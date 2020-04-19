@@ -13,6 +13,7 @@ object Version {
   val twitter4s = "6.2"
   val zio = "1.0.0-RC18-2"
   val zioConfig = "1.0.0-RC16"
+  val zioCats = "2.0.0.0-RC11"
 
   val http4s = "0.21.3"
 
@@ -31,6 +32,7 @@ object Libs {
   val zio = ivy"dev.zio::zio:${Version.zio}"
   val zioConfig = ivy"dev.zio::zio-config:${Version.zioConfig}"
   val zioConfigTypesafe = ivy"dev.zio::zio-config-typesafe:${Version.zioConfig}"
+  val zioCats = ivy"dev.zio::zio-interop-cats:${Version.zioCats}"
 
   val http4sBlazeServer =
     ivy"org.http4s::http4s-blaze-server:${Version.http4s}"
@@ -108,6 +110,7 @@ object services extends MyModuleWithTests {
       Libs.http4sBlazeClient,
       Libs.http4sDsl,
       Libs.http4sCirce,
+      Libs.zioCats,
       Libs.zio,
       Libs.zioConfig,
       Libs.zioConfigTypesafe
@@ -138,7 +141,7 @@ object examples extends mill.Module {
 
   object twitter extends MyModuleWithTests {
 
-    override def moduleDeps = Seq(camunda, twitterApi)
+    override def moduleDeps = Seq(camunda, services, twitterApi)
 
     override def mainClass = Some("pme123.camundala.examples.twitter.TwitterApp")
 

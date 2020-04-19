@@ -22,7 +22,7 @@ object appConfig {
 
   case class AppConf(servicesConf: ServicesConf)
 
-  case class ServicesConf(port: Int = 8888)
+  case class ServicesConf(host: String, port: Int = 8888)
 
   /**
     * Reads the App Authentication from the `twitter-auth.conf`.
@@ -30,7 +30,7 @@ object appConfig {
   lazy val live: RLayer[Console, AppConfig] = {
 
     val serviceConf =
-      (int("port")
+      (string("host") |@| int("port")
         ) (ServicesConf.apply, ServicesConf.unapply)
 
     val appConf =

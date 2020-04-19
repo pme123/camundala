@@ -2,7 +2,7 @@ package pme123.camundala.camunda
 
 import org.springframework.boot.SpringApplication
 import org.springframework.context.ConfigurableApplicationContext
-import zio.{ZIO, ZManaged, console}
+import zio._
 import zio.console.Console
 
 
