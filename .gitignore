@@ -1,0 +1,10 @@
+# Uncomment if you use real Twitter account!
+#/twitter-auth.conf
+/.bloop/
+/.idea/
+/.idea_modules/
+/.metals/
+/out/
+/project/
+/target/
+/mill
