@@ -25,7 +25,7 @@ object twitterConfig {
   /**
     * Reads the Twitter Authentication from the `twitter-auth.conf`.
     */
-  lazy val live: RLayer[Console, TwitterConfig] = {
+  def live(authFile: File): RLayer[Console, TwitterConfig] = {
 
     val tokenConfig =
       (string("key") |@|
@@ -36,8 +36,6 @@ object twitterConfig {
       (nested("consumerToken")(tokenConfig) |@|
         nested("accessToken")(tokenConfig)
         ) (TwitterAuth.apply, TwitterAuth.unapply)
-
-    val authFile = new File("./examples/twitter/twitter-auth.conf")
 
     lazy val sourceLayer: TaskLayer[Config[TwitterAuth]] = TypesafeConfig.fromHoconFile(authFile, twitterAuthConfig)
 

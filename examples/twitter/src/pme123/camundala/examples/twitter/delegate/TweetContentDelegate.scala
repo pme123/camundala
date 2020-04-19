@@ -1,5 +1,6 @@
 package pme123.camundala.examples.twitter.delegate
 
+import java.io.File
 import java.net.UnknownHostException
 
 import com.danielasfregola.twitter4s.exceptions.TwitterException
@@ -14,6 +15,7 @@ import zio.console.Console
   */
 class TweetContentDelegate
   extends CamundaDelegate {
+  private val authFile = new File("./examples/twitter/resources/twitter-auth.conf")
 
   def execute(execution: DelegateExecution): Unit =
     unsafeRun(
@@ -28,7 +30,7 @@ class TweetContentDelegate
         .mapError {
           case ex: TwitterException if ex.code.intValue == 187 =>
             new BpmnError("duplicateMessage")
-        }.provideCustomLayer((Console.live ++ twitterConfig.live) >>> twitterApi.live)
+        }.provideCustomLayer((Console.live ++ twitterConfig.live(authFile)) >>> twitterApi.live)
     )
 
 }
