@@ -13,6 +13,9 @@ object Version {
   val twitter4s = "6.2"
   val zio = "1.0.0-RC18-2"
   val zioConfig = "1.0.0-RC16"
+
+  val http4s = "0.21.3"
+
 }
 
 object Libs {
@@ -28,6 +31,13 @@ object Libs {
   val zio = ivy"dev.zio::zio:${Version.zio}"
   val zioConfig = ivy"dev.zio::zio-config:${Version.zioConfig}"
   val zioConfigTypesafe = ivy"dev.zio::zio-config-typesafe:${Version.zioConfig}"
+
+  val http4sBlazeServer =
+    ivy"org.http4s::http4s-blaze-server:${Version.http4s}"
+  val http4sBlazeClient =
+    ivy"org.http4s::http4s-blaze-client:${Version.http4s}"
+  val http4sCirce = ivy"org.http4s::http4s-circe:${Version.http4s}"
+  val http4sDsl = ivy"org.http4s::http4s-dsl:${Version.http4s}"
 
   val zioTest = ivy"dev.zio::zio-test:${Version.zio}"
   val zioTestSbt = ivy"dev.zio::zio-test-sbt:${Version.zio}"
@@ -77,6 +87,34 @@ object model extends MyModuleWithTests {
 
 }
 
+object config extends MyModuleWithTests {
+
+  override def ivyDeps = {
+    Agg(
+      Libs.zio,
+      Libs.zioConfig,
+      Libs.zioConfigTypesafe
+    )
+  }
+}
+
+object services extends MyModuleWithTests {
+
+  override def moduleDeps = Seq(config, model)
+
+  override def ivyDeps = {
+    Agg(
+      Libs.http4sBlazeServer,
+      Libs.http4sBlazeClient,
+      Libs.http4sDsl,
+      Libs.http4sCirce,
+      Libs.zio,
+      Libs.zioConfig,
+      Libs.zioConfigTypesafe
+    )
+  }
+}
+
 object camunda extends MyModuleWithTests {
 
   override def moduleDeps = Seq(model)
@@ -88,7 +126,9 @@ object camunda extends MyModuleWithTests {
       Libs.camundaWeb,
       Libs.camundaRest,
       Libs.h2,
-      Libs.postgres
+      Libs.postgres,
+
+      Libs.zio
     )
   }
 }
