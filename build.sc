@@ -87,8 +87,8 @@ object camunda extends MyModuleWithTests {
       Libs.springJdbc,
       Libs.camundaWeb,
       Libs.camundaRest,
-      Libs.h2
-      // Libs.postgres,
+      Libs.h2,
+      Libs.postgres
     )
   }
 }

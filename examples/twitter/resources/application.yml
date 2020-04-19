@@ -10,19 +10,19 @@ camunda:
       lastName: The Frog
     filter:
       create: All tasks
-#    database:
-#      schema-update: true
-#      type: postgres
+    database:
+      schema-update: true
+      type: postgres
 
-#spring:
-#  datasource:
-#    platform: postgres
-#    url: "jdbc:postgresql://localhost:5432/camunda"
-#    username: postgres
-#    password: Initial@Password
-#    driverClassName: org.postgresql.Driver
-#    initialization-mode: always
-#
-#    main.banner-mode: off
+spring:
+  datasource:
+    platform: postgres
+    url: "jdbc:postgresql://localhost:5432/camunda"
+    username: postgres
+    password: Initial@Password
+    driverClassName: org.postgresql.Driver
+    initialization-mode: always
+
+    main.banner-mode: off
 
 logging.level.org.springframework: ERROR
