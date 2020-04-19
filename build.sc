@@ -6,7 +6,7 @@ object Version {
   val scalaVersion = "2.13.1"
 
   val spring = "2.2.4.RELEASE"
-  val camundaSpringBoot = "3.3.7"
+  val camundaSpringBoot = "3.4.2"
   val h2 = "1.4.200"
   val postgres = "42.2.8"
 
@@ -18,7 +18,8 @@ object Version {
 object Libs {
   val spring = ivy"org.springframework.boot:spring-boot-starter-web:${Version.spring}"
   val springJdbc = ivy"org.springframework.boot:spring-boot-starter-jdbc:${Version.spring}"
-  val camunda = ivy"org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:${Version.camundaSpringBoot}"
+  val camundaWeb = ivy"org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:${Version.camundaSpringBoot}"
+  val camundaRest = ivy"org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:${Version.camundaSpringBoot}"
   val h2 = ivy"com.h2database:h2:${Version.h2}"
   val postgres = ivy"org.postgresql:postgresql:${Version.postgres}"
 
@@ -71,6 +72,7 @@ trait MyModuleWithTests extends MyModule {
   }
 
 }
+
 object model extends MyModuleWithTests {
 
 }
@@ -83,7 +85,8 @@ object camunda extends MyModuleWithTests {
     Agg(
       Libs.spring,
       Libs.springJdbc,
-      Libs.camunda,
+      Libs.camundaWeb,
+      Libs.camundaRest,
       Libs.h2
       // Libs.postgres,
     )
@@ -111,6 +114,19 @@ object examples extends mill.Module {
       }
     }
 
+  }
+
+  object rest extends MyModuleWithTests {
+
+    override def moduleDeps = Seq(camunda)
+
+    override def mainClass = Some("pme123.camundala.examples.rest.RestApp")
+
+    override def ivyDeps = {
+      Agg(
+        Libs.zio
+      )
+    }
   }
 
 }
