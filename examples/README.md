@@ -1,7 +1,17 @@
 # Examples
 Different Spring Boot App to play with Camundala.
 
-To let them work together, we use a Postgres Database.
+To let them work together and run them in parallel, 
+we use a Postgres Database that is shared between the examples.
+
+Make sure each example runs on its own port.
+
+## List of examples
+
+Example | Port
+:--- | ---:  
+Camunda Rest API | `9997`
+Twitter Demo App | `9998`
 
 # Docker
 We provide a `docker-compose.yml` file for the Database.
