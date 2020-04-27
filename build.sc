@@ -5,21 +5,43 @@ import mill.scalalib._
 object Version {
   val scalaVersion = "2.13.1"
 
+  // model
+  val scalaXml = "1.3.0"
+  val zio = "1.0.0-RC18-2"
+  val zioLogging = "0.2.7"
+
+  // config
+  val zioConfig = "1.0.0-RC16"
+
+  // services
+  val zioCats = "2.0.0.0-RC12"
+  val http4s = "0.21.3"
+  val circe = "0.13.0"
+
+  // camunda
   val spring = "2.2.4.RELEASE"
   val camundaSpringBoot = "3.4.2"
   val h2 = "1.4.200"
   val postgres = "42.2.8"
 
+  // example apps
+  // twitter
   val twitter4s = "6.2"
-  val zio = "1.0.0-RC18-2"
-  val zioConfig = "1.0.0-RC16"
-  val zioCats = "2.0.0.0-RC11"
 
-  val http4s = "0.21.3"
 
 }
 
 object Libs {
+  // model
+  val scalaXml = ivy"org.scala-lang.modules::scala-xml:${Version.scalaXml}"
+  val zio = ivy"dev.zio::zio:${Version.zio}"
+  val zioLogging = ivy"dev.zio::zio-logging:${Version.zioLogging}"
+
+  // config
+  val zioConfig = ivy"dev.zio::zio-config:${Version.zioConfig}"
+  val zioConfigTypesafe = ivy"dev.zio::zio-config-typesafe:${Version.zioConfig}"
+
+  // camunda
   val spring = ivy"org.springframework.boot:spring-boot-starter-web:${Version.spring}"
   val springJdbc = ivy"org.springframework.boot:spring-boot-starter-jdbc:${Version.spring}"
   val camundaWeb = ivy"org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:${Version.camundaSpringBoot}"
@@ -27,20 +49,21 @@ object Libs {
   val h2 = ivy"com.h2database:h2:${Version.h2}"
   val postgres = ivy"org.postgresql:postgresql:${Version.postgres}"
 
-  val twitter4s = ivy"com.danielasfregola::twitter4s:${Version.twitter4s}"
-
-  val zio = ivy"dev.zio::zio:${Version.zio}"
-  val zioConfig = ivy"dev.zio::zio-config:${Version.zioConfig}"
-  val zioConfigTypesafe = ivy"dev.zio::zio-config-typesafe:${Version.zioConfig}"
+  // services
   val zioCats = ivy"dev.zio::zio-interop-cats:${Version.zioCats}"
-
   val http4sBlazeServer =
     ivy"org.http4s::http4s-blaze-server:${Version.http4s}"
   val http4sBlazeClient =
     ivy"org.http4s::http4s-blaze-client:${Version.http4s}"
   val http4sCirce = ivy"org.http4s::http4s-circe:${Version.http4s}"
   val http4sDsl = ivy"org.http4s::http4s-dsl:${Version.http4s}"
+  val circe = ivy"io.circe::circe-generic:${Version.circe}"
 
+  // examples
+  // twitter
+  val twitter4s = ivy"com.danielasfregola::twitter4s:${Version.twitter4s}"
+
+  // test
   val zioTest = ivy"dev.zio::zio-test:${Version.zio}"
   val zioTestSbt = ivy"dev.zio::zio-test-sbt:${Version.zio}"
 }
@@ -87,30 +110,19 @@ trait MyModuleWithTests extends MyModule {
 
 object model extends MyModuleWithTests {
 
+  override def ivyDeps = {
+    Agg(
+      Libs.zio,
+      Libs.scalaXml,
+      Libs.zioLogging
+    )
+  }
 }
 
 object config extends MyModuleWithTests {
 
   override def ivyDeps = {
     Agg(
-      Libs.zio,
-      Libs.zioConfig,
-      Libs.zioConfigTypesafe
-    )
-  }
-}
-
-object services extends MyModuleWithTests {
-
-  override def moduleDeps = Seq(config, model)
-
-  override def ivyDeps = {
-    Agg(
-      Libs.http4sBlazeServer,
-      Libs.http4sBlazeClient,
-      Libs.http4sDsl,
-      Libs.http4sCirce,
-      Libs.zioCats,
       Libs.zio,
       Libs.zioConfig,
       Libs.zioConfigTypesafe
@@ -129,9 +141,23 @@ object camunda extends MyModuleWithTests {
       Libs.camundaWeb,
       Libs.camundaRest,
       Libs.h2,
-      Libs.postgres,
+      Libs.postgres
+    )
+  }
+}
 
-      Libs.zio
+object services extends MyModuleWithTests {
+
+  override def moduleDeps = Seq(config, camunda, model)
+
+  override def ivyDeps = {
+    Agg(
+      Libs.circe,
+      Libs.http4sBlazeServer,
+      Libs.http4sBlazeClient,
+      Libs.http4sDsl,
+      Libs.http4sCirce,
+      Libs.zioCats
     )
   }
 }
@@ -150,7 +176,6 @@ object examples extends mill.Module {
       override def ivyDeps = {
         Agg(
           Libs.twitter4s,
-          Libs.zio,
           Libs.zioConfig,
           Libs.zioConfigTypesafe
         )
@@ -165,11 +190,6 @@ object examples extends mill.Module {
 
     override def mainClass = Some("pme123.camundala.examples.rest.RestApp")
 
-    override def ivyDeps = {
-      Agg(
-        Libs.zio
-      )
-    }
   }
 
 }

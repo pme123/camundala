@@ -8,6 +8,8 @@ import zio.console.Console
 
 trait ZSpringApp  extends zio.App {
 
+
+
   /**
     * create SpringApplication as a ZManaged Resource.
     */

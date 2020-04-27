@@ -13,11 +13,12 @@ camunda:
     database:
       schema-update: true
       type: postgres
+    auto-deployment-enabled: false
 
 spring:
   datasource:
     platform: postgres
-    url: "jdbc:postgresql://localhost:5432/camunda"
+    url: "jdbc:postgresql://localhost:5433/camunda"
     username: postgres
     password: Initial@Password
     driverClassName: org.postgresql.Driver

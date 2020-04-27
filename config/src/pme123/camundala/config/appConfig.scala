@@ -22,7 +22,9 @@ object appConfig {
 
   case class AppConf(servicesConf: ServicesConf)
 
-  case class ServicesConf(host: String, port: Int = 8888)
+  case class ServicesConf(host: String, port: Int = 8888) {
+    val url = s"$host:$port"
+  }
 
   /**
     * Reads the App Authentication from the `twitter-auth.conf`.

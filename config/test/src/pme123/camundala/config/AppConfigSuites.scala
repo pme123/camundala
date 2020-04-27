@@ -8,7 +8,7 @@ object AppConfigSuites
   extends DefaultRunnableSpec {
 
   private val expectedConf =
-    AppConf(ServicesConf(8889))
+    AppConf(ServicesConf("localhost", 8889))
 
   def spec: ZSpec[environment.TestEnvironment, Any] =
     suite("AppConfigSuites")(

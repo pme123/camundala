@@ -1,16 +1,22 @@
 package pme123.camundala.services
 
-import org.http4s.HttpRoutes
-import org.http4s.dsl.Http4sDsl
+import io.circe.generic.auto._
+import io.circe.syntax._
+import org.http4s._
+import org.http4s.circe._
+import org.http4s.dsl._
 import org.http4s.implicits._
+import org.http4s.multipart.Multipart
 import org.http4s.server.blaze.BlazeServerBuilder
+import pme123.camundala.camunda.deploymentService
+import pme123.camundala.camunda.deploymentService._
 import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.{AppConfig, ServicesConf}
+import pme123.camundala.camunda.bpmnService.BpmnService
 import zio._
-import zio.clock.Clock
 import zio.console.Console
-import zio.interop.catz._
 import zio.interop.catz.implicits._
+import zio.interop.catz.{console, _}
 
 object httpServer {
   type HttpServer = Has[Service]
@@ -22,24 +28,60 @@ object httpServer {
   def serve(): RIO[HttpServer, Unit] =
     ZIO.accessM(_.get.serve())
 
-  type HttpServerDeps = AppConfig with Console with Clock
+  type HttpServerDeps = AppConfig with DeploymentService with Console
 
   /**
-    * Live Implementation that accesses Twitter and tweets for real to http://twitter.com/#!/camunda_demo
+    * http4s Implementation
     */
   lazy val live: RLayer[HttpServerDeps, HttpServer] =
-    ZLayer.fromServices[appConfig.Service, Console.Service, Clock.Service, Service] {
-      (config, console, clock) =>
+    ZLayer.fromServices[appConfig.Service, deploymentService.Service, Console.Service, Service] {
+      (config, deployService, console) =>
 
         val dsl: Http4sDsl[Task] = Http4sDsl[Task]
-
         import dsl._
 
         lazy val routes: HttpRoutes[Task] =
           HttpRoutes.of[Task] {
             case GET -> Root / "hello" =>
               Ok("Hello")
+            case req@POST -> Root / "deployment" / "create" =>
+              req.decode[Multipart[Task]] { m =>
+                deployMultipart(m)
+                  .foldM(e =>
+                    InternalServerError(),
+                    Ok(_))
+              }
           }
+
+        def deployMultipart(m: Multipart[Task]) = {
+          import DeployRequest._
+          def forName(m: Multipart[Task], name: String) = {
+            m.parts.collectFirst { case p if p.name.contains(name) =>
+              p.body.compile.toVector
+                .map(v => Some(new String(v.toArray)))
+                .catchAll(e =>
+                  console.putStrLn(s"Problem receiving ${e.getMessage}") *>
+                    ZIO.succeed(None)
+                )
+            }.getOrElse(ZIO.succeed(None))
+          }
+
+          (for {
+            files <- ZIO.collectAll(m.parts.filter(p => p.name.isEmpty || !RESERVED_KEYWORDS.contains(p.name.get))
+              .map { p =>
+                p.filename.map(fn => p.body.compile.toVector.map(v => DeployFile(fn, v)))
+                  .getOrElse(Task.fail(InvalidRequestException(s"No file name found in the deployment resource described by form parameter '${p.name.getOrElse("")}'.")))
+              })
+            deployName <- forName(m, DEPLOYMENT_NAME)
+            enableDuplFiltering <- forName(m, ENABLE_DUPLICATE_FILTERING).map(_.exists(_.toBoolean))
+            deployChangedOnly <- forName(m, DEPLOY_CHANGED_ONLY).map(_.exists(_.toBoolean))
+            deploySource <- forName(m, DEPLOYMENT_SOURCE)
+            tenantId <- forName(m, TENANT_ID)
+            deployResult <- deployService.deploy(DeployRequest(deployName, enableDuplFiltering, deployChangedOnly, deploySource, tenantId, files.toSet))
+          } yield deployResult.asJson)
+            .tap(j => console.putStrLn(s"JSON: $j"))
+            .tapError(e => console.putStrLn(s"Error: $e") *> ZIO.effect(e.printStackTrace()))
+        }
 
         def server(servicesConf: ServicesConf) =
           ZIO.runtime[Any]
@@ -57,12 +99,11 @@ object httpServer {
           def serve(): Task[Unit] =
             for {
               config <- config.get()
-              tweet <- server(config.servicesConf)
-              _ <- console.putStrLn(s"$tweet sent")
+              _ <- server(config.servicesConf)
+              _ <- console.putStrLn(s"HTTP server started on port: ${config.servicesConf.url}")
             } yield ()
         }
-
-
     }
+
 
 }
