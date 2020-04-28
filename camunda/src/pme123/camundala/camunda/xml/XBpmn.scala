@@ -1,6 +1,6 @@
 package pme123.camundala.camunda.xml
 
-import pme123.camundala.model.{Bpmn, BpmnProcess, Extensionable, UserTask}
+import pme123.camundala.model.{Bpmn, BpmnProcess, Extensionable}
 
 import scala.xml.{Elem, Node}
 
@@ -73,7 +73,7 @@ case class XBpmnProcess(xmlNode: Node)
       if (extensionableMap.size == xExts.length)
         ValidateWarnings.none
       else
-        ValidateWarnings(s"You have ${extensionableMap.size} $label in the XML-Model, but you have ${xExts.length} in Scala")
+        ValidateWarnings(s"You have ${xExts.length} $label in the XML-Model, but you have ${extensionableMap.size} in Scala")
 
     xExts
       .map(xt => xt.merge(extensionableMap.get(xt.id)))

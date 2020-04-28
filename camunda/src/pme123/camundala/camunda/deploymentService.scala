@@ -40,7 +40,7 @@ object deploymentService {
           private def mergeDeployFile(deployFile: DeployFile): Task[(DeployFile, XMergeResult)] =
             for {
               xml <- ZIO.effect(XML.load(new ByteArrayInputStream(deployFile.file.toArray)))
-              bpmn <- bpmnServ.mergeBpmn(xml)
+              bpmn <- bpmnServ.mergeBpmn(deployFile.filename, xml)
             } yield deployFile -> bpmn
 
           def deploy(request: DeployRequest): Task[DeployResult] =

@@ -2,13 +2,16 @@ package pme123.camundala.camunda
 
 import org.springframework.boot.SpringApplication
 import org.springframework.context.ConfigurableApplicationContext
+import pme123.camundala.model.bpmnRegister.BpmnRegister
+import pme123.camundala.model.{Bpmn, bpmnRegister}
 import zio._
 import zio.console.Console
 
 
 trait ZSpringApp  extends zio.App {
 
-
+  protected def registerBpmns(bpmns: Set[Bpmn]):  URIO[BpmnRegister, List[Unit]] =
+    ZIO.foreach(bpmns.toSeq)(b => bpmnRegister.registerBpmn(b))
 
   /**
     * create SpringApplication as a ZManaged Resource.
