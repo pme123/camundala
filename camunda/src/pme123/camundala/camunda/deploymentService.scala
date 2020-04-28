@@ -58,6 +58,7 @@ object deploymentService {
               b2 <- ZIO.succeed(request.tenantId.map(b1.tenantId).getOrElse(b1))
               b3 <- ZIO.effect(
                 models.foldLeft(b2) { case (builder, (df, mr)) =>
+                  println(s"toDeploy: ${mr.xmlNode.toString}")
                   builder.addInputStream(df.filename,
                     new ByteArrayInputStream(mr.xmlNode.toString.getBytes)
                   )

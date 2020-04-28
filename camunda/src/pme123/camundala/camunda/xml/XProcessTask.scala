@@ -22,9 +22,8 @@ sealed trait XProcessTask
     case (Some(pt), taskElem: Elem) =>
       val propElem = taskElem \\ "property"
       val propParams = propElem.map(_ \@ "name")
-      // xmlns:camunda={xmlnsCamunda} xmlns={xmlnsBpmn}>
       val xmlElem: Elem = taskElem.copy(
-        child = <extensionElements>
+        child = <extensionElements xmlns:camunda={xmlnsCamunda} xmlns={xmlnsBpmn}>
           <camunda:properties>
             {for {(k, v) <- pt.extensions.properties
                   if !propParams.contains(k) // only add the one that not exist

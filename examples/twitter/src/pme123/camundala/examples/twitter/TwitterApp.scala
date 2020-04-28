@@ -51,9 +51,12 @@ object TwitterApp extends ZSpringApp {
 
   private val process: BpmnProcess = BpmnProcess("TwitterDemoProcess",
     List(
-      UserTask("user_task_review_tweet", Extensions(Map("durationMean" -> "10000", "durationSd" -> "5000")))),
+      UserTask("user_task_review_tweet",
+        Extensions(Map("durationMean" -> "10000", "durationSd" -> "5000")))),
     List(
-      ServiceTask("service_task_send_rejection_notification"),
-      ServiceTask("service_task_publish_on_twitter")
+      ServiceTask("service_task_send_rejection_notification",
+        Extensions(Map("KPI-Ratio" -> "Tweet Rejected"))),
+      ServiceTask("service_task_publish_on_twitter",
+        Extensions(Map("KPI-Ratio" -> "Tweet Approved")))
     ))
 }

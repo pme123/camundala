@@ -13,10 +13,13 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
   private val bpmn = Source.fromResource("bpmn/TwitterModelProcess.bpmn")
   private val process: BpmnProcess = BpmnProcess("TwitterDemoProcess",
     List(
-      UserTask("user_task_review_tweet", Extensions(Map("durationMean" -> "10000", "durationSd" -> "5000")))),
+      UserTask("user_task_review_tweet",
+        Extensions(Map("durationMean" -> "10000", "durationSd" -> "5000")))),
     List(
-      ServiceTask("service_task_send_rejection_notification"),
-      ServiceTask("service_task_publish_on_twitter")
+      ServiceTask("service_task_send_rejection_notification",
+        Extensions(Map("KPI-Ratio" -> "Tweet Rejected"))),
+      ServiceTask("service_task_publish_on_twitter",
+        Extensions(Map("KPI-Ratio" -> "Tweet Approved")))
     ))
   private val expected = Bpmn(List(
     process))
@@ -30,11 +33,13 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
           userTasks = mergeResult.xmlNode \\ "userTask"
           serviceTasks = mergeResult.xmlNode \\ "serviceTask"
           userTaskProps = userTasks.head \\ "property"
+          serviceTaskProp = serviceTasks.head \\ "property"
         } yield {
           assert(mergeResult.warnings)(equalTo(ValidateWarnings.none)) &&
             assert(userTasks.size)(equalTo(1)) &&
-            assert(userTaskProps.length)(equalTo(3)) &&
-            assert(serviceTasks.length)(equalTo(2))
+            assert(userTaskProps.length)(equalTo(3))  &&
+            assert(serviceTasks.length)(equalTo(2)) &&
+          assert(serviceTaskProp.length) (equalTo(1))
         }
       }
     ).provideCustomLayer(((processRegister.live >>> bpmnService.live) ++ processRegister.live).mapError(TestFailure.fail))

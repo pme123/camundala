@@ -40,7 +40,7 @@ case class XBpmn(bpmnXml: Elem) {
       .map(xp => xp.merge(bpmn.processMap.get(xp.id)))
       .foldLeft(XMergeResult(bpmnXml, processWarnings)) {
         case (XMergeResult(resXml: Elem, resWarn), XMergeResult(procXml, procWarn)) =>
-          XMergeResult(resXml.copy(child = resXml.child.filter(c => c \@ "id" != procXml \@ "id") :+ procXml),
+          XMergeResult(resXml.copy(child = resXml.child.map(c => if(c \@ "id" != procXml \@ "id") c else procXml)),
             resWarn ++ procWarn)
       }
   }
