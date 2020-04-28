@@ -1,12 +1,13 @@
 package pme123.camundala.camunda.xml
 
-import pme123.camundala.camunda.bpmn.ValidateWarnings
-import pme123.camundala.model.{Bpmn, BpmnProcess, ProcessTask}
+import pme123.camundala.model.{Bpmn, BpmnProcess, Extensionable, UserTask}
 
 import scala.xml.{Elem, Node}
 
 trait XIdentifiableNode {
   def xmlNode: Node
+
+  def tagName: String
 
   val xmlnsBpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL"
   val xmlnsCamunda = "http://camunda.org/schema/1.0/bpmn"
@@ -21,14 +22,6 @@ case class XBpmn(bpmnXml: Elem) {
       .filter(_ \@ "isExecutable" == "true")
       .map(XBpmnProcess)
 
-  def validate(bpmn: Bpmn): ValidateWarnings =
-    if (processes.length == bpmn.processes.length)
-      processes
-        .map(xp => xp.validate(bpmn.processMap.get(xp.id)))
-        .foldLeft(ValidateWarnings.none)(_ ++ _)
-    else
-      ValidateWarnings(s"You have ${processes.length} Processes in the XML-Model, but you have ${bpmn.processes.length} in Scala")
-
   def merge(bpmn: Bpmn): XMergeResult = {
     val processWarnings =
       if (processes.length == bpmn.processes.length)
@@ -40,7 +33,7 @@ case class XBpmn(bpmnXml: Elem) {
       .map(xp => xp.merge(bpmn.processMap.get(xp.id)))
       .foldLeft(XMergeResult(bpmnXml, processWarnings)) {
         case (XMergeResult(resXml: Elem, resWarn), XMergeResult(procXml, procWarn)) =>
-          XMergeResult(resXml.copy(child = resXml.child.map(c => if(c \@ "id" != procXml \@ "id") c else procXml)),
+          XMergeResult(resXml.copy(child = resXml.child.map(c => if (c \@ "id" != procXml \@ "id") c else procXml)),
             resWarn ++ procWarn)
       }
   }
@@ -48,6 +41,7 @@ case class XBpmn(bpmnXml: Elem) {
 
 case class XBpmnProcess(xmlNode: Node)
   extends XIdentifiableNode {
+  def tagName: String = "Process"
 
   val userTasks: Seq[XUserTask] =
     (xmlNode \ "userTask").map(XUserTask)
@@ -55,55 +49,62 @@ case class XBpmnProcess(xmlNode: Node)
   val serviceTasks: Seq[XServiceTask] =
     (xmlNode \ "serviceTask").map(XServiceTask)
 
-  def validate(maybeProcess: Option[BpmnProcess]): ValidateWarnings = maybeProcess match {
-    case None =>
-      ValidateWarnings(s"There is no Process $id registered")
-    case Some(p) =>
-      val valUserTasks =
-        if (p.userTasks.length == userTasks.length) {
-          userTasks
-            .map(xt => xt.validate(p.userTaskMap.get(xt.id)))
-            .foldLeft(ValidateWarnings.none)(_ ++ _)
-        } else {
-          ValidateWarnings(s"You have ${userTasks.length} UserTasks in the XML-Model, but you have ${p.userTasks.length} in Scala")
-        }
-      val valServiceTasks =
-        if (p.serviceTaskMap.size == serviceTasks.length) {
-          serviceTasks
-            .map(xt => xt.validate(p.serviceTaskMap.get(xt.id)))
-            .foldLeft(ValidateWarnings.none)(_ ++ _)
-        } else {
-          ValidateWarnings(s"You have ${serviceTasks.length} ServiceTasks in the XML-Model, but you have ${p.serviceTaskMap.size} in Scala")
-        }
-      valUserTasks ++ valServiceTasks
-  }
+  val startEvents: Seq[XStartEvent] =
+    (xmlNode \ "startEvent").map(XStartEvent)
+
+  val exclusiveGateways: Seq[XExclusiveGateway] =
+    (xmlNode \ "exclusiveGateway").map(XExclusiveGateway)
 
   def merge(maybeProcess: Option[BpmnProcess]): XMergeResult =
     maybeProcess match {
       case None =>
         XMergeResult(xmlNode, ValidateWarnings(s"There is no Process $id registered"))
       case Some(p) =>
-        val XMergeResult(xmlUser, warningsUser) = mergeTask(xmlNode, p.userTaskMap, userTasks)
-        val XMergeResult(xmlService, warningsService) = mergeTask(xmlUser, p.serviceTaskMap, serviceTasks)
-        XMergeResult(xmlService, warningsUser ++ warningsService)
+        val XMergeResult(xmlUser, warningsUser) = mergeExtensionable(xmlNode, p.userTaskMap, userTasks, "UserTask")
+        val XMergeResult(xmlService, warningsService) = mergeExtensionable(xmlUser, p.serviceTaskMap, serviceTasks, "Service")
+        val XMergeResult(xmlStartEvent, warningsStartEvent) = mergeExtensionable(xmlService, p.startEventMap, startEvents, "StartEvent")
+        val XMergeResult(xmlGateway, warningsGateway) = mergeExtensionable(xmlStartEvent, p.gatewayMap, exclusiveGateways, "ExclusiveGateway")
+        XMergeResult(xmlGateway, warningsUser ++ warningsService ++ warningsStartEvent ++ warningsGateway)
     }
 
 
-  private def mergeTask(xml: Node, processTaskMap: Map[String, ProcessTask], xTasks: Seq[XProcessTask]) = {
-    val taskWarnings =
-      if (processTaskMap.size == xTasks.length)
+  private def mergeExtensionable(xml: Node, extensionableMap: Map[String, Extensionable], xExts: Seq[XBpmnNode], label:String) = {
+    val warnings =
+      if (extensionableMap.size == xExts.length)
         ValidateWarnings.none
       else
-        ValidateWarnings(s"You have ${xTasks.length} UserTasks in the XML-Model, but you have ${xTasks.length} in Scala")
+        ValidateWarnings(s"You have ${extensionableMap.size} $label in the XML-Model, but you have ${xExts.length} in Scala")
 
-    xTasks
-      .map(xt => xt.merge(processTaskMap.get(xt.id)))
-      .foldLeft(XMergeResult(xml, taskWarnings)) {
-        case (XMergeResult(resXml: Elem, resWarn), XMergeResult(taskXml, taskWarn)) =>
-          XMergeResult(resXml.copy(child = resXml.child.filter(c => c \@ "id" != taskXml \@ "id") :+ taskXml),
+    xExts
+      .map(xt => xt.merge(extensionableMap.get(xt.id)))
+      .foldLeft(XMergeResult(xml, warnings)) {
+        case (XMergeResult(resXml: Elem, resWarn), XMergeResult(xml, taskWarn)) =>
+          XMergeResult(resXml.copy(child = resXml.child.filter(c => c \@ "id" != xml \@ "id") :+ xml),
             resWarn ++ taskWarn)
       }
   }
 }
 
+trait XBpmnNode
+  extends XIdentifiableNode {
 
+  def merge(maybeNode: Option[Extensionable]): XMergeResult = (maybeNode, xmlNode) match {
+    case (None, _) =>
+      XMergeResult(xmlNode, ValidateWarnings(s"There is NOT a $tagName with id '$id' in Scala."))
+    case (Some(extensionable), nodeElem: Elem) =>
+      val propElem = nodeElem \\ "property"
+      val propParams = propElem.map(_ \@ "name")
+      val xmlElem: Elem = nodeElem.copy(
+        child = <extensionElements xmlns:camunda={xmlnsCamunda} xmlns={xmlnsBpmn}>
+          <camunda:properties>
+            {for {(k, v) <- extensionable.extensions.properties
+                  if !propParams.contains(k) // only add the one that not exist
+                  } yield
+              <camunda:property name={k} value={v}/>}{//
+            propElem}
+          </camunda:properties>
+        </extensionElements>
+      )
+      XMergeResult(xmlElem, ValidateWarnings.none)
+  }
+}

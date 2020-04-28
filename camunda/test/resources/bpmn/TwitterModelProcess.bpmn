@@ -7,11 +7,6 @@
     </serviceTask>
     <sequenceFlow id="SequenceFlow_4" name="" sourceRef="service_task_send_rejection_notification" targetRef="gateway_join" />
     <exclusiveGateway id="gateway_approved" name="Approved?">
-      <extensionElements>
-        <camunda:properties>
-          <camunda:property name="KPI-Cycle-End" value="Tweet Approval Time" />
-        </camunda:properties>
-      </extensionElements>
       <incoming>SequenceFlow_2</incoming>
       <outgoing>no</outgoing>
       <outgoing>yes</outgoing>
@@ -47,11 +42,6 @@
       <incoming>SequenceFlow_5</incoming>
     </endEvent>
     <startEvent id="start_event_new_tweet" name="Tweet written" camunda:formKey="app:createTweet.html" camunda:initiator="initiator">
-      <extensionElements>
-        <camunda:properties>
-          <camunda:property name="KPI-Cycle-Start" value="Tweet Approval Time" />
-        </camunda:properties>
-      </extensionElements>
       <outgoing>SequenceFlow_9</outgoing>
     </startEvent>
     <sequenceFlow id="SequenceFlow_9" name="" sourceRef="start_event_new_tweet" targetRef="user_task_review_tweet" />

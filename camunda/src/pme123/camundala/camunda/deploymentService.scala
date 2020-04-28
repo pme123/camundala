@@ -3,9 +3,8 @@ package pme123.camundala.camunda
 import java.io.ByteArrayInputStream
 
 import org.camunda.bpm.engine.rest.util.EngineUtil
-import pme123.camundala.camunda.bpmn.ValidateWarnings
 import pme123.camundala.camunda.bpmnService.BpmnService
-import pme123.camundala.camunda.xml.XMergeResult
+import pme123.camundala.camunda.xml.{ValidateWarnings, XMergeResult}
 import pme123.camundala.model.CamundalaException
 import zio._
 
@@ -58,17 +57,10 @@ object deploymentService {
               b2 <- ZIO.succeed(request.tenantId.map(b1.tenantId).getOrElse(b1))
               b3 <- ZIO.effect(
                 models.foldLeft(b2) { case (builder, (df, mr)) =>
-                  println(s"toDeploy: ${mr.xmlNode.toString}")
                   builder.addInputStream(df.filename,
                     new ByteArrayInputStream(mr.xmlNode.toString.getBytes)
                   )
-                }/*
-                request.deployFiles.foldLeft(b2) { case (builder,f) =>
-                  println(s"toDeploy: ${new String(f.file.toArray)}")
-                builder.addInputStream(f.filename,
-                  new ByteArrayInputStream(f.file.toArray)
-                )
-              }*/)
+                })
               deployment <- ZIO.effect(b3.deploy())
               deployResult = DeployResult(deployment.getId, deployment.getName,
                 deployment.getDeploymentTime.toString,
@@ -80,7 +72,6 @@ object deploymentService {
 
         }
     }
-
 
   case class DeployRequest(name: Option[String] = None,
                            enableDuplicateFilterung: Boolean = false,

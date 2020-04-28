@@ -1,7 +1,6 @@
 package pme123.camundala.camunda
 
-import pme123.camundala.camunda.bpmn.ValidateWarnings
-import pme123.camundala.camunda.xml.{XBpmn, XMergeResult}
+import pme123.camundala.camunda.xml.{ValidateWarnings, XBpmn, XMergeResult}
 import pme123.camundala.model.processRegister.ProcessRegister
 import pme123.camundala.model.{Bpmn, CamundalaException, processRegister}
 import zio._
@@ -33,7 +32,6 @@ object bpmnService {
                   } yield p
                 )).map(_.filter(_.nonEmpty).map(_.get))
               mergeResult = xBpmn.merge(Bpmn(processes))
-              _ = printf(s"mergeResult: ${mergeResult.xmlNode}")
             } yield mergeResult
 
           }
