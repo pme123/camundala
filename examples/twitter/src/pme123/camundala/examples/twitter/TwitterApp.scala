@@ -1,5 +1,6 @@
 package pme123.camundala.examples.twitter
 
+import org.camunda.bpm.engine.rest.util.EngineUtil
 import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import pme123.camundala.camunda.{ZSpringApp, bpmnService, deploymentService}
@@ -34,10 +35,12 @@ object TwitterApp extends ZSpringApp {
 
   private lazy val bpmnIdMapSTM: ZIO[Any, Nothing, TMap[String, Bpmn]] = TMap.make[String, Bpmn]().commit
 
-  private val registerLayer: ULayer[BpmnRegister] = bpmnRegister.live
-  private val bpmnServiceLayer = registerLayer >>> bpmnService.live
-  private val deploymentLayer = bpmnServiceLayer >>> deploymentService.live
-  private val httpServerLayer = (appConfig.live ++ deploymentLayer ++ Console.live) >>> httpServer.live
+  private lazy val processEngine = EngineUtil.lookupProcessEngine(null)
+
+  private lazy val registerLayer: ULayer[BpmnRegister] = bpmnRegister.live
+  private lazy val bpmnServiceLayer = registerLayer >>> bpmnService.live
+  private lazy val deploymentLayer = bpmnServiceLayer >>> deploymentService.live(processEngine)
+  private lazy val httpServerLayer = (appConfig.live ++ deploymentLayer ++ Console.live) >>> httpServer.live
 
   private lazy val http = httpServer.serve()
 
@@ -45,7 +48,8 @@ object TwitterApp extends ZSpringApp {
     managedSpringApp(classOf[TwitterApp], args)
   }
 
-  private val bpmn = Bpmn("TwitterModelProcess.bpmn",
+  private val bpmn = Bpmn("TwitterDemoProcess.bpmn",
+    StaticFile("TwitterDemoProcess.bpmn", "bpmn"),
     List(
       BpmnProcess("TwitterDemoProcess",
         List(
@@ -65,6 +69,7 @@ object TwitterApp extends ZSpringApp {
         )
         ),
       )), HashSet(
-      StaticFile("bpmn/TwitterModelProcess.bpmn")
+      StaticFile("static/forms/createTweet.html", "bpmn"),
+      StaticFile("static/forms/reviewTweet.html", "bpmn"),
     ))
 }

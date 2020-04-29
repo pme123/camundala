@@ -9,30 +9,7 @@ import scala.io.Source
 import scala.xml._
 
 object BpmnServiceSuite extends DefaultRunnableSpec {
-
-  private val bpmnResource = Source.fromResource("bpmn/TwitterModelProcess.bpmn")
-  private val bpmn = Bpmn("TwitterDemoProcess.bpmn",
-    List(
-      BpmnProcess("TwitterDemoProcess",
-        List(
-          UserTask("user_task_review_tweet",
-            Extensions(Map("durationMean" -> "10000", "durationSd" -> "5000")))),
-        List(
-          ServiceTask("service_task_send_rejection_notification",
-            Extensions(Map("KPI-Ratio" -> "Tweet Rejected"))),
-          ServiceTask("service_task_publish_on_twitter",
-            Extensions(Map("KPI-Ratio" -> "Tweet Approved")))
-        ),
-        List(StartEvent("start_event_new_tweet",
-          Extensions(Map("KPI-Cycle-Start" -> "Tweet Approval Time"))
-        )),
-        List(ExclusiveGateway("gateway_approved",
-          Extensions(Map("KPI-Cycle-End" -> "Tweet Approval Time"))
-        )
-        ),
-      )), HashSet(
-      StaticFile("bpmn/TwitterModelProcess.bpmn")
-    ))
+import TestData._
 
   def spec: ZSpec[environment.TestEnvironment, Any] =
     suite("BpmnSuite")(

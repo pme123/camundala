@@ -2,10 +2,11 @@ package pme123.camundala.camunda
 
 import java.io.ByteArrayInputStream
 
+import org.camunda.bpm.engine.ProcessEngine
 import org.camunda.bpm.engine.rest.util.EngineUtil
 import pme123.camundala.camunda.bpmnService.BpmnService
-import pme123.camundala.camunda.xml.{ValidateWarnings, XMergeResult}
-import pme123.camundala.model.CamundalaException
+import pme123.camundala.camunda.xml.{MergeResult, ValidateWarnings, XMergeResult}
+import pme123.camundala.model.{CamundalaException, StaticFile}
 import zio._
 
 import scala.xml.XML
@@ -28,20 +29,18 @@ object deploymentService {
 
   type DeploymentServiceDeps = BpmnService
 
-  lazy val live: RLayer[DeploymentServiceDeps, DeploymentService] =
+  def live(processEngine: => ProcessEngine): RLayer[DeploymentServiceDeps, DeploymentService] =
     ZLayer.fromService[bpmnService.Service, Service] {
       bpmnServ =>
         new Service {
-          private lazy val processEngine = EngineUtil.lookupProcessEngine(null)
+          private def mergeDeployFiles(deployFiles: Set[DeployFile]): Task[List[(DeployFile, MergeResult)]] =
+            ZIO.foreach(deployFiles)(mergeDeployFile)
 
-          private def mergeDeployFiles(deployFiles: Set[DeployFile]): Task[List[(DeployFile, XMergeResult)]] =
-            Task.collectAll(deployFiles.map(mergeDeployFile))
-
-          private def mergeDeployFile(deployFile: DeployFile): Task[(DeployFile, XMergeResult)] =
+          private def mergeDeployFile(deployFile: DeployFile): Task[(DeployFile, MergeResult)] =
             for {
               xml <- ZIO.effect(XML.load(new ByteArrayInputStream(deployFile.file.toArray)))
-              bpmn <- bpmnServ.mergeBpmn(deployFile.filename, xml)
-            } yield deployFile -> bpmn
+              mergeResult <- bpmnServ.mergeBpmn(deployFile.filename, xml)
+            } yield deployFile -> mergeResult
 
           def deploy(request: DeployRequest): Task[DeployResult] =
             for {
@@ -56,10 +55,14 @@ object deploymentService {
               b1 <- ZIO.succeed(request.source.map(builder.source).getOrElse(builder))
               b2 <- ZIO.succeed(request.tenantId.map(b1.tenantId).getOrElse(b1))
               b3 <- ZIO.effect(
-                models.foldLeft(b2) { case (builder, (df, mr)) =>
-                  builder.addInputStream(df.filename,
-                    new ByteArrayInputStream(mr.xmlNode.toString.getBytes)
+                models.foldLeft(b2) { case (builder, (df, MergeResult(xmlNode, maybeBpmn, _))) =>
+                  val b11 = builder.addInputStream(df.filename,
+                    new ByteArrayInputStream(xmlNode.toString.getBytes)
                   )
+                  maybeBpmn.toList.flatMap(_.staticFiles)
+                  .foldLeft(b11) { case (builder, sf) =>
+                    builder.addInputStream(sf.fileName, sf.inputStream)
+                  }
                 })
               deployment <- ZIO.effect(b3.deploy())
               deployResult = DeployResult(deployment.getId, deployment.getName,

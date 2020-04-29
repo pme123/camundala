@@ -61,17 +61,15 @@ object httpServer {
                 .map(v => Some(new String(v.toArray)))
                 .catchAll(e =>
                   console.putStrLn(s"Problem receiving ${e.getMessage}") *>
-                    ZIO.succeed(None)
+                    ZIO.none
                 )
-            }.getOrElse(ZIO.succeed(None))
+            }.getOrElse(ZIO.none)
           }
 
           (for {
-            files <- ZIO.collectAll(m.parts.filter(p => p.name.isEmpty || !RESERVED_KEYWORDS.contains(p.name.get))
-              .map { p =>
-                p.filename.map(fn => p.body.compile.toVector.map(v => DeployFile(fn, v)))
-                  .getOrElse(Task.fail(InvalidRequestException(s"No file name found in the deployment resource described by form parameter '${p.name.getOrElse("")}'.")))
-              })
+            files <- ZIO.foreach(m.parts.filter(p => p.name.isEmpty || !RESERVED_KEYWORDS.contains(p.name.get)))(p =>
+              p.filename.map(fn => p.body.compile.toVector.map(v => DeployFile(fn, v)))
+                .getOrElse(Task.fail(InvalidRequestException(s"No file name found in the deployment resource described by form parameter '${p.name.getOrElse("")}'."))))
             deployName <- forName(m, DEPLOYMENT_NAME)
             enableDuplFiltering <- forName(m, ENABLE_DUPLICATE_FILTERING).map(_.exists(_.toBoolean))
             deployChangedOnly <- forName(m, DEPLOY_CHANGED_ONLY).map(_.exists(_.toBoolean))

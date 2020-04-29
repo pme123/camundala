@@ -2,7 +2,6 @@ package pme123.camundala.camunda.xml
 
 import org.camunda.bpm.model.bpmn.{BpmnModelInstance, instance => camunda}
 
-case class MergeResult(camModel: BpmnModelInstance, warnings: ValidateWarnings)
 case class MergeProcess(process: camunda.Process, warnings: ValidateWarnings)
 case class MergeTask(task: camunda.Task, warnings: ValidateWarnings)
 
@@ -15,7 +14,7 @@ case class ValidateWarnings(value: Seq[ValidateWarning]) {
 object ValidateWarnings {
   def none: ValidateWarnings = ValidateWarnings(Seq.empty)
 
-  def apply(errorMsg: String): ValidateWarnings = new ValidateWarnings(Seq(ValidateWarning(errorMsg)))
+  def apply(warnMsg: String): ValidateWarnings = new ValidateWarnings(Seq(ValidateWarning(warnMsg)))
 }
 
 case class ValidateWarning(msg: String)

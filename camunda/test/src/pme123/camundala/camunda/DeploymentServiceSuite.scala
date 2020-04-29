@@ -1,6 +1,9 @@
 package pme123.camundala.camunda
 
+import org.camunda.bpm.engine.ProcessEngine
+import org.camunda.bpm.engine.rest.util.EngineUtil
 import pme123.camundala.camunda.deploymentService.{DeployFile, DeployRequest}
+import pme123.camundala.model.bpmnRegister
 import zio.test.Assertion.equalTo
 import zio.test._
 
@@ -8,18 +11,19 @@ import scala.collection.immutable.HashSet
 import scala.io.Source
 import scala.xml.XML
 
-object DeploymentServiceSuite {/* extends DefaultRunnableSpec {
+object DeploymentServiceSuite extends DefaultRunnableSpec {
 
-  private val bpmn = Source.fromResource("bpmn/TwitterModelProcess.bpmn")
-  private val deployRequest = DeployRequest(deployFiles = HashSet(DeployFile("myTask.bpmn", bpmn.reader().)))
-
+  import TestData._
+  private lazy val processEngine: ProcessEngine = EngineUtil.lookupProcessEngine(null)
 
   def spec: ZSpec[environment.TestEnvironment, Any] =
     suite("BpmnSuite")(
       testM("the BPMN Model is correct") {
-        deploymentService.deploy().registerProcess(deployRequest) *>
-        assertM( deploymentService.deploy())(
-          equalTo(expected))
+        for {
+          _ <- bpmnRegister.registerBpmn(bpmn)
+          dr <- deploymentService.deploy(DeployRequest(Some("TwitterDemoProcess"), deployFiles = Set(DeployFile("TwitterDemoProcess.bpmn", XML.load(bpmnResource.reader()).toString().getBytes().toVector))))
+        } yield
+          assert(dr.id)(equalTo("TwitterDemoProcess"))
       }
-    ).provideCustomLayer(((processRegister.live >>> bpmnService.live) ++ processRegister.live).mapError(TestFailure.fail))
-*/}
+    ).provideCustomLayer(((bpmnRegister.live >>> bpmnService.live >>> deploymentService.live(processEngine)) ++ bpmnRegister.live).mapError(TestFailure.fail))
+}
