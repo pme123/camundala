@@ -1,3 +1,4 @@
+import coursier.maven.MavenRepository
 import mill._
 import mill.define.BasePath
 import mill.scalalib._
@@ -7,7 +8,8 @@ object Version {
 
   // model
   val scalaXml = "1.3.0"
-  val zio = "1.0.0-RC18-2"
+  val zio = "1.0.0-RC18-2"//+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT"
+  val zioMacros = "1.0.0-RC18-2+99-bb2ded5f-SNAPSHOT"
   val zioLogging = "0.2.7"
 
   // config
@@ -40,6 +42,7 @@ object Libs {
   // config
   val zioConfig = ivy"dev.zio::zio-config:${Version.zioConfig}"
   val zioConfigTypesafe = ivy"dev.zio::zio-config-typesafe:${Version.zioConfig}"
+  val zioMacros = ivy"dev.zio::zio-macros:${Version.zioMacros}"
 
   // camunda
   val spring = ivy"org.springframework.boot:spring-boot-starter-web:${Version.spring}"
@@ -65,6 +68,7 @@ object Libs {
 
   // test
   val zioTest = ivy"dev.zio::zio-test:${Version.zio}"
+  val zioTestJunit = ivy"dev.zio::zio-test-junit:${Version.zio}"
   val zioTestSbt = ivy"dev.zio::zio-test-sbt:${Version.zio}"
 }
 
@@ -79,6 +83,7 @@ trait MyModule extends ScalaModule {
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
     "-encoding",
     "UTF-8", // Specify character encoding used by source files.
+    "-Ymacro-annotations", // ZIO Macros: add the macro annotation compiler options.
     "-language:higherKinds", // Allow higher-kinded types
     "-language:postfixOps", // Allows operator syntax in postfix position (deprecated since Scala 2.10)
     "-feature" // Emit warning and location for usages of features that should be imported explicitly.
@@ -90,11 +95,17 @@ trait MyModule extends ScalaModule {
 
 trait MyModuleWithTests extends MyModule {
 
+  // needed for ZIO nightly
+  override def repositories = super.repositories ++ Seq(
+    MavenRepository("https://oss.sonatype.org/content/repositories/snapshots")
+  )
+
   object test extends Tests {
     override def moduleDeps = super.moduleDeps
 
     override def ivyDeps = Agg(
       Libs.zioTest,
+      Libs.zioTestJunit,
       Libs.zioTestSbt
     )
 
@@ -113,6 +124,7 @@ object model extends MyModuleWithTests {
   override def ivyDeps = {
     Agg(
       Libs.zio,
+      Libs.zioMacros,
       Libs.scalaXml,
       Libs.zioLogging
     )
@@ -125,14 +137,15 @@ object config extends MyModuleWithTests {
     Agg(
       Libs.zio,
       Libs.zioConfig,
-      Libs.zioConfigTypesafe
+      Libs.zioConfigTypesafe,
+      Libs.zioLogging
     )
   }
 }
 
 object camunda extends MyModuleWithTests {
 
-  override def moduleDeps = Seq(model)
+  override def moduleDeps = Seq(model, config)
 
   override def ivyDeps = {
     Agg(

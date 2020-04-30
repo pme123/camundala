@@ -3,12 +3,11 @@ package pme123.camundala.camunda
 import pme123.camundala.model._
 import zio.test.Assertion.equalTo
 import zio.test._
+import zio.test.junit.JUnitRunnableSpec
 
-import scala.collection.immutable.HashSet
-import scala.io.Source
 import scala.xml._
 
-object BpmnServiceSuite extends DefaultRunnableSpec {
+object BpmnServiceSuite extends JUnitRunnableSpec {
 import TestData._
 
   def spec: ZSpec[environment.TestEnvironment, Any] =

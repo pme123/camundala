@@ -3,10 +3,12 @@ package pme123.camundala.config
 import java.io.File
 
 import zio._
+import zio.clock.Clock
 import zio.config.ConfigDescriptor._
 import zio.config.typesafe.TypesafeConfig
 import zio.config.{Config, ConfigDescriptor, config}
 import zio.console.Console
+import zio.logging.Logging
 
 object appConfig {
   type AppConfig = Has[Service]
@@ -29,7 +31,7 @@ object appConfig {
   /**
     * Reads the App Authentication from the `twitter-auth.conf`.
     */
-  lazy val live: RLayer[Console, AppConfig] = {
+  lazy val live: RLayer[Logging, AppConfig] = {
 
     val serviceConf =
       (string("host") |@| int("port")
@@ -53,5 +55,11 @@ object appConfig {
             .provideLayer(sourceLayer)
       })
   }
+  private lazy val logEnv: ULayer[Logging] = (Console.live ++ Clock.live) >>> Logging.console(
+    format = (_, logEntry) => logEntry,
+    rootLoggerName = Some("appConfig")
+  )
+
+  def defaultLayer: TaskLayer[AppConfig] = logEnv >>> live
 
 }

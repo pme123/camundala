@@ -12,11 +12,10 @@ import pme123.camundala.camunda.deploymentService
 import pme123.camundala.camunda.deploymentService._
 import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.{AppConfig, ServicesConf}
-import pme123.camundala.camunda.bpmnService.BpmnService
 import zio._
-import zio.console.Console
+import zio.interop.catz._
 import zio.interop.catz.implicits._
-import zio.interop.catz.{console, _}
+import zio.logging.Logging
 
 object httpServer {
   type HttpServer = Has[Service]
@@ -28,14 +27,14 @@ object httpServer {
   def serve(): RIO[HttpServer, Unit] =
     ZIO.accessM(_.get.serve())
 
-  type HttpServerDeps = AppConfig with DeploymentService with Console
+  type HttpServerDeps = AppConfig with DeploymentService with Logging
 
   /**
     * http4s Implementation
     */
   lazy val live: RLayer[HttpServerDeps, HttpServer] =
-    ZLayer.fromServices[appConfig.Service, deploymentService.Service, Console.Service, Service] {
-      (config, deployService, console) =>
+    ZLayer.fromServices[appConfig.Service, deploymentService.Service, logging.Logger[String], Service] {
+      (config, deployService, log) =>
 
         val dsl: Http4sDsl[Task] = Http4sDsl[Task]
         import dsl._
@@ -60,7 +59,7 @@ object httpServer {
               p.body.compile.toVector
                 .map(v => Some(new String(v.toArray)))
                 .catchAll(e =>
-                  console.putStrLn(s"Problem receiving ${e.getMessage}") *>
+                  log.info(s"Problem receiving ${e.getMessage}") *>
                     ZIO.none
                 )
             }.getOrElse(ZIO.none)
@@ -77,8 +76,8 @@ object httpServer {
             tenantId <- forName(m, TENANT_ID)
             deployResult <- deployService.deploy(DeployRequest(deployName, enableDuplFiltering, deployChangedOnly, deploySource, tenantId, files.toSet))
           } yield deployResult.asJson)
-            .tap(j => console.putStrLn(s"JSON: $j"))
-            .tapError(e => console.putStrLn(s"Error: $e") *> ZIO.effect(e.printStackTrace()))
+            .tap(j => log.info(s"JSON: $j"))
+            .tapError(e => log.error(s"Error: $e") *> ZIO.effect(e.printStackTrace()))
         }
 
         def server(servicesConf: ServicesConf) =
@@ -98,10 +97,8 @@ object httpServer {
             for {
               config <- config.get()
               _ <- server(config.servicesConf)
-              _ <- console.putStrLn(s"HTTP server started on port: ${config.servicesConf.url}")
+              _ <- log.info(s"HTTP server started on port: ${config.servicesConf.url}")
             } yield ()
         }
     }
-
-
 }

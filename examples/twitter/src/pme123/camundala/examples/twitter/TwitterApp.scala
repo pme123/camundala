@@ -1,52 +1,47 @@
 package pme123.camundala.examples.twitter
 
-import org.camunda.bpm.engine.rest.util.EngineUtil
+import com.sun.net.httpserver.HttpServer
+import org.camunda.bpm.engine.ProcessEngine
 import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.{ZSpringApp, bpmnService, deploymentService}
 import pme123.camundala.config.appConfig
-import pme123.camundala.model.bpmnRegister.BpmnRegister
 import pme123.camundala.model._
+import pme123.camundala.model.bpmnRegister.BpmnRegister
 import pme123.camundala.services.httpServer
+import pme123.camundala.services.httpServer.HttpServer
+import zio.clock.Clock
 import zio.console.Console
-import zio.stm.TMap
-import zio.{ULayer, ZIO}
+import zio.logging.Logging
+import zio.{TaskLayer, ULayer, ZIO, ZLayer}
 
 import scala.collection.immutable.HashSet
 
 @SpringBootApplication
-@EnableProcessApplication
+//@EnableProcessApplication
 class TwitterApp
 
 object TwitterApp extends ZSpringApp {
 
   def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] =
     (for {
-      _ <- http.fork
+      _ <- httpServer.serve().fork
       _ <- registerBpmns(Set(bpmn))
-      _ <- spring(args).useForever
+      _ <- managedSpringApp(classOf[TwitterApp], args).useForever
     } yield ())
       // you have to provide all the layers here so all fibers have the same register
-      .provideCustomLayer(httpServerLayer ++ bpmnServiceLayer ++ registerLayer)
+      .provideCustomLayer(layer)
       .fold(
         _ => 1,
         _ => 0
       )
 
-  private lazy val bpmnIdMapSTM: ZIO[Any, Nothing, TMap[String, Bpmn]] = TMap.make[String, Bpmn]().commit
+ private  lazy val httpServerLayer = appConfigLayer ++ deploymentServiceLayer ++ logLayer("httpServer") >>> httpServer.live
 
-  private lazy val processEngine = EngineUtil.lookupProcessEngine(null)
 
-  private lazy val registerLayer: ULayer[BpmnRegister] = bpmnRegister.live
-  private lazy val bpmnServiceLayer = registerLayer >>> bpmnService.live
-  private lazy val deploymentLayer = bpmnServiceLayer >>> deploymentService.live(processEngine)
-  private lazy val httpServerLayer = (appConfig.live ++ deploymentLayer ++ Console.live) >>> httpServer.live
 
-  private lazy val http = httpServer.serve()
-
-  private def spring(args: List[String]) = {
-    managedSpringApp(classOf[TwitterApp], args)
-  }
+  private lazy val layer = httpServerLayer ++ bpmnServiceLayer ++ bpmnRegisterLayer
 
   private val bpmn = Bpmn("TwitterDemoProcess.bpmn",
     StaticFile("TwitterDemoProcess.bpmn", "bpmn"),

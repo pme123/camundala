@@ -1,6 +1,7 @@
 # Uncomment if you use real Twitter account!
 #/twitter-auth.conf
 /.bloop/
+/.vscode/
 /.idea/
 /.idea_modules/
 /.metals/

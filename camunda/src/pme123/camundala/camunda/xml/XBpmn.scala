@@ -106,5 +106,7 @@ trait XBpmnNode
         </extensionElements>
       )
       XMergeResult(xmlElem, ValidateWarnings.none)
+    case (Some(_), node) =>
+      XMergeResult(xmlNode, ValidateWarnings(s"The XML Node must be a XML Elem not just a Node ($tagName with id '$id')."))
   }
 }

@@ -4,7 +4,7 @@ import pme123.camundala.model.Bpmn
 
 import scala.xml.Node
 
-case class MergeResult(xmlNode: Node, maybeBpmn: Option[Bpmn], warnings: ValidateWarnings)
+case class MergeResult(fileName:String, xmlNode: Node, maybeBpmn: Option[Bpmn], warnings: ValidateWarnings)
 
 case class XMergeResult(xmlNode: Node, warnings: ValidateWarnings)
 
