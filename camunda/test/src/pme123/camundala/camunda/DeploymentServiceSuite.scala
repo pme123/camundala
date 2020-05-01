@@ -1,17 +1,18 @@
 package pme123.camundala.camunda
 
+import java.util.Date
+
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity
 import org.camunda.bpm.engine.repository.Deployment
 import pme123.camundala.camunda.deploymentService.{DeployFile, DeployRequest}
 import pme123.camundala.camunda.processEngineService.ProcessEngineService
 import pme123.camundala.camunda.xml.MergeResult
 import pme123.camundala.model.bpmnRegister
-import zio.{Has, Task, ULayer, URLayer, ZLayer}
 import zio.test.Assertion.equalTo
 import zio.test._
 import zio.test.junit.JUnitRunnableSpec
 import zio.test.mock.Expectation._
-import zio.test.mock._
+import zio._
 
 import scala.xml.XML
 
@@ -23,6 +24,8 @@ object DeploymentServiceSuite extends JUnitRunnableSpec {
   private val deployment = {
     val depl = new DeploymentEntity()
     depl.setName(deployRequest.name.get)
+    depl.setId(deployRequest.name.get)
+    depl.setDeploymentTime(new Date())
     depl
   }
 
@@ -34,16 +37,16 @@ object DeploymentServiceSuite extends JUnitRunnableSpec {
           dr <- deploymentService.deploy(deployRequest)
         } yield
           assert(dr.id)(equalTo("TwitterDemoProcess"))
-      }
-    ).provideCustomLayer(((bpmnRegister.live >>> bpmnService.live ++ processEngineMockEnv >>> deploymentService.live) ++ bpmnRegister.live).mapError(TestFailure.fail))
+      }.provideCustomLayer(((bpmnRegister.live >>> bpmnService.live ++ processEngineMockEnv >>> deploymentService.live) ++ bpmnRegister.live).mapError(TestFailure.fail))
+
+    )
 
   val processEngineMockEnv: ULayer[ProcessEngineService] = {
-    ProcessEngineMock.Deploy(equalTo(deployRequest, Seq.empty[MergeResult])) returns value(deployment)
+    ProcessEngineMock.Deploy(Assertion.anything) returns value(deployment)
   }
 
-//  @mockable[processEngineService.Service]
-//  object ProcessEngineMock
-
+  //  @mockable[processEngineService.Service]
+  //  object ProcessEngineMock
 
   object ProcessEngineMock {
 
@@ -57,10 +60,11 @@ object DeploymentServiceSuite extends JUnitRunnableSpec {
     private val envBuilder: URLayer[Has[mock.Proxy], ProcessEngineService] =
       ZLayer.fromService(invoke =>
         new processEngineService.Service {
-           def deploy(deployRequest: DeployRequest, mergeResults: Seq[MergeResult]): Task[Deployment] =
-             invoke(Deploy, deployRequest, mergeResults)
+          def deploy(deployRequest: DeployRequest, mergeResults: Seq[MergeResult]): Task[Deployment] =
+            invoke(Deploy, deployRequest, mergeResults)
 
         }
       )
   }
+
 }
