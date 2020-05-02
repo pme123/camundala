@@ -33,7 +33,7 @@ case class DeployResult(id: String,
                         deploymentTime: String,
                         source: Option[String] = None,
                         tenantId: Option[String] = None,
-                        validateWarnings: ValidateWarnings
+                        validateWarnings: ValidateWarnings = ValidateWarnings.none
                        )
 
 case class DeploymentException(msg: String) extends CamundalaException

@@ -25,6 +25,8 @@ object deploymentService {
     def deploy(request: DeployRequest): Task[DeployResult]
 
     def deploy(bpmn: Bpmn): Task[DeployResult]
+
+    def deployments(): Task[Seq[DeployResult]]
   }
 
   def deploy(request: DeployRequest): RIO[DeploymentService, DeployResult] =
@@ -65,6 +67,7 @@ object deploymentService {
               mergeResult <- bpmnServ.mergeBpmn(bpmn.id)
               xml <- bpmn.xml.xml
               deployment <- processEngineService.deploy(DeployRequest(Some(bpmn.id),
+                source = Some("Camundala Deployer"),
                 deployFiles = HashSet(DeployFile(bpmn.xml.fileName, xml.toString().getBytes().toVector))), Seq(mergeResult))
             } yield DeployResult(deployment.getId, deployment.getName,
               deployment.getDeploymentTime.toString,
@@ -72,6 +75,18 @@ object deploymentService {
               Option(deployment.getTenantId),
               mergeResult.warnings
             )
+
+          def deployments(): Task[Seq[DeployResult]] =
+            for {
+              depls <- processEngineService.deployments()
+              result = depls.map(deployment =>
+                DeployResult(deployment.getId, deployment.getName,
+                  deployment.getDeploymentTime.toString,
+                  Option(deployment.getSource),
+                  Option(deployment.getTenantId)
+                )
+              )
+            } yield result
         }
     }
 

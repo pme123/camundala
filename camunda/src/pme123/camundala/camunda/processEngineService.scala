@@ -8,6 +8,7 @@ import pme123.camundala.camunda.xml.MergeResult
 import pme123.camundala.model.bpmn.{CamundalaException, StaticFile}
 import zio._
 import zio.macros.accessible
+import scala.jdk.CollectionConverters._
 
 /**
   * Wraps functionality that needs the Camunda ProcessEngine (Camunda must run).
@@ -20,6 +21,8 @@ object processEngineService {
 
   trait Service {
     def deploy(deployRequest: DeployRequest, mergeResults: Seq[MergeResult]): Task[Deployment]
+
+    def deployments(): Task[Seq[Deployment]]
   }
 
   import CamundaExtensions._
@@ -45,6 +48,14 @@ object processEngineService {
               )
             deployment <- ZIO.effect(builder.deploy())
           } yield deployment
+
+        def deployments(): Task[Seq[Deployment]] =
+          ZIO.effect(
+            processEngine().getRepositoryService.createDeploymentQuery()
+              .list()
+              .asScala
+              .toSeq
+          )
 
       }
 

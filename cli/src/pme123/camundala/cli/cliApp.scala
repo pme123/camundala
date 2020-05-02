@@ -39,35 +39,51 @@ object cliApp {
               .map(DeployBpmn)
           }
 
+        lazy val deploymentsOpts: Opts[Deployments] =
+          Opts.subcommand("deployments", "Get a list of Camunda Deployments") {
+            Opts.unit
+              .map(_ => Deployments())
+          }
+
         lazy val command = Command[Task[ExitCode]]("", "CLI for Camunda")(
-          deployBpmnOpts.map {
+          (deployBpmnOpts orElse deploymentsOpts).map {
             case DeployBpmn(deployId) =>
               (for {
                 maybeDeploy <- deployReg.requestDeploy(deployId)
                 results <-
-                  if (maybeDeploy.isEmptydepl)
+                  if (maybeDeploy.isEmpty)
                     ZIO.fail(CliAppException(s"There is no Deployment with the id '$deployId''"))
                   else
                     Task.foreach(maybeDeploy.toSeq
                       .flatMap(_.bpmns))(deployService.deploy)
-                _ <- console.putStrLn(s"${scala.Console.GREEN}Successful deployed")
-                _ <- ZIO.foreach(results)(r => console.putStrLn(r.toString))
-                _ <- console.putStr(scala.Console.RESET)
-              } yield ())
-                .as(ExitCode.Success)
-                .catchAll(e => {
-                  toError(e)
-                })
+                result <- printSuccess("Successful deployed", results.mkString("\n"))
+              } yield result)
+                .catchAll(printError(_, "Deployment failed:"))
+            case Deployments() =>
+              (for {
+                results <- deployService.deployments()
+                result <- printSuccess("Successful got Deployments", results.mkString("\n"))
+              } yield result)
+                .catchAll(printError(_, "Get Deployments failed:"))
           }
         )
 
-        def toError(e: Throwable): UIO[ExitCode] = {
-          console.putStrLn(s"${scala.Console.RED}Deployment failed:") *>
+        def printSuccess(msg: String, details: String): UIO[ExitCode] = {
+          console.putStrLn(s"${scala.Console.GREEN}$msg") *>
+            console.putStrLn(details) *>
+            console.putStr(scala.Console.RESET) *>
+            ZIO.succeed(ExitCode.Success)
+
+        }
+
+        def printError(e: Throwable, msg: String): UIO[ExitCode] = {
+          console.putStrLn(s"${scala.Console.RED}$msg") *>
             ZIO.succeed(e.printStackTrace()) *>
             console.putStr(scala.Console.RESET) *>
             ZIO.succeed(ExitCode.Error)
         }
 
+        case class Deployments()
         case class DeployBpmn(deployId: String = "default")
 
         (projectInfo: ProjectInfo) =>
