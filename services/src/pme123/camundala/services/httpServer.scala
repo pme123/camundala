@@ -8,7 +8,7 @@ import org.http4s.dsl._
 import org.http4s.implicits._
 import org.http4s.multipart.Multipart
 import org.http4s.server.blaze.BlazeServerBuilder
-import pme123.camundala.camunda.deploymentService
+import pme123.camundala.camunda.{DeployFile, DeployRequest, deploymentService}
 import pme123.camundala.camunda.deploymentService._
 import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.{AppConfig, ServicesConf}
@@ -53,7 +53,8 @@ object httpServer {
           }
 
         def deployMultipart(m: Multipart[Task]) = {
-          import DeployRequest._
+          import pme123.camundala.camunda.DeployRequest._
+
           def forName(m: Multipart[Task], name: String) = {
             m.parts.collectFirst { case p if p.name.contains(name) =>
               p.body.compile.toVector

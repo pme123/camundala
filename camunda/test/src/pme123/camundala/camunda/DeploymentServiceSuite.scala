@@ -4,15 +4,14 @@ import java.util.Date
 
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity
 import org.camunda.bpm.engine.repository.Deployment
-import pme123.camundala.camunda.deploymentService.{DeployFile, DeployRequest}
 import pme123.camundala.camunda.processEngineService.ProcessEngineService
 import pme123.camundala.camunda.xml.MergeResult
-import pme123.camundala.model.bpmnRegister
+import pme123.camundala.model.bpmn.bpmnRegister
+import zio._
 import zio.test.Assertion.equalTo
 import zio.test._
 import zio.test.junit.JUnitRunnableSpec
 import zio.test.mock.Expectation._
-import zio._
 
 import scala.xml.XML
 

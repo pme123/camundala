@@ -1,5 +1,4 @@
-package pme123.camundala.model
-
+package pme123.camundala.model.bpmn
 
 case class Bpmn(id: String,
                 xml: StaticFile,

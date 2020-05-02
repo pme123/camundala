@@ -4,12 +4,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import pme123.camundala.camunda.ZSpringApp
 import pme123.camundala.cli.cliApp.CliApp
 import pme123.camundala.cli.{ProjectInfo, cliApp}
-import pme123.camundala.model._
 import pme123.camundala.services.httpServer
 import zio.ZIO
 import zio.console.Console
-
-import scala.collection.immutable.HashSet
 
 @SpringBootApplication
 //@EnableProcessApplication
@@ -28,6 +25,7 @@ object TwitterApp extends ZSpringApp {
     (for {
       _ <- httpServer.serve().fork
       _ <- registerBpmns(Set(bpmn))
+      _ <- registerDeploys(Set(deploy))
       _ <- managedSpringApp(classOf[TwitterApp], args).useForever.fork
       _ <- runCli
     } yield ())
@@ -44,30 +42,6 @@ object TwitterApp extends ZSpringApp {
   protected def runCli: ZIO[CliApp with Console, Throwable, Nothing] =
     cliApp.run(projectInfo, List.empty)
 
-  private lazy val layer = cliLayer ++ httpServerLayer ++ bpmnServiceLayer ++ bpmnRegisterLayer
+  private lazy val layer = cliLayer ++ httpServerLayer ++ bpmnServiceLayer ++ bpmnRegisterLayer ++ deployRegisterLayer
 
-  private val bpmn = Bpmn("TwitterDemoProcess.bpmn",
-    StaticFile("TwitterDemoProcess.bpmn", "bpmn"),
-    List(
-      BpmnProcess("TwitterDemoProcess",
-        List(
-          UserTask("user_task_review_tweet",
-            Extensions(Map("durationMean" -> "10000", "durationSd" -> "5000")))),
-        List(
-          ServiceTask("service_task_send_rejection_notification",
-            Extensions(Map("KPI-Ratio" -> "Tweet Rejected"))),
-          ServiceTask("service_task_publish_on_twitter",
-            Extensions(Map("KPI-Ratio" -> "Tweet Approved")))
-        ),
-        List(StartEvent("start_event_new_tweet",
-          Extensions(Map("KPI-Cycle-Start" -> "Tweet Approval Time"))
-        )),
-        List(ExclusiveGateway("gateway_approved",
-          Extensions(Map("KPI-Cycle-End" -> "Tweet Approval Time"))
-        )
-        ),
-      )), HashSet(
-      StaticFile("static/forms/createTweet.html", "bpmn"),
-      StaticFile("static/forms/reviewTweet.html", "bpmn"),
-    ))
 }

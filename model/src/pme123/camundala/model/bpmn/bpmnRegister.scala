@@ -1,7 +1,7 @@
-package pme123.camundala.model
+package pme123.camundala.model.bpmn
 
-import zio._
 import zio.stm.TMap
+import zio._
 
 /**
   * Registry to register a Bpmn.
@@ -42,8 +42,7 @@ object bpmnRegister {
           bpmnMap.delete(id).commit
 
         def requestBpmn(id: String): UIO[Option[Bpmn]] =
-          bpmnMap.values.commit.map(v => (println(s"request: $v"))) *>
-        bpmnMap.get(id).commit
+          bpmnMap.get(id).commit
 
       }
     }

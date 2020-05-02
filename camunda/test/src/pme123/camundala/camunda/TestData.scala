@@ -1,6 +1,6 @@
 package pme123.camundala.camunda
 
-import pme123.camundala.model.{Bpmn, BpmnProcess, ExclusiveGateway, Extensions, ServiceTask, StartEvent, StaticFile, UserTask}
+import pme123.camundala.model.bpmn._
 
 import scala.collection.immutable.HashSet
 import scala.io.{BufferedSource, Source}

@@ -1,6 +1,6 @@
 package pme123.camundala.camunda.xml
 
-import pme123.camundala.model.Bpmn
+import pme123.camundala.model.bpmn.Bpmn
 
 import scala.xml.Node
 

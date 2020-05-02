@@ -1,6 +1,7 @@
 package pme123.camundala.camunda
 
 import pme123.camundala.model._
+import pme123.camundala.model.bpmn.bpmnRegister
 import zio.test.Assertion.equalTo
 import zio.test._
 import zio.test.junit.JUnitRunnableSpec

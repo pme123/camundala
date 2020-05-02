@@ -9,8 +9,11 @@ import pme123.camundala.camunda.deploymentService.DeploymentService
 import pme123.camundala.camunda.processEngineService.ProcessEngineService
 import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.AppConfig
-import pme123.camundala.model.bpmnRegister.BpmnRegister
-import pme123.camundala.model.{Bpmn, bpmnRegister}
+import pme123.camundala.model.bpmn.{Bpmn, bpmnRegister}
+import pme123.camundala.model.bpmn.bpmnRegister.BpmnRegister
+import pme123.camundala.model.bpmn.bpmnRegister
+import pme123.camundala.model.deploy.deployRegister.DeployRegister
+import pme123.camundala.model.deploy.{Deploy, deployRegister}
 import zio._
 import zio.clock.Clock
 import zio.console.Console
@@ -20,6 +23,9 @@ trait ZSpringApp extends zio.App {
 
   protected def registerBpmns(bpmns: Set[Bpmn]): URIO[BpmnRegister, List[Unit]] =
     ZIO.foreach(bpmns.toSeq)(b => bpmnRegister.registerBpmn(b))
+
+  protected def registerDeploys(deploys: Set[Deploy]): URIO[DeployRegister, List[Unit]] =
+    ZIO.foreach(deploys.toSeq)(d => deployRegister.registerDeploy(d))
 
   /**
     * create SpringApplication as a ZManaged Resource.
@@ -46,6 +52,7 @@ trait ZSpringApp extends zio.App {
   )
 
   protected lazy val bpmnRegisterLayer: ULayer[BpmnRegister] = bpmnRegister.live
+  protected lazy val deployRegisterLayer: ULayer[DeployRegister] = deployRegister.live
   protected lazy val bpmnServiceLayer: TaskLayer[BpmnService] = bpmnRegisterLayer >>> bpmnService.live
   protected lazy val appConfigLayer: TaskLayer[AppConfig] = logLayer("appConfig") >>> appConfig.live
 

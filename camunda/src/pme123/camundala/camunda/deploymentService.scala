@@ -5,10 +5,11 @@ import java.io.ByteArrayInputStream
 import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.processEngineService.ProcessEngineService
 import pme123.camundala.camunda.xml.{MergeResult, ValidateWarnings}
-import pme123.camundala.model.CamundalaException
+import pme123.camundala.model.bpmn.Bpmn
 import zio._
 import zio.macros.accessible
 
+import scala.collection.immutable.HashSet
 import scala.xml.XML
 
 /**
@@ -23,6 +24,8 @@ object deploymentService {
 
   trait Service {
     def deploy(request: DeployRequest): Task[DeployResult]
+
+    def deploy(bpmn: Bpmn): Task[DeployResult]
   }
 
   type DeploymentServiceDeps = BpmnService with ProcessEngineService
@@ -51,42 +54,21 @@ object deploymentService {
                 mergeResults.map(_.warnings).foldLeft(ValidateWarnings.none)(_ ++ _)
               )
             } yield deployResult
+
+          def deploy(bpmn: Bpmn): Task[DeployResult] =
+            for {
+              mergeResult <- bpmnServ.mergeBpmn(bpmn.id)
+              xml <- bpmn.xml.xml
+              deployment <- processEngineService.deploy(DeployRequest(Some(bpmn.id),
+                deployFiles = HashSet(DeployFile(bpmn.xml.fileName, xml.toString().getBytes().toVector))), Seq(mergeResult))
+            } yield DeployResult(deployment.getId, deployment.getName,
+              deployment.getDeploymentTime.toString,
+              Option(deployment.getSource),
+              Option(deployment.getTenantId),
+              mergeResult.warnings
+            )
         }
     }
 
-  case class DeployRequest(name: Option[String] = None,
-                           enableDuplicateFilterung: Boolean = false,
-                           deployChangedOnly: Boolean = false,
-                           source: Option[String] = None,
-                           tenantId: Option[String] = None,
-                           deployFiles: Set[DeployFile] = Set.empty)
-
-  object DeployRequest {
-    val DEPLOYMENT_NAME = "deployment-name"
-    val ENABLE_DUPLICATE_FILTERING = "enable-duplicate-filtering"
-    val DEPLOY_CHANGED_ONLY = "deploy-changed-only"
-    val DEPLOYMENT_SOURCE = "deployment-source"
-    val TENANT_ID = "tenant-id"
-
-    val RESERVED_KEYWORDS = Set(
-      DEPLOYMENT_NAME,
-      ENABLE_DUPLICATE_FILTERING,
-      DEPLOY_CHANGED_ONLY,
-      DEPLOYMENT_SOURCE,
-      TENANT_ID
-    )
-  }
-
-  case class DeployFile(filename: String, file: Vector[Byte])
-
-  case class DeployResult(id: String,
-                          name: String,
-                          deploymentTime: String,
-                          source: Option[String] = None,
-                          tenantId: Option[String] = None,
-                          validateWarnings: ValidateWarnings
-                         )
-
-  case class DeploymentException(msg: String) extends CamundalaException
 
 }

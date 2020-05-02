@@ -1,6 +1,7 @@
 package pme123.camundala.camunda.xml
 
-import pme123.camundala.model.{Bpmn, BpmnProcess, Extensionable}
+import pme123.camundala.model.bpmn.Extensionable
+import pme123.camundala.model.bpmn.{Bpmn, BpmnProcess, Extensionable}
 
 import scala.xml.{Elem, Node}
 

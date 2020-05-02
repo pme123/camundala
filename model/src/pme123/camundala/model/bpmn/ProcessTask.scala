@@ -1,4 +1,4 @@
-package pme123.camundala.model
+package pme123.camundala.model.bpmn
 
 sealed trait ProcessTask
   extends BpmnNode

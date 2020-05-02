@@ -4,9 +4,8 @@ import java.io.ByteArrayInputStream
 
 import org.camunda.bpm.engine.ProcessEngine
 import org.camunda.bpm.engine.repository.{Deployment, DeploymentBuilder}
-import pme123.camundala.camunda.deploymentService.DeployRequest
 import pme123.camundala.camunda.xml.MergeResult
-import pme123.camundala.model.{CamundalaException, StaticFile}
+import pme123.camundala.model.bpmn.{CamundalaException, StaticFile}
 import zio._
 import zio.macros.accessible
 
@@ -39,7 +38,7 @@ object processEngineService {
                 processEngine().getRepositoryService.createDeployment
                   .name(name)
                   .obtValue((b, v: String) => b.source(v), request.source)
-                  .obtValue((b, v: String) => b.tenantId(v), request.source)
+                  .obtValue((b, v: String) => b.tenantId(v), request.tenantId)
                   .enableDuplicateFiltering(request.enableDuplicateFilterung)
                   .listValue((b, v: MergeResult) => b.addInputStream(v.fileName, new ByteArrayInputStream(v.xmlNode.toString.getBytes)), mergeResults)
                   .listValue((b, v: StaticFile) => b.addInputStream(v.fileName, v.inputStream), mergeResults.flatMap(_.maybeBpmn).flatMap(_.staticFiles))

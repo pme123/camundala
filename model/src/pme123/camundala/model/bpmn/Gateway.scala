@@ -1,4 +1,4 @@
-package pme123.camundala.model
+package pme123.camundala.model.bpmn
 
 trait Gateway
   extends BpmnNode

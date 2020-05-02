@@ -1,6 +1,6 @@
 package pme123.camundala.services
 
-import pme123.camundala.model.CamundalaException
+import pme123.camundala.model.bpmn.CamundalaException
 
 sealed trait ServicesException
   extends CamundalaException
