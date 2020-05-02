@@ -1,14 +1,16 @@
 import coursier.maven.MavenRepository
 import mill._
-import mill.define.BasePath
 import mill.scalalib._
+import mill.scalalib.publish.{Developer, License, PomSettings, VersionControl}
+
+import scala.io.Source
 
 object Version {
   val scalaVersion = "2.13.1"
 
   // model
   val scalaXml = "1.3.0"
-  val zio = "1.0.0-RC18-2"//+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT"
+  val zio = "1.0.0-RC18-2" //+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT"
   val zioMacros = "1.0.0-RC18-2+99-bb2ded5f-SNAPSHOT"
   val zioLogging = "0.2.7"
 
@@ -26,10 +28,12 @@ object Version {
   val h2 = "1.4.200"
   val postgres = "42.2.8"
 
+  // cli
+  val decline = "1.2.0"
+
   // example apps
   // twitter
   val twitter4s = "6.2"
-
 
 }
 
@@ -62,6 +66,9 @@ object Libs {
   val http4sDsl = ivy"org.http4s::http4s-dsl:${Version.http4s}"
   val circe = ivy"io.circe::circe-generic:${Version.circe}"
 
+  // cli
+  val decline = ivy"com.monovore::decline-effect:${Version.decline}"
+
   // examples
   // twitter
   val twitter4s = ivy"com.danielasfregola::twitter4s:${Version.twitter4s}"
@@ -72,8 +79,12 @@ object Libs {
   val zioTestSbt = ivy"dev.zio::zio-test-sbt:${Version.zio}"
 }
 
-trait MyModule extends ScalaModule {
+trait MyModule
+  extends ScalaModule
+    with PublishModule {
   val scalaVersion = Version.scalaVersion
+  val versionSource = Source.fromFile("./version")
+  val publishVersion =  versionSource.getLines().next()
 
 
   override def scalacOptions =
@@ -91,6 +102,16 @@ trait MyModule extends ScalaModule {
     //  "-Xfatal-warnings"            // Fail the compilation if there are any warnings
   )
 
+  def pomSettings = PomSettings(
+    description = "Doing Camunda with Scala.",
+    organization = "pme123",
+    url = "https://github.com/pme123/camundala",
+    licenses = Seq(License.MIT),
+    versionControl = VersionControl.github("pme123", "camundala"),
+    developers = Seq(
+      Developer("pme123", "Pascal Mengelt", "https://github.com/pme123")
+    )
+  )
 }
 
 trait MyModuleWithTests extends MyModule {
@@ -161,7 +182,7 @@ object camunda extends MyModuleWithTests {
 
 object services extends MyModuleWithTests {
 
-  override def moduleDeps = Seq(config, camunda, model)
+  override def moduleDeps = Seq(camunda)
 
   override def ivyDeps = {
     Agg(
@@ -170,6 +191,20 @@ object services extends MyModuleWithTests {
       Libs.http4sBlazeClient,
       Libs.http4sDsl,
       Libs.http4sCirce,
+      Libs.zioCats
+    )
+  }
+}
+
+object cli extends MyModuleWithTests {
+
+  override def moduleDeps = Seq(camunda)
+
+  override def mainClass = Some("pme123.camundala.cli.CliApp")
+
+  override def ivyDeps = {
+    Agg(
+      Libs.decline,
       Libs.zioCats
     )
   }
