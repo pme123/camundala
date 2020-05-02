@@ -17,7 +17,6 @@ import scala.xml.XML
   * at the moment it only deploys a BPMN to Camunda.
   * The goal is to adjust the deployment with all needed files.
   */
-@accessible
 object deploymentService {
 
   type DeploymentService = Has[Service]
@@ -27,6 +26,12 @@ object deploymentService {
 
     def deploy(bpmn: Bpmn): Task[DeployResult]
   }
+
+  def deploy(request: DeployRequest): RIO[DeploymentService, DeployResult] =
+    ZIO.accessM(_.get.deploy(request))
+
+  def deploy(bpmn: Bpmn): RIO[DeploymentService, DeployResult] =
+    ZIO.accessM(_.get.deploy(bpmn))
 
   type DeploymentServiceDeps = BpmnService with ProcessEngineService
 

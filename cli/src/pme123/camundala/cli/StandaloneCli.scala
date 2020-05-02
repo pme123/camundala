@@ -1,7 +1,8 @@
 package pme123.camundala.cli
 
-import zio.console.Console
+import pme123.camundala.camunda.DefaultLayers._
 import zio.{ZIO, console}
+import zio.console.Console
 
 object StandaloneCli
   extends zio.App {
@@ -9,8 +10,8 @@ object StandaloneCli
   def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] =
     (for {
       pi <- cliApp.camundala
-      _ <- cliApp.run(pi.copy(name = "Standalone Console", sourceUrl = s"${pi.sourceUrl}/tree/master/cli"), args)
+      _ <- cliApp.run(pi.copy(name = "Standalone Console", sourceUrl = s"${pi.sourceUrl}/tree/master/cli"))
     } yield 0)
+      .provideCustomLayer((Console.live ++ deployRegisterLayer ++ deploymentServiceLayer) >>> cliApp.live)
       .catchAll(e => console.putStrLn(s"ERROR: $e").as(1))
-      .provideCustomLayer(Console.live >>> cliApp.live)
 }

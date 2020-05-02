@@ -36,11 +36,13 @@ object TwitterApp extends ZSpringApp {
         _ => 0
       )
 
+  import pme123.camundala.camunda.DefaultLayers._
+
   private lazy val httpServerLayer = appConfigLayer ++ deploymentServiceLayer ++ logLayer("httpServer") >>> httpServer.live
-  private lazy val cliLayer = cliApp.live
+  private lazy val cliLayer = (Console.live ++ deployRegisterLayer ++ deploymentServiceLayer) >>> cliApp.live
 
   protected def runCli: ZIO[CliApp with Console, Throwable, Nothing] =
-    cliApp.run(projectInfo, List.empty)
+    cliApp.run(projectInfo)
 
   private lazy val layer = cliLayer ++ httpServerLayer ++ bpmnServiceLayer ++ bpmnRegisterLayer ++ deployRegisterLayer
 
