@@ -79,12 +79,12 @@ object Libs {
   val zioTestSbt = ivy"dev.zio::zio-test-sbt:${Version.zio}"
 }
 
-trait MyModule
+trait CamundalaModule
   extends ScalaModule
     with PublishModule {
   val scalaVersion = Version.scalaVersion
   val versionSource = Source.fromFile("./version")
-  val publishVersion =  versionSource.getLines().next()
+  val publishVersion = versionSource.getLines().next()
 
 
   override def scalacOptions =
@@ -114,7 +114,7 @@ trait MyModule
   )
 }
 
-trait MyModuleWithTests extends MyModule {
+trait ModuleWithTests extends CamundalaModule {
 
   // needed for ZIO nightly
   override def repositories = super.repositories ++ Seq(
@@ -140,7 +140,7 @@ trait MyModuleWithTests extends MyModule {
 
 }
 
-object model extends MyModuleWithTests {
+object model extends ModuleWithTests {
 
   override def ivyDeps = {
     Agg(
@@ -152,7 +152,7 @@ object model extends MyModuleWithTests {
   }
 }
 
-object config extends MyModuleWithTests {
+object config extends ModuleWithTests {
 
   override def ivyDeps = {
     Agg(
@@ -164,7 +164,7 @@ object config extends MyModuleWithTests {
   }
 }
 
-object camunda extends MyModuleWithTests {
+object camunda extends ModuleWithTests {
 
   override def moduleDeps = Seq(model, config)
 
@@ -180,7 +180,7 @@ object camunda extends MyModuleWithTests {
   }
 }
 
-object services extends MyModuleWithTests {
+object services extends ModuleWithTests {
 
   override def moduleDeps = Seq(camunda)
 
@@ -196,7 +196,7 @@ object services extends MyModuleWithTests {
   }
 }
 
-object cli extends MyModuleWithTests {
+object cli extends ModuleWithTests {
 
   override def moduleDeps = Seq(camunda)
 
@@ -212,14 +212,17 @@ object cli extends MyModuleWithTests {
 
 object examples extends mill.Module {
 
+  trait ExampleModule extends ModuleWithTests {
+    override def moduleDeps:  Seq[JavaModule with PublishModule] = Seq(services, cli)
+  }
 
-  object twitter extends MyModuleWithTests {
+  object twitter extends ExampleModule {
 
-    override def moduleDeps = Seq(camunda, services, twitterApi)
+    override def moduleDeps:  Seq[JavaModule with PublishModule] = super.moduleDeps ++ Seq(twitterApi)
 
     override def mainClass = Some("pme123.camundala.examples.twitter.TwitterApp")
 
-    object twitterApi extends MyModuleWithTests {
+    object twitterApi extends ModuleWithTests {
 
       override def ivyDeps = {
         Agg(
@@ -232,9 +235,7 @@ object examples extends mill.Module {
 
   }
 
-  object rest extends MyModuleWithTests {
-
-    override def moduleDeps = Seq(camunda)
+  object rest extends ExampleModule {
 
     override def mainClass = Some("pme123.camundala.examples.rest.RestApp")
 

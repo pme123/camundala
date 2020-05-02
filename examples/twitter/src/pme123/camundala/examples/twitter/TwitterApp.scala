@@ -1,20 +1,13 @@
 package pme123.camundala.examples.twitter
 
-import com.sun.net.httpserver.HttpServer
-import org.camunda.bpm.engine.ProcessEngine
-import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import pme123.camundala.camunda.bpmnService.BpmnService
-import pme123.camundala.camunda.{ZSpringApp, bpmnService, deploymentService}
-import pme123.camundala.config.appConfig
+import pme123.camundala.camunda.ZSpringApp
+import pme123.camundala.cli.cliApp.CliApp
+import pme123.camundala.cli.{ProjectInfo, cliApp}
 import pme123.camundala.model._
-import pme123.camundala.model.bpmnRegister.BpmnRegister
 import pme123.camundala.services.httpServer
-import pme123.camundala.services.httpServer.HttpServer
-import zio.clock.Clock
+import zio.ZIO
 import zio.console.Console
-import zio.logging.Logging
-import zio.{TaskLayer, ULayer, ZIO, ZLayer}
 
 import scala.collection.immutable.HashSet
 
@@ -23,12 +16,20 @@ import scala.collection.immutable.HashSet
 class TwitterApp
 
 object TwitterApp extends ZSpringApp {
+  val projectInfo: ProjectInfo =
+    ProjectInfo(
+      "Twitter Camundala Demo App",
+      "pme123",
+      "0.0.1",
+      "https://github.com/pme123/camundala/tree/master/examples/twitter"
+    )
 
   def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] =
     (for {
       _ <- httpServer.serve().fork
       _ <- registerBpmns(Set(bpmn))
-      _ <- managedSpringApp(classOf[TwitterApp], args).useForever
+      _ <- managedSpringApp(classOf[TwitterApp], args).useForever.fork
+      _ <- runCli
     } yield ())
       // you have to provide all the layers here so all fibers have the same register
       .provideCustomLayer(layer)
@@ -37,11 +38,13 @@ object TwitterApp extends ZSpringApp {
         _ => 0
       )
 
- private  lazy val httpServerLayer = appConfigLayer ++ deploymentServiceLayer ++ logLayer("httpServer") >>> httpServer.live
+  private lazy val httpServerLayer = appConfigLayer ++ deploymentServiceLayer ++ logLayer("httpServer") >>> httpServer.live
+  private lazy val cliLayer = cliApp.live
 
+  protected def runCli: ZIO[CliApp with Console, Throwable, Nothing] =
+    cliApp.run(projectInfo, List.empty)
 
-
-  private lazy val layer = httpServerLayer ++ bpmnServiceLayer ++ bpmnRegisterLayer
+  private lazy val layer = cliLayer ++ httpServerLayer ++ bpmnServiceLayer ++ bpmnRegisterLayer
 
   private val bpmn = Bpmn("TwitterDemoProcess.bpmn",
     StaticFile("TwitterDemoProcess.bpmn", "bpmn"),

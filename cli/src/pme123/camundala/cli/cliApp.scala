@@ -45,13 +45,15 @@ object cliApp {
     for {
       - <- p(scala.Console.MAGENTA)
       _ <- pl("*" * width)
+      - <- p(scala.Console.BLUE)
       _ <- p(
         """|     _____
            |  __|___  |__  ____    ____    __  __   _  ____   _  _____   ____    ____    ____
            | |   ___|    ||    \  |    \  /  ||  | | ||    \ | ||     \ |    \  |    |  |    \
            | |   |__     ||     \ |     \/   ||  |_| ||     \| ||      \|     \ |    |_ |     \
            | |______|  __||__|\__\|__/\__/|__||______||__/\____||______/|__|\__\|______||__|\__\
-           |    |_____|""".stripMargin)
+           |    |_____|    Doing Camunda with Scala""".stripMargin)
+      - <- p(scala.Console.MAGENTA)
       pi <- camundala
       _ <- line(versionLabel, pi.version, leftAligned = false)
       _ <- line(licenseLabel, pi.license, leftAligned = false)
