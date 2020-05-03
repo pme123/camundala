@@ -8,8 +8,6 @@ object XmlHelper {
   val camundaPrefix = "camunda"
 
   val delegateExpression = "delegateExpression"
-  val xType = "type"
-  val topic = "topic"
 
   def elementUnapply(n: Node, qual: XQualifier): Option[Elem] = n match {
     case e: Elem if XQualifier(e) == qual => Some(e)
