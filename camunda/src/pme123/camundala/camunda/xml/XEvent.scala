@@ -1,17 +1,19 @@
 package pme123.camundala.camunda.xml
 
-import scala.xml.Node
+import pme123.camundala.model.bpmn.{BpmnEvent, EndEvent, StartEvent}
 
-sealed trait XEvent
-  extends XBpmnNode
+import scala.xml.Elem
 
-case class XStartEvent(xmlNode: Node)
-  extends XEvent {
+sealed trait XEvent[T <: BpmnEvent]
+  extends XBpmnNode[T]
+
+case class XStartEvent[T <: StartEvent](xmlElem: Elem)
+  extends XEvent[T] {
   val tagName = "StartEvent"
 }
 
-case class XEndEvent(xmlNode: Node)
-  extends XEvent {
+case class XEndEvent[T <: EndEvent](xmlElem: Elem)
+  extends XEvent[T] {
   val tagName = "EndEvent"
 
 }

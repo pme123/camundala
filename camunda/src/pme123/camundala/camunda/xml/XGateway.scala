@@ -1,13 +1,20 @@
 package pme123.camundala.camunda.xml
 
-import scala.xml.Node
+import pme123.camundala.model.bpmn.{ExclusiveGateway, Gateway, ParallelGateway}
 
-sealed trait XGateway
-  extends XBpmnNode
+import scala.xml.Elem
 
-case class XExclusiveGateway(xmlNode: Node)
-  extends XGateway {
+sealed trait XGateway[T <: Gateway]
+  extends XBpmnNode[T]
+
+case class XExclusiveGateway[T <: ExclusiveGateway](xmlElem: Elem)
+  extends XGateway[T] {
   val tagName = "ExclusiveGateway"
+}
+
+case class XParallelGateway[T <: ParallelGateway](xmlElem: Elem)
+  extends XGateway[T] {
+  val tagName = "ParallelGateway"
 }
 
 

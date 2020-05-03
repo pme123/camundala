@@ -5,6 +5,13 @@ sealed trait ProcessTask
     with Extensionable
 
 case class ServiceTask(id: String,
+                       implementation: TaskImplementation,
+                       extensions: Extensions = Extensions.none
+                      )
+  extends ProcessTask
+
+case class SendTask(id: String,
+                       implementation: TaskImplementation,
                        extensions: Extensions = Extensions.none
                       )
   extends ProcessTask

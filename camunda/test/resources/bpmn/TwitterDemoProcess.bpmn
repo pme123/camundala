@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://www.signavio.com/bpmn20" exporter="Camunda Modeler" exporterVersion="3.5.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
   <process id="TwitterDemoProcess" name="TwitterDemoProcess" isExecutable="true">
-    <serviceTask id="service_task_send_rejection_notification" name="Send rejection notification" camunda:delegateExpression="#{emailAdapter}">
+    <serviceTask id="service_task_send_rejection_notification" name="Send rejection notification">
       <incoming>no</incoming>
       <outgoing>SequenceFlow_4</outgoing>
     </serviceTask>
@@ -33,7 +33,7 @@
       <outgoing>SequenceFlow_5</outgoing>
     </exclusiveGateway>
     <sequenceFlow id="SequenceFlow_5" name="" sourceRef="gateway_join" targetRef="end_event_tweet_handled" />
-    <serviceTask id="service_task_publish_on_twitter" name="Publish on Twitter" camunda:delegateExpression="#{tweetAdapter}">
+    <serviceTask id="service_task_publish_on_twitter" name="Publish on Twitter">
       <incoming>yes</incoming>
       <outgoing>SequenceFlow_3</outgoing>
     </serviceTask>

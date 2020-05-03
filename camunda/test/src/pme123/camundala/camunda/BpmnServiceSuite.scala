@@ -1,5 +1,6 @@
 package pme123.camundala.camunda
 
+import pme123.camundala.camunda.xml.XmlHelper.XQualifier
 import pme123.camundala.model._
 import pme123.camundala.model.bpmn.bpmnRegister
 import zio.test.Assertion.equalTo
@@ -17,11 +18,14 @@ import TestData._
         for {
           _ <- bpmnRegister.registerBpmn(bpmn)
           mergeResult <- bpmnService.mergeBpmn("TwitterDemoProcess.bpmn", XML.load(bpmnResource.reader()))
-          userTasks = mergeResult.xmlNode \\ "userTask"
-          serviceTasks = mergeResult.xmlNode \\ "serviceTask"
-          startEvents = mergeResult.xmlNode \\ "startEvent"
-          exclusiveGateways = mergeResult.xmlNode \\ "exclusiveGateway"
+          userTasks = mergeResult.xmlElem \\ "userTask"
+          serviceTasks = mergeResult.xmlElem \\ "serviceTask"
+          startEvents = mergeResult.xmlElem \\ "startEvent"
+          exclusiveGateways = mergeResult.xmlElem \\ "exclusiveGateway"
           userTaskProps = userTasks.head \\ "property"
+          delegateExpression = XQualifier.camunda("delegateExpression").extractFrom(serviceTasks.head)
+          _ = println(s"merged: ${serviceTasks.head}")
+          _ = println(s"SERVICE TASK $delegateExpression")
           serviceTaskProp = serviceTasks.head \\ "property"
           startEventProp = startEvents \\ "property"
           exclusiveGatewayProp = exclusiveGateways.head \\ "property"
@@ -36,7 +40,8 @@ import TestData._
             assert(startEvents.length)(equalTo(1) ?? "startEvents") &&
             assert(startEventProp.length)(equalTo(1) ?? "startEventProp") &&
             assert(exclusiveGateways.length)(equalTo(2) ?? "exclusiveGateways") &&
-            assert(exclusiveGatewayProp.length)(equalTo(1) ?? "exclusiveGatewayProp")
+            assert(exclusiveGatewayProp.length)(equalTo(1) ?? "exclusiveGatewayProp") &&
+          assert(delegateExpression)(equalTo(Some("#{emailAdapter}")))
         }
       }
     ).provideCustomLayer(((bpmnRegister.live >>> bpmnService.live) ++ bpmnRegister.live).mapError(TestFailure.fail))

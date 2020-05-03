@@ -5,6 +5,7 @@ import com.monovore.decline._
 import com.monovore.decline.effect.CommandIOApp
 import pme123.camundala.camunda.deploymentService
 import pme123.camundala.camunda.deploymentService.DeploymentService
+import pme123.camundala.camunda.xml.ValidateWarnings
 import pme123.camundala.cli.ProjectInfo._
 import pme123.camundala.model.bpmn.CamundalaException
 import pme123.camundala.model.deploy.deployRegister
@@ -56,7 +57,9 @@ object cliApp {
                   else
                     Task.foreach(maybeDeploy.toSeq
                       .flatMap(_.bpmns))(deployService.deploy)
-                result <- printSuccess("Successful deployed", results.mkString("\n"))
+                result <- printSuccess("Successful deployed",
+                  results.map(_.copy(validateWarnings = ValidateWarnings.none)).mkString("\n") +
+                  results.foldLeft("")((r, dr) =>s"$r\n${scala.Console.YELLOW}- Warnings ${dr.name}:\n${dr.validateWarnings.value.mkString(" - ", "\n - ", "")}"))
               } yield result)
                 .catchAll(printError(_, "Deployment failed:"))
             case Deployments() =>

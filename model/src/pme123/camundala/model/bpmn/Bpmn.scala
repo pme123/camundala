@@ -8,15 +8,19 @@ case class Bpmn(id: String,
 }
 
 case class BpmnProcess(id: String,
-                       userTasks: Seq[UserTask],
-                       serviceTasks: Seq[ServiceTask],
-                       startEvents: Seq[StartEvent],
-                       gateways: Seq[Gateway]
+                       userTasks: Seq[UserTask] = Seq.empty,
+                       serviceTasks: Seq[ServiceTask] = Seq.empty,
+                       sendTasks: Seq[SendTask] = Seq.empty,
+                       startEvents: Seq[StartEvent] = Seq.empty,
+                       exclusiveGateways: Seq[ExclusiveGateway] = Seq.empty,
+                       parallelGateways: Seq[ParallelGateway] = Seq.empty
                       ) {
   lazy val userTaskMap: Map[String, UserTask] = userTasks.map(t => t.id -> t).toMap
   lazy val serviceTaskMap: Map[String, ServiceTask] = serviceTasks.map(t => t.id -> t).toMap
+  lazy val sendTaskMap: Map[String, SendTask] = sendTasks.map(t => t.id -> t).toMap
   lazy val startEventMap: Map[String, StartEvent] = startEvents.map(e => e.id -> e).toMap
-  lazy val gatewayMap: Map[String, Gateway] = gateways.map(g => g.id -> g).toMap
+  lazy val exclusiveGatewayMap: Map[String, ExclusiveGateway] = exclusiveGateways.map(g => g.id -> g).toMap
+  lazy val parallelGatewayMap: Map[String, ParallelGateway] = parallelGateways.map(g => g.id -> g).toMap
 
 }
 

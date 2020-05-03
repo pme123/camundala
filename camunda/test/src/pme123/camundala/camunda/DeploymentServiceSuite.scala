@@ -41,7 +41,9 @@ object DeploymentServiceSuite extends JUnitRunnableSpec {
     )
 
   val processEngineMockEnv: ULayer[ProcessEngineService] = {
-    ProcessEngineMock.Deploy(Assertion.anything) returns value(deployment)
+    (ProcessEngineMock.Deploy(Assertion.anything) returns value(deployment)) ++
+      (ProcessEngineMock.Deployments returns value(Seq(deployment))
+        )
   }
 
   //  @mockable[processEngineService.Service]
@@ -56,12 +58,16 @@ object DeploymentServiceSuite extends JUnitRunnableSpec {
 
     object Deploy extends Tag[(DeployRequest, Seq[MergeResult]), Deployment]
 
+    object Deployments extends Tag[Unit, Seq[Deployment]]
+
     private val envBuilder: URLayer[Has[mock.Proxy], ProcessEngineService] =
       ZLayer.fromService(invoke =>
         new processEngineService.Service {
           def deploy(deployRequest: DeployRequest, mergeResults: Seq[MergeResult]): Task[Deployment] =
             invoke(Deploy, deployRequest, mergeResults)
 
+          def deployments(): Task[Seq[Deployment]] =
+            invoke(Deployments)
         }
       )
   }

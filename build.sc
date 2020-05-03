@@ -10,8 +10,8 @@ object Version {
 
   // model
   val scalaXml = "1.3.0"
-  val zio = "1.0.0-RC18-2" //+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT"
-  val zioMacros = "1.0.0-RC18-2+99-bb2ded5f-SNAPSHOT"
+  val zio = "1.0.0-RC18-2"//+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT" //"
+  val zioMacros = "1.0.0-RC18-2+99-bb2ded5f-SNAPSHOT"//"
   val zioLogging = "0.2.7"
 
   // config

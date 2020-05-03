@@ -15,6 +15,6 @@ object AppConfigSuites
       testM("the Config is correct") {
         assertM(appConfig.get())(
           equalTo(expectedConf))
-      }.provideCustomLayer(appConfig.live.mapError(TestFailure.fail))
+      }.provideCustomLayer((appConfig.defaultLayer).mapError(TestFailure.fail))
     )
 }

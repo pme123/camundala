@@ -1,5 +1,6 @@
 package pme123.camundala.examples
 
+import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression
 import pme123.camundala.model.bpmn._
 import pme123.camundala.model.deploy.Deploy
 
@@ -17,14 +18,16 @@ package object twitter {
               Extensions(Map("durationMean" -> "10000", "durationSd" -> "5000")))),
           List(
             ServiceTask("service_task_send_rejection_notification",
+              DelegateExpression("#{emailAdapter}"),
               Extensions(Map("KPI-Ratio" -> "Tweet Rejected"))),
             ServiceTask("service_task_publish_on_twitter",
+              DelegateExpression("#{tweetAdapter}"),
               Extensions(Map("KPI-Ratio" -> "Tweet Approved")))
           ),
-          List(StartEvent("start_event_new_tweet",
+          startEvents = List(StartEvent("start_event_new_tweet",
             Extensions(Map("KPI-Cycle-Start" -> "Tweet Approval Time"))
           )),
-          List(ExclusiveGateway("gateway_approved",
+          exclusiveGateways = List(ExclusiveGateway("gateway_approved",
             Extensions(Map("KPI-Cycle-End" -> "Tweet Approval Time"))
           )
           ),

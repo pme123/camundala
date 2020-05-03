@@ -6,3 +6,6 @@ trait Gateway
 
 case class ExclusiveGateway(id: String, extensions: Extensions)
   extends Gateway
+
+case class ParallelGateway(id: String, extensions: Extensions)
+  extends Gateway
