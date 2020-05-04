@@ -5,7 +5,7 @@
     <participant id="Participant_1snfrd2" name="TestDemoProcess" processRef="TestDemoProcess" />
   </collaboration>
   <process id="TwitterDemoProcess" name="TwitterDemoProcess" isExecutable="true">
-    <serviceTask id="service_task_send_rejection_notification" name="Send rejection notification" camunda:delegateExpression="#{emailAdapter}">
+    <serviceTask id="service_task_send_rejection_notification" name="Send rejection notification">
       <incoming>no</incoming>
       <outgoing>SequenceFlow_4</outgoing>
     </serviceTask>
@@ -19,7 +19,7 @@
       <incoming>SequenceFlow_3</incoming>
       <outgoing>SequenceFlow_5</outgoing>
     </exclusiveGateway>
-    <serviceTask id="service_task_publish_on_twitter" name="Publish on Twitter" camunda:delegateExpression="#{tweetAdapter}">
+    <serviceTask id="service_task_publish_on_twitter" name="Publish on Twitter">
       <incoming>yes</incoming>
       <outgoing>SequenceFlow_3</outgoing>
     </serviceTask>
@@ -66,7 +66,7 @@
       <outgoing>SequenceFlow_18o60le</outgoing>
     </startEvent>
     <sequenceFlow id="SequenceFlow_18o60le" sourceRef="startEvent" targetRef="external-task-example" />
-    <serviceTask id="external-task-example" name="External Task Example" camunda:type="external" camunda:topic="myTopic">
+    <serviceTask id="external-task-example" name="External Task Example">
       <incoming>SequenceFlow_18o60le</incoming>
       <outgoing>SequenceFlow_0u2afzo</outgoing>
     </serviceTask>

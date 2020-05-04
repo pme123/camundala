@@ -8,10 +8,10 @@ Make sure each example runs on its own port.
 
 ## List of examples
 
-Example | Port
-:--- | ---:  
-Camunda Rest API | `9997`
-Twitter Demo App | `9998`
+Example | Port | Http Port | README
+:--- | ---: | ---:  | :---
+Camunda Rest API | `9997` | - | [./rest/README.m](./rest/README.md)
+Twitter Demo App | `9998` | `8888`| [./twitter/README.m](./twitter/README.md)
 
 # Docker
 We provide a `docker-compose.yml` file for the Database.

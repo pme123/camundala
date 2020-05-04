@@ -1,4 +1,6 @@
-# Just Starts the Camunda Rest API
+# Camunda Rest API
+This provides the Camunda Rest API. 
+It can be run in parallel any other example.
 
 Runs on port `9997`.
 

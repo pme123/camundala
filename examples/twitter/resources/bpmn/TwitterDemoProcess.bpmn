@@ -2,7 +2,6 @@
 <definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://www.signavio.com/bpmn20" exporter="Camunda Modeler" exporterVersion="3.5.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
   <collaboration id="Collaboration_19t23ei">
     <participant id="Participant_059fm3c" processRef="TwitterDemoProcess" />
-    <participant id="Participant_1snfrd2" name="TestDemoProcess" processRef="TestDemoProcess" />
   </collaboration>
   <process id="TwitterDemoProcess" name="TwitterDemoProcess" isExecutable="true">
     <serviceTask id="service_task_send_rejection_notification" name="Send rejection notification" camunda:delegateExpression="#{emailAdapter}">
@@ -60,25 +59,6 @@
     </sequenceFlow>
     <sequenceFlow id="SequenceFlow_4" name="" sourceRef="service_task_send_rejection_notification" targetRef="gateway_join" />
   </process>
-  <process id="TestDemoProcess" name="TestDemoProcess" isExecutable="true">
-    <sequenceFlow id="SequenceFlow_0u2afzo" sourceRef="external-task-example" targetRef="send-task-example" />
-    <startEvent id="StartEvent_1ukn3m3">
-      <outgoing>SequenceFlow_18o60le</outgoing>
-    </startEvent>
-    <sequenceFlow id="SequenceFlow_18o60le" sourceRef="StartEvent_1ukn3m3" targetRef="external-task-example" />
-    <serviceTask id="external-task-example" name="External Task Example" camunda:type="external" camunda:topic="myTopic">
-      <incoming>SequenceFlow_18o60le</incoming>
-      <outgoing>SequenceFlow_0u2afzo</outgoing>
-    </serviceTask>
-    <endEvent id="EndEvent_035u7ja">
-      <incoming>SequenceFlow_0rv2dtk</incoming>
-    </endEvent>
-    <sequenceFlow id="SequenceFlow_0rv2dtk" sourceRef="send-task-example" targetRef="EndEvent_035u7ja" />
-    <sendTask id="send-task-example" name="Send Task Example">
-      <incoming>SequenceFlow_0u2afzo</incoming>
-      <outgoing>SequenceFlow_0rv2dtk</outgoing>
-    </sendTask>
-  </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_TwitterDemoProcess">
     <bpmndi:BPMNPlane id="BPMNPlane_TwitterDemoProcess" bpmnElement="Collaboration_19t23ei">
       <bpmndi:BPMNShape id="Participant_059fm3c_di" bpmnElement="Participant_059fm3c" isHorizontal="true">
@@ -116,9 +96,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_Review_Tweet_3" bpmnElement="user_task_review_tweet">
         <omgdc:Bounds x="286" y="154" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_1ql9j8z_di" bpmnElement="external-task-example">
-        <omgdc:Bounds x="290" y="500" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="BPMNShape_Review_Tweet_3" targetElement="BPMNShape_Approved__3">
         <omgdi:waypoint x="386" y="194" />
@@ -173,30 +150,6 @@
           <omgdc:Bounds x="872" y="102" width="6" height="6" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Participant_1snfrd2_di" bpmnElement="Participant_1snfrd2" isHorizontal="true">
-        <omgdc:Bounds x="124" y="430" width="600" height="250" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="EndEvent_035u7ja_di" bpmnElement="EndEvent_035u7ja">
-        <omgdc:Bounds x="612" y="522" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_0u2afzo_di" bpmnElement="SequenceFlow_0u2afzo">
-        <omgdi:waypoint x="390" y="540" />
-        <omgdi:waypoint x="450" y="540" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="StartEvent_1ukn3m3_di" bpmnElement="StartEvent_1ukn3m3">
-        <omgdc:Bounds x="212" y="522" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_18o60le_di" bpmnElement="SequenceFlow_18o60le">
-        <omgdi:waypoint x="248" y="540" />
-        <omgdi:waypoint x="290" y="540" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_0rv2dtk_di" bpmnElement="SequenceFlow_0rv2dtk">
-        <omgdi:waypoint x="550" y="540" />
-        <omgdi:waypoint x="612" y="540" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="SendTask_00n36ur_di" bpmnElement="send-task-example">
-        <omgdc:Bounds x="450" y="500" width="100" height="80" />
-      </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </definitions>
