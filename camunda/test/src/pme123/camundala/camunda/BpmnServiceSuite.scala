@@ -1,16 +1,17 @@
 package pme123.camundala.camunda
 
+import org.junit.runner.RunWith
 import pme123.camundala.camunda.xml.XmlHelper
 import pme123.camundala.camunda.xml.XmlHelper.XQualifier
-import pme123.camundala.model._
 import pme123.camundala.model.bpmn.bpmnRegister
 import zio.test.Assertion._
 import zio.test._
-import zio.test.junit.JUnitRunnableSpec
+import zio.test.junit.ZTestJUnitRunner
 
 import scala.xml._
 
-object BpmnServiceSuite extends JUnitRunnableSpec {
+@RunWith(classOf[ZTestJUnitRunner])
+object BpmnServiceSuite extends DefaultRunnableSpec {
 import TestData._
 
   def spec: ZSpec[environment.TestEnvironment, Any] =
@@ -43,10 +44,17 @@ import TestData._
             assert(startEventProp.length)(equalTo(1) ?? "startEventProp") &&
             assert(exclusiveGateways.length)(equalTo(2) ?? "exclusiveGateways") &&
             assert(exclusiveGatewayProp.length)(equalTo(1) ?? "exclusiveGatewayProp") &&
-            assert(delegateExpression)(equalTo(Some("#{emailAdapter}"))) &&
-            assert(externalTask)(equalTo(Some("myTopic")))
+            assert(delegateExpression)(isSome(equalTo("#{emailAdapter}"))) &&
+            assert(externalTask)(isSome(equalTo("myTopic")))
 
         }
+      },
+      testM("Validate a BPMN") {
+        for{
+          _ <- bpmnRegister.registerBpmn(bpmn)
+          valWarns <- bpmnService.validateBpmn("TwitterDemoProcess.bpmn")
+        }yield
+          assert(valWarns.value.size)(equalTo(2))
       }
     ).provideCustomLayer(((bpmnRegister.live >>> bpmnService.live) ++ bpmnRegister.live).mapError(TestFailure.fail))
 }

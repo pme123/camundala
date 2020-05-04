@@ -12,6 +12,6 @@ object StandaloneCli
       pi <- cliApp.camundala
       _ <- cliApp.run(pi.copy(name = "Standalone Console", sourceUrl = s"${pi.sourceUrl}/tree/master/cli"))
     } yield 0)
-      .provideCustomLayer((Console.live ++ deployRegisterLayer ++ deploymentServiceLayer) >>> cliApp.live)
+      .provideCustomLayer((Console.live ++ bpmnServiceLayer ++ deployRegisterLayer ++ deploymentServiceLayer) >>> cliApp.live)
       .catchAll(e => console.putStrLn(s"ERROR: $e").as(1))
 }

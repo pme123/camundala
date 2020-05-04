@@ -3,9 +3,10 @@ package pme123.camundala.cli
 import cats.effect.ExitCode
 import com.monovore.decline._
 import com.monovore.decline.effect.CommandIOApp
-import pme123.camundala.camunda.deploymentService
+import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.deploymentService.DeploymentService
 import pme123.camundala.camunda.xml.ValidateWarnings
+import pme123.camundala.camunda.{bpmnService, deploymentService}
 import pme123.camundala.cli.ProjectInfo._
 import pme123.camundala.model.bpmn.CamundalaException
 import pme123.camundala.model.deploy.deployRegister
@@ -27,11 +28,17 @@ object cliApp {
   def run(projectInfo: ProjectInfo): ZIO[CliApp with Console, Throwable, Nothing] =
     ZIO.accessM(_.get.run(projectInfo))
 
-  type CliAppDeps = Console with DeployRegister with DeploymentService
+  type CliAppDeps = Console with BpmnService with DeployRegister with DeploymentService
 
   lazy val live: URLayer[CliAppDeps, CliApp] =
-    ZLayer.fromServices[Console.Service, deployRegister.Service, deploymentService.Service, Service] {
-      (console, deployReg, deployService) =>
+    ZLayer.fromServices[Console.Service, bpmnService.Service, deployRegister.Service, deploymentService.Service, Service] {
+      (console, bpmnService, deployReg, deployService) =>
+
+        lazy val validateBpmnOpts: Opts[ValidateBpmn] =
+          Opts.subcommand("validate", "Validate a BPMN if it can be merged") {
+            Opts.argument[String](metavar = "bpmnId")
+              .map(ValidateBpmn)
+          }
 
         lazy val deployBpmnOpts: Opts[DeployBpmn] =
           Opts.subcommand("deploy", "Deploy BPMNs to Camunda") {
@@ -47,21 +54,11 @@ object cliApp {
           }
 
         lazy val command = Command[Task[ExitCode]]("", "CLI for Camunda")(
-          (deployBpmnOpts orElse deploymentsOpts).map {
+          (validateBpmnOpts orElse deployBpmnOpts orElse deploymentsOpts).map {
+            case ValidateBpmn(bpmnId) =>
+              validateBpmn(bpmnId)
             case DeployBpmn(deployId) =>
-              (for {
-                maybeDeploy <- deployReg.requestDeploy(deployId)
-                results <-
-                  if (maybeDeploy.isEmpty)
-                    ZIO.fail(CliAppException(s"There is no Deployment with the id '$deployId''"))
-                  else
-                    Task.foreach(maybeDeploy.toSeq
-                      .flatMap(_.bpmns))(deployService.deploy)
-                result <- printSuccess("Successful deployed",
-                  results.map(_.copy(validateWarnings = ValidateWarnings.none)).mkString("\n") +
-                  results.foldLeft("")((r, dr) =>s"$r\n${scala.Console.YELLOW}- Warnings ${dr.name}:\n${dr.validateWarnings.value.mkString(" - ", "\n - ", "")}"))
-              } yield result)
-                .catchAll(printError(_, "Deployment failed:"))
+              deployBpmn(deployId)
             case Deployments() =>
               (for {
                 results <- deployService.deployments()
@@ -70,6 +67,31 @@ object cliApp {
                 .catchAll(printError(_, "Get Deployments failed:"))
           }
         )
+
+        def validateBpmn(bpmnId: String) = {
+          (for {
+            valWarns <- bpmnService.validateBpmn(bpmnId)
+            result <- printSuccess(s"Successful validated BPMN '$bpmnId'${scala.Console.YELLOW}\nWarnings:",
+              valWarns.value.map(_.msg).mkString(" - ", "\n - ", ""))
+          } yield result)
+            .catchAll(printError(_, "Validation failed:"))
+        }
+
+        def deployBpmn(deployId: String) = {
+          (for {
+            maybeDeploy <- deployReg.requestDeploy(deployId)
+            results <-
+              if (maybeDeploy.isEmpty)
+                ZIO.fail(CliAppException(s"There is no Deployment with the id '$deployId''"))
+              else
+                Task.foreach(maybeDeploy.toSeq
+                  .flatMap(_.bpmns))(deployService.deploy)
+            result <- printSuccess("Successful deployed",
+              results.map(_.copy(validateWarnings = ValidateWarnings.none)).mkString("\n") +
+                results.foldLeft("")((r, dr) => s"$r\n${scala.Console.YELLOW}- Warnings ${dr.name}:\n${dr.validateWarnings.value.mkString(" - ", "\n - ", "")}"))
+          } yield result)
+            .catchAll(printError(_, "Deployment failed:"))
+        }
 
         def printSuccess(msg: String, details: String): UIO[ExitCode] = {
           console.putStrLn(s"${scala.Console.GREEN}$msg") *>
@@ -88,6 +110,7 @@ object cliApp {
 
         case class Deployments()
         case class DeployBpmn(deployId: String = "default")
+        case class ValidateBpmn(bpmnId: String)
 
         (projectInfo: ProjectInfo) =>
           intro *>
