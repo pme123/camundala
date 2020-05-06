@@ -7,7 +7,6 @@ import pme123.camundala.camunda.processEngineService.ProcessEngineService
 import pme123.camundala.camunda.xml.{MergeResult, ValidateWarnings}
 import pme123.camundala.model.bpmn.Bpmn
 import zio._
-import zio.macros.accessible
 
 import scala.collection.immutable.HashSet
 import scala.xml.XML
@@ -65,7 +64,7 @@ object deploymentService {
           def deploy(bpmn: Bpmn): Task[DeployResult] =
             for {
               mergeResult <- bpmnServ.mergeBpmn(bpmn.id)
-              xml <- bpmn.xml.xml
+              xml <- StreamHelper.xml(bpmn.xml)
               deployment <- processEngineService.deploy(DeployRequest(Some(bpmn.id),
                 source = Some("Camundala Deployer"),
                 deployFiles = HashSet(DeployFile(bpmn.xml.fileName, xml.toString().getBytes().toVector))), Seq(mergeResult))

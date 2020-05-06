@@ -47,4 +47,6 @@ object bpmnRegister {
       }
     }
   }
+
+  def load(resourcePath: String) = ???
 }

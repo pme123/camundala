@@ -9,7 +9,7 @@ import pme123.camundala.model.bpmn.{CamundalaException, StaticFile}
 import zio._
 import zio.macros.accessible
 import scala.jdk.CollectionConverters._
-
+import StreamHelper._
 /**
   * Wraps functionality that needs the Camunda ProcessEngine (Camunda must run).
   *
@@ -44,7 +44,7 @@ object processEngineService {
                   .obtValue((b, v: String) => b.tenantId(v), request.tenantId)
                   .enableDuplicateFiltering(request.enableDuplicateFilterung)
                   .listValue((b, v: MergeResult) => b.addInputStream(v.fileName, new ByteArrayInputStream(v.xmlElem.toString.getBytes)), mergeResults)
-                  .listValue((b, v: StaticFile) => b.addInputStream(v.fileName, v.inputStream), mergeResults.flatMap(_.maybeBpmn).flatMap(_.staticFiles))
+                  .listValue((b, v: StaticFile) => b.addInputStream(v.fileName, inputStream(v)), mergeResults.flatMap(_.maybeBpmn).flatMap(_.staticFiles))
               )
             deployment <- ZIO.effect(builder.deploy())
           } yield deployment

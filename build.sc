@@ -1,5 +1,7 @@
 import coursier.maven.MavenRepository
 import mill._
+import mill.define.Discover
+import mill.scalajslib.ScalaJSModule
 import mill.scalalib._
 import mill.scalalib.publish.{Developer, License, PomSettings, VersionControl}
 
@@ -10,8 +12,8 @@ object Version {
 
   // model
   val scalaXml = "1.3.0"
-  val zio = "1.0.0-RC18-2"//+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT" //"
-  val zioMacros = "1.0.0-RC18-2+99-bb2ded5f-SNAPSHOT"//"
+  val zio = "1.0.0-RC18-2" //+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT" //"
+  val zioMacros = "1.0.0-RC18-2+99-bb2ded5f-SNAPSHOT" //"
   val zioLogging = "0.2.7"
 
   // config
@@ -140,7 +142,16 @@ trait ModuleWithTests extends CamundalaModule {
 
 }
 
-object model extends ModuleWithTests {
+
+trait CamundalaJsModule
+  extends ScalaJSModule
+    with CamundalaModule {
+  override def scalaJSVersion = "1.0.1"
+}
+
+object model
+  extends ModuleWithTests
+    with CamundalaJsModule {
 
   override def ivyDeps = {
     Agg(
@@ -150,6 +161,7 @@ object model extends ModuleWithTests {
       Libs.zioLogging
     )
   }
+
 }
 
 object config extends ModuleWithTests {
@@ -213,14 +225,24 @@ object cli extends ModuleWithTests {
 object examples extends mill.Module {
 
   trait ExampleModule extends ModuleWithTests {
-    override def moduleDeps:  Seq[JavaModule with PublishModule] = Seq(services, cli)
+    override def moduleDeps: Seq[JavaModule with PublishModule] = Seq(services, cli)
   }
 
   object twitter extends ExampleModule {
 
-    override def moduleDeps:  Seq[JavaModule with PublishModule] = super.moduleDeps ++ Seq(twitterApi)
+    override def moduleDeps: Seq[JavaModule with PublishModule] = Seq(bpmn, twitterApi)
 
     override def mainClass = Some("pme123.camundala.examples.twitter.TwitterApp")
+
+    object client extends ExampleModule with CamundalaJsModule {
+      override def moduleDeps = Seq(bpmn)
+
+      override def mainClass = Some("Main")
+    }
+
+    object bpmn extends ExampleModule  with CamundalaJsModule {
+      override def moduleDeps: Seq[JavaModule with PublishModule] = super.moduleDeps
+    }
 
     object twitterApi extends ModuleWithTests {
 

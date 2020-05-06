@@ -4,6 +4,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import pme123.camundala.camunda.ZSpringApp
 import pme123.camundala.cli.cliApp.CliApp
 import pme123.camundala.cli.{ProjectInfo, cliApp}
+import pme123.camundala.examples.twitter.bpmn.deployments
 import pme123.camundala.services.httpServer
 import zio.ZIO
 import zio.console.Console
@@ -24,8 +25,8 @@ object TwitterApp extends ZSpringApp {
   def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] =
     (for {
       _ <- httpServer.serve().fork
-      _ <- registerBpmns(Set(bpmn))
-      _ <- registerDeploys(Set(deploy))
+      _ <- registerBpmns(deployments.bpmns)
+      _ <- registerDeploys(deployments.deploys)
       _ <- managedSpringApp(classOf[TwitterApp], args).useForever.fork
       _ <- runCli
     } yield ())

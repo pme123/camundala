@@ -16,6 +16,8 @@ import zio.console.{Console, putStr => p, putStrLn => pl}
 import zio.interop.catz._
 
 import scala.io.{BufferedSource, Source}
+import scala.sys.process
+import scala.sys.process.Process
 
 object cliApp {
 
@@ -84,14 +86,24 @@ object cliApp {
               if (maybeDeploy.isEmpty)
                 ZIO.fail(CliAppException(s"There is no Deployment with the id '$deployId''"))
               else
-                Task.foreach(maybeDeploy.toSeq
-                  .flatMap(_.bpmns))(deployService.deploy)
+                { runMill(maybeDeploy.get.project) *>
+                  Task.foreach(maybeDeploy.toSeq
+                    .flatMap(_.bpmns))(deployService.deploy)
+                }
             result <- printSuccess("Successful deployed",
               results.map(_.copy(validateWarnings = ValidateWarnings.none)).mkString("\n") +
                 results.foldLeft("")((r, dr) => s"$r\n${scala.Console.YELLOW}- Warnings ${dr.name}:\n${dr.validateWarnings.value.mkString(" - ", "\n - ", "")}"))
           } yield result)
             .catchAll(printError(_, "Deployment failed:"))
         }
+
+        def runMill(project: String): Task[String] =
+          ZIO.effect(
+            Process(s"mill $project.compile").!!
+          ).tapError {
+            e=>
+              ZIO(e.printStackTrace())
+          } .tap(f => UIO(println(s"RUN SCALA: $f")))
 
         def printSuccess(msg: String, details: String): UIO[ExitCode] = {
           console.putStrLn(s"${scala.Console.GREEN}$msg") *>

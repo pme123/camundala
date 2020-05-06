@@ -1,15 +1,17 @@
-package pme123.camundala.examples
+package pme123.camundala.examples.twitter.bpmn
 
 import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression
 import pme123.camundala.model.bpmn._
 import pme123.camundala.model.deploy.Deploy
 
 import scala.collection.immutable.HashSet
+import scala.scalajs.js.annotation.JSExportTopLevel
 
-package object twitter {
+object deployments {
 
-  val bpmn: Bpmn =
-    Bpmn("TwitterDemoProcess.bpmn",
+  @JSExportTopLevel("bpmns")
+  val bpmns: Set[Bpmn] =
+    Set(Bpmn("TwitterDemoProcess.bpmn",
       StaticFile("TwitterDemoProcess.bpmn", "bpmn"),
       List(
         BpmnProcess("TwitterDemoProcess",
@@ -34,7 +36,8 @@ package object twitter {
         )), HashSet(
         StaticFile("static/forms/createTweet.html", "bpmn"),
         StaticFile("static/forms/reviewTweet.html", "bpmn"),
-      ))
+      )))
 
-  val deploy: Deploy = Deploy("default", HashSet(bpmn))
+  @JSExportTopLevel("deploys")
+  val deploys: Set[Deploy] = Set(Deploy("default", "examples.twitter", "PATH", bpmns))
 }
