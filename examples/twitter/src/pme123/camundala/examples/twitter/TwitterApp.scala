@@ -1,12 +1,20 @@
 package pme123.camundala.examples.twitter
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import pme123.camundala.app.appRunner
+import pme123.camundala.app.appRunner.AppRunner
+import pme123.camundala.camunda.DefaultLayers._
 import pme123.camundala.camunda.ZSpringApp
 import pme123.camundala.cli.cliApp.CliApp
 import pme123.camundala.cli.{ProjectInfo, cliApp}
+import pme123.camundala.model.bpmn.bpmnRegister.BpmnRegister
+import pme123.camundala.model.bpmn.{Bpmn, bpmnRegister}
+import pme123.camundala.model.deploy.deployRegister.DeployRegister
+import pme123.camundala.model.deploy.{Deploy, deployRegister}
 import pme123.camundala.services.httpServer
-import zio.ZIO
+import pme123.camundala.services.httpServer.HttpServer
 import zio.console.Console
+import zio._
 
 @SpringBootApplication
 //@EnableProcessApplication
@@ -23,10 +31,6 @@ object TwitterApp extends ZSpringApp {
 
   def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] =
     (for {
-      _ <- httpServer.serve().fork
-      _ <- registerBpmns(Set(bpmn))
-      _ <- registerDeploys(Set(deploy))
-      _ <- managedSpringApp(classOf[TwitterApp], args).useForever.fork
       _ <- runCli
     } yield ())
       // you have to provide all the layers here so all fibers have the same register
@@ -36,14 +40,42 @@ object TwitterApp extends ZSpringApp {
         _ => 0
       )
 
-  import pme123.camundala.camunda.DefaultLayers._
+  protected def registerBpmns(bpmns: Set[Bpmn]): URIO[BpmnRegister, List[Unit]] =
+    ZIO.foreach(bpmns.toSeq)(b => bpmnRegister.registerBpmn(b))
 
+  protected def registerDeploys(deploys: Set[Deploy]): URIO[DeployRegister, List[Unit]] =
+    ZIO.foreach(deploys.toSeq)(d => deployRegister.registerDeploy(d))
+
+  type TwitterAppDeps = Console with DeployRegister with BpmnRegister with HttpServer
+
+  protected lazy val twitterApp: RLayer[TwitterAppDeps, AppRunner] =
+    ZLayer.fromServices[Console.Service, bpmnRegister.Service, deployRegister.Service, httpServer.Service, appRunner.Service] {
+      (console, bpmnRegService, deplRegService, httpServService) =>
+        implicit val c: Console.Service = console
+        new appRunner.Service {
+          def run(): Task[Unit] = (for {
+            _ <- httpServService.serve().fork
+            _ <- ZIO.foreach(Set(bpmn))(b => bpmnRegService.registerBpmn(b))
+            _ <- ZIO.foreach(Seq(deploy))(d => deplRegService.registerDeploy(d))
+            _ <- managedSpringApp(classOf[TwitterApp]).useForever
+          } yield ())
+
+          def stop(): Task[Unit] = (for {
+            _ <- httpServService.serve().fork
+            _ <- ZIO.foreach(Set(bpmn))(b => bpmnRegService.unregisterBpmn(b.id))
+            _ <- ZIO.foreach(Seq(deploy))(d => deplRegService.unregisterDeploy(d.id))
+            _ <- managedSpringApp(classOf[TwitterApp]).useForever
+          } yield ())
+        }
+    }
+
+  private lazy val cliLayer = (Console.live ++ bpmnServiceLayer ++ deployRegisterLayer ++ deploymentServiceLayer ++ twitterApp) >>> cliApp.live
   private lazy val httpServerLayer = appConfigLayer ++ deploymentServiceLayer ++ logLayer("httpServer") >>> httpServer.live
-  private lazy val cliLayer = (Console.live ++ bpmnServiceLayer ++ deployRegisterLayer ++ deploymentServiceLayer) >>> cliApp.live
+  private lazy val appLayer = Console.live ++ httpServerLayer ++ bpmnServiceLayer ++ bpmnRegisterLayer ++ deployRegisterLayer
 
   protected def runCli: ZIO[CliApp with Console, Throwable, Nothing] =
     cliApp.run(projectInfo)
 
-  private lazy val layer = cliLayer ++ httpServerLayer ++ bpmnServiceLayer ++ bpmnRegisterLayer ++ deployRegisterLayer
+  private lazy val layer: ZLayer[Any, Throwable, CliApp] = appLayer >>> cliLayer
 
 }

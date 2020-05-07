@@ -1,7 +1,8 @@
 package pme123.camundala.cli
 
+import pme123.camundala.app.appRunner
 import pme123.camundala.camunda.DefaultLayers._
-import zio.{ZIO, console}
+import zio.{Task, ZIO, ZLayer, console}
 import zio.console.Console
 
 object StandaloneCli
@@ -12,6 +13,8 @@ object StandaloneCli
       pi <- cliApp.camundala
       _ <- cliApp.run(pi.copy(name = "Standalone Console", sourceUrl = s"${pi.sourceUrl}/tree/master/cli"))
     } yield 0)
-      .provideCustomLayer((Console.live ++ bpmnServiceLayer ++ deployRegisterLayer ++ deploymentServiceLayer) >>> cliApp.live)
+      .provideCustomLayer((Console.live ++ bpmnServiceLayer ++ deployRegisterLayer ++ deploymentServiceLayer ++ ZLayer.succeed(new appRunner.Service {
+        override def run(): Task[Unit] = ???
+      })) >>> cliApp.live)
       .catchAll(e => console.putStrLn(s"ERROR: $e").as(1))
 }

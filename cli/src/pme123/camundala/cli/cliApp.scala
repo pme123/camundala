@@ -3,6 +3,7 @@ package pme123.camundala.cli
 import cats.effect.ExitCode
 import com.monovore.decline._
 import com.monovore.decline.effect.CommandIOApp
+import pme123.camundala.app.appRunner
 import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.deploymentService.DeploymentService
 import pme123.camundala.camunda.xml.ValidateWarnings
@@ -14,6 +15,7 @@ import pme123.camundala.model.deploy.deployRegister.DeployRegister
 import zio._
 import zio.console.{Console, putStr => p, putStrLn => pl}
 import zio.interop.catz._
+import pme123.camundala.app.appRunner.AppRunner
 
 import scala.io.{BufferedSource, Source}
 
@@ -28,11 +30,11 @@ object cliApp {
   def run(projectInfo: ProjectInfo): ZIO[CliApp with Console, Throwable, Nothing] =
     ZIO.accessM(_.get.run(projectInfo))
 
-  type CliAppDeps = Console with BpmnService with DeployRegister with DeploymentService
+  type CliAppDeps = Console with BpmnService with DeployRegister with DeploymentService with AppRunner
 
   lazy val live: URLayer[CliAppDeps, CliApp] =
-    ZLayer.fromServices[Console.Service, bpmnService.Service, deployRegister.Service, deploymentService.Service, Service] {
-      (console, bpmnService, deployReg, deployService) =>
+    ZLayer.fromServices[Console.Service, bpmnService.Service, deployRegister.Service, deploymentService.Service, appRunner.Service, Service] {
+      (console, bpmnService, deployReg, deployService, appRunner) =>
 
         lazy val validateBpmnOpts: Opts[ValidateBpmn] =
           Opts.subcommand("validate", "Validate a BPMN if it can be merged") {
@@ -53,12 +55,12 @@ object cliApp {
               .map(_ => Deployments())
           }
 
-        lazy val command = Command[Task[ExitCode]]("", "CLI for Camunda")(
+        def command(runningApp: Fiber.Runtime[Throwable, Unit]) = Command[Task[ExitCode]]("", "CLI for Camunda")(
           (validateBpmnOpts orElse deployBpmnOpts orElse deploymentsOpts).map {
             case ValidateBpmn(bpmnId) =>
               validateBpmn(bpmnId)
             case DeployBpmn(deployId) =>
-              deployBpmn(deployId)
+              deployBpmn(deployId, runningApp)
             case Deployments() =>
               (for {
                 results <- deployService.deployments()
@@ -77,8 +79,10 @@ object cliApp {
             .catchAll(printError(_, "Validation failed:"))
         }
 
-        def deployBpmn(deployId: String) = {
+        def deployBpmn(deployId: String, runningApp: Fiber.Runtime[Throwable, Unit]) = {
           (for {
+            _ <- runningApp.interrupt
+            _ <- runningApp.getRef()
             maybeDeploy <- deployReg.requestDeploy(deployId)
             results <-
               if (maybeDeploy.isEmpty)
@@ -108,19 +112,26 @@ object cliApp {
             ZIO.succeed(ExitCode.Error)
         }
 
+        def cliRunner(runningApp: Fiber.Runtime[Throwable, Unit]) = intro *>
+          (for {
+            input <- console.getStrLn
+            _ <- CommandIOApp.run(command(runningApp), input.split(" ").toList)
+          } yield ())
+            .tapError(e => console.putStrLn(s"Error: $e"))
+            .forever
+
         case class Deployments()
         case class DeployBpmn(deployId: String = "default")
         case class ValidateBpmn(bpmnId: String)
 
         (projectInfo: ProjectInfo) =>
-          intro *>
-            printProject(projectInfo) *>
-            (for {
-              input <- console.getStrLn
-              _ <- CommandIOApp.run(command, input.split(" ").toList)
-            } yield ())
-              .tapError(e => console.putStrLn(s"Error: $e"))
-              .forever
+        for{
+          f <- appRunner.run().fork
+          _ <-  printProject(projectInfo)
+          _ <- ZIO.effect(Thread.sleep(10000))
+          d <-  cliRunner(f)
+        } yield d
+
     }
 
   private val width = 84

@@ -7,14 +7,12 @@ import org.camunda.bpm.engine.repository.{Deployment, DeploymentBuilder}
 import pme123.camundala.camunda.xml.MergeResult
 import pme123.camundala.model.bpmn.{CamundalaException, StaticFile}
 import zio._
-import zio.macros.accessible
 import scala.jdk.CollectionConverters._
 
 /**
   * Wraps functionality that needs the Camunda ProcessEngine (Camunda must run).
   *
   */
-@accessible
 object processEngineService {
 
   type ProcessEngineService = Has[Service]
@@ -24,6 +22,12 @@ object processEngineService {
 
     def deployments(): Task[Seq[Deployment]]
   }
+
+  def deploy(deployRequest: DeployRequest, mergeResults: Seq[MergeResult]): RIO[ProcessEngineService, Deployment] =
+    ZIO.accessM(_.get.deploy(deployRequest, mergeResults))
+
+  def deployments(): RIO[ProcessEngineService, Seq[Deployment]] =
+    ZIO.accessM(_.get.deployments())
 
   import CamundaExtensions._
 

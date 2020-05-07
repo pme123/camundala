@@ -7,7 +7,6 @@ import pme123.camundala.camunda.processEngineService.ProcessEngineService
 import pme123.camundala.camunda.xml.{MergeResult, ValidateWarnings}
 import pme123.camundala.model.bpmn.Bpmn
 import zio._
-import zio.macros.accessible
 
 import scala.collection.immutable.HashSet
 import scala.xml.XML

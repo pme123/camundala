@@ -11,7 +11,7 @@ object Version {
   // model
   val scalaXml = "1.3.0"
   val zio = "1.0.0-RC18-2"//+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT" //"
-  val zioMacros = "1.0.0-RC18-2+99-bb2ded5f-SNAPSHOT"//"
+  //val zioMacros = "1.0.0-RC18-2+99-bb2ded5f-SNAPSHOT"//"
   val zioLogging = "0.2.7"
 
   // config
@@ -46,7 +46,7 @@ object Libs {
   // config
   val zioConfig = ivy"dev.zio::zio-config:${Version.zioConfig}"
   val zioConfigTypesafe = ivy"dev.zio::zio-config-typesafe:${Version.zioConfig}"
-  val zioMacros = ivy"dev.zio::zio-macros:${Version.zioMacros}"
+  //val zioMacros = ivy"dev.zio::zio-macros:${Version.zioMacros}"
 
   // camunda
   val spring = ivy"org.springframework.boot:spring-boot-starter-web:${Version.spring}"
@@ -145,7 +145,7 @@ object model extends ModuleWithTests {
   override def ivyDeps = {
     Agg(
       Libs.zio,
-      Libs.zioMacros,
+   //   Libs.zioMacros,
       Libs.scalaXml,
       Libs.zioLogging
     )
@@ -166,7 +166,7 @@ object config extends ModuleWithTests {
 
 object camunda extends ModuleWithTests {
 
-  override def moduleDeps = Seq(model, config)
+  override def moduleDeps = Seq(model, config, app)
 
   override def ivyDeps = {
     Agg(
@@ -206,6 +206,17 @@ object cli extends ModuleWithTests {
     Agg(
       Libs.decline,
       Libs.zioCats
+    )
+  }
+}
+
+object app extends CamundalaModule {
+
+  override def moduleDeps = Seq()
+
+  override def ivyDeps = {
+    Agg(
+      Libs.zio
     )
   }
 }
