@@ -47,7 +47,7 @@ object bpmnService {
               bpmn <- if (maybeBpmn.isDefined)
                 UIO(maybeBpmn.get)
               else ZIO.fail(BpmnServiceException(s"There is no BPMN $bpmnId in the BPMN Register"))
-              xml <- bpmn.xml.xml
+              xml <- StreamHelper.xml(bpmn.xml)
               xMergeResult <- merge(xml, maybeBpmn, bpmnId)
             } yield MergeResult(bpmnId, xMergeResult.xmlElem, maybeBpmn, xMergeResult.warnings)
           }

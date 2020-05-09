@@ -7,8 +7,12 @@ object appRunner {
 
   trait Service {
     def run(): Task[Unit]
+    def update(): Task[Unit]
   }
 
   def run(): RIO[AppRunner, Unit] =
     ZIO.accessM(_.get.run())
+
+  def update(): RIO[AppRunner, Unit] =
+    ZIO.accessM(_.get.update())
 }

@@ -13,8 +13,8 @@ import pme123.camundala.model.deploy.deployRegister.DeployRegister
 import pme123.camundala.model.deploy.{Deploy, deployRegister}
 import pme123.camundala.services.httpServer
 import pme123.camundala.services.httpServer.HttpServer
-import zio.console.Console
 import zio._
+import zio.console.Console
 
 @SpringBootApplication
 //@EnableProcessApplication
@@ -59,12 +59,9 @@ object TwitterApp extends ZSpringApp {
             _ <- ZIO.foreach(Seq(deploy))(d => deplRegService.registerDeploy(d))
             _ <- managedSpringApp(classOf[TwitterApp]).useForever
           } yield ())
-
-          def stop(): Task[Unit] = (for {
-            _ <- httpServService.serve().fork
-            _ <- ZIO.foreach(Set(bpmn))(b => bpmnRegService.unregisterBpmn(b.id))
-            _ <- ZIO.foreach(Seq(deploy))(d => deplRegService.unregisterDeploy(d.id))
-            _ <- managedSpringApp(classOf[TwitterApp]).useForever
+          def update(): Task[Unit] = (for {
+            _ <- ZIO.foreach(Set(bpmn))(b => bpmnRegService.registerBpmn(b))
+            _ <- ZIO.foreach(Seq(deploy))(d => deplRegService.registerDeploy(d))
           } yield ())
         }
     }

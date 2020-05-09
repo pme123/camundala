@@ -2,15 +2,18 @@ import coursier.maven.MavenRepository
 import mill._
 import mill.scalalib._
 import mill.scalalib.publish.{Developer, License, PomSettings, VersionControl}
+import $ivy.`com.lihaoyi::mill-contrib-buildinfo:$MILL_VERSION`
+import camunda.{publishVersion, scalaVersion}
+import mill.contrib.buildinfo.BuildInfo
 
 import scala.io.Source
 
 object Version {
-  val scalaVersion = "2.13.1"
+  val scalaVersion = "2.13.2"
 
   // model
   val scalaXml = "1.3.0"
-  val zio = "1.0.0-RC18-2"//+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT" //"
+  val zio = "1.0.0-RC18-2" //+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT" //"
   //val zioMacros = "1.0.0-RC18-2+99-bb2ded5f-SNAPSHOT"//"
   val zioLogging = "0.2.7"
 
@@ -55,6 +58,7 @@ object Libs {
   val camundaRest = ivy"org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:${Version.camundaSpringBoot}"
   val h2 = ivy"com.h2database:h2:${Version.h2}"
   val postgres = ivy"org.postgresql:postgresql:${Version.postgres}"
+  val scalaCompiler = ivy"org.scala-lang:scala-compiler:${Version.scalaVersion}"
 
   // services
   val zioCats = ivy"dev.zio::zio-interop-cats:${Version.zioCats}"
@@ -145,8 +149,7 @@ object model extends ModuleWithTests {
   override def ivyDeps = {
     Agg(
       Libs.zio,
-   //   Libs.zioMacros,
-      Libs.scalaXml,
+      //   Libs.zioMacros,
       Libs.zioLogging
     )
   }
@@ -164,7 +167,9 @@ object config extends ModuleWithTests {
   }
 }
 
-object camunda extends ModuleWithTests {
+object camunda
+  extends ModuleWithTests
+    with BuildInfo {
 
   override def moduleDeps = Seq(model, config, app)
 
@@ -175,7 +180,21 @@ object camunda extends ModuleWithTests {
       Libs.camundaWeb,
       Libs.camundaRest,
       Libs.h2,
-      Libs.postgres
+      Libs.postgres,
+      Libs.scalaXml
+    )
+  }
+
+  override def buildInfoPackageName: Option[String] = Some("pme123.camundala")
+
+  override def buildInfoMembers: T[Map[String, String]] = T {
+    Map(
+      "name" -> "camundala",
+      "version" -> publishVersion(),
+     // "modelClasspath" -> model.ivyDeps().map((x: Dep) => s"${x.dep.module.orgName}").mkString("::"),
+      "scalaVersion" -> scalaVersion(),
+      "modelClasspath" -> model.runClasspath().map(pr => pr.path.toNIO.toString).mkString("::"),
+      "scalacOptions" -> scalacOptions().mkString("::")
     )
   }
 }
@@ -224,12 +243,12 @@ object app extends CamundalaModule {
 object examples extends mill.Module {
 
   trait ExampleModule extends ModuleWithTests {
-    override def moduleDeps:  Seq[JavaModule with PublishModule] = Seq(services, cli)
+    override def moduleDeps: Seq[JavaModule with PublishModule] = Seq(services, cli)
   }
 
   object twitter extends ExampleModule {
 
-    override def moduleDeps:  Seq[JavaModule with PublishModule] = super.moduleDeps ++ Seq(twitterApi)
+    override def moduleDeps: Seq[JavaModule with PublishModule] = super.moduleDeps ++ Seq(twitterApi)
 
     override def mainClass = Some("pme123.camundala.examples.twitter.TwitterApp")
 

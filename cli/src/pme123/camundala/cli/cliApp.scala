@@ -55,12 +55,12 @@ object cliApp {
               .map(_ => Deployments())
           }
 
-        def command(runningApp: Fiber.Runtime[Throwable, Unit]) = Command[Task[ExitCode]]("", "CLI for Camunda")(
+        lazy val command = Command[Task[ExitCode]]("", "CLI for Camunda")(
           (validateBpmnOpts orElse deployBpmnOpts orElse deploymentsOpts).map {
             case ValidateBpmn(bpmnId) =>
               validateBpmn(bpmnId)
             case DeployBpmn(deployId) =>
-              deployBpmn(deployId, runningApp)
+              deployBpmn(deployId)
             case Deployments() =>
               (for {
                 results <- deployService.deployments()
@@ -79,10 +79,9 @@ object cliApp {
             .catchAll(printError(_, "Validation failed:"))
         }
 
-        def deployBpmn(deployId: String, runningApp: Fiber.Runtime[Throwable, Unit]) = {
+        def deployBpmn(deployId: String) = {
           (for {
-            _ <- runningApp.interrupt
-            _ <- runningApp.getRef()
+            _ <- appRunner.update()
             maybeDeploy <- deployReg.requestDeploy(deployId)
             results <-
               if (maybeDeploy.isEmpty)
@@ -112,10 +111,10 @@ object cliApp {
             ZIO.succeed(ExitCode.Error)
         }
 
-        def cliRunner(runningApp: Fiber.Runtime[Throwable, Unit]) = intro *>
+        lazy val cliRunner = intro *>
           (for {
             input <- console.getStrLn
-            _ <- CommandIOApp.run(command(runningApp), input.split(" ").toList)
+            _ <- CommandIOApp.run(command, input.split(" ").toList)
           } yield ())
             .tapError(e => console.putStrLn(s"Error: $e"))
             .forever
@@ -129,7 +128,7 @@ object cliApp {
           f <- appRunner.run().fork
           _ <-  printProject(projectInfo)
           _ <- ZIO.effect(Thread.sleep(10000))
-          d <-  cliRunner(f)
+          d <-  cliRunner
         } yield d
 
     }

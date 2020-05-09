@@ -15,6 +15,8 @@ object StandaloneCli
     } yield 0)
       .provideCustomLayer((Console.live ++ bpmnServiceLayer ++ deployRegisterLayer ++ deploymentServiceLayer ++ ZLayer.succeed(new appRunner.Service {
         override def run(): Task[Unit] = ???
+
+        override def update(): Task[Unit] = ???
       })) >>> cliApp.live)
       .catchAll(e => console.putStrLn(s"ERROR: $e").as(1))
 }

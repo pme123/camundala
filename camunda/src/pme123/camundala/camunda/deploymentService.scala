@@ -64,7 +64,7 @@ object deploymentService {
           def deploy(bpmn: Bpmn): Task[DeployResult] =
             for {
               mergeResult <- bpmnServ.mergeBpmn(bpmn.id)
-              xml <- bpmn.xml.xml
+              xml <- StreamHelper.xml(bpmn.xml)
               deployment <- processEngineService.deploy(DeployRequest(Some(bpmn.id),
                 source = Some("Camundala Deployer"),
                 deployFiles = HashSet(DeployFile(bpmn.xml.fileName, xml.toString().getBytes().toVector))), Seq(mergeResult))
