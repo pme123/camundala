@@ -1,12 +1,18 @@
 package pme123.camundala.camunda
 
+import java.io.InputStreamReader
+import java.nio.file.Path
+
+import javax.script.ScriptEngineManager
 import org.springframework.boot.SpringApplication
 import org.springframework.context.ConfigurableApplicationContext
-import zio.{ZIO, ZManaged}
+import pme123.camundala.model.deploy.Deploys
 import zio.console.Console
+import zio.{Managed, Task, UIO, ZIO, ZManaged}
+
+import scala.io.Source
 
 trait ZSpringApp extends zio.App {
-
 
   /**
     * create SpringApplication as a ZManaged Resource.

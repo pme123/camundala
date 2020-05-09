@@ -3,16 +3,16 @@ import mill._
 import mill.scalalib._
 import mill.scalalib.publish.{Developer, License, PomSettings, VersionControl}
 import $ivy.`com.lihaoyi::mill-contrib-buildinfo:$MILL_VERSION`
-import camunda.{publishVersion, scalaVersion}
 import mill.contrib.buildinfo.BuildInfo
 
 import scala.io.Source
 
 object Version {
+  val versionSource = Source.fromFile("./version")
+  val projectVersion = versionSource.getLines().next()
   val scalaVersion = "2.13.2"
 
   // model
-  val scalaXml = "1.3.0"
   val zio = "1.0.0-RC18-2" //+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT" //"
   //val zioMacros = "1.0.0-RC18-2+99-bb2ded5f-SNAPSHOT"//"
   val zioLogging = "0.2.7"
@@ -30,6 +30,7 @@ object Version {
   val camundaSpringBoot = "3.4.2"
   val h2 = "1.4.200"
   val postgres = "42.2.8"
+  val scalaXml = "1.3.0"
 
   // cli
   val decline = "1.2.0"
@@ -42,7 +43,6 @@ object Version {
 
 object Libs {
   // model
-  val scalaXml = ivy"org.scala-lang.modules::scala-xml:${Version.scalaXml}"
   val zio = ivy"dev.zio::zio:${Version.zio}"
   val zioLogging = ivy"dev.zio::zio-logging:${Version.zioLogging}"
 
@@ -58,7 +58,7 @@ object Libs {
   val camundaRest = ivy"org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:${Version.camundaSpringBoot}"
   val h2 = ivy"com.h2database:h2:${Version.h2}"
   val postgres = ivy"org.postgresql:postgresql:${Version.postgres}"
-  val scalaCompiler = ivy"org.scala-lang:scala-compiler:${Version.scalaVersion}"
+  val scalaXml = ivy"org.scala-lang.modules::scala-xml:${Version.scalaXml}"
 
   // services
   val zioCats = ivy"dev.zio::zio-interop-cats:${Version.zioCats}"
@@ -87,9 +87,10 @@ trait CamundalaModule
   extends ScalaModule
     with PublishModule {
   val scalaVersion = Version.scalaVersion
-  val versionSource = Source.fromFile("./version")
-  val publishVersion = versionSource.getLines().next()
+  val publishVersion = Version.projectVersion
 
+
+  override def artifactName = s"camundala-${super.artifactName()}"
 
   override def scalacOptions =
     defaultScalaOpts
@@ -189,12 +190,12 @@ object camunda
 
   override def buildInfoMembers: T[Map[String, String]] = T {
     Map(
-      "name" -> "camundala",
+      "name" -> artifactName(),
+      "organization" -> pomSettings().organization,
+      "license" -> pomSettings().licenses.head.id,
       "version" -> publishVersion(),
-     // "modelClasspath" -> model.ivyDeps().map((x: Dep) => s"${x.dep.module.orgName}").mkString("::"),
-      "scalaVersion" -> scalaVersion(),
-      "modelClasspath" -> model.runClasspath().map(pr => pr.path.toNIO.toString).mkString("::"),
-      "scalacOptions" -> scalacOptions().mkString("::")
+      "url" -> pomSettings().url,
+      "scalaVersion" -> scalaVersion()
     )
   }
 }

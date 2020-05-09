@@ -2,13 +2,22 @@ package pme123.camundala.camunda
 
 import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
 import pme123.camundala.model.bpmn._
+import zio.{Task, UIO, ZIO, ZManaged}
 
 import scala.collection.immutable.HashSet
 import scala.io.{BufferedSource, Source}
+import scala.xml.{Elem, XML}
 
 object TestData {
 
-  val bpmnResource: BufferedSource = Source.fromResource("bpmn/TwitterDemoProcess.bpmn")
+  lazy val bpmnXmlTask: Task[Elem] = {
+    for {
+      bpmnResource <- ZIO.effect(Source.fromResource("bpmn/TwitterDemoProcess.bpmn"))
+      bpmnXml <- ZManaged.make(UIO(bpmnResource.reader()))(r => UIO(r.close()))
+        .use(r => ZIO.effect(XML.load(r)))
+    } yield bpmnXml
+
+  }
 
   val twitterProcess: BpmnProcess = BpmnProcess("TwitterDemoProcess",
     List(

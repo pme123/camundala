@@ -7,19 +7,22 @@ import pme123.camundala.model.bpmn.bpmnRegister
 import zio.test.Assertion._
 import zio.test._
 import zio.test.junit.ZTestJUnitRunner
+import zio.{Task, UIO, ZIO, ZManaged}
 
 import scala.xml._
 
 @RunWith(classOf[ZTestJUnitRunner])
 object BpmnServiceSuite extends DefaultRunnableSpec {
-import TestData._
+
+  import TestData._
 
   def spec: ZSpec[environment.TestEnvironment, Any] =
     suite("BpmnSuite")(
       testM("the BPMN Model is merged") {
         for {
+          bpmnXml <- bpmnXmlTask
           _ <- bpmnRegister.registerBpmn(bpmn)
-          mergeResult <- bpmnService.mergeBpmn("TwitterDemoProcess.bpmn", XML.load(bpmnResource.reader()))
+          mergeResult <- bpmnService.mergeBpmn("TwitterDemoProcess.bpmn", bpmnXml)
           userTasks = mergeResult.xmlElem \\ "userTask"
           serviceTasks = mergeResult.xmlElem \\ "serviceTask"
           sendTasks = mergeResult.xmlElem \\ "sendTask"
@@ -50,11 +53,12 @@ import TestData._
         }
       },
       testM("Validate a BPMN") {
-        for{
+        for {
           _ <- bpmnRegister.registerBpmn(bpmn)
           valWarns <- bpmnService.validateBpmn("TwitterDemoProcess.bpmn")
-        }yield
+        } yield
           assert(valWarns.value.size)(equalTo(2))
       }
     ).provideCustomLayer(((bpmnRegister.live >>> bpmnService.live) ++ bpmnRegister.live).mapError(TestFailure.fail))
+
 }

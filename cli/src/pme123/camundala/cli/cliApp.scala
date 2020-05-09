@@ -111,7 +111,7 @@ object cliApp {
             ZIO.succeed(ExitCode.Error)
         }
 
-        lazy val cliRunner = intro *>
+        lazy val cliRunner =
           (for {
             input <- console.getStrLn
             _ <- CommandIOApp.run(command, input.split(" ").toList)
@@ -125,9 +125,9 @@ object cliApp {
 
         (projectInfo: ProjectInfo) =>
         for{
-          f <- appRunner.run().fork
-          _ <-  printProject(projectInfo)
+          _ <- appRunner.run().fork
           _ <- ZIO.effect(Thread.sleep(10000))
+          _ <- intro *> printProject(projectInfo)
           d <-  cliRunner
         } yield d
 
