@@ -39,6 +39,7 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
           startEventProp = startEvents \\ "property"
           exclusiveGatewayProp = exclusiveGateways.head \\ "property"
           sequenceFlowProps = mergeResult.xmlElem \\ "sequenceFlow" \\ "property"
+          sequenceFlowConditionals = mergeResult.xmlElem \\ "sequenceFlow" \\ "conditionExpression"
 
         } yield {
           assert(mergeResult.warnings.value.length)(equalTo(12) ?? "warnings") &&
@@ -57,7 +58,8 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
             assert(exclusiveGatewayProp.length)(equalTo(1) ?? "exclusiveGatewayProp") &&
             assert(delegateExpression)(isSome(equalTo("#{emailAdapter}"))) &&
             assert(externalTask)(isSome(equalTo("myTopic"))) &&
-          assert(sequenceFlowProps.length)(equalTo(2) ?? "sequenceFlow Properties count")
+            assert(sequenceFlowProps.length)(equalTo(2) ?? "sequenceFlow Properties count") &&
+            assert(sequenceFlowConditionals.length)(equalTo(2) ?? "sequenceFlow Conditionals count")
         }
       },
       testM("Validate a BPMN") {
@@ -65,7 +67,7 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
           _ <- bpmnRegister.registerBpmn(bpmn)
           valWarns <- bpmnService.validateBpmn("TwitterDemoProcess.bpmn")
         } yield
-          assert(valWarns.value.size)(equalTo(12) ?? "warningsv")
+          assert(valWarns.value.size)(equalTo(12) ?? "warnings")
       }
     ).provideCustomLayer(((bpmnRegister.live >>> bpmnService.live) ++ bpmnRegister.live).mapError(TestFailure.fail))
 

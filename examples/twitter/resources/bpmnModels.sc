@@ -1,3 +1,4 @@
+import pme123.camundala.model.bpmn.ConditionExpression.Expression
 import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
@@ -29,8 +30,10 @@ val bpmns: Set[Bpmn] =
         )
         ),
         sequenceFlows = List(SequenceFlow("yes",
+          Some(Expression("#{approved}")),
           Extensions(Map("probability" -> "87"))
         ), SequenceFlow("no",
+          Some(Expression("#{!approved}")),
           Extensions(Map("probability" -> "13"))
         ))
       ))

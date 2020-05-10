@@ -1,5 +1,6 @@
 package pme123.camundala.camunda
 
+import pme123.camundala.model.bpmn.ConditionExpression.Expression
 import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
@@ -43,8 +44,10 @@ object TestData {
     )
     ),
     sequenceFlows = List(SequenceFlow("yes",
+      Some(Expression("#{approved}")),
       Extensions(Map("probability" -> "87"))
     ), SequenceFlow("no",
+      Some(Expression("#{!approved}")),
       Extensions(Map("probability" -> "13"))
     ))
   )

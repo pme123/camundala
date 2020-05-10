@@ -9,6 +9,8 @@ Doing Camunda with Scala.
 * **Separate Business Modelling from technical implementation.**
   * The Business Model contains only the business relevant stuff - no mappings etc.
   * The Implementation Model is generated from the Business Model and the technical Implementation - this is the Scala part.
+* **Provide a Type-Safe way to model a BPMN Process.**
+* **Use whenever possible Scala as the Type-Safe language.**
 
 ## Buildtool Mill
 This Project uses [Mill](https://github.com/lihaoyi/mill), the most fun build tool I know.
