@@ -61,6 +61,9 @@ case class XBpmnProcess(xmlElem: Elem)
   val parallelGateways: Seq[XParallelGateway[ParallelGateway]] =
     (xmlElem \ "parallelGateway").map { case e: Elem => XParallelGateway[ParallelGateway](e) }
 
+  val sequenceFlows: Seq[XSequenceFlow[SequenceFlow]] =
+    (xmlElem \ "sequenceFlow").map { case e: Elem => XSequenceFlow[SequenceFlow](e) }
+
   def merge(maybeProcess: Option[BpmnProcess]): Task[XMergeResult] =
     maybeProcess match {
       case None =>
@@ -72,9 +75,9 @@ case class XBpmnProcess(xmlElem: Elem)
           XMergeResult(xmlStartEvent, warningsStartEvent) <- mergeExtensionable(xmlService, p.startEventMap, startEvents, "StartEvent")
           XMergeResult(xmlExclusiveGateway, warningsExclusiveGateway) <- mergeExtensionable(xmlStartEvent, p.exclusiveGatewayMap, exclusiveGateways, "ExclusiveGateway")
           XMergeResult(xmlParallelGateway, warningsParallelGateway) <- mergeExtensionable(xmlExclusiveGateway, p.parallelGatewayMap, parallelGateways, "ParallelGateway")
-
+          XMergeResult(xmlSequenceFlow, warningsSequenceFlow) <- mergeExtensionable(xmlParallelGateway, p.sequenceFlowMap, sequenceFlows, "SequenceFlow")
         } yield
-          XMergeResult(xmlParallelGateway, warningsUser ++ warningsService ++ warningsStartEvent ++ warningsExclusiveGateway ++ warningsParallelGateway)
+          XMergeResult(xmlSequenceFlow, warningsUser ++ warningsService ++ warningsStartEvent ++ warningsExclusiveGateway ++ warningsParallelGateway ++ warningsSequenceFlow)
     }
 
 
@@ -105,6 +108,8 @@ trait XBpmnNode[T <: Extensionable]
     case (Some(extensionable), nodeElem: Elem) =>
       val propElem = nodeElem \\ "property"
       val propParams = propElem.map(_ \@ "name")
+      val child = nodeElem.child
+      val otherChild = child.filter(_.label != "extensionElements")
       val xmlElem: Elem =
         nodeElem.copy(
           child = <extensionElements xmlns:camunda={xmlnsCamunda} xmlns={xmlnsBpmn}>
@@ -116,6 +121,7 @@ trait XBpmnNode[T <: Extensionable]
               propElem}
             </camunda:properties>
           </extensionElements>
+          ++ otherChild
         )
       XMergeResult(xmlElem, ValidateWarnings.none)
     case (Some(_), _) =>

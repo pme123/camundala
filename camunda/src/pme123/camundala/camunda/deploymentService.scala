@@ -57,6 +57,7 @@ object deploymentService {
           def deploy(request: DeployRequest): Task[DeployResult] =
             for {
               mergeResults <- mergeDeployFiles(request.deployFiles)
+              _ = println(mergeResults)
               deployment <- processEngineService.deploy(request, mergeResults)
               deployResult = DeployResult(deployment.getId, deployment.getName,
                 deployment.getDeploymentTime.toString,

@@ -23,6 +23,8 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
           bpmnXml <- bpmnXmlTask
           _ <- bpmnRegister.registerBpmn(bpmn)
           mergeResult <- bpmnService.mergeBpmn("TwitterDemoProcess.bpmn", bpmnXml)
+          _ = println(s"BPMN XML ${mergeResult.xmlElem}")
+          _ = println(s"BPMN WARNINGS ${mergeResult.warnings.value.mkString("\n")}")
           userTasks = mergeResult.xmlElem \\ "userTask"
           userTaskForm = XQualifier.camunda("formKey").extractFrom(userTasks.head)
           serviceTasks = mergeResult.xmlElem \\ "serviceTask"
@@ -36,8 +38,10 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
           serviceTaskProp = serviceTasks.head \\ "property"
           startEventProp = startEvents \\ "property"
           exclusiveGatewayProp = exclusiveGateways.head \\ "property"
+          sequenceFlowProps = mergeResult.xmlElem \\ "sequenceFlow" \\ "property"
+
         } yield {
-          assert(mergeResult.warnings.value.length)(equalTo(2) ?? "warnings") &&
+          assert(mergeResult.warnings.value.length)(equalTo(12) ?? "warnings") &&
             assert(mergeResult.warnings.value.head.msg)(equalTo("You have 2 ExclusiveGateway in the XML-Model, but you have 1 in Scala")) &&
             assert(mergeResult.warnings.value(1).msg)(equalTo("There is NOT a ExclusiveGateway with id 'gateway_join' in Scala.")) &&
             assert(userTasks.size)(equalTo(1) ?? "userTasks") &&
@@ -52,7 +56,8 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
             assert(exclusiveGateways.length)(equalTo(2) ?? "exclusiveGateways") &&
             assert(exclusiveGatewayProp.length)(equalTo(1) ?? "exclusiveGatewayProp") &&
             assert(delegateExpression)(isSome(equalTo("#{emailAdapter}"))) &&
-            assert(externalTask)(isSome(equalTo("myTopic")))
+            assert(externalTask)(isSome(equalTo("myTopic"))) &&
+          assert(sequenceFlowProps.length)(equalTo(2) ?? "sequenceFlow Properties count")
         }
       },
       testM("Validate a BPMN") {
@@ -60,7 +65,7 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
           _ <- bpmnRegister.registerBpmn(bpmn)
           valWarns <- bpmnService.validateBpmn("TwitterDemoProcess.bpmn")
         } yield
-          assert(valWarns.value.size)(equalTo(2))
+          assert(valWarns.value.size)(equalTo(12) ?? "warningsv")
       }
     ).provideCustomLayer(((bpmnRegister.live >>> bpmnService.live) ++ bpmnRegister.live).mapError(TestFailure.fail))
 

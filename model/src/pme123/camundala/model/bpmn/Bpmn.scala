@@ -15,7 +15,8 @@ case class BpmnProcess(id: String,
                        sendTasks: Seq[SendTask] = Seq.empty,
                        startEvents: Seq[StartEvent] = Seq.empty,
                        exclusiveGateways: Seq[ExclusiveGateway] = Seq.empty,
-                       parallelGateways: Seq[ParallelGateway] = Seq.empty
+                       parallelGateways: Seq[ParallelGateway] = Seq.empty,
+                       sequenceFlows: Seq[SequenceFlow] = Seq.empty,
                       ) {
   def staticFiles: Set[StaticFile] =
     userTasks.flatMap(_.staticFiles).toSet ++
@@ -27,6 +28,7 @@ case class BpmnProcess(id: String,
   lazy val startEventMap: Map[String, StartEvent] = startEvents.map(e => e.id -> e).toMap
   lazy val exclusiveGatewayMap: Map[String, ExclusiveGateway] = exclusiveGateways.map(g => g.id -> g).toMap
   lazy val parallelGatewayMap: Map[String, ParallelGateway] = parallelGateways.map(g => g.id -> g).toMap
+  lazy val sequenceFlowMap: Map[String, SequenceFlow] = sequenceFlows.map(g => g.id -> g).toMap
 
 }
 

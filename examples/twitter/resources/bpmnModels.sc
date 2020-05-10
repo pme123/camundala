@@ -28,6 +28,11 @@ val bpmns: Set[Bpmn] =
           Extensions(Map("KPI-Cycle-End" -> "Tweet Approval Time"))
         )
         ),
+        sequenceFlows = List(SequenceFlow("yes",
+          Extensions(Map("probability" -> "87"))
+        ), SequenceFlow("no",
+          Extensions(Map("probability" -> "13"))
+        ))
       ))
   ))
 

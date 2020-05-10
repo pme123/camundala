@@ -43,25 +43,17 @@
     <sequenceFlow id="SequenceFlow_3" name="" sourceRef="service_task_publish_on_twitter" targetRef="gateway_join" />
     <sequenceFlow id="SequenceFlow_5" name="" sourceRef="gateway_join" targetRef="end_event_tweet_handled" />
     <sequenceFlow id="yes" name="yes" sourceRef="gateway_approved" targetRef="service_task_publish_on_twitter">
-      <extensionElements>
-        <camunda:properties>
-          <camunda:property name="probability" value="87" />
-        </camunda:properties>
-      </extensionElements>
       <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_2">#{approved}</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="no" name="no	" sourceRef="gateway_approved" targetRef="service_task_send_rejection_notification">
-      <extensionElements>
-        <camunda:properties>
-          <camunda:property name="probability" value="13" />
-        </camunda:properties>
-      </extensionElements>
       <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_1">#{!approved}</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="SequenceFlow_4" name="" sourceRef="service_task_send_rejection_notification" targetRef="gateway_join" />
   </process>
   <process id="TestDemoProcess" name="TestDemoProcess" isExecutable="true">
-    <sequenceFlow id="SequenceFlow_0u2afzo" sourceRef="external-task-example" targetRef="send-task-example" />
+    <sequenceFlow id="SequenceFlow_0u2afzo" sourceRef="external-task-example" targetRef="send-task-example">
+      <conditionExpression xsi:type="tFormalExpression" language=""></conditionExpression>
+    </sequenceFlow>
     <startEvent id="startEvent">
       <outgoing>SequenceFlow_18o60le</outgoing>
     </startEvent>
