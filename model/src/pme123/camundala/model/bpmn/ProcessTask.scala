@@ -25,7 +25,11 @@ case class SendTask(id: String,
 
 trait HasForm
   extends ProcessTask {
+
   def maybeForm: Option[UserTaskForm]
+
+  def staticFiles: Set[StaticFile] = maybeForm.toSet[UserTaskForm].flatMap(_.staticFiles)
+
 }
 
 case class UserTask(id: String,
@@ -33,6 +37,9 @@ case class UserTask(id: String,
                     extensions: Extensions = Extensions.none
                    )
   extends ProcessTask
-    with HasForm
+    with HasForm {
+
+
+}
 
 

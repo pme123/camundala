@@ -3,8 +3,9 @@ package pme123.camundala.model.bpmn
 case class Bpmn(id: String,
                 xml: StaticFile,
                 processes: Seq[BpmnProcess],
-                staticFiles: Set[StaticFile]) {
+               ) {
   lazy val processMap: Map[String, BpmnProcess] = processes.map(p => p.id -> p).toMap
+  def staticFiles: Set[StaticFile] = processes.flatMap(_.staticFiles).toSet
 }
 
 case class BpmnProcess(id: String,
@@ -15,6 +16,8 @@ case class BpmnProcess(id: String,
                        exclusiveGateways: Seq[ExclusiveGateway] = Seq.empty,
                        parallelGateways: Seq[ParallelGateway] = Seq.empty
                       ) {
+  def staticFiles: Set[StaticFile] = userTasks.flatMap(_.staticFiles).toSet
+
   lazy val userTaskMap: Map[String, UserTask] = userTasks.map(t => t.id -> t).toMap
   lazy val serviceTaskMap: Map[String, ServiceTask] = serviceTasks.map(t => t.id -> t).toMap
   lazy val sendTaskMap: Map[String, SendTask] = sendTasks.map(t => t.id -> t).toMap

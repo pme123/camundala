@@ -66,9 +66,5 @@ object TestData {
     List(
       twitterProcess,
       testProcess
-    ),
-    HashSet(
-      StaticFile("createTweet.html", "bpmn/static/forms"),
-      StaticFile("reviewTweet.html", "bpmn/static/forms")
     ))
 }
