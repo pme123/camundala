@@ -24,9 +24,11 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
           _ <- bpmnRegister.registerBpmn(bpmn)
           mergeResult <- bpmnService.mergeBpmn("TwitterDemoProcess.bpmn", bpmnXml)
           userTasks = mergeResult.xmlElem \\ "userTask"
+          userTaskForm = XQualifier.camunda("formKey").extractFrom(userTasks.head)
           serviceTasks = mergeResult.xmlElem \\ "serviceTask"
           sendTasks = mergeResult.xmlElem \\ "sendTask"
           startEvents = mergeResult.xmlElem \\ "startEvent"
+          startEventForm = XQualifier.camunda("formKey").extractFrom(startEvents.head)
           exclusiveGateways = mergeResult.xmlElem \\ "exclusiveGateway"
           userTaskProps = userTasks.head \\ "property"
           delegateExpression = XQualifier.camunda(XmlHelper.delegateExpression).extractFrom(serviceTasks.head)
@@ -39,17 +41,18 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
             assert(mergeResult.warnings.value.head.msg)(equalTo("You have 2 ExclusiveGateway in the XML-Model, but you have 1 in Scala")) &&
             assert(mergeResult.warnings.value(1).msg)(equalTo("There is NOT a ExclusiveGateway with id 'gateway_join' in Scala.")) &&
             assert(userTasks.size)(equalTo(1) ?? "userTasks") &&
+            assert(userTaskForm)(isSome(equalTo("embedded:deployment:static/forms/reviewTweet.html"))) &&
             assert(userTaskProps.length)(equalTo(3) ?? "userTaskProps") &&
             assert(serviceTasks.length)(equalTo(3) ?? "serviceTasks") &&
             assert(sendTasks.length)(equalTo(1) ?? "sendTasks") &&
             assert(serviceTaskProp.length)(equalTo(1) ?? "serviceTaskProp") &&
             assert(startEvents.length)(equalTo(2) ?? "startEvents") &&
+            assert(startEventForm)(isSome(equalTo("embedded:deployment:static/forms/createTweet.html"))) &&
             assert(startEventProp.length)(equalTo(1) ?? "startEventProp") &&
             assert(exclusiveGateways.length)(equalTo(2) ?? "exclusiveGateways") &&
             assert(exclusiveGatewayProp.length)(equalTo(1) ?? "exclusiveGatewayProp") &&
             assert(delegateExpression)(isSome(equalTo("#{emailAdapter}"))) &&
             assert(externalTask)(isSome(equalTo("myTopic")))
-
         }
       },
       testM("Validate a BPMN") {

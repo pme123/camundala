@@ -8,6 +8,7 @@ object XmlHelper {
   val camundaPrefix = "camunda"
 
   val delegateExpression = "delegateExpression"
+  val formKey = "formKey"
 
   def elementUnapply(n: Node, qual: XQualifier): Option[Elem] = n match {
     case e: Elem if XQualifier(e) == qual => Some(e)

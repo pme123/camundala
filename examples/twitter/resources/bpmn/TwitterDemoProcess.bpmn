@@ -29,11 +29,6 @@
       <outgoing>SequenceFlow_9</outgoing>
     </startEvent>
     <userTask id="user_task_review_tweet" name="Review Tweet" camunda:formKey="embedded:deployment:static/forms/reviewTweet.html" camunda:assignee="kermit">
-      <extensionElements>
-        <camunda:properties>
-          <camunda:property name="manualProp" value="hello" />
-        </camunda:properties>
-      </extensionElements>
       <incoming>SequenceFlow_9</incoming>
       <outgoing>SequenceFlow_2</outgoing>
     </userTask>

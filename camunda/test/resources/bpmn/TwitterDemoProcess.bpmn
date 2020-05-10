@@ -26,10 +26,10 @@
     <endEvent id="end_event_tweet_handled" name="Tweet handled">
       <incoming>SequenceFlow_5</incoming>
     </endEvent>
-    <startEvent id="start_event_new_tweet" name="Tweet written" camunda:formKey="embedded:deployment:static/forms/createTweet.html" camunda:initiator="initiator">
+    <startEvent id="start_event_new_tweet" name="Tweet written" camunda:initiator="initiator">
       <outgoing>SequenceFlow_9</outgoing>
     </startEvent>
-    <userTask id="user_task_review_tweet" name="Review Tweet" camunda:formKey="embedded:deployment:static/forms/reviewTweet.html" camunda:assignee="kermit">
+    <userTask id="user_task_review_tweet" name="Review Tweet" camunda:assignee="kermit">
       <extensionElements>
         <camunda:properties>
           <camunda:property name="manualProp" value="hello" />

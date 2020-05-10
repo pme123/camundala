@@ -3,10 +3,10 @@ package pme123.camundala.camunda.xml
 import pme123.camundala.camunda.xml.XmlHelper.XQualifier._
 import pme123.camundala.camunda.xml.XmlHelper._
 import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
+import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
 import zio.{Task, UIO}
 
-import scala.xml.transform.{RewriteRule, RuleTransformer}
 import scala.xml.{Attribute, Elem, Node, Null}
 
 sealed trait XProcessTask[T <: ProcessTask]
@@ -23,29 +23,14 @@ trait XImplementationTask[T <: ImplementationTask]
              .map(_.implementation)
              .map {
                case DelegateExpression(expresssion) =>
-                 rewrite(xml, Attribute(camundaPrefix, delegateExpression, expresssion, Null))
+                 xml % Attribute(camundaPrefix, delegateExpression, expresssion, Null)
                case ExternalTask(topic) =>
-                 rewrite(xml, Attribute(camundaPrefix, "topic", topic,
-                   Attribute(camundaPrefix, "type", "external", Null)))
+                 xml % Attribute(camundaPrefix, "topic", topic,
+                   Attribute(camundaPrefix, "type", "external", Null))
              }.getOrElse(xml)
            XMergeResult(newElem, warnings)
          }
          } yield result
-
-  private def rewrite(xml: Elem, attribute: Attribute) = {
-    val rule: RewriteRule = new RewriteRule {
-      override def transform(n: Node): Node = n match {
-        case XServiceTask(e) => e % attribute
-        case XSendTask(e) => e % attribute
-        case _ => n
-      }
-    }
-    new RuleTransformer(rule).transform(xml).toList match {
-      case (e: Elem) :: _ => e
-      case _ => xml
-    }
-  }
-
 }
 
 case class XServiceTask[T <: ServiceTask](xmlElem: Elem)
@@ -69,8 +54,29 @@ object XSendTask {
   def unapply(node: Node): Option[Elem] = elementUnapply(node, bpmn("sendTask"))
 }
 
+trait XHasForm[T <: HasForm]
+  extends XBpmnNode[T] {
+  override def merge(maybeNode: Option[T]): Task[XMergeResult] =
+    for {XMergeResult(xml, warnings) <- super.merge(maybeNode)
+         result <- UIO.succeed {
+           val newElem = maybeNode
+             .flatMap(_.maybeForm)
+             .map {
+               case EmbeddedDeploymentForm(staticFile) =>
+                 xml % Attribute(camundaPrefix, formKey, s"embedded:deployment:${staticFile.fileName}", Null)
+               case _ => xml
+             }.getOrElse(xml)
+           XMergeResult(newElem, warnings)
+         }
+         } yield result
+  }
+
 case class XUserTask[T <: UserTask](xmlElem: Elem)
-  extends XProcessTask[T] {
+  extends XProcessTask[T]
+with XHasForm[T] {
   val tagName = "UserTask"
+
+
+
 }
 

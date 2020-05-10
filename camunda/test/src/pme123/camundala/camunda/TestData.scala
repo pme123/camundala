@@ -1,6 +1,7 @@
 package pme123.camundala.camunda
 
 import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
+import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
 import zio.{Task, UIO, ZIO, ZManaged}
 
@@ -21,7 +22,9 @@ object TestData {
 
   val twitterProcess: BpmnProcess = BpmnProcess("TwitterDemoProcess",
     List(
+      //embedded:deployment:static/forms/reviewTweet.html
       UserTask("user_task_review_tweet",
+        Some(EmbeddedDeploymentForm(StaticFile("static/forms/reviewTweet.html", "bpmn"))),
         Extensions(Map("durationMean" -> "10000", "durationSd" -> "5000")))),
     List(
       ServiceTask("service_task_send_rejection_notification",
@@ -32,6 +35,7 @@ object TestData {
         Extensions(Map("KPI-Ratio" -> "Tweet Approved")))
     ),
     startEvents = List(StartEvent("start_event_new_tweet",
+      Some(EmbeddedDeploymentForm(StaticFile("static/forms/createTweet.html", "bpmn"))),
       Extensions(Map("KPI-Cycle-Start" -> "Tweet Approval Time"))
     )),
     exclusiveGateways = List(ExclusiveGateway("gateway_approved",

@@ -23,8 +23,16 @@ case class SendTask(id: String,
   extends ProcessTask
     with ImplementationTask
 
+trait HasForm
+  extends ProcessTask {
+  def maybeForm: Option[UserTaskForm]
+}
+
 case class UserTask(id: String,
+                    maybeForm: Option[UserTaskForm] = None,
                     extensions: Extensions = Extensions.none
                    )
   extends ProcessTask
+    with HasForm
+
 
