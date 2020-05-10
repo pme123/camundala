@@ -5,6 +5,7 @@ case class Bpmn(id: String,
                 processes: Seq[BpmnProcess],
                ) {
   lazy val processMap: Map[String, BpmnProcess] = processes.map(p => p.id -> p).toMap
+
   def staticFiles: Set[StaticFile] = processes.flatMap(_.staticFiles).toSet
 }
 
@@ -16,7 +17,9 @@ case class BpmnProcess(id: String,
                        exclusiveGateways: Seq[ExclusiveGateway] = Seq.empty,
                        parallelGateways: Seq[ParallelGateway] = Seq.empty
                       ) {
-  def staticFiles: Set[StaticFile] = userTasks.flatMap(_.staticFiles).toSet
+  def staticFiles: Set[StaticFile] =
+    userTasks.flatMap(_.staticFiles).toSet ++
+      startEvents.flatMap(_.staticFiles)
 
   lazy val userTaskMap: Map[String, UserTask] = userTasks.map(t => t.id -> t).toMap
   lazy val serviceTaskMap: Map[String, ServiceTask] = serviceTasks.map(t => t.id -> t).toMap

@@ -2,11 +2,12 @@ package pme123.camundala.camunda
 
 import java.io.ByteArrayInputStream
 
-import org.camunda.bpm.engine.ProcessEngine
+import org.camunda.bpm.engine.{ProcessEngine, RepositoryService}
 import org.camunda.bpm.engine.repository.{Deployment, DeploymentBuilder}
 import pme123.camundala.camunda.xml.MergeResult
 import pme123.camundala.model.bpmn.{CamundalaException, StaticFile}
 import zio._
+
 import scala.jdk.CollectionConverters._
 import StreamHelper._
 /**
@@ -20,11 +21,16 @@ object processEngineService {
   trait Service {
     def deploy(deployRequest: DeployRequest, mergeResults: Seq[MergeResult]): Task[Deployment]
 
+    def undeploy(deployId: String): Task[Unit]
+
     def deployments(): Task[Seq[Deployment]]
   }
 
   def deploy(deployRequest: DeployRequest, mergeResults: Seq[MergeResult]): RIO[ProcessEngineService, Deployment] =
     ZIO.accessM(_.get.deploy(deployRequest, mergeResults))
+
+  def undeploy(deployId: String): RIO[ProcessEngineService, Unit] =
+    ZIO.accessM(_.get.undeploy(deployId))
 
   def deployments(): RIO[ProcessEngineService, Seq[Deployment]] =
     ZIO.accessM(_.get.deployments())
@@ -36,13 +42,15 @@ object processEngineService {
   lazy val live: RLayer[ProcessEngineServiceDeps, ProcessEngineService] =
     ZLayer.fromService[() => ProcessEngine, Service] { processEngine =>
       new Service {
+        private lazy val repoService: RepositoryService = processEngine().getRepositoryService
+
         def deploy(request: DeployRequest, mergeResults: Seq[MergeResult]): Task[Deployment] =
           for {
             name <- ZIO.fromOption(request.name)
               .catchAll(_ => ZIO.fail(ProcessEngineException("The deployment name must be set.")))
             builder <-
               ZIO.effect(
-                processEngine().getRepositoryService.createDeployment
+                repoService.createDeployment
                   .name(name)
                   .obtValue((b, v: String) => b.source(v), request.source)
                   .obtValue((b, v: String) => b.tenantId(v), request.tenantId)
@@ -53,14 +61,22 @@ object processEngineService {
             deployment <- ZIO.effect(builder.deploy())
           } yield deployment
 
+        def undeploy(deployId: String): Task[Unit] =
+          ZIO.effect(
+            repoService.createDeploymentQuery()
+              .deploymentName(deployId)
+              .list()
+              .asScala
+              .foreach(d => repoService.deleteDeployment(d.getId, true))
+          )
+
         def deployments(): Task[Seq[Deployment]] =
           ZIO.effect(
-            processEngine().getRepositoryService.createDeploymentQuery()
+            repoService.createDeploymentQuery()
               .list()
               .asScala
               .toSeq
           )
-
       }
 
     }

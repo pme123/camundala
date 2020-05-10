@@ -49,6 +49,13 @@ object cliApp {
               .map(DeployBpmn)
           }
 
+        lazy val undeployBpmnOpts: Opts[UndeployBpmn] =
+          Opts.subcommand("undeploy", "Undeploy BPMNs from Camunda") {
+            Opts.argument[String](metavar = "deployId")
+              .withDefault("default")
+              .map(UndeployBpmn)
+          }
+
         lazy val deploymentsOpts: Opts[Deployments] =
           Opts.subcommand("deployments", "Get a list of Camunda Deployments") {
             Opts.unit
@@ -56,11 +63,13 @@ object cliApp {
           }
 
         lazy val command = Command[Task[ExitCode]]("", "CLI for Camunda")(
-          (validateBpmnOpts orElse deployBpmnOpts orElse deploymentsOpts).map {
+          (validateBpmnOpts orElse deployBpmnOpts orElse undeployBpmnOpts orElse deploymentsOpts).map {
             case ValidateBpmn(bpmnId) =>
               validateBpmn(bpmnId)
             case DeployBpmn(deployId) =>
               deployBpmn(deployId)
+            case UndeployBpmn(deployId) =>
+              undeployBpmn(deployId)
             case Deployments() =>
               (for {
                 results <- deployService.deployments()
@@ -72,6 +81,7 @@ object cliApp {
 
         def validateBpmn(bpmnId: String) = {
           (for {
+            _ <- appRunner.update()
             valWarns <- bpmnService.validateBpmn(bpmnId)
             result <- printSuccess(s"Successful validated BPMN '$bpmnId'${scala.Console.YELLOW}\nWarnings:",
               valWarns.value.map(_.msg).mkString(" - ", "\n - ", ""))
@@ -92,6 +102,20 @@ object cliApp {
             result <- printSuccess("Successful deployed",
               results.map(_.copy(validateWarnings = ValidateWarnings.none)).mkString("\n") +
                 results.foldLeft("")((r, dr) => s"$r\n${scala.Console.YELLOW}- Warnings ${dr.name}:\n${dr.validateWarnings.value.mkString(" - ", "\n - ", "")}"))
+          } yield result)
+            .catchAll(printError(_, "Deployment failed:"))
+        }
+
+        def undeployBpmn(deployId: String) = {
+          (for {
+            maybeDeploy <- deployReg.requestDeploy(deployId)
+            _ <-
+              if (maybeDeploy.isEmpty)
+                ZIO.fail(CliAppException(s"There is no Deployment with the id '$deployId''"))
+              else
+                Task.foreach(maybeDeploy.toSeq
+                  .flatMap(_.bpmns))(deployService.undeploy)
+            result <- printSuccess("Successful undeployed", "")
           } yield result)
             .catchAll(printError(_, "Deployment failed:"))
         }
@@ -121,15 +145,16 @@ object cliApp {
 
         case class Deployments()
         case class DeployBpmn(deployId: String = "default")
+        case class UndeployBpmn(deployId: String = "default")
         case class ValidateBpmn(bpmnId: String)
 
         (projectInfo: ProjectInfo) =>
-        for{
-          _ <- appRunner.run().fork
-          _ <- ZIO.effect(Thread.sleep(10000))
-          _ <- intro *> printProject(projectInfo)
-          d <-  cliRunner
-        } yield d
+          for {
+            _ <- appRunner.run().fork
+            _ <- ZIO.effect(Thread.sleep(10000))
+            _ <- intro *> printProject(projectInfo)
+            d <- cliRunner
+          } yield d
 
     }
 

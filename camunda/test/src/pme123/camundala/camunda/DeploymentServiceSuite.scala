@@ -42,5 +42,7 @@ object DeploymentServiceSuite extends DefaultRunnableSpec {
       override def deploy(deployRequest: DeployRequest, mergeResults: Seq[MergeResult]): Task[Deployment] = Task(deployment)
 
       override def deployments(): Task[Seq[Deployment]] = Task(Seq(deployment))
+
+      override def undeploy(deployId: String): Task[Unit] = Task(())
     })
 }

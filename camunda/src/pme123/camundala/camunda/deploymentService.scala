@@ -25,6 +25,8 @@ object deploymentService {
 
     def deploy(bpmn: Bpmn): Task[DeployResult]
 
+    def undeploy(bpmn: Bpmn): Task[Unit]
+
     def deployments(): Task[Seq[DeployResult]]
   }
 
@@ -33,6 +35,9 @@ object deploymentService {
 
   def deploy(bpmn: Bpmn): RIO[DeploymentService, DeployResult] =
     ZIO.accessM(_.get.deploy(bpmn))
+
+  def undeploy(bpmn: Bpmn): RIO[DeploymentService, Unit] =
+    ZIO.accessM(_.get.undeploy(bpmn))
 
   type DeploymentServiceDeps = BpmnService with ProcessEngineService
 
@@ -74,6 +79,11 @@ object deploymentService {
               Option(deployment.getTenantId),
               mergeResult.warnings
             )
+
+          def undeploy(bpmn: Bpmn): Task[Unit] =
+            for {
+              _ <- processEngineService.undeploy(bpmn.id)
+            } yield ()
 
           def deployments(): Task[Seq[DeployResult]] =
             for {
