@@ -41,8 +41,8 @@ object httpServer {
 
         lazy val routes: HttpRoutes[Task] =
           HttpRoutes.of[Task] {
-            case GET -> Root / "hello" =>
-              Ok("Hello")
+            case GET -> Root =>
+              Ok("Services are up and running")
             case req@POST -> Root / "deployment" / "create" =>
               req.decode[Multipart[Task]] { m =>
                 deployMultipart(m)
