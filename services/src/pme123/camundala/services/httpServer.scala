@@ -43,6 +43,9 @@ object httpServer {
           HttpRoutes.of[Task] {
             case GET -> Root =>
               Ok("Services are up and running")
+            // needed for the Camunda Modeler to checks if the deployment service is available:
+            case GET -> Root / "deployment" =>
+              Ok("Services are up and running")
             case req@POST -> Root / "deployment" / "create" =>
               req.decode[Multipart[Task]] { m =>
                 deployMultipart(m)
