@@ -1,4 +1,5 @@
-import pme123.camundala.model.bpmn.ConditionExpression.Expression
+import pme123.camundala.model.bpmn.ConditionExpression.{Expression, InlineScript}
+import pme123.camundala.model.bpmn.Extensions.{PropExtensions, PropInOutExtensions}
 import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
@@ -12,33 +13,37 @@ val bpmns: Set[Bpmn] =
         List(
           UserTask("user_task_review_tweet",
             Some(EmbeddedDeploymentForm(StaticFile("static/forms/reviewTweet.html", "bpmn"))),
-            Extensions(Map("durationMean" -> "10000", "durationSd" -> "5000")))),
-        List(
-          ServiceTask("service_task_send_rejection_notification",
-            DelegateExpression("#{emailAdapter}"),
-            Extensions(Map("KPI-Ratio" -> "Tweet Rejected"))),
-          ServiceTask("service_task_publish_on_twitter",
-            DelegateExpression("#{tweetAdapter}"),
-            Extensions(Map("KPI-Ratio" -> "Tweet Approved")))
-        ),
-        startEvents = List(StartEvent("start_event_new_tweet",
-          Some(EmbeddedDeploymentForm(StaticFile("static/forms/createTweet.html", "bpmn"))),
-          Extensions(Map("KPI-Cycle-Start" -> "Tweet Approval Time"))
-        )),
-        exclusiveGateways = List(ExclusiveGateway("gateway_approved",
-          Extensions(Map("KPI-Cycle-End" -> "Tweet Approval Time"))
-        )
-        ),
-        sequenceFlows = List(SequenceFlow("yes",
-          Some(Expression("#{approved}")),
-          Extensions(Map("probability" -> "87"))
-        ), SequenceFlow("no",
-          Some(Expression("#{!approved}")),
-          Extensions(Map("probability" -> "13"))
+            PropInOutExtensions(Map("durationMean" -> "10000", "durationSd" -> "5000"),
+              InputOutputs(Seq(InputOutput("scalascript", InlineScript("Hello from Scala"))),
+                Seq(InputOutput("scalascriptOut", InlineScript("Bye Bye from Scala")))
+                ))
+          )),
+          List(
+            ServiceTask("service_task_send_rejection_notification",
+              DelegateExpression("#{emailAdapter}"),
+              PropInOutExtensions(Map("KPI-Ratio" -> "Tweet Rejected"))),
+            ServiceTask("service_task_publish_on_twitter",
+              DelegateExpression("#{tweetAdapter}"),
+              PropInOutExtensions(Map("KPI-Ratio" -> "Tweet Approved")))
+          ),
+          startEvents = List(StartEvent("start_event_new_tweet",
+            Some(EmbeddedDeploymentForm(StaticFile("static/forms/createTweet.html", "bpmn"))),
+            PropExtensions(Map("KPI-Cycle-Start" -> "Tweet Approval Time"))
+          )),
+          exclusiveGateways = List(ExclusiveGateway("gateway_approved",
+            PropExtensions(Map("KPI-Cycle-End" -> "Tweet Approval Time"))
+          )
+          ),
+          sequenceFlows = List(SequenceFlow("yes",
+            Some(Expression("#{approved}")),
+            PropExtensions(Map("probability" -> "87"))
+          ), SequenceFlow("no",
+            Some(Expression("#{!approved}")),
+            PropExtensions(Map("probability" -> "13"))
+          ))
         ))
-      ))
-  ))
+    ))
 
-Deploys(Set(
-  Deploy("default", bpmns)
-))
+    Deploys (Set(
+    Deploy("default", bpmns)
+  ))

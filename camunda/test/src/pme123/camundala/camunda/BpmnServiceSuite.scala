@@ -26,6 +26,7 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
           _ = println(s"BPMN XML ${mergeResult.xmlElem}")
           _ = println(s"BPMN WARNINGS ${mergeResult.warnings.value.mkString("\n")}")
           userTasks = mergeResult.xmlElem \\ "userTask"
+          userTaskInputParam = mergeResult.xmlElem \\ "userTask" \\ "inputParameter"
           userTaskForm = XQualifier.camunda("formKey").extractFrom(userTasks.head)
           serviceTasks = mergeResult.xmlElem \\ "serviceTask"
           sendTasks = mergeResult.xmlElem \\ "sendTask"
@@ -59,7 +60,8 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
             assert(delegateExpression)(isSome(equalTo("#{emailAdapter}"))) &&
             assert(externalTask)(isSome(equalTo("myTopic"))) &&
             assert(sequenceFlowProps.length)(equalTo(2) ?? "sequenceFlow Properties count") &&
-            assert(sequenceFlowConditionals.length)(equalTo(2) ?? "sequenceFlow Conditionals count")
+            assert(sequenceFlowConditionals.length)(equalTo(2) ?? "sequenceFlow Conditionals count") &&
+            assert(userTaskInputParam.length)(equalTo(2) ?? "userTaskInputParam")
         }
       },
       testM("Validate a BPMN") {

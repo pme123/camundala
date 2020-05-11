@@ -31,6 +31,14 @@
     </startEvent>
     <userTask id="user_task_review_tweet" name="Review Tweet" camunda:assignee="kermit">
       <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="scalascript">
+            <camunda:script scriptFormat="scala">println("Hello from Scala")</camunda:script>
+          </camunda:inputParameter>
+          <camunda:outputParameter name="scalascriptOut">
+            <camunda:script scriptFormat="scala">println("Bye bye from Scala")</camunda:script>
+          </camunda:outputParameter>
+        </camunda:inputOutput>
         <camunda:properties>
           <camunda:property name="manualProp" value="hello" />
         </camunda:properties>
@@ -47,8 +55,7 @@
     <sequenceFlow id="SequenceFlow_4" name="" sourceRef="service_task_send_rejection_notification" targetRef="gateway_join" />
   </process>
   <process id="TestDemoProcess" name="TestDemoProcess" isExecutable="true">
-    <sequenceFlow id="SequenceFlow_0u2afzo" sourceRef="external-task-example" targetRef="send-task-example">
-    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_0u2afzo" sourceRef="external-task-example" targetRef="send-task-example" />
     <startEvent id="startEvent">
       <outgoing>SequenceFlow_18o60le</outgoing>
     </startEvent>

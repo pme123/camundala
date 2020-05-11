@@ -1,10 +1,12 @@
 package pme123.camundala.camunda.xml
 
 import pme123.camundala.camunda.xml.XmlHelper._
+import pme123.camundala.model.bpmn.ConditionExpression.{Expression, InlineScript}
+import pme123.camundala.model.bpmn.Extensions.PropInOutExtensions
 import pme123.camundala.model.bpmn._
 import zio.{Task, UIO, ZIO}
 
-import scala.xml.Elem
+import scala.xml.{Elem, Node}
 
 trait XIdentifiableNode {
   def xmlElem: Elem
@@ -30,12 +32,12 @@ case class XBpmn(bpmnXml: Elem) {
     for {
       mergeResults <- ZIO.foreach(processes)(xp => xp.merge(bpmn.processMap.get(xp.id)))
     } yield
-    mergeResults
-      .foldLeft(XMergeResult(bpmnXml, processWarnings)) {
-        case (XMergeResult(resXml: Elem, resWarn), XMergeResult(procXml, procWarn)) =>
-          XMergeResult(resXml.copy(child = resXml.child.map(c => if (c \@ "id" != procXml \@ "id") c else procXml)),
-            resWarn ++ procWarn)
-      }
+      mergeResults
+        .foldLeft(XMergeResult(bpmnXml, processWarnings)) {
+          case (XMergeResult(resXml: Elem, resWarn), XMergeResult(procXml, procWarn)) =>
+            XMergeResult(resXml.copy(child = resXml.child.map(c => if (c \@ "id" != procXml \@ "id") c else procXml)),
+              resWarn ++ procWarn)
+        }
   }
 }
 
@@ -108,6 +110,10 @@ trait XBpmnNode[T <: Extensionable]
     case (Some(extensionable), nodeElem: Elem) =>
       val propElem = nodeElem \\ "property"
       val propParams = propElem.map(_ \@ "name")
+      val inputElem = nodeElem \\ "inputParameter"
+      val inputParams = inputElem.map(_ \@ "name")
+      val outputElem = nodeElem \\ "outputParameter"
+      val outputParams = outputElem.map(_ \@ "name")
       val child = nodeElem.child
       val otherChild = child.filter(_.label != "extensionElements")
       val xmlElem: Elem =
@@ -119,12 +125,43 @@ trait XBpmnNode[T <: Extensionable]
                     } yield
                 <camunda:property name={k} value={v}/>}{//
               propElem}
-            </camunda:properties>
+            </camunda:properties>{extensionable.extensions match {
+              case PropInOutExtensions(_, inOuts) =>
+                <camunda:inputOutput>
+                  {for {(k, cond) <- inOuts.inputMap
+                        if !inputParams.contains(k) // only add the one that not exist
+                        } yield
+                  <camunda:inputParameter name={k}>
+                    {expressionElem(cond)}
+                  </camunda:inputParameter>}{//
+                  inputElem}{//
+                  for {(k, cond) <- inOuts.outputMap
+                       if !outputParams.contains(k) // only add the one that not exist
+                       } yield
+                    <camunda:outputParameter name={k}>
+                      {expressionElem(cond)}
+                    </camunda:outputParameter>}{//
+                  outputElem}
+                </camunda:inputOutput>
+              case _ => ()
+            }}
           </extensionElements>
-          ++ otherChild
+            ++ {
+            otherChild
+          }
         )
       XMergeResult(xmlElem, ValidateWarnings.none)
     case (Some(_), _) =>
       XMergeResult(xmlElem, ValidateWarnings(s"The XML Node must be a XML Elem not just a Node ($tagName with id '$id')."))
   })
+
+  private def expressionElem(cond: ConditionExpression) = {
+    cond match {
+      case InlineScript(value, language) =>
+        <camunda:script scriptFormat={language.key}>
+          {value}
+        </camunda:script>
+      case Expression(value) => value
+    }
+  }
 }

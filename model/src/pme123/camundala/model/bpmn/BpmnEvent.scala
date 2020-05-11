@@ -1,19 +1,27 @@
 package pme123.camundala.model.bpmn
 
+import pme123.camundala.model.bpmn.Extensions.PropExtensions
+
 sealed trait BpmnEvent
   extends BpmnNode
-    with Extensionable
+    with Extensionable {
+  def inOuts: InputOutputs = InputOutputs.none
+}
 
 case class StartEvent(id: String,
                       maybeForm: Option[UserTaskForm] = None,
-                      extensions: Extensions = Extensions.none
+                      extensions: PropExtensions = PropExtensions.none
                      )
   extends BpmnEvent
     with HasForm
 
 case class EndEvent(id: String,
-                    extensions: Extensions = Extensions.none
+                    extensions: PropExtensions = PropExtensions.none,
+                    inputs: Seq[InputOutput] = Nil
                    )
-  extends BpmnEvent
+  extends BpmnEvent {
+  override val inOuts: InputOutputs = InputOutputs(inputs)
+
+}
 
 
