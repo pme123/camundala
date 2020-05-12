@@ -24,6 +24,7 @@ object Version {
   val zioCats = "2.0.0.0-RC12"
   val http4s = "0.21.3"
   val circe = "0.13.0"
+  val sttp = "2.0.6"
 
   // camunda
   val spring = "2.2.4.RELEASE"
@@ -69,6 +70,8 @@ object Libs {
   val http4sCirce = ivy"org.http4s::http4s-circe:${Version.http4s}"
   val http4sDsl = ivy"org.http4s::http4s-dsl:${Version.http4s}"
   val circe = ivy"io.circe::circe-generic:${Version.circe}"
+  val sttpCore = ivy"com.softwaremill.sttp.client::core:${Version.sttp}"
+  val sttpClient = ivy"com.softwaremill.sttp.client::async-http-client-backend-zio:${Version.sttp}"
 
   // cli
   val decline = ivy"com.monovore::decline-effect:${Version.decline}"
@@ -211,14 +214,16 @@ object services extends ModuleWithTests {
       Libs.http4sBlazeClient,
       Libs.http4sDsl,
       Libs.http4sCirce,
-      Libs.zioCats
+      Libs.zioCats,
+      Libs.sttpClient,
+      Libs.sttpCore
     )
   }
 }
 
 object cli extends ModuleWithTests {
 
-  override def moduleDeps = Seq(camunda)
+  override def moduleDeps = Seq(services)
 
   override def mainClass = Some("pme123.camundala.cli.CliApp")
 

@@ -8,23 +8,25 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import pme123.camundala
 import pme123.camundala.app.appRunner
 import pme123.camundala.app.appRunner.AppRunner
-import pme123.camundala.camunda.DefaultLayers._
-import pme123.camundala.camunda.ZSpringApp
+import pme123.camundala.camunda.CamundaLayers._
+import pme123.camundala.camunda.{CamundaLayers, ZSpringApp}
 import pme123.camundala.cli.cliApp.CliApp
 import pme123.camundala.cli.{ProjectInfo, cliApp}
+import pme123.camundala.config.ConfigLayers
+import pme123.camundala.model.ModelLayers
 import pme123.camundala.model.bpmn.bpmnRegister
 import pme123.camundala.model.bpmn.bpmnRegister.BpmnRegister
-import pme123.camundala.model.deploy.{Deploys, deployRegister}
 import pme123.camundala.model.deploy.deployRegister.DeployRegister
-import pme123.camundala.services.httpServer
+import pme123.camundala.model.deploy.{Deploys, deployRegister}
 import pme123.camundala.services.httpServer.HttpServer
+import pme123.camundala.services.{ServicesLayers, httpServer}
 import zio._
+import zio.clock.Clock
 import zio.console.Console
 
 import scala.io.Source
 
 @SpringBootApplication
-//@EnableProcessApplication
 class TwitterApp
 
 object TwitterApp extends ZSpringApp {
@@ -85,9 +87,9 @@ object TwitterApp extends ZSpringApp {
   private lazy val bpmnModels: Managed[Throwable, InputStreamReader] = ZManaged.make(ZIO.effect(Source.fromFile(bpmnModelsPath.toFile).reader()))(r =>
     ZIO.effect(r.close()).catchAll(e => UIO(e.printStackTrace()) *> UIO.unit))
 
-  private lazy val cliLayer = (Console.live ++ bpmnServiceLayer ++ deployRegisterLayer ++ deploymentServiceLayer ++ twitterApp) >>> cliApp.live
-  private lazy val httpServerLayer = appConfigLayer ++ deploymentServiceLayer ++ logLayer("httpServer") >>> httpServer.live
-  private lazy val appLayer = Console.live ++ httpServerLayer ++ bpmnServiceLayer ++ bpmnRegisterLayer ++ deployRegisterLayer
+  private lazy val cliLayer = (Clock.live ++ Console.live ++ CamundaLayers.bpmnServiceLayer ++ ModelLayers.deployRegisterLayer ++ CamundaLayers.deploymentServiceLayer ++ ServicesLayers.dockerComposerLayer ++ twitterApp) >>> cliApp.live
+  private lazy val httpServerLayer = ConfigLayers.appConfigLayer ++ deploymentServiceLayer ++ ModelLayers.logLayer("httpServer") >>> httpServer.live
+  private lazy val appLayer = Console.live ++ httpServerLayer ++ bpmnServiceLayer ++ ModelLayers.bpmnRegisterLayer ++ ModelLayers.deployRegisterLayer
 
   protected def runCli: ZIO[CliApp with Console, Throwable, Nothing] =
     cliApp.run(projectInfo)

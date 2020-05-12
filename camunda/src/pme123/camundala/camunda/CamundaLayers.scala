@@ -15,17 +15,12 @@ import zio.{Has, TaskLayer, ULayer, ZIO, ZLayer}
 import zio.clock.Clock
 import zio.console.Console
 import zio.logging.Logging
+import pme123.camundala.model.ModelLayers._
 
-object DefaultLayers {
-  def logLayer(loggerName: String): ULayer[Logging] = (Console.live ++ Clock.live) >>> Logging.console(
-    format = (_, logEntry) => logEntry,
-    rootLoggerName = Some(loggerName)
-  )
+object CamundaLayers {
 
-  lazy val bpmnRegisterLayer: ULayer[BpmnRegister] = bpmnRegister.live
-  lazy val deployRegisterLayer: ULayer[DeployRegister] = deployRegister.live
   lazy val bpmnServiceLayer: TaskLayer[BpmnService] = bpmnRegisterLayer >>> bpmnService.live
-  lazy val appConfigLayer: TaskLayer[AppConfig] = logLayer("appConfig") >>> appConfig.live
+  lazy val deploymentServiceLayer: TaskLayer[DeploymentService] = bpmnServiceLayer ++ processEngineServiceLayer >>> deploymentService.live
 
   lazy val processEngineLayer: ZLayer[Any, Throwable, Has[() => ProcessEngine]] = // ProcessEngine must be lazy!
     ZLayer.fromAcquireRelease(ZIO.effect(() => EngineUtil.lookupProcessEngine(null)))(pe =>
@@ -33,6 +28,5 @@ object DefaultLayers {
     )
   lazy val processEngineServiceLayer: TaskLayer[ProcessEngineService] = processEngineLayer >>> processEngineService.live
 
-  lazy val deploymentServiceLayer: TaskLayer[DeploymentService] = bpmnServiceLayer ++ processEngineServiceLayer >>> deploymentService.live
 
 }

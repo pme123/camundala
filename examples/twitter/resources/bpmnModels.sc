@@ -1,9 +1,11 @@
+import java.nio.file.Paths
+
 import pme123.camundala.model.bpmn.ConditionExpression.{Expression, InlineScript}
 import pme123.camundala.model.bpmn.Extensions.{PropExtensions, PropInOutExtensions}
 import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
-import pme123.camundala.model.deploy.{Deploy, Deploys}
+import pme123.camundala.model.deploy.{Deploy, Deploys, DockerConfig}
 
 val bpmns: Set[Bpmn] =
   Set(Bpmn("TwitterDemoProcess.bpmn",
@@ -45,5 +47,5 @@ val bpmns: Set[Bpmn] =
     ))
 
     Deploys (Set(
-    Deploy("default", bpmns)
+    Deploy("default", bpmns, DockerConfig(dockerDir = Paths.get(s"./examples/docker")))
   ))
