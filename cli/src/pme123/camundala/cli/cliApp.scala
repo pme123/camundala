@@ -7,12 +7,11 @@ import pme123.camundala.app.appRunner
 import pme123.camundala.app.appRunner.AppRunner
 import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.deploymentService.DeploymentService
-import pme123.camundala.camunda.xml.ValidateWarnings
-import pme123.camundala.camunda.{bpmnService, deploymentService}
+import pme123.camundala.camunda.{DeployResult, bpmnService, deploymentService}
 import pme123.camundala.cli.ProjectInfo._
 import pme123.camundala.model.bpmn.CamundalaException
-import pme123.camundala.model.deploy.{Deploy, DockerConfig, deployRegister}
 import pme123.camundala.model.deploy.deployRegister.DeployRegister
+import pme123.camundala.model.deploy.{Deploy, DockerConfig, deployRegister}
 import pme123.camundala.services.dockerComposer
 import pme123.camundala.services.dockerComposer.DockerComposer
 import zio._
@@ -42,7 +41,7 @@ object cliApp {
         import CliCommand._
 
         lazy val command = Command[Task[ExitCode]]("", "CLI for Camunda")(
-          (validateBpmnOpts orElse deployBpmnOpts orElse undeployBpmnOpts orElse deploymentsOpts orElse dockerCommand).map {
+          (validateBpmnOpts orElse deployBpmnOpts orElse undeployBpmnOpts orElse deploymentsOpts orElse dockerCommand orElse appCommand).map {
             case ValidateBpmn(bpmnId) =>
               validateBpmn(bpmnId)
             case DeployBpmn(deployId) =>
@@ -68,6 +67,18 @@ object cliApp {
             }
           }
 
+        lazy val appCommand: Opts[ZIO[Any, Nothing, ExitCode]] =
+          Opts.subcommand("app", "Manage your App") {
+            (appStartOpts orElse appStopOpts orElse appRestartOpts).map {
+              case App.Start() =>
+                appStart()
+              case App.Stop() =>
+                appStop()
+              case App.Restart() =>
+                appRestart()
+            }
+          }
+
         def validateBpmn(bpmnId: String) = {
           (for {
             _ <- appRunner.update()
@@ -79,18 +90,21 @@ object cliApp {
         }
 
         def deployBpmn(deployId: String) =
-          runWithDeployId(deployId, " Deploy BPMN", config => Task.foreach(config.bpmns)(b => deployService.deploy(b)).map(_ => ""))
+          runWithDeployId[Seq[DeployResult]](deployId, " Deploy BPMN", config => Task.foreach(config.bpmns)(b => deployService.deploy(b)), results =>
+              results.foldLeft("")((r, dr) => s"$r\n${scala.Console.YELLOW}- Warnings ${dr.name}:\n${dr.validateWarnings.value.mkString(" - ", "\n - ", "")}"))
 
         def undeployBpmn(deployId: String) =
-          runWithDeployId(deployId, " Undeploy BPMN", config => Task.foreach(config.bpmns)(b => deployService.undeploy(b)).map(_ => ""))
+          runWithDeployId[List[Unit]](deployId, " Undeploy BPMN", config => Task.foreach(config.bpmns)(b => deployService.undeploy(b)), _ => "")
 
-        def deployments() = {
-          (for {
-            results <- deployService.deployments()
-            result <- printSuccess("Successful got Deployments", results.mkString("\n"))
-          } yield result)
-            .catchAll(printError(_, "Get Deployments failed:"))
-        }
+        def deployments() =
+          runUnit("Get Deployments", () => deployService.deployments().map(_.mkString("\n")))
+
+        def appStart() =
+          runUnit("Start App", () => appRunner.start().map(_ => ""))
+        def appStop() =
+          runUnit("Stop App", () => appRunner.stop().map(_ => ""))
+        def appRestart() =
+          runUnit("Restart App", () => appRunner.restart().map(_ => ""))
 
         def dockerUp(deployId: String) =
           runDocker(deployId, "Docker Up", dockerService.runDockerUp(_).provideLayer(ZLayer.succeed(clock)))
@@ -102,9 +116,17 @@ object cliApp {
           runDocker(deployId, "Docker Down", dockerService.runDockerDown)
 
         def runDocker(deployId: String, label: String, run: DockerConfig => Task[String]) =
-          runWithDeployId(deployId, label, deploy => run(deploy.dockerConfig))
+          runWithDeployId[String](deployId, label, deploy => run(deploy.dockerConfig), str => str)
 
-        def runWithDeployId(deployId: String, label: String, run: Deploy => Task[String]) = {
+        def runUnit(label: String, run: () => Task[String]) = {
+          (for {
+            results <- run()
+            result <- printSuccess(s"Successful $label", results)
+          } yield result)
+            .catchAll(printError(_, s"$label failed:"))
+        }
+
+        def runWithDeployId[T](deployId: String, label: String, run: Deploy => Task[T], details: T => String) = {
           (for {
             maybeDeploy <- deployReg.requestDeploy(deployId)
             results <-
@@ -112,7 +134,7 @@ object cliApp {
                 ZIO.fail(CliAppException(s"There is no Deployment with the id '$deployId''"))
               else
                 run(maybeDeploy.get)
-            result <- printSuccess(s"Successful $label", results)
+            result <- printSuccess(s"Successful $label", details(results))
           } yield result)
             .catchAll(printError(_, s"$label failed"))
         }
@@ -122,7 +144,6 @@ object cliApp {
             console.putStrLn(details) *>
             console.putStr(scala.Console.RESET) *>
             ZIO.succeed(ExitCode.Success)
-
         }
 
         def printError(e: Throwable, msg: String): UIO[ExitCode] = {
@@ -142,8 +163,6 @@ object cliApp {
 
         (projectInfo: ProjectInfo) =>
           for {
-            _ <- appRunner.run().fork
-            _ <- ZIO.effect(Thread.sleep(10000))
             _ <- intro *> printProject(projectInfo)
             d <- cliRunner
           } yield d

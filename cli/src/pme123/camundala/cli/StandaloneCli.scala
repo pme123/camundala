@@ -16,10 +16,20 @@ object StandaloneCli
       pi <- cliApp.camundala
       _ <- cliApp.run(pi.copy(name = "Standalone Console", sourceUrl = s"${pi.sourceUrl}/tree/master/cli"))
     } yield 0)
-      .provideCustomLayer((Clock.live ++ Console.live ++ bpmnServiceLayer ++  ModelLayers.deployRegisterLayer ++ deploymentServiceLayer ++ ServicesLayers.dockerComposerLayer ++ ZLayer.succeed(new appRunner.Service {
-        override def run(): Task[Unit] = ???
+      .provideCustomLayer(
+        Clock.live ++ Console.live ++
+          bpmnServiceLayer ++
+          ModelLayers.deployRegisterLayer ++
+          deploymentServiceLayer ++
+          ServicesLayers.dockerComposerLayer ++
+          ZLayer.succeed(new appRunner.Service {
+            override def start(): Task[Unit] = ???
 
-        override def update(): Task[Unit] = ???
-      })) >>> cliApp.live)
+            override def update(): Task[Unit] = ???
+
+            override def stop(): Task[Unit] = ???
+
+            override def restart(): Task[Unit] = ???
+          }) >>> cliApp.live)
       .catchAll(e => console.putStrLn(s"ERROR: $e").as(1))
 }

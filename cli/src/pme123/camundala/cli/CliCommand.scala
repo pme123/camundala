@@ -32,14 +32,24 @@ object CliCommand {
         .map(_ => Deployments())
     }
 
-   val dockerUpOpts: Opts[Docker.Up] = Opts.subcommand("up", "Docker Compose Up") {
+  val dockerUpOpts: Opts[Docker.Up] = Opts.subcommand("up", "Docker Compose Up") {
     deployId.map(Docker.Up)
   }
-   val dockerStopOpts: Opts[Docker.Stop] = Opts.subcommand("stop", "Docker Compose Stop") {
+  val dockerStopOpts: Opts[Docker.Stop] = Opts.subcommand("stop", "Docker Compose Stop") {
     deployId.map(Docker.Stop)
   }
-   val dockerDownOpts: Opts[Docker.Down] = Opts.subcommand("down", "Docker Compose Down") {
+  val dockerDownOpts: Opts[Docker.Down] = Opts.subcommand("down", "Docker Compose Down") {
     deployId.map(Docker.Down)
+  }
+
+  val appStartOpts: Opts[App.Start] = Opts.subcommand("start", "Start Application") {
+    Opts.unit.map(_ => App.Start())
+  }
+  val appStopOpts: Opts[App.Stop] = Opts.subcommand("stop", "Stop Application") {
+    Opts.unit.map(_ => App.Stop())
+  }
+  val appRestartOpts: Opts[App.Restart] = Opts.subcommand("restart", "Restart Application") {
+    Opts.unit.map(_ => App.Restart())
   }
 
   case class Deployments()
@@ -59,6 +69,18 @@ object CliCommand {
     case class Stop(deployId: String)
 
     case class Down(deployId: String)
+
+  }
+
+  sealed trait App
+
+  object App {
+
+    case class Start()
+
+    case class Stop()
+
+    case class Restart()
 
   }
 

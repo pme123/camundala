@@ -23,6 +23,7 @@ import pme123.camundala.services.{ServicesLayers, httpServer}
 import zio._
 import zio.clock.Clock
 import zio.console.Console
+import zio.stm.TRef
 
 import scala.io.Source
 
@@ -51,25 +52,43 @@ object TwitterApp extends ZSpringApp {
       )
 
   type TwitterAppDeps = Console with DeployRegister with BpmnRegister with HttpServer
-
-  private lazy val twitterApp: RLayer[TwitterAppDeps, AppRunner] =
-    ZLayer.fromServices[Console.Service, bpmnRegister.Service, deployRegister.Service, httpServer.Service, appRunner.Service] {
+  private lazy val twitterApp: ZLayer[TwitterAppDeps, Nothing, AppRunner] =
+    ZLayer.fromServicesM[Console.Service, bpmnRegister.Service, deployRegister.Service, httpServer.Service, Any, Nothing, appRunner.Service](
       (console, bpmnRegService, deplRegService, httpServService) =>
-        implicit val c: Console.Service = console
-        new appRunner.Service {
-          def run(): Task[Unit] = for {
-            _ <- httpServService.serve().fork
-            _ <- update()
-            _ <- managedSpringApp(classOf[TwitterApp]).useForever
-          } yield ()
 
-          def update(): Task[Unit] = for {
-            deploys <- readScript
-            _ <- ZIO.foreach(deploys.value.flatMap(_.bpmns))(b => bpmnRegService.registerBpmn(b))
-            _ <- ZIO.foreach(deploys.value)(d => deplRegService.registerDeploy(d))
-          } yield ()
+        ZIO.foreach(0 to 1)(_ => TRef.make[Option[Fiber.Runtime[Throwable, Unit]]](None).commit).map {
+          case camundaRef :: httpServerRef :: _ =>
+
+            new appRunner.Service {
+
+              def start(): Task[Unit] = for {
+                httpServerFiber <- httpServService.serve().fork
+                _ <- httpServerRef.set(Some(httpServerFiber)).commit
+                _ <- update()
+                camundaFork <- managedSpringApp(classOf[TwitterApp]).useForever.fork.provideLayer(ZLayer.succeed(console))
+                _ <- camundaRef.set(Some(camundaFork)).commit
+              } yield ()
+
+              def update(): Task[Unit] = for {
+                deploys <- readScript
+                _ <- ZIO.foreach(deploys.value.flatMap(_.bpmns))(b => bpmnRegService.registerBpmn(b))
+                _ <- ZIO.foreach(deploys.value)(d => deplRegService.registerDeploy(d))
+              } yield ()
+
+              def stop(): Task[Unit] = (for {
+                maybeHttpFiber <- httpServerRef.get.commit
+                httpFiber <- ZIO.fromOption(maybeHttpFiber).mapError(_ => new Exception("Service already down"))
+                _ <- httpFiber.interrupt
+                maybeCamundaFiber <- camundaRef.get.commit
+                camFiber <- ZIO.fromOption(maybeCamundaFiber).mapError(_ => new Exception("Service already down"))
+                _ <- camFiber.interrupt
+              } yield ())
+
+              def restart(): Task[Unit] =
+                stop() *> start()
+            }
         }
-    }
+    )
 
   private val bpmnModelsPath: Path = Paths.get(".", "examples", "twitter", "resources", "bpmnModels.sc")
   private lazy val readScript: Task[Deploys] = bpmnModels
