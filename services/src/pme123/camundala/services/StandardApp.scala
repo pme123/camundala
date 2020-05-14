@@ -10,12 +10,12 @@ import pme123.camundala.app.appRunner
 import pme123.camundala.app.appRunner.AppRunner
 import pme123.camundala.model.bpmn.bpmnRegister
 import pme123.camundala.model.bpmn.bpmnRegister.BpmnRegister
-import pme123.camundala.model.deploy.{Deploys, deployRegister}
 import pme123.camundala.model.deploy.deployRegister.DeployRegister
+import pme123.camundala.model.deploy.{Deploys, deployRegister}
 import pme123.camundala.services.httpServer.HttpServer
-import zio.{Fiber, Managed, Task, UIO, ZIO, ZLayer, ZManaged, console}
 import zio.console.Console
 import zio.stm.TRef
+import zio._
 
 import scala.io.Source
 
@@ -27,39 +27,41 @@ object StandardApp {
     ZLayer.fromServicesM[Console.Service, bpmnRegister.Service, deployRegister.Service, httpServer.Service, Any, Nothing, appRunner.Service](
       (console, bpmnRegService, deplRegService, httpServService) =>
 
-        ZIO.foreach(0 to 1)(_ => TRef.make[Option[Fiber.Runtime[Throwable, Unit]]](None).commit).map {
-          case camundaRef :: httpServerRef :: _ =>
+        ZIO.foreach(0 to 1)(_ => TRef.make[Option[Fiber.Runtime[Throwable, Unit]]](None).commit).map { refs =>
+          val camundaRef = refs.head
+          val httpServerRef = refs.last
 
-            new appRunner.Service {
+          new appRunner.Service {
 
-              def start(): Task[Unit] = for {
-                httpServerFiber <- httpServService.serve().fork
-                _ <- httpServerRef.set(Some(httpServerFiber)).commit
-                _ <- update()
-                camundaFork <- managedSpringApp(clazz).useForever.fork.provideLayer(ZLayer.succeed(console))
-                _ <- camundaRef.set(Some(camundaFork)).commit
-              } yield ()
+            def start(): Task[Unit] = for {
+              httpServerFiber <- httpServService.serve().fork
+              _ <- httpServerRef.set(Some(httpServerFiber)).commit
+              _ <- update()
+              camundaFork <- managedSpringApp(clazz).useForever.fork.provideLayer(ZLayer.succeed(console))
+              _ <- camundaRef.set(Some(camundaFork)).commit
+            } yield ()
 
-              def update(): Task[Unit] = for {
-                deploys <- readScript(bpmnModelsPath)
-                _ <- ZIO.foreach(deploys.value.flatMap(_.bpmns))(b => bpmnRegService.registerBpmn(b))
-                _ <- ZIO.foreach(deploys.value)(d => deplRegService.registerDeploy(d))
-              } yield ()
+            def update(): Task[Unit] = for {
+              deploys <- readScript(bpmnModelsPath)
+              _ <- ZIO.foreach(deploys.value.flatMap(_.bpmns))(b => bpmnRegService.registerBpmn(b))
+              _ <- ZIO.foreach(deploys.value)(d => deplRegService.registerDeploy(d))
+            } yield ()
 
-              def stop(): Task[Unit] = (for {
-                maybeHttpFiber <- httpServerRef.get.commit
-                httpFiber <- ZIO.fromOption(maybeHttpFiber).mapError(_ => new Exception("Service already down"))
-                _ <- httpFiber.interrupt
-                maybeCamundaFiber <- camundaRef.get.commit
-                camFiber <- ZIO.fromOption(maybeCamundaFiber).mapError(_ => new Exception("Service already down"))
-                _ <- camFiber.interrupt
-              } yield ())
+            def stop(): Task[Unit] = (for {
+              maybeHttpFiber <- httpServerRef.get.commit
+              httpFiber <- ZIO.fromOption(maybeHttpFiber).mapError(_ => new Exception("Service already down"))
+              _ <- httpFiber.interrupt
+              maybeCamundaFiber <- camundaRef.get.commit
+              camFiber <- ZIO.fromOption(maybeCamundaFiber).mapError(_ => new Exception("Service already down"))
+              _ <- camFiber.interrupt
+            } yield ())
 
-              def restart(): Task[Unit] =
-                stop() *> start()
-            }
+            def restart(): Task[Unit] =
+              stop() *> start()
+          }
         }
     )
+
   /**
     * create SpringApplication as a ZManaged Resource.
     */

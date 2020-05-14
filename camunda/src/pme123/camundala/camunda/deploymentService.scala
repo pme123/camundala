@@ -5,7 +5,7 @@ import java.io.ByteArrayInputStream
 import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.processEngineService.ProcessEngineService
 import pme123.camundala.camunda.xml.{MergeResult, ValidateWarnings}
-import pme123.camundala.model.bpmn.Bpmn
+import pme123.camundala.model.bpmn._
 import zio._
 
 import scala.collection.immutable.HashSet
@@ -51,7 +51,8 @@ object deploymentService {
           private def mergeDeployFile(deployFile: DeployFile): Task[MergeResult] =
             for {
               xml <- ZIO.effect(XML.load(new ByteArrayInputStream(deployFile.file.toArray)))
-              mergeResult <- bpmnServ.mergeBpmn(deployFile.filename, xml)
+              bpmnId <- bpmnIdFromFileName(deployFile.filename)
+              mergeResult <- bpmnServ.mergeBpmn(bpmnId, xml)
             } yield mergeResult
 
           def deploy(request: DeployRequest): Task[DeployResult] =
@@ -71,7 +72,7 @@ object deploymentService {
             for {
               mergeResult <- bpmnServ.mergeBpmn(bpmn.id)
               xml <- StreamHelper.xml(bpmn.xml)
-              deployment <- processEngineService.deploy(DeployRequest(Some(bpmn.id),
+              deployment <- processEngineService.deploy(DeployRequest(bpmn.id,
                 source = Some("Camundala Deployer"),
                 deployFiles = HashSet(DeployFile(bpmn.xml.fileName, xml.toString().getBytes().toVector))), Seq(mergeResult))
             } yield DeployResult(deployment.getId, deployment.getName,

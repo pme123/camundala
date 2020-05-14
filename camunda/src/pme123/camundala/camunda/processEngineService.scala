@@ -2,14 +2,15 @@ package pme123.camundala.camunda
 
 import java.io.ByteArrayInputStream
 
-import org.camunda.bpm.engine.{ProcessEngine, RepositoryService}
 import org.camunda.bpm.engine.repository.{Deployment, DeploymentBuilder}
+import org.camunda.bpm.engine.{ProcessEngine, RepositoryService}
+import pme123.camundala.camunda.StreamHelper._
 import pme123.camundala.camunda.xml.MergeResult
 import pme123.camundala.model.bpmn.{CamundalaException, StaticFile}
+import pme123.camundala.model.deploy.DeployId
 import zio._
 
 import scala.jdk.CollectionConverters._
-import StreamHelper._
 /**
   * Wraps functionality that needs the Camunda ProcessEngine (Camunda must run).
   *
@@ -21,7 +22,7 @@ object processEngineService {
   trait Service {
     def deploy(deployRequest: DeployRequest, mergeResults: Seq[MergeResult]): Task[Deployment]
 
-    def undeploy(deployId: String): Task[Unit]
+    def undeploy(deployId: DeployId): Task[Unit]
 
     def deployments(): Task[Seq[Deployment]]
   }
@@ -29,7 +30,7 @@ object processEngineService {
   def deploy(deployRequest: DeployRequest, mergeResults: Seq[MergeResult]): RIO[ProcessEngineService, Deployment] =
     ZIO.accessM(_.get.deploy(deployRequest, mergeResults))
 
-  def undeploy(deployId: String): RIO[ProcessEngineService, Unit] =
+  def undeploy(deployId: DeployId): RIO[ProcessEngineService, Unit] =
     ZIO.accessM(_.get.undeploy(deployId))
 
   def deployments(): RIO[ProcessEngineService, Seq[Deployment]] =
@@ -46,25 +47,23 @@ object processEngineService {
 
         def deploy(request: DeployRequest, mergeResults: Seq[MergeResult]): Task[Deployment] =
           for {
-            name <- ZIO.fromOption(request.name)
-              .catchAll(_ => ZIO.fail(ProcessEngineException("The deployment name must be set.")))
             builder <-
               ZIO.effect(
                 repoService.createDeployment
-                  .name(name)
+                  .name(request.bpmnId.value)
                   .obtValue((b, v: String) => b.source(v), request.source)
                   .obtValue((b, v: String) => b.tenantId(v), request.tenantId)
                   .enableDuplicateFiltering(request.enableDuplicateFilterung)
-                  .listValue((b, v: MergeResult) => b.addInputStream(v.fileName, new ByteArrayInputStream(v.xmlElem.toString.getBytes)), mergeResults)
-                  .listValue((b, v: StaticFile) => b.addInputStream(v.fileName, inputStream(v)), mergeResults.flatMap(_.maybeBpmn).flatMap(_.staticFiles))
+                  .listValue((b, v: MergeResult) => b.addInputStream(v.fileName.value, new ByteArrayInputStream(v.xmlElem.toString.getBytes)), mergeResults)
+                  .listValue((b, v: StaticFile) => b.addInputStream(v.fileName.value, inputStream(v)), mergeResults.flatMap(_.maybeBpmn).flatMap(_.staticFiles))
               )
             deployment <- ZIO.effect(builder.deploy())
           } yield deployment
 
-        def undeploy(deployId: String): Task[Unit] =
+        def undeploy(deployId: DeployId): Task[Unit] =
           ZIO.effect(
             repoService.createDeploymentQuery()
-              .deploymentName(deployId)
+              .deploymentName(deployId.value)
               .list()
               .asScala
               .foreach(d => repoService.deleteDeployment(d.getId, true))

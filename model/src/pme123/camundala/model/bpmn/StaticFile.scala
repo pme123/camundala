@@ -6,7 +6,7 @@ package pme123.camundala.model.bpmn
   * @param fileName The name of the File / Path that is put in the Deployment for Camunda
   * @param resourcePath The rest of the path of where it is found in the resources
   */
-case class StaticFile(fileName: String, resourcePath: String) {
+case class StaticFile(fileName: FileName, resourcePath: String) {
 
   def pathWithName = s"$resourcePath/$fileName"
 

@@ -30,7 +30,7 @@ case class XBpmn(bpmnXml: Elem) {
       else
         ValidateWarnings(s"You have ${processes.length} Processes in the XML-Model, but you have ${bpmn.processes.length} in Scala")
     for {
-      mergeResults <- ZIO.foreach(processes)(xp => xp.merge(bpmn.processMap.get(xp.id)))
+      mergeResults <- ZIO.foreach(processes)(xp =>  bpmnIdFromStr(xp.id).flatMap(id => xp.merge(bpmn.processMap.get(id))))
     } yield
       mergeResults
         .foldLeft(XMergeResult(bpmnXml, processWarnings)) {

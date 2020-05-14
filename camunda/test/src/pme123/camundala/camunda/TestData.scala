@@ -1,5 +1,6 @@
 package pme123.camundala.camunda
 
+import eu.timepit.refined.auto._
 import pme123.camundala.model.bpmn.ConditionExpression.Expression
 import pme123.camundala.model.bpmn.Extensions.{PropExtensions, PropInOutExtensions}
 import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}

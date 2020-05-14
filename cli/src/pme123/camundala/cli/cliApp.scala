@@ -11,7 +11,7 @@ import pme123.camundala.camunda.{DeployResult, bpmnService, deploymentService}
 import pme123.camundala.cli.ProjectInfo._
 import pme123.camundala.model.bpmn.CamundalaException
 import pme123.camundala.model.deploy.deployRegister.DeployRegister
-import pme123.camundala.model.deploy.{Deploy, DockerConfig, deployRegister}
+import pme123.camundala.model.deploy.{Deploy, DeployId, DockerConfig, deployRegister}
 import pme123.camundala.services.dockerComposer
 import pme123.camundala.services.dockerComposer.DockerComposer
 import zio._
@@ -79,7 +79,7 @@ object cliApp {
             }
           }
 
-        def validateBpmn(bpmnId: String) = {
+        def validateBpmn(bpmnId: DeployId) = {
           (for {
             _ <- appRunner.update()
             valWarns <- bpmnService.validateBpmn(bpmnId)
@@ -89,11 +89,11 @@ object cliApp {
             .catchAll(printError(_, "Validation failed:"))
         }
 
-        def deployBpmn(deployId: String) =
+        def deployBpmn(deployId: DeployId) =
           runWithDeployId[Seq[DeployResult]](deployId, " Deploy BPMN", config => Task.foreach(config.bpmns)(b => deployService.deploy(b)), results =>
               results.foldLeft("")((r, dr) => s"$r\n${scala.Console.YELLOW}- Warnings ${dr.name}:\n${dr.validateWarnings.value.mkString(" - ", "\n - ", "")}"))
 
-        def undeployBpmn(deployId: String) =
+        def undeployBpmn(deployId: DeployId) =
           runWithDeployId[List[Unit]](deployId, " Undeploy BPMN", config => Task.foreach(config.bpmns)(b => deployService.undeploy(b)), _ => "")
 
         def deployments() =
@@ -106,16 +106,16 @@ object cliApp {
         def appRestart() =
           runUnit("Restart App", () => appRunner.restart().map(_ => ""))
 
-        def dockerUp(deployId: String) =
+        def dockerUp(deployId: DeployId) =
           runDocker(deployId, "Docker Up", dockerService.runDockerUp(_).provideLayer(ZLayer.succeed(clock)))
 
-        def dockerStop(deployId: String) =
+        def dockerStop(deployId: DeployId) =
           runDocker(deployId, "Docker Stop", dockerService.runDockerStop)
 
-        def dockerDown(deployId: String) =
+        def dockerDown(deployId: DeployId) =
           runDocker(deployId, "Docker Down", dockerService.runDockerDown)
 
-        def runDocker(deployId: String, label: String, run: DockerConfig => Task[String]) =
+        def runDocker(deployId: DeployId, label: String, run: DockerConfig => Task[String]) =
           runWithDeployId[String](deployId, label, deploy => run(deploy.dockerConfig), str => str)
 
         def runUnit(label: String, run: () => Task[String]) = {
@@ -126,7 +126,7 @@ object cliApp {
             .catchAll(printError(_, s"$label failed:"))
         }
 
-        def runWithDeployId[T](deployId: String, label: String, run: Deploy => Task[T], details: T => String) = {
+        def runWithDeployId[T](deployId: DeployId, label: String, run: Deploy => Task[T], details: T => String) = {
           (for {
             maybeDeploy <- deployReg.requestDeploy(deployId)
             results <-

@@ -1,15 +1,15 @@
 package pme123.camundala.model.bpmn
 
-case class Bpmn(id: String,
+case class Bpmn(id: BpmnId,
                 xml: StaticFile,
                 processes: Seq[BpmnProcess],
                ) {
-  lazy val processMap: Map[String, BpmnProcess] = processes.map(p => p.id -> p).toMap
+  lazy val processMap: Map[BpmnId, BpmnProcess] = processes.map(p => p.id -> p).toMap
 
   def staticFiles: Set[StaticFile] = processes.flatMap(_.staticFiles).toSet
 }
 
-case class BpmnProcess(id: String,
+case class BpmnProcess(id: BpmnId,
                        userTasks: Seq[UserTask] = Seq.empty,
                        serviceTasks: Seq[ServiceTask] = Seq.empty,
                        sendTasks: Seq[SendTask] = Seq.empty,

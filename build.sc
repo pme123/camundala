@@ -16,6 +16,7 @@ object Version {
   val zio = "1.0.0-RC18-2" //+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT" //"
   //val zioMacros = "1.0.0-RC18-2+99-bb2ded5f-SNAPSHOT"//"
   val zioLogging = "0.2.7"
+  val refined = "0.9.14"
 
   // config
   val zioConfig = "1.0.0-RC16"
@@ -46,7 +47,7 @@ object Libs {
   // model
   val zio = ivy"dev.zio::zio:${Version.zio}"
   val zioLogging = ivy"dev.zio::zio-logging:${Version.zioLogging}"
-
+  val refinded = ivy"eu.timepit::refined:${Version.refined}"
   // config
   val zioConfig = ivy"dev.zio::zio-config:${Version.zioConfig}"
   val zioConfigTypesafe = ivy"dev.zio::zio-config-typesafe:${Version.zioConfig}"
@@ -75,6 +76,7 @@ object Libs {
 
   // cli
   val decline = ivy"com.monovore::decline-effect:${Version.decline}"
+  val declineRefined = ivy"com.monovore::decline-refined:${Version.decline}"
 
   // examples
   // twitter
@@ -105,6 +107,7 @@ trait CamundalaModule
     "-Ymacro-annotations", // ZIO Macros: add the macro annotation compiler options.
     "-language:higherKinds", // Allow higher-kinded types
     "-language:postfixOps", // Allows operator syntax in postfix position (deprecated since Scala 2.10)
+
     "-feature" // Emit warning and location for usages of features that should be imported explicitly.
     //  "-Ypartial-unification",      // Enable partial unification in type constructor inference
     //  "-Xfatal-warnings"            // Fail the compilation if there are any warnings
@@ -154,7 +157,8 @@ object model extends ModuleWithTests {
     Agg(
       Libs.zio,
       //   Libs.zioMacros,
-      Libs.zioLogging
+      Libs.zioLogging,
+      Libs.refinded
     )
   }
 }
@@ -230,6 +234,7 @@ object cli extends ModuleWithTests {
   override def ivyDeps = {
     Agg(
       Libs.decline,
+      Libs.declineRefined,
       Libs.zioCats
     )
   }

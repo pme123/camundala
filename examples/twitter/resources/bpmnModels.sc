@@ -1,5 +1,6 @@
 import java.nio.file.Paths
 
+import eu.timepit.refined.auto._
 import pme123.camundala.model.bpmn.ConditionExpression.{Expression, InlineScript}
 import pme123.camundala.model.bpmn.Extensions.{PropExtensions, PropInOutExtensions}
 import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression

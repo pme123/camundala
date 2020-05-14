@@ -10,3 +10,5 @@ trait CamundalaException extends Throwable {
 
   override def getCause: Throwable = cause.orNull
 }
+
+case class ModelException(msg: String) extends CamundalaException

@@ -2,10 +2,12 @@ package pme123.camundala.camunda
 
 import java.util.Date
 
+import eu.timepit.refined.auto._
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity
 import org.camunda.bpm.engine.repository.Deployment
 import pme123.camundala.camunda.xml.MergeResult
 import pme123.camundala.model.bpmn.bpmnRegister
+import pme123.camundala.model.deploy.DeployId
 import zio._
 import zio.test.Assertion.equalTo
 import zio.test._
@@ -27,7 +29,7 @@ object DeploymentServiceSuite extends DefaultRunnableSpec {
       testM("the BPMN Model can be deployed") {
         for {
           bpmnXml <- bpmnXmlTask
-          deployRequest = DeployRequest(Some("TwitterDemoProcess"), deployFiles = Set(DeployFile("TwitterDemoProcess.bpmn", bpmnXml.toString.getBytes.toVector)))
+          deployRequest = DeployRequest("TwitterDemoProcess", deployFiles = Set(DeployFile("TwitterDemoProcess.bpmn", bpmnXml.toString.getBytes.toVector)))
           _ <- bpmnRegister.registerBpmn(bpmn)
           dr <- deploymentService.deploy(deployRequest)
         } yield
@@ -43,6 +45,6 @@ object DeploymentServiceSuite extends DefaultRunnableSpec {
 
       override def deployments(): Task[Seq[Deployment]] = Task(Seq(deployment))
 
-      override def undeploy(deployId: String): Task[Unit] = Task(())
+      override def undeploy(deployId: DeployId): Task[Unit] = Task(())
     })
 }

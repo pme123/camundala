@@ -8,10 +8,11 @@ import org.http4s.dsl._
 import org.http4s.implicits._
 import org.http4s.multipart.Multipart
 import org.http4s.server.blaze.BlazeServerBuilder
-import pme123.camundala.camunda.{DeployFile, DeployRequest, deploymentService}
 import pme123.camundala.camunda.deploymentService._
+import pme123.camundala.camunda.{DeployFile, DeployRequest, deploymentService}
 import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.{AppConfig, ServicesConf}
+import pme123.camundala.model.bpmn._
 import zio._
 import zio.interop.catz._
 import zio.interop.catz.implicits._
@@ -71,14 +72,16 @@ object httpServer {
 
           (for {
             files <- ZIO.foreach(m.parts.filter(p => p.name.isEmpty || !RESERVED_KEYWORDS.contains(p.name.get)))(p =>
-              p.filename.map(fn => p.body.compile.toVector.map(v => DeployFile(fn, v)))
+              p.filename.map(fn => p.body.compile.toVector.flatMap(v => fileNameFromStr(fn).map(x => DeployFile(x, v))))
                 .getOrElse(Task.fail(InvalidRequestException(s"No file name found in the deployment resource described by form parameter '${p.name.getOrElse("")}'."))))
-            deployName <- forName(m, DEPLOYMENT_NAME)
+            maybeBpmnId <- forName(m, DEPLOYMENT_NAME)
+            bpmnIdStr <- ZIO.fromOption(maybeBpmnId).mapError(_ => HttpServerException(s"BpmnId ($DEPLOYMENT_NAME) must be set!"))
+            bpmnId <- bpmnIdFromStr(bpmnIdStr)
             enableDuplFiltering <- forName(m, ENABLE_DUPLICATE_FILTERING).map(_.exists(_.toBoolean))
             deployChangedOnly <- forName(m, DEPLOY_CHANGED_ONLY).map(_.exists(_.toBoolean))
             deploySource <- forName(m, DEPLOYMENT_SOURCE)
             tenantId <- forName(m, TENANT_ID)
-            deployResult <- deployService.deploy(DeployRequest(deployName, enableDuplFiltering, deployChangedOnly, deploySource, tenantId, files.toSet))
+            deployResult <- deployService.deploy(DeployRequest(bpmnId, enableDuplFiltering, deployChangedOnly, deploySource, tenantId, files.toSet))
           } yield deployResult.asJson)
             .tap(j => log.info(s"JSON: $j"))
             .tapError(e => log.error(s"Error: $e") *> ZIO.effect(e.printStackTrace()))
@@ -106,4 +109,6 @@ object httpServer {
             } yield ()
         }
     }
+
+  case class HttpServerException(msg: String) extends CamundalaException
 }

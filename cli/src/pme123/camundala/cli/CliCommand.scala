@@ -1,16 +1,19 @@
 package pme123.camundala.cli
 
 import com.monovore.decline.Opts
-import zio.ZLayer
+import eu.timepit.refined.auto._
+import pme123.camundala.model.bpmn.BpmnId
+import pme123.camundala.model.deploy.DeployId
+import com.monovore.decline.refined._
 
 object CliCommand {
 
-  private val deployId: Opts[String] = Opts.argument[String](metavar = "deployId")
+  private val deployId: Opts[DeployId] = Opts.argument[DeployId](metavar = "deployId")
     .withDefault("default")
 
   lazy val validateBpmnOpts: Opts[ValidateBpmn] =
     Opts.subcommand("validate", "Validate a BPMN if it can be merged") {
-      Opts.argument[String](metavar = "bpmnId")
+      Opts.argument[BpmnId](metavar = "bpmnId")
         .map(ValidateBpmn)
     }
 
@@ -54,21 +57,21 @@ object CliCommand {
 
   case class Deployments()
 
-  case class DeployBpmn(deployId: String = "default")
+  case class DeployBpmn(deployId: DeployId = "default")
 
-  case class UndeployBpmn(deployId: String = "default")
+  case class UndeployBpmn(deployId: DeployId = "default")
 
-  case class ValidateBpmn(bpmnId: String)
+  case class ValidateBpmn(bpmnId: BpmnId)
 
   sealed trait Docker
 
   object Docker {
 
-    case class Up(deployId: String)
+    case class Up(deployId: DeployId)
 
-    case class Stop(deployId: String)
+    case class Stop(deployId: DeployId)
 
-    case class Down(deployId: String)
+    case class Down(deployId: DeployId)
 
   }
 

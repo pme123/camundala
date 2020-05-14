@@ -15,22 +15,22 @@ object deployRegister {
 
     def registerDeploy(bpmn: Deploy): UIO[Unit]
 
-    def unregisterDeploy(id: String): UIO[Unit]
+    def unregisterDeploy(id: DeployId): UIO[Unit]
 
-    def requestDeploy(id: String): UIO[Option[Deploy]]
+    def requestDeploy(id: DeployId): UIO[Option[Deploy]]
 
   }
 
   def registerDeploy(deploy: Deploy): URIO[DeployRegister, Unit] =
     ZIO.accessM(_.get.registerDeploy(deploy))
 
-  def unregisterDeploy(id: String): URIO[DeployRegister, Unit] =
+  def unregisterDeploy(id: DeployId): URIO[DeployRegister, Unit] =
     ZIO.accessM(_.get.unregisterDeploy(id))
 
-  def requestDeploy(id: String): URIO[DeployRegister, Option[Deploy]] =
+  def requestDeploy(id: DeployId): URIO[DeployRegister, Option[Deploy]] =
     ZIO.accessM(_.get.requestDeploy(id))
 
-  private lazy val deployIdMapSTM = TMap.make[String, Deploy]()
+  private lazy val deployIdMapSTM = TMap.make[DeployId, Deploy]()
 
   val live: ULayer[DeployRegister] = ZLayer.fromEffect {
     deployIdMapSTM.commit.map { deployMap =>
@@ -38,10 +38,10 @@ object deployRegister {
         def registerDeploy(deploy: Deploy): UIO[Unit] =
           deployMap.put(deploy.id, deploy).commit
 
-        def unregisterDeploy(id: String): UIO[Unit] =
+        def unregisterDeploy(id: DeployId): UIO[Unit] =
           deployMap.delete(id).commit
 
-        def requestDeploy(id: String): UIO[Option[Deploy]] =
+        def requestDeploy(id: DeployId): UIO[Option[Deploy]] =
             deployMap.get(id).commit
 
       }

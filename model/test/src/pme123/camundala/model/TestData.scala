@@ -1,12 +1,10 @@
 package pme123.camundala.model
 
+import eu.timepit.refined.auto._
 import pme123.camundala.model.bpmn.Extensions.{PropExtensions, PropInOutExtensions}
 import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
-import zio.{Task, UIO, ZIO, ZManaged}
-
-import scala.io.Source
 
 object TestData {
 

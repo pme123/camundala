@@ -1,9 +1,9 @@
 package pme123.camundala.camunda
 
 import pme123.camundala.camunda.xml.ValidateWarnings
-import pme123.camundala.model.bpmn.CamundalaException
+import pme123.camundala.model.bpmn.{BpmnId, CamundalaException, FileName}
 
-case class DeployRequest(name: Option[String] = None,
+case class DeployRequest(bpmnId: BpmnId,
                          enableDuplicateFilterung: Boolean = false,
                          deployChangedOnly: Boolean = false,
                          source: Option[String] = None,
@@ -26,7 +26,7 @@ object DeployRequest {
   )
 }
 
-case class DeployFile(filename: String, file: Vector[Byte])
+case class DeployFile(filename: FileName, file: Vector[Byte])
 
 case class DeployResult(id: String,
                         name: String,

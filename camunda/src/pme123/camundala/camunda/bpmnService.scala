@@ -2,7 +2,7 @@ package pme123.camundala.camunda
 
 import pme123.camundala.camunda.xml.{MergeResult, ValidateWarnings, XBpmn, XMergeResult}
 import pme123.camundala.model.bpmn.bpmnRegister.BpmnRegister
-import pme123.camundala.model.bpmn.{Bpmn, CamundalaException, bpmnRegister}
+import pme123.camundala.model.bpmn.{fileNameFromBpmnId, _}
 import zio._
 
 import scala.xml.Elem
@@ -11,21 +11,21 @@ object bpmnService {
   type BpmnService = Has[Service]
 
   trait Service {
-    def mergeBpmn(bpmnId: String, bpmnXml: Elem): Task[MergeResult]
+    def mergeBpmn(bpmnId: BpmnId, bpmnXml: Elem): Task[MergeResult]
 
-    def mergeBpmn(bpmnId: String): Task[MergeResult]
+    def mergeBpmn(bpmnId: BpmnId): Task[MergeResult]
 
-    def validateBpmn(bpmnId: String): Task[ValidateWarnings]
+    def validateBpmn(bpmnId: BpmnId): Task[ValidateWarnings]
 
   }
 
-  def mergeBpmn(bpmnId: String, bpmnXml: Elem): RIO[BpmnService, MergeResult] =
+  def mergeBpmn(bpmnId: BpmnId, bpmnXml: Elem): RIO[BpmnService, MergeResult] =
     ZIO.accessM(_.get.mergeBpmn(bpmnId, bpmnXml))
 
-  def mergeBpmn(bpmnId: String): RIO[BpmnService, MergeResult] =
+  def mergeBpmn(bpmnId: BpmnId): RIO[BpmnService, MergeResult] =
     ZIO.accessM(_.get.mergeBpmn(bpmnId))
 
-  def validateBpmn(bpmnId: String): RIO[BpmnService, ValidateWarnings] =
+  def validateBpmn(bpmnId: BpmnId): RIO[BpmnService, ValidateWarnings] =
     ZIO.accessM(_.get.validateBpmn(bpmnId))
 
 
@@ -34,14 +34,16 @@ object bpmnService {
       register =>
 
         new Service {
-          def mergeBpmn(bpmnId: String, bpmnXml: Elem): Task[MergeResult] = {
+          def mergeBpmn(bpmnId: BpmnId, bpmnXml: Elem): Task[MergeResult] = {
             for {
               maybeBpmn <- register.requestBpmn(bpmnId)
               xMergeResult <- merge(bpmnXml, maybeBpmn, bpmnId)
-            } yield MergeResult(bpmnId, xMergeResult.xmlElem, maybeBpmn, xMergeResult.warnings)
+              f <- fileNameFromBpmnId(bpmnId)
+              fileName = maybeBpmn.map(_.xml.fileName).getOrElse(f)
+            } yield MergeResult(fileName, xMergeResult.xmlElem, maybeBpmn, xMergeResult.warnings)
           }
 
-          def mergeBpmn(bpmnId: String): Task[MergeResult] = {
+          def mergeBpmn(bpmnId: BpmnId): Task[MergeResult] = {
             for {
               maybeBpmn <- register.requestBpmn(bpmnId)
               bpmn <- if (maybeBpmn.isDefined)
@@ -49,15 +51,15 @@ object bpmnService {
               else ZIO.fail(BpmnServiceException(s"There is no BPMN $bpmnId in the BPMN Register"))
               xml <- StreamHelper.xml(bpmn.xml)
               xMergeResult <- merge(xml, maybeBpmn, bpmnId)
-            } yield MergeResult(bpmnId, xMergeResult.xmlElem, maybeBpmn, xMergeResult.warnings)
+            } yield MergeResult(bpmn.xml.fileName, xMergeResult.xmlElem, maybeBpmn, xMergeResult.warnings)
           }
 
-          def validateBpmn(bpmnId: String): Task[ValidateWarnings] =
+          def validateBpmn(bpmnId: BpmnId): Task[ValidateWarnings] =
             for {
               xMergeResult <- mergeBpmn(bpmnId)
             } yield xMergeResult.warnings
 
-          private def merge(xml: Elem, maybeBpmn: Option[Bpmn], bpmnId: String) =
+          private def merge(xml: Elem, maybeBpmn: Option[Bpmn], bpmnId: BpmnId) =
             for {
               xBpmn <- ZIO.effect(XBpmn(xml))
               xMergeResult: XMergeResult <- maybeBpmn.map(xBpmn.merge)
