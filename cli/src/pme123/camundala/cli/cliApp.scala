@@ -10,8 +10,9 @@ import pme123.camundala.camunda.deploymentService.DeploymentService
 import pme123.camundala.camunda.{DeployResult, bpmnService, deploymentService}
 import pme123.camundala.cli.ProjectInfo._
 import pme123.camundala.model.bpmn.CamundalaException
-import pme123.camundala.model.deploy.deployRegister.DeployRegister
-import pme123.camundala.model.deploy.{Deploy, DeployId, DockerConfig, deployRegister}
+import pme123.camundala.model.register.deployRegister.DeployRegister
+import pme123.camundala.model.deploy.{Deploy, DeployId, DockerConfig}
+import pme123.camundala.model.register.deployRegister
 import pme123.camundala.services.dockerComposer
 import pme123.camundala.services.dockerComposer.DockerComposer
 import zio._

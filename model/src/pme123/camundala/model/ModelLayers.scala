@@ -1,9 +1,8 @@
 package pme123.camundala.model
 
-import pme123.camundala.model.bpmn.bpmnRegister
-import pme123.camundala.model.bpmn.bpmnRegister.BpmnRegister
-import pme123.camundala.model.deploy.deployRegister
-import pme123.camundala.model.deploy.deployRegister.DeployRegister
+import pme123.camundala.model.register.bpmnRegister.BpmnRegister
+import pme123.camundala.model.register.deployRegister.DeployRegister
+import pme123.camundala.model.register.{bpmnRegister, deployRegister}
 import zio.ULayer
 import zio.clock.Clock
 import zio.console.Console

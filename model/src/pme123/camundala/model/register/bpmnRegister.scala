@@ -1,5 +1,6 @@
-package pme123.camundala.model.bpmn
+package pme123.camundala.model.register
 
+import pme123.camundala.model.bpmn.{Bpmn, BpmnId}
 import zio.stm.TMap
 import zio._
 

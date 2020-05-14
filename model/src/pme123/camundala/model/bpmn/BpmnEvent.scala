@@ -8,14 +8,14 @@ sealed trait BpmnEvent
   def inOuts: InputOutputs = InputOutputs.none
 }
 
-case class StartEvent(id: String,
+case class StartEvent(id: BpmnNodeId,
                       maybeForm: Option[UserTaskForm] = None,
                       extensions: PropExtensions = PropExtensions.none
                      )
   extends BpmnEvent
     with HasForm
 
-case class EndEvent(id: String,
+case class EndEvent(id: BpmnNodeId,
                     extensions: PropExtensions = PropExtensions.none,
                     inputs: Seq[InputOutput] = Nil
                    )

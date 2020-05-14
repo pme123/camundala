@@ -6,4 +6,5 @@ import pme123.camundala.model.bpmn.IdRegex
 package object deploy {
 
    type DeployId = String Refined IdRegex
+   type ProjectName = String Refined IdRegex
 }

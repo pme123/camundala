@@ -2,7 +2,7 @@
 
 Doing Camunda with Scala.
 
-# WORK IN PROGRESS / EXPERIMANTAL
+# WORK IN PROGRESS / EXPERIMENTAL
 
 # Key Concepts
 

@@ -8,10 +8,10 @@ import org.springframework.boot.SpringApplication
 import org.springframework.context.ConfigurableApplicationContext
 import pme123.camundala.app.appRunner
 import pme123.camundala.app.appRunner.AppRunner
-import pme123.camundala.model.bpmn.bpmnRegister
-import pme123.camundala.model.bpmn.bpmnRegister.BpmnRegister
-import pme123.camundala.model.deploy.deployRegister.DeployRegister
-import pme123.camundala.model.deploy.{Deploys, deployRegister}
+import pme123.camundala.model.register.bpmnRegister.BpmnRegister
+import pme123.camundala.model.register.deployRegister.DeployRegister
+import pme123.camundala.model.deploy.Deploys
+import pme123.camundala.model.register.{bpmnRegister, deployRegister}
 import pme123.camundala.services.httpServer.HttpServer
 import zio.console.Console
 import zio.stm.TRef
@@ -36,25 +36,25 @@ object StandardApp {
             def start(): Task[Unit] = for {
               httpServerFiber <- httpServService.serve().fork
               _ <- httpServerRef.set(Some(httpServerFiber)).commit
-              _ <- update()
+              _ <- update() // this takes a bit Read Script
               camundaFork <- managedSpringApp(clazz).useForever.fork.provideLayer(ZLayer.succeed(console))
               _ <- camundaRef.set(Some(camundaFork)).commit
             } yield ()
 
             def update(): Task[Unit] = for {
-              deploys <- readScript(bpmnModelsPath)
+              deploys <- readScript(bpmnModelsPath) // this takes a bit
               _ <- ZIO.foreach(deploys.value.flatMap(_.bpmns))(b => bpmnRegService.registerBpmn(b))
               _ <- ZIO.foreach(deploys.value)(d => deplRegService.registerDeploy(d))
             } yield ()
 
-            def stop(): Task[Unit] = (for {
+            def stop(): Task[Unit] = for {
               maybeHttpFiber <- httpServerRef.get.commit
               httpFiber <- ZIO.fromOption(maybeHttpFiber).mapError(_ => new Exception("Service already down"))
               _ <- httpFiber.interrupt
               maybeCamundaFiber <- camundaRef.get.commit
               camFiber <- ZIO.fromOption(maybeCamundaFiber).mapError(_ => new Exception("Service already down"))
               _ <- camFiber.interrupt
-            } yield ())
+            } yield ()
 
             def restart(): Task[Unit] =
               stop() *> start()

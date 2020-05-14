@@ -2,7 +2,7 @@ package pme123.camundala.camunda
 
 import eu.timepit.refined.auto._
 import pme123.camundala.model.bpmn.ConditionExpression.Expression
-import pme123.camundala.model.bpmn.Extensions.{PropExtensions, PropInOutExtensions}
+import pme123.camundala.model.bpmn.Extensions.{Prop, PropExtensions, PropInOutExtensions}
 import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
@@ -27,29 +27,30 @@ object TestData {
       //embedded:deployment:static/forms/reviewTweet.html
       UserTask("user_task_review_tweet",
         Some(EmbeddedDeploymentForm(StaticFile("static/forms/reviewTweet.html", "bpmn"))),
-        PropInOutExtensions(Map("durationMean" -> "10000", "durationSd" -> "5000"),InputOutputs(Seq(InputOutput("testVal", Expression("ok"))))))),
+        PropInOutExtensions(Seq(Prop("durationMean", "10000"), Prop("durationSd", "5000")),
+          InputOutputs(Seq(InputOutput("testVal", Expression("ok"))))))),
     List(
       ServiceTask("service_task_send_rejection_notification",
         DelegateExpression("#{emailAdapter}"),
-        PropInOutExtensions(Map("KPI-Ratio" -> "Tweet Rejected"))),
+        PropInOutExtensions(Seq(Prop("kpiRatio", "Tweet Rejected")))),
       ServiceTask("service_task_publish_on_twitter",
         DelegateExpression("#{tweetAdapter}"),
-        PropInOutExtensions(Map("KPI-Ratio" -> "Tweet Approved")))
-    ),
+        PropInOutExtensions(Seq(Prop("kpiRatio", "Tweet Approved")))
+    )),
     startEvents = List(StartEvent("start_event_new_tweet",
       Some(EmbeddedDeploymentForm(StaticFile("static/forms/createTweet.html", "bpmn"))),
-      PropExtensions(Map("KPI-Cycle-Start" -> "Tweet Approval Time"))
+      PropExtensions(Seq(Prop("kpiCycleStart", "Tweet Approval Time")))
     )),
     exclusiveGateways = List(ExclusiveGateway("gateway_approved",
-      PropExtensions(Map("KPI-Cycle-End" -> "Tweet Approval Time"))
+      PropExtensions(Seq(Prop("kpiCycleStop", "Tweet Approval Time")))
     )
     ),
     sequenceFlows = List(SequenceFlow("yes",
       Some(Expression("#{approved}")),
-      PropExtensions(Map("probability" -> "87"))
+      PropExtensions(Seq(Prop("probability", "87")))
     ), SequenceFlow("no",
       Some(Expression("#{!approved}")),
-      PropExtensions(Map("probability" -> "13"))
+      PropExtensions(Seq(Prop("probability", "13")))
     ))
   )
 

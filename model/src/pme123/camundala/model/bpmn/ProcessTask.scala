@@ -11,7 +11,7 @@ sealed trait ImplementationTask
   def implementation: TaskImplementation
 }
 
-case class ServiceTask(id: String,
+case class ServiceTask(id: BpmnNodeId,
                        implementation: TaskImplementation,
                        extensions: PropInOutExtensions = PropInOutExtensions.none,
                        inOuts: InputOutputs = InputOutputs.none
@@ -19,7 +19,7 @@ case class ServiceTask(id: String,
   extends ProcessTask
     with ImplementationTask
 
-case class SendTask(id: String,
+case class SendTask(id: BpmnNodeId,
                     implementation: TaskImplementation,
                     extensions: PropInOutExtensions = PropInOutExtensions.none,
                     inOuts: InputOutputs = InputOutputs.none
@@ -36,7 +36,7 @@ trait HasForm
 
 }
 
-case class UserTask(id: String,
+case class UserTask(id: BpmnNodeId,
                     maybeForm: Option[UserTaskForm] = None,
                     extensions: PropInOutExtensions = PropInOutExtensions.none,
                     inOuts: InputOutputs = InputOutputs.none

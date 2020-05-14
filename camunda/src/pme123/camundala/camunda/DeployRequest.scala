@@ -11,18 +11,18 @@ case class DeployRequest(bpmnId: BpmnId,
                          deployFiles: Set[DeployFile] = Set.empty)
 
 object DeployRequest {
-  val DEPLOYMENT_NAME = "deployment-name"
-  val ENABLE_DUPLICATE_FILTERING = "enable-duplicate-filtering"
-  val DEPLOY_CHANGED_ONLY = "deploy-changed-only"
-  val DEPLOYMENT_SOURCE = "deployment-source"
-  val TENANT_ID = "tenant-id"
+  val DeploymentName = "deployment-name"
+  val EnableDuplicateFiltering = "enable-duplicate-filtering"
+  val DeployChangedOnly = "deploy-changed-only"
+  val DeploymentSource = "deployment-source"
+  val tenantId = "tenant-id"
 
-  val RESERVED_KEYWORDS = Set(
-    DEPLOYMENT_NAME,
-    ENABLE_DUPLICATE_FILTERING,
-    DEPLOY_CHANGED_ONLY,
-    DEPLOYMENT_SOURCE,
-    TENANT_ID
+  val ReservedKeywords = Set(
+    DeploymentName,
+    EnableDuplicateFiltering,
+    DeployChangedOnly,
+    DeploymentSource,
+    tenantId
   )
 }
 

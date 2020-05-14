@@ -9,7 +9,7 @@ case class Bpmn(id: BpmnId,
   def staticFiles: Set[StaticFile] = processes.flatMap(_.staticFiles).toSet
 }
 
-case class BpmnProcess(id: BpmnId,
+case class BpmnProcess(id: ProcessId,
                        userTasks: Seq[UserTask] = Seq.empty,
                        serviceTasks: Seq[ServiceTask] = Seq.empty,
                        sendTasks: Seq[SendTask] = Seq.empty,
@@ -22,19 +22,19 @@ case class BpmnProcess(id: BpmnId,
     userTasks.flatMap(_.staticFiles).toSet ++
       startEvents.flatMap(_.staticFiles)
 
-  lazy val userTaskMap: Map[String, UserTask] = userTasks.map(t => t.id -> t).toMap
-  lazy val serviceTaskMap: Map[String, ServiceTask] = serviceTasks.map(t => t.id -> t).toMap
-  lazy val sendTaskMap: Map[String, SendTask] = sendTasks.map(t => t.id -> t).toMap
-  lazy val startEventMap: Map[String, StartEvent] = startEvents.map(e => e.id -> e).toMap
-  lazy val exclusiveGatewayMap: Map[String, ExclusiveGateway] = exclusiveGateways.map(g => g.id -> g).toMap
-  lazy val parallelGatewayMap: Map[String, ParallelGateway] = parallelGateways.map(g => g.id -> g).toMap
-  lazy val sequenceFlowMap: Map[String, SequenceFlow] = sequenceFlows.map(g => g.id -> g).toMap
+  lazy val userTaskMap: Map[BpmnNodeId, UserTask] = userTasks.map(t => t.id -> t).toMap
+  lazy val serviceTaskMap: Map[BpmnNodeId, ServiceTask] = serviceTasks.map(t => t.id -> t).toMap
+  lazy val sendTaskMap: Map[BpmnNodeId, SendTask] = sendTasks.map(t => t.id -> t).toMap
+  lazy val startEventMap: Map[BpmnNodeId, StartEvent] = startEvents.map(e => e.id -> e).toMap
+  lazy val exclusiveGatewayMap: Map[BpmnNodeId, ExclusiveGateway] = exclusiveGateways.map(g => g.id -> g).toMap
+  lazy val parallelGatewayMap: Map[BpmnNodeId, ParallelGateway] = parallelGateways.map(g => g.id -> g).toMap
+  lazy val sequenceFlowMap: Map[BpmnNodeId, SequenceFlow] = sequenceFlows.map(g => g.id -> g).toMap
 
 }
 
 // org.camunda.bpm.model.bpmn.instance.FlowNode
 trait BpmnNode {
-  def id: String
+  def id: BpmnNodeId
 }
 
 

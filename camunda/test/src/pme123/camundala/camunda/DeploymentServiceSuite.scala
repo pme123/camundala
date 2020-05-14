@@ -6,8 +6,8 @@ import eu.timepit.refined.auto._
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity
 import org.camunda.bpm.engine.repository.Deployment
 import pme123.camundala.camunda.xml.MergeResult
-import pme123.camundala.model.bpmn.bpmnRegister
 import pme123.camundala.model.deploy.DeployId
+import pme123.camundala.model.register.bpmnRegister
 import zio._
 import zio.test.Assertion.equalTo
 import zio.test._

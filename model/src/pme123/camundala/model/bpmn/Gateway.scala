@@ -8,8 +8,8 @@ trait Gateway
   val inOuts: InputOutputs = InputOutputs.none
 }
 
-case class ExclusiveGateway(id: String, extensions: PropExtensions = PropExtensions.none)
+case class ExclusiveGateway(id: BpmnNodeId, extensions: PropExtensions = PropExtensions.none)
   extends Gateway
 
-case class ParallelGateway(id: String, extensions: PropExtensions = PropExtensions.none)
+case class ParallelGateway(id: BpmnNodeId, extensions: PropExtensions = PropExtensions.none)
   extends Gateway

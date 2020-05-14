@@ -2,19 +2,11 @@ package pme123.camundala.camunda.xml
 
 import pme123.camundala.camunda.xml.XmlHelper._
 import pme123.camundala.model.bpmn.ConditionExpression.{Expression, InlineScript}
-import pme123.camundala.model.bpmn.Extensions.PropInOutExtensions
+import pme123.camundala.model.bpmn.Extensions.{Prop, PropInOutExtensions}
 import pme123.camundala.model.bpmn._
 import zio.{Task, UIO, ZIO}
 
 import scala.xml.{Elem, Node}
-
-trait XIdentifiableNode {
-  def xmlElem: Elem
-
-  def tagName: String
-
-  val id: String = xmlElem \@ "id"
-}
 
 case class XBpmn(bpmnXml: Elem) {
 
@@ -30,7 +22,7 @@ case class XBpmn(bpmnXml: Elem) {
       else
         ValidateWarnings(s"You have ${processes.length} Processes in the XML-Model, but you have ${bpmn.processes.length} in Scala")
     for {
-      mergeResults <- ZIO.foreach(processes)(xp =>  bpmnIdFromStr(xp.id).flatMap(id => xp.merge(bpmn.processMap.get(id))))
+      mergeResults <- ZIO.foreach(processes)(xp => bpmnIdFromStr(xp.id).flatMap(id => xp.merge(bpmn.processMap.get(id))))
     } yield
       mergeResults
         .foldLeft(XMergeResult(bpmnXml, processWarnings)) {
@@ -41,9 +33,10 @@ case class XBpmn(bpmnXml: Elem) {
   }
 }
 
-case class XBpmnProcess(xmlElem: Elem)
-  extends XIdentifiableNode {
-  def tagName: String = "Process"
+case class XBpmnProcess(xmlElem: Elem) {
+
+  val tagName: String = "Process"
+  val id: String = xmlElem \@ "id"
 
   val userTasks: Seq[XUserTask[UserTask]] =
     (xmlElem \ "userTask").map { case e: Elem => XUserTask(e) }
@@ -83,7 +76,7 @@ case class XBpmnProcess(xmlElem: Elem)
     }
 
 
-  private def mergeExtensionable[A <: Extensionable](xml: Elem, extensionableMap: Map[String, A], xExts: Seq[XBpmnNode[A]], label: String): Task[XMergeResult] = {
+  private def mergeExtensionable[A <: Extensionable](xml: Elem, extensionableMap: Map[BpmnNodeId, A], xExts: Seq[XBpmnNode[A]], label: String): Task[XMergeResult] = {
     val warnings =
       if (extensionableMap.size == xExts.length)
         ValidateWarnings.none
@@ -91,7 +84,7 @@ case class XBpmnProcess(xmlElem: Elem)
         ValidateWarnings(s"You have ${xExts.length} $label in the XML-Model, but you have ${extensionableMap.size} in Scala")
 
     for {
-      mergeResults <- ZIO.foreach(xExts)(xt => xt.merge(extensionableMap.get(xt.id)))
+      mergeResults <- ZIO.foreach(xExts)(xn => xn.id.flatMap(id => xn.merge(extensionableMap.get(id))))
     } yield
       mergeResults.foldLeft(XMergeResult(xml, warnings)) {
         case (XMergeResult(resXml: Elem, resWarn), XMergeResult(xml, taskWarn)) =>
@@ -101,59 +94,66 @@ case class XBpmnProcess(xmlElem: Elem)
   }
 }
 
-trait XBpmnNode[T <: Extensionable]
-  extends XIdentifiableNode {
+trait XBpmnNode[T <: Extensionable] {
 
-  def merge(maybeNode: Option[T]): Task[XMergeResult] = Task((maybeNode, xmlElem) match {
-    case (None, _) =>
-      XMergeResult(xmlElem, ValidateWarnings(s"There is NOT a $tagName with id '$id' in Scala."))
-    case (Some(extensionable), nodeElem: Elem) =>
-      val propElem = nodeElem \\ "property"
-      val propParams = propElem.map(_ \@ "name")
-      val inputElem = nodeElem \\ "inputParameter"
-      val inputParams = inputElem.map(_ \@ "name")
-      val outputElem = nodeElem \\ "outputParameter"
-      val outputParams = outputElem.map(_ \@ "name")
-      val child = nodeElem.child
-      val otherChild = child.filter(_.label != "extensionElements")
-      val xmlElem: Elem =
-        nodeElem.copy(
-          child = <extensionElements xmlns:camunda={xmlnsCamunda} xmlns={xmlnsBpmn}>
-            <camunda:properties>
-              {for {(k, v) <- extensionable.extensions.properties
-                    if !propParams.contains(k) // only add the one that not exist
-                    } yield
-                <camunda:property name={k} value={v}/>}{//
-              propElem}
-            </camunda:properties>{extensionable.extensions match {
-              case PropInOutExtensions(_, inOuts) =>
-                <camunda:inputOutput>
-                  {for {(k, cond) <- inOuts.inputMap
-                        if !inputParams.contains(k) // only add the one that not exist
-                        } yield
-                  <camunda:inputParameter name={k}>
-                    {expressionElem(cond)}
-                  </camunda:inputParameter>}{//
-                  inputElem}{//
-                  for {(k, cond) <- inOuts.outputMap
-                       if !outputParams.contains(k) // only add the one that not exist
-                       } yield
-                    <camunda:outputParameter name={k}>
+  def xmlElem: Elem
+
+  def tagName: String
+
+  lazy val id: ZIO[Any, ModelException, BpmnNodeId] = bpmnNodeIdFromStr(xmlElem \@ "id")
+
+  def merge(maybeNode: Option[T]): Task[XMergeResult] = {
+    id.map(id => (maybeNode, xmlElem) match {
+      case (None, _) =>
+        XMergeResult(xmlElem, ValidateWarnings(s"There is NOT a $tagName with id '$id' in Scala."))
+      case (Some(extensionable), nodeElem: Elem) =>
+        val propElem = nodeElem \\ "property"
+        val propParams = propElem.map(_ \@ "name")
+        val inputElem = nodeElem \\ "inputParameter"
+        val inputParams = inputElem.map(_ \@ "name")
+        val outputElem = nodeElem \\ "outputParameter"
+        val outputParams = outputElem.map(_ \@ "name")
+        val child = nodeElem.child
+        val otherChild = child.filter(_.label != "extensionElements")
+        val xmlElem: Elem =
+          nodeElem.copy(
+            child = <extensionElements xmlns:camunda={xmlnsCamunda} xmlns={xmlnsBpmn}>
+              <camunda:properties>
+                {for {Prop(k, v) <- extensionable.extensions.properties
+                      if !propParams.contains(k) // only add the one that not exist
+                      } yield
+                  <camunda:property name={k.value} value={v}/>}{//
+                propElem}
+              </camunda:properties>{extensionable.extensions match {
+                case PropInOutExtensions(_, inOuts) =>
+                  <camunda:inputOutput>
+                    {for {(k, cond) <- inOuts.inputMap
+                          if !inputParams.contains(k) // only add the one that not exist
+                          } yield
+                    <camunda:inputParameter name={k.value}>
                       {expressionElem(cond)}
-                    </camunda:outputParameter>}{//
-                  outputElem}
-                </camunda:inputOutput>
-              case _ => ()
-            }}
-          </extensionElements>
-            ++ {
-            otherChild
-          }
-        )
-      XMergeResult(xmlElem, ValidateWarnings.none)
-    case (Some(_), _) =>
-      XMergeResult(xmlElem, ValidateWarnings(s"The XML Node must be a XML Elem not just a Node ($tagName with id '$id')."))
-  })
+                    </camunda:inputParameter>}{//
+                    inputElem}{//
+                    for {(k, cond) <- inOuts.outputMap
+                         if !outputParams.contains(k) // only add the one that not exist
+                         } yield
+                      <camunda:outputParameter name={k.value}>
+                        {expressionElem(cond)}
+                      </camunda:outputParameter>}{//
+                    outputElem}
+                  </camunda:inputOutput>
+                case _ => ()
+              }}
+            </extensionElements>
+              ++ {
+              otherChild
+            }
+          )
+        XMergeResult(xmlElem, ValidateWarnings.none)
+      case (Some(_), _) =>
+        XMergeResult(xmlElem, ValidateWarnings(s"The XML Node must be a XML Elem not just a Node ($tagName with id '$id')."))
+    })
+  }
 
   private def expressionElem(cond: ConditionExpression) = {
     cond match {

@@ -1,7 +1,8 @@
-package pme123.camundala.model.deploy
+package pme123.camundala.model.register
 
-import zio._
+import pme123.camundala.model.deploy.{Deploy, DeployId}
 import zio.stm.TMap
+import zio._
 
 /**
   * Registry to register a Bpmn.

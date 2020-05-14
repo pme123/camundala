@@ -28,12 +28,12 @@
     <startEvent id="start_event_new_tweet" name="Tweet written" camunda:formKey="embedded:deployment:static/forms/createTweet.html" camunda:initiator="initiator">
       <outgoing>SequenceFlow_9</outgoing>
     </startEvent>
-    <userTask id="user_task_review_tweet" name="Review Tweet" camunda:formKey="embedded:deployment:static/forms/reviewTweet.html" camunda:assignee="kermit">
+    <userTask id="user_task_review._tweet" name="Review Tweet" camunda:formKey="embedded:deployment:static/forms/reviewTweet.html" camunda:assignee="kermit">
       <incoming>SequenceFlow_9</incoming>
       <outgoing>SequenceFlow_2</outgoing>
     </userTask>
-    <sequenceFlow id="SequenceFlow_2" name="" sourceRef="user_task_review_tweet" targetRef="gateway_approved" />
-    <sequenceFlow id="SequenceFlow_9" name="" sourceRef="start_event_new_tweet" targetRef="user_task_review_tweet" />
+    <sequenceFlow id="SequenceFlow_2" name="" sourceRef="user_task_review._tweet" targetRef="gateway_approved" />
+    <sequenceFlow id="SequenceFlow_9" name="" sourceRef="start_event_new_tweet" targetRef="user_task_review._tweet" />
     <sequenceFlow id="SequenceFlow_3" name="" sourceRef="service_task_publish_on_twitter" targetRef="gateway_join" />
     <sequenceFlow id="SequenceFlow_5" name="" sourceRef="gateway_join" targetRef="end_event_tweet_handled" />
     <sequenceFlow id="yes" name="yes" sourceRef="gateway_approved" targetRef="service_task_publish_on_twitter" />
@@ -75,7 +75,7 @@
           <omgdc:Bounds x="161" y="211" width="65" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_Review_Tweet_3" bpmnElement="user_task_review_tweet">
+      <bpmndi:BPMNShape id="BPMNShape_Review_Tweet_3" bpmnElement="user_task_review._tweet">
         <omgdc:Bounds x="286" y="154" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="BPMNShape_Review_Tweet_3" targetElement="BPMNShape_Approved__3">

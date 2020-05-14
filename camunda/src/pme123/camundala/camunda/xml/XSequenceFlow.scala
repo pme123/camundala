@@ -13,14 +13,14 @@ case class XSequenceFlow[T <: SequenceFlow](xmlElem: Elem)
 
   override def merge(maybeNode: Option[T]): Task[XMergeResult] =
     for {XMergeResult(xml, warnings) <- super.merge(maybeNode)
-         result <- UIO.succeed {
+         result <- id.map { elemId =>
            val newElem = maybeNode
              .flatMap(_.maybeExpression)
              .map {
                case Expression(value) =>
                  xml.copy(child =
                    xml.child.filterNot(_.label == "conditionExpression") ++
-                   <conditionExpression xsi:type="tFormalExpression" id={s"FormalExpression_${id}"} xmlns:xsi={xmlnsXsi}>{value
+                   <conditionExpression xsi:type="tFormalExpression" id={s"FormalExpression_${elemId}"} xmlns:xsi={xmlnsXsi}>{value
                      }</conditionExpression>
                  )
                case _ => xml

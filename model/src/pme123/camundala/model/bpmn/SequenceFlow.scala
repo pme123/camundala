@@ -2,7 +2,7 @@ package pme123.camundala.model.bpmn
 
 import pme123.camundala.model.bpmn.Extensions.PropExtensions
 
-case class SequenceFlow(id: String,
+case class SequenceFlow(id: BpmnNodeId,
                         maybeExpression: Option[ConditionExpression] = None,
                         extensions: PropExtensions = PropExtensions.none)
   extends BpmnNode

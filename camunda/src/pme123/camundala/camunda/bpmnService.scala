@@ -1,8 +1,9 @@
 package pme123.camundala.camunda
 
 import pme123.camundala.camunda.xml.{MergeResult, ValidateWarnings, XBpmn, XMergeResult}
-import pme123.camundala.model.bpmn.bpmnRegister.BpmnRegister
+import pme123.camundala.model.register.bpmnRegister.BpmnRegister
 import pme123.camundala.model.bpmn.{fileNameFromBpmnId, _}
+import pme123.camundala.model.register.bpmnRegister
 import zio._
 
 import scala.xml.Elem

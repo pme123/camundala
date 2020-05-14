@@ -1,5 +1,6 @@
 package pme123.camundala.services
 
+import eu.timepit.refined.string.Url
 import pme123.camundala.model.deploy.DockerConfig
 import pme123.camundala.services.sttpBackend.SttpTaskBackend
 import sttp.client._
@@ -66,7 +67,7 @@ object dockerComposer {
                 args.mkString(" ", " ", ""))
             )
 
-          private def pageIsReady(url:String, attempt: Int = 50): RIO[Clock, Unit] = {
+          private def pageIsReady(url: Url, attempt: Int = 50): RIO[Clock, Unit] = {
             val uri = uri"$url"
             (for {
               _ <- log.debug(s"Check $url")

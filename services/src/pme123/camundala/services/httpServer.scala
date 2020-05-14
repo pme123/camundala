@@ -71,16 +71,16 @@ object httpServer {
           }
 
           (for {
-            files <- ZIO.foreach(m.parts.filter(p => p.name.isEmpty || !RESERVED_KEYWORDS.contains(p.name.get)))(p =>
+            files <- ZIO.foreach(m.parts.filter(p => p.name.isEmpty || !ReservedKeywords.contains(p.name.get)))(p =>
               p.filename.map(fn => p.body.compile.toVector.flatMap(v => fileNameFromStr(fn).map(x => DeployFile(x, v))))
                 .getOrElse(Task.fail(InvalidRequestException(s"No file name found in the deployment resource described by form parameter '${p.name.getOrElse("")}'."))))
-            maybeBpmnId <- forName(m, DEPLOYMENT_NAME)
-            bpmnIdStr <- ZIO.fromOption(maybeBpmnId).mapError(_ => HttpServerException(s"BpmnId ($DEPLOYMENT_NAME) must be set!"))
+            maybeBpmnId <- forName(m, DeploymentName)
+            bpmnIdStr <- ZIO.fromOption(maybeBpmnId).mapError(_ => HttpServerException(s"BpmnId ($DeploymentName) must be set!"))
             bpmnId <- bpmnIdFromStr(bpmnIdStr)
-            enableDuplFiltering <- forName(m, ENABLE_DUPLICATE_FILTERING).map(_.exists(_.toBoolean))
-            deployChangedOnly <- forName(m, DEPLOY_CHANGED_ONLY).map(_.exists(_.toBoolean))
-            deploySource <- forName(m, DEPLOYMENT_SOURCE)
-            tenantId <- forName(m, TENANT_ID)
+            enableDuplFiltering <- forName(m, EnableDuplicateFiltering).map(_.exists(_.toBoolean))
+            deployChangedOnly <- forName(m, DeployChangedOnly).map(_.exists(_.toBoolean))
+            deploySource <- forName(m, DeploymentSource)
+            tenantId <- forName(m, tenantId)
             deployResult <- deployService.deploy(DeployRequest(bpmnId, enableDuplFiltering, deployChangedOnly, deploySource, tenantId, files.toSet))
           } yield deployResult.asJson)
             .tap(j => log.info(s"JSON: $j"))
