@@ -1,6 +1,7 @@
 package pme123.camundala.model
 
-import eu.timepit.refined.{W, refineV}
+import eu.timepit.refined._
+import eu.timepit.refined
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.string.MatchesRegex
 import zio.ZIO
@@ -18,6 +19,8 @@ package object bpmn {
   type FileName = String Refined FileNameRegex
   type FilePath = String Refined FilePathRegex
   type PropKey = String Refined IdRegex
+
+  type Url = String Refined string.Url
 
   def bpmnIdFromFileName(fileName: FileName): ZIO[Any, ModelException, BpmnId] =
     bpmnIdFromStr(fileName.value)

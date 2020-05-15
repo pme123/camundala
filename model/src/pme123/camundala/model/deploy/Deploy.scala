@@ -1,7 +1,6 @@
 package pme123.camundala.model.deploy
 
 import eu.timepit.refined.auto._
-import eu.timepit.refined.string.Url
 import pme123.camundala.model.bpmn._
 
 case class Deploys(value: Set[Deploy])

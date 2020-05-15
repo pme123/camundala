@@ -36,15 +36,16 @@ object StandardApp {
             def start(): Task[Unit] = for {
               httpServerFiber <- httpServService.serve().fork
               _ <- httpServerRef.set(Some(httpServerFiber)).commit
-              _ <- update() // this takes a bit Read Script
               camundaFork <- managedSpringApp(clazz).useForever.fork.provideLayer(ZLayer.succeed(console))
               _ <- camundaRef.set(Some(camundaFork)).commit
             } yield ()
 
             def update(): Task[Unit] = for {
+              _ <- console.putStrLn(s"Starting compile $bpmnModelsPath\nThis will take some time - Keep calm and enjoy a coffee;)")
               deploys <- readScript(bpmnModelsPath) // this takes a bit
               _ <- ZIO.foreach(deploys.value.flatMap(_.bpmns))(b => bpmnRegService.registerBpmn(b))
               _ <- ZIO.foreach(deploys.value)(d => deplRegService.registerDeploy(d))
+              _ <- console.putStrLn(s"Registry  $bpmnModelsPath is updated\nThanks for your patience;)")
             } yield ()
 
             def stop(): Task[Unit] = for {

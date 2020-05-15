@@ -49,5 +49,9 @@ val bpmns: Set[Bpmn] =
     )))
 
 Deploys(Set(
-  Deploy("default", bpmns, DockerConfig(dockerDir = "examples/docker")))
+  Deploy("default", bpmns, DockerConfig(dockerDir = "examples/docker")),
+  Deploy("remote", bpmns, DockerConfig(dockerDir = "examples/docker",
+    composeFiles = Seq("docker-compose", "docker-compose-camunda", "docker-compose-mailcatcher"),
+    maybeReadyUrl = Some("http://localhost:8085/camunda"),
+    projectName = "camunda-remote")))
 )

@@ -85,6 +85,8 @@ object CliCommand {
 
     case class Restart()
 
+    case class Update()
+
   }
 
 

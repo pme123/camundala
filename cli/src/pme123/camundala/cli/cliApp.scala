@@ -77,6 +77,8 @@ object cliApp {
                 appStop()
               case App.Restart() =>
                 appRestart()
+              case App.Update() =>
+                appUpdate()
             }
           }
 
@@ -102,16 +104,21 @@ object cliApp {
 
         def appStart() =
           runUnit("Start App", () => appRunner.start().map(_ => ""))
+
         def appStop() =
           runUnit("Stop App", () => appRunner.stop().map(_ => ""))
+
         def appRestart() =
           runUnit("Restart App", () => appRunner.restart().map(_ => ""))
+
+        def appUpdate() =
+          runUnit("Update App (Register)", () => appRunner.update().map(_ => ""))
 
         def dockerUp(deployId: DeployId) =
           runDocker(deployId, "Docker Up", dockerService.runDockerUp(_).provideLayer(ZLayer.succeed(clock)))
 
         def dockerStop(deployId: DeployId) =
-          runDocker(deployId, "Docker Stop", dockerService.runDockerStop)
+            runDocker(deployId, "Docker Stop", dockerService.runDockerStop)
 
         def dockerDown(deployId: DeployId) =
           runDocker(deployId, "Docker Down", dockerService.runDockerDown)
@@ -132,7 +139,7 @@ object cliApp {
             maybeDeploy <- deployReg.requestDeploy(deployId)
             results <-
               if (maybeDeploy.isEmpty)
-                ZIO.fail(CliAppException(s"There is no Deployment with the id '$deployId''"))
+                ZIO.fail(CliAppException(s"There is no Deployment with the id '$deployId'"))
               else
                 run(maybeDeploy.get)
             result <- printSuccess(s"Successful $label", details(results))
@@ -165,6 +172,7 @@ object cliApp {
         (projectInfo: ProjectInfo) =>
           for {
             _ <- intro *> printProject(projectInfo)
+            _ <- appUpdate() // make sure Registry is initialized
             d <- cliRunner
           } yield d
 
