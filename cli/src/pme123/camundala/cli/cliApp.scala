@@ -50,8 +50,8 @@ object cliApp {
               deployBpmn(deployId)
             case UndeployBpmn(deployId) =>
               undeployBpmn(deployId)
-            case Deployments() =>
-              deployments()
+            case Deployments(deployId) =>
+              deployments(deployId)
             case other: UIO[ExitCode] =>
               other
           }
@@ -103,10 +103,14 @@ object cliApp {
           )
 
         def undeployBpmn(deployId: DeployId) =
-          runWithDeployId[List[Unit]](deployId, " Undeploy BPMN", config => Task.foreach(config.bpmns)(b => deployService.undeploy(b)), _ => "")
+          runWithDeployId[List[Unit]](deployId, " Undeploy BPMN", deploy =>
+            Task.foreach(deploy.bpmns)(b => deployService.undeploy(b)), _ => "")
 
-        def deployments() =
-          runUnit("Get Deployments", () => deployService.deployments().map(_.mkString("\n")))
+        def deployments(deployId: DeployId) =
+          runWithDeployId[Seq[DeployResult]](deployId, " Get Deployments", deploy =>
+            deploy.maybeRemote.map(deployClient.deployments) // run the remote version if configured
+              .getOrElse(deployService.deployments()),
+            results => results.mkString(" - ", "\n - ", ""))
 
         def appStart() =
           runUnit("Start App", () => appRunner.start().map(_ => ""))

@@ -31,8 +31,8 @@ object CliCommand {
 
   lazy val deploymentsOpts: Opts[Deployments] =
     Opts.subcommand("deployments", "Get a list of Camunda Deployments") {
-      Opts.unit
-        .map(_ => Deployments())
+      deployId
+        .map(Deployments)
     }
 
   val dockerUpOpts: Opts[Docker.Up] = Opts.subcommand("up", "Docker Compose Up") {
@@ -58,7 +58,7 @@ object CliCommand {
     Opts.unit.map(_ => App.Update())
   }
 
-  case class Deployments()
+  case class Deployments(deployId: DeployId = "default")
 
   case class DeployBpmn(deployId: DeployId = "default")
 

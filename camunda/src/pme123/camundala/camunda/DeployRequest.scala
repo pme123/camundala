@@ -29,7 +29,7 @@ object DeployRequest {
 case class DeployFile(filePath: FilePath, file: Vector[Byte])
 
 case class DeployResult(id: String,
-                        name: String,
+                        name: Option[String],
                         deploymentTime: String,
                         source: Option[String] = None,
                         tenantId: Option[String] = None,

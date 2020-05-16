@@ -59,7 +59,7 @@ object deploymentService {
             for {
               mergeResults <- mergeDeployFiles(request.deployFiles)
               deployment <- processEngineService.deploy(request, mergeResults)
-              deployResult = DeployResult(deployment.getId, deployment.getName,
+              deployResult = DeployResult(deployment.getId, Some(deployment.getName),
                 deployment.getDeploymentTime.toString,
                 Option(deployment.getSource),
                 Option(deployment.getTenantId),
@@ -74,7 +74,7 @@ object deploymentService {
               deployment <- processEngineService.deploy(DeployRequest(bpmn.id,
                 source = Some("Camundala Deployer")),
                 Seq(mergeResult))
-            } yield DeployResult(deployment.getId, deployment.getName,
+            } yield DeployResult(deployment.getId, Some(deployment.getName),
               deployment.getDeploymentTime.toString,
               Option(deployment.getSource),
               Option(deployment.getTenantId),
@@ -90,7 +90,7 @@ object deploymentService {
             for {
               depls <- processEngineService.deployments()
               result = depls.map(deployment =>
-                DeployResult(deployment.getId, deployment.getName,
+                DeployResult(deployment.getId, Some(deployment.getName),
                   deployment.getDeploymentTime.toString,
                   Option(deployment.getSource),
                   Option(deployment.getTenantId)
