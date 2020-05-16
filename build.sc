@@ -76,6 +76,7 @@ object Libs {
     ivy"org.http4s::http4s-blaze-client:${Version.http4s}"
   val http4sCirce = ivy"org.http4s::http4s-circe:${Version.http4s}"
   val http4sDsl = ivy"org.http4s::http4s-dsl:${Version.http4s}"
+  val scalaCompiler = ivy"org.scala-lang:scala-compiler:${Version.scalaVersion}"
 
   // cli
   val decline = ivy"com.monovore::decline-effect:${Version.decline}"
@@ -228,6 +229,12 @@ object camunda
 object services extends ModuleWithTests {
 
   override def moduleDeps = Seq(camunda)
+
+  override def runIvyDeps =
+    Agg(
+      Libs.scalaCompiler
+    )
+
 
   override def ivyDeps = {
     Agg(

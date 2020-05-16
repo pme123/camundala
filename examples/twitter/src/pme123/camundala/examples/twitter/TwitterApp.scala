@@ -1,7 +1,5 @@
 package pme123.camundala.examples.twitter
 
-import java.nio.file.{Path, Paths}
-
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import pme123.camundala
 import pme123.camundala.app.appRunner.AppRunner
@@ -47,7 +45,7 @@ object TwitterApp extends ZSpringApp {
 
   private[twitter] lazy val twitterApp: ZLayer[StandardAppDeps, Nothing, AppRunner] = StandardApp.layer(classOf[TwitterApp], bpmnModelsPath)
 
-  private val bpmnModelsPath: Path = Paths.get(".", "examples", "twitter", "resources", "bpmnModels.sc")
+  private val bpmnModelsPath = "bpmnModels.sc"
 
   private[twitter] lazy val cliLayer = (Clock.live ++ Console.live ++ CamundaLayers.bpmnServiceLayer ++ ModelLayers.deployRegisterLayer ++ CamundaLayers.deploymentServiceLayer ++ httpDeployClientLayer ++ ServicesLayers.dockerComposerLayer ++ twitterApp) >>> cliApp.live
   private[twitter] lazy val httpServerLayer = ConfigLayers.appConfigLayer ++ deploymentServiceLayer ++ ModelLayers.logLayer("httpServer") >>> httpServer.live

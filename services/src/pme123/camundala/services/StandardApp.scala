@@ -1,21 +1,20 @@
 package pme123.camundala.services
 
 import java.io.InputStreamReader
-import java.nio.file.Path
 
 import javax.script.ScriptEngineManager
 import org.springframework.boot.SpringApplication
 import org.springframework.context.ConfigurableApplicationContext
 import pme123.camundala.app.appRunner
 import pme123.camundala.app.appRunner.AppRunner
+import pme123.camundala.model.deploy.Deploys
 import pme123.camundala.model.register.bpmnRegister.BpmnRegister
 import pme123.camundala.model.register.deployRegister.DeployRegister
-import pme123.camundala.model.deploy.Deploys
 import pme123.camundala.model.register.{bpmnRegister, deployRegister}
 import pme123.camundala.services.httpServer.HttpServer
+import zio._
 import zio.console.Console
 import zio.stm.TRef
-import zio._
 
 import scala.io.Source
 
@@ -23,7 +22,7 @@ object StandardApp {
 
   type StandardAppDeps = Console with DeployRegister with BpmnRegister with HttpServer
 
-  def layer(clazz: Class[_], bpmnModelsPath: Path): ZLayer[StandardAppDeps, Nothing, AppRunner] =
+  def layer(clazz: Class[_], bpmnModelsPath: String): ZLayer[StandardAppDeps, Nothing, AppRunner] =
     ZLayer.fromServicesM[Console.Service, bpmnRegister.Service, deployRegister.Service, httpServer.Service, Any, Nothing, appRunner.Service](
       (console, bpmnRegService, deplRegService, httpServService) =>
 
@@ -82,10 +81,11 @@ object StandardApp {
         )
     )
 
-  private def readScript(bpmnModelsPath: Path): Task[Deploys] = bpmnModels(bpmnModelsPath)
+  private[services] def readScript(bpmnModelsPath: String): Task[Deploys] = bpmnModels(bpmnModelsPath)
     .use { deploysReader =>
       for {
-        e <- ZIO.effect(new ScriptEngineManager().getEngineByName("scala"))
+        e <- ZIO.effect(new ScriptEngineManager(getClass.getClassLoader).getEngineByName("scala"))
+        _ = println(s"Engine: $e - Reader: $deploysReader")
         scriptResult <- ZIO.effect(e.eval(deploysReader))
         deploys <- scriptResult match {
           case d: Deploys => UIO(d)
@@ -94,6 +94,11 @@ object StandardApp {
       } yield deploys
     }
 
-  private def bpmnModels(bpmnModelsPath: Path): Managed[Throwable, InputStreamReader] = ZManaged.make(ZIO.effect(Source.fromFile(bpmnModelsPath.toFile).reader()))(r =>
-    ZIO.effect(r.close()).catchAll(e => UIO(e.printStackTrace()) *> UIO.unit))
+  private def bpmnModels(bpmnModelsPath: String): Managed[Throwable, InputStreamReader] =
+    ZManaged.make(ZIO.fromOption(Option(Thread.currentThread().getContextClassLoader.getResourceAsStream(bpmnModelsPath)))
+      .map(i => new InputStreamReader(i)))(r =>
+      ZIO.effect(r.close()).catchAll(e => UIO(e.printStackTrace()) *> UIO.unit)
+    ).mapError(_ => NoResourceException(s"Resource $bpmnModelsPath could not be found"))
+
+
 }

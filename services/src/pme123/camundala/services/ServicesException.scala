@@ -8,4 +8,7 @@ sealed trait ServicesException
 case class InvalidRequestException(msg: String)
   extends ServicesException
 
+case class NoResourceException(msg: String)
+  extends ServicesException
+
 

@@ -2,15 +2,12 @@ package pme123.camundala.camunda
 
 
 import eu.timepit.refined.auto._
-import org.junit.runner.RunWith
 import pme123.camundala.camunda.xml.XmlHelper
 import pme123.camundala.camunda.xml.XmlHelper.XQualifier
 import pme123.camundala.model.register.bpmnRegister
 import zio.test.Assertion._
 import zio.test._
-import zio.test.junit.ZTestJUnitRunner
 
-@RunWith(classOf[ZTestJUnitRunner])
 object BpmnServiceSuite extends DefaultRunnableSpec {
 
   import TestData._
