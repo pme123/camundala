@@ -7,7 +7,8 @@ import pme123.camundala.app.appRunner
 import pme123.camundala.app.appRunner.AppRunner
 import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.deploymentService.DeploymentService
-import pme123.camundala.camunda.{DeployResult, bpmnService, deploymentService}
+import pme123.camundala.camunda.httpDeployClient.HttpDeployClient
+import pme123.camundala.camunda.{DeployResult, bpmnService, deploymentService, httpDeployClient}
 import pme123.camundala.cli.ProjectInfo._
 import pme123.camundala.model.bpmn.CamundalaException
 import pme123.camundala.model.register.deployRegister.DeployRegister
@@ -33,11 +34,11 @@ object cliApp {
   def run(projectInfo: ProjectInfo): ZIO[CliApp with Console, Throwable, Nothing] =
     ZIO.accessM(_.get.run(projectInfo))
 
-  type CliAppDeps = Clock with Console with BpmnService with DeployRegister with DeploymentService with DockerComposer with AppRunner
+  type CliAppDeps = Clock with Console with BpmnService with DeployRegister with DeploymentService with HttpDeployClient with DockerComposer with AppRunner
 
   lazy val live: URLayer[CliAppDeps, CliApp] =
-    ZLayer.fromServices[Clock.Service, Console.Service, bpmnService.Service, deployRegister.Service, deploymentService.Service, dockerComposer.Service, appRunner.Service, Service] {
-      (clock, console, bpmnService, deployReg, deployService, dockerService, appRunner) =>
+    ZLayer.fromServices[Clock.Service, Console.Service, bpmnService.Service, deployRegister.Service, deploymentService.Service, httpDeployClient.Service, dockerComposer.Service, appRunner.Service, Service] {
+      (clock, console, bpmnService, deployReg, deployService, deployClient, dockerService, appRunner) =>
 
         import CliCommand._
 
@@ -70,7 +71,7 @@ object cliApp {
 
         lazy val appCommand: Opts[ZIO[Any, Nothing, ExitCode]] =
           Opts.subcommand("app", "Manage your App") {
-            (appStartOpts orElse appStopOpts orElse appRestartOpts).map {
+            (appStartOpts orElse appStopOpts orElse appRestartOpts orElse appUpdateOpts).map {
               case App.Start() =>
                 appStart()
               case App.Stop() =>
@@ -93,8 +94,13 @@ object cliApp {
         }
 
         def deployBpmn(deployId: DeployId) =
-          runWithDeployId[Seq[DeployResult]](deployId, " Deploy BPMN", config => Task.foreach(config.bpmns)(b => deployService.deploy(b)), results =>
-              results.foldLeft("")((r, dr) => s"$r\n${scala.Console.YELLOW}- Warnings ${dr.name}:\n${dr.validateWarnings.value.mkString(" - ", "\n - ", "")}"))
+          runWithDeployId[Seq[DeployResult]](deployId, " Deploy BPMN", deploy =>
+            deploy.maybeRemote.map(_ => deployClient.deploy(deploy)) // run the remote version if configured
+              .getOrElse(
+                Task.foreach(deploy.bpmns)(b => deployService.deploy(b))),
+            results =>
+              results.foldLeft("")((r, dr) => s"$r\n${scala.Console.YELLOW}- Warnings ${dr.name}:\n${dr.validateWarnings.value.mkString(" - ", "\n - ", "")}")
+          )
 
         def undeployBpmn(deployId: DeployId) =
           runWithDeployId[List[Unit]](deployId, " Undeploy BPMN", config => Task.foreach(config.bpmns)(b => deployService.undeploy(b)), _ => "")
@@ -118,7 +124,7 @@ object cliApp {
           runDocker(deployId, "Docker Up", dockerService.runDockerUp(_).provideLayer(ZLayer.succeed(clock)))
 
         def dockerStop(deployId: DeployId) =
-            runDocker(deployId, "Docker Stop", dockerService.runDockerStop)
+          runDocker(deployId, "Docker Stop", dockerService.runDockerStop)
 
         def dockerDown(deployId: DeployId) =
           runDocker(deployId, "Docker Down", dockerService.runDockerDown)

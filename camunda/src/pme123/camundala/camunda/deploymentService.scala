@@ -51,14 +51,13 @@ object deploymentService {
           private def mergeDeployFile(deployFile: DeployFile): Task[MergeResult] =
             for {
               xml <- ZIO.effect(XML.load(new ByteArrayInputStream(deployFile.file.toArray)))
-              bpmnId <- bpmnIdFromFileName(deployFile.filename)
+              bpmnId <- bpmnIdFromFilePath(deployFile.filePath)
               mergeResult <- bpmnServ.mergeBpmn(bpmnId, xml)
             } yield mergeResult
 
           def deploy(request: DeployRequest): Task[DeployResult] =
             for {
               mergeResults <- mergeDeployFiles(request.deployFiles)
-              _ = println(mergeResults)
               deployment <- processEngineService.deploy(request, mergeResults)
               deployResult = DeployResult(deployment.getId, deployment.getName,
                 deployment.getDeploymentTime.toString,
@@ -73,8 +72,8 @@ object deploymentService {
               mergeResult <- bpmnServ.mergeBpmn(bpmn.id)
               xml <- StreamHelper.xml(bpmn.xml)
               deployment <- processEngineService.deploy(DeployRequest(bpmn.id,
-                source = Some("Camundala Deployer"),
-                deployFiles = HashSet(DeployFile(bpmn.xml.fileName, xml.toString().getBytes().toVector))), Seq(mergeResult))
+                source = Some("Camundala Deployer")),
+                Seq(mergeResult))
             } yield DeployResult(deployment.getId, deployment.getName,
               deployment.getDeploymentTime.toString,
               Option(deployment.getSource),

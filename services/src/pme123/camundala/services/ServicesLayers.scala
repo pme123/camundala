@@ -1,5 +1,6 @@
 package pme123.camundala.services
 
+import pme123.camundala.app.sttpBackend
 import pme123.camundala.camunda.CamundaLayers
 import pme123.camundala.model.ModelLayers
 import pme123.camundala.services.dockerComposer.DockerComposer

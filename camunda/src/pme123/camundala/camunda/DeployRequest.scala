@@ -1,7 +1,7 @@
 package pme123.camundala.camunda
 
 import pme123.camundala.camunda.xml.ValidateWarnings
-import pme123.camundala.model.bpmn.{BpmnId, CamundalaException, FileName}
+import pme123.camundala.model.bpmn.{BpmnId, CamundalaException, FilePath}
 
 case class DeployRequest(bpmnId: BpmnId,
                          enableDuplicateFilterung: Boolean = false,
@@ -26,7 +26,7 @@ object DeployRequest {
   )
 }
 
-case class DeployFile(filename: FileName, file: Vector[Byte])
+case class DeployFile(filePath: FilePath, file: Vector[Byte])
 
 case class DeployResult(id: String,
                         name: String,
@@ -34,6 +34,9 @@ case class DeployResult(id: String,
                         source: Option[String] = None,
                         tenantId: Option[String] = None,
                         validateWarnings: ValidateWarnings = ValidateWarnings.none
-                       )
+                       ) {
+  def withWarnings(validateWarnings: ValidateWarnings): DeployResult =
+    copy(validateWarnings = validateWarnings)
+}
 
 case class DeploymentException(msg: String) extends CamundalaException

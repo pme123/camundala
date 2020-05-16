@@ -2,7 +2,7 @@ package pme123.camundala.camunda
 
 import pme123.camundala.camunda.xml.{MergeResult, ValidateWarnings, XBpmn, XMergeResult}
 import pme123.camundala.model.register.bpmnRegister.BpmnRegister
-import pme123.camundala.model.bpmn.{fileNameFromBpmnId, _}
+import pme123.camundala.model.bpmn.{filePathFromBpmnId, _}
 import pme123.camundala.model.register.bpmnRegister
 import zio._
 
@@ -39,7 +39,7 @@ object bpmnService {
             for {
               maybeBpmn <- register.requestBpmn(bpmnId)
               xMergeResult <- merge(bpmnXml, maybeBpmn, bpmnId)
-              f <- fileNameFromBpmnId(bpmnId)
+              f <- filePathFromBpmnId(bpmnId)
               fileName = maybeBpmn.map(_.xml.fileName).getOrElse(f)
             } yield MergeResult(fileName, xMergeResult.xmlElem, maybeBpmn, xMergeResult.warnings)
           }

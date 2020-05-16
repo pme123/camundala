@@ -49,7 +49,7 @@ object TwitterApp extends ZSpringApp {
 
   private val bpmnModelsPath: Path = Paths.get(".", "examples", "twitter", "resources", "bpmnModels.sc")
 
-  private[twitter] lazy val cliLayer = (Clock.live ++ Console.live ++ CamundaLayers.bpmnServiceLayer ++ ModelLayers.deployRegisterLayer ++ CamundaLayers.deploymentServiceLayer ++ ServicesLayers.dockerComposerLayer ++ twitterApp) >>> cliApp.live
+  private[twitter] lazy val cliLayer = (Clock.live ++ Console.live ++ CamundaLayers.bpmnServiceLayer ++ ModelLayers.deployRegisterLayer ++ CamundaLayers.deploymentServiceLayer ++ httpDeployClientLayer ++ ServicesLayers.dockerComposerLayer ++ twitterApp) >>> cliApp.live
   private[twitter] lazy val httpServerLayer = ConfigLayers.appConfigLayer ++ deploymentServiceLayer ++ ModelLayers.logLayer("httpServer") >>> httpServer.live
   private[twitter] lazy val appLayer: ZLayer[Any, Throwable, Console with HttpServer with BpmnService with BpmnRegister with DeployRegister] = Console.live ++ httpServerLayer ++ bpmnServiceLayer ++ ModelLayers.bpmnRegisterLayer ++ ModelLayers.deployRegisterLayer
 

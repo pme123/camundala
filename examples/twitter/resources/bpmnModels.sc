@@ -5,7 +5,7 @@ import pme123.camundala.model.bpmn.Extensions.{Prop, PropExtensions, PropInOutEx
 import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
-import pme123.camundala.model.deploy.{Deploy, Deploys, DockerConfig}
+import pme123.camundala.model.deploy.{CamundaEndpoint, Deploy, Deploys, DockerConfig, Url}
 
 
 val bpmns: Set[Bpmn] =
@@ -48,10 +48,15 @@ val bpmns: Set[Bpmn] =
         ))
     )))
 
+val camundaRestUrl: Url = "http://localhost:8085/engine-rest"
+val camundaRestAPI = Some(CamundaEndpoint(camundaRestUrl, "demo", Sensitive("demo")))
+
 Deploys(Set(
   Deploy("default", bpmns, DockerConfig(dockerDir = "examples/docker")),
   Deploy("remote", bpmns, DockerConfig(dockerDir = "examples/docker",
     composeFiles = Seq("docker-compose", "docker-compose-camunda", "docker-compose-mailcatcher"),
-    maybeReadyUrl = Some("http://localhost:8085/camunda"),
-    projectName = "camunda-remote")))
-)
+    maybeReadyUrl = Some(camundaRestUrl),
+    projectName = "camunda-remote"),
+    maybeRemote = camundaRestAPI
+  )
+))

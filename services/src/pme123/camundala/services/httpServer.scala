@@ -72,7 +72,7 @@ object httpServer {
 
           (for {
             files <- ZIO.foreach(m.parts.filter(p => p.name.isEmpty || !ReservedKeywords.contains(p.name.get)))(p =>
-              p.filename.map(fn => p.body.compile.toVector.flatMap(v => fileNameFromStr(fn).map(x => DeployFile(x, v))))
+              p.filename.map(fn => p.body.compile.toVector.flatMap(v => filePathFromStr(fn).map(x => DeployFile(x, v))))
                 .getOrElse(Task.fail(InvalidRequestException(s"No file name found in the deployment resource described by form parameter '${p.name.getOrElse("")}'."))))
             maybeBpmnId <- forName(m, DeploymentName)
             bpmnIdStr <- ZIO.fromOption(maybeBpmnId).mapError(_ => HttpServerException(s"BpmnId ($DeploymentName) must be set!"))

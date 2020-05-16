@@ -54,6 +54,9 @@ object CliCommand {
   val appRestartOpts: Opts[App.Restart] = Opts.subcommand("restart", "Restart Application") {
     Opts.unit.map(_ => App.Restart())
   }
+  val appUpdateOpts: Opts[App.Update] = Opts.subcommand("update", "Update Application (Registers)") {
+    Opts.unit.map(_ => App.Update())
+  }
 
   case class Deployments()
 

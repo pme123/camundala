@@ -4,18 +4,28 @@ Doing Camunda with Scala.
 
 # WORK IN PROGRESS / EXPERIMENTAL
 
-# Key Concepts
+# Key Focus
 
 * **Separate Business Modelling from technical implementation.**
   * The Business Model contains only the business relevant stuff - no mappings etc.
   * The Implementation Model is generated from the Business Model and the technical Implementation - this is the Scala part.
+
+* **BPMN Engineer centered.**
+  * This is all about productivity.
+  
 * **Provide a Type-Safe way to model a BPMN Process.**
   * Let the compiler help you to do your BPMN right.
+  
 * **Use whenever possible Scala as the Type-Safe language.**
   * Technical BPMNs are build with _Scala Case Classes_.
   * Refined Types - see
   * Scripting is done with _Scala Script_.
+  
+* **100 % Camunda compatible**
+  * Deployed Models run on any Camunda Engine - no Extras needed.
 
+  
+  
 # Requirements
 
 ## Buildtool Mill

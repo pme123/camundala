@@ -1,8 +1,7 @@
 package pme123.camundala.services
 
-import pme123.camundala.model.bpmn.Url
-import pme123.camundala.model.deploy.DockerConfig
-import pme123.camundala.services.sttpBackend.SttpTaskBackend
+import pme123.camundala.model.deploy.{DockerConfig, Url}
+import pme123.camundala.app.sttpBackend.SttpTaskBackend
 import sttp.client._
 import zio.clock.Clock
 import zio.duration._

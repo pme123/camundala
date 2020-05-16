@@ -1,4 +1,4 @@
-package pme123.camundala.services
+package pme123.camundala.app
 
 import sttp.client.SttpBackend
 import sttp.client.asynchttpclient.WebSocketHandler

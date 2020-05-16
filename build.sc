@@ -53,6 +53,10 @@ object Libs {
   val zioConfigTypesafe = ivy"dev.zio::zio-config-typesafe:${Version.zioConfig}"
   //val zioMacros = ivy"dev.zio::zio-macros:${Version.zioMacros}"
 
+  // app
+  val sttpCore = ivy"com.softwaremill.sttp.client::core:${Version.sttp}"
+  val sttpClient = ivy"com.softwaremill.sttp.client::async-http-client-backend-zio:${Version.sttp}"
+
   // camunda
   val spring = ivy"org.springframework.boot:spring-boot-starter-web:${Version.spring}"
   val springJdbc = ivy"org.springframework.boot:spring-boot-starter-jdbc:${Version.spring}"
@@ -61,6 +65,8 @@ object Libs {
   val h2 = ivy"com.h2database:h2:${Version.h2}"
   val postgres = ivy"org.postgresql:postgresql:${Version.postgres}"
   val scalaXml = ivy"org.scala-lang.modules::scala-xml:${Version.scalaXml}"
+  val sttpCirce = ivy"com.softwaremill.sttp.client::circe::${Version.sttp}"
+  val circe = ivy"io.circe::circe-generic:${Version.circe}"
 
   // services
   val zioCats = ivy"dev.zio::zio-interop-cats:${Version.zioCats}"
@@ -70,9 +76,6 @@ object Libs {
     ivy"org.http4s::http4s-blaze-client:${Version.http4s}"
   val http4sCirce = ivy"org.http4s::http4s-circe:${Version.http4s}"
   val http4sDsl = ivy"org.http4s::http4s-dsl:${Version.http4s}"
-  val circe = ivy"io.circe::circe-generic:${Version.circe}"
-  val sttpCore = ivy"com.softwaremill.sttp.client::core:${Version.sttp}"
-  val sttpClient = ivy"com.softwaremill.sttp.client::async-http-client-backend-zio:${Version.sttp}"
 
   // cli
   val decline = ivy"com.monovore::decline-effect:${Version.decline}"
@@ -175,6 +178,19 @@ object config extends ModuleWithTests {
   }
 }
 
+object app extends CamundalaModule {
+
+  override def moduleDeps = Seq()
+
+  override def ivyDeps = {
+    Agg(
+      Libs.zio,
+      Libs.sttpClient,
+      Libs.sttpCore
+    )
+  }
+}
+
 object camunda
   extends ModuleWithTests
     with BuildInfo {
@@ -189,7 +205,9 @@ object camunda
       Libs.camundaRest,
       Libs.h2,
       Libs.postgres,
-      Libs.scalaXml
+      Libs.scalaXml,
+      Libs.sttpCirce,
+      Libs.circe
     )
   }
 
@@ -213,14 +231,11 @@ object services extends ModuleWithTests {
 
   override def ivyDeps = {
     Agg(
-      Libs.circe,
       Libs.http4sBlazeServer,
       Libs.http4sBlazeClient,
       Libs.http4sDsl,
       Libs.http4sCirce,
-      Libs.zioCats,
-      Libs.sttpClient,
-      Libs.sttpCore
+      Libs.zioCats
     )
   }
 }
@@ -236,17 +251,6 @@ object cli extends ModuleWithTests {
       Libs.decline,
       Libs.declineRefined,
       Libs.zioCats
-    )
-  }
-}
-
-object app extends CamundalaModule {
-
-  override def moduleDeps = Seq()
-
-  override def ivyDeps = {
-    Agg(
-      Libs.zio
     )
   }
 }

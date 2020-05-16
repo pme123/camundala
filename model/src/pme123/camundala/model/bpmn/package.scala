@@ -1,7 +1,6 @@
 package pme123.camundala.model
 
 import eu.timepit.refined._
-import eu.timepit.refined
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.string.MatchesRegex
 import zio.ZIO
@@ -20,9 +19,11 @@ package object bpmn {
   type FilePath = String Refined FilePathRegex
   type PropKey = String Refined IdRegex
 
-  type Url = String Refined string.Url
+  case class Sensitive(value: String) {
+    override def toString: String = "*" * 10
+  }
 
-  def bpmnIdFromFileName(fileName: FileName): ZIO[Any, ModelException, BpmnId] =
+  def bpmnIdFromFilePath(fileName: FilePath): ZIO[Any, ModelException, BpmnId] =
     bpmnIdFromStr(fileName.value)
 
   def bpmnIdFromStr(str: String): ZIO[Any, ModelException, BpmnId] =
@@ -33,10 +34,10 @@ package object bpmn {
     ZIO.fromEither(refineV[IdRegex](str))
       .mapError(ex => ModelException(s"Could not map $str to BpmnNodeId:\n $ex"))
 
-  def fileNameFromBpmnId(bpmnId: BpmnId): ZIO[Any, ModelException, FileName] =
-    fileNameFromStr(bpmnId.value)
+  def filePathFromBpmnId(bpmnId: BpmnId): ZIO[Any, ModelException, FilePath] =
+    filePathFromStr(bpmnId.value)
 
-  def fileNameFromStr(fileName: String): ZIO[Any, ModelException, FileName] =
-    ZIO.fromEither(refineV[FileNameRegex](fileName))
-      .mapError(ex => ModelException(s"Could not create FileName $fileName:\n $ex"))
+  def filePathFromStr(filePath: String): ZIO[Any, ModelException, FilePath] =
+    ZIO.fromEither(refineV[FilePathRegex](filePath))
+      .mapError(ex => ModelException(s"Could not create FilePath $filePath:\n $ex"))
 }
