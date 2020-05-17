@@ -12,6 +12,7 @@ import pme123.camundala.model.bpmn.{BpmnId, CamundalaException}
 import pme123.camundala.model.deploy.{CamundaEndpoint, Deploy}
 import sttp.client.circe.asJson
 import sttp.client.{multipart, _}
+import sttp.model.StatusCode
 import zio.clock.Clock
 import zio.duration._
 import zio.logging.Logging
@@ -23,7 +24,7 @@ object httpDeployClient {
   trait Service {
     def deploy(deploy: Deploy): Task[Seq[DeployResult]]
 
-    def undeploy(bpmnId: BpmnId): Task[Unit]
+    def undeploy(bpmnId: BpmnId, endpoint: CamundaEndpoint): Task[Unit]
 
     def deployments(endpoint: CamundaEndpoint): Task[Seq[DeployResult]]
   }
@@ -31,8 +32,8 @@ object httpDeployClient {
   def deploy(deploy: Deploy): RIO[HttpDeployClient, Seq[DeployResult]] =
     ZIO.accessM(_.get.deploy(deploy))
 
-  def undeploy(bpmnId: BpmnId): RIO[HttpDeployClient, Unit] =
-    ZIO.accessM(_.get.undeploy(bpmnId))
+  def undeploy(bpmnId: BpmnId, endpoint: CamundaEndpoint): RIO[HttpDeployClient, Unit] =
+    ZIO.accessM(_.get.undeploy(bpmnId, endpoint))
 
   def deployments(endpoint: CamundaEndpoint): RIO[HttpDeployClient, Seq[DeployResult]] =
     ZIO.accessM(_.get.deployments(endpoint))
@@ -54,10 +55,8 @@ object httpDeployClient {
             ZIO.foreach(deploy.bpmns) { bpmn =>
               for {
                 endpoint <- ZIO.fromOption(deploy.maybeRemote).mapError(_ => HttpDeployClientException(s"There is no Remote Configuration for ${deploy.id}"))
-                uri = uri"${endpoint.url.value}/deployment/create"
-                logMsg = s"Deploy ${bpmn.id} to ${endpoint.url.value}"
                 mergeResult <- bpmnServ.mergeBpmn(bpmn.id)
-                _ <- log.info(logMsg)
+                _ <- log.info(s"Deploy ${bpmn.id} to ${endpoint.url.value}")
                 staticFiles = bpmn.staticFiles.map(st => multipart(st.fileName.value, StreamHelper.inputStream(st)).fileName(st.fileName.value))
                 body = Seq(
                   multipart(DeploymentName, bpmn.id.value),
@@ -66,19 +65,35 @@ object httpDeployClient {
                   multipart(DeploymentSource, "Camundala Client"),
                   multipart(bpmn.xml.fileName.value, StreamHelper.inputStream(mergeResult.xmlElem)).fileName(bpmn.xml.fileName.value),
                 ) ++ staticFiles
-                request: Request[Either[ResponseError[circe.Error], DeployResult], Nothing] = basicRequest
+                request = basicRequest
                   .multipartBody(body)
                   .response(asJson[DeployResult])
-                  .post(uri)
-                deployResult <- send(endpoint, request)
+                  .post(uri"${endpoint.url.value}/deployment/create")
+                deployResult <- sendWithResult(endpoint, request)
               } yield
                 deployResult.withWarnings(mergeResult.warnings)
             }.catchAll(er => UIO(er.printStackTrace()) *> ZIO.fail(er match {
               case ex: HttpDeployClientException => ex
               case _ => HttpDeployClientException(s"There is Problem with ${deploy.id} - see the stack trace")
-            })).provideLayer(ZLayer.succeed(clock))
+            }))
 
-          def undeploy(bpmnId: BpmnId): Task[Unit] = ???
+          def undeploy(bpmnId: BpmnId, endpoint: CamundaEndpoint): Task[Unit] = {
+            for {
+              depls <- deploymentsForName(bpmnId.value, endpoint)
+              r <- ZIO.foreach(depls)(deploy =>
+                for {
+                  _ <- log.info(s"Deployments for ${endpoint.url.value}")
+                  request = basicRequest
+                    .delete(uri"${endpoint.url.value}/deployment/${deploy.id}")
+                  deployResults <- send(endpoint, request)
+                } yield deployResults
+              )
+            } yield r
+          }.map(_ => ())
+            .catchAll(er => UIO(er.printStackTrace()) *> ZIO.fail(er match {
+              case ex: HttpDeployClientException => ex
+              case _ => HttpDeployClientException(s"There is Problem with getting the Deployments - see the stack trace")
+            }))
 
           def deployments(endpoint: CamundaEndpoint): Task[Seq[DeployResult]] = {
             for {
@@ -86,15 +101,24 @@ object httpDeployClient {
               request: Request[Either[ResponseError[circe.Error], Seq[DeployResult]], Nothing] = basicRequest
                 .response(asJson[Seq[DeployResult]])
                 .get(uri"${endpoint.url.value}/deployment")
-              deployResults <- send(endpoint, request)
+              deployResults <- sendWithResult(endpoint, request)
             } yield deployResults
           }.catchAll(er => UIO(er.printStackTrace()) *> ZIO.fail(er match {
             case ex: HttpDeployClientException => ex
             case _ => HttpDeployClientException(s"There is Problem with getting the Deployments - see the stack trace")
-          })).provideLayer(ZLayer.succeed(clock))
+          }))
 
+          private def deploymentsForName(deploymentName: String, endpoint: CamundaEndpoint) = {
+            for {
+              _ <- log.info(s"Deployments for ${endpoint.url.value}")
+              request = basicRequest
+                .response(asJson[Seq[DeployResult]])
+                .get(uri"${endpoint.url.value}/deployment?name=$deploymentName")
+              deployResults <- sendWithResult(endpoint, request)
+            } yield deployResults
+          }
 
-          private def send[T](endpoint: CamundaEndpoint, request: Request[Either[ResponseError[circe.Error], T], Nothing]) = {
+          private def sendWithResult[T](endpoint: CamundaEndpoint, request: Request[Either[ResponseError[circe.Error], T], Nothing]) = {
             request
               .auth.basic(endpoint.user, endpoint.password.value)
               .send()
@@ -115,7 +139,29 @@ object httpDeployClient {
                 case Right(value) =>
                   ZIO.succeed(value)
               }
-          }
+          }.provideLayer(ZLayer.succeed(clock))
+
+          private def send[T](endpoint: CamundaEndpoint, request: Request[Either[String, String], Nothing]) = {
+            request
+              .auth.basic(endpoint.user, endpoint.password.value)
+              .send()
+              .tapError(error =>
+                for {
+                  t <- clock.currentTime(TimeUnit.SECONDS)
+                  _ <- log.info(s"Failing attempt (${t % 100} s): ${error.getMessage}")
+                } yield ()
+              )
+              .tap { r =>
+                log.debug(s"Response with Status ${r.code}\n${r.body}")
+              }
+              .retry(Schedule.recurs(5) && Schedule.exponential(1.second))
+              .mapError(_ => HttpDeployClientException(s"There was a Problem calling ${endpoint.url}"))
+              .flatMap {
+                case r if r.code == StatusCode.NoContent => ZIO.unit
+                case r => ZIO.fail(HttpDeployClientException(s"Rest call failed ${endpoint.url}\nStatus: ${r.code}\nBody: ${r.body}"))
+              }
+
+          }.provideLayer(ZLayer.succeed(clock))
         }
     }
 
