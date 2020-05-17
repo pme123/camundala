@@ -5,10 +5,10 @@ import java.net.UnknownHostException
 
 import com.danielasfregola.twitter4s.exceptions.TwitterException
 import org.camunda.bpm.engine.delegate.{BpmnError, DelegateExecution}
+import pme123.camundala.model.ModelLayers
 import pme123.camundala.twitter.{twitterApi, twitterConfig}
 import zio.Runtime.default.unsafeRun
 import zio.ZIO
-import zio.console.Console
 
 /**
   * Publish content on Twitter. It really goes live! Watch out http://twitter.com/#!/camunda_demo for your postings.
@@ -17,7 +17,8 @@ class TweetContentDelegate
   extends CamundaDelegate {
   private val authFile = new File("./examples/twitter/resources/twitter-auth.conf")
 
-  def execute(execution: DelegateExecution): Unit =
+  def execute(execution: DelegateExecution): Unit = {
+    val logger = ModelLayers.logLayer("TweetContentDelegate")
     unsafeRun(
       (for {
         tweet <- execution.stringVar("content")
@@ -30,7 +31,8 @@ class TweetContentDelegate
         .mapError {
           case ex: TwitterException if ex.code.intValue == 187 =>
             new BpmnError("duplicateMessage")
-        }.provideCustomLayer((Console.live ++ twitterConfig.live(authFile)) >>> twitterApi.live)
+        }.provideCustomLayer(logger ++ (logger >>> twitterConfig.live(authFile)) >>> twitterApi.live)
     )
+  }
 
 }

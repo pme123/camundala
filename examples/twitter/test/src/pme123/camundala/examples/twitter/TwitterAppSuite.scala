@@ -19,7 +19,7 @@ object TwitterAppSuite extends DefaultRunnableSpec {
           result <- appRunner.update()
         } yield
           assert(result)(isUnit)
-      } // Console with DeployRegister with BpmnRegister with HttpServer
-    ).provideCustomLayer((ModelLayers.bpmnRegisterLayer ++ ModelLayers.deployRegisterLayer ++ TwitterApp.httpServerLayer ++ Console.live >>> TwitterApp.twitterApp).mapError(TestFailure.fail))
+      }
+    ).provideCustomLayer((ModelLayers.bpmnRegisterLayer ++ ModelLayers.deployRegisterLayer ++ TwitterApp.httpServerLayer ++ ModelLayers.logLayer("TwitterAppSuite") >>> TwitterApp.twitterApp).mapError(TestFailure.fail))
 
 }

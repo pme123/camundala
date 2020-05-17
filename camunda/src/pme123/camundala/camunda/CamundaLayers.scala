@@ -7,17 +7,10 @@ import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.deploymentService.DeploymentService
 import pme123.camundala.camunda.httpDeployClient.HttpDeployClient
 import pme123.camundala.camunda.processEngineService.ProcessEngineService
-import pme123.camundala.config.appConfig
-import pme123.camundala.config.appConfig.AppConfig
 import pme123.camundala.model.ModelLayers
-import pme123.camundala.model.register.bpmnRegister.BpmnRegister
-import pme123.camundala.model.register.deployRegister.DeployRegister
-import zio.{Has, TaskLayer, ULayer, ZIO, ZLayer}
-import zio.clock.Clock
-import zio.console.Console
-import zio.logging.Logging
 import pme123.camundala.model.ModelLayers._
-import pme123.camundala.model.register.{bpmnRegister, deployRegister}
+import zio.clock.Clock
+import zio.{Has, TaskLayer, ZIO, ZLayer}
 
 object CamundaLayers {
 

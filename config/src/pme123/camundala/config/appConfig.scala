@@ -1,11 +1,9 @@
 package pme123.camundala.config
 
 import zio._
-import zio.clock.Clock
 import zio.config.ConfigDescriptor._
 import zio.config.typesafe.TypesafeConfig
 import zio.config.{Config, config}
-import zio.console.Console
 import zio.logging.Logging
 
 object appConfig {
@@ -36,10 +34,10 @@ object appConfig {
         ) (ServicesConf.apply, ServicesConf.unapply)
 
     val appConf =
-      nested("services")(serviceConf) (AppConf.apply, AppConf.unapply)
+      nested("services")(serviceConf)(AppConf.apply, AppConf.unapply)
 
     val confWrapper =
-      nested("camundala")(appConf) (ConfWrapper.apply, ConfWrapper.unapply)
+      nested("camundala")(appConf)(ConfWrapper.apply, ConfWrapper.unapply)
 
     lazy val sourceLayer: TaskLayer[Config[ConfWrapper]] = TypesafeConfig.fromDefaultLoader(confWrapper)
 
@@ -49,11 +47,5 @@ object appConfig {
         .tap(config => log.info(s"$config"))
         .provideLayer(sourceLayer))
   }
-  private lazy val logEnv: ULayer[Logging] = (Console.live ++ Clock.live) >>> Logging.console(
-    format = (_, logEntry) => logEntry,
-    rootLoggerName = Some("appConfig")
-  )
-
-  def defaultLayer: TaskLayer[AppConfig] = logEnv >>> live
 
 }

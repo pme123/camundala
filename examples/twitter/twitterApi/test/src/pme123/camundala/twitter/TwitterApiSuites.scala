@@ -1,6 +1,5 @@
 package pme123.camundala.twitter
 
-import twitterConfig.{Token, TwitterAuth}
 import zio.test.Assertion.equalTo
 import zio.test._
 import zio.test.environment.TestConsole

@@ -2,9 +2,10 @@ package pme123.camundala.twitter
 
 import com.danielasfregola.twitter4s.TwitterRestClient
 import com.danielasfregola.twitter4s.entities.{AccessToken, ConsumerToken}
-import twitterConfig.TwitterConfig
+import pme123.camundala.twitter.twitterConfig.TwitterConfig
 import zio._
 import zio.console.Console
+import zio.logging.Logging
 
 object twitterApi {
   type TwitterApi = Has[Service]
@@ -16,27 +17,25 @@ object twitterApi {
   def createTweet(tweet: String): RIO[TwitterApi, Unit] =
     ZIO.accessM(_.get.createTweet(tweet))
 
-  type TwitterApiDeps = TwitterConfig with Console
+  type TwitterApiDeps = TwitterConfig with Logging
 
   /**
     * Live Implementation that accesses Twitter and tweets for real to http://twitter.com/#!/camunda_demo
     */
   lazy val live: RLayer[TwitterApiDeps, TwitterApi] =
-    ZLayer.fromServices[Console.Service, twitterConfig.Service, Service] {
-      (console, twitterConfig) =>
-        new Service {
-          def createTweet(tweet: String): Task[Unit] =
-            for {
-              config <- twitterConfig.auth()
-              tweet <- ZIO.fromFuture { _ =>
-                val consumerToken = ConsumerToken(config.consumerToken.key, config.consumerToken.value)
-                val accessToken = AccessToken(config.accessToken.key, config.accessToken.value)
-                val twitter = TwitterRestClient(consumerToken, accessToken)
-                twitter.createTweet(tweet)
-              }
-              _ <- console.putStrLn(s"$tweet sent")
-            } yield ()
-        }
+    ZLayer.fromServices[logging.Logger[String], twitterConfig.Service, Service] {
+      (log, twitterConfig) =>
+        (tweet: String) =>
+          for {
+            config <- twitterConfig.auth()
+            tweet <- ZIO.fromFuture { _ =>
+              val consumerToken = ConsumerToken(config.consumerToken.key, config.consumerToken.value)
+              val accessToken = AccessToken(config.accessToken.key, config.accessToken.value)
+              val twitter = TwitterRestClient(consumerToken, accessToken)
+              twitter.createTweet(tweet)
+            }
+            _ <- log.info(s"$tweet sent")
+          } yield ()
     }
 
   /**

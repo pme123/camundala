@@ -6,7 +6,7 @@ import zio._
 import zio.config.ConfigDescriptor._
 import zio.config.typesafe.TypesafeConfig
 import zio.config.{Config, ConfigDescriptor, config}
-import zio.console.Console
+import zio.logging.Logging
 
 object twitterConfig {
   type TwitterConfig = Has[Service]
@@ -25,7 +25,7 @@ object twitterConfig {
   /**
     * Reads the Twitter Authentication from the `twitter-auth.conf`.
     */
-  def live(authFile: File): RLayer[Console, TwitterConfig] = {
+  def live(authFile: File): RLayer[Logging, TwitterConfig] = {
 
     val tokenConfig =
       (string("key") |@|
@@ -39,13 +39,10 @@ object twitterConfig {
 
     lazy val sourceLayer: TaskLayer[Config[TwitterAuth]] = TypesafeConfig.fromHoconFile(authFile, twitterAuthConfig)
 
-    ZLayer.fromService(console =>
-      new Service {
-        def auth(): Task[TwitterAuth] =
-          console.putStrLn(    s"AuthConfig from: ${authFile.getAbsolutePath}") *>
-          config[TwitterAuth]
-            .provideLayer(sourceLayer)
-      })
+    ZLayer.fromService(log =>
+      () => log.info(s"AuthConfig from: ${authFile.getAbsolutePath}") *>
+        config[TwitterAuth]
+          .provideLayer(sourceLayer))
   }
 
 }

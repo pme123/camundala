@@ -5,6 +5,8 @@ import java.io.File
 import twitterConfig.{Token, TwitterAuth}
 import zio.test.Assertion.equalTo
 import zio.test._
+import zio.console.Console
+import zio.logging
 
 object TwitterConfigSuites
   extends DefaultRunnableSpec {
@@ -19,6 +21,6 @@ object TwitterConfigSuites
       testM("the Config is correct") {
         assertM(twitterConfig.auth())(
           equalTo(expectedAuth))
-      }.provideCustomLayer(twitterConfig.live(authFile).mapError(TestFailure.fail))
+      }.provideCustomLayer(logging.Logging.ignore >>> twitterConfig.live(authFile).mapError(TestFailure.fail))
     )
 }

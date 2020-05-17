@@ -1,9 +1,7 @@
 package pme123.camundala.camunda
 
-import java.io.ByteArrayInputStream
-
+import org.camunda.bpm.engine.ProcessEngine
 import org.camunda.bpm.engine.repository.{Deployment, DeploymentBuilder}
-import org.camunda.bpm.engine.{ProcessEngine, RepositoryService}
 import pme123.camundala.camunda.StreamHelper._
 import pme123.camundala.camunda.xml.MergeResult
 import pme123.camundala.model.bpmn.{CamundalaException, StaticFile}
@@ -11,6 +9,7 @@ import pme123.camundala.model.deploy.DeployId
 import zio._
 
 import scala.jdk.CollectionConverters._
+
 /**
   * Wraps functionality that needs the Camunda ProcessEngine (Camunda must run).
   *
@@ -43,10 +42,15 @@ object processEngineService {
   lazy val live: RLayer[ProcessEngineServiceDeps, ProcessEngineService] =
     ZLayer.fromService[() => ProcessEngine, Service] { processEngine =>
       new Service {
-        private lazy val repoService: RepositoryService = processEngine().getRepositoryService
+        private lazy val repoServiceEffect = (for {
+          pe <- ZIO.fromOption(Option(processEngine()))
+          rs <- ZIO.effect(pe.getRepositoryService)
+        } yield rs)
+          .mapError(_ => ProcessEngineException("Camunda Process Engine is not running. Did you start Camunda?"))
 
         def deploy(request: DeployRequest, mergeResults: Seq[MergeResult]): Task[Deployment] =
           for {
+            repoService <- repoServiceEffect
             builder <-
               ZIO.effect(
                 repoService.createDeployment
@@ -61,7 +65,7 @@ object processEngineService {
           } yield deployment
 
         def undeploy(deployId: DeployId): Task[Unit] =
-          ZIO.effect(
+          repoServiceEffect.map(repoService =>
             repoService.createDeploymentQuery()
               .deploymentName(deployId.value)
               .list()
@@ -70,12 +74,13 @@ object processEngineService {
           )
 
         def deployments(): Task[Seq[Deployment]] =
-          ZIO.effect(
+          repoServiceEffect.map(repoService =>
             repoService.createDeploymentQuery()
               .list()
               .asScala
               .toSeq
           )
+
       }
 
     }

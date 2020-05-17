@@ -46,7 +46,7 @@ object Version {
 object Libs {
   // model
   val zio = ivy"dev.zio::zio:${Version.zio}"
-  val zioLogging = ivy"dev.zio::zio-logging:${Version.zioLogging}"
+  val zioLogging = ivy"dev.zio::zio-logging-slf4j:${Version.zioLogging}"
   val refinded = ivy"eu.timepit::refined:${Version.refined}"
   // config
   val zioConfig = ivy"dev.zio::zio-config:${Version.zioConfig}"
@@ -280,6 +280,7 @@ object examples extends mill.Module {
         Agg(
           Libs.twitter4s,
           Libs.zioConfig,
+          Libs.zioLogging,
           Libs.zioConfigTypesafe
         )
       }

@@ -5,12 +5,13 @@ import zio.{TaskLayer, ULayer}
 import zio.clock.Clock
 import zio.console.Console
 import zio.logging.Logging
+import zio.logging.slf4j.Slf4jLogger
 
 object ConfigLayers {
 
-  def configLogLayer(loggerName: String): ULayer[Logging] = (Console.live ++ Clock.live) >>> Logging.console(
-    format = (_, logEntry) => logEntry,
-    rootLoggerName = Some(loggerName)
+  def configLogLayer(loggerName: String): ULayer[Logging] = Slf4jLogger.make(
+    (_, logEntry) => logEntry,
+    Some(loggerName)
   )
 
   lazy val appConfigLayer: TaskLayer[AppConfig] = configLogLayer("appConfig") >>> appConfig.live

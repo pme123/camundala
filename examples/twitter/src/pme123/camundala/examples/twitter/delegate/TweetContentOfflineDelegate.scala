@@ -2,6 +2,7 @@ package pme123.camundala.examples.twitter.delegate
 
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.stereotype.Service
+import pme123.camundala.model.ModelLayers
 import pme123.camundala.twitter.twitterApi
 import zio.Runtime.default.unsafeRun
 import zio.console.Console

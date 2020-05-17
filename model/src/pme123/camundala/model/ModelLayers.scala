@@ -4,15 +4,17 @@ import pme123.camundala.model.register.bpmnRegister.BpmnRegister
 import pme123.camundala.model.register.deployRegister.DeployRegister
 import pme123.camundala.model.register.{bpmnRegister, deployRegister}
 import zio.ULayer
-import zio.clock.Clock
-import zio.console.Console
 import zio.logging.Logging
+import zio.logging.slf4j.Slf4jLogger
 
 object ModelLayers {
-  def logLayer(loggerName: String): ULayer[Logging] = (Console.live ++ Clock.live) >>> Logging.console(
-    format = (_, logEntry) => logEntry,
-    rootLoggerName = Some(loggerName)
-  )
+
+  def logLayer(loggerName: String): ULayer[Logging] =
+    Slf4jLogger.make((context, message) =>
+      message,
+      Some(loggerName)
+    )
+
   lazy val bpmnRegisterLayer: ULayer[BpmnRegister] = bpmnRegister.live
   lazy val deployRegisterLayer: ULayer[DeployRegister] = deployRegister.live
 
