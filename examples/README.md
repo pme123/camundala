@@ -12,6 +12,7 @@ Example | Port | Http Port | README
 :--- | ---: | ---:  | :---
 Camunda Rest API | `9997` | - | [./rest/README.m](./rest/README.md)
 Twitter Demo App | `9998` | `8888`| [./twitter/README.m](./twitter/README.md)
+Playground App | `10001` | `9001`| [./playground/README.m](./playground/README.md)
 
 # Docker
 We provide a `docker-compose.yml` file for the Database.

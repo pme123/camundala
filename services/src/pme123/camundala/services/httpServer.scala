@@ -100,14 +100,11 @@ object httpServer {
 
             }
 
-        new Service {
-          def serve(): Task[Unit] =
-            for {
-              config <- config.get()
-              _ <- server(config.servicesConf)
-              _ <- log.info(s"HTTP server started on port: ${config.servicesConf.url}")
-            } yield ()
-        }
+        () => for {
+          config <- config.get()
+          _ <- server(config.servicesConf)
+          _ <- log.info(s"HTTP server started on port: ${config.servicesConf.url}")
+        } yield ()
     }
 
   case class HttpServerException(msg: String) extends CamundalaException

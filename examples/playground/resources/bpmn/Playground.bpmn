@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://www.signavio.com/bpmn20" exporter="Camunda Modeler" exporterVersion="3.5.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
   <collaboration id="Collaboration_19t23ei">
-    <participant id="Participant_059fm3c" name="Twitter Demo Process" processRef="TwitterDemoProcess" />
+    <participant id="Participant_059fm3c" processRef="PlaygroundProcess" />
   </collaboration>
-  <process id="TwitterDemoProcess" name="TwitterDemoProcess" isExecutable="true">
+  <process id="PlaygroundProcess" name="PlaygroundProcess" isExecutable="true">
     <serviceTask id="service_task_send_rejection_notification" name="Send rejection notification" camunda:delegateExpression="#{emailAdapter}">
       <incoming>no</incoming>
       <outgoing>SequenceFlow_4</outgoing>
@@ -40,8 +40,8 @@
     <sequenceFlow id="no" name="no	" sourceRef="gateway_approved" targetRef="service_task_send_rejection_notification" />
     <sequenceFlow id="SequenceFlow_4" name="" sourceRef="service_task_send_rejection_notification" targetRef="gateway_join" />
   </process>
-  <bpmndi:BPMNDiagram id="BPMNDiagram_TwitterDemoProcess">
-    <bpmndi:BPMNPlane id="BPMNPlane_TwitterDemoProcess" bpmnElement="Collaboration_19t23ei">
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Playground">
+    <bpmndi:BPMNPlane id="BPMNPlane_Playground" bpmnElement="Collaboration_19t23ei">
       <bpmndi:BPMNShape id="Participant_059fm3c_di" bpmnElement="Participant_059fm3c" isHorizontal="true">
         <omgdc:Bounds x="124" y="62" width="840" height="350" />
       </bpmndi:BPMNShape>

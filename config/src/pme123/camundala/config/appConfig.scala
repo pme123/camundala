@@ -40,11 +40,12 @@ object appConfig {
       nested("camundala")(appConf)(ConfWrapper.apply, ConfWrapper.unapply)
 
     lazy val sourceLayer: TaskLayer[Config[ConfWrapper]] = TypesafeConfig.fromDefaultLoader(confWrapper)
+    import zio.config.generateDocsWithValue
 
     ZLayer.fromService(log =>
       () => config[ConfWrapper]
         .map(_.camundala)
-        .tap(config => log.info(s"$config"))
+        .tap(config => log.info(s"Camundala Configuration:\n$config"))
         .provideLayer(sourceLayer))
   }
 

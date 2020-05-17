@@ -20,6 +20,6 @@ object TwitterAppSuite extends DefaultRunnableSpec {
         } yield
           assert(result)(isUnit)
       }
-    ).provideCustomLayer((ModelLayers.bpmnRegisterLayer ++ ModelLayers.deployRegisterLayer ++ TwitterApp.httpServerLayer ++ ModelLayers.logLayer("TwitterAppSuite") >>> TwitterApp.twitterApp).mapError(TestFailure.fail))
+    ).provideCustomLayer((ModelLayers.bpmnRegisterLayer ++ ModelLayers.deployRegisterLayer ++ TwitterApp.httpServerLayer ++ ModelLayers.logLayer("TwitterAppSuite") >>> TwitterApp.twitterAppLayer).mapError(TestFailure.fail))
 
 }

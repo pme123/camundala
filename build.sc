@@ -3,6 +3,7 @@ import mill._
 import mill.scalalib._
 import mill.scalalib.publish.{Developer, License, PomSettings, VersionControl}
 import $ivy.`com.lihaoyi::mill-contrib-buildinfo:$MILL_VERSION`
+import examples.twitter.twitterApi
 import mill.contrib.buildinfo.BuildInfo
 
 import scala.io.Source
@@ -268,9 +269,13 @@ object examples extends mill.Module {
     override def moduleDeps: Seq[JavaModule with PublishModule] = Seq(services, cli)
   }
 
+  object common extends ExampleModule {
+
+  }
+
   object twitter extends ExampleModule {
 
-    override def moduleDeps: Seq[JavaModule with PublishModule] = super.moduleDeps ++ Seq(twitterApi)
+    override def moduleDeps: Seq[JavaModule with PublishModule] = super.moduleDeps ++ Seq(common, twitterApi)
 
     override def mainClass = Some("pme123.camundala.examples.twitter.TwitterApp")
 
@@ -291,6 +296,13 @@ object examples extends mill.Module {
   object rest extends ExampleModule {
 
     override def mainClass = Some("pme123.camundala.examples.rest.RestApp")
+
+  }
+
+  object playground extends ExampleModule {
+    override def moduleDeps: Seq[JavaModule with PublishModule] = super.moduleDeps ++ Seq(common)
+
+    override def mainClass = Some("pme123.camundala.examples.playground.PlaygroundApp")
 
   }
 
