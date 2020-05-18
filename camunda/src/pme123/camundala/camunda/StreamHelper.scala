@@ -2,8 +2,8 @@ package pme123.camundala.camunda
 
 import java.io.{ByteArrayInputStream, InputStream}
 
-import pme123.camundala.model.bpmn.StaticFile
-import zio.{Managed, Task, TaskManaged, UIO}
+import pme123.camundala.model.bpmn.{CamundalaException, StaticFile}
+import zio.{Cause, Managed, Task, TaskManaged, UIO, ZIO}
 
 import scala.io.{BufferedSource, Source}
 import scala.xml.{Elem, Node, XML}
@@ -21,10 +21,17 @@ object StreamHelper {
     )
 
   def xml(staticFile: StaticFile): Task[Elem] =
-    xmlSource(staticFile).use(s => Task.effect(XML.load(s.reader())))
+    xmlSource(staticFile).use(s =>
+        ZIO.effect(XML.load(s.reader()))
+      .mapError(ex => StreamHelperException(s"There is a Problem loading ${staticFile.pathWithName}", Some(ex)))
+    )
 
   private def xmlSource(staticFile: StaticFile): TaskManaged[BufferedSource] =
     Managed.make(Task.effect(Source.fromResource(staticFile.pathWithName)))(
       is => UIO.succeed(is.close())
     )
+
+  case class StreamHelperException(msg: String, override val cause: Option[Throwable])
+    extends CamundalaException
+
 }

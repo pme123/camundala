@@ -5,6 +5,7 @@ import java.net.UnknownHostException
 
 import com.danielasfregola.twitter4s.exceptions.TwitterException
 import org.camunda.bpm.engine.delegate.{BpmnError, DelegateExecution}
+import pme123.camundala.camunda.delegate.CamundaDelegate
 import pme123.camundala.model.ModelLayers
 import pme123.camundala.twitter.{twitterApi, twitterConfig}
 import zio.Runtime.default.unsafeRun

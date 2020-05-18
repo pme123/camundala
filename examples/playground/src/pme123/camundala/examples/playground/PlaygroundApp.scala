@@ -7,7 +7,7 @@ import pme123.camundala.services.StandardApp
 import pme123.camundala.services.StandardApp.StandardAppDeps
 import zio.ZLayer
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = Array("pme123.camundala.examples.playground", "pme123.camundala.camunda"))
 class PlaygroundApp
 
 object PlaygroundApp extends StandardCliApp {

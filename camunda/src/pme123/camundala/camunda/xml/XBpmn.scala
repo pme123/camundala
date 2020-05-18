@@ -22,7 +22,7 @@ case class XBpmn(bpmnXml: Elem) {
       else
         ValidateWarnings(s"You have ${processes.length} Processes in the XML-Model, but you have ${bpmn.processes.length} in Scala")
     for {
-      mergeResults <- ZIO.foreach(processes)(xp => bpmnIdFromStr(xp.id).flatMap(id => xp.merge(bpmn.processMap.get(id))))
+      mergeResults <- ZIO.foreach(processes)(xp => xp.idEffect.flatMap(id => xp.merge(bpmn.processMap.get(id))))
     } yield
       mergeResults
         .foldLeft(XMergeResult(bpmnXml, processWarnings)) {
@@ -31,12 +31,15 @@ case class XBpmn(bpmnXml: Elem) {
               resWarn ++ procWarn)
         }
   }
+
+  def createProcesses(): Task[List[BpmnProcess]] =
+    Task.foreach(processes)(_.createProcess())
 }
 
 case class XBpmnProcess(xmlElem: Elem) {
 
   val tagName: String = "Process"
-  val id: String = xmlElem \@ "id"
+  val idEffect: ZIO[Any, ModelException, ProcessId] = processIdFromStr(xmlElem \@ "id")
 
   val userTasks: Seq[XUserTask[UserTask]] =
     (xmlElem \ "userTask").map { case e: Elem => XUserTask(e) }
@@ -62,7 +65,7 @@ case class XBpmnProcess(xmlElem: Elem) {
   def merge(maybeProcess: Option[BpmnProcess]): Task[XMergeResult] =
     maybeProcess match {
       case None =>
-        UIO(XMergeResult(xmlElem, ValidateWarnings(s"There is no Process $id registered")))
+        idEffect.map(id => XMergeResult(xmlElem, ValidateWarnings(s"There is no Process $id registered")))
       case Some(p) =>
         for {
           XMergeResult(xmlUser, warningsUser) <- mergeExtensionable(xmlElem, p.userTaskMap, userTasks, "UserTask")
@@ -84,7 +87,7 @@ case class XBpmnProcess(xmlElem: Elem) {
         ValidateWarnings(s"You have ${xExts.length} $label in the XML-Model, but you have ${extensionableMap.size} in Scala")
 
     for {
-      mergeResults <- ZIO.foreach(xExts)(xn => xn.id.flatMap(id => xn.merge(extensionableMap.get(id))))
+      mergeResults <- ZIO.foreach(xExts)(xn => xn.xBpmnId.flatMap(id => xn.merge(extensionableMap.get(id))))
     } yield
       mergeResults.foldLeft(XMergeResult(xml, warnings)) {
         case (XMergeResult(resXml: Elem, resWarn), XMergeResult(xml, taskWarn)) =>
@@ -92,6 +95,29 @@ case class XBpmnProcess(xmlElem: Elem) {
             resWarn ++ taskWarn)
       }
   }
+
+  def createProcess(): Task[BpmnProcess] =
+    for {
+      processId <- idEffect
+      uTasks <- Task.foreach(userTasks)(_.create())
+      sTasks <- Task.foreach(serviceTasks)(_.create())
+      sendTasks <- Task.foreach(sendTasks)(_.create())
+      startEvents <- Task.foreach(startEvents)(_.create())
+      exGateways <- Task.foreach(exclusiveGateways)(_.create())
+      pGateways <- Task.foreach(parallelGateways)(_.create())
+      seqFlows <- Task.foreach(sequenceFlows)(_.create())
+    } yield
+      BpmnProcess(
+        processId,
+        uTasks,
+        sTasks,
+        sendTasks,
+        startEvents,
+        exGateways,
+        pGateways,
+        seqFlows
+      )
+
 }
 
 trait XBpmnNode[T <: Extensionable] {
@@ -100,10 +126,10 @@ trait XBpmnNode[T <: Extensionable] {
 
   def tagName: String
 
-  lazy val id: ZIO[Any, ModelException, BpmnNodeId] = bpmnNodeIdFromStr(xmlElem \@ "id")
+  lazy val xBpmnId: ZIO[Any, ModelException, BpmnNodeId] = bpmnNodeIdFromStr(xmlElem \@ "id")
 
   def merge(maybeNode: Option[T]): Task[XMergeResult] = {
-    id.map(id => (maybeNode, xmlElem) match {
+    xBpmnId.map(id => (maybeNode, xmlElem) match {
       case (None, _) =>
         XMergeResult(xmlElem, ValidateWarnings(s"There is NOT a $tagName with id '$id' in Scala."))
       case (Some(extensionable), nodeElem: Elem) =>

@@ -1,4 +1,4 @@
-package pme123.camundala.examples.twitter.delegate
+package pme123.camundala.camunda.delegate
 
 import org.camunda.bpm.engine.delegate.{DelegateExecution, JavaDelegate}
 import zio.{IO, ZIO}

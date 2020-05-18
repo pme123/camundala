@@ -12,9 +12,9 @@ object AppConfigSuites
 
   def spec: ZSpec[environment.TestEnvironment, Any] =
     suite("AppConfigSuites")(
-      testM("the Config is correct") {
+      testM("the Config is correct")(
         assertM(appConfig.get())(
           equalTo(expectedConf))
-      }.provideCustomLayer((appConfig.defaultLayer).mapError(TestFailure.fail))
+      ).provideCustomLayer(ConfigLayers.appConfigLayer.mapError(TestFailure.fail))
     )
 }

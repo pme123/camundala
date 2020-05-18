@@ -1,6 +1,7 @@
 package pme123.camundala.model.bpmn
 
 import pme123.camundala.model.bpmn.Extensions.PropInOutExtensions
+import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression
 
 sealed trait ProcessTask
   extends BpmnNode
@@ -12,7 +13,7 @@ sealed trait ImplementationTask
 }
 
 case class ServiceTask(id: BpmnNodeId,
-                       implementation: TaskImplementation,
+                       implementation: TaskImplementation = DelegateExpression("#{YOURAdapter}"),
                        extensions: PropInOutExtensions = PropInOutExtensions.none,
                        inOuts: InputOutputs = InputOutputs.none
                       )
@@ -20,7 +21,7 @@ case class ServiceTask(id: BpmnNodeId,
     with ImplementationTask
 
 case class SendTask(id: BpmnNodeId,
-                    implementation: TaskImplementation,
+                    implementation: TaskImplementation = DelegateExpression("#{YOURAdapter}"),
                     extensions: PropInOutExtensions = PropInOutExtensions.none,
                     inOuts: InputOutputs = InputOutputs.none
                    )
@@ -43,6 +44,7 @@ case class UserTask(id: BpmnNodeId,
                    )
   extends ProcessTask
     with HasForm {
+
 
 
 }

@@ -5,7 +5,7 @@ import pme123.camundala.camunda.xml.XmlHelper._
 import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
-import zio.{Task, UIO}
+import zio.{IO, Task, UIO, ZIO}
 
 import scala.xml.{Attribute, Elem, Node, Null}
 
@@ -37,6 +37,14 @@ case class XServiceTask[T <: ServiceTask](xmlElem: Elem)
   extends XImplementationTask[T] {
   val tagName = "ServiceTask"
 
+  def create(): IO[ModelException, ServiceTask] =
+    for{
+      nodeId <- xBpmnId
+    } yield
+      ServiceTask(
+        nodeId
+      )
+
 }
 
 object XServiceTask {
@@ -47,6 +55,14 @@ object XServiceTask {
 case class XSendTask[T <: SendTask](xmlElem: Elem)
   extends XImplementationTask[T] {
   val tagName = "SendTask"
+
+  def create(): IO[ModelException, SendTask] =
+    for{
+      nodeId <- xBpmnId
+    } yield
+      SendTask(
+        nodeId
+      )
 }
 
 object XSendTask {
@@ -74,6 +90,15 @@ trait XHasForm[T <: HasForm]
 case class XUserTask[T <: UserTask](xmlElem: Elem)
   extends XProcessTask[T]
 with XHasForm[T] {
+
+  def create(): IO[ModelException, UserTask] =
+    for{
+      nodeId <- xBpmnId
+    } yield
+      UserTask(
+        nodeId
+      )
+
   val tagName = "UserTask"
 
 

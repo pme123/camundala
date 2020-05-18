@@ -2,6 +2,7 @@ package pme123.camundala.examples.twitter.delegate
 
 import org.camunda.bpm.engine.delegate.{DelegateExecution, JavaDelegate}
 import org.springframework.stereotype.Service
+import pme123.camundala.camunda.delegate.CamundaDelegate
 import zio.Runtime.default.unsafeRun
 import zio.ZIO
 import zio.console

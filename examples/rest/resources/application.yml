@@ -17,7 +17,7 @@ camunda:
 spring:
   datasource:
     platform: postgres
-    url: "jdbc:postgresql://localhost:5433/camunda"
+    url: "jdbc:postgresql://localhost:5444/camunda"
     username: postgres
     password: Initial@Password
     driverClassName: org.postgresql.Driver

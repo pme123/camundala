@@ -4,7 +4,7 @@ import eu.timepit.refined.auto._
 import pme123.camundala.app.appRunner
 import pme123.camundala.model.ModelLayers
 import pme123.camundala.model.deploy.Url
-import zio.console.Console
+import pme123.camundala.services.{ServicesLayers, StandardApp}
 import zio.test.Assertion._
 import zio.test._
 
@@ -20,6 +20,6 @@ object TwitterAppSuite extends DefaultRunnableSpec {
         } yield
           assert(result)(isUnit)
       }
-    ).provideCustomLayer((ModelLayers.bpmnRegisterLayer ++ ModelLayers.deployRegisterLayer ++ TwitterApp.httpServerLayer ++ ModelLayers.logLayer("TwitterAppSuite") >>> TwitterApp.twitterAppLayer).mapError(TestFailure.fail))
+    ).provideCustomLayer((ModelLayers.bpmnRegisterLayer ++ ModelLayers.deployRegisterLayer ++ ServicesLayers.httpServerLayer ++ ModelLayers.logLayer("TwitterAppSuite") >>> StandardApp.layer(classOf[TwitterApp], "bpmnModels.sc")).mapError(TestFailure.fail))
 
 }

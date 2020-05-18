@@ -5,15 +5,16 @@ import com.monovore.decline._
 import com.monovore.decline.effect.CommandIOApp
 import pme123.camundala.app.appRunner
 import pme123.camundala.app.appRunner.AppRunner
+import pme123.camundala.camunda.bpmnGenerator.BpmnGenerator
 import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.deploymentService.DeploymentService
 import pme123.camundala.camunda.httpDeployClient.HttpDeployClient
-import pme123.camundala.camunda.{DeployResult, bpmnService, deploymentService, httpDeployClient}
+import pme123.camundala.camunda._
 import pme123.camundala.cli.ProjectInfo._
-import pme123.camundala.model.bpmn.CamundalaException
-import pme123.camundala.model.register.deployRegister.DeployRegister
+import pme123.camundala.model.bpmn.{Bpmn, BpmnId, CamundalaException}
 import pme123.camundala.model.deploy.{Deploy, DeployId, DockerConfig}
 import pme123.camundala.model.register.deployRegister
+import pme123.camundala.model.register.deployRegister.DeployRegister
 import pme123.camundala.services.dockerComposer
 import pme123.camundala.services.dockerComposer.DockerComposer
 import zio._
@@ -34,164 +35,189 @@ object cliApp {
   def run(projectInfo: ProjectInfo): ZIO[CliApp with Console, Throwable, Nothing] =
     ZIO.accessM(_.get.run(projectInfo))
 
-  type CliAppDeps = Clock with Console with BpmnService with DeployRegister with DeploymentService with HttpDeployClient with DockerComposer with AppRunner
+  type CliAppDeps = Clock with Console with BpmnService with DeployRegister with DeploymentService with HttpDeployClient with DockerComposer with BpmnGenerator with AppRunner
 
-  lazy val live: URLayer[CliAppDeps, CliApp] =
-    ZLayer.fromServices[Clock.Service, Console.Service, bpmnService.Service, deployRegister.Service, deploymentService.Service, httpDeployClient.Service, dockerComposer.Service, appRunner.Service, Service] {
-      (clock, console, bpmnService, deployReg, deployService, deployClient, dockerService, appRunner) =>
+  lazy val live: URLayer[CliAppDeps, CliApp] = ZLayer.fromServices[
+    Clock.Service,
+    Console.Service,
+    bpmnService.Service,
+    deployRegister.Service,
+    deploymentService.Service,
+    httpDeployClient.Service,
+    dockerComposer.Service,
+    bpmnGenerator.Service,
+    appRunner.Service,
+    Service] {
+    (clock, console, bpmnService, deployReg, deployService, deployClient, dockerService, generator, appRunner) =>
 
-        import CliCommand._
+      import CliCommand._
 
-        lazy val command = Command[Task[ExitCode]]("", "CLI for Camunda")(
-          (validateBpmnOpts orElse deployBpmnOpts orElse undeployBpmnOpts orElse deploymentsOpts orElse dockerCommand orElse appCommand).map {
-            case ValidateBpmn(bpmnId) =>
-              validateBpmn(bpmnId)
-            case DeployBpmn(deployId) =>
-              deployBpmn(deployId)
-            case UndeployBpmn(deployId) =>
-              undeployBpmn(deployId)
-            case Deployments(deployId) =>
-              deployments(deployId)
-            case other: UIO[ExitCode] =>
-              other
+      lazy val command = Command[Task[ExitCode]]("", "CLI for Camunda")(
+        (validateBpmnOpts orElse generateBpmnsOpts
+          orElse deployCommand orElse dockerCommand orElse appCommand).map {
+          case ValidateBpmn(bpmnId) =>
+            validateBpmn(bpmnId)
+          case GenerateBpmns(deployId) =>
+            generateBpmns(deployId)
+          case other: UIO[ExitCode] =>
+            other
+        }
+      )
+
+      lazy val deployCommand: Opts[ZIO[Any, Nothing, ExitCode]] =
+        Opts.subcommand("deploy", "Deploy your BPMNs.") {
+          (deployCreateOpts orElse deployDeleteOpts orElse deployListOpts).map {
+            case ComDeploy.Create(deployId) =>
+              deployCreate(deployId)
+            case ComDeploy.Delete(deployId) =>
+              deployDelete(deployId)
+            case ComDeploy.List(deployId) =>
+              deployList(deployId)
           }
+        }
+
+      lazy val dockerCommand: Opts[ZIO[Any, Nothing, ExitCode]] =
+        Opts.subcommand("docker", "Work with Docker Compose") {
+          (dockerUpOpts orElse dockerStopOpts orElse dockerDownOpts).map {
+            case Docker.Up(bpmnId) =>
+              dockerUp(bpmnId)
+            case Docker.Stop(bpmnId) =>
+              dockerStop(bpmnId)
+            case Docker.Down(bpmnId) =>
+              dockerDown(bpmnId)
+          }
+        }
+
+      lazy val appCommand: Opts[ZIO[Any, Nothing, ExitCode]] =
+        Opts.subcommand("app", "Manage your App") {
+          (appStartOpts orElse appStopOpts orElse appRestartOpts orElse appUpdateOpts).map {
+            case App.Start() =>
+              appStart()
+            case App.Stop() =>
+              appStop()
+            case App.Restart() =>
+              appRestart()
+            case App.Update() =>
+              appUpdate()
+          }
+        }
+
+      def validateBpmn(bpmnId: BpmnId) = {
+        (for {
+          _ <- appRunner.update()
+          valWarns <- bpmnService.validateBpmn(bpmnId)
+          result <- printSuccess(s"Successful validated BPMN '$bpmnId'${scala.Console.YELLOW}\nWarnings:",
+            valWarns.value.map(_.msg).mkString(" - ", "\n - ", ""))
+        } yield result)
+          .catchAll(printError(_, "Validation failed:"))
+      }
+
+      def generateBpmns(deployId: DeployId) =
+        runWithDeployId[Seq[Bpmn]](deployId, "Generate BPMNs", deploy =>
+              Task.foreach(deploy.bpmns)(b => generator.generate(b.xml)),
+          results =>
+            results.foldLeft("")((r, bpmn) => s"$r${scala.Console.RESET}\nGenerated ${bpmn.id}: ${scala.Console.GREEN}\n${bpmn.generate()}")
         )
 
-        lazy val dockerCommand: Opts[ZIO[Any, Nothing, ExitCode]] =
-          Opts.subcommand("docker", "Work with Docker Compose") {
-            (dockerUpOpts orElse dockerStopOpts orElse dockerDownOpts).map {
-              case Docker.Up(bpmnId) =>
-                dockerUp(bpmnId)
-              case Docker.Stop(bpmnId) =>
-                dockerStop(bpmnId)
-              case Docker.Down(bpmnId) =>
-                dockerDown(bpmnId)
-            }
-          }
+      def deployCreate(deployId: DeployId) =
+        runWithDeployId[Seq[DeployResult]](deployId, "Deploy BPMN", deploy =>
+          deploy.maybeRemote.map(_ => deployClient.deploy(deploy)) // run the remote version if configured
+            .getOrElse(
+              Task.foreach(deploy.bpmns)(b => deployService.deploy(b))),
+          results =>
+            results.foldLeft("")((r, dr) => s"$r\n${scala.Console.YELLOW}- Warnings ${dr.name}:\n${dr.validateWarnings.value.mkString(" - ", "\n - ", "")}")
+        )
 
-        lazy val appCommand: Opts[ZIO[Any, Nothing, ExitCode]] =
-          Opts.subcommand("app", "Manage your App") {
-            (appStartOpts orElse appStopOpts orElse appRestartOpts orElse appUpdateOpts).map {
-              case App.Start() =>
-                appStart()
-              case App.Stop() =>
-                appStop()
-              case App.Restart() =>
-                appRestart()
-              case App.Update() =>
-                appUpdate()
-            }
-          }
+      def deployDelete(deployId: DeployId) =
+        runWithDeployId[Seq[Unit]](deployId, "Undeploy BPMN", deploy =>
+          deploy.maybeRemote.map(r =>
+            Task.foreach(deploy.bpmns)(b => deployClient.undeploy(b.id, r)) // run the remote version if configured
+          ).getOrElse(
+            Task.foreach(deploy.bpmns)(b => deployService.undeploy(b))),
+          _ => ""
+        )
 
-        def validateBpmn(bpmnId: DeployId) = {
-          (for {
-            _ <- appRunner.update()
-            valWarns <- bpmnService.validateBpmn(bpmnId)
-            result <- printSuccess(s"Successful validated BPMN '$bpmnId'${scala.Console.YELLOW}\nWarnings:",
-              valWarns.value.map(_.msg).mkString(" - ", "\n - ", ""))
-          } yield result)
-            .catchAll(printError(_, "Validation failed:"))
-        }
+      def deployList(deployId: DeployId) =
+        runWithDeployId[Seq[DeployResult]](deployId, "Get Deployments", deploy =>
+          deploy.maybeRemote.map(deployClient.deployments) // run the remote version if configured
+            .getOrElse(deployService.deployments()),
+          results => results.mkString(" - ", "\n - ", ""))
 
-        def deployBpmn(deployId: DeployId) =
-          runWithDeployId[Seq[DeployResult]](deployId, " Deploy BPMN", deploy =>
-            deploy.maybeRemote.map(_ => deployClient.deploy(deploy)) // run the remote version if configured
-              .getOrElse(
-                Task.foreach(deploy.bpmns)(b => deployService.deploy(b))),
-            results =>
-              results.foldLeft("")((r, dr) => s"$r\n${scala.Console.YELLOW}- Warnings ${dr.name}:\n${dr.validateWarnings.value.mkString(" - ", "\n - ", "")}")
-          )
+      def appStart() =
+        runUnit("Start App", () => appRunner.start().map(_ => ""))
 
-        def undeployBpmn(deployId: DeployId) =
-          runWithDeployId[Seq[Unit]](deployId, " Undeploy BPMN", deploy =>
-            deploy.maybeRemote.map(r =>
-              Task.foreach(deploy.bpmns)(b => deployClient.undeploy(b.id, r)) // run the remote version if configured
-            ).getOrElse(
-              Task.foreach(deploy.bpmns)(b => deployService.undeploy(b))),
-            _ => ""
-          )
+      def appStop() =
+        runUnit("Stop App", () => appRunner.stop().map(_ => ""))
 
-        def deployments(deployId: DeployId) =
-          runWithDeployId[Seq[DeployResult]](deployId, " Get Deployments", deploy =>
-            deploy.maybeRemote.map(deployClient.deployments) // run the remote version if configured
-              .getOrElse(deployService.deployments()),
-            results => results.mkString(" - ", "\n - ", ""))
+      def appRestart() =
+        runUnit("Restart App", () => appRunner.restart().map(_ => ""))
 
-        def appStart() =
-          runUnit("Start App", () => appRunner.start().map(_ => ""))
+      def appUpdate() =
+        runUnit("Update App (Register)", () => appRunner.update().map(_ => ""))
 
-        def appStop() =
-          runUnit("Stop App", () => appRunner.stop().map(_ => ""))
+      def dockerUp(deployId: DeployId) =
+        runDocker(deployId, "Docker Up", dockerService.runDockerUp(_).provideLayer(ZLayer.succeed(clock)))
 
-        def appRestart() =
-          runUnit("Restart App", () => appRunner.restart().map(_ => ""))
+      def dockerStop(deployId: DeployId) =
+        runDocker(deployId, "Docker Stop", dockerService.runDockerStop)
 
-        def appUpdate() =
-          runUnit("Update App (Register)", () => appRunner.update().map(_ => ""))
+      def dockerDown(deployId: DeployId) =
+        runDocker(deployId, "Docker Down", dockerService.runDockerDown)
 
-        def dockerUp(deployId: DeployId) =
-          runDocker(deployId, "Docker Up", dockerService.runDockerUp(_).provideLayer(ZLayer.succeed(clock)))
+      def runDocker(deployId: DeployId, label: String, run: DockerConfig => Task[String]) =
+        runWithDeployId[String](deployId, label, deploy => run(deploy.dockerConfig), str => str)
 
-        def dockerStop(deployId: DeployId) =
-          runDocker(deployId, "Docker Stop", dockerService.runDockerStop)
+      def runUnit(label: String, run: () => Task[String]) = {
+        (for {
+          results <- run()
+          result <- printSuccess(s"Successful $label", results)
+        } yield result)
+          .catchAll(printError(_, s"$label failed:"))
+      }
 
-        def dockerDown(deployId: DeployId) =
-          runDocker(deployId, "Docker Down", dockerService.runDockerDown)
+      def runWithDeployId[T](deployId: DeployId, label: String, run: Deploy => Task[T], details: T => String) = {
+        (for {
+          maybeDeploy <- deployReg.requestDeploy(deployId)
+          results <-
+            if (maybeDeploy.isEmpty)
+              ZIO.fail(CliAppException(s"There is no Deployment with the id '$deployId'"))
+            else
+              run(maybeDeploy.get)
+          result <- printSuccess(s"Successful $label", details(results))
+        } yield result)
+          .catchAll(printError(_, s"$label failed"))
+      }
 
-        def runDocker(deployId: DeployId, label: String, run: DockerConfig => Task[String]) =
-          runWithDeployId[String](deployId, label, deploy => run(deploy.dockerConfig), str => str)
+      def printSuccess(msg: String, details: String): UIO[ExitCode] = {
+        console.putStrLn(s"${scala.Console.GREEN}$msg") *>
+          console.putStrLn(details) *>
+          console.putStr(scala.Console.RESET) *>
+          ZIO.succeed(ExitCode.Success)
+      }
 
-        def runUnit(label: String, run: () => Task[String]) = {
-          (for {
-            results <- run()
-            result <- printSuccess(s"Successful $label", results)
-          } yield result)
-            .catchAll(printError(_, s"$label failed:"))
-        }
+      def printError(e: Throwable, msg: String): UIO[ExitCode] = {
+        console.putStrLn(s"${scala.Console.RED}$msg") *>
+          ZIO.succeed(e.printStackTrace()) *>
+          console.putStr(scala.Console.RESET) *>
+          ZIO.succeed(ExitCode.Error)
+      }
 
-        def runWithDeployId[T](deployId: DeployId, label: String, run: Deploy => Task[T], details: T => String) = {
-          (for {
-            maybeDeploy <- deployReg.requestDeploy(deployId)
-            results <-
-              if (maybeDeploy.isEmpty)
-                ZIO.fail(CliAppException(s"There is no Deployment with the id '$deployId'"))
-              else
-                run(maybeDeploy.get)
-            result <- printSuccess(s"Successful $label", details(results))
-          } yield result)
-            .catchAll(printError(_, s"$label failed"))
-        }
+      lazy val cliRunner =
+        (for {
+          input <- console.getStrLn
+          _ <- CommandIOApp.run(command, input.split(" ").toList)
+        } yield ())
+          .tapError(e => console.putStrLn(s"Error: $e"))
+          .forever
 
-        def printSuccess(msg: String, details: String): UIO[ExitCode] = {
-          console.putStrLn(s"${scala.Console.GREEN}$msg") *>
-            console.putStrLn(details) *>
-            console.putStr(scala.Console.RESET) *>
-            ZIO.succeed(ExitCode.Success)
-        }
+      (projectInfo: ProjectInfo) =>
+        for {
+          _ <- intro *> printProject(projectInfo)
+          _ <- appUpdate() // make sure Registry is initialized
+          d <- cliRunner
+        } yield d
 
-        def printError(e: Throwable, msg: String): UIO[ExitCode] = {
-          console.putStrLn(s"${scala.Console.RED}$msg") *>
-            ZIO.succeed(e.printStackTrace()) *>
-            console.putStr(scala.Console.RESET) *>
-            ZIO.succeed(ExitCode.Error)
-        }
-
-        lazy val cliRunner =
-          (for {
-            input <- console.getStrLn
-            _ <- CommandIOApp.run(command, input.split(" ").toList)
-          } yield ())
-            .tapError(e => console.putStrLn(s"Error: $e"))
-            .forever
-
-        (projectInfo: ProjectInfo) =>
-          for {
-            _ <- intro *> printProject(projectInfo)
-            _ <- appUpdate() // make sure Registry is initialized
-            d <- cliRunner
-          } yield d
-
-    }
+  }
 
   private val width = 84
   private val versionFile: zio.Managed[Throwable, BufferedSource] = zio.Managed.make(ZIO.effect(Source.fromFile("./version")))(s => ZIO.succeed(s.close()))

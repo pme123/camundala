@@ -10,4 +10,7 @@ case class StaticFile(fileName: FilePath, resourcePath: FilePath) {
 
   def pathWithName = s"$resourcePath/$fileName"
 
+  def generate() =
+    s"""StaticFile("${fileName.value}", "${resourcePath.value}")"""
+
 }

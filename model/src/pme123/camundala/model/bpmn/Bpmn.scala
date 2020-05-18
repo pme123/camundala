@@ -2,8 +2,15 @@ package pme123.camundala.model.bpmn
 
 case class Bpmn(id: BpmnId,
                 xml: StaticFile,
-                processes: Seq[BpmnProcess],
+                processes: Seq[BpmnProcess] = Seq.empty,
                ) {
+  def generate(): String =
+    s"""
+      |Bpmn("$id",
+      |  ${xml.generate()},
+      |  List(${processes.map(_.generate()).mkString(",")}))
+      |""".stripMargin
+
   lazy val processMap: Map[BpmnId, BpmnProcess] = processes.map(p => p.id -> p).toMap
 
   def staticFiles: Set[StaticFile] = processes.flatMap(_.staticFiles).toSet
@@ -18,6 +25,18 @@ case class BpmnProcess(id: ProcessId,
                        parallelGateways: Seq[ParallelGateway] = Seq.empty,
                        sequenceFlows: Seq[SequenceFlow] = Seq.empty,
                       ) {
+  def generate(): String =
+    s"""
+      |      BpmnProcess("${id.value}",
+      |            userTasks = List(${userTasks.map(_.generate()).mkString(",")}),
+      |            serviceTasks = List(${serviceTasks.map(_.generate()).mkString(",")}),
+      |            sendTasks = List(${sendTasks.map(_.generate()).mkString(",")}),
+      |            startEvents = List(${startEvents.map(_.generate()).mkString(",")}),
+      |            exclusiveGateways = List(${exclusiveGateways.map(_.generate()).mkString(",")}),
+      |            parallelGateways = List(${parallelGateways.map(_.generate()).mkString(",")}),
+      |            sequenceFlows = List(${sequenceFlows.map(_.generate()).mkString(",")}),
+      |)""".stripMargin
+
   def staticFiles: Set[StaticFile] =
     userTasks.flatMap(_.staticFiles).toSet ++
       startEvents.flatMap(_.staticFiles)
@@ -35,6 +54,9 @@ case class BpmnProcess(id: ProcessId,
 // org.camunda.bpm.model.bpmn.instance.FlowNode
 trait BpmnNode {
   def id: BpmnNodeId
+
+  def generate(): String =
+    s"""${getClass.getSimpleName}("${id.value}")"""
 }
 
 

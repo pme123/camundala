@@ -19,6 +19,7 @@ object CliLayers {
       ModelLayers.deployRegisterLayer ++
       CamundaLayers.deploymentServiceLayer ++
       CamundaLayers.httpDeployClientLayer ++
+      CamundaLayers.bpmnGeneratorLayer ++
       ServicesLayers.dockerComposerLayer ++
       appRunnerLayer) >>> cliApp.live
 

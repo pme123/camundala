@@ -12,27 +12,33 @@ object CliCommand {
     .withDefault("default")
 
   lazy val validateBpmnOpts: Opts[ValidateBpmn] =
-    Opts.subcommand("validate", "Validate a BPMN if it can be merged") {
+    Opts.subcommand("validate", "Validate a BPMN if it can be merged.") {
       Opts.argument[BpmnId](metavar = "bpmnId")
         .map(ValidateBpmn)
     }
 
-  lazy val deployBpmnOpts: Opts[DeployBpmn] =
-    Opts.subcommand("deploy", "Deploy BPMNs to Camunda") {
+  lazy val generateBpmnsOpts: Opts[GenerateBpmns] =
+    Opts.subcommand("generate", "Generates BPMNs that are configured in the Deploy.") {
       deployId
-        .map(DeployBpmn)
+        .map(GenerateBpmns)
     }
 
-  lazy val undeployBpmnOpts: Opts[UndeployBpmn] =
-    Opts.subcommand("undeploy", "Undeploy BPMNs from Camunda") {
+  lazy val deployCreateOpts: Opts[ComDeploy.Create] =
+    Opts.subcommand("create", "Deploy BPMNs to Camunda") {
       deployId
-        .map(UndeployBpmn)
+        .map(ComDeploy.Create)
     }
 
-  lazy val deploymentsOpts: Opts[Deployments] =
-    Opts.subcommand("deployments", "Get a list of Camunda Deployments") {
+  lazy val deployDeleteOpts: Opts[ComDeploy.Delete] =
+    Opts.subcommand("delete", "Undeploy BPMNs from Camunda") {
       deployId
-        .map(Deployments)
+        .map(ComDeploy.Delete)
+    }
+
+  lazy val deployListOpts: Opts[ComDeploy.List] =
+    Opts.subcommand("list", "Get a list of Camunda Deployments") {
+      deployId
+        .map(ComDeploy.List)
     }
 
   val dockerUpOpts: Opts[Docker.Up] = Opts.subcommand("up", "Docker Compose Up") {
@@ -58,13 +64,22 @@ object CliCommand {
     Opts.unit.map(_ => App.Update())
   }
 
-  case class Deployments(deployId: DeployId = "default")
-
-  case class DeployBpmn(deployId: DeployId = "default")
-
-  case class UndeployBpmn(deployId: DeployId = "default")
-
   case class ValidateBpmn(bpmnId: BpmnId)
+
+  case class GenerateBpmns(deployId: DeployId)
+
+  // prefixed with Com(mand) as there is already Deploy as a Domain Entity.
+  sealed trait ComDeploy
+
+  object ComDeploy {
+
+    case class List(deployId: DeployId = "default")
+
+    case class Create(deployId: DeployId = "default")
+
+    case class Delete(deployId: DeployId = "default")
+
+  }
 
   sealed trait Docker
 

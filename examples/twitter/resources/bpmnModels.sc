@@ -1,5 +1,6 @@
 
 import eu.timepit.refined.auto._
+import pme123.camundala.examples.common.deploys
 import pme123.camundala.model.bpmn.ConditionExpression.{Expression, InlineScript}
 import pme123.camundala.model.bpmn.Extensions.{Prop, PropExtensions, PropInOutExtensions}
 import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression
@@ -48,15 +49,4 @@ val bpmns: Set[Bpmn] =
         ))
     )))
 
-val camundaRestUrl: Url = "http://localhost:8085/engine-rest"
-val camundaRestAPI = Some(CamundaEndpoint(camundaRestUrl, "demo", Sensitive("demo")))
-
-Deploys(Set(
-  Deploy("default", bpmns, DockerConfig(dockerDir = "examples/docker")),
-  Deploy("remote", bpmns, DockerConfig(dockerDir = "examples/docker",
-    composeFiles = Seq("docker-compose", "docker-compose-camunda", "docker-compose-mailcatcher"),
-    maybeReadyUrl = Some(camundaRestUrl),
-    projectName = "camunda-remote"),
-    maybeRemote = camundaRestAPI
-  )
-))
+deploys.standard(bpmns)

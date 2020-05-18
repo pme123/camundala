@@ -34,6 +34,10 @@ package object bpmn {
     ZIO.fromEither(refineV[IdRegex](str))
       .mapError(ex => ModelException(s"Could not map $str to BpmnNodeId:\n $ex"))
 
+  def processIdFromStr(str: String): ZIO[Any, ModelException, ProcessId] =
+    ZIO.fromEither(refineV[IdRegex](str))
+      .mapError(ex => ModelException(s"Could not map $str to ProcessId:\n $ex"))
+
   def filePathFromBpmnId(bpmnId: BpmnId): ZIO[Any, ModelException, FilePath] =
     filePathFromStr(bpmnId.value)
 
