@@ -6,9 +6,9 @@ import pme123.camundala.model.deploy._
 object deploys {
 
   val camundaRestUrl: Url = "http://localhost:8085/engine-rest"
-  val camundaRestAPI = Some(CamundaEndpoint(camundaRestUrl, "demo", Sensitive("demo")))
+  val camundaRestAPI: Option[CamundaEndpoint] = Some(CamundaEndpoint(camundaRestUrl, "demo", Sensitive("demo")))
 
-  def standard(bpmns: Set[Bpmn]) =
+  def standard(bpmns: Set[Bpmn]): Deploys =
    Deploys(Set(
      Deploy("default", bpmns, DockerConfig(dockerDir = "examples/docker")),
      Deploy("remote", bpmns, DockerConfig(dockerDir = "examples/docker",

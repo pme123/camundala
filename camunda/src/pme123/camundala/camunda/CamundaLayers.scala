@@ -8,12 +8,16 @@ import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.deploymentService.DeploymentService
 import pme123.camundala.camunda.httpDeployClient.HttpDeployClient
 import pme123.camundala.camunda.processEngineService.ProcessEngineService
+import pme123.camundala.camunda.service.restService
+import pme123.camundala.camunda.service.restService.RestService
 import pme123.camundala.model.ModelLayers
 import pme123.camundala.model.ModelLayers._
 import zio.clock.Clock
 import zio.{Has, TaskLayer, ZIO, ZLayer}
 
 object CamundaLayers {
+
+  lazy val restServicetLayer: TaskLayer[RestService] = sttpBackend.sttpBackendLayer ++ ModelLayers.logLayer("RestService") ++ Clock.live >>> restService.live
 
   lazy val bpmnServiceLayer: TaskLayer[BpmnService] = bpmnRegisterLayer >>> bpmnService.live
   lazy val httpDeployClientLayer: TaskLayer[HttpDeployClient] = sttpBackend.sttpBackendLayer ++ bpmnServiceLayer ++ ModelLayers.logLayer("DockerRunner") ++ Clock.live >>> httpDeployClient.live
