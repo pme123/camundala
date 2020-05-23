@@ -1,7 +1,7 @@
 package pme123.camundala.camunda.xml
 
 import pme123.camundala.camunda.xml.XmlHelper._
-import pme123.camundala.model.bpmn.ConditionExpression.{Expression, InlineScript}
+import pme123.camundala.model.bpmn.ConditionExpression.{Expression, InlineScript, JsonExpression}
 import pme123.camundala.model.bpmn.Extensions.{Prop, PropInOutExtensions}
 import pme123.camundala.model.bpmn._
 import zio.{Task, UIO, ZIO}
@@ -186,6 +186,10 @@ trait XBpmnNode[T <: Extensionable] {
       case InlineScript(value, language) =>
         <camunda:script scriptFormat={language.key}>
           {value}
+        </camunda:script>
+      case jsonExpre: JsonExpression =>
+        <camunda:script scriptFormat="Groovy">
+          {jsonExpre.value}
         </camunda:script>
       case Expression(value) => value
     }

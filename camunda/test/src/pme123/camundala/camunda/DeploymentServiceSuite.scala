@@ -34,8 +34,7 @@ object DeploymentServiceSuite extends DefaultRunnableSpec {
           dr <- deploymentService.deploy(deployRequest)
         } yield
           assert(dr.id)(equalTo("TwitterDemoProcess"))
-      }.provideCustomLayer(((bpmnRegister.live >>> bpmnService.live ++ processEngineLayer >>> deploymentService.live) ++ bpmnRegister.live).mapError(TestFailure.fail))
-
+      }.provideCustomLayer(CamundaLayers.deploymentServiceLayer ++ bpmnRegister.live).mapError(TestFailure.fail)
     )
   }
 

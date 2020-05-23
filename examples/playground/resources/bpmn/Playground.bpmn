@@ -4,21 +4,21 @@
     <participant id="SwapiProcessParticipant" name="Swapi Process" processRef="PlaygroundProcess" />
   </collaboration>
   <process id="PlaygroundProcess" name="Playground Process" isExecutable="true">
-    <startEvent id="DefineInputsStartEvent" name="Define Inputs" camunda:initiator="initiator">
+    <startEvent id="DefineInputsStartEvent" name="Define Inputs" camunda:asyncBefore="true" camunda:asyncAfter="true">
       <outgoing>SequenceFlow_9</outgoing>
     </startEvent>
     <sequenceFlow id="SequenceFlow_9" name="" sourceRef="DefineInputsStartEvent" targetRef="CallSwapiServiceTask" />
     <sequenceFlow id="SequenceFlow_0m72fzi" sourceRef="ShowResultTask" targetRef="ProcessDoneEndEvent" />
-    <serviceTask id="CallSwapiServiceTask" name="Call Swapi Service" camunda:delegateExpression="#{tweetAdapter}">
+    <serviceTask id="CallSwapiServiceTask" name="Call Swapi Service Task" camunda:asyncBefore="true" camunda:asyncAfter="true">
       <incoming>SequenceFlow_9</incoming>
       <outgoing>SequenceFlow_0k5kyka</outgoing>
     </serviceTask>
     <sequenceFlow id="SequenceFlow_0k5kyka" sourceRef="CallSwapiServiceTask" targetRef="ShowResultTask" />
-    <userTask id="ShowResultTask" name="Show Result" camunda:assignee="kermit">
+    <userTask id="ShowResultTask" name="Show Result" camunda:asyncBefore="true" camunda:asyncAfter="true">
       <incoming>SequenceFlow_0k5kyka</incoming>
       <outgoing>SequenceFlow_0m72fzi</outgoing>
     </userTask>
-    <endEvent id="ProcessDoneEndEvent" name="Process Done">
+    <endEvent id="ProcessDoneEndEvent" name="Process Done" camunda:asyncBefore="true" camunda:asyncAfter="true">
       <incoming>SequenceFlow_0m72fzi</incoming>
     </endEvent>
   </process>

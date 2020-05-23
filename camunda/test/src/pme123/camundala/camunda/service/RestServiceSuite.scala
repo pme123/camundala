@@ -14,6 +14,7 @@ import sttp.client._
 import zio.UIO
 import zio.test.Assertion._
 import zio.test._
+import pme123.camundala.camunda.TestData._
 
 object RestServiceSuite extends DefaultRunnableSpec {
 
@@ -47,9 +48,7 @@ object RestServiceSuite extends DefaultRunnableSpec {
       suite("Call Service")(
         testM("SWAPI with get method") {
           for {
-            result <- restService.call(Request(
-              Host(url, NoAuth),
-              path = Path("people", "1")))
+            result <- restService.call(testRequest)
           } yield
             assert(result)(isSubtype[restService.Response.WithContent](anything))
         }
@@ -58,9 +57,5 @@ object RestServiceSuite extends DefaultRunnableSpec {
 
   val key1: PropKey = "name"
   val key2: PropKey = "iq"
-  private val queryParams = Params(key1 -> "Mäder", key2 -> "99")
-
-  private val url: Url = "https://swapi.dev/api"
-  private val host = Host(url,
-    BasicAuth("pme123", Sensitive("pwd123x")))
+  val queryParams: Params = Params(key1 -> "Mäder", key2 -> "99")
 }

@@ -1,9 +1,10 @@
 
 import eu.timepit.refined.auto._
-import pme123.camundala.camunda.delegate.RestServiceDelegate
+import pme123.camundala.camunda.delegate.RestServiceDelegate.RestServiceTempl
+import pme123.camundala.camunda.service.restService.RequestPath.Path
 import pme123.camundala.examples.common.deploys
+import pme123.camundala.examples.playground.bpmns._
 import pme123.camundala.model.bpmn._
-
 
 val bpmns: Set[Bpmn] =
   Set(
@@ -13,9 +14,10 @@ val bpmns: Set[Bpmn] =
         BpmnProcess("PlaygroundProcess",
           userTasks = List(UserTask("ShowResultTask")),
           serviceTasks = List(
-            ServiceTask("CallSwapiServiceTask",
-              RestServiceDelegate.expression
-            )),
+            RestServiceTempl(
+              swapiRequest(Path("people", "1"), "addresses")
+            ).asServiceTask("CallSwapiServiceTask")
+          ),
           sendTasks = List(),
           startEvents = List(StartEvent("DefineInputsStartEvent")),
           exclusiveGateways = List(),

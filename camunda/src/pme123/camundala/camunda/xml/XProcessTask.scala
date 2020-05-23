@@ -23,10 +23,10 @@ trait XImplementationTask[T <: ImplementationTask]
              .map(_.implementation)
              .map {
                case DelegateExpression(expresssion) =>
-                 xml % Attribute(camundaPrefix, delegateExpression, expresssion, Null)
+                 xml % Attribute(camundaPrefix, delegateExpression, expresssion, camundaXmlnsAttr)
                case ExternalTask(topic) =>
                  xml % Attribute(camundaPrefix, "topic", topic,
-                   Attribute(camundaPrefix, "type", "external", Null))
+                   Attribute(camundaPrefix, "type", "external", camundaXmlnsAttr))
              }.getOrElse(xml)
            XMergeResult(newElem, warnings)
          }
@@ -38,7 +38,7 @@ case class XServiceTask[T <: ServiceTask](xmlElem: Elem)
   val tagName = "ServiceTask"
 
   def create(): IO[ModelException, ServiceTask] =
-    for{
+    for {
       nodeId <- xBpmnId
     } yield
       ServiceTask(
@@ -57,7 +57,7 @@ case class XSendTask[T <: SendTask](xmlElem: Elem)
   val tagName = "SendTask"
 
   def create(): IO[ModelException, SendTask] =
-    for{
+    for {
       nodeId <- xBpmnId
     } yield
       SendTask(
@@ -85,14 +85,14 @@ trait XHasForm[T <: HasForm]
            XMergeResult(newElem, warnings)
          }
          } yield result
-  }
+}
 
 case class XUserTask[T <: UserTask](xmlElem: Elem)
   extends XProcessTask[T]
-with XHasForm[T] {
+    with XHasForm[T] {
 
   def create(): IO[ModelException, UserTask] =
-    for{
+    for {
       nodeId <- xBpmnId
     } yield
       UserTask(
@@ -100,7 +100,6 @@ with XHasForm[T] {
       )
 
   val tagName = "UserTask"
-
 
 
 }

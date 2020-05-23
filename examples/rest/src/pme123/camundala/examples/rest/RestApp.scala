@@ -10,7 +10,7 @@ import zio.ZIO
 @EnableProcessApplication
 class RestApp
 
-object RestApp {
+object RestApp extends zio.App {
 
   def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] =
     StandardApp.managedSpringApp(classOf[RestApp], args).useForever

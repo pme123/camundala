@@ -7,8 +7,8 @@ import pme123.camundala.camunda.processEngineService.ProcessEngineService
 import pme123.camundala.camunda.xml.{MergeResult, ValidateWarnings}
 import pme123.camundala.model.bpmn._
 import zio._
+import zio.logging.{Logger, Logging}
 
-import scala.collection.immutable.HashSet
 import scala.xml.XML
 
 /**
@@ -39,11 +39,11 @@ object deploymentService {
   def undeploy(bpmn: Bpmn): RIO[DeploymentService, Unit] =
     ZIO.accessM(_.get.undeploy(bpmn))
 
-  type DeploymentServiceDeps = BpmnService with ProcessEngineService
+  type DeploymentServiceDeps = BpmnService with ProcessEngineService with Logging
 
   lazy val live: RLayer[DeploymentServiceDeps, DeploymentService] =
-    ZLayer.fromServices[bpmnService.Service, processEngineService.Service, Service] {
-      (bpmnServ, processEngineService) =>
+    ZLayer.fromServices[bpmnService.Service, processEngineService.Service, Logger[String], Service] {
+      (bpmnServ, processEngineService, log) =>
         new Service {
           private def mergeDeployFiles(deployFiles: Set[DeployFile]): Task[List[MergeResult]] =
             ZIO.foreach(deployFiles)(mergeDeployFile)
@@ -53,6 +53,7 @@ object deploymentService {
               xml <- ZIO.effect(XML.load(new ByteArrayInputStream(deployFile.file.toArray)))
               bpmnId <- bpmnIdFromFilePath(deployFile.filePath)
               mergeResult <- bpmnServ.mergeBpmn(bpmnId, xml)
+              _ <- log.info(s"Merged BPMN:\n${mergeResult.xmlElem}")
             } yield mergeResult
 
           def deploy(request: DeployRequest): Task[DeployResult] =
@@ -70,7 +71,7 @@ object deploymentService {
           def deploy(bpmn: Bpmn): Task[DeployResult] =
             for {
               mergeResult <- bpmnServ.mergeBpmn(bpmn.id)
-              xml <- StreamHelper.xml(bpmn.xml)
+              _ <- log.info(s"Merged BPMN:\n${mergeResult.xmlElem}")
               deployment <- processEngineService.deploy(DeployRequest(bpmn.id,
                 source = Some("Camundala Deployer")),
                 Seq(mergeResult))

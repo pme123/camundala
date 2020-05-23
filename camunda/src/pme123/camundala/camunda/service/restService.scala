@@ -176,13 +176,14 @@ object restService {
                      body: RequestBody = RequestBody.NoBody,
                      responseRead: ResponseRead = StringRead,
                      handledErrors: Seq[Int] = Nil,
-                     maybeMocked: Option[Request => Response] = None
+                     responseVariable: String = "jsonResult",
+                    // maybeMocked: Option[Request => Response] = None
                     )
 
   object Request {
 
     case class Host(url: Url,
-                    auth: Auth
+                    auth: Auth = NoAuth
                    )
 
     sealed trait Auth

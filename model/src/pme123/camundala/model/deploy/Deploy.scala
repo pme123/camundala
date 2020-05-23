@@ -29,5 +29,5 @@ case class DockerConfig(projectName: ProjectName = "camundala-default",
       .mkString(" ")
 }
 
-case class CamundaEndpoint(url: Url, user: String, password: Sensitive)
+case class CamundaEndpoint(url: Url, user: Username, password: Sensitive)
 

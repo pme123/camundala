@@ -1,17 +1,34 @@
 package pme123.camundala.camunda
 
 import eu.timepit.refined.auto._
+import pme123.camundala.camunda.delegate.RestServiceDelegate.RestServiceTempl
+import pme123.camundala.camunda.service.restService.Request
+import pme123.camundala.camunda.service.restService.Request.Auth.BasicAuth
+import pme123.camundala.camunda.service.restService.Request.Host
+import pme123.camundala.camunda.service.restService.RequestPath.Path
 import pme123.camundala.model.bpmn.ConditionExpression.Expression
 import pme123.camundala.model.bpmn.Extensions.{Prop, PropExtensions, PropInOutExtensions}
 import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
+import pme123.camundala.model.deploy.{Sensitive, Url}
 import zio.{Task, UIO, ZIO, ZManaged}
 
 import scala.io.Source
 import scala.xml.{Elem, XML}
 
 object TestData {
+
+  val url: Url = "https://swapi.dev/api"
+  val host: Host = Host(url,
+    BasicAuth("pme123", Sensitive("pwd123x")))
+  val testRequest: Request = Request(
+    host,
+    path = Path("people", "1"))
+
+  val restServiceTask: ServiceTask =  RestServiceTempl(
+    testRequest
+  ).asServiceTask("CallSwapiServiceTask")
 
   lazy val bpmnXmlTask: Task[Elem] = {
     for {
@@ -36,7 +53,7 @@ object TestData {
       ServiceTask("service_task_publish_on_twitter",
         DelegateExpression("#{tweetAdapter}"),
         PropInOutExtensions(Seq(Prop("kpiRatio", "Tweet Approved")))
-    )),
+      )),
     startEvents = List(StartEvent("start_event_new_tweet",
       Some(EmbeddedDeploymentForm(StaticFile("static/forms/createTweet.html", "bpmn"))),
       PropExtensions(Seq(Prop("kpiCycleStart", "Tweet Approval Time")))
@@ -59,6 +76,7 @@ object TestData {
       StartEvent("startEvent")
     ),
     serviceTasks = List(
+      restServiceTask,
       ServiceTask("external-task-example",
         ExternalTask("myTopic")
       )
@@ -77,4 +95,6 @@ object TestData {
       twitterProcess,
       testProcess
     ))
+
+
 }

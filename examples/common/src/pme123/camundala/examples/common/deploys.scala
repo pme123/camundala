@@ -1,6 +1,6 @@
 package pme123.camundala.examples.common
 import eu.timepit.refined.auto._
-import pme123.camundala.model.bpmn.{Bpmn, Sensitive}
+import pme123.camundala.model.bpmn.Bpmn
 import pme123.camundala.model.deploy._
 
 object deploys {

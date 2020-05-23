@@ -8,8 +8,10 @@ import io.circe.{Decoder, HCursor}
 import pme123.camundala.app.sttpBackend.SttpTaskBackend
 import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.xml.{ValidateWarning, ValidateWarnings}
+import pme123.camundala.config.appConfig
+import pme123.camundala.config.appConfig.{AppConf, AppConfig}
 import pme123.camundala.model.bpmn.{BpmnId, CamundalaException}
-import pme123.camundala.model.deploy.{CamundaEndpoint, Deploy}
+import pme123.camundala.model.deploy.{CamundaEndpoint, Deploy, Sensitive}
 import sttp.client.circe.asJson
 import sttp.client.{multipart, _}
 import sttp.model.StatusCode
@@ -38,14 +40,14 @@ object httpDeployClient {
   def deployments(endpoint: CamundaEndpoint): RIO[HttpDeployClient, Seq[DeployResult]] =
     ZIO.accessM(_.get.deployments(endpoint))
 
-  type HttpDeployClientDeps = Has[SttpTaskBackend] with BpmnService with Logging with Clock
+  type HttpDeployClientDeps = Has[SttpTaskBackend] with AppConfig with BpmnService with Logging with Clock
 
   /**
     * http4s Implementation
     */
   lazy val live: RLayer[HttpDeployClientDeps, HttpDeployClient] =
-    ZLayer.fromServices[SttpTaskBackend, bpmnService.Service, logging.Logger[String], Clock.Service, Service] {
-      (backend, bpmnServ, log, clock) =>
+    ZLayer.fromServices[SttpTaskBackend, appConfig.Service, bpmnService.Service, logging.Logger[String], Clock.Service, Service] {
+      (backend, confService, bpmnServ, log, clock) =>
         implicit def sttpBackend: SttpBackend[Task, Nothing, NothingT] = backend
 
         import DeployRequest._
@@ -120,7 +122,7 @@ object httpDeployClient {
 
           private def sendWithResult[T](endpoint: CamundaEndpoint, request: Request[Either[ResponseError[circe.Error], T], Nothing]) = {
             request
-              .auth.basic(endpoint.user, endpoint.password.value)
+              .auth.basic(endpoint.user.value, endpoint.password.value)
               .send()
               .tapError(error =>
                 for {
@@ -143,7 +145,7 @@ object httpDeployClient {
 
           private def send[T](endpoint: CamundaEndpoint, request: Request[Either[String, String], Nothing]) = {
             request
-              .auth.basic(endpoint.user, endpoint.password.value)
+              .auth.basic(endpoint.user.value, endpoint.password.value)
               .send()
               .tapError(error =>
                 for {

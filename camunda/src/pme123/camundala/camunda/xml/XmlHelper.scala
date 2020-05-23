@@ -1,12 +1,13 @@
 package pme123.camundala.camunda.xml
 
-import scala.xml.{Elem, Node, Null, PrefixedAttribute, Text, UnprefixedAttribute}
+import scala.xml.{Attribute, Elem, Node, Null, PrefixedAttribute, Text, UnprefixedAttribute}
 
 object XmlHelper {
   val xmlnsBpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL"
   val xmlnsCamunda = "http://camunda.org/schema/1.0/bpmn"
   val xmlnsXsi = "http://www.w3.org/2001/XMLSchema-instance"
   val camundaPrefix = "camunda"
+  val camundaXmlnsAttr: Attribute = Attribute("xmlns", camundaPrefix, xmlnsCamunda, Null)
 
   val delegateExpression = "delegateExpression"
   val formKey = "formKey"

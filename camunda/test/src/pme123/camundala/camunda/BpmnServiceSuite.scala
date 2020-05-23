@@ -19,8 +19,8 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
           bpmnXml <- bpmnXmlTask
           _ <- bpmnRegister.registerBpmn(bpmn)
           mergeResult <- bpmnService.mergeBpmn("TwitterDemoProcess.bpmn", bpmnXml)
-          _ = println(s"BPMN XML ${mergeResult.xmlElem}")
-          _ = println(s"BPMN WARNINGS ${mergeResult.warnings.value.mkString("\n")}")
+          _ <- zio.console.putStrLn(s"BPMN XML ${mergeResult.xmlElem}")
+          _ <- zio.console.putStrLn(s"BPMN WARNINGS ${mergeResult.warnings.value.mkString("\n")}")
           userTasks = mergeResult.xmlElem \\ "userTask"
           userTaskInputParam = mergeResult.xmlElem \\ "userTask" \\ "inputParameter"
           userTaskForm = XQualifier.camunda("formKey").extractFrom(userTasks.head)
@@ -39,13 +39,13 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
           sequenceFlowConditionals = mergeResult.xmlElem \\ "sequenceFlow" \\ "conditionExpression"
 
         } yield {
-          assert(mergeResult.warnings.value.length)(equalTo(12) ?? "warnings") &&
+          assert(mergeResult.warnings.value.length)(equalTo(13) ?? "warnings") &&
             assert(mergeResult.warnings.value.head.msg)(equalTo("You have 2 ExclusiveGateway in the XML-Model, but you have 1 in Scala")) &&
             assert(mergeResult.warnings.value(1).msg)(equalTo("There is NOT a ExclusiveGateway with id 'gateway_join' in Scala.")) &&
             assert(userTasks.size)(equalTo(1) ?? "userTasks") &&
             assert(userTaskForm)(isSome(equalTo("embedded:deployment:static/forms/reviewTweet.html"))) &&
             assert(userTaskProps.length)(equalTo(3) ?? "userTaskProps") &&
-            assert(serviceTasks.length)(equalTo(3) ?? "serviceTasks") &&
+            assert(serviceTasks.length)(equalTo(4) ?? "serviceTasks") &&
             assert(sendTasks.length)(equalTo(1) ?? "sendTasks") &&
             assert(serviceTaskProp.length)(equalTo(1) ?? "serviceTaskProp") &&
             assert(startEvents.length)(equalTo(2) ?? "startEvents") &&
@@ -65,7 +65,7 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
           _ <- bpmnRegister.registerBpmn(bpmn)
           valWarns <- bpmnService.validateBpmn("TwitterDemoProcess.bpmn")
         } yield
-          assert(valWarns.value.size)(equalTo(12) ?? "warnings")
+          assert(valWarns.value.size)(equalTo(13) ?? "warnings")
       }
     ).provideCustomLayer(((bpmnRegister.live >>> bpmnService.live) ++ bpmnRegister.live).mapError(TestFailure.fail))
 

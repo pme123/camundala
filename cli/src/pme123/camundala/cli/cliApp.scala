@@ -121,6 +121,7 @@ object cliApp {
 
       def deployCreate(deployId: DeployId) =
         runWithDeployId[Seq[DeployResult]](deployId, "Deploy BPMN", deploy =>
+
           deploy.maybeRemote.map(_ => deployClient.deploy(deploy)) // run the remote version if configured
             .getOrElse(
               Task.foreach(deploy.bpmns)(b => deployService.deploy(b))),
@@ -213,6 +214,7 @@ object cliApp {
       (projectInfo: ProjectInfo) =>
         for {
           _ <- intro *> printProject(projectInfo)
+          _ <- appStart()
           _ <- appUpdate() // make sure Registry is initialized
           d <- cliRunner
         } yield d

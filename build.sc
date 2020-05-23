@@ -3,7 +3,6 @@ import mill._
 import mill.scalalib._
 import mill.scalalib.publish.{Developer, License, PomSettings, VersionControl}
 import $ivy.`com.lihaoyi::mill-contrib-buildinfo:$MILL_VERSION`
-import examples.twitter.twitterApi
 import mill.contrib.buildinfo.BuildInfo
 
 import scala.io.Source
@@ -30,10 +29,13 @@ object Version {
 
   // camunda
   val spring = "2.2.4.RELEASE"
+  val camunda = "7.12.0"
   val camundaSpringBoot = "3.4.2"
+  val camundaSpinJackson = "1.9.0"
   val h2 = "1.4.200"
   val postgres = "42.2.8"
   val scalaXml = "1.3.0"
+  val groovy = "3.0.3"
 
   // cli
   val decline = "1.2.0"
@@ -49,9 +51,11 @@ object Libs {
   val zio = ivy"dev.zio::zio:${Version.zio}"
   val zioLogging = ivy"dev.zio::zio-logging-slf4j:${Version.zioLogging}"
   val refinded = ivy"eu.timepit::refined:${Version.refined}"
+
   // config
   val zioConfig = ivy"dev.zio::zio-config:${Version.zioConfig}"
   val zioConfigTypesafe = ivy"dev.zio::zio-config-typesafe:${Version.zioConfig}"
+  val zioConfigRefined = ivy"dev.zio::zio-config-refined:${Version.zioConfig}"
   //val zioMacros = ivy"dev.zio::zio-macros:${Version.zioMacros}"
 
   // app
@@ -63,11 +67,16 @@ object Libs {
   val springJdbc = ivy"org.springframework.boot:spring-boot-starter-jdbc:${Version.spring}"
   val camundaWeb = ivy"org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:${Version.camundaSpringBoot}"
   val camundaRest = ivy"org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:${Version.camundaSpringBoot}"
+  val camundaSpin = ivy"org.camunda.bpm:camunda-engine-plugin-spin:${Version.camunda}"
+  val camundaSpinJackson = ivy"org.camunda.spin:camunda-spin-dataformat-json-jackson:${Version.camundaSpinJackson}"
+
   val h2 = ivy"com.h2database:h2:${Version.h2}"
   val postgres = ivy"org.postgresql:postgresql:${Version.postgres}"
   val scalaXml = ivy"org.scala-lang.modules::scala-xml:${Version.scalaXml}"
   val sttpCirce = ivy"com.softwaremill.sttp.client::circe::${Version.sttp}"
   val circe = ivy"io.circe::circe-generic:${Version.circe}"
+  val circeRefined = ivy"io.circe::circe-refined:${Version.circe}"
+  val groovy = ivy"org.codehaus.groovy:groovy-all:${Version.groovy}"
 
   // services
   val zioCats = ivy"dev.zio::zio-interop-cats:${Version.zioCats}"
@@ -169,13 +178,13 @@ object model extends ModuleWithTests {
 }
 
 object config extends ModuleWithTests {
+  override def moduleDeps = Seq(model)
 
   override def ivyDeps = {
     Agg(
-      Libs.zio,
       Libs.zioConfig,
-      Libs.zioConfigTypesafe,
-      Libs.zioLogging
+      Libs.zioConfigRefined,
+      Libs.zioConfigTypesafe
     )
   }
 }
@@ -205,11 +214,15 @@ object camunda
       Libs.springJdbc,
       Libs.camundaWeb,
       Libs.camundaRest,
+      Libs.camundaSpin,
+      Libs.camundaSpinJackson,
+      Libs.groovy,
       Libs.h2,
       Libs.postgres,
       Libs.scalaXml,
       Libs.sttpCirce,
-      Libs.circe
+      Libs.circe,
+      Libs.circeRefined
     )
   }
 
