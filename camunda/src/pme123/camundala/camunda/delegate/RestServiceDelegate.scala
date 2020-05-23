@@ -1,7 +1,6 @@
 package pme123.camundala.camunda.delegate
 
 import eu.timepit.refined.auto._
-import io.circe
 import io.circe.parser.decode
 import io.circe.syntax._
 import org.camunda.bpm.engine.RuntimeService
@@ -23,7 +22,7 @@ import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression
 import pme123.camundala.model.bpmn._
 import pme123.camundala.model.deploy.Sensitive
 import zio.Runtime.default.unsafeRun
-import zio.{IO, ZIO, logging}
+import zio.{ZIO, logging}
 
 
 /**
@@ -79,7 +78,6 @@ object RestServiceDelegate
 
   case class RestServiceTempl(request: Request) {
 
-
     def asServiceTask(id: BpmnNodeId): ServiceTask =
       ServiceTask(id,
         expression,
@@ -91,8 +89,6 @@ object RestServiceDelegate
           )
         )
       )
-
-
   }
 
 }

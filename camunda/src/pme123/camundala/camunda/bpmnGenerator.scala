@@ -19,6 +19,7 @@ object bpmnGenerator {
       (xmlFile: StaticFile) =>
         for {
           xml <- StreamHelper.xml(xmlFile)
+          _ = println(s"XML - $xml")
           bpmnId <- bpmnIdFromFilePath(xmlFile.fileName)
           processes <- XBpmn(xml).createProcesses()
           bpmn = Bpmn(bpmnId, xmlFile, processes)
