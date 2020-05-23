@@ -3,6 +3,8 @@ package pme123.camundala.camunda.xml
 import pme123.camundala.camunda.xml.XmlHelper._
 import pme123.camundala.model.bpmn.ConditionExpression.{Expression, InlineScript, JsonExpression}
 import pme123.camundala.model.bpmn.Extensions.{Prop, PropInOutExtensions}
+import pme123.camundala.model.bpmn.UserTaskForm.FormField.EnumField
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
 import pme123.camundala.model.bpmn._
 import zio.{Task, UIO, ZIO}
 
@@ -133,12 +135,14 @@ trait XBpmnNode[T <: Extensionable] {
       case (None, _) =>
         XMergeResult(xmlElem, ValidateWarnings(s"There is NOT a $tagName with id '$id' in Scala."))
       case (Some(extensionable), nodeElem: Elem) =>
-        val propElem = nodeElem \\ "property"
-        val propParams = propElem.map(_ \@ "name")
-        val inputElem = nodeElem \\ "inputParameter"
-        val inputParams = inputElem.map(_ \@ "name")
-        val outputElem = nodeElem \\ "outputParameter"
-        val outputParams = outputElem.map(_ \@ "name")
+        val propElems = nodeElem \\ "property"
+        val propParams = propElems.map(_ \@ "name")
+        val inputElems = nodeElem \\ "inputParameter"
+        val inputParams = inputElems.map(_ \@ "name")
+        val outputElems = nodeElem \\ "outputParameter"
+        val outputParams = outputElems.map(_ \@ "name")
+        val formFieldElems = nodeElem \\ "formField"
+        val formFields = formFieldElems.map(_ \@ "id")
         val child = nodeElem.child
         val otherChild = child.filter(_.label != "extensionElements")
         val xmlElem: Elem =
@@ -149,7 +153,7 @@ trait XBpmnNode[T <: Extensionable] {
                       if !propParams.contains(k) // only add the one that not exist
                       } yield
                   <camunda:property name={k.value} value={v}/>}{//
-                propElem}
+                propElems}
               </camunda:properties>{extensionable.extensions match {
                 case PropInOutExtensions(_, inOuts) =>
                   <camunda:inputOutput>
@@ -159,16 +163,38 @@ trait XBpmnNode[T <: Extensionable] {
                     <camunda:inputParameter name={k.value}>
                       {expressionElem(cond)}
                     </camunda:inputParameter>}{//
-                    inputElem}{//
+                    inputElems}{//
                     for {(k, cond) <- inOuts.outputMap
                          if !outputParams.contains(k) // only add the one that not exist
                          } yield
                       <camunda:outputParameter name={k.value}>
                         {expressionElem(cond)}
                       </camunda:outputParameter>}{//
-                    outputElem}
+                    outputElems}
                   </camunda:inputOutput>
                 case _ => ()
+              }}{//
+              extensionable match {
+                case hf: HasForm =>
+                  <camunda:formData>
+                    {hf.maybeForm.toList.flatMap {
+                    case form: GeneratedForm => {
+                      form.fields
+                        .filter(ff => !formFields.contains(ff.id)) // only add if not defined
+                        .map(field =>
+                          <camunda:formField id={field.id.value} label={field.label} type={field.`type`.name} defaultValue={field.defaultValue}>
+                            {field match {
+                            case ef: EnumField =>
+                              ef.values.enums.map(ev => <camunda:value id={ev.key.value} name={ev.label}/>)
+                            case _ => {}
+                          }}
+                          </camunda:formField>
+                        )
+                    }
+                    case _ => Seq.empty
+                  } ++ formFieldElems}
+                  </camunda:formData>
+                case _ => {}
               }}
             </extensionElements>
               ++ {

@@ -71,7 +71,7 @@ object restService {
                 else if (request.handledErrors.contains(status.code))
                   ZIO.succeed(Response.HandledError(status.code, r.body))
                 else
-                  ZIO.fail(RestServiceException(s"Result was not successful with Status ${status.code}"))
+                  ZIO.fail(RestServiceException(s"Result for ${request.host.url} was not successful with Status ${status.code}"))
               }
 
           def handleResponseBody(status: sttpModel.StatusCode, sttpRespEffect: sttp.Response[Either[String, String]]): Task[Response] =
@@ -83,7 +83,7 @@ object restService {
                   .map(_.body)
                   .flatMap {
                     case Left(error: String) =>
-                      ZIO.fail(RestServiceException(s"Could not Parse DeployResult\n$error"))
+                      ZIO.fail(RestServiceException(s"Could not Parse Response\n$error"))
                     case Right(value) =>
                       ZIO.succeed(Response.WithContent(status.code, value))
                   }
@@ -97,9 +97,10 @@ object restService {
     val uri = s"${
       request.host.url.value
     }${
-      request.path.toString
-    }${
-      request.queryParams.toString
+      request.mappings.foldLeft(request.path.toString) {
+        case (r, (k, v)) =>
+          r.replace(k, v)
+      }
     }"
     uri"$uri"
   }
@@ -177,6 +178,7 @@ object restService {
                      responseRead: ResponseRead = StringRead,
                      handledErrors: Seq[Int] = Nil,
                      responseVariable: String = "jsonResult",
+                     mappings: Map[String, String] = Map.empty
                     // maybeMocked: Option[Request => Response] = None
                     )
 

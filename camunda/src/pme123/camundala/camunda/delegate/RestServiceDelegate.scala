@@ -1,12 +1,12 @@
 package pme123.camundala.camunda.delegate
 
 import eu.timepit.refined.auto._
-import groovy.json.JsonOutput
+import io.circe
 import io.circe.parser.decode
 import io.circe.syntax._
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.{BpmnError, DelegateExecution}
-import org.camunda.bpm.engine.variable.Variables
+import org.camunda.spin.DataFormats._
 import org.camunda.spin.Spin
 import org.camunda.spin.plugin.variable.value.JsonValue
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,8 +23,7 @@ import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression
 import pme123.camundala.model.bpmn._
 import pme123.camundala.model.deploy.Sensitive
 import zio.Runtime.default.unsafeRun
-import zio.{ZIO, logging}
-import org.camunda.spin.DataFormats._
+import zio.{IO, ZIO, logging}
 
 
 /**
@@ -34,15 +33,14 @@ import org.camunda.spin.DataFormats._
 class RestServiceDelegate @Autowired()(runtimeService: RuntimeService)
   extends CamundaDelegate
     with JsonEnDecoders {
-  def execute(execution: DelegateExecution): Unit = {
 
+  def execute(execution: DelegateExecution): Unit = {
+    val requestRes = extractVariables(execution)
     val response = unsafeRun(
       (for {
-        json: JsonValue <- ZIO(execution.getVariableTyped[JsonValue]("request"))
-        request <- ZIO.fromEither(decode[Request](json.getValueSerialized))
+        request <- ZIO.fromEither(requestRes)
         response <- restService.call(request)
         _ <- logging.log.debug(s"Rest call ${request.host.url} successful:\n$response")
-
       } yield (request.responseVariable, response))
         .provideCustomLayer(ModelLayers.logLayer("RestServiceDelegate") ++
           CamundaLayers.restServicetLayer)
@@ -54,6 +52,23 @@ class RestServiceDelegate @Autowired()(runtimeService: RuntimeService)
       case (_, HandledError(status, body)) =>
         throw new BpmnError(s"restService-$status", s"Handled Error with:\nStatus: $status\nBody: $body")
     }
+  }
+
+  def extractVariables(execution: DelegateExecution) = {
+    val json = execution.getVariableTyped[JsonValue]("request")
+    val request = decode[Request](json.getValueSerialized)
+      .map(request =>
+        request.copy(
+          mappings = request.mappings
+            .keys
+            .map { k =>
+              k ->
+                Option(execution.getVariable(k)).map(_.toString)
+                  .getOrElse(request.mappings(k))
+            }
+            .toMap
+        ))
+    request
   }
 }
 
