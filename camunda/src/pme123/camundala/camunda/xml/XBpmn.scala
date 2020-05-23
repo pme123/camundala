@@ -182,13 +182,7 @@ trait XBpmnNode[T <: Extensionable] {
                       form.fields
                         .filter(ff => !formFields.contains(ff.id)) // only add if not defined
                         .map(field =>
-                          <camunda:formField id={field.id.value} label={field.label} type={field.`type`.name} defaultValue={field.defaultValue}>
-                            {field match {
-                            case ef: EnumField =>
-                              ef.values.enums.map(ev => <camunda:value id={ev.key.value} name={ev.label}/>)
-                            case _ => {}
-                          }}
-                          </camunda:formField>
+                          createFormField(field)
                         )
                     }
                     case _ => Seq.empty
@@ -205,6 +199,29 @@ trait XBpmnNode[T <: Extensionable] {
       case (Some(_), _) =>
         XMergeResult(xmlElem, ValidateWarnings(s"The XML Node must be a XML Elem not just a Node ($tagName with id '$id')."))
     })
+  }
+
+  private def createFormField(field: UserTaskForm.FormField) = {
+    <camunda:formField id={field.id.value} label={field.label} type={field.`type`.name} defaultValue={field.defaultValue}>
+      {field match {
+      case ef: EnumField =>
+        ef.values.enums.map(ev => <camunda:value id={ev.key.value} name={ev.label}/>)
+      case _ => {}
+    }}<camunda:properties>
+      {field.properties.map(p =>
+          <camunda:property id={p.id.value} value={p.value}/>
+      )}
+    </camunda:properties>
+      <camunda:validation>
+        {field.validations.map(c =>
+        c.config.map(config =>
+            <camunda:constraint name={c.name.value} config={config}/>
+        ).getOrElse(
+            <camunda:constraint name={c.name.value}/>
+        )
+      )}
+      </camunda:validation>
+    </camunda:formField>
   }
 
   private def expressionElem(cond: ConditionExpression) = {

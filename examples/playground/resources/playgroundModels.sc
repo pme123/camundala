@@ -5,6 +5,7 @@ import pme123.camundala.camunda.service.restService.Request
 import pme123.camundala.camunda.service.restService.RequestPath.Path
 import pme123.camundala.examples.common.deploys
 import pme123.camundala.examples.playground.bpmns._
+import pme123.camundala.model.bpmn.UserTaskForm.FormField.Constraint.Required
 import pme123.camundala.model.bpmn.UserTaskForm.FormField.{EnumField, EnumValue, EnumValues, SimpleField}
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
 import pme123.camundala.model.bpmn._
@@ -17,7 +18,8 @@ val bpmns: Set[Bpmn] =
         BpmnProcess("PlaygroundProcess",
           userTasks = List(
             UserTask("ShowResultTask",
-              Some(GeneratedForm(Seq(SimpleField("swapiResult", "SWAPI Result"))))
+              Some(GeneratedForm(Seq(SimpleField("swapiResult", "SWAPI Result", validations = Seq(Required))),
+              ))
             )
           ),
           serviceTasks = List(
@@ -37,7 +39,8 @@ val bpmns: Set[Bpmn] =
                 EnumValue("planets", "Planets"),
                 EnumValue("films", "Films"),
                 EnumValue("vehicles", "Vehicles"),
-                EnumValue("starships", "Starships"))))))
+                EnumValue("starships", "Starships"))),
+              validations = Seq(Required))))
             ))),
           exclusiveGateways = List(),
           parallelGateways = List(),
