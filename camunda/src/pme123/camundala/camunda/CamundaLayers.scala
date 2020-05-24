@@ -17,7 +17,8 @@ import zio.logging.Logging
 import zio._
 
 object CamundaLayers {
-  private def logLayer(loggerName: String): ULayer[Logging] =
+
+  def logLayer(loggerName: String): ULayer[Logging] =
     ModelLayers.logLayer(loggerName, "pme123.camundala.camunda")
 
   lazy val restServicetLayer: TaskLayer[RestService] = sttpBackend.sttpBackendLayer ++ logLayer("RestService") ++ Clock.live >>> restService.live

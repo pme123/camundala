@@ -1,19 +1,19 @@
 package pme123.camundala.examples.common
 
 import eu.timepit.refined.auto._
-import pme123.camundala.model.bpmn.Bpmn
+import pme123.camundala.model.bpmn._
 import pme123.camundala.model.deploy._
 
 object deploys {
 
   val camundaRestUrl: Url = "http://localhost:8085/engine-rest"
-  val playgroundRestApi: Option[CamundaEndpoint] = Some(CamundaEndpoint("http://localhost:10001/rest", "kermit", Sensitive("kermit")))
-  val camundaRestAPI: Option[CamundaEndpoint] = Some(CamundaEndpoint(camundaRestUrl, "demo", Sensitive("demo")))
+  def exampleRestApi( endpoint: Url): CamundaEndpoint = CamundaEndpoint(endpoint, "kermit", Sensitive("kermit"))
+  val camundaRestAPI: CamundaEndpoint = CamundaEndpoint(camundaRestUrl, "demo", Sensitive("demo"))
 
-  def standard(bpmns: Set[Bpmn]): Deploys =
+  def standard(bpmns: Set[Bpmn], endpointUrl: Url): Deploys =
     Deploys(Set(
       Deploy("default", bpmns, DockerConfig(dockerDir = "examples/docker"),
-        maybeRemote = playgroundRestApi
+        camundaEndpoint = exampleRestApi(endpointUrl)
       ),
       Deploy("remote", bpmns,
         DockerConfig(dockerDir = "examples/docker",
@@ -21,7 +21,7 @@ object deploys {
           maybeReadyUrl = Some(camundaRestUrl),
           projectName = "camunda-remote"
         ),
-        maybeRemote = camundaRestAPI
+        camundaEndpoint = camundaRestAPI
       )
     ))
 }

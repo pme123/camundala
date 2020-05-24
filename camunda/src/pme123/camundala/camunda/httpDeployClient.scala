@@ -11,7 +11,7 @@ import pme123.camundala.camunda.service.restService.Request.Host
 import pme123.camundala.camunda.service.restService.RequestBody.MultipartBody
 import pme123.camundala.camunda.service.restService.RequestBody.Part.{FilePart, StringPart}
 import pme123.camundala.camunda.service.restService.RequestPath.Path
-import pme123.camundala.camunda.service.restService.{QueryParams, Request, RequestMethod, RequestPath, RestService}
+import pme123.camundala.camunda.service.restService.{Request, RequestMethod, RequestPath, RestService}
 import pme123.camundala.camunda.xml.{ValidateWarning, ValidateWarnings}
 import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.AppConfig
@@ -53,10 +53,11 @@ object httpDeployClient {
 
         new Service {
 
-          def deploy(deploy: Deploy): Task[Seq[DeployResult]] =
+          def deploy(deploy: Deploy): Task[Seq[DeployResult]] = {
+            val endpoint = deploy.camundaEndpoint
+
             ZIO.foreach(deploy.bpmns) { bpmn =>
               for {
-                endpoint <- ZIO.fromOption(deploy.maybeRemote).mapError(_ => HttpDeployClientException(s"There is no Remote Configuration for ${deploy.id}"))
                 mergeResult <- bpmnServ.mergeBpmn(bpmn.id)
                 _ <- log.info(s"Deploy ${bpmn.id} to ${endpoint.url.value}")
                 config <- confService.get()
@@ -85,6 +86,7 @@ object httpDeployClient {
               case ex: HttpDeployClientException => ex
               case other => HttpDeployClientException(s"There is Problem with ${deploy.id} - see the stack trace", Some(other))
             }))
+          }
 
           def undeploy(bpmnId: BpmnId, endpoint: CamundaEndpoint): Task[Unit] = {
             for {

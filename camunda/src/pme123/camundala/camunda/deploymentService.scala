@@ -23,21 +23,11 @@ object deploymentService {
   trait Service {
     def deploy(request: DeployRequest): Task[DeployResult]
 
-    def deploy(bpmn: Bpmn): Task[DeployResult]
-
-    def undeploy(bpmn: Bpmn): Task[Unit]
-
-    def deployments(): Task[Seq[DeployResult]]
   }
 
   def deploy(request: DeployRequest): RIO[DeploymentService, DeployResult] =
     ZIO.accessM(_.get.deploy(request))
 
-  def deploy(bpmn: Bpmn): RIO[DeploymentService, DeployResult] =
-    ZIO.accessM(_.get.deploy(bpmn))
-
-  def undeploy(bpmn: Bpmn): RIO[DeploymentService, Unit] =
-    ZIO.accessM(_.get.undeploy(bpmn))
 
   type DeploymentServiceDeps = BpmnService with ProcessEngineService with Logging
 
@@ -67,39 +57,6 @@ object deploymentService {
                 mergeResults.map(_.warnings).foldLeft(ValidateWarnings.none)(_ ++ _)
               )
             } yield deployResult
-
-          def deploy(bpmn: Bpmn): Task[DeployResult] =
-            for {
-              mergeResult <- bpmnServ.mergeBpmn(bpmn.id)
-              _ <- log.info(s"Merged BPMN:\n${mergeResult.xmlElem}")
-              deployment <- processEngineService.deploy(DeployRequest(bpmn.id,
-                source = Some("Camundala Deployer")),
-                Seq(mergeResult))
-            } yield DeployResult(deployment.getId, Some(deployment.getName),
-              deployment.getDeploymentTime.toString,
-              Option(deployment.getSource),
-              Option(deployment.getTenantId),
-              mergeResult.warnings
-            )
-
-          def undeploy(bpmn: Bpmn): Task[Unit] =
-            for {
-              _ <- processEngineService.undeploy(bpmn.id)
-            } yield ()
-
-          def deployments(): Task[Seq[DeployResult]] =
-            for {
-              depls <- processEngineService.deployments()
-              result = depls.map(deployment =>
-                DeployResult(deployment.getId, Some(deployment.getName),
-                  deployment.getDeploymentTime.toString,
-                  Option(deployment.getSource),
-                  Option(deployment.getTenantId)
-                )
-              )
-            } yield result
         }
     }
-
-
 }

@@ -5,7 +5,8 @@ import eu.timepit.refined._
 import eu.timepit.refined.boolean.And
 import eu.timepit.refined.collection.NonEmpty
 import eu.timepit.refined.string.Trimmed
-import pme123.camundala.model.bpmn.IdRegex
+import pme123.camundala.model.bpmn.{IdRegex, ModelException, PropKey}
+import zio.ZIO
 
 package object deploy {
 
@@ -25,5 +26,8 @@ package object deploy {
     override def toString: String = "*" * 10
   }
 
+  def urlFromStr(url: String): ZIO[Any, ModelException, Url] =
+    ZIO.fromEither(refineV[string.Url](url))
+      .mapError(ex => ModelException(s"Could not create Url $url:\n $ex"))
 
 }

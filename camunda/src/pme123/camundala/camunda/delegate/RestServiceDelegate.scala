@@ -41,7 +41,7 @@ class RestServiceDelegate @Autowired()(runtimeService: RuntimeService)
         response <- restService.call(request)
         _ <- logging.log.debug(s"Rest call ${request.host.url} successful:\n$response")
       } yield (request.responseVariable, response))
-        .provideCustomLayer(ModelLayers.logLayer("RestServiceDelegate") ++
+        .provideCustomLayer(CamundaLayers.logLayer("RestServiceDelegate") ++
           CamundaLayers.restServicetLayer)
     )
     response match {

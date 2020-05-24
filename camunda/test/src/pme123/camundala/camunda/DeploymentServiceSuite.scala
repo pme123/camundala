@@ -6,7 +6,6 @@ import eu.timepit.refined.auto._
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity
 import org.camunda.bpm.engine.repository.Deployment
 import pme123.camundala.camunda.xml.MergeResult
-import pme123.camundala.model.deploy.DeployId
 import pme123.camundala.model.register.bpmnRegister
 import zio._
 import zio.test.Assertion.equalTo
@@ -42,8 +41,5 @@ object DeploymentServiceSuite extends DefaultRunnableSpec {
     new processEngineService.Service {
       override def deploy(deployRequest: DeployRequest, mergeResults: Seq[MergeResult]): Task[Deployment] = Task(deployment)
 
-      override def deployments(): Task[Seq[Deployment]] = Task(Seq(deployment))
-
-      override def undeploy(deployId: DeployId): Task[Unit] = Task(())
     })
 }

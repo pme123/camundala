@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 import _root_.sttp.model.Uri._
 import io.circe.Json
 import pme123.camundala.app.sttpBackend.SttpTaskBackend
-import pme123.camundala.camunda.service.restService.QueryParams.{NoParams, Params}
+import pme123.camundala.camunda.service.restService.QueryParams.NoParams
 import pme123.camundala.camunda.service.restService.Request.Auth.{BasicAuth, BearerAuth, DigestAuth, NoAuth}
 import pme123.camundala.camunda.service.restService.Request.{Auth, Host}
 import pme123.camundala.camunda.service.restService.RequestBody.Part.{FilePart, StringPart}

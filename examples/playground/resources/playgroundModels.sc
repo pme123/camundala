@@ -69,4 +69,4 @@ val bpmns: Set[Bpmn] =
       ))
   )
 
-deploys.standard(bpmns)
+deploys.standard(bpmns, "http://localhost:10001/rest")

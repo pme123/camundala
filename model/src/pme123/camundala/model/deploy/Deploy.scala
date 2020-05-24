@@ -14,7 +14,7 @@ case class Deploys(value: Set[Deploy])
 case class Deploy(id: DeployId,
                   bpmns: Set[Bpmn],
                   dockerConfig: DockerConfig,
-                  maybeRemote: Option[CamundaEndpoint] = None,
+                  camundaEndpoint: CamundaEndpoint,
                  )
 
 case class DockerConfig(projectName: ProjectName = "camundala-default",

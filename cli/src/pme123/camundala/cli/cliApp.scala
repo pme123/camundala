@@ -114,34 +114,27 @@ object cliApp {
 
       def generateBpmns(deployId: DeployId) =
         runWithDeployId[Seq[Bpmn]](deployId, "Generate BPMNs", deploy =>
-              Task.foreach(deploy.bpmns)(b => generator.generate(b.xml)),
+          Task.foreach(deploy.bpmns)(b => generator.generate(b.xml)),
           results =>
             results.foldLeft("")((r, bpmn) => s"$r${scala.Console.RESET}\nGenerated ${bpmn.id}: ${scala.Console.GREEN}\n${bpmn.generate()}")
         )
 
       def deployCreate(deployId: DeployId) =
         runWithDeployId[Seq[DeployResult]](deployId, "Deploy BPMN", deploy =>
-
-          deploy.maybeRemote.map(_ => deployClient.deploy(deploy)) // run the remote version if configured
-            .getOrElse(
-              Task.foreach(deploy.bpmns)(b => deployService.deploy(b))),
+          deployClient.deploy(deploy),
           results =>
             results.foldLeft("")((r, dr) => s"$r\n${scala.Console.YELLOW}- Warnings ${dr.name}:\n${dr.validateWarnings.value.mkString(" - ", "\n - ", "")}")
         )
 
       def deployDelete(deployId: DeployId) =
         runWithDeployId[Seq[Unit]](deployId, "Undeploy BPMN", deploy =>
-          deploy.maybeRemote.map(r =>
-            Task.foreach(deploy.bpmns)(b => deployClient.undeploy(b.id, r)) // run the remote version if configured
-          ).getOrElse(
-            Task.foreach(deploy.bpmns)(b => deployService.undeploy(b))),
+          Task.foreach(deploy.bpmns)(b => deployClient.undeploy(b.id, deploy.camundaEndpoint)),
           _ => ""
         )
 
       def deployList(deployId: DeployId) =
         runWithDeployId[Seq[DeployResult]](deployId, "Get Deployments", deploy =>
-          deploy.maybeRemote.map(deployClient.deployments) // run the remote version if configured
-            .getOrElse(deployService.deployments()),
+          deployClient.deployments(deploy.camundaEndpoint),
           results => results.mkString(" - ", "\n - ", ""))
 
       def appStart() =

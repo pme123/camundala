@@ -2,15 +2,11 @@ package pme123.camundala.camunda
 
 import org.camunda.bpm.engine.ProcessEngine
 import org.camunda.bpm.engine.repository.{Deployment, DeploymentBuilder}
-import pme123.camundala.camunda.StreamHelper._
 import pme123.camundala.camunda.xml.MergeResult
 import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.AppConfig
 import pme123.camundala.model.bpmn.{CamundalaException, StaticFile}
-import pme123.camundala.model.deploy.DeployId
 import zio._
-
-import scala.jdk.CollectionConverters._
 
 /**
   * Wraps functionality that needs the Camunda ProcessEngine (Camunda must run).
@@ -22,20 +18,10 @@ object processEngineService {
 
   trait Service {
     def deploy(deployRequest: DeployRequest, mergeResults: Seq[MergeResult]): Task[Deployment]
-
-    def undeploy(deployId: DeployId): Task[Unit]
-
-    def deployments(): Task[Seq[Deployment]]
   }
 
   def deploy(deployRequest: DeployRequest, mergeResults: Seq[MergeResult]): RIO[ProcessEngineService, Deployment] =
     ZIO.accessM(_.get.deploy(deployRequest, mergeResults))
-
-  def undeploy(deployId: DeployId): RIO[ProcessEngineService, Unit] =
-    ZIO.accessM(_.get.undeploy(deployId))
-
-  def deployments(): RIO[ProcessEngineService, Seq[Deployment]] =
-    ZIO.accessM(_.get.deployments())
 
   import CamundaExtensions._
 
@@ -66,23 +52,6 @@ object processEngineService {
               )
             deployment <- ZIO.effect(builder.deploy())
           } yield deployment
-
-        def undeploy(deployId: DeployId): Task[Unit] =
-          repoServiceEffect.map(repoService =>
-            repoService.createDeploymentQuery()
-              .deploymentName(deployId.value)
-              .list()
-              .asScala
-              .foreach(d => repoService.deleteDeployment(d.getId, true))
-          )
-
-        def deployments(): Task[Seq[Deployment]] =
-          repoServiceEffect.map(repoService =>
-            repoService.createDeploymentQuery()
-              .list()
-              .asScala
-              .toSeq
-          )
 
       }
 
