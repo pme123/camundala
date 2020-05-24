@@ -5,16 +5,18 @@ import java.util.concurrent.TimeUnit
 import _root_.sttp.model.Uri._
 import io.circe.Json
 import pme123.camundala.app.sttpBackend.SttpTaskBackend
-import pme123.camundala.camunda.service.restService.QueryParams.NoParams
+import pme123.camundala.camunda.service.restService.QueryParams.{NoParams, Params}
 import pme123.camundala.camunda.service.restService.Request.Auth.{BasicAuth, BearerAuth, DigestAuth, NoAuth}
 import pme123.camundala.camunda.service.restService.Request.{Auth, Host}
+import pme123.camundala.camunda.service.restService.RequestBody.Part.{FilePart, StringPart}
 import pme123.camundala.camunda.service.restService.RequestHeader.NoHeaders
 import pme123.camundala.camunda.service.restService.RequestMethod.Get
 import pme123.camundala.camunda.service.restService.RequestPath.NoPath
 import pme123.camundala.camunda.service.restService.ResponseRead.{NoResponseRead, StringRead}
-import pme123.camundala.model.bpmn.{CamundalaException, PathElem, PropKey}
+import pme123.camundala.model.bpmn.{CamundalaException, FilePath, PathElem, PropKey}
 import pme123.camundala.model.deploy.{Sensitive, Url, Username}
-import sttp.{client => sttp, model => sttpModel}
+import sttp.client.{Empty, NothingT, RequestT, SttpBackend, basicRequest, multipart, Request => SttpRequest, Response => SttpResponse}
+import sttp.model.StatusCode
 import zio._
 import zio.clock.Clock
 import zio.duration._
@@ -37,12 +39,12 @@ object restService {
     ZLayer.fromServices[SttpTaskBackend, logging.Logger[String], Clock.Service, Service] {
       (backend, log, clock) =>
 
-        implicit def sttpBackend: sttp.SttpBackend[Task, Nothing, sttp.NothingT] = backend
+        implicit def sttpBackend: SttpBackend[Task, Nothing, NothingT] = backend
 
         (request: Request) => {
 
-          lazy val sendRequest: Task[sttp.Response[Either[String, String]]] =
-            sttp.basicRequest
+          lazy val sendRequest: Task[SttpResponse[Either[String, String]]] =
+            basicRequest
               .headers(request.headers.toMap)
               .withAuth(request.host.auth)
               .withMethod(request)
@@ -61,7 +63,7 @@ object restService {
               .retry(Schedule.recurs(5) && Schedule.exponential(1.second))
               .provideLayer(ZLayer.succeed(clock))
 
-          def handleResponse(sttpRespEffect: Task[sttp.Response[Either[String, String]]]): Task[Response] =
+          def handleResponse(sttpRespEffect: Task[SttpResponse[Either[String, String]]]): Task[Response] =
             sttpRespEffect
               .mapError(ex => RestServiceException(s"There was a Problem calling ${request.host.url}", Some(ex)))
               .flatMap { r =>
@@ -74,7 +76,7 @@ object restService {
                   ZIO.fail(RestServiceException(s"Result for ${request.host.url} was not successful with Status ${status.code}"))
               }
 
-          def handleResponseBody(status: sttpModel.StatusCode, sttpRespEffect: sttp.Response[Either[String, String]]): Task[Response] =
+          def handleResponseBody(status: StatusCode, sttpRespEffect: SttpResponse[Either[String, String]]): Task[Response] =
             request.responseRead match {
               case NoResponseRead =>
                 ZIO.succeed(Response.NoContent)
@@ -95,20 +97,24 @@ object restService {
 
   private[service] def uri(request: Request) = {
     val uri = s"${
-      request.host.url.value
+      request.host.url
     }${
-      request.mappings.foldLeft(request.path.toString) {
+      request.path
+    }${
+      request.queryParams
+    }"
+    uri"${
+      request.mappings.foldLeft(uri) {
         case (r, (k, v)) =>
           r.replace(k, v)
       }
     }"
-    uri"$uri"
   }
 
 
-  implicit class CRequestT(sttpRequest: sttp.RequestT[sttp.Empty, Either[String, String], Nothing]) {
+  implicit class CRequestT(sttpRequest: RequestT[Empty, Either[String, String], Nothing]) {
 
-    def withAuth(auth: Auth): sttp.RequestT[sttp.Empty, Either[String, String], Nothing] = auth match {
+    def withAuth(auth: Auth): RequestT[Empty, Either[String, String], Nothing] = auth match {
       case NoAuth =>
         sttpRequest
       case BasicAuth(username, password) =>
@@ -124,7 +130,7 @@ object restService {
 
     import RequestMethod._
 
-    def withMethod(request: Request): sttp.Request[Either[String, String], Nothing] = request.method match {
+    def withMethod(request: Request): SttpRequest[Either[String, String], Nothing] = request.method match {
       case Get =>
         sttpRequest
           .get(uri(request))
@@ -150,19 +156,29 @@ object restService {
 
   }
 
-  implicit class CRequest(sttpRequest: sttp.Request[Either[String, String], Nothing]) {
+  implicit class CRequest(sttpRequest: SttpRequest[Either[String, String], Nothing]) {
 
     import RequestBody._
 
-    def withBody(body: RequestBody): sttp.Request[Either[String, String], Nothing] = body match {
+    def withBody(body: RequestBody): SttpRequest[Either[String, String], Nothing] = body match {
       case NoBody =>
         sttpRequest
       case StringBody(str) =>
         sttpRequest
           .body(str)
+      case MultipartBody(parts) =>
+        sttpRequest
+          .multipartBody(
+            parts.map {
+              case StringPart(name, value) =>
+                multipart(name.value, value)
+              case FilePart(name, fileName, data) =>
+                multipart(name.value, data).fileName(fileName.value)
+            }.toSeq)
+
     }
 
-    def withResponse(resp: ResponseRead): sttp.Request[Either[String, String], Nothing] = resp match {
+    def withResponse(resp: ResponseRead): SttpRequest[Either[String, String], Nothing] = resp match {
       case NoResponseRead | StringRead =>
         sttpRequest
     }
@@ -179,7 +195,7 @@ object restService {
                      handledErrors: Seq[Int] = Nil,
                      responseVariable: String = "jsonResult",
                      mappings: Map[String, String] = Map.empty
-                    // maybeMocked: Option[Request => Response] = None
+                     // maybeMocked: Option[Request => Response] = None
                     )
 
   object Request {
@@ -251,6 +267,18 @@ object restService {
     case object NoBody extends RequestBody
 
     case class StringBody(str: String) extends RequestBody
+
+    case class MultipartBody(parts: Set[Part]) extends RequestBody
+
+    sealed trait Part
+
+    object Part {
+
+      case class StringPart(name: PropKey, value: String) extends Part
+
+      case class FilePart(name: PropKey, fileName: FilePath, data: String) extends Part
+
+    }
 
   }
 

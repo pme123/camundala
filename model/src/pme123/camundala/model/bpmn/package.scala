@@ -42,4 +42,12 @@ package object bpmn {
   def filePathFromStr(filePath: String): ZIO[Any, ModelException, FilePath] =
     ZIO.fromEither(refineV[FilePathRegex](filePath))
       .mapError(ex => ModelException(s"Could not create FilePath $filePath:\n $ex"))
+
+  def pathElemFromStr(pathElem: String): ZIO[Any, ModelException, PathElem] =
+    ZIO.fromEither(refineV[PathElemRegex](pathElem))
+      .mapError(ex => ModelException(s"Could not create PathElem $pathElem:\n $ex"))
+
+  def propKeyFromStr(propKey: String): ZIO[Any, ModelException, PropKey] =
+    ZIO.fromEither(refineV[IdRegex](propKey))
+      .mapError(ex => ModelException(s"Could not create PropKey $propKey:\n $ex"))
 }

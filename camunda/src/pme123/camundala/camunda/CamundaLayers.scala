@@ -24,7 +24,7 @@ object CamundaLayers {
 
   lazy val bpmnServiceLayer: TaskLayer[BpmnService] = ConfigLayers.appConfigLayer ++ ModelLayers.bpmnRegisterLayer >>> bpmnService.live
   lazy val httpDeployClientLayer: TaskLayer[HttpDeployClient] =
-    sttpBackend.sttpBackendLayer ++ bpmnServiceLayer ++ logLayer("DockerRunner") ++ ConfigLayers.appConfigLayer ++ Clock.live >>> httpDeployClient.live
+    bpmnServiceLayer ++ logLayer("DockerRunner") ++ restServicetLayer ++ ConfigLayers.appConfigLayer >>> httpDeployClient.live
   lazy val deploymentServiceLayer: TaskLayer[DeploymentService] = bpmnServiceLayer ++ processEngineServiceLayer ++  logLayer("DeploymentService") >>> deploymentService.live
   lazy val bpmnGeneratorLayer: TaskLayer[BpmnGenerator] = logLayer("BpmnGenerator") ++ ConfigLayers.appConfigLayer >>> bpmnGenerator.live
 

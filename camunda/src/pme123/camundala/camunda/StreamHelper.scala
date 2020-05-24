@@ -2,6 +2,7 @@ package pme123.camundala.camunda
 
 import java.io.{ByteArrayInputStream, File, FileInputStream, InputStream}
 
+import org.apache.commons.io.IOUtils
 import pme123.camundala.model.bpmn.{CamundalaException, StaticFile}
 import zio._
 
@@ -17,6 +18,9 @@ case class StreamHelper(basePath: String) {
     else
       getClass.getClassLoader.getResourceAsStream(staticFile.pathWithName)
   }
+
+  def asString(staticFile: StaticFile): String =
+    IOUtils.toString(inputStream(staticFile), "UTF-8")
 
   def inputStream(xml: Node): InputStream =
     new ByteArrayInputStream(xml.toString.getBytes)

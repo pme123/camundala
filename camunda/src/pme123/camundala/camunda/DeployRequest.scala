@@ -1,7 +1,8 @@
 package pme123.camundala.camunda
 
+import eu.timepit.refined.auto._
 import pme123.camundala.camunda.xml.ValidateWarnings
-import pme123.camundala.model.bpmn.{BpmnId, CamundalaException, FilePath}
+import pme123.camundala.model.bpmn.{BpmnId, CamundalaException, FilePath, PropKey}
 
 case class DeployRequest(bpmnId: BpmnId,
                          enableDuplicateFilterung: Boolean = false,
@@ -11,18 +12,18 @@ case class DeployRequest(bpmnId: BpmnId,
                          deployFiles: Set[DeployFile] = Set.empty)
 
 object DeployRequest {
-  val DeploymentName = "deployment-name"
-  val EnableDuplicateFiltering = "enable-duplicate-filtering"
-  val DeployChangedOnly = "deploy-changed-only"
-  val DeploymentSource = "deployment-source"
-  val tenantId = "tenant-id"
+  val DeploymentName: PropKey = "deployment-name"
+  val EnableDuplicateFiltering: PropKey = "enable-duplicate-filtering"
+  val DeployChangedOnly: PropKey = "deploy-changed-only"
+  val DeploymentSource: PropKey = "deployment-source"
+  val tenantId: PropKey = "tenant-id"
 
   val ReservedKeywords = Set(
-    DeploymentName,
-    EnableDuplicateFiltering,
-    DeployChangedOnly,
-    DeploymentSource,
-    tenantId
+    DeploymentName.value,
+    EnableDuplicateFiltering.value,
+    DeployChangedOnly.value,
+    DeploymentSource.value,
+    tenantId.value
   )
 }
 

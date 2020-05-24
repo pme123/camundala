@@ -50,7 +50,7 @@ object httpServer {
             case req@POST -> Root / "deployment" / "create" =>
               req.decode[Multipart[Task]] { m =>
                 deployMultipart(m)
-                  .foldM(e =>
+                  .foldM(_ =>
                     InternalServerError(),
                     Ok(_))
               }
@@ -59,8 +59,8 @@ object httpServer {
         def deployMultipart(m: Multipart[Task]) = {
           import pme123.camundala.camunda.DeployRequest._
 
-          def forName(m: Multipart[Task], name: String) = {
-            m.parts.collectFirst { case p if p.name.contains(name) =>
+          def forName(m: Multipart[Task], name: PropKey) = {
+            m.parts.collectFirst { case p if p.name.contains(name.value) =>
               p.body.compile.toVector
                 .map(v => Some(new String(v.toArray)))
                 .catchAll(e =>
