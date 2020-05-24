@@ -1,8 +1,10 @@
 package pme123.camundala.examples.playground
 
+import eu.timepit.refined.auto._
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import pme123.camundala.app.appRunner.AppRunner
 import pme123.camundala.examples.common.StandardCliApp
+import pme123.camundala.model.bpmn.StaticFile
 import pme123.camundala.services.StandardApp
 import pme123.camundala.services.StandardApp.StandardAppDeps
 import zio.ZLayer
@@ -16,6 +18,6 @@ object PlaygroundApp extends StandardCliApp {
   protected val title = "Camundala Playground App"
 
   protected def appRunnerLayer: ZLayer[StandardAppDeps, Nothing, AppRunner] =
-    StandardApp.layer(classOf[PlaygroundApp], "playgroundModels.sc")
+    StandardApp.layer(classOf[PlaygroundApp], StaticFile("playgroundModels.sc", "."))
 
 }

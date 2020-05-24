@@ -4,6 +4,8 @@ import org.camunda.bpm.engine.ProcessEngine
 import org.camunda.bpm.engine.repository.{Deployment, DeploymentBuilder}
 import pme123.camundala.camunda.StreamHelper._
 import pme123.camundala.camunda.xml.MergeResult
+import pme123.camundala.config.appConfig
+import pme123.camundala.config.appConfig.AppConfig
 import pme123.camundala.model.bpmn.{CamundalaException, StaticFile}
 import pme123.camundala.model.deploy.DeployId
 import zio._
@@ -37,10 +39,10 @@ object processEngineService {
 
   import CamundaExtensions._
 
-  type ProcessEngineServiceDeps = Has[() => ProcessEngine]
+  type ProcessEngineServiceDeps = Has[() => ProcessEngine] with AppConfig
 
   lazy val live: RLayer[ProcessEngineServiceDeps, ProcessEngineService] =
-    ZLayer.fromService[() => ProcessEngine, Service] { processEngine =>
+    ZLayer.fromServices[() => ProcessEngine, appConfig.Service, Service] { (processEngine, configService) =>
       new Service {
         private lazy val repoServiceEffect = (for {
           pe <- ZIO.fromOption(Option(processEngine()))
@@ -51,6 +53,7 @@ object processEngineService {
         def deploy(request: DeployRequest, mergeResults: Seq[MergeResult]): Task[Deployment] =
           for {
             repoService <- repoServiceEffect
+            config <- configService.get()
             builder <-
               ZIO.effect(
                 repoService.createDeployment
@@ -58,8 +61,8 @@ object processEngineService {
                   .obtValue((b, v: String) => b.source(v), request.source)
                   .obtValue((b, v: String) => b.tenantId(v), request.tenantId)
                   .enableDuplicateFiltering(request.enableDuplicateFilterung)
-                  .listValue((b, v: MergeResult) => b.addInputStream(v.fileName.value, StreamHelper.inputStream(v.xmlElem)), mergeResults)
-                  .listValue((b, v: StaticFile) => b.addInputStream(v.fileName.value, inputStream(v)), mergeResults.flatMap(_.maybeBpmn).flatMap(_.staticFiles))
+                  .listValue((b, v: MergeResult) => b.addInputStream(v.fileName.value, StreamHelper(config.basePath).inputStream(v.xmlElem)), mergeResults)
+                  .listValue((b, v: StaticFile) => b.addInputStream(v.fileName.value, StreamHelper(config.basePath).inputStream(v)), mergeResults.flatMap(_.maybeBpmn).flatMap(_.staticFiles))
               )
             deployment <- ZIO.effect(builder.deploy())
           } yield deployment

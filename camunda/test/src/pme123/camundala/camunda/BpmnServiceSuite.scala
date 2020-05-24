@@ -4,6 +4,7 @@ package pme123.camundala.camunda
 import eu.timepit.refined.auto._
 import pme123.camundala.camunda.xml.XmlHelper
 import pme123.camundala.camunda.xml.XmlHelper.XQualifier
+import pme123.camundala.model.ModelLayers
 import pme123.camundala.model.register.bpmnRegister
 import zio.test.Assertion._
 import zio.test._
@@ -67,6 +68,6 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
         } yield
           assert(valWarns.value.size)(equalTo(13) ?? "warnings")
       }
-    ).provideCustomLayer(((bpmnRegister.live >>> bpmnService.live) ++ bpmnRegister.live).mapError(TestFailure.fail))
+    ).provideCustomLayer((CamundaLayers.bpmnServiceLayer ++ ModelLayers.bpmnRegisterLayer).mapError(TestFailure.fail))
 
 }

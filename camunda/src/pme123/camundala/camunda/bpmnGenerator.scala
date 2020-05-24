@@ -1,6 +1,8 @@
 package pme123.camundala.camunda
 
 import pme123.camundala.camunda.xml.XBpmn
+import pme123.camundala.config.appConfig
+import pme123.camundala.config.appConfig.AppConfig
 import pme123.camundala.model.bpmn._
 import zio._
 import zio.logging.{Logger, Logging}
@@ -12,13 +14,14 @@ object bpmnGenerator {
     def generate(xmlFile: StaticFile): Task[Bpmn]
   }
 
-  type BpmnGeneratorDeps = Logging
+  type BpmnGeneratorDeps = Logging with AppConfig
 
   lazy val live: URLayer[BpmnGeneratorDeps, BpmnGenerator] =
-    ZLayer.fromService[Logger[String], Service] { log =>
+    ZLayer.fromServices[Logger[String], appConfig.Service, Service] { (log, configService) =>
       (xmlFile: StaticFile) =>
         for {
-          xml <- StreamHelper.xml(xmlFile)
+          config <- configService.get()
+          xml <- StreamHelper(config.basePath).xml(xmlFile)
           _ = println(s"XML - $xml")
           bpmnId <- bpmnIdFromFilePath(xmlFile.fileName)
           processes <- XBpmn(xml).createProcesses()

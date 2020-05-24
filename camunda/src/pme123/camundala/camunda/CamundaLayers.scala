@@ -12,25 +12,27 @@ import pme123.camundala.camunda.service.restService
 import pme123.camundala.camunda.service.restService.RestService
 import pme123.camundala.config.ConfigLayers
 import pme123.camundala.model.ModelLayers
-import pme123.camundala.model.ModelLayers._
 import zio.clock.Clock
-import zio.{Has, TaskLayer, ZIO, ZLayer}
+import zio.logging.Logging
+import zio._
 
 object CamundaLayers {
+  private def logLayer(loggerName: String): ULayer[Logging] =
+    ModelLayers.logLayer(loggerName, "pme123.camundala.camunda")
 
-  lazy val restServicetLayer: TaskLayer[RestService] = sttpBackend.sttpBackendLayer ++ ModelLayers.logLayer("RestService") ++ Clock.live >>> restService.live
+  lazy val restServicetLayer: TaskLayer[RestService] = sttpBackend.sttpBackendLayer ++ logLayer("RestService") ++ Clock.live >>> restService.live
 
-  lazy val bpmnServiceLayer: TaskLayer[BpmnService] = bpmnRegisterLayer >>> bpmnService.live
+  lazy val bpmnServiceLayer: TaskLayer[BpmnService] = ConfigLayers.appConfigLayer ++ ModelLayers.bpmnRegisterLayer >>> bpmnService.live
   lazy val httpDeployClientLayer: TaskLayer[HttpDeployClient] =
-    sttpBackend.sttpBackendLayer ++ bpmnServiceLayer ++ ModelLayers.logLayer("DockerRunner") ++ ConfigLayers.appConfigLayer ++ Clock.live >>> httpDeployClient.live
-  lazy val deploymentServiceLayer: TaskLayer[DeploymentService] = bpmnServiceLayer ++ processEngineServiceLayer ++  ModelLayers.logLayer("DeploymentService") >>> deploymentService.live
-  lazy val bpmnGeneratorLayer: TaskLayer[BpmnGenerator] = ModelLayers.logLayer("BpmnGenerator") >>> bpmnGenerator.live
+    sttpBackend.sttpBackendLayer ++ bpmnServiceLayer ++ logLayer("DockerRunner") ++ ConfigLayers.appConfigLayer ++ Clock.live >>> httpDeployClient.live
+  lazy val deploymentServiceLayer: TaskLayer[DeploymentService] = bpmnServiceLayer ++ processEngineServiceLayer ++  logLayer("DeploymentService") >>> deploymentService.live
+  lazy val bpmnGeneratorLayer: TaskLayer[BpmnGenerator] = logLayer("BpmnGenerator") ++ ConfigLayers.appConfigLayer >>> bpmnGenerator.live
 
   lazy val processEngineLayer: ZLayer[Any, Throwable, Has[() => ProcessEngine]] = // ProcessEngine must be lazy!
     ZLayer.fromAcquireRelease(ZIO.effect(() => EngineUtil.lookupProcessEngine(null)))(pe =>
       ZIO.effect(pe().close()).ignore
     )
-  lazy val processEngineServiceLayer: TaskLayer[ProcessEngineService] = processEngineLayer >>> processEngineService.live
+  lazy val processEngineServiceLayer: TaskLayer[ProcessEngineService] = ConfigLayers.appConfigLayer ++ processEngineLayer >>> processEngineService.live
 
 
 }

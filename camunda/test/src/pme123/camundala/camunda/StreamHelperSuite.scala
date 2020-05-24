@@ -11,12 +11,12 @@ object StreamHelperSuite extends DefaultRunnableSpec {
     suite("StreamHelperSuite")(
       testM("Load Resource that exists") {
         for {
-          xml <- StreamHelper.xml(StaticFile("TwitterDemoProcess.bpmn", "bpmn"))
+          xml <- StreamHelper("camunda/test/resources").xml(StaticFile("TwitterDemoProcess.bpmn", "bpmn"))
         } yield
           assert(xml.toString)(containsString("TwitterDemoProcess"))
       },testM("Load Resource that does not exists") {
         for {
-          xml <- StreamHelper.xml(StaticFile("TwitterDemoProcessBAD.bpmn", "bpmn")).flip
+          xml <- StreamHelper("bad").xml(StaticFile("TwitterDemoProcessBAD.bpmn", "bpmn")).flip
         } yield
           assert(xml.getMessage)(equalTo("There is a Problem loading bpmn/TwitterDemoProcessBAD.bpmn"))
       }

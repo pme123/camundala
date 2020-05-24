@@ -9,10 +9,10 @@ import zio.logging.slf4j.Slf4jLogger
 
 object ModelLayers {
 
-  def logLayer(loggerName: String): ULayer[Logging] =
+   def logLayer(loggerName: String, prefix: String = "pme123.camundala.model"): ULayer[Logging] =
     Slf4jLogger.make((context, message) =>
       message,
-      Some(loggerName)
+      Some(s"$prefix.$loggerName")
     )
 
   lazy val bpmnRegisterLayer: ULayer[BpmnRegister] = bpmnRegister.live

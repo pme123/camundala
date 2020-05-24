@@ -1,6 +1,8 @@
 package pme123.camundala.camunda
 
 import pme123.camundala.camunda.xml.{MergeResult, ValidateWarnings, XBpmn, XMergeResult}
+import pme123.camundala.config.appConfig
+import pme123.camundala.config.appConfig.AppConfig
 import pme123.camundala.model.register.bpmnRegister.BpmnRegister
 import pme123.camundala.model.bpmn.{filePathFromBpmnId, _}
 import pme123.camundala.model.register.bpmnRegister
@@ -29,10 +31,11 @@ object bpmnService {
   def validateBpmn(bpmnId: BpmnId): RIO[BpmnService, ValidateWarnings] =
     ZIO.accessM(_.get.validateBpmn(bpmnId))
 
+ type BpmnServiceDeps = BpmnRegister with AppConfig
 
-  lazy val live: RLayer[BpmnRegister, BpmnService] =
-    ZLayer.fromService[bpmnRegister.Service, Service] {
-      register =>
+  lazy val live: RLayer[BpmnServiceDeps, BpmnService] =
+    ZLayer.fromServices[bpmnRegister.Service, appConfig.Service, Service] {
+      (register, configService) =>
 
         new Service {
           def mergeBpmn(bpmnId: BpmnId, bpmnXml: Elem): Task[MergeResult] = {
@@ -50,7 +53,8 @@ object bpmnService {
               bpmn <- if (maybeBpmn.isDefined)
                 UIO(maybeBpmn.get)
               else ZIO.fail(BpmnServiceException(s"There is no BPMN $bpmnId in the BPMN Register"))
-              xml <- StreamHelper.xml(bpmn.xml)
+              config <- configService.get()
+              xml <- StreamHelper(config.basePath).xml(bpmn.xml)
               xMergeResult <- merge(xml, maybeBpmn, bpmnId)
             } yield MergeResult(bpmn.xml.fileName, xMergeResult.xmlElem, maybeBpmn, xMergeResult.warnings)
           }

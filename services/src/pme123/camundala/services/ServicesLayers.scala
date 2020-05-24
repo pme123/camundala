@@ -7,18 +7,23 @@ import pme123.camundala.model.ModelLayers
 import pme123.camundala.services.StandardApp.StandardAppDeps
 import pme123.camundala.services.dockerComposer.DockerComposer
 import pme123.camundala.services.httpServer.HttpServer
-import zio.TaskLayer
+import zio.logging.Logging
+import zio.{TaskLayer, ULayer}
 
 object ServicesLayers {
 
+  private def logLayer(loggerName: String): ULayer[Logging] =
+    ModelLayers.logLayer(loggerName, "pme123.camundala.services")
+
   lazy val httpServerLayer: TaskLayer[HttpServer] =
-    ModelLayers.logLayer("httpServer") ++
+    logLayer("httpServer") ++
       ConfigLayers.appConfigLayer ++
       CamundaLayers.deploymentServiceLayer >>> httpServer.live
 
   lazy val appDepsLayer: TaskLayer[StandardAppDeps] =
-    ModelLayers.logLayer("appLayer") ++
+    logLayer("appLayer") ++
       httpServerLayer ++
+      ConfigLayers.appConfigLayer ++
       CamundaLayers.bpmnServiceLayer ++
       ModelLayers.bpmnRegisterLayer ++
       ModelLayers.deployRegisterLayer

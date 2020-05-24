@@ -1,18 +1,14 @@
 package pme123.camundala.config
 
 import pme123.camundala.config.appConfig.AppConfig
-import zio.{TaskLayer, ULayer}
-import zio.clock.Clock
-import zio.console.Console
+import pme123.camundala.model.ModelLayers
 import zio.logging.Logging
-import zio.logging.slf4j.Slf4jLogger
+import zio.{TaskLayer, ULayer}
 
 object ConfigLayers {
 
-  def configLogLayer(loggerName: String): ULayer[Logging] = Slf4jLogger.make(
-    (_, logEntry) => logEntry,
-    Some(loggerName)
-  )
+  def configLogLayer(loggerName: String): ULayer[Logging] =
+    ModelLayers.logLayer(loggerName, "pme123.camundala.config")
 
   lazy val appConfigLayer: TaskLayer[AppConfig] = configLogLayer("appConfig") >>> appConfig.live
 

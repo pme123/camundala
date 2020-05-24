@@ -10,7 +10,7 @@ object AppConfigSuites
   extends DefaultRunnableSpec {
 
   private val expectedConf =
-    AppConf(ServicesConf("localhost", 8889))//, CamundaConf(CamundaEndpoint("http://localhost:10001/rest", "kermit", Sensitive("kermit"))))
+    AppConf(".", ServicesConf("localhost", 8889))//, CamundaConf(CamundaEndpoint("http://localhost:10001/rest", "kermit", Sensitive("kermit"))))
 
   def spec: ZSpec[environment.TestEnvironment, Any] =
     suite("AppConfigSuites")(

@@ -2,7 +2,7 @@ package pme123.camundala.examples.twitter
 
 import eu.timepit.refined.auto._
 import pme123.camundala.app.appRunner
-import pme123.camundala.model.ModelLayers
+import pme123.camundala.model.bpmn.StaticFile
 import pme123.camundala.model.deploy.Url
 import pme123.camundala.services.{ServicesLayers, StandardApp}
 import zio.test.Assertion._
@@ -20,6 +20,8 @@ object TwitterAppSuite extends DefaultRunnableSpec {
         } yield
           assert(result)(isUnit)
       }
-    ).provideCustomLayer((ModelLayers.bpmnRegisterLayer ++ ModelLayers.deployRegisterLayer ++ ServicesLayers.httpServerLayer ++ ModelLayers.logLayer("TwitterAppSuite") >>> StandardApp.layer(classOf[TwitterApp], "bpmnModels.sc")).mapError(TestFailure.fail))
+    ).provideCustomLayer(ServicesLayers.appDepsLayer >>>
+      StandardApp.layer(classOf[TwitterApp], StaticFile("bpmnModels.sc", ".")))
+        .mapError(TestFailure.fail)
 
 }

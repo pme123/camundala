@@ -4,7 +4,7 @@ import pme123.camundala.model.deploy.{CamundaEndpoint, Sensitive}
 import zio._
 import zio.config.ConfigDescriptor._
 import zio.config.typesafe.TypesafeConfig
-import zio.config.{Config, config, _}
+import zio.config.{Config, config}
 import zio.logging.Logging
 
 object appConfig {
@@ -19,7 +19,7 @@ object appConfig {
 
   case class ConfWrapper(camundala: AppConf)
 
-  case class AppConf(servicesConf: ServicesConf/*, camundaConf: CamundaConf*/)
+  case class AppConf(basePath: String, servicesConf: ServicesConf/*, camundaConf: CamundaConf*/)
 
   case class ServicesConf(host: String, port: Int = 8888) {
     val url = s"$host:$port"
@@ -49,7 +49,8 @@ object appConfig {
 
 
     val appConf =
-      (nested("services")(serviceConf) /*|@| nested("camunda")(camundaConf)*/) (AppConf.apply, AppConf.unapply)
+      (string("basePath") |@|
+        nested("services")(serviceConf) /*|@| nested("camunda")(camundaConf)*/) (AppConf.apply, AppConf.unapply)
 
     val confWrapper =
       nested("camundala")(appConf)(ConfWrapper.apply, ConfWrapper.unapply)

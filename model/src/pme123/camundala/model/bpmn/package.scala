@@ -11,7 +11,7 @@ package object bpmn {
   type IdRegex = MatchesRegex["""^[a-zA-Z_][\w|\-|\.]+$"""]
   type FileNameRegex = IdRegex
   type FilePathRegex = MatchesRegex["""^[a-zA-Z_]+[\w\-\.\/]+$"""]
-  type PathElemRegex = MatchesRegex["""^[\w_]+[\w\-\.\/]*$"""]
+  type PathElemRegex = MatchesRegex["""^[\w_\.]+[\w\-\.\/]*$"""]
 
   type ProcessId = String Refined IdRegex
   type BpmnNodeId = String Refined IdRegex

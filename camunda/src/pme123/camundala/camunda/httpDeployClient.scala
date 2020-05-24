@@ -9,7 +9,7 @@ import pme123.camundala.app.sttpBackend.SttpTaskBackend
 import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.xml.{ValidateWarning, ValidateWarnings}
 import pme123.camundala.config.appConfig
-import pme123.camundala.config.appConfig.{AppConf, AppConfig}
+import pme123.camundala.config.appConfig.AppConfig
 import pme123.camundala.model.bpmn.{BpmnId, CamundalaException}
 import pme123.camundala.model.deploy.{CamundaEndpoint, Deploy, Sensitive}
 import sttp.client.circe.asJson
@@ -59,13 +59,14 @@ object httpDeployClient {
                 endpoint <- ZIO.fromOption(deploy.maybeRemote).mapError(_ => HttpDeployClientException(s"There is no Remote Configuration for ${deploy.id}"))
                 mergeResult <- bpmnServ.mergeBpmn(bpmn.id)
                 _ <- log.info(s"Deploy ${bpmn.id} to ${endpoint.url.value}")
-                staticFiles = bpmn.staticFiles.map(st => multipart(st.fileName.value, StreamHelper.inputStream(st)).fileName(st.fileName.value))
+                config <- confService.get()
+                staticFiles = bpmn.staticFiles.map(st => multipart(st.fileName.value, StreamHelper(config.basePath).inputStream(st)).fileName(st.fileName.value))
                 body = Seq(
                   multipart(DeploymentName, bpmn.id.value),
                   multipart(EnableDuplicateFiltering, "false"),
                   multipart(DeployChangedOnly, "true"),
                   multipart(DeploymentSource, "Camundala Client"),
-                  multipart(bpmn.xml.fileName.value, StreamHelper.inputStream(mergeResult.xmlElem)).fileName(bpmn.xml.fileName.value),
+                  multipart(bpmn.xml.fileName.value, StreamHelper(config.basePath).inputStream(mergeResult.xmlElem)).fileName(bpmn.xml.fileName.value),
                 ) ++ staticFiles
                 request = basicRequest
                   .multipartBody(body)
