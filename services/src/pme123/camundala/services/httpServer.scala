@@ -8,8 +8,8 @@ import org.http4s.dsl._
 import org.http4s.implicits._
 import org.http4s.multipart.Multipart
 import org.http4s.server.blaze.BlazeServerBuilder
-import pme123.camundala.camunda.deploymentService._
-import pme123.camundala.camunda.{DeployFile, DeployRequest, deploymentService}
+import pme123.camundala.camunda.httpDeployClient.HttpDeployClient
+import pme123.camundala.camunda.{DeployFile, DeployRequest, JsonEnDecoders, httpDeployClient}
 import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.{AppConfig, ServicesConf}
 import pme123.camundala.model.bpmn._
@@ -18,7 +18,8 @@ import zio.interop.catz._
 import zio.interop.catz.implicits._
 import zio.logging.Logging
 
-object httpServer {
+object httpServer
+  extends JsonEnDecoders {
   type HttpServer = Has[Service]
 
   trait Service {
@@ -28,14 +29,14 @@ object httpServer {
   def serve(): RIO[HttpServer, Unit] =
     ZIO.accessM(_.get.serve())
 
-  type HttpServerDeps = AppConfig with DeploymentService with Logging
+  type HttpServerDeps = AppConfig with HttpDeployClient with Logging
 
   /**
     * http4s Implementation
     */
   lazy val live: RLayer[HttpServerDeps, HttpServer] =
-    ZLayer.fromServices[appConfig.Service, deploymentService.Service, logging.Logger[String], Service] {
-      (config, deployService, log) =>
+    ZLayer.fromServices[appConfig.Service, httpDeployClient.Service, logging.Logger[String], Service] {
+      (configServ, deployService, log) =>
 
         val dsl: Http4sDsl[Task] = Http4sDsl[Task]
         import dsl._
@@ -65,15 +66,16 @@ object httpServer {
                 .map(v => Some(new String(v.toArray)))
                 .catchAll(e =>
                   log.info(s"Problem receiving ${e.getMessage}") *>
-                    ZIO.none
+                    ZIO.succeed(None)
                 )
-            }.getOrElse(ZIO.none)
+            }.getOrElse(ZIO.succeed(None))
           }
 
           (for {
             files <- ZIO.foreach(m.parts.filter(p => p.name.isEmpty || !ReservedKeywords.contains(p.name.get)))(p =>
               p.filename.map(fn => p.body.compile.toVector.flatMap(v => filePathFromStr(fn).map(x => DeployFile(x, v))))
                 .getOrElse(Task.fail(InvalidRequestException(s"No file name found in the deployment resource described by form parameter '${p.name.getOrElse("")}'."))))
+            file <- ZIO.fromOption(files.headOption).mapError(_ => InvalidRequestException(s"No file in the Multipart of the Request from the Modeler."))
             maybeBpmnId <- forName(m, DeploymentName)
             bpmnIdStr <- ZIO.fromOption(maybeBpmnId).mapError(_ => HttpServerException(s"BpmnId ($DeploymentName) must be set!"))
             bpmnId <- bpmnIdFromStr(bpmnIdStr)
@@ -81,10 +83,11 @@ object httpServer {
             deployChangedOnly <- forName(m, DeployChangedOnly).map(_.exists(_.toBoolean))
             deploySource <- forName(m, DeploymentSource)
             tenantId <- forName(m, tenantId)
-            deployResult <- deployService.deploy(DeployRequest(bpmnId, enableDuplFiltering, deployChangedOnly, deploySource, tenantId, files.toSet))
+            config <- configServ.get()
+            camundaEndpoint <- config.camundaConf.rest.toCamundaEndpoint
+            deployResult <- deployService.deploy(DeployRequest(bpmnId, file, camundaEndpoint, enableDuplFiltering, deployChangedOnly, deploySource, tenantId))
           } yield deployResult.asJson)
-            .tap(j => log.info(s"JSON: $j"))
-            .tapError(e => log.error(s"Error: $e") *> ZIO.effect(e.printStackTrace()))
+            .tapError(e => log.error(s"Error: $e", Cause.fail(e)))
         }
 
         def server(servicesConf: ServicesConf) =
@@ -100,12 +103,14 @@ object httpServer {
 
             }
 
-        () => for {
-          config <- config.get()
-          _ <- server(config.servicesConf)
-          _ <- log.info(s"HTTP server started on port: ${config.servicesConf.url}")
-        } yield ()
+        () =>
+          for {
+            config <- configServ.get()
+            _ <- server(config.servicesConf)
+            _ <- log.info(s"HTTP server started on port: ${config.servicesConf.url}")
+          } yield ()
     }
 
   case class HttpServerException(msg: String) extends CamundalaException
+
 }

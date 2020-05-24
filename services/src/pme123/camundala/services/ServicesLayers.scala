@@ -18,7 +18,7 @@ object ServicesLayers {
   lazy val httpServerLayer: TaskLayer[HttpServer] =
     logLayer("httpServer") ++
       ConfigLayers.appConfigLayer ++
-      CamundaLayers.deploymentServiceLayer >>> httpServer.live
+      CamundaLayers.httpDeployClientLayer >>> httpServer.live
 
   lazy val appDepsLayer: TaskLayer[StandardAppDeps] =
     logLayer("appLayer") ++

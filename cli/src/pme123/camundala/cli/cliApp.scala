@@ -5,11 +5,10 @@ import com.monovore.decline._
 import com.monovore.decline.effect.CommandIOApp
 import pme123.camundala.app.appRunner
 import pme123.camundala.app.appRunner.AppRunner
+import pme123.camundala.camunda._
 import pme123.camundala.camunda.bpmnGenerator.BpmnGenerator
 import pme123.camundala.camunda.bpmnService.BpmnService
-import pme123.camundala.camunda.deploymentService.DeploymentService
 import pme123.camundala.camunda.httpDeployClient.HttpDeployClient
-import pme123.camundala.camunda._
 import pme123.camundala.cli.ProjectInfo._
 import pme123.camundala.model.bpmn.{Bpmn, BpmnId, CamundalaException}
 import pme123.camundala.model.deploy.{Deploy, DeployId, DockerConfig}
@@ -35,20 +34,19 @@ object cliApp {
   def run(projectInfo: ProjectInfo): ZIO[CliApp with Console, Throwable, Nothing] =
     ZIO.accessM(_.get.run(projectInfo))
 
-  type CliAppDeps = Clock with Console with BpmnService with DeployRegister with DeploymentService with HttpDeployClient with DockerComposer with BpmnGenerator with AppRunner
+  type CliAppDeps = Clock with Console with BpmnService with DeployRegister with HttpDeployClient with DockerComposer with BpmnGenerator with AppRunner
 
   lazy val live: URLayer[CliAppDeps, CliApp] = ZLayer.fromServices[
     Clock.Service,
     Console.Service,
     bpmnService.Service,
     deployRegister.Service,
-    deploymentService.Service,
     httpDeployClient.Service,
     dockerComposer.Service,
     bpmnGenerator.Service,
     appRunner.Service,
     Service] {
-    (clock, console, bpmnService, deployReg, deployService, deployClient, dockerService, generator, appRunner) =>
+    (clock, console, bpmnService, deployReg, deployClient, dockerService, generator, appRunner) =>
 
       import CliCommand._
 

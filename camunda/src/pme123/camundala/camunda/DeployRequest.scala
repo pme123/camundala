@@ -3,13 +3,16 @@ package pme123.camundala.camunda
 import eu.timepit.refined.auto._
 import pme123.camundala.camunda.xml.ValidateWarnings
 import pme123.camundala.model.bpmn.{BpmnId, CamundalaException, FilePath, PropKey}
+import pme123.camundala.model.deploy.CamundaEndpoint
 
 case class DeployRequest(bpmnId: BpmnId,
+                         deployFile: DeployFile,
+                         camundaEndpoint: CamundaEndpoint,
                          enableDuplicateFilterung: Boolean = false,
                          deployChangedOnly: Boolean = false,
                          source: Option[String] = None,
-                         tenantId: Option[String] = None,
-                         deployFiles: Set[DeployFile] = Set.empty)
+                         tenantId: Option[String] = None
+                        )
 
 object DeployRequest {
   val DeploymentName: PropKey = "deployment-name"

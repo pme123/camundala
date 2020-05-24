@@ -1,8 +1,7 @@
 package pme123.camundala.config
 
-import eu.timepit.refined.auto._
-import pme123.camundala.config.appConfig.{AppConf, CamundaConf, ServicesConf}
-import pme123.camundala.model.deploy.{CamundaEndpoint, Sensitive}
+import pme123.camundala.config.appConfig.{AppConf, CamundaConf, RestHost, ServicesConf}
+import pme123.camundala.model.deploy.Sensitive
 import zio.test.Assertion.equalTo
 import zio.test._
 
@@ -10,7 +9,7 @@ object AppConfigSuites
   extends DefaultRunnableSpec {
 
   private val expectedConf =
-    AppConf(".", ServicesConf("localhost", 8889))//, CamundaConf(CamundaEndpoint("http://localhost:10001/rest", "kermit", Sensitive("kermit"))))
+    AppConf(".", ServicesConf("localhost", 8889), CamundaConf(RestHost("http://localhost:10001/rest", "kermit", "kermit")))
 
   def spec: ZSpec[environment.TestEnvironment, Any] =
     suite("AppConfigSuites")(

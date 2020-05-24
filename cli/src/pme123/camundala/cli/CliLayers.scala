@@ -17,7 +17,6 @@ object CliLayers {
       Console.live ++
       CamundaLayers.bpmnServiceLayer ++
       ModelLayers.deployRegisterLayer ++
-      CamundaLayers.deploymentServiceLayer ++
       CamundaLayers.httpDeployClientLayer ++
       CamundaLayers.bpmnGeneratorLayer ++
       ServicesLayers.dockerComposerLayer ++

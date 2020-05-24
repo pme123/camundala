@@ -1,5 +1,7 @@
 package pme123.camundala.camunda
 
+import java.io.ByteArrayInputStream
+
 import eu.timepit.refined.auto._
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, HCursor}
@@ -12,7 +14,7 @@ import pme123.camundala.camunda.service.restService.RequestBody.MultipartBody
 import pme123.camundala.camunda.service.restService.RequestBody.Part.{FilePart, StringPart}
 import pme123.camundala.camunda.service.restService.RequestPath.Path
 import pme123.camundala.camunda.service.restService.{Request, RequestMethod, RequestPath, RestService}
-import pme123.camundala.camunda.xml.{ValidateWarning, ValidateWarnings}
+import pme123.camundala.camunda.xml.{MergeResult, ValidateWarning, ValidateWarnings}
 import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.AppConfig
 import pme123.camundala.model.bpmn.{pathElemFromStr, _}
@@ -20,11 +22,15 @@ import pme123.camundala.model.deploy.{CamundaEndpoint, Deploy, Sensitive}
 import zio.logging.Logging
 import zio.{logging, _}
 
+import scala.xml.XML
+
 object httpDeployClient {
   type HttpDeployClient = Has[Service]
 
   trait Service {
     def deploy(deploy: Deploy): Task[Seq[DeployResult]]
+
+    def deploy(request: DeployRequest): Task[DeployResult]
 
     def undeploy(bpmnId: BpmnId, endpoint: CamundaEndpoint): Task[Unit]
 
@@ -33,6 +39,9 @@ object httpDeployClient {
 
   def deploy(deploy: Deploy): RIO[HttpDeployClient, Seq[DeployResult]] =
     ZIO.accessM(_.get.deploy(deploy))
+
+  def deploy(request: DeployRequest): RIO[HttpDeployClient, DeployResult] =
+    ZIO.accessM(_.get.deploy(request))
 
   def undeploy(bpmnId: BpmnId, endpoint: CamundaEndpoint): RIO[HttpDeployClient, Unit] =
     ZIO.accessM(_.get.undeploy(bpmnId, endpoint))
@@ -57,35 +66,50 @@ object httpDeployClient {
             val endpoint = deploy.camundaEndpoint
 
             ZIO.foreach(deploy.bpmns) { bpmn =>
-              for {
-                mergeResult <- bpmnServ.mergeBpmn(bpmn.id)
-                _ <- log.info(s"Deploy ${bpmn.id} to ${endpoint.url.value}")
-                config <- confService.get()
-                staticFiles <- ZIO.foreach(bpmn.staticFiles)(st =>
-                  propKeyFromStr(st.fileName.value)
-                    .map(pk => FilePart(pk, st.fileName, StreamHelper(config.basePath).asString(st)))
-                )
-                bpmnName <- propKeyFromStr(bpmn.xml.fileName.value)
-                body = MultipartBody(Set(
-                  StringPart(DeploymentName, bpmn.id.value),
-                  StringPart(EnableDuplicateFiltering, "false"),
-                  StringPart(DeployChangedOnly, "true"),
-                  StringPart(DeploymentSource, "Camundala Client"),
-                  FilePart(bpmnName, bpmn.xml.fileName, mergeResult.xmlElem.toString),
-                ) ++ staticFiles)
-                response <- restServ.call(Request(
-                  toHost(endpoint),
-                  RequestMethod.Post,
-                  Path("deployment", "create"),
-                  body = body
-                ))
-                deployResult <- JsonEnDecoders.toResult[DeployResult](toHost(endpoint), response)
-              } yield
-                deployResult.withWarnings(mergeResult.warnings)
-            }.catchAll(er => UIO(er.printStackTrace()) *> ZIO.fail(er match {
-              case ex: HttpDeployClientException => ex
-              case other => HttpDeployClientException(s"There is Problem with ${deploy.id} - see the stack trace", Some(other))
-            }))
+              deployBpmn(endpoint, bpmn)
+            }
+          }
+
+
+          def deploy(request: DeployRequest): Task[DeployResult] =
+            for {
+              mergeResult <- mergeDeployFile(request.deployFile)
+              deployResult <- mergeResult.maybeBpmn
+                .map(deployBpmn(request.camundaEndpoint, _))
+                .getOrElse(ZIO.fail(HttpDeployClientException(s"There is no BPMN for ${request.bpmnId}")))
+
+            } yield deployResult
+
+          private def deployBpmn(endpoint: CamundaEndpoint, bpmn: Bpmn) = {
+            (for {
+              mergeResult <- bpmnServ.mergeBpmn(bpmn.id)
+              _ <- log.info(s"Deploy ${bpmn.id} to ${endpoint.url.value}")
+              config <- confService.get()
+              staticFiles <- ZIO.foreach(bpmn.staticFiles)(st =>
+                propKeyFromStr(st.fileName.value)
+                  .map(pk => FilePart(pk, st.fileName, StreamHelper(config.basePath).asString(st)))
+              )
+              bpmnName <- propKeyFromStr(bpmn.xml.fileName.value)
+              body = MultipartBody(Set(
+                StringPart(DeploymentName, bpmn.id.value),
+                StringPart(EnableDuplicateFiltering, "false"),
+                StringPart(DeployChangedOnly, "true"),
+                StringPart(DeploymentSource, "Camundala Client"),
+                FilePart(bpmnName, bpmn.xml.fileName, mergeResult.xmlElem.toString),
+              ) ++ staticFiles)
+              response <- restServ.call(Request(
+                toHost(endpoint),
+                RequestMethod.Post,
+                Path("deployment", "create"),
+                body = body
+              ))
+              deployResult <- JsonEnDecoders.toResult[DeployResult](toHost(endpoint), response)
+            } yield
+              deployResult.withWarnings(mergeResult.warnings))
+              .catchAll(er => UIO(er.printStackTrace()) *> ZIO.fail(er match {
+                case ex: HttpDeployClientException => ex
+                case other => HttpDeployClientException(s"There is Problem deploying with ${bpmn.id} - see the stack trace", Some(other))
+              }))
           }
 
           def undeploy(bpmnId: BpmnId, endpoint: CamundaEndpoint): Task[Unit] = {
@@ -123,6 +147,14 @@ object httpDeployClient {
             case ex: HttpDeployClientException => ex
             case _ => HttpDeployClientException(s"There is Problem with getting the Deployments - see the stack trace")
           }))
+
+          private def mergeDeployFile(deployFile: DeployFile): Task[MergeResult] =
+            for {
+              xml <- ZIO.effect(XML.load(new ByteArrayInputStream(deployFile.file.toArray)))
+              bpmnId <- bpmnIdFromFilePath(deployFile.filePath)
+              mergeResult <- bpmnServ.mergeBpmn(bpmnId, xml)
+              _ <- log.info(s"Merged BPMN:\n${mergeResult.xmlElem}")
+            } yield mergeResult
 
           private def deploymentsForName(deploymentName: String, host: Host) = {
             for {

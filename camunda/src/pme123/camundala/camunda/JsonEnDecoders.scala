@@ -8,6 +8,7 @@ import pme123.camundala.camunda.httpDeployClient.HttpDeployClientException
 import pme123.camundala.camunda.service.restService.Request.{Auth, Host}
 import pme123.camundala.camunda.service.restService.RequestBody.Part
 import pme123.camundala.camunda.service.restService._
+import pme123.camundala.camunda.xml.{ValidateWarning, ValidateWarnings}
 import pme123.camundala.model.deploy.Sensitive
 import zio.ZIO
 
@@ -38,6 +39,15 @@ trait JsonEnDecoders {
   implicit val responseReadDecoder: Decoder[ResponseRead] = deriveDecoder[ResponseRead]
   implicit val requestEncoder: Encoder[Request] = deriveEncoder[Request]
   implicit val requestDecoder: Decoder[Request] = deriveDecoder[Request]
+
+  implicit val validateWarningEncoder: Encoder[ValidateWarning] = deriveEncoder[ValidateWarning]
+  implicit val validateWarningDecoder: Decoder[ValidateWarning] = deriveDecoder[ValidateWarning]
+  implicit val validateWarningsEncoder: Encoder[ValidateWarnings] = deriveEncoder[ValidateWarnings]
+  implicit val validateWarningsDecoder: Decoder[ValidateWarnings] = deriveDecoder[ValidateWarnings]
+  implicit val deployResultEncoder: Encoder[DeployResult] = deriveEncoder[DeployResult]
+  implicit val deployResultDecoder: Decoder[DeployResult] = deriveDecoder[DeployResult]
+
+
 }
 
 object JsonEnDecoders {
