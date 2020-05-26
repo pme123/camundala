@@ -4,7 +4,7 @@
     <participant id="SwapiProcessParticipant" name="Swapi Process" processRef="SwapiProcess" />
     <participant id="SwapiPlanetProcessParticipant" name="Swapi Planet Process" processRef="SwapiPlanetProcess" />
   </collaboration>
-  <process id="SwapiProcess" name="SwapiProcess" isExecutable="true">
+  <process id="SwapiProcess" name="SwapiProcess" isExecutable="true" camunda:candidateStarterGroups="masters" camunda:candidateStarterUsers="reto,heidi">
     <startEvent id="DefineInputsStartEvent" name="Define Inputs" camunda:asyncBefore="true" camunda:asyncAfter="true">
       <outgoing>SequenceFlow_9</outgoing>
     </startEvent>
@@ -15,7 +15,7 @@
       <outgoing>SequenceFlow_0k5kyka</outgoing>
     </serviceTask>
     <sequenceFlow id="SequenceFlow_0k5kyka" sourceRef="CallSwapiServiceTask" targetRef="ShowResultTask" />
-    <userTask id="ShowResultTask" name="Show Result" camunda:asyncBefore="true" camunda:asyncAfter="true">
+    <userTask id="ShowResultTask" name="Show Result" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:candidateUsers="remo,karin" camunda:candidateGroups="master, helper">
       <extensionElements />
       <incoming>SequenceFlow_0k5kyka</incoming>
       <outgoing>SequenceFlow_0m72fzi</outgoing>

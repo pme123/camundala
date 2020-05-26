@@ -1,8 +1,7 @@
 package pme123.camundala.config
 
-import eu.timepit.refined.auto._
-import pme123.camundala.model.bpmn.ModelException
-import pme123.camundala.model.deploy.{CamundaEndpoint, Sensitive, urlFromStr, usernameFromStr, _}
+import pme123.camundala.model.bpmn._
+import pme123.camundala.model.deploy.CamundaEndpoint
 import zio._
 import zio.config.ConfigDescriptor._
 import zio.config.typesafe.TypesafeConfig

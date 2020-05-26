@@ -11,7 +11,6 @@ import pme123.camundala.model.bpmn.Extensions.{Prop, PropExtensions, PropInOutEx
 import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
-import pme123.camundala.model.deploy.{Sensitive, Url}
 import zio.{Task, UIO, ZIO, ZManaged}
 
 import scala.io.Source
@@ -25,8 +24,13 @@ object TestData {
   val testRequest: Request = Request(
     host,
     path = Path("people", "1"))
+  val worker: Group = Group("worker", "Worker")
+  val guest: Group = Group("guest", "Guest")
+  val hans: User = User("hans", "Müller", "Hans", "hans@mueller.ch", Seq(worker))
+  val heidi: User = User("heidi", "Meier", "Heidi", "heidi@meier.ch", Seq(guest))
+  val peter: User = User("peter", "Arnold", "Peter", "peter@arnold.ch", Seq(guest, worker))
 
-  val restServiceTask: ServiceTask =  RestServiceTempl(
+  val restServiceTask: ServiceTask = RestServiceTempl(
     testRequest
   ).asServiceTask("CallSwapiServiceTask")
 
@@ -40,13 +44,17 @@ object TestData {
   }
 
   val twitterProcess: BpmnProcess = BpmnProcess("TwitterDemoProcess",
-    List(
+    starterUsers = CandidateUsers(heidi, peter),
+    starterGroups = CandidateGroups(worker,guest),
+    userTasks = List(
       //embedded:deployment:static/forms/reviewTweet.html
       UserTask("user_task_review_tweet",
-        Some(EmbeddedDeploymentForm(StaticFile("static/forms/reviewTweet.html", "bpmn"))),
-        PropInOutExtensions(Seq(Prop("durationMean", "10000"), Prop("durationSd", "5000")),
+        candidateUsers = CandidateUsers(heidi),
+        candidateGroups = CandidateGroups(worker),
+        maybeForm = Some(EmbeddedDeploymentForm(StaticFile("static/forms/reviewTweet.html", "bpmn"))),
+        extensions = PropInOutExtensions(Seq(Prop("durationMean", "10000"), Prop("durationSd", "5000")),
           InputOutputs(Seq(InputOutput("testVal", Expression("ok"))))))),
-    List(
+    serviceTasks = List(
       ServiceTask("service_task_send_rejection_notification",
         DelegateExpression("#{emailAdapter}"),
         PropInOutExtensions(Seq(Prop("kpiRatio", "Tweet Rejected")))),

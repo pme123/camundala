@@ -9,7 +9,7 @@ import pme123.camundala.camunda.service.restService.Request.{Auth, Host}
 import pme123.camundala.camunda.service.restService.RequestBody.Part
 import pme123.camundala.camunda.service.restService._
 import pme123.camundala.camunda.xml.{ValidateWarning, ValidateWarnings}
-import pme123.camundala.model.deploy.Sensitive
+import pme123.camundala.model.bpmn.Sensitive
 import zio.ZIO
 
 trait JsonEnDecoders {

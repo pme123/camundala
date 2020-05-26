@@ -37,14 +37,40 @@ trait HasForm
 
 }
 
+trait UsersAndGroups {
+
+  def asList(usersAndGroups: String): Seq[String] =
+    usersAndGroups.split(",").toList.map(_.trim).filter(_.nonEmpty)
+}
+
+case class CandidateGroups(groups:Group*) extends UsersAndGroups {
+
+  def asString(str: String): String =
+    (groups.map(_.id.value) ++ asList(str)).distinct.mkString(",")
+}
+
+object CandidateGroups {
+  val none: CandidateGroups = CandidateGroups()
+}
+
+case class CandidateUsers(users: User*) extends UsersAndGroups {
+  def asString(str: String): String =
+    (users.map(_.username.value) ++ asList(str)).distinct.mkString(",")
+}
+
+object CandidateUsers {
+  val none: CandidateUsers = CandidateUsers()
+}
+
 case class UserTask(id: BpmnNodeId,
+                    candidateGroups: CandidateGroups = CandidateGroups.none,
+                    candidateUsers: CandidateUsers = CandidateUsers.none,
                     maybeForm: Option[UserTaskForm] = None,
                     extensions: PropInOutExtensions = PropInOutExtensions.none,
                     inOuts: InputOutputs = InputOutputs.none
                    )
   extends ProcessTask
     with HasForm {
-
 
 
 }

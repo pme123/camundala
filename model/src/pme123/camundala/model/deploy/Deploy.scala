@@ -15,6 +15,7 @@ case class Deploy(id: DeployId,
                   bpmns: Set[Bpmn],
                   dockerConfig: DockerConfig,
                   camundaEndpoint: CamundaEndpoint,
+                  overwrites: Overwrites = Overwrites.none
                  )
 
 case class DockerConfig(projectName: ProjectName = "camundala-default",
@@ -28,6 +29,14 @@ case class DockerConfig(projectName: ProjectName = "camundala-default",
       .map(f => s"-f ${s"$dockerDir/$f.yml"}")
       .mkString(" ")
 }
+
+case class Overwrites(seq: Seq[Overwrite[_]] = Seq.empty)
+
+object Overwrites{
+  val none: Overwrites = Overwrites()
+}
+
+case class Overwrite[T](from: T , to: T)
 
 case class CamundaEndpoint(url: Url, user: Username, password: Sensitive)
 

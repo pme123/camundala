@@ -14,6 +14,7 @@ camunda:
       schema-update: true
       type: postgres
     auto-deployment-enabled: false
+    authorization.enabled: true
 
 spring:
   datasource:

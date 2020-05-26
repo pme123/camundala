@@ -9,12 +9,12 @@ import pme123.camundala.model.bpmn._
 object TestData {
 
   val twitterProcess: BpmnProcess = BpmnProcess("TwitterDemoProcess",
-    List(
+    userTasks = List(
       //embedded:deployment:static/forms/reviewTweet.html
       UserTask("user_task_review_tweet",
-        Some(EmbeddedDeploymentForm(StaticFile("static/forms/reviewTweet.html", "bpmn"))),
-        PropInOutExtensions(Seq(Prop("durationMean", "10000"), Prop("durationSd", "5000"))))),
-    List(
+        maybeForm = Some(EmbeddedDeploymentForm(StaticFile("static/forms/reviewTweet.html", "bpmn"))),
+        extensions = PropInOutExtensions(Seq(Prop("durationMean", "10000"), Prop("durationSd", "5000"))))),
+    serviceTasks = List(
       ServiceTask("service_task_send_rejection_notification",
         DelegateExpression("#{emailAdapter}"),
         PropInOutExtensions(Seq(Prop("KPI-Ratio", "Tweet Rejected")))),

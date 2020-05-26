@@ -13,8 +13,7 @@ import pme123.camundala.camunda.service.restService.RequestHeader.NoHeaders
 import pme123.camundala.camunda.service.restService.RequestMethod.Get
 import pme123.camundala.camunda.service.restService.RequestPath.NoPath
 import pme123.camundala.camunda.service.restService.ResponseRead.{NoResponseRead, StringRead}
-import pme123.camundala.model.bpmn.{CamundalaException, FilePath, PathElem, PropKey}
-import pme123.camundala.model.deploy.{Sensitive, Url, Username}
+import pme123.camundala.model.bpmn._
 import sttp.client.{Empty, NothingT, RequestT, SttpBackend, basicRequest, multipart, Request => SttpRequest, Response => SttpResponse}
 import sttp.model.StatusCode
 import zio._

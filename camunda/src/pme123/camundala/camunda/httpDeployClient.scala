@@ -18,7 +18,7 @@ import pme123.camundala.camunda.xml.{MergeResult, ValidateWarning, ValidateWarni
 import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.AppConfig
 import pme123.camundala.model.bpmn.{pathElemFromStr, _}
-import pme123.camundala.model.deploy.{CamundaEndpoint, Deploy, Sensitive}
+import pme123.camundala.model.deploy.{CamundaEndpoint, Deploy}
 import zio.logging.Logging
 import zio.{logging, _}
 

@@ -6,10 +6,10 @@ case class Bpmn(id: BpmnId,
                ) {
   def generate(): String =
     s"""
-      |Bpmn("$id",
-      |  ${xml.generate()},
-      |  List(${processes.map(_.generate()).mkString(",")}))
-      |""".stripMargin
+       |Bpmn("$id",
+       |  ${xml.generate()},
+       |  List(${processes.map(_.generate()).mkString(",")}))
+       |""".stripMargin
 
   lazy val processMap: Map[BpmnId, BpmnProcess] = processes.map(p => p.id -> p).toMap
 
@@ -17,6 +17,8 @@ case class Bpmn(id: BpmnId,
 }
 
 case class BpmnProcess(id: ProcessId,
+                       starterGroups: CandidateGroups = CandidateGroups.none,
+                       starterUsers: CandidateUsers = CandidateUsers.none,
                        userTasks: Seq[UserTask] = Seq.empty,
                        serviceTasks: Seq[ServiceTask] = Seq.empty,
                        sendTasks: Seq[SendTask] = Seq.empty,
@@ -27,15 +29,15 @@ case class BpmnProcess(id: ProcessId,
                       ) {
   def generate(): String =
     s"""
-      |      BpmnProcess("${id.value}",
-      |            userTasks = List(${userTasks.map(_.generate()).mkString(",")}),
-      |            serviceTasks = List(${serviceTasks.map(_.generate()).mkString(",")}),
-      |            sendTasks = List(${sendTasks.map(_.generate()).mkString(",")}),
-      |            startEvents = List(${startEvents.map(_.generate()).mkString(",")}),
-      |            exclusiveGateways = List(${exclusiveGateways.map(_.generate()).mkString(",")}),
-      |            parallelGateways = List(${parallelGateways.map(_.generate()).mkString(",")}),
-      |            sequenceFlows = List(${sequenceFlows.map(_.generate()).mkString(",")}),
-      |)""".stripMargin
+       |      BpmnProcess("${id.value}",
+       |            userTasks = List(${userTasks.map(_.generate()).mkString(",")}),
+       |            serviceTasks = List(${serviceTasks.map(_.generate()).mkString(",")}),
+       |            sendTasks = List(${sendTasks.map(_.generate()).mkString(",")}),
+       |            startEvents = List(${startEvents.map(_.generate()).mkString(",")}),
+       |            exclusiveGateways = List(${exclusiveGateways.map(_.generate()).mkString(",")}),
+       |            parallelGateways = List(${parallelGateways.map(_.generate()).mkString(",")}),
+       |            sequenceFlows = List(${sequenceFlows.map(_.generate()).mkString(",")}),
+       |)""".stripMargin
 
   def staticFiles: Set[StaticFile] =
     userTasks.flatMap(_.staticFiles).toSet ++

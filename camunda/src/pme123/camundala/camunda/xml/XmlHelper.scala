@@ -1,6 +1,8 @@
 package pme123.camundala.camunda.xml
 
-import scala.xml.{Attribute, Elem, Node, Null, PrefixedAttribute, Text, UnprefixedAttribute}
+import pme123.camundala.camunda.xml.XmlHelper.QName
+
+import scala.xml._
 
 object XmlHelper {
   val xmlnsBpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL"
@@ -10,59 +12,70 @@ object XmlHelper {
   val camundaXmlnsAttr: Attribute = Attribute("xmlns", camundaPrefix, xmlnsCamunda, Null)
 
   val delegateExpression = "delegateExpression"
+  val candidateStarterGroups = "candidateStarterGroups"
+  val candidateStarterUsers = "candidateStarterUsers"
+  val candidateGroups = "candidateGroups"
+  val candidateUsers = "candidateUsers"
   val formKey = "formKey"
 
-  def elementUnapply(n: Node, qual: XQualifier): Option[Elem] = n match {
-    case e: Elem if XQualifier(e) == qual => Some(e)
+  def elementUnapply(n: Node, qual: QName): Option[Elem] = n match {
+    case e: Elem if QName(e) == qual => Some(e)
     case _ => None
   }
 
-  case class XQualifier(namespace: Option[String], label: String) {
+  implicit class NodeExtension(elem: Node) {
 
-    def extractFrom(e: Node, default: Option[String] = None): Option[String] =
-      namespace.flatMap(e.attribute(_, label))
-        .orElse(e.attribute(label))
-        .flatMap(_.headOption)
-        .fold(default)(x => Some(x.text))
+    def attributeAsText(qName: QName): String =
+      qAttributes(qName).toList.flatten.headOption
+        .map(_.text)
+        .getOrElse("")
 
-    def mapAttr(e: Elem, mapper: String => String): Elem = {
+    def qAttributes(qName: QName): Option[collection.Seq[Node]] =
+      qName match {
+        case QName(Some(ns), label) =>
+          elem.attribute(ns, label)
+        case QName(_, label) =>
+          elem.attribute(label)
+      }
+  }
+
+  implicit class ElemExtension(elem: Elem) {
+
+
+    def mapAttr(qName: QName, mapper: String => String): Elem = {
       for {
-        attr <- attributes(e)
+        attr <- elem.qAttributes(qName)
         mappedAttr = attr.map {
           case Text(value) => Text(mapper(value))
           case other => other
         }
         if attr != mappedAttr
-      } yield e % {
-        namespace match {
-          case Some(ns) =>
-            val prefix = e.scope.getPrefix(ns)
+      } yield elem % {
+        qName match {
+          case QName(Some(ns), label) =>
+            val prefix = elem.scope.getPrefix(ns)
             new PrefixedAttribute(prefix, label, mappedAttr, Null)
-          case None => new UnprefixedAttribute(label, mappedAttr, Null)
+          case QName(_, label) =>
+            new UnprefixedAttribute(label, mappedAttr, Null)
         }
       }
-    }.getOrElse(e)
+    }.getOrElse(elem)
 
-    private def attributes(e: Node): Option[collection.Seq[Node]] = {
-      namespace match {
-        case Some(ns) => e.attribute(ns, label)
-        case None =>
-          e.attribute(label)
-      }
-    }
   }
 
-  object XQualifier {
+  case class QName(namespace: Option[String], label: String)
 
-    def bpmn(label: String): XQualifier = XQualifier(xmlnsBpmn, label)
+  object QName {
 
-    def camunda(label: String): XQualifier = XQualifier(xmlnsCamunda, label)
+    def bpmn(label: String): QName = QName(xmlnsBpmn, label)
 
-    def apply(namespace: String, label: String): XQualifier = XQualifier(Some(namespace), label)
+    def camunda(label: String): QName = QName(xmlnsCamunda, label)
 
-    def apply(n: Node): XQualifier = XQualifier(n.namespace, n.label)
+    def apply(namespace: String, label: String): QName = QName(Some(namespace), label)
 
-    def apply(label: String): XQualifier = XQualifier(None, label)
+    def apply(n: Node): QName = QName(n.namespace, n.label)
+
+    def apply(label: String): QName = QName(None, label)
   }
 
 }

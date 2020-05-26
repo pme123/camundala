@@ -1,6 +1,6 @@
 package pme123.camundala.camunda.xml
 
-import pme123.camundala.camunda.xml.XmlHelper.XQualifier._
+import pme123.camundala.camunda.xml.XmlHelper.QName._
 import pme123.camundala.camunda.xml.XmlHelper._
 import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
@@ -101,6 +101,20 @@ case class XUserTask[T <: UserTask](xmlElem: Elem)
 
   val tagName = "UserTask"
 
+  override def merge(maybeNode: Option[T]): Task[XMergeResult] =
+    for {XMergeResult(xml, warnings) <- super.merge(maybeNode)
+         result <- maybeNode
+           .map(mergeCandidates(xml, _))
+           .getOrElse(ZIO.succeed(xml))
+         } yield XMergeResult(result, warnings)
+
+  private def mergeCandidates(xml: Elem, userTask: T): Task[Elem] = Task {
+    val candGroups = userTask.candidateGroups.asString(xml.attributeAsText(QName.camunda(candidateGroups)))
+    val candUsers = userTask.candidateUsers.asString(xml.attributeAsText(QName.camunda(candidateUsers)))
+    xml % Attribute(camundaPrefix, candidateGroups, candGroups,
+      Attribute(camundaPrefix, candidateUsers, candUsers,
+        camundaXmlnsAttr))
+  }
 
 }
 

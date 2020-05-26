@@ -8,7 +8,7 @@ import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
 import pme123.camundala.model.bpmn._
 import zio.{Task, UIO, ZIO}
 
-import scala.xml.{Elem, Node}
+import scala.xml.{Attribute, Elem, Node}
 
 case class XBpmn(bpmnXml: Elem) {
 
@@ -70,7 +70,8 @@ case class XBpmnProcess(xmlElem: Elem) {
         idEffect.map(id => XMergeResult(xmlElem, ValidateWarnings(s"There is no Process $id registered")))
       case Some(p) =>
         for {
-          XMergeResult(xmlUser, warningsUser) <- mergeExtensionable(xmlElem, p.userTaskMap, userTasks, "UserTask")
+          xmlCandidates <- mergeCandidates(xmlElem, p)
+          XMergeResult(xmlUser, warningsUser) <- mergeExtensionable(xmlCandidates, p.userTaskMap, userTasks, "UserTask")
           XMergeResult(xmlService, warningsService) <- mergeExtensionable(xmlUser, p.serviceTaskMap, serviceTasks, "Service")
           XMergeResult(xmlStartEvent, warningsStartEvent) <- mergeExtensionable(xmlService, p.startEventMap, startEvents, "StartEvent")
           XMergeResult(xmlExclusiveGateway, warningsExclusiveGateway) <- mergeExtensionable(xmlStartEvent, p.exclusiveGatewayMap, exclusiveGateways, "ExclusiveGateway")
@@ -80,6 +81,14 @@ case class XBpmnProcess(xmlElem: Elem) {
           XMergeResult(xmlSequenceFlow, warningsUser ++ warningsService ++ warningsStartEvent ++ warningsExclusiveGateway ++ warningsParallelGateway ++ warningsSequenceFlow)
     }
 
+
+  private def mergeCandidates(xml: Elem, process: BpmnProcess): Task[Elem] = Task{
+    val starterGroups = process.starterGroups.asString(xmlElem.attributeAsText(QName.camunda(candidateStarterGroups)))
+    val starterUsers = process.starterUsers.asString(xmlElem.attributeAsText(QName.camunda(candidateStarterUsers)))
+    xml % Attribute(camundaPrefix, candidateStarterGroups, starterGroups,
+      Attribute(camundaPrefix, candidateStarterUsers, starterUsers,
+        camundaXmlnsAttr))
+  }
 
   private def mergeExtensionable[A <: Extensionable](xml: Elem, extensionableMap: Map[BpmnNodeId, A], xExts: Seq[XBpmnNode[A]], label: String): Task[XMergeResult] = {
     val warnings =
@@ -111,6 +120,8 @@ case class XBpmnProcess(xmlElem: Elem) {
     } yield
       BpmnProcess(
         processId,
+        CandidateGroups.none,
+        CandidateUsers.none,
         uTasks,
         sTasks,
         sendTasks,

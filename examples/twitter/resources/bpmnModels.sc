@@ -6,7 +6,6 @@ import pme123.camundala.model.bpmn.Extensions.{Prop, PropExtensions, PropInOutEx
 import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
-import pme123.camundala.model.deploy.{CamundaEndpoint, Deploy, Deploys, DockerConfig, Url}
 
 
 val bpmns: Set[Bpmn] =

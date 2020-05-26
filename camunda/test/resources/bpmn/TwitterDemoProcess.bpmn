@@ -4,7 +4,7 @@
     <participant id="Participant_059fm3c" processRef="TwitterDemoProcess" />
     <participant id="Participant_1snfrd2" name="TestDemoProcess" processRef="TestDemoProcess" />
   </collaboration>
-  <process id="TwitterDemoProcess" name="TwitterDemoProcess" isExecutable="true">
+  <process id="TwitterDemoProcess" name="TwitterDemoProcess" isExecutable="true" camunda:candidateStarterUsers="alina">
     <serviceTask id="service_task_send_rejection_notification" name="Send rejection notification">
       <incoming>no</incoming>
       <outgoing>SequenceFlow_4</outgoing>
@@ -29,7 +29,7 @@
     <startEvent id="start_event_new_tweet" name="Tweet written" camunda:initiator="initiator">
       <outgoing>SequenceFlow_9</outgoing>
     </startEvent>
-    <userTask id="user_task_review_tweet" name="Review Tweet" camunda:assignee="kermit">
+    <userTask id="user_task_review_tweet" name="Review Tweet" camunda:assignee="kermit" camunda:candidateGroups="player">
       <extensionElements>
         <camunda:inputOutput>
           <camunda:inputParameter name="scalascript">

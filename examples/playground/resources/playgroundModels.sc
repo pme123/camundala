@@ -11,10 +11,20 @@ import pme123.camundala.model.bpmn.UserTaskForm.FormField.{EnumField, EnumValue,
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
 import pme123.camundala.model.bpmn._
 
+val worker: Group = Group("worker", "Worker")
+val guest: Group = Group("guest", "Guest")
+val hans: User = User("hans", "Müller", "Hans", "hans@mueller.ch", Seq(worker))
+val heidi: User = User("heidi", "Meier", "Heidi", "heidi@meier.ch", Seq(guest))
+val peter: User = User("peter", "Arnold", "Peter", "peter@arnold.ch", Seq(guest, worker))
+
 val swapiProcess = BpmnProcess("SwapiProcess",
+  starterUsers = CandidateUsers(peter),
+  starterGroups = CandidateGroups(worker),
   userTasks = List(
     UserTask("ShowResultTask",
-      Some(GeneratedForm(Seq(SimpleField("swapiResult", "SWAPI Result", validations = Seq(Required))),
+      candidateUsers = CandidateUsers(hans),
+      candidateGroups = CandidateGroups(guest),
+      maybeForm = Some(GeneratedForm(Seq(SimpleField("swapiResult", "SWAPI Result", validations = Seq(Required))),
       ))
     )
   ),
@@ -46,7 +56,7 @@ val swapiProcess = BpmnProcess("SwapiProcess",
 val swapiPlanetProcess = BpmnProcess("SwapiPlanetProcess",
   userTasks = List(
     UserTask("ShowResultTask1",
-      Some(GeneratedForm(Seq(SimpleField("swapiResult", "SWAPI Result", validations = Seq(Required))),
+      maybeForm = Some(GeneratedForm(Seq(SimpleField("swapiResult", "SWAPI Result", validations = Seq(Required))),
       )))
   ),
   serviceTasks = List(

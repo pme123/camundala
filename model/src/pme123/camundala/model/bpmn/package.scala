@@ -2,7 +2,9 @@ package pme123.camundala.model
 
 import eu.timepit.refined._
 import eu.timepit.refined.api.Refined
-import eu.timepit.refined.string.MatchesRegex
+import eu.timepit.refined.boolean._
+import eu.timepit.refined.collection.NonEmpty
+import eu.timepit.refined.string.{MatchesRegex, Trimmed}
 import zio.ZIO
 
 package object bpmn {
@@ -12,6 +14,8 @@ package object bpmn {
   type FileNameRegex = IdRegex
   type FilePathRegex = MatchesRegex["""^[a-zA-Z_]+[\w\-\.\/]+$"""]
   type PathElemRegex = MatchesRegex["""^[\w_\.]+[\w\-\.\/]*$"""]
+  type GroupsAndUsersRegex = MatchesRegex["""^[\w]+[\w\-,]*$"""]
+  type EmailRegex = MatchesRegex["""(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"""]
 
   type ProcessId = String Refined IdRegex
   type BpmnNodeId = String Refined IdRegex
@@ -20,6 +24,24 @@ package object bpmn {
   type FilePath = String Refined FilePathRegex
   type PathElem = String Refined PathElemRegex
   type PropKey = String Refined IdRegex
+  type Identifier = String Refined IdRegex
+
+  type DeployId = String Refined IdRegex
+  type ProjectName = String Refined IdRegex
+
+  type Url = String Refined string.Url
+  type Port = Int Refined numeric.Greater[0]
+
+  type TrimmedNonEmpty = Trimmed And NonEmpty
+  //TODO problem in zio-config with And
+  type Username = String Refined  TrimmedNonEmpty
+  type Password = String Refined  TrimmedNonEmpty
+  type Email = String Refined EmailRegex
+
+  case class Sensitive(secret: Password) {
+    def value: String = secret.value
+    override def toString: String = "*" * 10
+  }
 
   def bpmnIdFromFilePath(fileName: FilePath): ZIO[Any, ModelException, BpmnId] =
     bpmnIdFromStr(fileName.value)
@@ -50,4 +72,17 @@ package object bpmn {
   def propKeyFromStr(propKey: String): ZIO[Any, ModelException, PropKey] =
     ZIO.fromEither(refineV[IdRegex](propKey))
       .mapError(ex => ModelException(s"Could not create PropKey $propKey:\n $ex"))
+
+  def urlFromStr(url: String): ZIO[Any, ModelException, Url] =
+    ZIO.fromEither(refineV[string.Url](url))
+      .mapError(ex => ModelException(s"Could not create Url $url:\n $ex"))
+
+  def passwordFromStr(password: String): ZIO[Any, ModelException, Password] =
+    ZIO.fromEither(refineV[TrimmedNonEmpty](password))
+      .mapError(ex => ModelException(s"Could not create Password $password:\n $ex"))
+
+  def usernameFromStr(username: String): ZIO[Any, ModelException, Username] =
+    ZIO.fromEither(refineV[TrimmedNonEmpty](username))
+      .mapError(ex => ModelException(s"Could not create Username $username:\n $ex"))
+
 }

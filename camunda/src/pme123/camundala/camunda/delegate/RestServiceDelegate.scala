@@ -3,24 +3,20 @@ package pme123.camundala.camunda.delegate
 import eu.timepit.refined.auto._
 import io.circe.parser.decode
 import io.circe.syntax._
-import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.{BpmnError, DelegateExecution}
 import org.camunda.spin.DataFormats._
 import org.camunda.spin.Spin
 import org.camunda.spin.plugin.variable.value.JsonValue
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import pme123.camundala.camunda.service.restService
 import pme123.camundala.camunda.service.restService.Request.Host
 import pme123.camundala.camunda.service.restService.Response.{HandledError, NoContent, WithContent}
 import pme123.camundala.camunda.service.restService._
 import pme123.camundala.camunda.{CamundaLayers, JsonEnDecoders}
-import pme123.camundala.model.ModelLayers
 import pme123.camundala.model.bpmn.ConditionExpression.JsonExpression
 import pme123.camundala.model.bpmn.Extensions.PropInOutExtensions
 import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression
 import pme123.camundala.model.bpmn._
-import pme123.camundala.model.deploy.Sensitive
 import zio.Runtime.default.unsafeRun
 import zio.{ZIO, logging}
 
@@ -29,7 +25,7 @@ import zio.{ZIO, logging}
   * Provide a generic REST service
   */
 @Service("restService")
-class RestServiceDelegate @Autowired()(runtimeService: RuntimeService)
+class RestServiceDelegate
   extends CamundaDelegate
     with JsonEnDecoders {
 
@@ -53,7 +49,7 @@ class RestServiceDelegate @Autowired()(runtimeService: RuntimeService)
     }
   }
 
-  def extractVariables(execution: DelegateExecution) = {
+  private def extractVariables(execution: DelegateExecution) = {
     val json = execution.getVariableTyped[JsonValue]("request")
     val request = decode[Request](json.getValueSerialized)
       .map(request =>

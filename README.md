@@ -24,7 +24,12 @@ Doing Camunda with Scala.
 * **100 % Camunda compatible**
   * Deployed Models run on any Camunda Engine - no Extras needed.
 
-  
+# Feature List
+## CLI
+**Feature** | **Descr** | **State**
+--- | --- | --- 
+deploy create | Deploy a project according to your Deploy definition. It uses the Camunda REST API. | ready
+ TODO |
   
 # Requirements
 
