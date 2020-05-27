@@ -43,7 +43,7 @@ trait UsersAndGroups {
     usersAndGroups.split(",").toList.map(_.trim).filter(_.nonEmpty)
 }
 
-case class CandidateGroups(groups:Group*) extends UsersAndGroups {
+case class CandidateGroups(groups: Group*) extends UsersAndGroups {
 
   def asString(str: String): String =
     (groups.map(_.id.value) ++ asList(str)).distinct.mkString(",")
@@ -72,6 +72,9 @@ case class UserTask(id: BpmnNodeId,
   extends ProcessTask
     with HasForm {
 
+  def groups(): Seq[Group] = candidateGroups.groups
+
+  def users(): Seq[User] = candidateUsers.users
 
 }
 

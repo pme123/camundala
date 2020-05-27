@@ -9,9 +9,10 @@ import pme123.camundala.camunda._
 import pme123.camundala.camunda.bpmnGenerator.BpmnGenerator
 import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.httpDeployClient.HttpDeployClient
+import pme123.camundala.camunda.userManagement.UserManagement
 import pme123.camundala.cli.ProjectInfo._
-import pme123.camundala.model.bpmn.{Bpmn, BpmnId, CamundalaException}
-import pme123.camundala.model.deploy.{Deploy, DeployId, DockerConfig}
+import pme123.camundala.model.bpmn._
+import pme123.camundala.model.deploy.{Deploy, DockerConfig}
 import pme123.camundala.model.register.deployRegister
 import pme123.camundala.model.register.deployRegister.DeployRegister
 import pme123.camundala.services.dockerComposer
@@ -34,11 +35,21 @@ object cliApp {
   def run(projectInfo: ProjectInfo): ZIO[CliApp with Console, Throwable, Nothing] =
     ZIO.accessM(_.get.run(projectInfo))
 
-  type CliAppDeps = Clock with Console with BpmnService with DeployRegister with HttpDeployClient with DockerComposer with BpmnGenerator with AppRunner
+  type CliAppDeps =
+    Clock
+      with Console
+      with UserManagement
+      with BpmnService
+      with DeployRegister
+      with HttpDeployClient
+      with DockerComposer
+      with BpmnGenerator
+      with AppRunner
 
   lazy val live: URLayer[CliAppDeps, CliApp] = ZLayer.fromServices[
     Clock.Service,
     Console.Service,
+    userManagement.Service,
     bpmnService.Service,
     deployRegister.Service,
     httpDeployClient.Service,
@@ -46,17 +57,19 @@ object cliApp {
     bpmnGenerator.Service,
     appRunner.Service,
     Service] {
-    (clock, console, bpmnService, deployReg, deployClient, dockerService, generator, appRunner) =>
+    (clock, console, userManagmnt, bpmnService, deployReg, deployClient, dockerService, generator, appRunner) =>
 
       import CliCommand._
 
       lazy val command = Command[Task[ExitCode]]("", "CLI for Camunda")(
-        (validateBpmnOpts orElse generateBpmnsOpts
+        (validateBpmnOpts orElse generateBpmnsOpts orElse createUsersAndGroupsOpts
           orElse deployCommand orElse dockerCommand orElse appCommand).map {
           case ValidateBpmn(bpmnId) =>
             validateBpmn(bpmnId)
           case GenerateBpmns(deployId) =>
             generateBpmns(deployId)
+          case CreateUsersAndGroups(deployId) =>
+            createUsersAndGroups(deployId)
           case other: UIO[ExitCode] =>
             other
         }
@@ -108,6 +121,16 @@ object cliApp {
             valWarns.value.map(_.msg).mkString(" - ", "\n - ", ""))
         } yield result)
           .catchAll(printError(_, "Validation failed:"))
+      }
+
+      def createUsersAndGroups(deployId: DeployId) = {
+        runWithDeployId[Unit](deployId, "Create Users and Groups", deploy => {
+          val groups = deploy.groups()
+          val users = deploy.users()
+          userManagmnt.initGroupsAndUsers(groups, users)
+        },
+          _ => ""
+        )
       }
 
       def generateBpmns(deployId: DeployId) =

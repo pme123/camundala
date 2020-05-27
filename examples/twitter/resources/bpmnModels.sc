@@ -8,8 +8,8 @@ import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
 
 
-val bpmns: Set[Bpmn] =
-  Set(Bpmn("TwitterDemoProcess.bpmn",
+val bpmns: Seq[Bpmn] =
+  Seq(Bpmn("TwitterDemoProcess.bpmn",
     StaticFile("TwitterDemoProcess.bpmn", "bpmn"),
     List(
       BpmnProcess("TwitterDemoProcess",

@@ -10,10 +10,11 @@ object deploys {
   def exampleRestApi( endpoint: Url): CamundaEndpoint = CamundaEndpoint(endpoint, "kermit", Sensitive("kermit"))
   val camundaRestAPI: CamundaEndpoint = CamundaEndpoint(camundaRestUrl, "demo", Sensitive("demo"))
 
-  def standard(bpmns: Set[Bpmn], endpointUrl: Url): Deploys =
+  def standard(bpmns: Seq[Bpmn], endpointUrl: Url, additionalUsers: Seq[User] = Seq.empty): Deploys =
     Deploys(Set(
       Deploy("default", bpmns, DockerConfig(dockerDir = "examples/docker"),
-        camundaEndpoint = exampleRestApi(endpointUrl)
+        camundaEndpoint = exampleRestApi(endpointUrl),
+        additionalUsers = additionalUsers
       ),
       Deploy("remote", bpmns,
         DockerConfig(dockerDir = "examples/docker",
@@ -21,7 +22,8 @@ object deploys {
           maybeReadyUrl = Some(camundaRestUrl),
           projectName = "camunda-remote"
         ),
-        camundaEndpoint = camundaRestAPI
+        camundaEndpoint = camundaRestAPI,
+        additionalUsers = additionalUsers
       )
     ))
 }

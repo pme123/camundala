@@ -12,11 +12,18 @@ case class Deploys(value: Set[Deploy])
   * @param dockerConfig Configures the Docker
   */
 case class Deploy(id: DeployId,
-                  bpmns: Set[Bpmn],
+                  bpmns: Seq[Bpmn],
                   dockerConfig: DockerConfig,
                   camundaEndpoint: CamundaEndpoint,
-                  overwrites: Overwrites = Overwrites.none
-                 )
+                  overwrites: Overwrites = Overwrites.none,
+                  additionalUsers: Seq[User] = Seq.empty
+                 ) {
+  def groups(): Seq[Group] = (bpmns.flatMap(_.groups()) ++ additionalUsers.flatMap(_.groups)).distinct
+
+
+  def users(): Seq[User] = (bpmns.flatMap(_.users()) ++ additionalUsers).distinct
+
+}
 
 case class DockerConfig(projectName: ProjectName = "camundala-default",
                         composeFiles: Seq[FilePath] = List("docker-compose"),
@@ -32,11 +39,11 @@ case class DockerConfig(projectName: ProjectName = "camundala-default",
 
 case class Overwrites(seq: Seq[Overwrite[_]] = Seq.empty)
 
-object Overwrites{
+object Overwrites {
   val none: Overwrites = Overwrites()
 }
 
-case class Overwrite[T](from: T , to: T)
+case class Overwrite[T](from: T, to: T)
 
 case class CamundaEndpoint(url: Url, user: Username, password: Sensitive)
 

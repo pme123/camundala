@@ -8,6 +8,7 @@ import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.httpDeployClient.HttpDeployClient
 import pme123.camundala.camunda.service.restService
 import pme123.camundala.camunda.service.restService.RestService
+import pme123.camundala.camunda.userManagement.UserManagement
 import pme123.camundala.config.ConfigLayers
 import pme123.camundala.model.ModelLayers
 import zio._
@@ -26,10 +27,11 @@ object CamundaLayers {
     bpmnServiceLayer ++ logLayer("DockerRunner") ++ restServicetLayer ++ ConfigLayers.appConfigLayer >>> httpDeployClient.live
   lazy val bpmnGeneratorLayer: TaskLayer[BpmnGenerator] = logLayer("BpmnGenerator") ++ ConfigLayers.appConfigLayer >>> bpmnGenerator.live
 
-  lazy val processEngineLayer: ZLayer[Any, Throwable, Has[() => ProcessEngine]] = // ProcessEngine must be lazy!
+  lazy val processEngineLayer: TaskLayer[Has[() => ProcessEngine]] = // ProcessEngine must be lazy!
     ZLayer.fromAcquireRelease(ZIO.effect(() => EngineUtil.lookupProcessEngine(null)))(pe =>
       ZIO.effect(pe().close()).ignore
     )
 
+  lazy val userManagementLayer: TaskLayer[UserManagement] = processEngineLayer ++ logLayer("UserManagement") >>> userManagement.live
 
 }

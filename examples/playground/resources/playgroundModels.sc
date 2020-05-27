@@ -11,11 +11,11 @@ import pme123.camundala.model.bpmn.UserTaskForm.FormField.{EnumField, EnumValue,
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
 import pme123.camundala.model.bpmn._
 
-val worker: Group = Group("worker", "Worker")
-val guest: Group = Group("guest", "Guest")
-val hans: User = User("hans", "Müller", "Hans", "hans@mueller.ch", Seq(worker))
-val heidi: User = User("heidi", "Meier", "Heidi", "heidi@meier.ch", Seq(guest))
-val peter: User = User("peter", "Arnold", "Peter", "peter@arnold.ch", Seq(guest, worker))
+val worker: Group = Group("worker", Some("Worker"))
+val guest: Group = Group("guest", Some("Guest"))
+val hans: User = User("hans", Some("Müller"), Some("Hans"), Some("hans@mueller.ch"), Seq(worker))
+val heidi: User = User("heidi", Some("Meier"), Some("Heidi"), Some("heidi@meier.ch"), Seq(guest))
+val peter: User = User("peter", Some("Arnold"), Some("Peter"), Some("peter@arnold.ch"), Seq(guest, worker))
 
 val swapiProcess = BpmnProcess("SwapiProcess",
   starterUsers = CandidateUsers(peter),
@@ -69,8 +69,8 @@ val swapiPlanetProcess = BpmnProcess("SwapiPlanetProcess",
   sequenceFlows = List(SequenceFlow("SequenceFlow_1keaeek"), SequenceFlow("SequenceFlow_0ekpwko"), SequenceFlow("SequenceFlow_1jzq3xe")),
 )
 
-val bpmns: Set[Bpmn] =
-  Set(
+val bpmns: Seq[Bpmn] =
+  Seq(
     Bpmn("Playground.bpmn",
       StaticFile("Playground.bpmn", "bpmn"),
       List(
@@ -79,4 +79,4 @@ val bpmns: Set[Bpmn] =
       ))
   )
 
-deploys.standard(bpmns, "http://localhost:10001/rest")
+deploys.standard(bpmns, "http://localhost:10001/rest", Seq(heidi))

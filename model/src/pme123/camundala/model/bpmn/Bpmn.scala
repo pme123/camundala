@@ -4,6 +4,11 @@ case class Bpmn(id: BpmnId,
                 xml: StaticFile,
                 processes: Seq[BpmnProcess] = Seq.empty,
                ) {
+
+  def groups(): Seq[Group] = processes.flatMap(_.groups())
+
+  def users(): Seq[User] = processes.flatMap(_.users())
+
   def generate(): String =
     s"""
        |Bpmn("$id",
@@ -27,6 +32,11 @@ case class BpmnProcess(id: ProcessId,
                        parallelGateways: Seq[ParallelGateway] = Seq.empty,
                        sequenceFlows: Seq[SequenceFlow] = Seq.empty,
                       ) {
+
+  def groups(): Seq[Group] = userTasks.flatMap(_.groups()) ++ starterGroups.groups
+
+  def users(): Seq[User] = userTasks.flatMap(_.users()) ++ starterUsers.users
+
   def generate(): String =
     s"""
        |      BpmnProcess("${id.value}",

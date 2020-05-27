@@ -1,10 +1,9 @@
 package pme123.camundala.cli
 
 import com.monovore.decline.Opts
-import eu.timepit.refined.auto._
-import pme123.camundala.model.bpmn.BpmnId
-import pme123.camundala.model.deploy.DeployId
 import com.monovore.decline.refined._
+import eu.timepit.refined.auto._
+import pme123.camundala.model.bpmn.{BpmnId, DeployId}
 
 object CliCommand {
 
@@ -21,6 +20,12 @@ object CliCommand {
     Opts.subcommand("generate", "Generates BPMNs that are configured in the Deploy.") {
       deployId
         .map(GenerateBpmns)
+    }
+
+  lazy val createUsersAndGroupsOpts: Opts[CreateUsersAndGroups] =
+    Opts.subcommand("createUsers", "Creates all Groups and Users that are used in the Deploy.") {
+      deployId
+        .map(CreateUsersAndGroups)
     }
 
   lazy val deployCreateOpts: Opts[ComDeploy.Create] =
@@ -67,6 +72,8 @@ object CliCommand {
   case class ValidateBpmn(bpmnId: BpmnId)
 
   case class GenerateBpmns(deployId: DeployId)
+
+  case class CreateUsersAndGroups(deployId: DeployId)
 
   // prefixed with Com(mand) as there is already Deploy as a Domain Entity.
   sealed trait ComDeploy

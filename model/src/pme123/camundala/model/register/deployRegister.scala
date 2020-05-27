@@ -1,6 +1,7 @@
 package pme123.camundala.model.register
 
-import pme123.camundala.model.deploy.{Deploy, DeployId}
+import pme123.camundala.model.bpmn.DeployId
+import pme123.camundala.model.deploy.Deploy
 import zio.stm.TMap
 import zio._
 
