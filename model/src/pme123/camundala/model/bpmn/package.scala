@@ -1,6 +1,7 @@
 package pme123.camundala.model
 
 import eu.timepit.refined._
+import eu.timepit.refined.auto._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean._
 import eu.timepit.refined.collection.NonEmpty
@@ -27,6 +28,7 @@ package object bpmn {
   type Identifier = String Refined IdRegex
 
   type DeployId = String Refined IdRegex
+  val DeployId: DeployId = "default"
   type ProjectName = String Refined IdRegex
 
   type Url = String Refined string.Url
@@ -57,6 +59,10 @@ package object bpmn {
   def processIdFromStr(str: String): ZIO[Any, ModelException, ProcessId] =
     ZIO.fromEither(refineV[IdRegex](str))
       .mapError(ex => ModelException(s"Could not map $str to ProcessId:\n $ex"))
+
+  def deployIdFromStr(str: String): ZIO[Any, ModelException, DeployId] =
+    ZIO.fromEither(refineV[IdRegex](str))
+      .mapError(ex => ModelException(s"Could not map $str to DeployId:\n $ex"))
 
   def filePathFromBpmnId(bpmnId: BpmnId): ZIO[Any, ModelException, FilePath] =
     filePathFromStr(bpmnId.value)

@@ -13,6 +13,8 @@ import pme123.camundala.camunda.{DeployFile, DeployRequest, JsonEnDecoders, http
 import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.{AppConfig, ServicesConf}
 import pme123.camundala.model.bpmn._
+import pme123.camundala.model.register.deployRegister
+import pme123.camundala.model.register.deployRegister.DeployRegister
 import zio._
 import zio.interop.catz._
 import zio.interop.catz.implicits._
@@ -29,14 +31,14 @@ object httpServer
   def serve(): RIO[HttpServer, Unit] =
     ZIO.accessM(_.get.serve())
 
-  type HttpServerDeps = AppConfig with HttpDeployClient with Logging
+  type HttpServerDeps = AppConfig with DeployRegister with HttpDeployClient with Logging
 
   /**
     * http4s Implementation
     */
   lazy val live: RLayer[HttpServerDeps, HttpServer] =
-    ZLayer.fromServices[appConfig.Service, httpDeployClient.Service, logging.Logger[String], Service] {
-      (configServ, deployService, log) =>
+    ZLayer.fromServices[appConfig.Service, deployRegister.Service, httpDeployClient.Service, logging.Logger[String], Service] {
+      (configServ, deplRegister, deployService, log) =>
 
         val dsl: Http4sDsl[Task] = Http4sDsl[Task]
         import dsl._
@@ -48,6 +50,8 @@ object httpServer
             // needed for the Camunda Modeler to checks if the deployment service is available:
             case GET -> Root / "deployment" =>
               Ok("Services are up and running")
+            case GET -> Root / deployId / "deployment" =>
+              Ok(s"Services are up and running for DeployId: $deployId")
             case req@POST -> Root / "deployment" / "create" =>
               req.decode[Multipart[Task]] { m =>
                 deployMultipart(m)
@@ -55,9 +59,18 @@ object httpServer
                     InternalServerError(),
                     Ok(_))
               }
+            case req@POST -> Root / deployIdStr / "deployment" / "create" =>
+              req.decode[Multipart[Task]] { m =>
+                deployIdFromStr(deployIdStr).flatMap(deployId =>
+                  deployMultipart(m, deployId)
+                    .foldM(_ =>
+                      InternalServerError(),
+                      Ok(_))
+                )
+              }
           }
 
-        def deployMultipart(m: Multipart[Task]) = {
+        def deployMultipart(m: Multipart[Task], deployId: DeployId = DeployId) = {
           import pme123.camundala.camunda.DeployRequest._
 
           def forName(m: Multipart[Task], name: PropKey) = {
@@ -84,7 +97,9 @@ object httpServer
             deploySource <- forName(m, DeploymentSource)
             tenantId <- forName(m, tenantId)
             config <- configServ.get()
-            camundaEndpoint <- config.camundaConf.rest.toCamundaEndpoint
+            deploy <- deplRegister.requestDeploy(deployId)
+            defaultEndpoint <- config.camundaConf.rest.toCamundaEndpoint //TODO Get rid of this config
+            camundaEndpoint = deploy.map(_.camundaEndpoint).getOrElse(defaultEndpoint)
             deployResult <- deployService.deploy(DeployRequest(bpmnId, file, camundaEndpoint, enableDuplFiltering, deployChangedOnly, deploySource, tenantId))
           } yield deployResult.asJson)
             .tapError(e => log.error(s"Error: $e", Cause.fail(e)))

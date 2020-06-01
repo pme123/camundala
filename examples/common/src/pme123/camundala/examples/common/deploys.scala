@@ -6,7 +6,7 @@ import pme123.camundala.model.deploy._
 
 object deploys {
 
-  val camundaRestUrl: Url = "http://localhost:8085/engine-rest"
+  val camundaRestUrl: Url = "http://localhost:8085/rest"
   def exampleRestApi( endpoint: Url): CamundaEndpoint = CamundaEndpoint(endpoint, "kermit", Sensitive("kermit"))
   val camundaRestAPI: CamundaEndpoint = CamundaEndpoint(camundaRestUrl, "demo", Sensitive("demo"))
 

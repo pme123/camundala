@@ -12,13 +12,13 @@ import zio.{TaskLayer, ULayer}
 
 object ServicesLayers {
 
-  private def logLayer(loggerName: String): ULayer[Logging] =
+  def logLayer(loggerName: String): ULayer[Logging] =
     ModelLayers.logLayer(loggerName, "pme123.camundala.services")
 
   lazy val httpServerLayer: TaskLayer[HttpServer] =
     logLayer("httpServer") ++
       ConfigLayers.appConfigLayer ++
-      CamundaLayers.httpDeployClientLayer >>> httpServer.live
+      CamundaLayers.httpDeployClientLayer ++ ModelLayers.deployRegisterLayer >>> httpServer.live
 
   lazy val appDepsLayer: TaskLayer[StandardAppDeps] =
     logLayer("appLayer") ++

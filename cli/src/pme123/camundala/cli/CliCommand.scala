@@ -80,11 +80,11 @@ object CliCommand {
 
   object ComDeploy {
 
-    case class List(deployId: DeployId = "default")
+    case class List(deployId: DeployId = DeployId)
 
-    case class Create(deployId: DeployId = "default")
+    case class Create(deployId: DeployId = DeployId)
 
-    case class Delete(deployId: DeployId = "default")
+    case class Delete(deployId: DeployId = DeployId)
 
   }
 
