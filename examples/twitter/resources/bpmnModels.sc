@@ -13,15 +13,15 @@ val bpmns: Seq[Bpmn] =
     StaticFile("TwitterDemoProcess.bpmn", "bpmn"),
     List(
       BpmnProcess("TwitterDemoProcess",
-        List(
+       userTasks = List(
           UserTask("user_task_review_tweet",
-            Some(EmbeddedDeploymentForm(StaticFile("static/forms/reviewTweet.html", "bpmn"))),
-            PropInOutExtensions(Seq(Prop("durationMean", "10000"), Prop("durationSd", "5000"))),
-            InputOutputs(Seq(InputOutput("scalascript", InlineScript("Hello from Scala"))),
+            maybeForm = Some(EmbeddedDeploymentForm(StaticFile("static/forms/reviewTweet.html", "bpmn"))),
+            extensions = PropInOutExtensions(Seq(Prop("durationMean", "10000"), Prop("durationSd", "5000"))),
+            inOuts = InputOutputs(Seq(InputOutput("scalascript", InlineScript("Hello from Scala"))),
               Seq(InputOutput("scalascriptOut", InlineScript("Bye Bye from Scala")))
             ))
         ),
-        List(
+       serviceTasks = List(
           ServiceTask("service_task_send_rejection_notification",
             DelegateExpression("#{emailAdapter}"),
             PropInOutExtensions(Seq(Prop("KPI-Ratio", "Tweet Rejected")))),
@@ -48,4 +48,4 @@ val bpmns: Seq[Bpmn] =
         ))
     )))
 
-deploys.standard(bpmns, s"http://localhost:9998/rest")
+deploys.standard(bpmns, "http://localhost:8088/rest")

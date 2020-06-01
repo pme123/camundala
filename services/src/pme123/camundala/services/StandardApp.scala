@@ -19,7 +19,7 @@ import pme123.camundala.services.httpServer.HttpServer
 import zio._
 import zio.logging.{Logging, log}
 import zio.stm.TRef
-
+import scala.jdk.CollectionConverters._
 
 object StandardApp {
 
@@ -35,8 +35,10 @@ object StandardApp {
 
           def readScript(): Task[Deploys] = bpmnModels()
             .use { deploysReader =>
+              val manager = new ScriptEngineManager(getClass.getClassLoader)
               for {
-                e <- ZIO.effect(new ScriptEngineManager(getClass.getClassLoader).getEngineByName("scala"))
+                e <- ZIO.effect(manager.getEngineByExtension("scala"))
+                _ <- log.info(s"Script Engine: $e from: ${manager.getEngineFactories.asScala.map(f => s"names: ${f.getEngineName} - extensions: ${f.getExtensions}")}")
                 scriptResult <- ZIO.effect(e.eval(deploysReader))
                 deploys <- scriptResult match {
                   case d: Deploys => UIO(d)

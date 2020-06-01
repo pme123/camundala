@@ -17,5 +17,5 @@ object RestApp extends zio.App {
       .fold(
         _ => 1,
         _ => 0
-      ).provideLayer(ModelLayers.logLayer("RestApp"))
+      ).provideLayer(ModelLayers.logLayer("RestApp", "pme123.camundala.examples.rest"))
 }

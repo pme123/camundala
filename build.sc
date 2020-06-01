@@ -3,7 +3,9 @@ import mill._
 import mill.scalalib._
 import mill.scalalib.publish.{Developer, License, PomSettings, VersionControl}
 import $ivy.`com.lihaoyi::mill-contrib-buildinfo:$MILL_VERSION`
+import mill.api.Loose
 import mill.contrib.buildinfo.BuildInfo
+import mill.define.Target
 
 import scala.io.Source
 
@@ -149,6 +151,11 @@ trait ModuleWithTests extends CamundalaModule {
   object test extends Tests {
     override def moduleDeps = super.moduleDeps
 
+    override def runIvyDeps: Target[Loose.Agg[Dep]] =
+      Agg(
+        Libs.scalaCompiler
+      )
+
     override def ivyDeps = Agg(
       Libs.zioTest,
       Libs.zioTestJunit,
@@ -244,11 +251,6 @@ object services extends ModuleWithTests {
 
   override def moduleDeps = Seq(camunda)
 
-  override def runIvyDeps =
-    Agg(
-      Libs.scalaCompiler
-    )
-
 
   override def ivyDeps = {
     Agg(
@@ -256,7 +258,8 @@ object services extends ModuleWithTests {
       Libs.http4sBlazeClient,
       Libs.http4sDsl,
       Libs.http4sCirce,
-      Libs.zioCats
+      Libs.zioCats,
+      Libs.scalaCompiler
     )
   }
 }

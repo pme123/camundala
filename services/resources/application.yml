@@ -1,0 +1,32 @@
+server:
+  port: ${HOST_PORT:8088}
+
+camunda:
+  bpm:
+    admin-user:
+      id: ${ADMIN_USERNAME:kermit}
+      password: ${ADMIN_PASSWORD:kermit}
+      firstName: ${ADMIN_FIRSTNAME:Kermit}
+      lastName: ${ADMIN_LASTNAME:The Frog}
+      email: ${ADMIN_EMAIL:kermit@thefrog.ch}
+    filter:
+      create: All tasks
+    database:
+      schema-update: true
+      type: postgres
+    auto-deployment-enabled: false
+    authorization.enabled: true
+
+spring:
+  datasource:
+    platform: postgres
+    url: ${DB_URL:jdbc:postgresql://localhost:5444/camunda}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:Initial@Password}
+    driverClassName: ${DB_DRIVER:org.postgresql.Driver}
+    initialization-mode: always
+
+    main.banner-mode: off
+
+logging.level.org.springframework: ERROR
+

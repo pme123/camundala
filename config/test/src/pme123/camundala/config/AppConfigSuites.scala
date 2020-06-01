@@ -1,7 +1,6 @@
 package pme123.camundala.config
 
 import pme123.camundala.config.appConfig.{AppConf, CamundaConf, RestHost, ServicesConf}
-import pme123.camundala.model.deploy.Sensitive
 import zio.test.Assertion.equalTo
 import zio.test._
 

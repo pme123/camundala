@@ -8,7 +8,6 @@ import pme123.camundala.camunda.service.restService.Request.Host
 import pme123.camundala.camunda.service.restService.RequestPath.Path
 import pme123.camundala.camunda.service.restService.{Request, RequestMethod}
 import pme123.camundala.model.bpmn.PropKey
-import pme123.camundala.model.deploy.Sensitive
 import sttp.client._
 import zio.test.Assertion._
 import zio.test._

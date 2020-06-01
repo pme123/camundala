@@ -86,10 +86,10 @@ object httpDeployClient {
               _ <- log.info(s"Deploy ${bpmn.id} to ${endpoint.url.value}")
               config <- confService.get()
               staticFiles <- ZIO.foreach(bpmn.staticFiles)(st =>
-                propKeyFromStr(st.fileName.value)
+                filePathFromStr(st.fileName.value)
                   .map(pk => FilePart(pk, st.fileName, StreamHelper(config.basePath).asString(st)))
               )
-              bpmnName <- propKeyFromStr(bpmn.xml.fileName.value)
+              bpmnName <- filePathFromStr(bpmn.xml.fileName.value)
               body = MultipartBody(Set(
                 StringPart(DeploymentName, bpmn.id.value),
                 StringPart(EnableDuplicateFiltering, "false"),

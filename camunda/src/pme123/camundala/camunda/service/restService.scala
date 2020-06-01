@@ -275,7 +275,7 @@ object restService {
 
       case class StringPart(name: PropKey, value: String) extends Part
 
-      case class FilePart(name: PropKey, fileName: FilePath, data: String) extends Part
+      case class FilePart(name: FilePath, fileName: FilePath, data: String) extends Part
 
     }
 
