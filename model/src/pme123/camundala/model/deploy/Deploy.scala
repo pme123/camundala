@@ -25,7 +25,7 @@ object Deploys {
           maybeReadyUrl = Some(camundaUrl),
           projectName = "camunda-remote"
         ),
-        camundaEndpoint = restApi(camundaDevUrl),
+        camundaEndpoint = restApi(camundaUrl),
         additionalUsers = additionalUsers
       )
     ))
