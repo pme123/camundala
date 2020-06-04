@@ -1,12 +1,11 @@
 
 import eu.timepit.refined.auto._
-import pme123.camundala.examples.common.deploys
 import pme123.camundala.model.bpmn.ConditionExpression.{Expression, InlineScript}
 import pme123.camundala.model.bpmn.Extensions.{Prop, PropExtensions, PropInOutExtensions}
 import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
-
+import pme123.camundala.model.deploy.Deploys
 
 val bpmns: Seq[Bpmn] =
   Seq(Bpmn("TwitterDemoProcess.bpmn",
@@ -48,4 +47,4 @@ val bpmns: Seq[Bpmn] =
         ))
     )))
 
-deploys.standard(bpmns, "http://localhost:8088/rest")
+Deploys.standard(bpmns, dockerDir = "examples/docker")

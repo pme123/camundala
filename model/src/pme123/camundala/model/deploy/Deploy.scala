@@ -5,6 +5,32 @@ import pme123.camundala.model.bpmn._
 
 case class Deploys(value: Set[Deploy])
 
+object Deploys {
+
+  val camundaUrl: Url = "http://localhost:8085/rest"
+  val camundaDevUrl: Url = "http://localhost:8088/rest"
+
+  def restApi(endpoint: Url): CamundaEndpoint = CamundaEndpoint(endpoint, "kermit", Sensitive("kermit"))
+
+  def standard(bpmns: Seq[Bpmn], additionalUsers: Seq[User] = Seq.empty, dockerDir: FilePath = "docker"): Deploys =
+    Deploys(Set(
+      Deploy("default", bpmns, DockerConfig(dockerDir = dockerDir,
+        composeFiles = Seq("docker-compose-dev")),
+        camundaEndpoint = restApi(camundaDevUrl),
+        additionalUsers = additionalUsers
+      ),
+      Deploy("remote", bpmns,
+        DockerConfig(dockerDir = dockerDir,
+          composeFiles = Seq("docker-compose"),
+          maybeReadyUrl = Some(camundaUrl),
+          projectName = "camunda-remote"
+        ),
+        camundaEndpoint = restApi(camundaDevUrl),
+        additionalUsers = additionalUsers
+      )
+    ))
+}
+
 /**
   *
   * @param id           The Id of the deployment - must be unique in the deployRegistry

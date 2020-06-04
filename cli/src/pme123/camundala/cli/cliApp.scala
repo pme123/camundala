@@ -236,12 +236,8 @@ object cliApp {
   }
 
   private val width = 84
-  private val versionFile: zio.Managed[Throwable, BufferedSource] = zio.Managed.make(ZIO.effect(Source.fromFile("./version")))(s => ZIO.succeed(s.close()))
 
-  private[cli] val camundala: Task[ProjectInfo] =
-    for {
-      version <- versionFile.use(vf => ZIO.effect(vf.getLines().next()))
-    } yield ProjectInfo("camundala", "pme123", version, "https://github.com/pme123/camundala")
+  private[cli] val info = pme123.camundala.BuildInfo
 
   private val intro =
     for {
@@ -254,12 +250,11 @@ object cliApp {
            | |   ___|    ||    \  |    \  /  ||  | | ||    \ | ||     \ |    \  |    |  |    \
            | |   |__     ||     \ |     \/   ||  |_| ||     \| ||      \|     \ |    |_ |     \
            | |______|  __||__|\__\|__/\__/|__||______||__/\____||______/|__|\__\|______||__|\__\
-           |    |_____|    Doing Camunda with Scala""".stripMargin)
+           |    |_____|     """.stripMargin + s"Doing Camunda ${info.camundaVersion} by Scala ${info.scalaVersion}")
       _ <- p(scala.Console.MAGENTA)
-      pi <- camundala
-      _ <- line(versionLabel, pi.version, leftAligned = false)
-      _ <- line(licenseLabel, pi.license, leftAligned = false)
-      _ <- line("", pi.sourceUrl, leftAligned = false)
+      _ <- line(versionLabel, info.version, leftAligned = false)
+      _ <- line(licenseLabel, info.license, leftAligned = false)
+      _ <- line("", info.url, leftAligned = false)
       _ <- pl("")
       _ <- pl("*" * width)
       _ <- pl(" For Help type '--help'")

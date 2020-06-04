@@ -11,6 +11,11 @@
     <sequenceFlow id="SequenceFlow_9" name="" sourceRef="DefineInputsStartEvent" targetRef="CallSwapiServiceTask" />
     <sequenceFlow id="SequenceFlow_0m72fzi" sourceRef="ShowResultTask" targetRef="ProcessDoneEndEvent" />
     <serviceTask id="CallSwapiServiceTask" name="Call Swapi Service Task" camunda:asyncBefore="true" camunda:asyncAfter="true">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Input_3vt75ep" />
+        </camunda:inputOutput>
+      </extensionElements>
       <incoming>SequenceFlow_9</incoming>
       <outgoing>SequenceFlow_0k5kyka</outgoing>
     </serviceTask>

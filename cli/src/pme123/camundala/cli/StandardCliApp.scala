@@ -1,27 +1,18 @@
-package pme123.camundala.examples.common
+package pme123.camundala.cli
 
-import pme123.camundala
 import pme123.camundala.app.appRunner.AppRunner
-import pme123.camundala.cli.{CliLayers, ProjectInfo, cliApp}
 import pme123.camundala.cli.cliApp.CliApp
 import pme123.camundala.services.ServicesLayers
 import pme123.camundala.services.StandardApp.StandardAppDeps
-import zio.{ZIO, ZLayer}
 import zio.console.Console
+import zio.{ZIO, ZLayer}
 
 trait StandardCliApp extends zio.App {
 
   protected def appRunnerLayer: ZLayer[StandardAppDeps, Nothing, AppRunner]
   protected def title: String
   protected def ident: String
-  private lazy val projectInfo: ProjectInfo =
-    ProjectInfo(
-      title,
-      camundala.BuildInfo.organization,
-      camundala.BuildInfo.version,
-      s"${camundala.BuildInfo.url}/tree/master/examples/$ident",
-      camundala.BuildInfo.license
-    )
+  protected def projectInfo: ProjectInfo
 
   def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] =
     (for {

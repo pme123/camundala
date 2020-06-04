@@ -11,7 +11,9 @@ import scala.io.Source
 
 object Version {
   val versionSource = Source.fromFile("./version")
+
   val projectVersion = versionSource.getLines().next()
+
   val scalaVersion = "2.13.2"
 
   // model
@@ -108,7 +110,8 @@ trait CamundalaModule
   extends ScalaModule
     with PublishModule {
   val scalaVersion = Version.scalaVersion
-  val publishVersion = Version.projectVersion
+
+  def publishVersion = Version.projectVersion
 
 
   override def artifactName = s"camundala-${super.artifactName()}"
@@ -237,12 +240,13 @@ object camunda
 
   override def buildInfoMembers: T[Map[String, String]] = T {
     Map(
-      "name" -> artifactName(),
+      "name" -> "camundala",
       "organization" -> pomSettings().organization,
       "license" -> pomSettings().licenses.head.id,
       "version" -> publishVersion(),
       "url" -> pomSettings().url,
-      "scalaVersion" -> scalaVersion()
+      "scalaVersion" -> scalaVersion(),
+      "camundaVersion" -> Version.camunda
     )
   }
 }

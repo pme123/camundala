@@ -3,13 +3,13 @@ import eu.timepit.refined.auto._
 import pme123.camundala.camunda.delegate.RestServiceDelegate.RestServiceTempl
 import pme123.camundala.camunda.service.restService.Request
 import pme123.camundala.camunda.service.restService.RequestPath.Path
-import pme123.camundala.examples.common.deploys
 import pme123.camundala.examples.playground.SwapiService
 import pme123.camundala.examples.playground.bpmns._
 import pme123.camundala.model.bpmn.UserTaskForm.FormField.Constraint.Required
 import pme123.camundala.model.bpmn.UserTaskForm.FormField.{EnumField, EnumValue, EnumValues, SimpleField}
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
 import pme123.camundala.model.bpmn._
+import pme123.camundala.model.deploy.Deploys
 
 val worker: Group = Group("worker", Some("Worker"))
 val guest: Group = Group("guest", Some("Guest"))
@@ -79,4 +79,4 @@ val bpmns: Seq[Bpmn] =
       ))
   )
 
-deploys.standard(bpmns, "http://localhost:10001/rest", Seq(heidi))
+Deploys.standard(bpmns, Seq(heidi), "examples/docker")
