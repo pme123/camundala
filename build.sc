@@ -17,19 +17,20 @@ object Version {
   val scalaVersion = "2.13.2"
 
   // model
-  val zio = "1.0.0-RC18-2" //+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT" //"
+  val zio = "1.0.0-RC20" //+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT" //"
   //val zioMacros = "1.0.0-RC18-2+99-bb2ded5f-SNAPSHOT"//"
-  val zioLogging = "0.2.7"
+  val zioLogging = "0.3.0"
   val refined = "0.9.14"
 
   // config
-  val zioConfig = "1.0.0-RC16"
+  val zioConfig = "1.0.0-RC20"
 
   // services
-  val zioCats = "2.0.0.0-RC12"
+  val zioCats = "2.1.3.0-RC15"
   val http4s = "0.21.3"
   val circe = "0.13.0"
   val sttp = "2.0.6"
+  val tapir = "0.15.3"
 
   // camunda
   val spring = "2.2.4.RELEASE"
@@ -91,6 +92,12 @@ object Libs {
   val http4sCirce = ivy"org.http4s::http4s-circe:${Version.http4s}"
   val http4sDsl = ivy"org.http4s::http4s-dsl:${Version.http4s}"
   val scalaCompiler = ivy"org.scala-lang:scala-compiler:${Version.scalaVersion}"
+  val tapir = ivy"com.softwaremill.sttp.tapir::tapir-zio-http4s-server:${Version.tapir}"
+  val tapirCirce = ivy"com.softwaremill.sttp.tapir::tapir-json-circe:${Version.tapir}"
+  val tapirDocs = ivy"com.softwaremill.sttp.tapir::tapir-openapi-docs:${Version.tapir}"
+  val tapirDocsCirce = ivy"com.softwaremill.sttp.tapir::tapir-openapi-circe-yaml:${Version.tapir}"
+  val tapirSwagger = ivy"com.softwaremill.sttp.tapir::tapir-swagger-ui-http4s:${Version.tapir}"
+  val tapirRedoc = ivy"com.softwaremill.sttp.tapir::tapir-redoc-http4s:${Version.tapir}"
 
   // cli
   val decline = ivy"com.monovore::decline-effect:${Version.decline}"
@@ -128,7 +135,7 @@ trait CamundalaModule
     "-language:postfixOps", // Allows operator syntax in postfix position (deprecated since Scala 2.10)
 
     "-feature" // Emit warning and location for usages of features that should be imported explicitly.
-    //  "-Ypartial-unification",      // Enable partial unification in type constructor inference
+   // "-Ypartial-unification"      // Enable partial unification in type constructor inference
     //  "-Xfatal-warnings"            // Fail the compilation if there are any warnings
   )
 
@@ -263,6 +270,12 @@ object services extends ModuleWithTests {
       Libs.http4sDsl,
       Libs.http4sCirce,
       Libs.zioCats,
+      Libs.tapir,
+      Libs.tapirCirce,
+      Libs.tapirDocs,
+      Libs.tapirDocsCirce,
+      Libs.tapirSwagger,
+      Libs.tapirRedoc,
       Libs.scalaCompiler
     )
   }

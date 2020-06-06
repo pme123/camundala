@@ -32,7 +32,7 @@ object twitterConfig {
         string("value")
         ) (Token.apply, Token.unapply)
 
-    val twitterAuthConfig: ConfigDescriptor[String, String, TwitterAuth] =
+    val twitterAuthConfig: ConfigDescriptor[TwitterAuth] =
       (nested("consumerToken")(tokenConfig) |@|
         nested("accessToken")(tokenConfig)
         ) (TwitterAuth.apply, TwitterAuth.unapply)

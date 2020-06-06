@@ -63,7 +63,8 @@ object XmlHelper {
 
   }
 
-  case class QName(namespace: Option[String], label: String)
+  case class
+  QName(namespace: Option[String], label: String)
 
   object QName {
 

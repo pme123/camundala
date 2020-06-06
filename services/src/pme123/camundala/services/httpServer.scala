@@ -1,5 +1,6 @@
 package pme123.camundala.services
 
+import cats.implicits._
 import io.circe.generic.auto._
 import io.circe.syntax._
 import org.http4s._
@@ -19,6 +20,7 @@ import zio._
 import zio.interop.catz._
 import zio.interop.catz.implicits._
 import zio.logging.Logging
+
 
 object httpServer
   extends JsonEnDecoders {
@@ -43,15 +45,9 @@ object httpServer
         val dsl: Http4sDsl[Task] = Http4sDsl[Task]
         import dsl._
 
-        lazy val routes: HttpRoutes[Task] =
-          HttpRoutes.of[Task] {
-            case GET -> Root =>
-              Ok("Services are up and running")
-            // needed for the Camunda Modeler to checks if the deployment service is available:
-            case GET -> Root / "deployment" =>
-              Ok("Services are up and running")
-            case GET -> Root / deployId / "deployment" =>
-              Ok(s"Services are up and running for DeployId: $deployId")
+
+        lazy val routes: HttpRoutes[Task] = HttpEndpointServer.allRoutes <+>
+          (HttpRoutes.of[Task] {
             case req@POST -> Root / "deployment" / "create" =>
               req.decode[Multipart[Task]] { m =>
                 deployMultipart(m)
@@ -68,7 +64,7 @@ object httpServer
                       Ok(_))
                 )
               }
-          }
+          })
 
         def deployMultipart(m: Multipart[Task], deployId: DeployId = DeployId) = {
           import pme123.camundala.camunda.DeployRequest._
@@ -98,8 +94,7 @@ object httpServer
             tenantId <- forName(m, tenantId)
             config <- configServ.get()
             deploy <- deplRegister.requestDeploy(deployId)
-            defaultEndpoint <- config.camundaConf.rest.toCamundaEndpoint //TODO Get rid of this config
-            camundaEndpoint = deploy.map(_.camundaEndpoint).getOrElse(defaultEndpoint)
+            camundaEndpoint = deploy.map(_.camundaEndpoint).getOrElse(config.camundaConf.rest)
             deployResult <- deployService.deploy(DeployRequest(bpmnId, file, camundaEndpoint, enableDuplFiltering, deployChangedOnly, deploySource, tenantId))
           } yield deployResult.asJson)
             .tapError(e => log.error(s"Error: $e", Cause.fail(e)))

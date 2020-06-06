@@ -5,7 +5,7 @@ import pme123.camundala.cli.cliApp.CliApp
 import pme123.camundala.services.ServicesLayers
 import pme123.camundala.services.StandardApp.StandardAppDeps
 import zio.console.Console
-import zio.{ZIO, ZLayer}
+import zio.{ExitCode, ZIO, ZLayer}
 
 trait StandardCliApp extends zio.App {
 
@@ -14,15 +14,15 @@ trait StandardCliApp extends zio.App {
   protected def ident: String
   protected def projectInfo: ProjectInfo
 
-  def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] =
+  def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] =
     (for {
       _ <- runCli
     } yield ())
       // you have to provide all the layers here so all fibers have the same register
       .provideCustomLayer(ServicesLayers.appDepsLayer >>> CliLayers.cliLayer(appRunnerLayer))
       .fold(
-        _ => 1,
-        _ => 0
+        _ => ExitCode.failure,
+        _ => ExitCode.success
       )
 
   protected def runCli: ZIO[CliApp with Console, Throwable, Nothing] =

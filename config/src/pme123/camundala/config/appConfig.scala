@@ -4,8 +4,9 @@ import pme123.camundala.model.bpmn._
 import pme123.camundala.model.deploy.CamundaEndpoint
 import zio._
 import zio.config.ConfigDescriptor._
+import zio.config.refined._
 import zio.config.typesafe.TypesafeConfig
-import zio.config.{Config, config}
+import zio.config.{Config, config, refined}
 import zio.logging.Logging
 
 object appConfig {
@@ -26,17 +27,15 @@ object appConfig {
     val url = s"$host:$port"
   }
 
-  case class CamundaConf(rest: RestHost)
+  case class CamundaConf(rest: CamundaEndpoint)
 
-  case class RestHost(url: String, user: String, password: String) {
+  case class RestHost(url: Url, user: String, password: Sensitive) {
 
     def toCamundaEndpoint: ZIO[Any, ModelException, CamundaEndpoint] =
       for{
-        curl <-urlFromStr(url)
         cuser <-  usernameFromStr(user)
-        pwd <- passwordFromStr(password)
       } yield
-        CamundaEndpoint(curl, cuser, Sensitive(pwd))
+        CamundaEndpoint(url, cuser, password)
   }
 
   /**
@@ -45,11 +44,15 @@ object appConfig {
   lazy val live: RLayer[Logging, AppConfig] = {
 
 
+    val usernameConf = nonEmpty(string("user")) //and[Trimmed, NonEmpty](string("user"))
+    val desc = nonEmpty(string("password"))
+    val sensitiveConf = desc(Sensitive.apply, Sensitive.unapply)
+
     val camundaRestConf =
-      (string("url") |@|
-        string("user") |@|
-        string("password")
-        ) (RestHost.apply, RestHost.unapply)
+      (refined.url(string("url")) |@|
+        usernameConf |@|
+        sensitiveConf
+        ) (CamundaEndpoint.apply, CamundaEndpoint.unapply)
 
     val camundaConf =
       nested("rest")(camundaRestConf)(CamundaConf.apply, CamundaConf.unapply)

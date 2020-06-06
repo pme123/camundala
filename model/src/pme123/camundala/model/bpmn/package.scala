@@ -34,8 +34,8 @@ package object bpmn {
   type Url = String Refined string.Url
   type Port = Int Refined numeric.Greater[0]
 
-  type TrimmedNonEmpty = Trimmed And NonEmpty
   //TODO problem in zio-config with And
+  type TrimmedNonEmpty = /*Trimmed And*/ NonEmpty
   type Username = String Refined  TrimmedNonEmpty
   type Password = String Refined  TrimmedNonEmpty
   type Email = String Refined EmailRegex
