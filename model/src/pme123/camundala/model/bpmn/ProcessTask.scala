@@ -1,7 +1,8 @@
 package pme123.camundala.model.bpmn
 
-import pme123.camundala.model.bpmn.Extensions.PropInOutExtensions
-import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression
+import pme123.camundala.model.bpmn.Extensions.{Prop, PropInOutExtensions}
+import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
+import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 
 sealed trait ProcessTask
   extends BpmnNode
@@ -18,7 +19,19 @@ case class ServiceTask(id: BpmnNodeId,
                        inOuts: InputOutputs = InputOutputs.none
                       )
   extends ProcessTask
-    with ImplementationTask
+    with ImplementationTask {
+
+  def delegate(expression: String): ServiceTask = copy(implementation = DelegateExpression(expression))
+
+  def external(topic: String): ServiceTask = copy(implementation = ExternalTask(topic))
+
+  def prop(prop: (PropKey, String)): ServiceTask = copy(extensions = extensions :+ Prop(prop._1, prop._2))
+
+  def input(inputOutput: InputOutput): ServiceTask = copy(extensions = extensions.input(inputOutput))
+
+  def output(inputOutput: InputOutput): ServiceTask = copy(extensions = extensions.output(inputOutput))
+
+}
 
 case class SendTask(id: BpmnNodeId,
                     implementation: TaskImplementation = DelegateExpression("#{YOURAdapter}"),
@@ -47,6 +60,9 @@ case class CandidateGroups(groups: Group*) extends UsersAndGroups {
 
   def asString(str: String): String =
     (groups.map(_.id.value) ++ asList(str)).distinct.mkString(",")
+
+  def :+(group: Group): CandidateGroups = CandidateGroups(groups = (groups :+ group): _*)
+
 }
 
 object CandidateGroups {
@@ -56,6 +72,9 @@ object CandidateGroups {
 case class CandidateUsers(users: User*) extends UsersAndGroups {
   def asString(str: String): String =
     (users.map(_.username.value) ++ asList(str)).distinct.mkString(",")
+
+  def :+(user: User): CandidateUsers = CandidateUsers(users = (users :+ user): _*)
+
 }
 
 object CandidateUsers {
@@ -67,7 +86,6 @@ case class UserTask(id: BpmnNodeId,
                     candidateUsers: CandidateUsers = CandidateUsers.none,
                     maybeForm: Option[UserTaskForm] = None,
                     extensions: PropInOutExtensions = PropInOutExtensions.none,
-                    inOuts: InputOutputs = InputOutputs.none
                    )
   extends ProcessTask
     with HasForm {
@@ -75,6 +93,22 @@ case class UserTask(id: BpmnNodeId,
   def groups(): Seq[Group] = candidateGroups.groups
 
   def users(): Seq[User] = candidateUsers.users
+
+  def candidateGroup(group: Group): UserTask = copy(candidateGroups = candidateGroups :+ group)
+
+  def candidateUser(user: User): UserTask = copy(candidateUsers = candidateUsers :+ user)
+
+  def form(form: UserTaskForm): UserTask = copy(maybeForm = Some(form))
+
+  def embeddedForm(fileName: FilePath, resourcePath: PathElem): UserTask =
+    copy(maybeForm = Some(EmbeddedDeploymentForm(StaticFile(fileName, resourcePath))))
+
+  def prop(prop: (PropKey, String)): UserTask = copy(extensions = extensions :+ Prop(prop._1, prop._2))
+
+  def input(inputOutput: InputOutput): UserTask = copy(extensions = extensions.input(inputOutput))
+
+  def output(inputOutput: InputOutput): UserTask = copy(extensions = extensions.output(inputOutput))
+
 
 }
 

@@ -1,5 +1,7 @@
 package pme123.camundala.model.bpmn
 
+import eu.timepit.refined.auto._
+
 case class Bpmn(id: BpmnId,
                 xml: StaticFile,
                 processes: Seq[BpmnProcess] = Seq.empty,
@@ -8,6 +10,10 @@ case class Bpmn(id: BpmnId,
   def groups(): Seq[Group] = processes.flatMap(_.groups())
 
   def users(): Seq[User] = processes.flatMap(_.users())
+
+  def ###(proc: BpmnProcess): Bpmn = process(proc)
+
+  def process(proc: BpmnProcess): Bpmn = copy(processes = processes :+ proc)
 
   def generate(): String =
     s"""
@@ -19,6 +25,12 @@ case class Bpmn(id: BpmnId,
   lazy val processMap: Map[BpmnId, BpmnProcess] = processes.map(p => p.id -> p).toMap
 
   def staticFiles: Set[StaticFile] = processes.flatMap(_.staticFiles).toSet
+}
+
+object Bpmn {
+  private val DefaultBpmnDirectory: PathElem = "bpmn"
+
+  def apply(id: BpmnId, xmlName: FilePath): Bpmn = new Bpmn(id, StaticFile(xmlName, DefaultBpmnDirectory))
 }
 
 case class BpmnProcess(id: ProcessId,
@@ -60,6 +72,24 @@ case class BpmnProcess(id: ProcessId,
   lazy val exclusiveGatewayMap: Map[BpmnNodeId, ExclusiveGateway] = exclusiveGateways.map(g => g.id -> g).toMap
   lazy val parallelGatewayMap: Map[BpmnNodeId, ParallelGateway] = parallelGateways.map(g => g.id -> g).toMap
   lazy val sequenceFlowMap: Map[BpmnNodeId, SequenceFlow] = sequenceFlows.map(g => g.id -> g).toMap
+
+  def starterGroup(group: Group): BpmnProcess = copy(starterGroups = starterGroups :+ group)
+
+  def starterUser(user: User): BpmnProcess = copy(starterUsers = starterUsers :+ user)
+
+  def ***(userTask: UserTask): BpmnProcess = copy(userTasks = userTasks :+ userTask)
+
+  def ***(serviceTask: ServiceTask): BpmnProcess = copy(serviceTasks = serviceTasks :+ serviceTask)
+
+  def sendTask(sendTask: SendTask): BpmnProcess = copy(sendTasks = sendTasks :+ sendTask)
+
+  def ***(startEvent: StartEvent): BpmnProcess = copy(startEvents = startEvents :+ startEvent)
+
+  def ***(exclusiveGateway: ExclusiveGateway): BpmnProcess = copy(exclusiveGateways = exclusiveGateways :+ exclusiveGateway)
+
+  def parallelGateway(parallelGateway: ParallelGateway): BpmnProcess = copy(parallelGateways = parallelGateways :+ parallelGateway)
+
+  def sequenceFlow(sequenceFlow: SequenceFlow): BpmnProcess = copy(sequenceFlows = sequenceFlows :+ sequenceFlow)
 
 }
 
