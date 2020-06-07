@@ -20,11 +20,31 @@ object TestData {
   val testRequest: Request = Request(
     host,
     path = Path("people", "1"))
-  val worker: Group = Group("worker", Some("Worker"))
-  val guest: Group = Group("guest", Some("Guest"))
-  val hans: User = User("hans", Some("Müller"), Some("Hans"), Some("hans@mueller.ch"), Seq(worker))
-  val heidi: User = User("heidi", Some("Meier"), Some("Heidi"), Some("heidi@meier.ch"), Seq(guest))
-  val peter: User = User("peter", Some("Arnold"), Some("Peter"), Some("peter@arnold.ch"), Seq(guest, worker))
+  val worker: Group =
+    Group("worker")
+      .name("Worker")
+  val guest: Group =
+    Group("guest")
+      .name("Guest")
+  val hans: User =
+    User("hans")
+      .name("Müller")
+      .firstName("Hans")
+      .email("hans@mueller.ch")
+      .group(worker)
+  val heidi: User =
+    User("heidi")
+      .name("Meier")
+      .firstName("Heidi")
+      .email("heidi@meier.ch")
+      .group(guest)
+  val peter: User =
+    User("peter")
+      .name("Arnold")
+      .firstName("Peter")
+      .email("peter@arnold.ch")
+      .group(guest)
+      .group(worker)
 
   val restServiceTask: ServiceTask = RestServiceTempl(
     testRequest

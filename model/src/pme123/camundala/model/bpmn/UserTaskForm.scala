@@ -1,7 +1,7 @@
 package pme123.camundala.model.bpmn
 
 import eu.timepit.refined.auto._
-import pme123.camundala.model.bpmn.UserTaskForm.FormField.{Constraint, Property}
+import pme123.camundala.model.bpmn.UserTaskForm.FormField.Constraint
 import pme123.camundala.model.bpmn.UserTaskForm.FormFieldType.{EnumType, StringType}
 
 sealed trait UserTaskForm {
@@ -18,8 +18,13 @@ object UserTaskForm {
 
   }
 
-  case class GeneratedForm(fields: Seq[FormField])
-    extends UserTaskForm
+  case class GeneratedForm(fields: Seq[FormField] = Seq.empty)
+    extends UserTaskForm {
+    def field(fld: FormField): GeneratedForm = copy(fields = fields :+ fld)
+
+    def ---(fld: FormField): GeneratedForm = field(fld)
+
+  }
 
   sealed trait FormField {
     def id: PropKey
@@ -32,7 +37,7 @@ object UserTaskForm {
 
     def validations: Seq[Constraint]
 
-    def properties: Seq[Property]
+    def properties: Seq[Prop]
   }
 
   object FormField {
@@ -42,20 +47,46 @@ object UserTaskForm {
                            `type`: FormFieldType = StringType,
                            defaultValue: String = "",
                            validations: Seq[Constraint] = Seq.empty,
-                           properties: Seq[Property] = Seq.empty)
-      extends FormField
+                           properties: Seq[Prop] = Seq.empty)
+      extends FormField {
+
+      def label(l: String): SimpleField = copy(label = l)
+
+      def default(d: String): SimpleField = copy(defaultValue = d)
+
+      def validate(constraint: Constraint): SimpleField = copy(validations = validations :+ constraint)
+
+      def prop(prop: (PropKey, String)): SimpleField = copy(properties = properties :+ Prop(prop._1, prop._2))
+    }
 
     case class EnumField(id: PropKey,
                          label: String = "",
                          defaultValue: String = "",
-                         values: EnumValues,
+                         values: EnumValues = EnumValues.none,
                          validations: Seq[Constraint] = Seq.empty,
-                         properties: Seq[Property] = Seq.empty)
+                         properties: Seq[Prop] = Seq.empty)
       extends FormField {
       val `type`: FormFieldType = EnumType
+
+      def label(l: String): EnumField = copy(label = l)
+
+      def default(d: String): EnumField = copy(defaultValue = d)
+
+      def value(prop: (PropKey, String)): EnumField = copy(values = values :+ EnumValue(prop._1, prop._2))
+
+      def validate(constraint: Constraint): EnumField = copy(validations = validations :+ constraint)
+
+      def prop(prop: (PropKey, String)): EnumField = copy(properties = properties :+ Prop(prop._1, prop._2))
     }
 
-    case class EnumValues(enums: Seq[EnumValue])
+    case class EnumValues(enums: Seq[EnumValue]) {
+      def :+(value: EnumValue): EnumValues = copy(enums :+ value)
+
+    }
+
+    object EnumValues {
+      def none: EnumValues = EnumValues(Seq.empty)
+    }
 
     case class EnumValue(key: PropKey, label: String)
 
@@ -67,7 +98,7 @@ object UserTaskForm {
 
     object Constraint {
 
-      case class Custom(name: PropKey, config:  Option[String]) extends Constraint
+      case class Custom(name: PropKey, config: Option[String]) extends Constraint
 
       case object Required extends Constraint {
         val name: PropKey = "required"
@@ -96,16 +127,15 @@ object UserTaskForm {
         val name: PropKey = "maxlength"
       }
 
-      case class Min(value: Int)  extends MinMax {
+      case class Min(value: Int) extends MinMax {
         val name: PropKey = "min"
       }
-      case class Max(value: Int)  extends MinMax {
+
+      case class Max(value: Int) extends MinMax {
         val name: PropKey = "max"
       }
+
     }
-
-    case class Property(id: PropKey, value: String)
-
   }
 
   sealed trait FormFieldType {

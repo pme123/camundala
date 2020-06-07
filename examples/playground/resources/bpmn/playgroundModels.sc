@@ -6,26 +6,50 @@ import pme123.camundala.camunda.service.restService.RequestPath.Path
 import pme123.camundala.examples.playground.SwapiService
 import pme123.camundala.examples.playground.bpmns._
 import pme123.camundala.model.bpmn.UserTaskForm.FormField.Constraint.Required
-import pme123.camundala.model.bpmn.UserTaskForm.FormField.{EnumField, EnumValue, EnumValues, SimpleField}
+import pme123.camundala.model.bpmn.UserTaskForm.FormField.{EnumField, SimpleField}
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
 import pme123.camundala.model.bpmn._
 import pme123.camundala.model.deploy.Deploys
 
-val worker: Group = Group("worker", Some("Worker"))
-val guest: Group = Group("guest", Some("Guest"))
-val hans: User = User("hans", Some("Müller"), Some("Hans"), Some("hans@mueller.ch"), Seq(worker))
-val heidi: User = User("heidi", Some("Meier"), Some("Heidi"), Some("heidi@meier.ch"), Seq(guest))
-val peter: User = User("peter", Some("Arnold"), Some("Peter"), Some("peter@arnold.ch"), Seq(guest, worker))
+val worker: Group =
+  Group("worker")
+    .name("Worker")
+val guest: Group =
+  Group("guest")
+    .name("Guest")
+val hans: User =
+  User("hans")
+    .name("Müller")
+    .firstName("Hans")
+    .email("hans@mueller.ch")
+    .group(worker)
+val heidi: User =
+  User("heidi")
+    .name("Meier")
+    .firstName("Heidi")
+    .email("heidi@meier.ch")
+    .group(guest)
+val peter: User =
+  User("peter")
+    .name("Arnold")
+    .firstName("Peter")
+    .email("peter@arnold.ch")
+    .group(guest)
+    .group(worker)
 
-val selectCategoryForm = GeneratedForm(Seq(EnumField("_category_", "Category", "people",
-  EnumValues(Seq(EnumValue("people", "People"),
-    EnumValue("planets", "Planets"),
-    EnumValue("films", "Films"),
-    EnumValue("vehicles", "Vehicles"),
-    EnumValue("starships", "Starships"))),
-  validations = Seq(Required))))
-
-val swapiResultForm = GeneratedForm(Seq(SimpleField("swapiResult", "SWAPI Result", validations = Seq(Required))))
+val selectCategoryForm =
+  GeneratedForm()
+    .--- {
+      EnumField("_category_")
+        .label("Category")
+        .default("people")
+        .value("people", "People")
+        .value("planets", "Planets")
+        .value("films", "Films")
+        .value("vehicles", "Vehicles")
+        .value("starships", "Starships")
+        .validate(Required)
+    }
 
 val callSwapiTask = RestServiceTempl(
   Request(
@@ -49,7 +73,13 @@ val swapiProcess =
       UserTask("ShowResultTask")
         .candidateUser(hans)
         .candidateGroup(guest)
-        .form(swapiResultForm)
+        .===(
+          GeneratedForm()
+            .--- {
+              SimpleField("swapiResult")
+                .label("SWAPI Result")
+                .validate(Required)
+            })
     )
 
 val swapiPlanetProcess =

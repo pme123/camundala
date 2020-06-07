@@ -136,6 +136,8 @@ case class UserTask(id: BpmnNodeId,
 
   def form(form: UserTaskForm): UserTask = copy(maybeForm = Some(form))
 
+  def ===(utf: UserTaskForm): UserTask = form(utf)
+
   def embeddedForm(fileName: FilePath, resourcePath: PathElem): UserTask =
     copy(maybeForm = Some(EmbeddedDeploymentForm(StaticFile(fileName, resourcePath))))
 

@@ -240,7 +240,7 @@ trait XBpmnNode[T <: BpmnNode] {
       }
     }}<camunda:properties>
       {field.properties.map(p =>
-          <camunda:property id={p.id.value} value={p.value}/>
+          <camunda:property id={p.key.value} value={p.value}/>
       )}
     </camunda:properties>
       <camunda:validation>

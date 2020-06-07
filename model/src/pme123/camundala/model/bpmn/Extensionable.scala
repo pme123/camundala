@@ -1,6 +1,5 @@
 package pme123.camundala.model.bpmn
 
-import com.softwaremill.quicklens._
 import pme123.camundala.model.bpmn.ConditionExpression.{Expression, InlineScript, JsonExpression}
 
 
