@@ -7,9 +7,6 @@ import pme123.camundala.camunda.service.restService.Request.Auth.BasicAuth
 import pme123.camundala.camunda.service.restService.Request.Host
 import pme123.camundala.camunda.service.restService.RequestPath.Path
 import pme123.camundala.model.bpmn.ConditionExpression.Expression
-import pme123.camundala.model.bpmn.Extensions.{Prop, PropExtensions, PropInOutExtensions}
-import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
-import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
 import zio.{Task, UIO, ZIO, ZManaged}
 
@@ -43,66 +40,61 @@ object TestData {
 
   }
 
-  val twitterProcess: BpmnProcess = BpmnProcess("TwitterDemoProcess",
-    starterUsers = CandidateUsers(heidi, peter),
-    starterGroups = CandidateGroups(worker,guest),
-    userTasks = List(
-      //embedded:deployment:static/forms/reviewTweet.html
-      UserTask("user_task_review_tweet",
-        candidateUsers = CandidateUsers(heidi),
-        candidateGroups = CandidateGroups(worker),
-        maybeForm = Some(EmbeddedDeploymentForm(StaticFile("static/forms/reviewTweet.html", "bpmn"))),
-        extensions = PropInOutExtensions(Seq(Prop("durationMean", "10000"), Prop("durationSd", "5000")),
-          InputOutputs(Seq(InputOutput("testVal", Expression("ok"))))))),
-    serviceTasks = List(
-      ServiceTask("service_task_send_rejection_notification",
-        DelegateExpression("#{emailAdapter}"),
-        PropInOutExtensions(Seq(Prop("kpiRatio", "Tweet Rejected")))),
-      ServiceTask("service_task_publish_on_twitter",
-        DelegateExpression("#{tweetAdapter}"),
-        PropInOutExtensions(Seq(Prop("kpiRatio", "Tweet Approved")))
-      )),
-    startEvents = List(StartEvent("start_event_new_tweet",
-      Some(EmbeddedDeploymentForm(StaticFile("static/forms/createTweet.html", "bpmn"))),
-      PropExtensions(Seq(Prop("kpiCycleStart", "Tweet Approval Time")))
-    )),
-    exclusiveGateways = List(ExclusiveGateway("gateway_approved",
-      PropExtensions(Seq(Prop("kpiCycleStop", "Tweet Approval Time")))
-    )
-    ),
-    sequenceFlows = List(SequenceFlow("yes",
-      Some(Expression("#{approved}")),
-      PropExtensions(Seq(Prop("probability", "87")))
-    ), SequenceFlow("no",
-      Some(Expression("#{!approved}")),
-      PropExtensions(Seq(Prop("probability", "13")))
-    ))
-  )
+  val twitterProcess: BpmnProcess =
+    BpmnProcess("TwitterDemoProcess")
+      .starterGroup(worker)
+      .starterGroup(guest)
+      .starterUser(heidi)
+      .starterUser(peter)
+      .*** {
+        StartEvent("start_event_new_tweet")
+          .embeddedForm("static/forms/createTweet.html", "bpmn")
+          .prop("kpiCycleStart", "Tweet Approval Time")
+      }.*** {
+      UserTask("user_task_review_tweet")
+        .candidateUser(heidi)
+        .candidateGroup(worker)
+        .embeddedForm("static/forms/reviewTweet.html", "bpmn")
+        .prop("durationMean", "10000")
+        .prop("durationSd", "5000")
+        .input(InputOutput("testVal", Expression("ok")))
+    }.*** {
+      ExclusiveGateway("gateway_approved")
+        .prop("KPI-Cycle-End", "Tweet Approval Time")
+    }.*** {
+      SequenceFlow("yes")
+        .expression("#{approved}")
+        .prop("probability", "87")
+    }.*** {
+      SequenceFlow("no")
+        .expression("#{!approved}")
+        .prop("probability", "13")
+    }.*** {
+      ServiceTask("service_task_send_rejection_notification")
+        .delegate("#{emailAdapter}")
+        .prop("KPI-Ratio", "Tweet Rejected")
+    }.*** {
+      ServiceTask("service_task_publish_on_twitter")
+        .delegate("#{tweetAdapter}")
+        .prop("KPI-Ratio", "Tweet Approved")
+    }
 
-  val testProcess: BpmnProcess = BpmnProcess("TestDemoProcess",
-    startEvents = List(
+  val testProcess: BpmnProcess =
+    BpmnProcess("TestDemoProcess"
+    ).*** {
       StartEvent("startEvent")
-    ),
-    serviceTasks = List(
-      restServiceTask,
-      ServiceTask("external-task-example",
-        ExternalTask("myTopic")
-      )
-    ),
-    sendTasks = List(
-      SendTask("send-task-example",
-        ExternalTask("myTopic")
-      )
-    )
+    }.*** {
+      ServiceTask("CallSwapiServiceTask")
+        .external("myTopic")
+    }.*** {
+      ServiceTask("external-task-example")
+        .external("myTopic")
+    }.*** {
+      SendTask("send-task-example")
+        .external("myTopic")
+    }
 
-  )
-
-  val bpmn: Bpmn = Bpmn("TwitterDemoProcess.bpmn",
-    StaticFile("TwitterDemoProcess.bpmn", "bpmn"),
-    List(
-      twitterProcess,
-      testProcess
-    ))
-
-
+  val bpmn: Bpmn = Bpmn("TwitterDemoProcess.bpmn", "TwitterDemoProcess.bpmn")
+    .process(twitterProcess)
+    .process(testProcess)
 }

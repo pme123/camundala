@@ -65,18 +65,18 @@
       <incoming>SequenceFlow_0u2afzo</incoming>
       <outgoing>SequenceFlow_0rv2dtk</outgoing>
     </sendTask>
-    <serviceTask id="CallSwapiServiceTask" name="CallSwapiServiceTask&#10;">
-      <incoming>SequenceFlow_18o60le</incoming>
-      <outgoing>SequenceFlow_0xa77rh</outgoing>
-    </serviceTask>
+    <startEvent id="startEvent">
+      <outgoing>SequenceFlow_18o60le</outgoing>
+    </startEvent>
     <serviceTask id="external-task-example" name="External Task Example">
       <incoming>SequenceFlow_0xa77rh</incoming>
       <outgoing>SequenceFlow_0u2afzo</outgoing>
     </serviceTask>
+    <serviceTask id="CallSwapiServiceTask" name="CallSwapiServiceTask&#10;">
+      <incoming>SequenceFlow_18o60le</incoming>
+      <outgoing>SequenceFlow_0xa77rh</outgoing>
+    </serviceTask>
     <sequenceFlow id="SequenceFlow_0xa77rh" sourceRef="CallSwapiServiceTask" targetRef="external-task-example" />
-    <startEvent id="startEvent">
-      <outgoing>SequenceFlow_18o60le</outgoing>
-    </startEvent>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_TwitterDemoProcess">
     <bpmndi:BPMNPlane id="BPMNPlane_TwitterDemoProcess" bpmnElement="Collaboration_19t23ei">
@@ -117,7 +117,7 @@
         <omgdc:Bounds x="286" y="154" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_1ql9j8z_di" bpmnElement="external-task-example">
-        <omgdc:Bounds x="380" y="500" width="100" height="80" />
+        <omgdc:Bounds x="400" y="500" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="BPMNShape_Review_Tweet_3" targetElement="BPMNShape_Approved__3">
         <omgdi:waypoint x="386" y="194" />
@@ -179,7 +179,7 @@
         <omgdc:Bounds x="682" y="522" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0u2afzo_di" bpmnElement="SequenceFlow_0u2afzo">
-        <omgdi:waypoint x="480" y="540" />
+        <omgdi:waypoint x="500" y="540" />
         <omgdi:waypoint x="530" y="540" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="StartEvent_1ukn3m3_di" bpmnElement="startEvent">
@@ -196,13 +196,13 @@
       <bpmndi:BPMNShape id="SendTask_00n36ur_di" bpmnElement="send-task-example">
         <omgdc:Bounds x="530" y="500" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_0xa77rh_di" bpmnElement="SequenceFlow_0xa77rh">
-        <omgdi:waypoint x="350" y="540" />
-        <omgdi:waypoint x="380" y="540" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ServiceTask_1labsw4_di" bpmnElement="CallSwapiServiceTask">
         <omgdc:Bounds x="250" y="500" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0xa77rh_di" bpmnElement="SequenceFlow_0xa77rh">
+        <omgdi:waypoint x="350" y="540" />
+        <omgdi:waypoint x="400" y="540" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </definitions>

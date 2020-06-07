@@ -39,7 +39,11 @@ case class SendTask(id: BpmnNodeId,
                     inOuts: InputOutputs = InputOutputs.none
                    )
   extends ProcessTask
-    with ImplementationTask
+    with ImplementationTask {
+
+  def external(topic: String): SendTask = copy(implementation = ExternalTask(topic))
+
+}
 
 trait HasForm
   extends ProcessTask {

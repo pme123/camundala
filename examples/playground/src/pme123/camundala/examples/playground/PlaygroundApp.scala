@@ -18,6 +18,6 @@ object PlaygroundApp extends StandardExampleCliApp {
   protected val title = "Camundala Playground App"
 
   protected def appRunnerLayer: ZLayer[StandardAppDeps, Nothing, AppRunner] =
-    StandardApp.layer(classOf[PlaygroundApp], StaticFile("playgroundModels.sc", "."))
+    StandardApp.layer(classOf[PlaygroundApp], StaticFile("playgroundModels.sc", "bpmn"))
 
 }

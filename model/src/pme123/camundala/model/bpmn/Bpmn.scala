@@ -75,21 +75,39 @@ case class BpmnProcess(id: ProcessId,
 
   def starterGroup(group: Group): BpmnProcess = copy(starterGroups = starterGroups :+ group)
 
+  def ***(group: Group): BpmnProcess = starterGroup(group)
+
   def starterUser(user: User): BpmnProcess = copy(starterUsers = starterUsers :+ user)
 
-  def ***(userTask: UserTask): BpmnProcess = copy(userTasks = userTasks :+ userTask)
+  def ***(user: User): BpmnProcess = starterUser(user)
 
-  def ***(serviceTask: ServiceTask): BpmnProcess = copy(serviceTasks = serviceTasks :+ serviceTask)
+  def userTask(userTask: UserTask): BpmnProcess = copy(userTasks = userTasks :+ userTask)
 
-  def sendTask(sendTask: SendTask): BpmnProcess = copy(sendTasks = sendTasks :+ sendTask)
+  def ***(task: UserTask): BpmnProcess = userTask(task)
 
-  def ***(startEvent: StartEvent): BpmnProcess = copy(startEvents = startEvents :+ startEvent)
+  def serviceTask(task: ServiceTask): BpmnProcess = copy(serviceTasks = serviceTasks :+ task)
 
-  def ***(exclusiveGateway: ExclusiveGateway): BpmnProcess = copy(exclusiveGateways = exclusiveGateways :+ exclusiveGateway)
+  def ***(task: ServiceTask): BpmnProcess = serviceTask(task)
 
-  def parallelGateway(parallelGateway: ParallelGateway): BpmnProcess = copy(parallelGateways = parallelGateways :+ parallelGateway)
+  def sendTask(task: SendTask): BpmnProcess = copy(sendTasks = sendTasks :+ task)
 
-  def sequenceFlow(sequenceFlow: SequenceFlow): BpmnProcess = copy(sequenceFlows = sequenceFlows :+ sequenceFlow)
+  def ***(task: SendTask): BpmnProcess = sendTask(task)
+
+  def startEvent(event: StartEvent): BpmnProcess = copy(startEvents = startEvents :+ event)
+
+  def ***(event: StartEvent): BpmnProcess = startEvent(event)
+
+  def exclusiveGateway(gateway: ExclusiveGateway): BpmnProcess = copy(exclusiveGateways = exclusiveGateways :+ gateway)
+
+  def ***(gateway: ExclusiveGateway): BpmnProcess = exclusiveGateway(gateway)
+
+  def parallelGateway(gateway: ParallelGateway): BpmnProcess = copy(parallelGateways = parallelGateways :+ gateway)
+
+  def ***(gateway: ParallelGateway): BpmnProcess = parallelGateway(gateway)
+
+  def sequenceFlow(flow: SequenceFlow): BpmnProcess = copy(sequenceFlows = sequenceFlows :+ flow)
+
+  def ***(flow: SequenceFlow): BpmnProcess = sequenceFlow(flow)
 
 }
 

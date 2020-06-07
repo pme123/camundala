@@ -18,6 +18,6 @@ object TwitterApp extends StandardExampleCliApp {
   protected val title = "Twitter Camundala Demo App"
 
   protected def appRunnerLayer: ZLayer[StandardAppDeps, Nothing, AppRunner] =
-    StandardApp.layer(classOf[TwitterApp], StaticFile("bpmnModels.sc", "."))
+    StandardApp.layer(classOf[TwitterApp], StaticFile("bpmnModels.sc", "bpmn"))
 
 }
