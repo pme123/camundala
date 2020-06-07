@@ -1,6 +1,5 @@
 
 import eu.timepit.refined.auto._
-import pme123.camundala.model.bpmn.ConditionExpression.InlineScript
 import pme123.camundala.model.bpmn._
 import pme123.camundala.model.deploy.Deploys
 
@@ -18,8 +17,8 @@ val bpmns: Seq[Bpmn] =
             .embeddedForm("static/forms/reviewTweet.html", "bpmn")
             .prop("durationMean", "10000")
             .prop("durationSd", "5000")
-            .input(InputOutput("scalascript", InlineScript("Hello from Scala")))
-            .output(InputOutput("scalascriptOut", InlineScript("Bye Bye from Scala")))
+            .inputInline("scalascript", "Hello from Scala")
+            .outputInline("scalascriptOut", "Bye Bye from Scala")
         }.*** {
           ExclusiveGateway("gateway_approved")
             .prop("KPI-Cycle-End", "Tweet Approval Time")

@@ -1,22 +1,23 @@
 package pme123.camundala.model.bpmn
 
-import pme123.camundala.model.bpmn.Extensions.{Prop, PropInOutExtensions}
 import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 
 sealed trait ProcessTask
   extends BpmnNode
-    with Extensionable
+    with HasExtProperties
+    with HasExtInOutputs
 
 sealed trait ImplementationTask
   extends ProcessTask {
+
   def implementation: TaskImplementation
 }
 
 case class ServiceTask(id: BpmnNodeId,
                        implementation: TaskImplementation = DelegateExpression("#{YOURAdapter}"),
-                       extensions: PropInOutExtensions = PropInOutExtensions.none,
-                       inOuts: InputOutputs = InputOutputs.none
+                       extProperties: ExtProperties = ExtProperties.none,
+                       extInOutputs: ExtInOutputs = ExtInOutputs.none
                       )
   extends ProcessTask
     with ImplementationTask {
@@ -25,28 +26,58 @@ case class ServiceTask(id: BpmnNodeId,
 
   def external(topic: String): ServiceTask = copy(implementation = ExternalTask(topic))
 
-  def prop(prop: (PropKey, String)): ServiceTask = copy(extensions = extensions :+ Prop(prop._1, prop._2))
+  // HasExtProperties
+  def prop(prop: (PropKey, String)): ServiceTask =
+    copy(extProperties = extProperties :+ Prop(prop._1, prop._2))
 
-  def input(inputOutput: InputOutput): ServiceTask = copy(extensions = extensions.input(inputOutput))
+  // HasExtInOutputs
+  def inputExpression(key: PropKey, expression: String): ServiceTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))
 
-  def output(inputOutput: InputOutput): ServiceTask = copy(extensions = extensions.output(inputOutput))
+  def inputInline(key: PropKey, inlineScript: String): ServiceTask = copy(extInOutputs = extInOutputs.inputExpression(key, inlineScript))
+
+  def inputJson(key: PropKey, json: String): ServiceTask = copy(extInOutputs = extInOutputs.inputExpression(key, json))
+
+  def outputExpression(key: PropKey, expression: String): ServiceTask = copy(extInOutputs = extInOutputs.outputExpression(key, expression))
+
+  def outputInline(key: PropKey, inlineScript: String): ServiceTask = copy(extInOutputs = extInOutputs.outputExpression(key, inlineScript))
+
+  def outputJson(key: PropKey, json: String): ServiceTask = copy(extInOutputs = extInOutputs.outputExpression(key, json))
 
 }
 
 case class SendTask(id: BpmnNodeId,
                     implementation: TaskImplementation = DelegateExpression("#{YOURAdapter}"),
-                    extensions: PropInOutExtensions = PropInOutExtensions.none,
-                    inOuts: InputOutputs = InputOutputs.none
+                    extProperties: ExtProperties = ExtProperties.none,
+                    extInOutputs: ExtInOutputs = ExtInOutputs.none
                    )
   extends ProcessTask
     with ImplementationTask {
 
+  def delegate(expression: String): SendTask = copy(implementation = DelegateExpression(expression))
+
   def external(topic: String): SendTask = copy(implementation = ExternalTask(topic))
+
+  // HasExtProperties
+  def prop(prop: (PropKey, String)): SendTask =
+    copy(extProperties = extProperties :+ Prop(prop._1, prop._2))
+
+  // HasExtInOutputs
+  def inputExpression(key: PropKey, expression: String): SendTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))
+
+  def inputInline(key: PropKey, inlineScript: String): SendTask = copy(extInOutputs = extInOutputs.inputExpression(key, inlineScript))
+
+  def inputJson(key: PropKey, json: String): SendTask = copy(extInOutputs = extInOutputs.inputExpression(key, json))
+
+  def outputExpression(key: PropKey, expression: String): SendTask = copy(extInOutputs = extInOutputs.outputExpression(key, expression))
+
+  def outputInline(key: PropKey, inlineScript: String): SendTask = copy(extInOutputs = extInOutputs.outputExpression(key, inlineScript))
+
+  def outputJson(key: PropKey, json: String): SendTask = copy(extInOutputs = extInOutputs.outputExpression(key, json))
 
 }
 
 trait HasForm
-  extends ProcessTask {
+  extends BpmnNode {
 
   def maybeForm: Option[UserTaskForm]
 
@@ -65,7 +96,7 @@ case class CandidateGroups(groups: Group*) extends UsersAndGroups {
   def asString(str: String): String =
     (groups.map(_.id.value) ++ asList(str)).distinct.mkString(",")
 
-  def :+(group: Group): CandidateGroups = CandidateGroups(groups = (groups :+ group): _*)
+  def :+(group: Group): CandidateGroups = CandidateGroups(groups = groups :+ group: _*)
 
 }
 
@@ -77,7 +108,7 @@ case class CandidateUsers(users: User*) extends UsersAndGroups {
   def asString(str: String): String =
     (users.map(_.username.value) ++ asList(str)).distinct.mkString(",")
 
-  def :+(user: User): CandidateUsers = CandidateUsers(users = (users :+ user): _*)
+  def :+(user: User): CandidateUsers = CandidateUsers(users = users :+ user: _*)
 
 }
 
@@ -89,7 +120,8 @@ case class UserTask(id: BpmnNodeId,
                     candidateGroups: CandidateGroups = CandidateGroups.none,
                     candidateUsers: CandidateUsers = CandidateUsers.none,
                     maybeForm: Option[UserTaskForm] = None,
-                    extensions: PropInOutExtensions = PropInOutExtensions.none,
+                    extProperties: ExtProperties = ExtProperties.none,
+                    extInOutputs: ExtInOutputs = ExtInOutputs.none
                    )
   extends ProcessTask
     with HasForm {
@@ -107,12 +139,22 @@ case class UserTask(id: BpmnNodeId,
   def embeddedForm(fileName: FilePath, resourcePath: PathElem): UserTask =
     copy(maybeForm = Some(EmbeddedDeploymentForm(StaticFile(fileName, resourcePath))))
 
-  def prop(prop: (PropKey, String)): UserTask = copy(extensions = extensions :+ Prop(prop._1, prop._2))
+  // HasExtProperties
+  def prop(prop: (PropKey, String)): UserTask =
+    copy(extProperties = extProperties :+ Prop(prop._1, prop._2))
 
-  def input(inputOutput: InputOutput): UserTask = copy(extensions = extensions.input(inputOutput))
+  // HasExtInOutputs
+  def inputExpression(key: PropKey, expression: String): UserTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))
 
-  def output(inputOutput: InputOutput): UserTask = copy(extensions = extensions.output(inputOutput))
+  def inputInline(key: PropKey, inlineScript: String): UserTask = copy(extInOutputs = extInOutputs.inputExpression(key, inlineScript))
 
+  def inputJson(key: PropKey, json: String): UserTask = copy(extInOutputs = extInOutputs.inputExpression(key, json))
+
+  def outputExpression(key: PropKey, expression: String): UserTask = copy(extInOutputs = extInOutputs.outputExpression(key, expression))
+
+  def outputInline(key: PropKey, inlineScript: String): UserTask = copy(extInOutputs = extInOutputs.outputExpression(key, inlineScript))
+
+  def outputJson(key: PropKey, json: String): UserTask = copy(extInOutputs = extInOutputs.outputExpression(key, json))
 
 }
 

@@ -1,58 +1,51 @@
 package pme123.camundala.model.bpmn
 
-import pme123.camundala.model.bpmn.Extensions.Prop
+import com.softwaremill.quicklens._
+import pme123.camundala.model.bpmn.ConditionExpression.{Expression, InlineScript, JsonExpression}
 
-trait Extensionable {
-  def extensions: Extensions
+
+trait HasExtProperties {
+
+  def extProperties: ExtProperties
+}
+
+trait HasExtInOutputs {
+
+  def extInOutputs: ExtInOutputs
 
 }
 
-sealed trait Extensions {
-  def properties: Seq[Prop]
-
-  def inOuts: InputOutputs
-
+case class ExtProperties(properties: Seq[Prop] = Seq.empty) {
+  def :+(prop: Prop): ExtProperties = copy(properties = properties :+ prop)
 }
 
-object Extensions {
-
-  case class PropExtensions(properties: Seq[Prop] = Seq.empty) extends Extensions {
-    final val inOuts: InputOutputs = InputOutputs.none
-
-    def :+(prop: Prop): PropExtensions = copy(properties = properties :+ prop)
-
-  }
-
-  object PropExtensions {
-    val none: PropExtensions = PropExtensions()
-  }
-
-  case class PropInOutExtensions(properties: Seq[Prop] = Seq.empty, inOuts: InputOutputs = InputOutputs.none) extends Extensions {
-    def :+(prop: Prop): PropInOutExtensions = copy(properties = properties :+ prop)
-
-    def input(inputOutput: InputOutput): PropInOutExtensions = copy(inOuts = inOuts.input(inputOutput))
-    def output(inputOutput: InputOutput): PropInOutExtensions = copy(inOuts = inOuts.output(inputOutput))
-  }
-
-  object PropInOutExtensions {
-    val none: PropInOutExtensions = PropInOutExtensions()
-  }
-
-  case class Prop(key: PropKey, value: String)
-
+object ExtProperties {
+  val none: ExtProperties = ExtProperties()
 }
 
-case class InputOutputs(inputs: Seq[InputOutput] = Nil, outputs: Seq[InputOutput] = Nil) {
+case class Prop(key: PropKey, value: String)
+
+case class ExtInOutputs(inputs: Seq[InputOutput] = Nil, outputs: Seq[InputOutput] = Nil) {
   val inputMap: Map[PropKey, ConditionExpression] = inputs.map(in => in.key -> in.expression).toMap
   val outputMap: Map[PropKey, ConditionExpression] = outputs.map(out => out.key -> out.expression).toMap
 
-  def input(inputOutput: InputOutput): InputOutputs = copy(inputs = inputs :+ inputOutput)
-  def output(inputOutput: InputOutput): InputOutputs = copy(outputs = outputs :+ inputOutput)
+  def inputExpression(key: PropKey, expression: String): ExtInOutputs = copy(inputs = inputs :+ InputOutput(key, Expression(expression)))
+
+  def inputInline(key: PropKey, inlineScript: String): ExtInOutputs = copy(inputs = inputs :+ InputOutput(key, InlineScript(inlineScript)))
+
+  def inputJson(key: PropKey, json: String): ExtInOutputs = copy(inputs = inputs :+ InputOutput(key, JsonExpression(json)))
+
+  def outputExpression(key: PropKey, expression: String): ExtInOutputs = copy(outputs = outputs :+ InputOutput(key, Expression(expression)))
+
+  def outputInline(key: PropKey, inlineScript: String): ExtInOutputs = copy(outputs = outputs :+ InputOutput(key, InlineScript(inlineScript)))
+
+  def outputJson(key: PropKey, json: String): ExtInOutputs = copy(outputs = outputs :+ InputOutput(key, JsonExpression(json)))
+
 
 }
 
-object InputOutputs {
-  def none: InputOutputs = InputOutputs()
+object ExtInOutputs {
+  def none: ExtInOutputs = ExtInOutputs()
 }
 
 case class InputOutput(key: PropKey, expression: ConditionExpression)

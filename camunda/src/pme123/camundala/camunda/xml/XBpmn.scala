@@ -2,13 +2,12 @@ package pme123.camundala.camunda.xml
 
 import pme123.camundala.camunda.xml.XmlHelper._
 import pme123.camundala.model.bpmn.ConditionExpression.{Expression, InlineScript, JsonExpression}
-import pme123.camundala.model.bpmn.Extensions.{Prop, PropInOutExtensions}
 import pme123.camundala.model.bpmn.UserTaskForm.FormField.EnumField
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
 import pme123.camundala.model.bpmn._
-import zio.{Task, UIO, ZIO}
+import zio.{Task, ZIO}
 
-import scala.xml.{Attribute, Elem, Node}
+import scala.xml.{Attribute, Elem}
 
 case class XBpmn(bpmnXml: Elem) {
 
@@ -82,7 +81,7 @@ case class XBpmnProcess(xmlElem: Elem) {
     }
 
 
-  private def mergeCandidates(xml: Elem, process: BpmnProcess): Task[Elem] = Task{
+  private def mergeCandidates(xml: Elem, process: BpmnProcess): Task[Elem] = Task {
     val starterGroups = process.starterGroups.asString(xmlElem.attributeAsText(QName.camunda(candidateStarterGroups)))
     val starterUsers = process.starterUsers.asString(xmlElem.attributeAsText(QName.camunda(candidateStarterUsers)))
     xml % Attribute(camundaPrefix, candidateStarterGroups, starterGroups,
@@ -90,7 +89,7 @@ case class XBpmnProcess(xmlElem: Elem) {
         camundaXmlnsAttr))
   }
 
-  private def mergeExtensionable[A <: Extensionable](xml: Elem, extensionableMap: Map[BpmnNodeId, A], xExts: Seq[XBpmnNode[A]], label: String): Task[XMergeResult] = {
+  private def mergeExtensionable[A <: BpmnNode](xml: Elem, extensionableMap: Map[BpmnNodeId, A], xExts: Seq[XBpmnNode[A]], label: String): Task[XMergeResult] = {
     val warnings =
       if (extensionableMap.size == xExts.length)
         ValidateWarnings.none
@@ -133,7 +132,7 @@ case class XBpmnProcess(xmlElem: Elem) {
 
 }
 
-trait XBpmnNode[T <: Extensionable] {
+trait XBpmnNode[T <: BpmnNode] {
 
   def xmlElem: Elem
 
@@ -145,61 +144,22 @@ trait XBpmnNode[T <: Extensionable] {
     xBpmnId.map(id => (maybeNode, xmlElem) match {
       case (None, _) =>
         XMergeResult(xmlElem, ValidateWarnings(s"There is NOT a $tagName with id '$id' in Scala."))
-      case (Some(extensionable), nodeElem: Elem) =>
-        val propElems = nodeElem \\ "property"
-        val propParams = propElems.map(_ \@ "name")
-        val inputElems = nodeElem \\ "inputParameter"
-        val inputParams = inputElems.map(_ \@ "name")
-        val outputElems = nodeElem \\ "outputParameter"
-        val outputParams = outputElems.map(_ \@ "name")
-        val formFieldElems = nodeElem \\ "formField"
-        val formFields = formFieldElems.map(_ \@ "id")
+      case (Some(bpmnNode), nodeElem: Elem) =>
+
         val child = nodeElem.child
         val otherChild = child.filter(_.label != "extensionElements")
         val xmlElem: Elem =
           nodeElem.copy(
             child = <extensionElements xmlns:camunda={xmlnsCamunda} xmlns={xmlnsBpmn}>
-              <camunda:properties>
-                {for {Prop(k, v) <- extensionable.extensions.properties
-                      if !propParams.contains(k) // only add the one that not exist
-                      } yield
-                  <camunda:property name={k.value} value={v}/>}{//
-                propElems}
-              </camunda:properties>{extensionable.extensions match {
-                case PropInOutExtensions(_, inOuts) =>
-                  <camunda:inputOutput>
-                    {for {(k, cond) <- inOuts.inputMap
-                          if !inputParams.contains(k) // only add the one that not exist
-                          } yield
-                    <camunda:inputParameter name={k.value}>
-                      {expressionElem(cond)}
-                    </camunda:inputParameter>}{//
-                    inputElems}{//
-                    for {(k, cond) <- inOuts.outputMap
-                         if !outputParams.contains(k) // only add the one that not exist
-                         } yield
-                      <camunda:outputParameter name={k.value}>
-                        {expressionElem(cond)}
-                      </camunda:outputParameter>}{//
-                    outputElems}
-                  </camunda:inputOutput>
-                case _ => ()
-              }}{//
-              extensionable match {
-                case hf: HasForm =>
-                  <camunda:formData>
-                    {hf.maybeForm.toList.flatMap {
-                    case form: GeneratedForm => {
-                      form.fields
-                        .filter(ff => !formFields.contains(ff.id)) // only add if not defined
-                        .map(field =>
-                          createFormField(field)
-                        )
-                    }
-                    case _ => Seq.empty
-                  } ++ formFieldElems}
-                  </camunda:formData>
-                case _ => {}
+              {bpmnNode match {
+                case n: HasExtProperties => mergeHasProperties(n)
+                case _ =>
+              }}{bpmnNode match {
+                case n: HasExtInOutputs => mergeHasInOutputs(n)
+                case _ =>
+              }}{bpmnNode match {
+                case n: HasForm => mergeHasForm(n)
+                case _ =>
               }}
             </extensionElements>
               ++ {
@@ -209,7 +169,66 @@ trait XBpmnNode[T <: Extensionable] {
         XMergeResult(xmlElem, ValidateWarnings.none)
       case (Some(_), _) =>
         XMergeResult(xmlElem, ValidateWarnings(s"The XML Node must be a XML Elem not just a Node ($tagName with id '$id')."))
-    })
+    }
+    )
+  }
+
+  def mergeHasProperties(hasProps: HasExtProperties): Elem = {
+    val propElems = xmlElem \\ "property"
+    val propParams = propElems.map(_ \@ "name")
+
+    <camunda:properties>
+      {for {
+      Prop(k, v) <- hasProps.extProperties.properties
+      if !propParams.contains(k) // only add the one that not exist
+    } yield
+        <camunda:property name={k.value} value={v}/>}{//
+      propElems}
+    </camunda:properties>
+  }
+
+  def mergeHasInOutputs(hasInOuts: HasExtInOutputs): Elem = {
+    val inputElems = xmlElem \\ "inputParameter"
+    val inputParams = inputElems.map(_ \@ "name")
+    val outputElems = xmlElem \\ "outputParameter"
+    val outputParams = outputElems.map(_ \@ "name")
+
+    <camunda:inputOutput>
+      {for {
+      (k, cond) <- hasInOuts.extInOutputs.inputMap
+      if !inputParams.contains(k) // only add the one that not exist
+    } yield
+      <camunda:inputParameter name={k.value}>
+        {expressionElem(cond)}
+      </camunda:inputParameter>}{//
+      inputElems}{//
+      for {
+        (k, cond) <- hasInOuts.extInOutputs.outputMap
+        if !outputParams.contains(k) // only add the one that not exist
+      } yield
+        <camunda:outputParameter name={k.value}>
+          {expressionElem(cond)}
+        </camunda:outputParameter>}{//
+      outputElems}
+    </camunda:inputOutput>
+  }
+
+  def mergeHasForm(hasForm: HasForm): Elem = {
+    val formFieldElems = xmlElem \\ "formField"
+    val formFields = formFieldElems.map(_ \@ "id")
+
+    <camunda:formData>
+      {hasForm.maybeForm.toList.flatMap {
+      case form: GeneratedForm => {
+        form.fields
+          .filter(ff => !formFields.contains(ff.id)) // only add if not defined
+          .map(field =>
+            createFormField(field)
+          )
+      }
+      case _ => Seq.empty
+    } ++ formFieldElems}
+    </camunda:formData>
   }
 
   private def createFormField(field: UserTaskForm.FormField) = {
@@ -217,7 +236,8 @@ trait XBpmnNode[T <: Extensionable] {
       {field match {
       case ef: EnumField =>
         ef.values.enums.map(ev => <camunda:value id={ev.key.value} name={ev.label}/>)
-      case _ => {}
+      case _ => {
+      }
     }}<camunda:properties>
       {field.properties.map(p =>
           <camunda:property id={p.id.value} value={p.value}/>
@@ -235,7 +255,10 @@ trait XBpmnNode[T <: Extensionable] {
     </camunda:formField>
   }
 
-  private def expressionElem(cond: ConditionExpression) = {
+  private
+
+  def expressionElem
+  (cond: ConditionExpression) = {
     cond match {
       case InlineScript(value, language) =>
         <camunda:script scriptFormat={language.key}>

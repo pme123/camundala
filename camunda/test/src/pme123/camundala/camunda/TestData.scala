@@ -6,7 +6,6 @@ import pme123.camundala.camunda.service.restService.Request
 import pme123.camundala.camunda.service.restService.Request.Auth.BasicAuth
 import pme123.camundala.camunda.service.restService.Request.Host
 import pme123.camundala.camunda.service.restService.RequestPath.Path
-import pme123.camundala.model.bpmn.ConditionExpression.Expression
 import pme123.camundala.model.bpmn._
 import zio.{Task, UIO, ZIO, ZManaged}
 
@@ -57,7 +56,7 @@ object TestData {
         .embeddedForm("static/forms/reviewTweet.html", "bpmn")
         .prop("durationMean", "10000")
         .prop("durationSd", "5000")
-        .input(InputOutput("testVal", Expression("ok")))
+        .inputExpression("testVal", "ok")
     }.*** {
       ExclusiveGateway("gateway_approved")
         .prop("KPI-Cycle-End", "Tweet Approval Time")

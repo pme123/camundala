@@ -9,13 +9,9 @@ import org.camunda.spin.Spin
 import org.camunda.spin.plugin.variable.value.JsonValue
 import org.springframework.stereotype.Service
 import pme123.camundala.camunda.service.restService
-import pme123.camundala.camunda.service.restService.Request.Host
 import pme123.camundala.camunda.service.restService.Response.{HandledError, NoContent, WithContent}
 import pme123.camundala.camunda.service.restService._
 import pme123.camundala.camunda.{CamundaLayers, JsonEnDecoders}
-import pme123.camundala.model.bpmn.ConditionExpression.JsonExpression
-import pme123.camundala.model.bpmn.Extensions.PropInOutExtensions
-import pme123.camundala.model.bpmn.TaskImplementation.DelegateExpression
 import pme123.camundala.model.bpmn._
 import zio.Runtime.default.unsafeRun
 import zio.{ZIO, logging}
@@ -69,22 +65,13 @@ class RestServiceDelegate
 
 object RestServiceDelegate
   extends JsonEnDecoders {
-  val expression: DelegateExpression = DelegateExpression("#{restService}")
-  val propPrefix = "rest-service"
 
   case class RestServiceTempl(request: Request) {
 
     def asServiceTask(id: BpmnNodeId): ServiceTask =
-      ServiceTask(id,
-        expression,
-        PropInOutExtensions(
-          inOuts = InputOutputs(
-            inputs = List(
-              InputOutput("request", JsonExpression(request.asJson.toString())),
-            )
-          )
-        )
-      )
+      ServiceTask(id)
+        .delegate("#{restService}")
+        .inputJson("request", request.asJson.toString())
   }
 
 }
