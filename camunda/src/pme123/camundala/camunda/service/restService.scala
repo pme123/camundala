@@ -2,7 +2,6 @@ package pme123.camundala.camunda.service
 
 import java.util.concurrent.TimeUnit
 
-import _root_.sttp.model.Uri._
 import io.circe.Json
 import pme123.camundala.app.sttpBackend.SttpTaskBackend
 import pme123.camundala.camunda.service.restService.QueryParams.NoParams
@@ -16,6 +15,7 @@ import pme123.camundala.camunda.service.restService.ResponseRead.{NoResponseRead
 import pme123.camundala.model.bpmn._
 import sttp.client.{Empty, NothingT, RequestT, SttpBackend, basicRequest, multipart, Request => SttpRequest, Response => SttpResponse}
 import sttp.model.StatusCode
+import sttp.model.Uri._
 import zio._
 import zio.clock.Clock
 import zio.duration._

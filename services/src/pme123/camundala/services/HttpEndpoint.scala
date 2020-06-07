@@ -5,31 +5,24 @@ import java.io.File
 import cats.implicits._
 import io.circe.generic.auto._
 import org.http4s.HttpRoutes
+import pme123.camundala.camunda.DeployResult
 import pme123.camundala.camunda.httpDeployClient.HttpDeployClient
-import pme123.camundala.camunda.{DeployFile, DeployRequest, DeployResult, httpDeployClient}
-import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.AppConfig
 import pme123.camundala.model.bpmn._
-import pme123.camundala.model.register.deployRegister
 import pme123.camundala.model.register.deployRegister.DeployRegister
-import pme123.camundala.services.HttpEndpointServer.allRoutes
 import sttp.model.Part
+import sttp.tapir.Endpoint
+import sttp.tapir.docs.openapi._
 import sttp.tapir.generic.Configuration
 import sttp.tapir.json.circe._
-import sttp.tapir.openapi.OpenAPI
-import sttp.tapir.server.http4s.ztapir._
-import sttp.tapir.ztapir._
-import sttp.tapir.{AnyPart, Endpoint, EndpointInfo}
-import zio.interop.catz._
-import zio.interop.catz.implicits._
-import zio.logging.{Logging, log}
-import zio._
-import sttp.tapir.openapi.OpenAPI
-import sttp.tapir.docs.openapi._
-import sttp.tapir.docs.openapi._
 import sttp.tapir.openapi.circe.yaml._
 import sttp.tapir.redoc.http4s.RedocHttp4s
+import sttp.tapir.server.http4s.ztapir._
 import sttp.tapir.swagger.http4s.SwaggerHttp4s
+import sttp.tapir.ztapir._
+import zio._
+import zio.interop.catz._
+import zio.logging.Logging
 
 object HttpEndpoint {
 
@@ -84,8 +77,9 @@ object HttpEndpoint {
     endpoint.post
       .in("deployment" / "create")
       .in(multipartBody[DeployMultipart]) // only in Intellij a problem
-      //  .in(multipartBody) //[DeployMultipart]) // only in Intellij a problem
       .out(jsonBody[DeployResult])
+      .name("Create Deployment from Modeler")
+      .description("This creates a Deployment from the Modeler Deploy Dialog.\nThe name of the file part is not static.")
 
   lazy val openApi: String = List(redocs, docs, camundaDeployDummy, camundaDeployDummyWithId, deployCreate).toOpenAPI("Camundala API", "1.0")
     .toYaml
