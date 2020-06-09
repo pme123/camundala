@@ -13,4 +13,6 @@ case class StaticFile(fileName: FilePath, resourcePath: PathElem) {
   def generate() =
     s"""StaticFile("${fileName.value}", "${resourcePath.value}")"""
 
+  def generateDsl() = s""""${fileName.value}""""
+
 }

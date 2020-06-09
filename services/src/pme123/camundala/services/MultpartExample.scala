@@ -63,7 +63,7 @@ object MultipartFormUploadAkkaServer extends zio.App {
       .flatMap {
         implicit rts =>
 
-
+          import org.http4s.implicits._
           BlazeServerBuilder[Task]
             .bindHttp(8080, "localhost")
             .withHttpApp((setDommyRoute <+> setProfileRoute).orNotFound)
@@ -82,13 +82,15 @@ object MultipartFormUploadAkkaServer extends zio.App {
 
     // testing
     implicit val backend: SttpBackend[Identity, Nothing, NothingT] = HttpURLConnectionBackend()
-    val result = try{basicRequest
-      .response(asStringAlways)
-      .post(uri"http://localhost:8080/user/profile")
-       .multipartBody(multipart("na-me", "Frodo"), multipart("hobby", "hiking"), multipart("age", "33"), multipartFile("photo", testFile))
-      .send()
-      .body}
-    catch{
+    val result = try {
+      basicRequest
+        .response(asStringAlways)
+        .post(uri"http://localhost:8080/user/profile")
+        .multipartBody(multipart("na-me", "Frodo"), multipart("hobby", "hiking"), multipart("age", "33"), multipartFile("photo", testFile))
+        .send()
+        .body
+    }
+    catch {
       case ex => ex.printStackTrace()
     }
     println("Got result: " + result)
@@ -104,7 +106,7 @@ object MultipartFormUploadAkkaServer extends zio.App {
             _ <- clock.sleep(3.seconds)
             _ <- client
             _ <- zio.console.putStrLn("MIDDLE")
-          //  _ <- clock.sleep(30.seconds)
+            //  _ <- clock.sleep(30.seconds)
             _ <- zio.console.putStrLn("END")
 
             } yield ())

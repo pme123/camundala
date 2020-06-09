@@ -1,7 +1,5 @@
 package pme123.camundala.camunda.xml
 
-import pme123.camundala.camunda.xml.XmlHelper.QName
-
 import scala.xml._
 
 object XmlHelper {

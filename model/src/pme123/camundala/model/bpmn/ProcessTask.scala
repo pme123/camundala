@@ -33,16 +33,15 @@ case class ServiceTask(id: BpmnNodeId,
   // HasExtInOutputs
   def inputExpression(key: PropKey, expression: String): ServiceTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))
 
-  def inputInline(key: PropKey, inlineScript: String): ServiceTask = copy(extInOutputs = extInOutputs.inputExpression(key, inlineScript))
+  def inputInline(key: PropKey, inlineScript: String): ServiceTask = copy(extInOutputs = extInOutputs.inputInline(key, inlineScript))
 
-  def inputJson(key: PropKey, json: String): ServiceTask = copy(extInOutputs = extInOutputs.inputExpression(key, json))
+  def inputJson(key: PropKey, json: String): ServiceTask = copy(extInOutputs = extInOutputs.inputJson(key, json))
 
   def outputExpression(key: PropKey, expression: String): ServiceTask = copy(extInOutputs = extInOutputs.outputExpression(key, expression))
 
-  def outputInline(key: PropKey, inlineScript: String): ServiceTask = copy(extInOutputs = extInOutputs.outputExpression(key, inlineScript))
+  def outputInline(key: PropKey, inlineScript: String): ServiceTask = copy(extInOutputs = extInOutputs.outputInline(key, inlineScript))
 
-  def outputJson(key: PropKey, json: String): ServiceTask = copy(extInOutputs = extInOutputs.outputExpression(key, json))
-
+  def outputJson(key: PropKey, json: String): ServiceTask = copy(extInOutputs = extInOutputs.outputJson(key, json))
 }
 
 case class SendTask(id: BpmnNodeId,
@@ -64,16 +63,15 @@ case class SendTask(id: BpmnNodeId,
   // HasExtInOutputs
   def inputExpression(key: PropKey, expression: String): SendTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))
 
-  def inputInline(key: PropKey, inlineScript: String): SendTask = copy(extInOutputs = extInOutputs.inputExpression(key, inlineScript))
+  def inputInline(key: PropKey, inlineScript: String): SendTask = copy(extInOutputs = extInOutputs.inputInline(key, inlineScript))
 
-  def inputJson(key: PropKey, json: String): SendTask = copy(extInOutputs = extInOutputs.inputExpression(key, json))
+  def inputJson(key: PropKey, json: String): SendTask = copy(extInOutputs = extInOutputs.inputJson(key, json))
 
   def outputExpression(key: PropKey, expression: String): SendTask = copy(extInOutputs = extInOutputs.outputExpression(key, expression))
 
-  def outputInline(key: PropKey, inlineScript: String): SendTask = copy(extInOutputs = extInOutputs.outputExpression(key, inlineScript))
+  def outputInline(key: PropKey, inlineScript: String): SendTask = copy(extInOutputs = extInOutputs.outputInline(key, inlineScript))
 
-  def outputJson(key: PropKey, json: String): SendTask = copy(extInOutputs = extInOutputs.outputExpression(key, json))
-
+  def outputJson(key: PropKey, json: String): SendTask = copy(extInOutputs = extInOutputs.outputJson(key, json))
 }
 
 trait HasForm
@@ -148,15 +146,15 @@ case class UserTask(id: BpmnNodeId,
   // HasExtInOutputs
   def inputExpression(key: PropKey, expression: String): UserTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))
 
-  def inputInline(key: PropKey, inlineScript: String): UserTask = copy(extInOutputs = extInOutputs.inputExpression(key, inlineScript))
+  def inputInline(key: PropKey, inlineScript: String): UserTask = copy(extInOutputs = extInOutputs.inputInline(key, inlineScript))
 
-  def inputJson(key: PropKey, json: String): UserTask = copy(extInOutputs = extInOutputs.inputExpression(key, json))
+  def inputJson(key: PropKey, json: String): UserTask = copy(extInOutputs = extInOutputs.inputJson(key, json))
 
   def outputExpression(key: PropKey, expression: String): UserTask = copy(extInOutputs = extInOutputs.outputExpression(key, expression))
 
-  def outputInline(key: PropKey, inlineScript: String): UserTask = copy(extInOutputs = extInOutputs.outputExpression(key, inlineScript))
+  def outputInline(key: PropKey, inlineScript: String): UserTask = copy(extInOutputs = extInOutputs.outputInline(key, inlineScript))
 
-  def outputJson(key: PropKey, json: String): UserTask = copy(extInOutputs = extInOutputs.outputExpression(key, json))
+  def outputJson(key: PropKey, json: String): UserTask = copy(extInOutputs = extInOutputs.outputJson(key, json))
 
 }
 

@@ -1,6 +1,6 @@
 ### docker-compose file for demo environment
 # Usage:
-# docker-compose -f ./examples/docker-compose.yml --project-directory . -p camunda-db up
+# docker-compose -f ./examples/docker-compose-dev.yml --project-directory . -p camunda-db up
 
 version: "3.7"
 services:

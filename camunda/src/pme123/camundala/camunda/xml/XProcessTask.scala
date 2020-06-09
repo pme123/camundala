@@ -87,9 +87,9 @@ trait XHasForm[T <: HasForm]
          } yield result
 }
 
-case class XUserTask[T <: UserTask](xmlElem: Elem)
-  extends XProcessTask[T]
-    with XHasForm[T] {
+case class XUserTask(xmlElem: Elem)
+  extends XProcessTask[UserTask]
+    with XHasForm[UserTask] {
 
   def create(): IO[ModelException, UserTask] =
     for {
@@ -101,14 +101,14 @@ case class XUserTask[T <: UserTask](xmlElem: Elem)
 
   val tagName = "UserTask"
 
-  override def merge(maybeNode: Option[T]): Task[XMergeResult] =
+  override def merge(maybeNode: Option[UserTask]): Task[XMergeResult] =
     for {XMergeResult(xml, warnings) <- super.merge(maybeNode)
          result <- maybeNode
            .map(mergeCandidates(xml, _))
            .getOrElse(ZIO.succeed(xml))
          } yield XMergeResult(result, warnings)
 
-  private def mergeCandidates(xml: Elem, userTask: T): Task[Elem] = Task {
+  private def mergeCandidates(xml: Elem, userTask: UserTask): Task[Elem] = Task {
     val candGroups = userTask.candidateGroups.asString(xml.attributeAsText(QName.camunda(candidateGroups)))
     val candUsers = userTask.candidateUsers.asString(xml.attributeAsText(QName.camunda(candidateUsers)))
     xml % Attribute(camundaPrefix, candidateGroups, candGroups,

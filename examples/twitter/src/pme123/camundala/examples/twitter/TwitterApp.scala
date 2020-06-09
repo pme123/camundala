@@ -9,7 +9,7 @@ import pme123.camundala.services.StandardApp
 import pme123.camundala.services.StandardApp.StandardAppDeps
 import zio._
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = Array("pme123.camundala.camunda"))
 class TwitterApp
 
 object TwitterApp extends StandardExampleCliApp {

@@ -22,6 +22,12 @@ case class Bpmn(id: BpmnId,
        |  List(${processes.map(_.generate()).mkString(",")}))
        |""".stripMargin
 
+  def generateDsl(): String =
+    s"""
+       |Bpmn("$id", ${xml.generateDsl()})
+       |   ${processes.map(_.generateDsl()).mkString}
+       |""".stripMargin
+
   lazy val processMap: Map[BpmnId, BpmnProcess] = processes.map(p => p.id -> p).toMap
 
   def staticFiles: Set[StaticFile] = processes.flatMap(_.staticFiles).toSet
@@ -60,6 +66,15 @@ case class BpmnProcess(id: ProcessId,
        |            parallelGateways = List(${parallelGateways.map(_.generate()).mkString(",")}),
        |            sequenceFlows = List(${sequenceFlows.map(_.generate()).mkString(",")}),
        |)""".stripMargin
+
+  def generateDsl(): String =
+    s""".### {
+       |    BpmnProcess("${id.value}")
+       |${genDsl(startEvents)}${genDsl(userTasks)}${genDsl(serviceTasks)}${genDsl(sendTasks)}${genDsl(exclusiveGateways)}${genDsl(parallelGateways)}${genDsl(sequenceFlows)}
+       |}""".stripMargin
+
+  private def genDsl(nodes: Seq[BpmnNode]) =
+    nodes.map(_.generateDsl()).mkString
 
   def staticFiles: Set[StaticFile] =
     userTasks.flatMap(_.staticFiles).toSet ++
@@ -117,6 +132,11 @@ trait BpmnNode {
 
   def generate(): String =
     s"""${getClass.getSimpleName}("${id.value}")"""
+
+  def generateDsl(): String =
+    s""".*** {
+       |         ${getClass.getSimpleName}("${id.value}")
+       |}""".stripMargin
 }
 
 

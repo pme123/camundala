@@ -22,8 +22,6 @@ import zio.clock.Clock
 import zio.console.{Console, putStr => p, putStrLn => pl}
 import zio.interop.catz._
 
-import scala.io.{BufferedSource, Source}
-
 object cliApp {
 
   type CliApp = Has[Service]
@@ -137,7 +135,7 @@ object cliApp {
         runWithDeployId[Seq[Bpmn]](deployId, "Generate BPMNs", deploy =>
           Task.foreach(deploy.bpmns)(b => generator.generate(b.xml)),
           results =>
-            results.foldLeft("")((r, bpmn) => s"$r${scala.Console.RESET}\nGenerated ${bpmn.id}: ${scala.Console.GREEN}\n${bpmn.generate()}")
+            results.foldLeft("")((r, bpmn) => s"$r${scala.Console.RESET}\nGenerated ${bpmn.id} - copy and paste the following output to your bpmnModels.sc file: ${scala.Console.GREEN}\n\n${bpmn.generateDsl()}")
         )
 
       def deployCreate(deployId: DeployId) =

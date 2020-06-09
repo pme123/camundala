@@ -7,32 +7,39 @@ import pme123.camundala.model.bpmn._
 import zio._
 import zio.logging.{Logger, Logging}
 
+import scala.xml.Elem
+
 object bpmnGenerator {
   type BpmnGenerator = Has[Service]
 
   trait Service {
-    def generate(xmlFile: StaticFile): Task[Bpmn]
+    def generate(xmlFile: StaticFile, printDsl: Boolean = true): Task[Bpmn]
   }
 
   type BpmnGeneratorDeps = Logging with AppConfig
 
   lazy val live: URLayer[BpmnGeneratorDeps, BpmnGenerator] =
     ZLayer.fromServices[Logger[String], appConfig.Service, Service] { (log, configService) =>
-      (xmlFile: StaticFile) =>
-        for {
-          config <- configService.get()
-          xml <- StreamHelper(config.basePath).xml(xmlFile)
-          _ = println(s"XML - $xml")
-          bpmnId <- bpmnIdFromFilePath(xmlFile.fileName)
-          processes <- XBpmn(xml).createProcesses()
-          bpmn = Bpmn(bpmnId, xmlFile, processes)
-          _ <- log.info(
-            s"""
-               |Generated BPMN of ${xmlFile.fileName.value}
-               |${"*" * 50}
-               |${bpmn.generate()}
-               |${"*" * 50}
-               |""".stripMargin)
-        } yield bpmn
+
+      (xmlFile: StaticFile, printDsl: Boolean) => for {
+        config <- configService.get()
+        xml: Elem <- StreamHelper(config.basePath).xml(xmlFile)
+        bpmnId <- bpmnIdFromFilePath(xmlFile.fileName)
+        processes <- XBpmn(xml).createProcesses()
+        bpmn = Bpmn(bpmnId, xmlFile, processes)
+        _ <- log.debug(
+          s"""
+             |Generated BPMN of $bpmnId
+             |${"*" * 50}
+             |${
+            if (printDsl)
+              bpmn.generateDsl()
+            else
+              bpmn.generate()
+          }
+             |${"*" * 50}
+             |""".stripMargin)
+      } yield (bpmn)
+
     }
 }

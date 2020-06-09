@@ -42,7 +42,7 @@ case class XBpmnProcess(xmlElem: Elem) {
   val tagName: String = "Process"
   val idEffect: ZIO[Any, ModelException, ProcessId] = processIdFromStr(xmlElem \@ "id")
 
-  val userTasks: Seq[XUserTask[UserTask]] =
+  val userTasks: Seq[XUserTask] =
     (xmlElem \ "userTask").map { case e: Elem => XUserTask(e) }
 
   val serviceTasks: Seq[XServiceTask[ServiceTask]] =
