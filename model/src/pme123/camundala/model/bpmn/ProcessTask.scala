@@ -1,6 +1,7 @@
 package pme123.camundala.model.bpmn
 
-import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
+import eu.timepit.refined.auto._
+import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, DmnImpl, ExternalTask}
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 
 sealed trait ProcessTask
@@ -158,4 +159,35 @@ case class UserTask(id: BpmnNodeId,
 
 }
 
+//<businessRuleTask id="CountryRiskTask" name="Country Risk" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:resultVariable="approvalRequired" camunda:decisionRef="country-risk" camunda:mapDecisionResult="singleEntry">
+// only implementation DMN supported
+case class BusinessRuleTask(id: BpmnNodeId,
+                            implementation: TaskImplementation = DmnImpl("yourDMN"),
+                            extProperties: ExtProperties = ExtProperties.none,
+                            extInOutputs: ExtInOutputs = ExtInOutputs.none
+                           )
+  extends ProcessTask
+    with ImplementationTask {
+
+  def dmn(decisionRef: FilePath, resultVariable: Identifier = "ruleResult"): BusinessRuleTask = copy(implementation =
+    DmnImpl(StaticFile(decisionRef), resultVariable))
+
+  // HasExtProperties
+  def prop(prop: (PropKey, String)): BusinessRuleTask =
+    copy(extProperties = extProperties :+ Prop(prop._1, prop._2))
+
+  // HasExtInOutputs
+  def inputExpression(key: PropKey, expression: String): BusinessRuleTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))
+
+  def inputInline(key: PropKey, inlineScript: String): BusinessRuleTask = copy(extInOutputs = extInOutputs.inputInline(key, inlineScript))
+
+  def inputJson(key: PropKey, json: String): BusinessRuleTask = copy(extInOutputs = extInOutputs.inputJson(key, json))
+
+  def outputExpression(key: PropKey, expression: String): BusinessRuleTask = copy(extInOutputs = extInOutputs.outputExpression(key, expression))
+
+  def outputInline(key: PropKey, inlineScript: String): BusinessRuleTask = copy(extInOutputs = extInOutputs.outputInline(key, inlineScript))
+
+  def outputJson(key: PropKey, json: String): BusinessRuleTask = copy(extInOutputs = extInOutputs.outputJson(key, json))
+
+}
 

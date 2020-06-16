@@ -1,7 +1,5 @@
 package pme123.camundala.model.bpmn
 
-import eu.timepit.refined.auto._
-
 case class Bpmn(id: BpmnId,
                 xml: StaticFile,
                 processes: Seq[BpmnProcess] = Seq.empty,
@@ -15,13 +13,6 @@ case class Bpmn(id: BpmnId,
 
   def process(proc: BpmnProcess): Bpmn = copy(processes = processes :+ proc)
 
-  def generate(): String =
-    s"""
-       |Bpmn("$id",
-       |  ${xml.generate()},
-       |  List(${processes.map(_.generate()).mkString(",")}))
-       |""".stripMargin
-
   def generateDsl(): String =
     s"""
        |Bpmn("$id", ${xml.generateDsl()})
@@ -34,9 +25,8 @@ case class Bpmn(id: BpmnId,
 }
 
 object Bpmn {
-  private val DefaultBpmnDirectory: PathElem = "bpmn"
 
-  def apply(id: BpmnId, xmlName: FilePath): Bpmn = new Bpmn(id, StaticFile(xmlName, DefaultBpmnDirectory))
+  def apply(id: BpmnId, xmlName: FilePath): Bpmn = new Bpmn(id, StaticFile(xmlName))
 }
 
 case class BpmnProcess(id: ProcessId,
@@ -44,6 +34,7 @@ case class BpmnProcess(id: ProcessId,
                        starterUsers: CandidateUsers = CandidateUsers.none,
                        userTasks: Seq[UserTask] = Seq.empty,
                        serviceTasks: Seq[ServiceTask] = Seq.empty,
+                       businessRuleTasks: Seq[BusinessRuleTask] = Seq.empty,
                        sendTasks: Seq[SendTask] = Seq.empty,
                        startEvents: Seq[StartEvent] = Seq.empty,
                        exclusiveGateways: Seq[ExclusiveGateway] = Seq.empty,
@@ -55,22 +46,10 @@ case class BpmnProcess(id: ProcessId,
 
   def users(): Seq[User] = userTasks.flatMap(_.users()) ++ starterUsers.users
 
-  def generate(): String =
-    s"""
-       |      BpmnProcess("${id.value}",
-       |            userTasks = List(${userTasks.map(_.generate()).mkString(",")}),
-       |            serviceTasks = List(${serviceTasks.map(_.generate()).mkString(",")}),
-       |            sendTasks = List(${sendTasks.map(_.generate()).mkString(",")}),
-       |            startEvents = List(${startEvents.map(_.generate()).mkString(",")}),
-       |            exclusiveGateways = List(${exclusiveGateways.map(_.generate()).mkString(",")}),
-       |            parallelGateways = List(${parallelGateways.map(_.generate()).mkString(",")}),
-       |            sequenceFlows = List(${sequenceFlows.map(_.generate()).mkString(",")}),
-       |)""".stripMargin
-
   def generateDsl(): String =
     s""".### {
        |    BpmnProcess("${id.value}")
-       |${genDsl(startEvents)}${genDsl(userTasks)}${genDsl(serviceTasks)}${genDsl(sendTasks)}${genDsl(exclusiveGateways)}${genDsl(parallelGateways)}${genDsl(sequenceFlows)}
+       |${genDsl(startEvents)}${genDsl(userTasks)}${genDsl(serviceTasks)}${genDsl(sendTasks)}${genDsl(businessRuleTasks)}${genDsl(exclusiveGateways)}${genDsl(parallelGateways)}${genDsl(sequenceFlows)}
        |}""".stripMargin
 
   private def genDsl(nodes: Seq[BpmnNode]) =
@@ -82,6 +61,7 @@ case class BpmnProcess(id: ProcessId,
 
   lazy val userTaskMap: Map[BpmnNodeId, UserTask] = userTasks.map(t => t.id -> t).toMap
   lazy val serviceTaskMap: Map[BpmnNodeId, ServiceTask] = serviceTasks.map(t => t.id -> t).toMap
+  lazy val businessRuleTaskMap: Map[BpmnNodeId, BusinessRuleTask] = businessRuleTasks.map(t => t.id -> t).toMap
   lazy val sendTaskMap: Map[BpmnNodeId, SendTask] = sendTasks.map(t => t.id -> t).toMap
   lazy val startEventMap: Map[BpmnNodeId, StartEvent] = startEvents.map(e => e.id -> e).toMap
   lazy val exclusiveGatewayMap: Map[BpmnNodeId, ExclusiveGateway] = exclusiveGateways.map(g => g.id -> g).toMap
@@ -103,6 +83,10 @@ case class BpmnProcess(id: ProcessId,
   def serviceTask(task: ServiceTask): BpmnProcess = copy(serviceTasks = serviceTasks :+ task)
 
   def ***(task: ServiceTask): BpmnProcess = serviceTask(task)
+
+  def businessRuleTask(task: BusinessRuleTask): BpmnProcess = copy(businessRuleTasks = businessRuleTasks :+ task)
+
+  def ***(task: BusinessRuleTask): BpmnProcess = businessRuleTask(task)
 
   def sendTask(task: SendTask): BpmnProcess = copy(sendTasks = sendTasks :+ task)
 

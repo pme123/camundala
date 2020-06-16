@@ -84,6 +84,7 @@ object httpDeployClient {
             (for {
               mergeResult <- bpmnServ.mergeBpmn(bpmn.id)
               _ <- log.info(s"Deploy ${bpmn.id} to ${endpoint.url.value}")
+              _ <- log.debug(mergeResult.xmlElem.toString)
               config <- confService.get()
               staticFiles <- ZIO.foreach(bpmn.staticFiles)(st =>
                 filePathFromStr(st.fileName.value)

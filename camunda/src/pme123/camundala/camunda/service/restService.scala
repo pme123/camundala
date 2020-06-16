@@ -2,6 +2,7 @@ package pme123.camundala.camunda.service
 
 import java.util.concurrent.TimeUnit
 
+import eu.timepit.refined.auto._
 import io.circe.Json
 import pme123.camundala.app.sttpBackend.SttpTaskBackend
 import pme123.camundala.camunda.service.restService.QueryParams.NoParams
@@ -11,6 +12,7 @@ import pme123.camundala.camunda.service.restService.RequestBody.Part.{FilePart, 
 import pme123.camundala.camunda.service.restService.RequestHeader.NoHeaders
 import pme123.camundala.camunda.service.restService.RequestMethod.Get
 import pme123.camundala.camunda.service.restService.RequestPath.NoPath
+import pme123.camundala.camunda.service.restService.Response.{HandledError, NoContent, WithContent}
 import pme123.camundala.camunda.service.restService.ResponseRead.{NoResponseRead, StringRead}
 import pme123.camundala.model.bpmn._
 import sttp.client.{Empty, NothingT, RequestT, SttpBackend, basicRequest, multipart, Request => SttpRequest, Response => SttpResponse}
@@ -41,6 +43,14 @@ object restService {
         implicit def sttpBackend: SttpBackend[Task, Nothing, NothingT] = backend
 
         (request: Request) => {
+
+          def mockRequest(mockData:MockData): Task[Response] = mockData match {
+            case MockData(_, Json.Null) => UIO(NoContent)
+            case MockData(status, body) if request.handledErrors.contains(status) => UIO(HandledError(status, Right(body.toString())))
+            case MockData(status, body) if status < 400 => UIO(WithContent(status, body.toString()))
+            case MockData(status, body) => Task.fail(RestServiceException(s"There was a Server Problem with Status $status\n$body"))
+          }
+
 
           lazy val sendRequest: Task[SttpResponse[Either[String, String]]] =
             basicRequest
@@ -90,7 +100,8 @@ object restService {
                   }
             }
 
-          handleResponse(sendRequest)
+          request.maybeMocked.map(mockRequest)
+            .getOrElse( handleResponse(sendRequest))
         }
     }
 
@@ -184,7 +195,7 @@ object restService {
 
   }
 
-  case class Request(host: Host,
+  case class Request(host: Host = Host.unknown,
                      method: RequestMethod = Get,
                      path: RequestPath = NoPath,
                      queryParams: QueryParams = NoParams,
@@ -193,8 +204,8 @@ object restService {
                      responseRead: ResponseRead = StringRead,
                      handledErrors: Seq[Int] = Nil,
                      responseVariable: String = "jsonResult",
-                     mappings: Map[String, String] = Map.empty
-                     // maybeMocked: Option[Request => Response] = None
+                     mappings: Map[String, String] = Map.empty,
+                     maybeMocked: Option[MockData] = None
                     )
 
   object Request {
@@ -202,6 +213,9 @@ object restService {
     case class Host(url: Url,
                     auth: Auth = NoAuth
                    )
+    object Host{
+      val unknown: Host = Host("http://unknown")
+    }
 
     sealed trait Auth
 
@@ -346,6 +360,7 @@ object restService {
 
   }
 
+  case class MockData(respStatus: Int = 200, respBody: Json = Json.Null)
 
   case class RestServiceException(msg: String,
                                   override val cause: Option[Throwable] = None)

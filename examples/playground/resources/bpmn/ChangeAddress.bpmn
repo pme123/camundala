@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://www.signavio.com/bpmn20" exporter="Camunda Modeler" exporterVersion="3.5.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <collaboration id="Collaboration_19t23ei">
+    <participant id="ChangeAddressDemoParticipant" name="Change Address Demo" processRef="ChangeAddressDemo" />
+  </collaboration>
+  <process id="ChangeAddressDemo" name="Change Address Demo" isExecutable="true" camunda:candidateStarterGroups="vars:kube">
+    <startEvent id="CustomerSearchStartEvent" name="Customer Search">
+      <outgoing>SequenceFlow_1bzdi90</outgoing>
+    </startEvent>
+    <exclusiveGateway id="ApprovalRequiredGateway" name="Approval Required">
+      <incoming>SequenceFlow_1whhj6c</incoming>
+      <outgoing>NoApprovalRequiredSequenceFlow</outgoing>
+      <outgoing>ApprovalRequiredSequenceFlow</outgoing>
+    </exclusiveGateway>
+    <userTask id="ApproveAddressTask" name="Approve Address" camunda:asyncBefore="true" camunda:asyncAfter="true">
+      <incoming>ApprovalRequiredSequenceFlow</incoming>
+      <outgoing>SequenceFlow_1sndpwb</outgoing>
+    </userTask>
+    <businessRuleTask id="CountryRiskTask" name="Country Risk" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:resultVariable="approvalRequired" camunda:decisionRef="country-risk" camunda:decisionRefBinding="deployment" camunda:mapDecisionResult="singleEntry">
+      <incoming>SequenceFlow_00ifudn</incoming>
+      <outgoing>SequenceFlow_1whhj6c</outgoing>
+    </businessRuleTask>
+    <serviceTask id="GetAddressTask" name="Get Address" camunda:asyncBefore="true" camunda:asyncAfter="true">
+      <incoming>SequenceFlow_1bzdi90</incoming>
+      <outgoing>SequenceFlow_019q4x2</outgoing>
+    </serviceTask>
+    <userTask id="AddressChangeTask" name="Address Change">
+      <incoming>SequenceFlow_019q4x2</incoming>
+      <outgoing>SequenceFlow_00ifudn</outgoing>
+    </userTask>
+    <sequenceFlow id="SequenceFlow_1bzdi90" sourceRef="CustomerSearchStartEvent" targetRef="GetAddressTask" />
+    <sequenceFlow id="SequenceFlow_00ifudn" sourceRef="AddressChangeTask" targetRef="CountryRiskTask" />
+    <sequenceFlow id="SequenceFlow_1whhj6c" sourceRef="CountryRiskTask" targetRef="ApprovalRequiredGateway" />
+    <sequenceFlow id="ApprovalRequiredSequenceFlow" name="Approval Required" sourceRef="ApprovalRequiredGateway" targetRef="ApproveAddressTask" />
+    <sequenceFlow id="NoApprovalRequiredSequenceFlow" name="No Approval Required" sourceRef="ApprovalRequiredGateway" targetRef="SaveToFCSTask" />
+    <sequenceFlow id="AddressApprovedSequenceFlow" name="Address Approved" sourceRef="AddressApprovedGateway" targetRef="SaveToFCSTask" />
+    <sequenceFlow id="SequenceFlow_0qapy1d" sourceRef="SaveToFCSTask" targetRef="EndEvent_1eyinko" />
+    <sequenceFlow id="SequenceFlow_09xu869" sourceRef="InformMATask" targetRef="EndEvent_1eyinko" />
+    <sequenceFlow id="SequenceFlow_1sndpwb" sourceRef="ApproveAddressTask" targetRef="AddressApprovedGateway" />
+    <sequenceFlow id="AddressNotApprovedSequenceFlow" name="Address not approved" sourceRef="AddressApprovedGateway" targetRef="InformMATask" />
+    <sequenceFlow id="SequenceFlow_019q4x2" sourceRef="GetAddressTask" targetRef="AddressChangeTask" />
+    <exclusiveGateway id="AddressApprovedGateway" name="Address Approved">
+      <incoming>SequenceFlow_1sndpwb</incoming>
+      <outgoing>AddressNotApprovedSequenceFlow</outgoing>
+      <outgoing>AddressApprovedSequenceFlow</outgoing>
+    </exclusiveGateway>
+    <serviceTask id="SaveToFCSTask" name="Save to FCS" camunda:asyncBefore="true" camunda:type="external" camunda:topic="store-address">
+      <incoming>AddressApprovedSequenceFlow</incoming>
+      <incoming>NoApprovalRequiredSequenceFlow</incoming>
+      <outgoing>SequenceFlow_0qapy1d</outgoing>
+    </serviceTask>
+    <userTask id="InformMATask" name="Inform MA" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:candidateGroups="vars:kube">
+      <incoming>AddressNotApprovedSequenceFlow</incoming>
+      <outgoing>SequenceFlow_09xu869</outgoing>
+    </userTask>
+    <endEvent id="EndEvent_1eyinko">
+      <incoming>SequenceFlow_09xu869</incoming>
+      <incoming>SequenceFlow_0qapy1d</incoming>
+    </endEvent>
+    <textAnnotation id="TextAnnotation_1qfwu0b">
+      <text>Get the Address from a REST Service</text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Playground">
+    <bpmndi:BPMNPlane id="BPMNPlane_Playground" bpmnElement="Collaboration_19t23ei">
+      <bpmndi:BPMNShape id="Participant_1wy63u5_di" bpmnElement="ChangeAddressDemoParticipant" isHorizontal="true">
+        <omgdc:Bounds x="130" y="60" width="1250" height="290" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_0yz35aw_di" bpmnElement="CustomerSearchStartEvent">
+        <omgdc:Bounds x="198" y="159" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="173" y="202" width="86" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_1c2uhw2_di" bpmnElement="ApprovalRequiredGateway" isMarkerVisible="true">
+        <omgdc:Bounds x="791" y="152" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="793" y="116" width="45" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_0yzarx1_di" bpmnElement="SaveToFCSTask">
+        <omgdc:Bounds x="990" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1eyinko_di" bpmnElement="EndEvent_1eyinko">
+        <omgdc:Bounds x="1222" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1wev46g_di" bpmnElement="ApproveAddressTask">
+        <omgdc:Bounds x="886" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_1tu7mfp_di" bpmnElement="AddressApprovedGateway" isMarkerVisible="true">
+        <omgdc:Bounds x="1015" y="265" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1017" y="322" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1iyqrpg_di" bpmnElement="InformMATask">
+        <omgdc:Bounds x="1180" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BusinessRuleTask_1d4c5tw_di" bpmnElement="CountryRiskTask">
+        <omgdc:Bounds x="636" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_0az1w08_di" bpmnElement="GetAddressTask">
+        <omgdc:Bounds x="311" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0rxgra1_di" bpmnElement="AddressChangeTask">
+        <omgdc:Bounds x="476" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_019q4x2_di" bpmnElement="SequenceFlow_019q4x2">
+        <omgdi:waypoint x="411" y="177" />
+        <omgdi:waypoint x="476" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_07ybkrv_di" bpmnElement="AddressNotApprovedSequenceFlow">
+        <omgdi:waypoint x="1065" y="290" />
+        <omgdi:waypoint x="1180" y="290" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1096" y="272" width="59" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1sndpwb_di" bpmnElement="SequenceFlow_1sndpwb">
+        <omgdi:waypoint x="986" y="290" />
+        <omgdi:waypoint x="1015" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_09xu869_di" bpmnElement="SequenceFlow_09xu869">
+        <omgdi:waypoint x="1240" y="250" />
+        <omgdi:waypoint x="1240" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0qapy1d_di" bpmnElement="SequenceFlow_0qapy1d">
+        <omgdi:waypoint x="1090" y="177" />
+        <omgdi:waypoint x="1222" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1j51jki_di" bpmnElement="AddressApprovedSequenceFlow">
+        <omgdi:waypoint x="1040" y="265" />
+        <omgdi:waypoint x="1040" y="217" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1033" y="238" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_03fat1m_di" bpmnElement="NoApprovalRequiredSequenceFlow">
+        <omgdi:waypoint x="841" y="177" />
+        <omgdi:waypoint x="990" y="177" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="887" y="186" width="61" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_12jzbor_di" bpmnElement="ApprovalRequiredSequenceFlow">
+        <omgdi:waypoint x="816" y="202" />
+        <omgdi:waypoint x="816" y="290" />
+        <omgdi:waypoint x="886" y="290" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="767" y="236" width="45" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1whhj6c_di" bpmnElement="SequenceFlow_1whhj6c">
+        <omgdi:waypoint x="736" y="177" />
+        <omgdi:waypoint x="791" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_00ifudn_di" bpmnElement="SequenceFlow_00ifudn">
+        <omgdi:waypoint x="576" y="177" />
+        <omgdi:waypoint x="636" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1bzdi90_di" bpmnElement="SequenceFlow_1bzdi90">
+        <omgdi:waypoint x="234" y="177" />
+        <omgdi:waypoint x="311" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_1qfwu0b_di" bpmnElement="TextAnnotation_1qfwu0b">
+        <omgdc:Bounds x="300" y="80" width="141" height="40" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

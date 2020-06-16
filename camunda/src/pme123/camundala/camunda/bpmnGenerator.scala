@@ -13,7 +13,7 @@ object bpmnGenerator {
   type BpmnGenerator = Has[Service]
 
   trait Service {
-    def generate(xmlFile: StaticFile, printDsl: Boolean = true): Task[Bpmn]
+    def generate(xmlFile: StaticFile): Task[Bpmn]
   }
 
   type BpmnGeneratorDeps = Logging with AppConfig
@@ -21,7 +21,7 @@ object bpmnGenerator {
   lazy val live: URLayer[BpmnGeneratorDeps, BpmnGenerator] =
     ZLayer.fromServices[Logger[String], appConfig.Service, Service] { (log, configService) =>
 
-      (xmlFile: StaticFile, printDsl: Boolean) => for {
+      (xmlFile: StaticFile) => for {
         config <- configService.get()
         xml: Elem <- StreamHelper(config.basePath).xml(xmlFile)
         bpmnId <- bpmnIdFromFilePath(xmlFile.fileName)
@@ -31,15 +31,10 @@ object bpmnGenerator {
           s"""
              |Generated BPMN of $bpmnId
              |${"*" * 50}
-             |${
-            if (printDsl)
-              bpmn.generateDsl()
-            else
-              bpmn.generate()
-          }
+             |${bpmn.generateDsl()}
              |${"*" * 50}
              |""".stripMargin)
-      } yield (bpmn)
+      } yield bpmn
 
     }
 }

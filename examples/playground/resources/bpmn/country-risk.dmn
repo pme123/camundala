@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="drd_country-risk" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="3.5.0">
+  <decision id="country-risk" name="country-risk">
+    <extensionElements>
+      <biodi:bounds x="150" y="81" width="180" height="80" />
+    </extensionElements>
+    <decisionTable id="country-risk_table" hitPolicy="FIRST">
+      <input id="input_1" label="CurrentCountry" camunda:inputVariable="currentCountry">
+        <inputExpression id="inputExpression_1" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_031e7hk" label="TargetCountry" camunda:inputVariable="targetCountry">
+        <inputExpression id="LiteralExpression_1kwhm3b" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="output_1" label="Approval Required" name="approvalRequired" typeRef="boolean" />
+      <rule id="DecisionRule_0u4il2v">
+        <description></description>
+        <inputEntry id="UnaryTests_0m2ax69">
+          <text>"CH"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_058asyx">
+          <text>"CH"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_10624at">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_04lsupm">
+        <description></description>
+        <inputEntry id="UnaryTests_1b60xtl">
+          <text>"CH"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1qws2q2">
+          <text>"DE","AT","FR"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1q9sok1">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_10m5j0c">
+        <description></description>
+        <inputEntry id="UnaryTests_02qid11">
+          <text>"CH"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0qwqv7r">
+          <text>"UA","US"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0g4coyu">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_15mxwkt">
+        <description></description>
+        <inputEntry id="UnaryTests_1udy123">
+          <text>"DE","AT","FR"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0lzkpfr">
+          <text>"CH"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0qwko74">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1d36vu5">
+        <description></description>
+        <inputEntry id="UnaryTests_1mg049b">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0gweg2v">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_18l3p9f">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0ln5pew">
+        <inputEntry id="UnaryTests_0gt8flu">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0snxgt1">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_03wz1kp">
+          <text></text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

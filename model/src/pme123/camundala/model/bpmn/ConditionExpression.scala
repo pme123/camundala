@@ -28,7 +28,7 @@ object ConditionExpression {
     override def value: String =
       s"""
          |$asJson
-         |//println("JSON STR: "+ "\"\"$jsonStr"\"\")
+         |println("JSON STR: "+ "\"\"$jsonStr"\"\")
          |def str = "\"\"$jsonStr"\"\"
          |asJson(str)
          |""".stripMargin

@@ -2,7 +2,7 @@ package pme123.camundala.camunda.xml
 
 import pme123.camundala.camunda.xml.XmlHelper.QName._
 import pme123.camundala.camunda.xml.XmlHelper._
-import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
+import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, DmnImpl, ExternalTask}
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
 import zio.{IO, Task, UIO, ZIO}
@@ -27,6 +27,11 @@ trait XImplementationTask[T <: ImplementationTask]
                case ExternalTask(topic) =>
                  xml % Attribute(camundaPrefix, "topic", topic,
                    Attribute(camundaPrefix, "type", "external", camundaXmlnsAttr))
+               case DmnImpl(decisionRef, resultVariable, decisionRefBinding, mapDecisionResult) =>
+                 xml % Attribute(camundaPrefix, "decisionRef", decisionRef.fileName.value,
+                   Attribute(camundaPrefix, "decisionRefBinding", decisionRefBinding,
+                     Attribute(camundaPrefix, "mapDecisionResult", mapDecisionResult,
+                       Attribute(camundaPrefix, "resultVariable", resultVariable.value, camundaXmlnsAttr))))
              }.getOrElse(xml)
            XMergeResult(newElem, warnings)
          }
@@ -118,3 +123,15 @@ case class XUserTask(xmlElem: Elem)
 
 }
 
+case class XBusinessRuleTask[T <: BusinessRuleTask](xmlElem: Elem)
+  extends XImplementationTask[T] {
+  val tagName = "BusinessRuleTask"
+
+  def create(): IO[ModelException, BusinessRuleTask] =
+    for {
+      nodeId <- xBpmnId
+    } yield
+      BusinessRuleTask(
+        nodeId
+      )
+}

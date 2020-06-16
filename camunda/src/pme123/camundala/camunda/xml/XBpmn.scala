@@ -48,6 +48,9 @@ case class XBpmnProcess(xmlElem: Elem) {
   val serviceTasks: Seq[XServiceTask[ServiceTask]] =
     (xmlElem \ "serviceTask").map { case e: Elem => XServiceTask(e) }
 
+  val businessRuleTasks: Seq[XBusinessRuleTask[BusinessRuleTask]] =
+    (xmlElem \ "businessRuleTask").map { case e: Elem => XBusinessRuleTask(e) }
+
   val sendTasks: Seq[XSendTask[SendTask]] =
     (xmlElem \ "sendTask").map { case e: Elem => XSendTask(e) }
 
@@ -71,13 +74,14 @@ case class XBpmnProcess(xmlElem: Elem) {
         for {
           xmlCandidates <- mergeCandidates(xmlElem, p)
           XMergeResult(xmlUser, warningsUser) <- mergeExtensionable(xmlCandidates, p.userTaskMap, userTasks, "UserTask")
-          XMergeResult(xmlService, warningsService) <- mergeExtensionable(xmlUser, p.serviceTaskMap, serviceTasks, "Service")
+          XMergeResult(xmlService, warningsService) <- mergeExtensionable(xmlUser, p.serviceTaskMap, serviceTasks, "ServiceTask")
           XMergeResult(xmlStartEvent, warningsStartEvent) <- mergeExtensionable(xmlService, p.startEventMap, startEvents, "StartEvent")
           XMergeResult(xmlExclusiveGateway, warningsExclusiveGateway) <- mergeExtensionable(xmlStartEvent, p.exclusiveGatewayMap, exclusiveGateways, "ExclusiveGateway")
           XMergeResult(xmlParallelGateway, warningsParallelGateway) <- mergeExtensionable(xmlExclusiveGateway, p.parallelGatewayMap, parallelGateways, "ParallelGateway")
           XMergeResult(xmlSequenceFlow, warningsSequenceFlow) <- mergeExtensionable(xmlParallelGateway, p.sequenceFlowMap, sequenceFlows, "SequenceFlow")
+          XMergeResult(xmlBusinessRuleService, warningsBusinessRule) <- mergeExtensionable(xmlSequenceFlow, p.businessRuleTaskMap, businessRuleTasks, "BusinessRuleTask")
         } yield
-          XMergeResult(xmlSequenceFlow, warningsUser ++ warningsService ++ warningsStartEvent ++ warningsExclusiveGateway ++ warningsParallelGateway ++ warningsSequenceFlow)
+          XMergeResult(xmlBusinessRuleService, warningsUser ++ warningsService ++ warningsBusinessRule ++ warningsStartEvent ++ warningsExclusiveGateway ++ warningsParallelGateway ++ warningsSequenceFlow)
     }
 
 
@@ -101,7 +105,7 @@ case class XBpmnProcess(xmlElem: Elem) {
     } yield
       mergeResults.foldLeft(XMergeResult(xml, warnings)) {
         case (XMergeResult(resXml: Elem, resWarn), XMergeResult(xml, taskWarn)) =>
-          XMergeResult(resXml.copy(child = resXml.child.filter(c => c \@ "id" != xml \@ "id") :+ xml),
+          XMergeResult(resXml.copy(child = resXml.child.map(c => if (c \@ "id" == xml \@ "id") xml else c)),
             resWarn ++ taskWarn)
       }
   }
@@ -111,6 +115,7 @@ case class XBpmnProcess(xmlElem: Elem) {
       processId <- idEffect
       uTasks <- Task.foreach(userTasks)(_.create())
       sTasks <- Task.foreach(serviceTasks)(_.create())
+      bRuleTasks <- Task.foreach(businessRuleTasks)(_.create())
       sendTasks <- Task.foreach(sendTasks)(_.create())
       startEvents <- Task.foreach(startEvents)(_.create())
       exGateways <- Task.foreach(exclusiveGateways)(_.create())
@@ -123,6 +128,7 @@ case class XBpmnProcess(xmlElem: Elem) {
         CandidateUsers.none,
         uTasks,
         sTasks,
+        bRuleTasks,
         sendTasks,
         startEvents,
         exGateways,
@@ -174,7 +180,7 @@ trait XBpmnNode[T <: BpmnNode] {
   }
 
   def mergeHasProperties(hasProps: HasExtProperties): Elem = {
-    val propElems = xmlElem \\ "property"
+    val propElems = xmlElem \ "extensionElements" \ "properties" \ "property"
     val propParams = propElems.map(_ \@ "name")
 
     <camunda:properties>

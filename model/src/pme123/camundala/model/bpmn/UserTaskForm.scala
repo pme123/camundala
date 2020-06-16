@@ -61,7 +61,7 @@ object UserTaskForm {
 
     case class EnumField(id: PropKey,
                          label: String = "",
-                         defaultValue: String = "",
+                         defaultValue: String = null, // must be null otherwise Camunda fails
                          values: EnumValues = EnumValues.none,
                          validations: Seq[Constraint] = Seq.empty,
                          properties: Seq[Prop] = Seq.empty)

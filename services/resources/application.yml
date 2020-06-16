@@ -16,11 +16,14 @@ camunda:
       type: postgres
     auto-deployment-enabled: false
     authorization.enabled: true
+    job-execution:
+      deployment-aware: true
 
 spring:
   datasource:
     platform: postgres
-    url: ${DB_URL:jdbc:postgresql://localhost:5444/camunda}
+    #url: ${DB_URL:jdbc:postgresql://localhost:5444/camunda}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/bpf}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:Initial@Password}
     driverClassName: ${DB_DRIVER:org.postgresql.Driver}
