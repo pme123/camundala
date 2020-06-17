@@ -28,7 +28,7 @@ trait XImplementationTask[T <: ImplementationTask]
                  xml % Attribute(camundaPrefix, "topic", topic,
                    Attribute(camundaPrefix, "type", "external", camundaXmlnsAttr))
                case DmnImpl(decisionRef, resultVariable, decisionRefBinding, mapDecisionResult) =>
-                 xml % Attribute(camundaPrefix, "decisionRef", decisionRef.fileName.value,
+                 xml % Attribute(camundaPrefix, "decisionRef", decisionRef.fileNameWithoutExtension,
                    Attribute(camundaPrefix, "decisionRefBinding", decisionRefBinding,
                      Attribute(camundaPrefix, "mapDecisionResult", mapDecisionResult,
                        Attribute(camundaPrefix, "resultVariable", resultVariable.value, camundaXmlnsAttr))))

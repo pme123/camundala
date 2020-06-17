@@ -5,6 +5,8 @@ import io.circe.parser._
 import pme123.camundala.camunda.delegate.RestServiceDelegate.RestServiceTempl
 import pme123.camundala.camunda.service.restService.{MockData, Request}
 import pme123.camundala.camunda.service.restService.Request.Host
+import pme123.camundala.camunda.service.restService.RequestBody.StringBody
+import pme123.camundala.camunda.service.restService.RequestMethod.Post
 import pme123.camundala.camunda.service.restService.RequestPath.Path
 import pme123.camundala.model.bpmn.{BpmnNodeId, ServiceTask}
 
@@ -26,10 +28,26 @@ case class AddressService(addressHost: Host = Host.unknown) {
     RestServiceTempl(
       Request(
         addressHost,
-        path = Path("_customerId_", "_addressType_"),
+        path = Path("customer", "11"),
         responseVariable = "existingAddress",
-        mappings = Map("_customerId_" -> "dummyCustomerId", "_addressType_" -> "11"),
+        mappings = Map("customer" -> "dummyCustomerId"),
         maybeMocked = if (addressHost == Host.unknown) maybeMockData else None
+      )
+    ).asServiceTask(id)
+
+  def saveAddress(id: BpmnNodeId): ServiceTask =
+    RestServiceTempl(
+      Request(
+        addressHost,
+        Post,
+        path = Path("address", "modify"),
+        body = StringBody(
+          """{
+            | custId: customer,
+            | address: newAddress,
+            |}""".stripMargin),
+        mappings = Map("newAddress" -> "{...}", "customer" -> "12141"),
+        maybeMocked = if (addressHost == Host.unknown) Some(MockData(204)) else None
       )
     ).asServiceTask(id)
 

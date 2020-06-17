@@ -1,6 +1,7 @@
 package pme123.camundala.model.bpmn
 
-import pme123.camundala.model.bpmn.ConditionExpression.{Expression, InlineScript, JsonExpression}
+import pme123.camundala.model.bpmn.ConditionExpression.{Expression, ExternalScript, InlineScript, JsonExpression}
+import pme123.camundala.model.bpmn.ScriptLanguage.Groovy
 
 
 trait HasExtProperties {
@@ -11,6 +12,8 @@ trait HasExtProperties {
 trait HasExtInOutputs {
 
   def extInOutputs: ExtInOutputs
+
+  def inOutStaticFiles: Set[StaticFile] = extInOutputs.staticFiles
 
 }
 
@@ -32,6 +35,8 @@ case class ExtInOutputs(inputs: Seq[InputOutput] = Nil, outputs: Seq[InputOutput
 
   def inputInline(key: PropKey, inlineScript: String): ExtInOutputs = copy(inputs = inputs :+ InputOutput(key, InlineScript(inlineScript)))
 
+  def inputExternal(key: PropKey, scriptPath: FilePath, language: ScriptLanguage = Groovy, includes: Seq[String] = Seq.empty): ExtInOutputs = copy(inputs = inputs :+ InputOutput(key, ExternalScript(StaticFile(scriptPath, includes = includes), language)))
+
   def inputJson(key: PropKey, json: String): ExtInOutputs = copy(inputs = inputs :+ InputOutput(key, JsonExpression(json)))
 
   def outputExpression(key: PropKey, expression: String): ExtInOutputs = copy(outputs = outputs :+ InputOutput(key, Expression(expression)))
@@ -40,6 +45,7 @@ case class ExtInOutputs(inputs: Seq[InputOutput] = Nil, outputs: Seq[InputOutput
 
   def outputJson(key: PropKey, json: String): ExtInOutputs = copy(outputs = outputs :+ InputOutput(key, JsonExpression(json)))
 
+  def staticFiles: Set[StaticFile] = inputs.toSet[InputOutput].flatMap(_.staticFiles) ++ outputs.toSet[InputOutput].flatMap(_.staticFiles)
 
 }
 
@@ -47,5 +53,9 @@ object ExtInOutputs {
   def none: ExtInOutputs = ExtInOutputs()
 }
 
-case class InputOutput(key: PropKey, expression: ConditionExpression)
+case class InputOutput(key: PropKey, expression: ConditionExpression) {
+
+  def staticFiles: Set[StaticFile] = expression.staticFiles
+
+}
 

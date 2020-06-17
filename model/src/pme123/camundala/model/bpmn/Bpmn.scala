@@ -56,8 +56,15 @@ case class BpmnProcess(id: ProcessId,
     nodes.map(_.generateDsl()).mkString
 
   def staticFiles: Set[StaticFile] =
-    userTasks.flatMap(_.staticFiles).toSet ++
-      startEvents.flatMap(_.staticFiles)
+    startEvents.flatMap(_.formStaticFiles).toSet ++
+      userTasks.flatMap(_.formStaticFiles) ++
+      userTasks.flatMap(_.inOutStaticFiles) ++
+      serviceTasks.flatMap(_.inOutStaticFiles) ++
+      serviceTasks.flatMap(_.implStaticFiles) ++
+      sendTasks.flatMap(_.inOutStaticFiles) ++
+      sendTasks.flatMap(_.implStaticFiles) ++
+      businessRuleTasks.flatMap(_.implStaticFiles) ++
+      businessRuleTasks.flatMap(_.inOutStaticFiles)
 
   lazy val userTaskMap: Map[BpmnNodeId, UserTask] = userTasks.map(t => t.id -> t).toMap
   lazy val serviceTaskMap: Map[BpmnNodeId, ServiceTask] = serviceTasks.map(t => t.id -> t).toMap

@@ -94,7 +94,7 @@ object httpDeployClient {
               body = MultipartBody(Set(
                 StringPart(DeploymentName, bpmn.id.value),
                 StringPart(EnableDuplicateFiltering, "false"),
-                StringPart(DeployChangedOnly, "true"),
+                StringPart(DeployChangedOnly, "false"),
                 StringPart(DeploymentSource, "Camundala Client"),
                 FilePart(bpmnName, bpmn.xml.fileName, mergeResult.xmlElem.toString),
               ) ++ staticFiles)

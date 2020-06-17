@@ -20,14 +20,16 @@ case class StreamHelper(basePath: String) {
   }
 
   def asString(staticFile: StaticFile): String =
-    IOUtils.toString(inputStream(staticFile), "UTF-8")
+    (staticFile.includes.mkString("", "\n", "\n") +
+      IOUtils.toString(inputStream(staticFile), "UTF-8"))
+      .trim
 
   def inputStream(xml: Node): InputStream =
     new ByteArrayInputStream(xml.toString.getBytes)
 
   def inputStreamManaged(staticFile: StaticFile): Managed[Throwable, InputStream] = {
     Managed.make(Task.effect(
-     inputStream(staticFile)
+      inputStream(staticFile)
     ))(
       is => UIO.succeed(is.close())
     )

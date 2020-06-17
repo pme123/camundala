@@ -1,7 +1,7 @@
 package pme123.camundala.camunda.xml
 
 import pme123.camundala.camunda.xml.XmlHelper._
-import pme123.camundala.model.bpmn.ConditionExpression.{Expression, InlineScript, JsonExpression}
+import pme123.camundala.model.bpmn.ConditionExpression.{Expression, ExternalScript, InlineScript, JsonExpression}
 import pme123.camundala.model.bpmn.UserTaskForm.FormField.EnumField
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
 import pme123.camundala.model.bpmn._
@@ -226,7 +226,7 @@ trait XBpmnNode[T <: BpmnNode] {
     <camunda:formData>
       {hasForm.maybeForm.toList.flatMap {
       case form: GeneratedForm => {
-        form.fields
+        form.allFields()
           .filter(ff => !formFields.contains(ff.id)) // only add if not defined
           .map(field =>
             createFormField(field)
@@ -238,14 +238,14 @@ trait XBpmnNode[T <: BpmnNode] {
   }
 
   private def createFormField(field: UserTaskForm.FormField) = {
-    <camunda:formField id={field.id.value} label={field.label} type={field.`type`.name} defaultValue={field.defaultValue}>
+    <camunda:formField id={field.id} label={field.label} type={field.`type`.name} defaultValue={field.defaultValue}>
       {field match {
       case ef: EnumField =>
         ef.values.enums.map(ev => <camunda:value id={ev.key.value} name={ev.label}/>)
       case _ => {
       }
     }}<camunda:properties>
-      {field.properties.map(p =>
+      {field.allProperties.map(p =>
           <camunda:property id={p.key.value} value={p.value}/>
       )}
     </camunda:properties>
@@ -270,6 +270,8 @@ trait XBpmnNode[T <: BpmnNode] {
         <camunda:script scriptFormat={language.key}>
           {value}
         </camunda:script>
+      case ExternalScript(ref, language) =>
+          <camunda:script scriptFormat={language.key} resource={s"deployment://${ref.fileName}"} />
       case jsonExpre: JsonExpression =>
         <camunda:script scriptFormat="Groovy">
           {jsonExpre.value}

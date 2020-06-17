@@ -2,7 +2,11 @@ package pme123.camundala.model.bpmn
 
 import eu.timepit.refined.auto._
 
-sealed trait TaskImplementation
+sealed trait TaskImplementation {
+
+  def staticFiles: Set[StaticFile] = Set.empty
+
+}
 
 object TaskImplementation {
 
@@ -17,9 +21,13 @@ object TaskImplementation {
                      decisionRefBinding: String = "deployment", // only supported
                      mapDecisionResult: String = "singleEntry", // only supported
                     )
-    extends TaskImplementation
+    extends TaskImplementation {
+    override def staticFiles: Set[StaticFile] = Set(decisionRef)
 
-  object DmnImpl{
+  }
+
+  object DmnImpl {
     def apply(decisionRef: FilePath): DmnImpl = new DmnImpl(StaticFile(decisionRef))
   }
+
 }

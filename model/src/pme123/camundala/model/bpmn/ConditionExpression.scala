@@ -1,31 +1,27 @@
 package pme123.camundala.model.bpmn
 
-import pme123.camundala.model.bpmn.ScriptLanguage.ScalaScript
+import pme123.camundala.model.bpmn.ScriptLanguage.Groovy
 
 sealed trait ConditionExpression {
-  def value: String
+
+  def staticFiles: Set[StaticFile] = Set.empty
 }
 
 object ConditionExpression {
 
+
   case class Expression(value: String) extends ConditionExpression
 
-  case class InlineScript(value: String, language: ScriptLanguage = ScalaScript) extends ConditionExpression
+  case class InlineScript(value: String, language: ScriptLanguage = Groovy) extends ConditionExpression
+
+  case class ExternalScript(ref: StaticFile, language: ScriptLanguage = Groovy) extends ConditionExpression {
+    override def staticFiles: Set[StaticFile] = Set(ref)
+
+  }
 
   case class JsonExpression(jsonStr: String) extends ConditionExpression {
-    val asJson: String =
-      """
-        |import static org.camunda.spin.Spin.*
-        |import groovy.json.*
-        |
-        |def asJson(String jsonStr) {
-        |    jsonSlurper = new JsonSlurper()
-        |    json = jsonSlurper.parseText(jsonStr)
-        |
-        |    S(JsonOutput.toJson(json))
-        |}""".stripMargin
 
-    override def value: String =
+    def value: String =
       s"""
          |$asJson
          |println("JSON STR: "+ "\"\"$jsonStr"\"\")
@@ -34,6 +30,18 @@ object ConditionExpression {
          |""".stripMargin
 
   }
+
+  val asJson: String =
+    """
+      |import static org.camunda.spin.Spin.*
+      |import groovy.json.*
+      |
+      |def asJson(String jsonStr) {
+      |    jsonSlurper = new JsonSlurper()
+      |    json = jsonSlurper.parseText(jsonStr)
+      |
+      |    S(JsonOutput.toJson(json))
+      |}""".stripMargin
 
   // case class ExternalScript() extends ConditionExpression
 }
@@ -46,6 +54,10 @@ object ScriptLanguage {
 
   case object ScalaScript extends ScriptLanguage {
     final val key: String = "scala"
+  }
+
+  case object Groovy extends ScriptLanguage {
+    final val key: String = "groovy"
   }
 
 }

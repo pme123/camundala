@@ -3,7 +3,7 @@
   <collaboration id="Collaboration_19t23ei">
     <participant id="ChangeAddressDemoParticipant" name="Change Address Demo" processRef="ChangeAddressDemo" />
   </collaboration>
-  <process id="ChangeAddressDemo" name="Change Address Demo" isExecutable="true" camunda:candidateStarterGroups="vars:kube">
+  <process id="ChangeAddressDemo" name="Change Address Demo" isExecutable="true">
     <startEvent id="CustomerSearchStartEvent" name="Customer Search">
       <outgoing>SequenceFlow_1bzdi90</outgoing>
     </startEvent>
@@ -44,7 +44,7 @@
       <outgoing>AddressNotApprovedSequenceFlow</outgoing>
       <outgoing>AddressApprovedSequenceFlow</outgoing>
     </exclusiveGateway>
-    <serviceTask id="SaveToFCSTask" name="Save to FCS" camunda:asyncBefore="true" camunda:type="external" camunda:topic="store-address">
+    <serviceTask id="SaveToFCSTask" name="Save to FCS" camunda:asyncBefore="true">
       <incoming>AddressApprovedSequenceFlow</incoming>
       <incoming>NoApprovalRequiredSequenceFlow</incoming>
       <outgoing>SequenceFlow_0qapy1d</outgoing>

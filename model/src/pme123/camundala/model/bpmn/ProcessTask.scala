@@ -1,18 +1,23 @@
 package pme123.camundala.model.bpmn
 
 import eu.timepit.refined.auto._
+import pme123.camundala.model.bpmn.ScriptLanguage.Groovy
 import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, DmnImpl, ExternalTask}
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 
 sealed trait ProcessTask
   extends BpmnNode
     with HasExtProperties
-    with HasExtInOutputs
+    with HasExtInOutputs {
+}
 
 sealed trait ImplementationTask
   extends ProcessTask {
 
   def implementation: TaskImplementation
+
+  def implStaticFiles: Set[StaticFile] = implementation.staticFiles
+
 }
 
 case class ServiceTask(id: BpmnNodeId,
@@ -73,6 +78,7 @@ case class SendTask(id: BpmnNodeId,
   def outputInline(key: PropKey, inlineScript: String): SendTask = copy(extInOutputs = extInOutputs.outputInline(key, inlineScript))
 
   def outputJson(key: PropKey, json: String): SendTask = copy(extInOutputs = extInOutputs.outputJson(key, json))
+
 }
 
 trait HasForm
@@ -80,7 +86,7 @@ trait HasForm
 
   def maybeForm: Option[UserTaskForm]
 
-  def staticFiles: Set[StaticFile] = maybeForm.toSet[UserTaskForm].flatMap(_.staticFiles)
+  def formStaticFiles: Set[StaticFile] = maybeForm.toSet[UserTaskForm].flatMap(_.staticFiles)
 
 }
 
@@ -149,6 +155,8 @@ case class UserTask(id: BpmnNodeId,
 
   def inputInline(key: PropKey, inlineScript: String): UserTask = copy(extInOutputs = extInOutputs.inputInline(key, inlineScript))
 
+  def inputExternal(key: PropKey, scriptPath: FilePath, language: ScriptLanguage = Groovy, includes: Seq[String] = Seq.empty): UserTask = copy(extInOutputs = extInOutputs.inputExternal(key, scriptPath, language, includes))
+
   def inputJson(key: PropKey, json: String): UserTask = copy(extInOutputs = extInOutputs.inputJson(key, json))
 
   def outputExpression(key: PropKey, expression: String): UserTask = copy(extInOutputs = extInOutputs.outputExpression(key, expression))
@@ -178,6 +186,8 @@ case class BusinessRuleTask(id: BpmnNodeId,
 
   // HasExtInOutputs
   def inputExpression(key: PropKey, expression: String): BusinessRuleTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))
+
+  def inputExternal(key: PropKey, scriptPath: FilePath, language: ScriptLanguage = Groovy, includes: Seq[String] = Seq.empty): BusinessRuleTask = copy(extInOutputs = extInOutputs.inputExternal(key, scriptPath, language, includes))
 
   def inputInline(key: PropKey, inlineScript: String): BusinessRuleTask = copy(extInOutputs = extInOutputs.inputInline(key, inlineScript))
 
