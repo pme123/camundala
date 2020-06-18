@@ -30,9 +30,9 @@ object PlaygroundBpmn {
   val callSwapiTask = RestServiceTempl(
     Request(
       swapiHost,
-      path = Path("_category_/"),
+      path = Path("%category/"),
       responseVariable = "swapiResult",
-      mappings = Map("_category_" -> "people")
+      mappings = Map("category" -> "people")
     )
   ).asServiceTask("CallSwapiServiceTask")
 

@@ -44,7 +44,7 @@ object restService {
 
         (request: Request) => {
 
-          def mockRequest(mockData:MockData): Task[Response] = mockData match {
+          def mockRequest(mockData: MockData): Task[Response] = mockData match {
             case MockData(_, Json.Null) => UIO(NoContent)
             case MockData(status, body) if request.handledErrors.contains(status) => UIO(HandledError(status, Right(body.toString())))
             case MockData(status, body) if status < 400 => UIO(WithContent(status, body.toString()))
@@ -57,7 +57,7 @@ object restService {
               .headers(request.headers.toMap)
               .withAuth(request.host.auth)
               .withMethod(request)
-              .withBody(request.body)
+              .withBody(request)
               .withResponse(request.responseRead)
               .send()
               .tapError(error =>
@@ -101,7 +101,7 @@ object restService {
             }
 
           request.maybeMocked.map(mockRequest)
-            .getOrElse( handleResponse(sendRequest))
+            .getOrElse(handleResponse(sendRequest))
         }
     }
 
@@ -114,13 +114,15 @@ object restService {
       request.queryParams
     }"
     uri"${
-      request.mappings.foldLeft(uri) {
-        case (r, (k, v)) =>
-          r.replace(k, v)
-      }
+      mapStr(uri, request.mappings)
     }"
   }
 
+  private[service] def mapStr(str: String, mappings: Map[String, String]) =
+    mappings.foldLeft(str) {
+      case (r, (k, v)) =>
+        r.replace(s"%$k", v)
+    }
 
   implicit class CRequestT(sttpRequest: RequestT[Empty, Either[String, String], Nothing]) {
 
@@ -170,23 +172,24 @@ object restService {
 
     import RequestBody._
 
-    def withBody(body: RequestBody): SttpRequest[Either[String, String], Nothing] = body match {
-      case NoBody =>
-        sttpRequest
-      case StringBody(str) =>
-        sttpRequest
-          .body(str)
-      case MultipartBody(parts) =>
-        sttpRequest
-          .multipartBody(
-            parts.map {
-              case StringPart(name, value) =>
-                multipart(name.value, value)
-              case FilePart(name, fileName, data) =>
-                multipart(name.value, data).fileName(fileName.value)
-            }.toSeq)
+    def withBody(request: Request): SttpRequest[Either[String, String], Nothing] =
+      request.body.mapStr(request.mappings) match {
+        case NoBody =>
+          sttpRequest
+        case StringBody(str) =>
+          sttpRequest
+            .body(str)
+        case MultipartBody(parts) =>
+          sttpRequest
+            .multipartBody(
+              parts.map {
+                case StringPart(name, value) =>
+                  multipart(name.value, value)
+                case FilePart(name, fileName, data) =>
+                  multipart(name.value, data).fileName(fileName.value)
+              }.toSeq)
 
-    }
+      }
 
     def withResponse(resp: ResponseRead): SttpRequest[Either[String, String], Nothing] = resp match {
       case NoResponseRead | StringRead =>
@@ -195,6 +198,22 @@ object restService {
 
   }
 
+  /**
+    *
+    * @param host
+    * @param method
+    * @param path
+    * @param queryParams
+    * @param headers
+    * @param body
+    * @param responseRead
+    * @param handledErrors
+    * @param responseVariable
+    * @param mappings You can have variables in your path, queryParams or body - like `%YourVariable`.
+    *                 Your mappings: Map("YourVariable" -> "YourValue").
+    *                 If a mapping is not provided - it throws an RestServiceException.
+    * @param maybeMocked
+    */
   case class Request(host: Host = Host.unknown,
                      method: RequestMethod = Get,
                      path: RequestPath = NoPath,
@@ -213,7 +232,8 @@ object restService {
     case class Host(url: Url,
                     auth: Auth = NoAuth
                    )
-    object Host{
+
+    object Host {
       val unknown: Host = Host("http://unknown")
     }
 
@@ -273,21 +293,38 @@ object restService {
 
   }
 
-  sealed trait RequestBody
+  sealed trait RequestBody {
+    def mapStr(mappings: Map[String, String]): RequestBody = this
+  }
 
   object RequestBody {
 
     case object NoBody extends RequestBody
 
-    case class StringBody(str: String) extends RequestBody
+    case class StringBody(str: String) extends RequestBody {
+      override def mapStr(mappings: Map[String, String]): RequestBody =
+        copy(str = restService.mapStr(str, mappings))
 
-    case class MultipartBody(parts: Set[Part]) extends RequestBody
+    }
 
-    sealed trait Part
+    case class MultipartBody(parts: Set[Part]) extends RequestBody {
+
+      override def mapStr(mappings: Map[String, String]): RequestBody =
+        copy(parts = parts.map(_.mapStr(mappings)))
+
+    }
+
+    sealed trait Part {
+      def mapStr(mappings: Map[String, String]): Part = this
+
+    }
 
     object Part {
 
-      case class StringPart(name: PropKey, value: String) extends Part
+      case class StringPart(name: PropKey, value: String) extends Part {
+        override def mapStr(mappings: Map[String, String]): StringPart =
+          copy(value = restService.mapStr(value, mappings))
+      }
 
       case class FilePart(name: FilePath, fileName: FilePath, data: String) extends Part
 

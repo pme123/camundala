@@ -4,7 +4,6 @@ import eu.timepit.refined.auto._
 import pme123.camundala.camunda.CamundaLayers
 import pme123.camundala.camunda.TestData._
 import pme123.camundala.camunda.service.restService.QueryParams.Params
-import pme123.camundala.camunda.service.restService.Request.Host
 import pme123.camundala.camunda.service.restService.RequestPath.Path
 import pme123.camundala.camunda.service.restService.{Request, RequestMethod}
 import pme123.camundala.model.bpmn.PropKey
@@ -13,7 +12,6 @@ import zio.test.Assertion._
 import zio.test._
 
 object RestServiceSuite extends DefaultRunnableSpec {
-
 
   def spec: ZSpec[environment.TestEnvironment, Any] =
     suite("RestServiceSuite")(
@@ -40,12 +38,28 @@ object RestServiceSuite extends DefaultRunnableSpec {
             queryParams = queryParams))
           assert(result)(equalTo(uri"$url?name=Mäder&iq=99"))
         },
-        test("withpath and query params and mapping") {
+        test("with path and query params and mapping") {
           val result = restService.uri(Request(host,
-            path = Path("hello", "__variable"),
-            queryParams = Params(key1 -> "Mäder", key2 -> "__value"),
-            mappings = Map("__variable" -> "Kurt", "__value" -> "101")))
+            path = Path("hello", "%variable"),
+            queryParams = Params(key1 -> "Mäder", key2 -> "%value"),
+            mappings = Map("variable" -> "Kurt", "value" -> "101")))
           assert(result)(equalTo(uri"$url/hello/Kurt?name=Mäder&iq=101"))
+        },
+        test("with body and mapping") {
+          val result = restService.mapStr(
+            """{ "name": %object,
+              |"type": "%strType"
+              |}""".stripMargin,
+            Map("object" ->
+              """{
+                |"sub": "great"
+                |}""".stripMargin, "strType" -> "bool"))
+          assert(result)(equalTo(
+            """{ "name": {
+              |"sub": "great"
+              |},
+              |"type": "bool"
+              |}""".stripMargin))
         }
       ),
       suite("Call Service")(

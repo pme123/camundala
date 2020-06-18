@@ -4,7 +4,7 @@ import eu.timepit.refined.auto._
 import io.circe.parser.decode
 import io.circe.syntax._
 import org.camunda.bpm.engine.delegate.{BpmnError, DelegateExecution}
-import org.camunda.spin.DataFormats._
+import org.camunda.spin.DataFormats.json
 import org.camunda.spin.Spin
 import org.camunda.spin.plugin.variable.value.JsonValue
 import org.springframework.stereotype.Service
@@ -14,7 +14,7 @@ import pme123.camundala.camunda.service.restService._
 import pme123.camundala.camunda.{CamundaLayers, JsonEnDecoders}
 import pme123.camundala.model.bpmn._
 import zio.Runtime.default.unsafeRun
-import zio.{ZIO, logging}
+import zio.{UIO, ZIO, logging}
 
 
 /**
@@ -26,16 +26,23 @@ class RestServiceDelegate
     with JsonEnDecoders {
 
   def execute(execution: DelegateExecution): Unit = {
-    val requestRes = extractVariables(execution)
+    val requestRes = extractVariables(execution) // this can not be done in a ZIO fibre (Camunda execution must be in the main Thread)
     val response = unsafeRun(
       (for {
-        request <- ZIO.fromEither(requestRes)
-        response <- restService.call(request)
-        _ <- logging.log.debug(s"Rest call ${request.host.url} successful:\n$response")
-      } yield (request.responseVariable, response))
+        (req, mappings) <- ZIO.fromEither(requestRes)
+        reqMappings <- ZIO.foreach(mappings){
+          case (k, Some(v)) =>
+          UIO(k -> v)
+          case (k, _) =>
+            ZIO.fail(RestServiceException(s"There is no Variable '$k' for mapping in your Bag"))
+        }
+        response <- restService.call(req.copy(mappings = reqMappings.toMap))
+        _ <- logging.log.debug(s"Rest call ${req.host.url} successful:\n$response")
+      } yield (req.responseVariable, response))
         .provideCustomLayer(CamundaLayers.logLayer("RestServiceDelegate") ++
           CamundaLayers.restServicetLayer)
     )
+    // this can not be done in a ZIO fibre (Camunda execution must be in the main Thread)
     response match {
       case (_, NoContent) => ()
       case (variable, WithContent(_, body)) =>
@@ -46,20 +53,18 @@ class RestServiceDelegate
   }
 
   private def extractVariables(execution: DelegateExecution) = {
-    val json = execution.getVariableTyped[JsonValue]("request")
-    val request = decode[Request](json.getValueSerialized)
-      .map(request =>
-        request.copy(
-          mappings = request.mappings
-            .keys
-            .map { k =>
-              k ->
-                Option(execution.getVariable(k)).map(_.toString)
-                  .getOrElse(request.mappings(k))
-            }
-            .toMap
-        ))
-    request
+    for {
+      json <- Option(execution.getVariableTyped[JsonValue]("request"))
+        .map(Right(_))
+        .getOrElse(Left(RestServiceException("There is no Variable 'request' in your Bag.")))
+      request <- decode[Request](json.getValueSerialized)
+    } yield (request, request.mappings
+      .keys
+      .map { k =>
+        k ->
+          Option(execution.getVariable(k)).map(_.toString)
+      }
+      .toMap)
   }
 }
 
@@ -73,5 +78,7 @@ object RestServiceDelegate
         .delegate("#{restService}")
         .inputJson("request", request.asJson.toString())
   }
+
+  case class RestServiceException(msg: String) extends CamundalaException
 
 }

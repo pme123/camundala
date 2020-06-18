@@ -28,7 +28,7 @@ case class AddressService(addressHost: Host = Host.unknown) {
     RestServiceTempl(
       Request(
         addressHost,
-        path = Path("customer", "11"),
+        path = Path("%customer", "11"),
         responseVariable = "existingAddress",
         mappings = Map("customer" -> "dummyCustomerId"),
         maybeMocked = if (addressHost == Host.unknown) maybeMockData else None
@@ -43,8 +43,8 @@ case class AddressService(addressHost: Host = Host.unknown) {
         path = Path("address", "modify"),
         body = StringBody(
           """{
-            | custId: customer,
-            | address: newAddress,
+            | custId: %customer,
+            | address: %newAddress,
             |}""".stripMargin),
         mappings = Map("newAddress" -> "{...}", "customer" -> "12141"),
         maybeMocked = if (addressHost == Host.unknown) Some(MockData(204)) else None
