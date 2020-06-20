@@ -2,6 +2,7 @@ package pme123.camundala.model
 
 import eu.timepit.refined.auto._
 import pme123.camundala.model.bpmn._
+import pme123.camundala.model.bpmn.ops._
 
 object TestData {
 

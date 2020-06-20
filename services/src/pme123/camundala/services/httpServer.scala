@@ -8,7 +8,6 @@ import org.http4s.circe._
 import org.http4s.dsl._
 import org.http4s.implicits._
 import org.http4s.multipart.Multipart
-import org.http4s.server.blaze.BlazeServerBuilder
 import pme123.camundala.camunda.httpDeployClient.HttpDeployClient
 import pme123.camundala.camunda.{DeployFile, DeployRequest, JsonEnDecoders, httpDeployClient}
 import pme123.camundala.config.appConfig
@@ -104,7 +103,13 @@ object httpServer
           ZIO.runtime[Any]
             .flatMap {
               implicit rts =>
-                BlazeServerBuilder[Task]
+
+                import org.http4s.implicits._
+                import org.http4s.server.blaze._
+
+                import scala.concurrent.ExecutionContext.global
+
+                BlazeServerBuilder.apply[Task](global)
                   .bindHttp(servicesConf.port, servicesConf.host)
                   .withHttpApp(routes.orNotFound)
                   .serve

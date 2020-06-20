@@ -140,9 +140,8 @@ trait CamundalaModule
     "-language:higherKinds", // Allow higher-kinded types
     "-language:postfixOps", // Allows operator syntax in postfix position (deprecated since Scala 2.10)
 
-    "-feature" // Emit warning and location for usages of features that should be imported explicitly.
-   // "-Ypartial-unification"      // Enable partial unification in type constructor inference
-    //  "-Xfatal-warnings"            // Fail the compilation if there are any warnings
+    "-feature", // Emit warning and location for usages of features that should be imported explicitly.
+    "-Xfatal-warnings"            // Fail the compilation if there are any warnings -> check https://alexn.org/blog/2020/05/26/scala-fatal-warnings.html
   )
 
   def pomSettings = PomSettings(

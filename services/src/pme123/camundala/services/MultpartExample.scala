@@ -4,7 +4,8 @@ import java.io.{File, PrintWriter}
 
 import cats.implicits._
 import org.http4s.HttpRoutes
-import org.http4s.server.blaze.BlazeServerBuilder
+import org.http4s.server.blaze._
+
 import sttp.client.{NothingT, SttpBackend, basicRequest, multipart, _}
 import sttp.model._
 import sttp.tapir.Endpoint
@@ -15,6 +16,7 @@ import zio.interop.catz._
 import zio.interop.catz.implicits._
 import zio.{Task, ZEnv, _}
 
+import scala.concurrent.ExecutionContext.global
 /**
   * Working example for Multipart Form
   * - problem is that file part name is dynamic in Camunda Modeler
@@ -64,7 +66,10 @@ object MultipartFormUploadAkkaServer extends zio.App {
         implicit rts =>
 
           import org.http4s.implicits._
-          BlazeServerBuilder[Task]
+          import org.http4s.server.blaze._
+          import scala.concurrent.ExecutionContext.global
+
+          BlazeServerBuilder.apply[Task](global)
             .bindHttp(8080, "localhost")
             .withHttpApp((setDommyRoute <+> setProfileRoute).orNotFound)
             .serve
@@ -91,7 +96,7 @@ object MultipartFormUploadAkkaServer extends zio.App {
         .body
     }
     catch {
-      case ex => ex.printStackTrace()
+      case ex: Throwable => ex.printStackTrace()
     }
     println("Got result: " + result)
 

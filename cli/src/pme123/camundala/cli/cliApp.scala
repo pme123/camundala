@@ -68,8 +68,8 @@ object cliApp {
             generateBpmns(deployId)
           case CreateUsersAndGroups(deployId) =>
             createUsersAndGroups(deployId)
-          case other: UIO[ExitCode] =>
-            other
+          case other =>
+            other.asInstanceOf[UIO[ExitCode]]
         }
       )
 
