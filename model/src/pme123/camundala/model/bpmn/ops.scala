@@ -2,9 +2,22 @@ package pme123.camundala.model.bpmn
 
 import pme123.camundala.model.bpmn.Constraint.{Custom, Max, Maxlength, Min, Minlength, Readonly, Required}
 import pme123.camundala.model.bpmn.ScriptLanguage.Groovy
+import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 
 object ops {
+
+  implicit class WithTaskImplOps[A: WithTaskImpl](a: A) {
+    def set(taskImpl:TaskImplementation): A =
+      WithTaskImpl[A].set(a, taskImpl)
+
+    def delegate(expression: String): A =
+      set(DelegateExpression(expression))
+
+    def external(topic: String): A =
+      set(ExternalTask(topic))
+
+  }
 
   implicit class FormularOps[A: WithForm](a: A) {
     def form(form: UserTaskForm): A =

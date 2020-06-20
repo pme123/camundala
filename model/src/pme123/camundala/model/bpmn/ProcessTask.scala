@@ -1,7 +1,7 @@
 package pme123.camundala.model.bpmn
 
 import eu.timepit.refined.auto._
-import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, DmnImpl, ExternalTask}
+import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, DmnImpl}
 
 sealed trait ProcessTask
   extends BpmnNode
@@ -25,11 +25,6 @@ case class ServiceTask(id: BpmnNodeId,
                       )
   extends ProcessTask
     with ImplementationTask {
-
-  def delegate(expression: String): ServiceTask = copy(implementation = DelegateExpression(expression))
-
-  def external(topic: String): ServiceTask = copy(implementation = ExternalTask(topic))
-
 }
 
 case class SendTask(id: BpmnNodeId,
@@ -39,11 +34,6 @@ case class SendTask(id: BpmnNodeId,
                    )
   extends ProcessTask
     with ImplementationTask {
-
-  def delegate(expression: String): SendTask = copy(implementation = DelegateExpression(expression))
-
-  def external(topic: String): SendTask = copy(implementation = ExternalTask(topic))
-
 }
 
 trait UsersAndGroups {
