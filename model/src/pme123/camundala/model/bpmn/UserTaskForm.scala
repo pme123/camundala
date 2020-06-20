@@ -1,8 +1,9 @@
 package pme123.camundala.model.bpmn
 
 import eu.timepit.refined.auto._
-import pme123.camundala.model.bpmn.UserTaskForm.FormField.{EnumField, SimpleField}
-import pme123.camundala.model.bpmn.UserTaskForm.FormFieldType.{BooleanType, EnumType, StringType}
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField._
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormFieldType.{BooleanType, DateType, EnumType, LongType, StringType}
 
 trait HasForm
   extends BpmnNode {
@@ -62,200 +63,218 @@ object UserTaskForm {
     def allFields(): Seq[FormField] = fields.flatMap(_.allFields())
   }
 
-  sealed trait FormField {
-
-    def id: String
-
-    def label: String
-
-    def `type`: FormFieldType
-
-    def defaultValue: String
-
-    def width: Int
-
-    def validations: Seq[Constraint]
-
-    def properties: Seq[Prop]
-
-    def allProperties: Seq[Prop] =
-      properties :+ Prop("width", s"$width")
-
-    def allFields(): Seq[FormField] = Seq(this)
-
-    def prop(prop: (PropKey, String)): FormField = this
-
-  }
-
-  object FormField {
-
-    case class GroupField(id: String,
-                          label: String = "",
-                          width: Int = 16,
-                          fields: Seq[FormField] = Seq.empty)
-      extends FormField {
-
-      val `type`: FormFieldType = StringType
-      val defaultValue: String = ""
-      val validations: Seq[Constraint] = Seq.empty
-      val properties: Seq[Prop] = Seq.empty
-
-      def label(l: String): GroupField = copy(label = l)
-
-      def width(w: Int): GroupField = copy(width = w)
-
-      def field(fld: FormField): GroupField = copy(fields = fields :+ fld)
-
-      def ---(fld: FormField): GroupField = field(fld)
-
-      override def allProperties: Seq[Prop] =
-        super.allProperties :+ Prop("display", "group")
-
-      override def allFields(): Seq[FormField] = this +: fields.flatMap(_.allFields()).map(withGroup)
-
-      private def withGroup(field: FormField): FormField =
-        field.prop("group", id)
-    }
-
-    case class RowFieldGroup(id: String,
-                             fields: Seq[FormField] = Seq.empty)
-      extends FormField {
-
-      val label: String = ""
-      val `type`: FormFieldType = StringType
-      val defaultValue: String = ""
-      val width: Int = 16
-      val validations: Seq[Constraint] = Seq.empty
-      val properties: Seq[Prop] = Seq.empty
-
-      def field(fld: SimpleField): RowFieldGroup = copy(fields = fields :+ fld)
-
-      def ---(fld: SimpleField): RowFieldGroup = field(fld)
-
-      def field(fld: EnumField): RowFieldGroup = copy(fields = fields :+ fld)
-
-      def ---(fld: EnumField): RowFieldGroup = field(fld)
-
-      override def allFields(): Seq[FormField] = fields.flatMap(_.allFields()).map(withGroup)
-
-      private def withGroup(field: FormField): FormField =
-        field.prop("fieldGroup", id)
-
-    }
-
-    case class SimpleField(id: String,
-                           label: String = "",
-                           `type`: FormFieldType = StringType,
-                           defaultValue: String = "",
-                           width: Int = 16,
-                           validations: Seq[Constraint] = Seq.empty,
-                           properties: Seq[Prop] = Seq.empty)
-      extends FormField {
-
-      def fieldType(fieldType: FormFieldType): SimpleField = copy(`type` = fieldType)
-
-      def label(l: String): SimpleField = copy(label = l)
-
-      def default(d: String): SimpleField = copy(defaultValue = d)
-
-      def width(w: Int): SimpleField = copy(width = w)
-
-      override def prop(prop: (PropKey, String)): SimpleField = copy(properties = properties :+ Prop(prop._1, prop._2))
-    }
-
+  object GeneratedForm {
     def text(id: String): SimpleField =
       SimpleField(id)
 
     def boolean(id: String): SimpleField =
       SimpleField(id, `type` = BooleanType)
 
-    case class EnumField(id: String,
-                         label: String = "",
-                         defaultValue: String = null, // must be null otherwise Camunda fails
-                         values: EnumValues = EnumValues.none,
-                         width: Int = 16,
-                         validations: Seq[Constraint] = Seq.empty,
-                         properties: Seq[Prop] = Seq.empty)
-      extends FormField {
-      val `type`: FormFieldType = EnumType
+    def longField(id: String): SimpleField =
+      SimpleField(id, `type` = LongType)
 
-      def label(l: String): EnumField = copy(label = l)
+    def dateField(id: String): SimpleField =
+      SimpleField(id, `type` = DateType)
 
-      def default(d: String): EnumField = copy(defaultValue = d)
+    def enumField(id: String): EnumField =
+      EnumField(id)
 
-      def width(w: Int): EnumField = copy(width = w)
+    def groupField(id: String): GroupField =
+      GroupField(id)
 
-      def value(prop: (PropKey, String)): EnumField = copy(values = values :+ EnumValue(prop._1, prop._2))
+    def rowGroupField(id: String): RowGroupField =
+      RowGroupField(id)
 
-      override def prop(prop: (PropKey, String)): EnumField = copy(properties = properties :+ Prop(prop._1, prop._2))
+    sealed trait FormField {
+
+      def id: String
+
+      def label: String
+
+      def `type`: FormFieldType
+
+      def defaultValue: String
+
+      def width: Int
+
+      def validations: Seq[Constraint]
+
+      def properties: Seq[Prop]
+
+      def allProperties: Seq[Prop] =
+        properties :+ Prop("width", s"$width")
+
+      def allFields(): Seq[FormField] = Seq(this)
+
+      def prop(prop: (PropKey, String)): FormField = this
+
     }
 
-    case class EnumValues(enums: Seq[EnumValue]) {
-      def :+(value: EnumValue): EnumValues = copy(enums :+ value)
+    object FormField {
+
+      case class GroupField(id: String,
+                            label: String = "",
+                            width: Int = 16,
+                            fields: Seq[FormField] = Seq.empty)
+        extends FormField {
+
+        val `type`: FormFieldType = StringType
+        val defaultValue: String = ""
+        val validations: Seq[Constraint] = Seq.empty
+        val properties: Seq[Prop] = Seq.empty
+
+        def label(l: String): GroupField = copy(label = l)
+
+        def width(w: Int): GroupField = copy(width = w)
+
+        def field(fld: FormField): GroupField = copy(fields = fields :+ fld)
+
+        def ---(fld: FormField): GroupField = field(fld)
+
+        override def allProperties: Seq[Prop] =
+          super.allProperties :+ Prop("display", "group")
+
+        override def allFields(): Seq[FormField] = this +: fields.flatMap(_.allFields()).map(withGroup)
+
+        private def withGroup(field: FormField): FormField =
+          field.prop("group", id)
+      }
+
+      case class RowGroupField(id: String,
+                               fields: Seq[FormField] = Seq.empty)
+        extends FormField {
+
+        val label: String = ""
+        val `type`: FormFieldType = StringType
+        val defaultValue: String = ""
+        val width: Int = 16
+        val validations: Seq[Constraint] = Seq.empty
+        val properties: Seq[Prop] = Seq.empty
+
+        def field(fld: SimpleField): RowGroupField = copy(fields = fields :+ fld)
+
+        def ---(fld: SimpleField): RowGroupField = field(fld)
+
+        def field(fld: EnumField): RowGroupField = copy(fields = fields :+ fld)
+
+        def ---(fld: EnumField): RowGroupField = field(fld)
+
+        override def allFields(): Seq[FormField] = fields.flatMap(_.allFields()).map(withGroup)
+
+        private def withGroup(field: FormField): FormField =
+          field.prop("fieldGroup", id)
+
+      }
+
+      case class SimpleField(id: String,
+                             label: String = "",
+                             `type`: FormFieldType = StringType,
+                             defaultValue: String = "",
+                             width: Int = 16,
+                             validations: Seq[Constraint] = Seq.empty,
+                             properties: Seq[Prop] = Seq.empty)
+        extends FormField {
+
+        def fieldType(fieldType: FormFieldType): SimpleField = copy(`type` = fieldType)
+
+        def label(l: String): SimpleField = copy(label = l)
+
+        def default(d: String): SimpleField = copy(defaultValue = d)
+
+        def width(w: Int): SimpleField = copy(width = w)
+
+        override def prop(prop: (PropKey, String)): SimpleField = copy(properties = properties :+ Prop(prop._1, prop._2))
+      }
+
+      case class EnumField(id: String,
+                           label: String = "",
+                           defaultValue: String = null, // must be null otherwise Camunda fails
+                           values: EnumValues = EnumValues.none,
+                           width: Int = 16,
+                           validations: Seq[Constraint] = Seq.empty,
+                           properties: Seq[Prop] = Seq.empty)
+        extends FormField {
+        val `type`: FormFieldType = EnumType
+
+        def label(l: String): EnumField = copy(label = l)
+
+        def default(d: String): EnumField = copy(defaultValue = d)
+
+        def width(w: Int): EnumField = copy(width = w)
+
+        def value(prop: (PropKey, String)): EnumField = copy(values = values :+ EnumValue(prop._1, prop._2))
+
+        override def prop(prop: (PropKey, String)): EnumField = copy(properties = properties :+ Prop(prop._1, prop._2))
+      }
+
+      case class EnumValues(enums: Seq[EnumValue]) {
+        def :+(value: EnumValue): EnumValues = copy(enums :+ value)
+
+      }
+
+      object EnumValues {
+        def none: EnumValues = EnumValues(Seq.empty)
+      }
+
+      case class EnumValue(key: PropKey, label: String)
 
     }
 
-    object EnumValues {
-      def none: EnumValues = EnumValues(Seq.empty)
+    sealed trait FormFieldType {
+      def name: String
     }
 
-    case class EnumValue(key: PropKey, label: String)
+    object FormFieldType {
+
+      case object StringType extends FormFieldType {
+        val name = "string"
+      }
+
+      case object BooleanType extends FormFieldType {
+        val name = "boolean"
+      }
+
+      case object EnumType extends FormFieldType {
+        val name = "enum"
+      }
+
+      case object LongType extends FormFieldType {
+        val name = "long"
+      }
+
+      case object DateType extends FormFieldType {
+        val name = "date"
+      }
+
+    }
 
   }
 
-  sealed trait FormFieldType {
-    def name: String
+  sealed trait WithConstraint[T] {
+    def validate(field: T, constraint: Constraint): T
   }
 
-  object FormFieldType {
+  object WithConstraint {
 
-    case object StringType extends FormFieldType {
-      val name = "string"
-    }
+    def apply[A](implicit validation: WithConstraint[A]): WithConstraint[A] = validation
 
-    case object BooleanType extends FormFieldType {
-      val name = "boolean"
-    }
+    //needed only if we want to support notation: show(...)
+    def validate[A: WithConstraint](validation: A, constraint: Constraint): A =
+      WithConstraint[A].validate(validation, constraint)
 
-    case object EnumType extends FormFieldType {
-      val name = "enum"
-    }
+    //type class instances
+    def instance[A](func: (A, Constraint) => A): WithConstraint[A] =
+      new WithConstraint[A] {
+        def validate(field: A, constraint: Constraint): A =
+          func(field, constraint)
+      }
 
-    case object LongType extends FormFieldType {
-      val name = "long"
-    }
+    implicit val simpleField: WithConstraint[SimpleField] =
+      instance((field, constraint) => field.copy(validations = field.validations :+ constraint))
 
-    case object DateType extends FormFieldType {
-      val name = "date"
-    }
+    implicit val enumField: WithConstraint[EnumField] =
+      instance((field, constraint) => field.copy(validations = field.validations :+ constraint))
 
   }
-
-}
-
-sealed trait WithConstraint[T] {
-  def validate(field: T, constraint: Constraint): T
-}
-
-object WithConstraint {
-
-  def apply[A](implicit validation: WithConstraint[A]): WithConstraint[A] = validation
-
-  //needed only if we want to support notation: show(...)
-  def validate[A: WithConstraint](validation: A, constraint: Constraint): A =
-    WithConstraint[A].validate(validation, constraint)
-
-  //type class instances
-  def instance[A](func: (A, Constraint) => A): WithConstraint[A] =
-    new WithConstraint[A] {
-      def validate(field: A, constraint: Constraint): A =
-        func(field, constraint)
-    }
-
-  implicit val simpleField: WithConstraint[SimpleField] =
-    instance((field, constraint) => field.copy(validations = field.validations :+ constraint))
-
-  implicit val enumField: WithConstraint[EnumField] =
-    instance((field, constraint) => field.copy(validations = field.validations :+ constraint))
 
 }

@@ -3,10 +3,11 @@ package pme123.camundala.examples.playground
 import eu.timepit.refined.auto._
 import pme123.camundala.camunda.service.restService.Request.Host
 import pme123.camundala.examples.playground.UsersAndGroups._
-import pme123.camundala.model.bpmn.UserTaskForm.FormField._
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
-import pme123.camundala.model.bpmn.ops._
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm._
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField._
 import pme123.camundala.model.bpmn._
+import pme123.camundala.model.bpmn.ops._
 
 
 case class ChangeAddressBpmn(maGroup: Group = adminGroup,
@@ -105,7 +106,7 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
     GeneratedForm()
       .---(
         GroupField("infosGroup")
-          .---(RowFieldGroup("infosGroup")
+          .---(RowGroupField("infosGroup")
             .---(text("customer")
               .width(8)
               .readonly)
@@ -130,7 +131,7 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
 
     GroupField(s"${prefix}AddressGroup")
       .---(addressField("street"))
-      .---(RowFieldGroup(s"${prefix}CityCountry")
+      .---(RowGroupField(s"${prefix}CityCountry")
         .---(addressField("zipCode")
           .width(4))
         .---(addressField("city")

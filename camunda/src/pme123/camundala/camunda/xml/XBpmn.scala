@@ -2,8 +2,9 @@ package pme123.camundala.camunda.xml
 
 import pme123.camundala.camunda.xml.XmlHelper._
 import pme123.camundala.model.bpmn.ConditionExpression.{Expression, ExternalScript, InlineScript, JsonExpression}
-import pme123.camundala.model.bpmn.UserTaskForm.FormField.EnumField
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField.EnumField
 import pme123.camundala.model.bpmn._
 import zio.{Task, ZIO}
 
@@ -237,7 +238,7 @@ trait XBpmnNode[T <: BpmnNode] {
     </camunda:formData>
   }
 
-  private def createFormField(field: UserTaskForm.FormField) = {
+  private def createFormField(field: FormField) = {
     <camunda:formField id={field.id} label={field.label} type={field.`type`.name} defaultValue={field.defaultValue}>
       {field match {
       case ef: EnumField =>

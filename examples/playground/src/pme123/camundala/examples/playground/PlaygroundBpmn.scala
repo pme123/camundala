@@ -1,20 +1,20 @@
 package pme123.camundala.examples.playground
 
+import eu.timepit.refined.auto._
 import pme123.camundala.camunda.delegate.RestServiceDelegate.RestServiceTempl
 import pme123.camundala.camunda.service.restService.Request
 import pme123.camundala.camunda.service.restService.RequestPath.Path
-import pme123.camundala.examples.playground.UsersAndGroups.{adminGroup, guest, hans, peter, worker}
+import pme123.camundala.examples.playground.UsersAndGroups._
 import pme123.camundala.examples.playground.bpmns.swapiHost
-import pme123.camundala.model.bpmn.{Bpmn, BpmnProcess, StartEvent, UserTask}
-import pme123.camundala.model.bpmn.UserTaskForm.FormField.{EnumField, SimpleField}
-import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
-import eu.timepit.refined.auto._
 import pme123.camundala.model.bpmn.Constraint.Required
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField.{EnumField, SimpleField}
 import pme123.camundala.model.bpmn.ops._
+import pme123.camundala.model.bpmn.{Bpmn, BpmnProcess, StartEvent, UserTask}
 
 object PlaygroundBpmn {
 
-  val selectCategoryForm =
+  val selectCategoryForm: GeneratedForm =
     GeneratedForm()
       .--- {
         EnumField("_category_")
