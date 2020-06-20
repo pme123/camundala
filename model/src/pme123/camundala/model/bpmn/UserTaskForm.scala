@@ -43,10 +43,8 @@ object UserTaskForm {
 
     def properties: Seq[Prop]
 
-    def allProperties: Seq[Prop] = {
-      println(s"All PROPS $id: $width")
+    def allProperties: Seq[Prop] =
       properties :+ Prop("width", s"$width")
-    }
 
     def allFields(): Seq[FormField] = Seq(this)
 

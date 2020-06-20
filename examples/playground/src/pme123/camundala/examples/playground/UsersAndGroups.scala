@@ -46,6 +46,16 @@ object UsersAndGroups {
       .name("user")
       .groupType("BPF")
 
+  val kubeGroup: Group =
+    Group("kube")
+      .name("Kundenberater")
+      .groupType("BPF")
+
+  val complianceGroup: Group =
+    Group("compliance")
+      .name("Compliance")
+      .groupType("BPF")
+
   val adminUser: User =
     User("adminUser")
       .firstName("Admin")

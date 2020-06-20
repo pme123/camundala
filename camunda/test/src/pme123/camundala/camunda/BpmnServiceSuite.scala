@@ -75,7 +75,18 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
           valWarns <- bpmnService.validateBpmn("TwitterDemoProcess.bpmn")
         } yield
           assert(valWarns.value.size)(equalTo(13) ?? "warnings")
-      }
+      },
+      testM("the BPMN Model is generated") {
+        for {
+          bpmnXml <- bpmnXmlTask
+          _ <- bpmnRegister.registerBpmn(bpmn)
+          paths <- bpmnService.generateBpmn("TwitterDemoProcess.bpmn")
+          _ = println(s"Result generated BPMNs: $paths")
+        } yield {
+          assert(paths.length)(equalTo(3) ?? "number of generated Paths")
+        }
+      },
+
     ).provideCustomLayer((CamundaLayers.bpmnServiceLayer ++ ModelLayers.bpmnRegisterLayer).mapError(TestFailure.fail))
 
 }

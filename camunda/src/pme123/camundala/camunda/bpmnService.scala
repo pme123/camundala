@@ -1,11 +1,13 @@
 package pme123.camundala.camunda
 
+import java.io.{File, PrintWriter}
+
 import pme123.camundala.camunda.xml.{MergeResult, ValidateWarnings, XBpmn, XMergeResult}
 import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.AppConfig
-import pme123.camundala.model.register.bpmnRegister.BpmnRegister
 import pme123.camundala.model.bpmn.{filePathFromBpmnId, _}
 import pme123.camundala.model.register.bpmnRegister
+import pme123.camundala.model.register.bpmnRegister.BpmnRegister
 import zio._
 
 import scala.xml.Elem
@@ -18,6 +20,8 @@ object bpmnService {
 
     def mergeBpmn(bpmnId: BpmnId): Task[MergeResult]
 
+    def generateBpmn(bpmnId: BpmnId): Task[List[String]]
+
     def validateBpmn(bpmnId: BpmnId): Task[ValidateWarnings]
 
   }
@@ -28,10 +32,13 @@ object bpmnService {
   def mergeBpmn(bpmnId: BpmnId): RIO[BpmnService, MergeResult] =
     ZIO.accessM(_.get.mergeBpmn(bpmnId))
 
+  def generateBpmn(bpmnId: BpmnId): RIO[BpmnService, List[String]] =
+    ZIO.accessM(_.get.generateBpmn(bpmnId))
+
   def validateBpmn(bpmnId: BpmnId): RIO[BpmnService, ValidateWarnings] =
     ZIO.accessM(_.get.validateBpmn(bpmnId))
 
- type BpmnServiceDeps = BpmnRegister with AppConfig
+  type BpmnServiceDeps = BpmnRegister with AppConfig
 
   lazy val live: RLayer[BpmnServiceDeps, BpmnService] =
     ZLayer.fromServices[bpmnRegister.Service, appConfig.Service, Service] {
@@ -58,6 +65,25 @@ object bpmnService {
               xMergeResult <- merge(xml, maybeBpmn, bpmnId)
             } yield MergeResult(bpmn.xml.fileName, xMergeResult.xmlElem, maybeBpmn, xMergeResult.warnings)
           }
+
+          def generateBpmn(bpmnId: BpmnId): Task[List[String]] =
+            for {
+              mergeResult <- mergeBpmn(bpmnId)
+              config <- configService.get()
+              staticFiles <- ZIO.foreach(mergeResult.maybeBpmn.toList.flatMap(_.staticFiles))(st =>
+                ZIO((s"${config.basePath}/_generated/${st.pathWithName}", StreamHelper(config.basePath).asString(st))))
+              bpmnFile <- ZIO.fromOption(mergeResult.maybeBpmn.map(bpmn => (s"${config.basePath}/_generated/${bpmn.xml.pathWithName}", mergeResult.xmlElem.toString)))
+                .mapError(_ => BpmnServiceException(s"There is no BPMN with id $bpmnId"))
+              paths <- ZIO.foreach(staticFiles :+ bpmnFile) { case (path, content) =>
+                ZIO(new File(path).getParentFile.mkdirs()) *>
+                  ZManaged.make(ZIO(new PrintWriter(new File(path)))
+                  )(pw => UIO(pw.close()))
+                    .use(pw =>
+                      ZIO(pw.write(content))
+                        .map(_ => path)
+                    )
+              }
+            } yield paths
 
           def validateBpmn(bpmnId: BpmnId): Task[ValidateWarnings] =
             for {

@@ -37,6 +37,9 @@ object Version {
   val camunda = "7.12.0"
   val camundaSpringBoot = "3.4.2"
   val camundaSpinJackson = "1.9.0"
+  val camundaAssert = "5.0.0"
+  val assertJ = "3.13.2"
+
   val h2 = "1.4.200"
   val postgres = "42.2.8"
   val scalaXml = "1.3.0"
@@ -74,6 +77,8 @@ object Libs {
   val camundaRest = ivy"org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:${Version.camundaSpringBoot}"
   val camundaSpin = ivy"org.camunda.bpm:camunda-engine-plugin-spin:${Version.camunda}"
   val camundaSpinJackson = ivy"org.camunda.spin:camunda-spin-dataformat-json-jackson:${Version.camundaSpinJackson}"
+  val camundaAssert = ivy"org.camunda.bpm.assert:camunda-bpm-assert:${Version.camundaAssert}"
+  val assertJ = ivy"org.assertj:assertj-core:${Version.assertJ}"
 
   val h2 = ivy"com.h2database:h2:${Version.h2}"
   val postgres = ivy"org.postgresql:postgresql:${Version.postgres}"
@@ -169,7 +174,9 @@ trait ModuleWithTests extends CamundalaModule {
     override def ivyDeps = Agg(
       Libs.zioTest,
       Libs.zioTestJunit,
-      Libs.zioTestSbt
+      Libs.zioTestSbt,
+      Libs.camundaAssert,
+      Libs.assertJ
     )
 
     def testOne(args: String*) = T.command {
