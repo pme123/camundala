@@ -1,8 +1,6 @@
 package pme123.camundala.model.bpmn
 
 import eu.timepit.refined.auto._
-import pme123.camundala.model.bpmn.Constraint._
-import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn.UserTaskForm.FormField.{EnumField, SimpleField}
 import pme123.camundala.model.bpmn.UserTaskForm.FormFieldType.{BooleanType, EnumType, StringType}
 
@@ -14,29 +12,29 @@ trait HasForm
   def formStaticFiles: Set[StaticFile] = maybeForm.toSet[UserTaskForm].flatMap(_.staticFiles)
 }
 
-sealed trait Formular[T] {
+sealed trait WithForm[T] {
   def form(node: T, form: UserTaskForm): T
 }
 
-object Formular {
+object WithForm {
 
-  def apply[A](implicit node: Formular[A]): Formular[A] = node
+  def apply[A](implicit node: WithForm[A]): WithForm[A] = node
 
   //needed only if we want to support notation: form(...)
-  def form[A: Formular](node: A, form: UserTaskForm): A =
-    Formular[A].form(node, form)
+  def form[A: WithForm](node: A, form: UserTaskForm): A =
+    WithForm[A].form(node, form)
 
   //type class instances
-  def instance[A](func: (A, UserTaskForm) => A): Formular[A] =
-    new Formular[A] {
+  def instance[A](func: (A, UserTaskForm) => A): WithForm[A] =
+    new WithForm[A] {
       def form(field: A, form:UserTaskForm): A =
         func(field, form)
     }
 
-  implicit val userTask: Formular[UserTask] =
+  implicit val userTask: WithForm[UserTask] =
     instance((node, form) => node.copy(maybeForm = Some(form)))
 
-  implicit val enumField: Formular[StartEvent] =
+  implicit val enumField: WithForm[StartEvent] =
     instance((node, form) => node.copy(maybeForm = Some(form)))
 
 }
@@ -235,29 +233,29 @@ object UserTaskForm {
 
 }
 
-sealed trait Validation[T] {
+sealed trait WithConstraint[T] {
   def validate(field: T, constraint: Constraint): T
 }
 
-object Validation {
+object WithConstraint {
 
-  def apply[A](implicit validation: Validation[A]): Validation[A] = validation
+  def apply[A](implicit validation: WithConstraint[A]): WithConstraint[A] = validation
 
   //needed only if we want to support notation: show(...)
-  def validate[A: Validation](validation: A, constraint: Constraint): A =
-    Validation[A].validate(validation, constraint)
+  def validate[A: WithConstraint](validation: A, constraint: Constraint): A =
+    WithConstraint[A].validate(validation, constraint)
 
   //type class instances
-  def instance[A](func: (A, Constraint) => A): Validation[A] =
-    new Validation[A] {
+  def instance[A](func: (A, Constraint) => A): WithConstraint[A] =
+    new WithConstraint[A] {
       def validate(field: A, constraint: Constraint): A =
         func(field, constraint)
     }
 
-  implicit val simpleField: Validation[SimpleField] =
+  implicit val simpleField: WithConstraint[SimpleField] =
     instance((field, constraint) => field.copy(validations = field.validations :+ constraint))
 
-  implicit val enumField: Validation[EnumField] =
+  implicit val enumField: WithConstraint[EnumField] =
     instance((field, constraint) => field.copy(validations = field.validations :+ constraint))
 
 }

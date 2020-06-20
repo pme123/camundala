@@ -31,10 +31,6 @@ case class ServiceTask(id: BpmnNodeId,
 
   def external(topic: String): ServiceTask = copy(implementation = ExternalTask(topic))
 
-  // HasExtProperties
-  def prop(prop: (PropKey, String)): ServiceTask =
-    copy(extProperties = extProperties :+ Prop(prop._1, prop._2))
-
   // HasExtInOutputs
   def inputExpression(key: PropKey, expression: String): ServiceTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))
 
@@ -60,10 +56,6 @@ case class SendTask(id: BpmnNodeId,
   def delegate(expression: String): SendTask = copy(implementation = DelegateExpression(expression))
 
   def external(topic: String): SendTask = copy(implementation = ExternalTask(topic))
-
-  // HasExtProperties
-  def prop(prop: (PropKey, String)): SendTask =
-    copy(extProperties = extProperties :+ Prop(prop._1, prop._2))
 
   // HasExtInOutputs
   def inputExpression(key: PropKey, expression: String): SendTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))
@@ -129,10 +121,6 @@ case class UserTask(id: BpmnNodeId,
 
   def candidateUser(user: User): UserTask = copy(candidateUsers = candidateUsers :+ user)
 
-  // HasExtProperties
-  def prop(prop: (PropKey, String)): UserTask =
-    copy(extProperties = extProperties :+ Prop(prop._1, prop._2))
-
   // HasExtInOutputs
   def inputExpression(key: PropKey, expression: String): UserTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))
 
@@ -162,10 +150,6 @@ case class BusinessRuleTask(id: BpmnNodeId,
 
   def dmn(decisionRef: FilePath, resultVariable: Identifier = "ruleResult"): BusinessRuleTask = copy(implementation =
     DmnImpl(StaticFile(decisionRef), resultVariable))
-
-  // HasExtProperties
-  def prop(prop: (PropKey, String)): BusinessRuleTask =
-    copy(extProperties = extProperties :+ Prop(prop._1, prop._2))
 
   // HasExtInOutputs
   def inputExpression(key: PropKey, expression: String): BusinessRuleTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))

@@ -12,10 +12,6 @@ case class StartEvent(id: BpmnNodeId,
   extends BpmnEvent
     with HasForm {
 
-  // HasExtProperties
-  def prop(prop: (PropKey, String)): StartEvent =
-    copy(extProperties = extProperties :+ Prop(prop._1, prop._2))
-
 }
 
 case class EndEvent(id: BpmnNodeId,
@@ -23,10 +19,6 @@ case class EndEvent(id: BpmnNodeId,
                     inputs: Seq[InputOutput] = Nil
                    )
   extends BpmnEvent {
-
-  // HasExtProperties
-  def prop(prop: (PropKey, String)): EndEvent =
-    copy(extProperties = extProperties :+ Prop(prop._1, prop._2))
 
 }
 

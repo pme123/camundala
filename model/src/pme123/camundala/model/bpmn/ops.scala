@@ -5,9 +5,9 @@ import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 
 object ops {
 
-  implicit class FormularOps[A: Formular](a: A) {
+  implicit class FormularOps[A: WithForm](a: A) {
     def form(form: UserTaskForm): A =
-      Formular[A].form(a, form)
+      WithForm[A].form(a, form)
 
     def ===(utf: UserTaskForm): A = form(utf)
 
@@ -15,9 +15,14 @@ object ops {
       form(EmbeddedDeploymentForm(StaticFile(fileName, resourcePath)))
   }
 
-  implicit class ValidationOps[A: Validation](a: A) {
+  implicit class WithExtPropertiesOps[A: WithProperties](a: A) {
+    def prop(key: PropKey, value: String): A =
+      WithProperties[A].prop(a, key, value)
+  }
+
+  implicit class ValidationOps[A: WithConstraint](a: A) {
     def validate(constraint: Constraint): A =
-      Validation[A].validate(a, constraint)
+      WithConstraint[A].validate(a, constraint)
 
     def readonly: A = validate(Readonly)
 
