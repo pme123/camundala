@@ -1,7 +1,5 @@
 package pme123.camundala.model.bpmn
 
-import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
-
 sealed trait BpmnEvent
   extends BpmnNode
     with HasExtProperties {
@@ -13,11 +11,6 @@ case class StartEvent(id: BpmnNodeId,
                      )
   extends BpmnEvent
     with HasForm {
-
-  def form(form: UserTaskForm): StartEvent = copy(maybeForm = Some(form))
-
-  def embeddedForm(fileName: FilePath, resourcePath: PathElem): StartEvent =
-    copy(maybeForm = Some(EmbeddedDeploymentForm(StaticFile(fileName, resourcePath))))
 
   // HasExtProperties
   def prop(prop: (PropKey, String)): StartEvent =

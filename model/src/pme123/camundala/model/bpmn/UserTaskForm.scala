@@ -1,8 +1,45 @@
 package pme123.camundala.model.bpmn
 
 import eu.timepit.refined.auto._
-import pme123.camundala.model.bpmn.UserTaskForm.FormField.Constraint
+import pme123.camundala.model.bpmn.Constraint._
+import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
+import pme123.camundala.model.bpmn.UserTaskForm.FormField.{EnumField, SimpleField}
 import pme123.camundala.model.bpmn.UserTaskForm.FormFieldType.{BooleanType, EnumType, StringType}
+
+trait HasForm
+  extends BpmnNode {
+
+  def maybeForm: Option[UserTaskForm]
+
+  def formStaticFiles: Set[StaticFile] = maybeForm.toSet[UserTaskForm].flatMap(_.staticFiles)
+}
+
+sealed trait Formular[T] {
+  def form(node: T, form: UserTaskForm): T
+}
+
+object Formular {
+
+  def apply[A](implicit node: Formular[A]): Formular[A] = node
+
+  //needed only if we want to support notation: form(...)
+  def form[A: Formular](node: A, form: UserTaskForm): A =
+    Formular[A].form(node, form)
+
+  //type class instances
+  def instance[A](func: (A, UserTaskForm) => A): Formular[A] =
+    new Formular[A] {
+      def form(field: A, form:UserTaskForm): A =
+        func(field, form)
+    }
+
+  implicit val userTask: Formular[UserTask] =
+    instance((node, form) => node.copy(maybeForm = Some(form)))
+
+  implicit val enumField: Formular[StartEvent] =
+    instance((node, form) => node.copy(maybeForm = Some(form)))
+
+}
 
 sealed trait UserTaskForm {
 
@@ -125,26 +162,14 @@ object UserTaskForm {
 
       def width(w: Int): SimpleField = copy(width = w)
 
-      def validate(constraint: Constraint): SimpleField = copy(validations = validations :+ constraint)
-
       override def prop(prop: (PropKey, String)): SimpleField = copy(properties = properties :+ Prop(prop._1, prop._2))
     }
 
-    def text(id: String, readOnly: Boolean = false): SimpleField =
-      if (readOnly)
-        textReadOnly(id)
-      else
-        SimpleField(id)
+    def text(id: String): SimpleField =
+      SimpleField(id)
 
-    def textReadOnly(id: String): SimpleField = SimpleField(id).validate(Constraint.Readonly)
-
-    def boolean(id: String, readOnly: Boolean = false): SimpleField =
-      if (readOnly)
-        textReadOnly(id)
-      else
-        SimpleField(id, `type` = BooleanType)
-
-    def booleanReadOnly(id: String): SimpleField = SimpleField(id, `type` = BooleanType).validate(Constraint.Readonly)
+    def boolean(id: String): SimpleField =
+      SimpleField(id, `type` = BooleanType)
 
     case class EnumField(id: String,
                          label: String = "",
@@ -164,8 +189,6 @@ object UserTaskForm {
 
       def value(prop: (PropKey, String)): EnumField = copy(values = values :+ EnumValue(prop._1, prop._2))
 
-      def validate(constraint: Constraint): EnumField = copy(validations = validations :+ constraint)
-
       override def prop(prop: (PropKey, String)): EnumField = copy(properties = properties :+ Prop(prop._1, prop._2))
     }
 
@@ -179,53 +202,6 @@ object UserTaskForm {
     }
 
     case class EnumValue(key: PropKey, label: String)
-
-    sealed trait Constraint {
-      def name: PropKey
-
-      def config: Option[String]
-    }
-
-    object Constraint {
-
-      case class Custom(name: PropKey, config: Option[String]) extends Constraint
-
-      case object Required extends Constraint {
-        val name: PropKey = "required"
-
-        val config: Option[String] = None
-      }
-
-      case object Readonly extends Constraint {
-        val name: PropKey = "readonly"
-
-        val config: Option[String] = None
-      }
-
-      sealed trait MinMax extends Constraint {
-
-        def value: Int
-
-        val config: Option[String] = Some(s"$value")
-      }
-
-      case class Minlength(value: Int) extends MinMax {
-        val name: PropKey = "minlength"
-      }
-
-      case class Maxlength(value: Int) extends MinMax {
-        val name: PropKey = "maxlength"
-      }
-
-      case class Min(value: Int) extends MinMax {
-        val name: PropKey = "min"
-      }
-
-      case class Max(value: Int) extends MinMax {
-        val name: PropKey = "max"
-      }
-
-    }
 
   }
 
@@ -256,5 +232,32 @@ object UserTaskForm {
     }
 
   }
+
+}
+
+sealed trait Validation[T] {
+  def validate(field: T, constraint: Constraint): T
+}
+
+object Validation {
+
+  def apply[A](implicit validation: Validation[A]): Validation[A] = validation
+
+  //needed only if we want to support notation: show(...)
+  def validate[A: Validation](validation: A, constraint: Constraint): A =
+    Validation[A].validate(validation, constraint)
+
+  //type class instances
+  def instance[A](func: (A, Constraint) => A): Validation[A] =
+    new Validation[A] {
+      def validate(field: A, constraint: Constraint): A =
+        func(field, constraint)
+    }
+
+  implicit val simpleField: Validation[SimpleField] =
+    instance((field, constraint) => field.copy(validations = field.validations :+ constraint))
+
+  implicit val enumField: Validation[EnumField] =
+    instance((field, constraint) => field.copy(validations = field.validations :+ constraint))
 
 }

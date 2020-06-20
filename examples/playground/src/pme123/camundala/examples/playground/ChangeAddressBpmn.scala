@@ -3,9 +3,9 @@ package pme123.camundala.examples.playground
 import eu.timepit.refined.auto._
 import pme123.camundala.camunda.service.restService.Request.Host
 import pme123.camundala.examples.playground.UsersAndGroups._
-import pme123.camundala.model.bpmn.UserTaskForm.FormField.Constraint.Required
 import pme123.camundala.model.bpmn.UserTaskForm.FormField._
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
+import pme123.camundala.model.bpmn.ops._
 import pme123.camundala.model.bpmn._
 
 
@@ -31,7 +31,7 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
                 .value("arnold", "Heinrich Arnold")
                 .value("schuler", "Petra Schuler")
                 .value("meinrad", "Helga Meinrad")
-                .validate(Required)
+                .required
             })
           .prop("waitForTask", "true")
       }.*** {
@@ -71,13 +71,15 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
       UserTask("InformMATask")
         .candidateGroup(maGroup)
         .form(GeneratedForm()
-          .---(textReadOnly("message")
+          .---(text("message")
             .default("Sorry we could not change the Address")
             .prop("display", "message")
             .prop("icon", "info")
+            .readonly
           )
-          .---(textReadOnly("compliance")
+          .---(text("compliance")
             .label("Not approved by:")
+            .readonly
           )
 
         )
@@ -94,7 +96,8 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
 
   lazy val addressChangeForm: GeneratedForm =
     GeneratedForm()
-      .---(textReadOnly("customer"))
+      .---(text("customer")
+        .readonly)
       .---(address("existing", readOnly = true))
       .---(address("new"))
 
@@ -103,10 +106,12 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
       .---(
         GroupField("infosGroup")
           .---(RowFieldGroup("infosGroup")
-            .---(textReadOnly("customer")
-              .width(8))
-            .---(textReadOnly("kube")
-              .width(8)))
+            .---(text("customer")
+              .width(8)
+              .readonly)
+            .---(text("kube")
+              .width(8)
+              .readonly))
       )
       .---(address("existing", readOnly = true))
       .---(address("new", readOnly = true))
@@ -118,9 +123,9 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
 
   private def address(prefix: String, readOnly: Boolean = false): GroupField = {
     def addressField(fieldId: String) = {
-      text(s"/${prefix}Address/$fieldId", readOnly)
+      val field = text(s"/${prefix}Address/$fieldId")
         .label(s"#address.$fieldId")
-        .validate(Required)
+      if (readOnly) field.readonly else field.required
     }
 
     GroupField(s"${prefix}AddressGroup")

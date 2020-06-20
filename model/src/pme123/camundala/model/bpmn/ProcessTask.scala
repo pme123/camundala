@@ -3,7 +3,6 @@ package pme123.camundala.model.bpmn
 import eu.timepit.refined.auto._
 import pme123.camundala.model.bpmn.ScriptLanguage.Groovy
 import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, DmnImpl, ExternalTask}
-import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 
 sealed trait ProcessTask
   extends BpmnNode
@@ -81,15 +80,6 @@ case class SendTask(id: BpmnNodeId,
 
 }
 
-trait HasForm
-  extends BpmnNode {
-
-  def maybeForm: Option[UserTaskForm]
-
-  def formStaticFiles: Set[StaticFile] = maybeForm.toSet[UserTaskForm].flatMap(_.staticFiles)
-
-}
-
 trait UsersAndGroups {
 
   def asList(usersAndGroups: String): Seq[String] =
@@ -138,13 +128,6 @@ case class UserTask(id: BpmnNodeId,
   def candidateGroup(group: Group): UserTask = copy(candidateGroups = candidateGroups :+ group)
 
   def candidateUser(user: User): UserTask = copy(candidateUsers = candidateUsers :+ user)
-
-  def form(form: UserTaskForm): UserTask = copy(maybeForm = Some(form))
-
-  def ===(utf: UserTaskForm): UserTask = form(utf)
-
-  def embeddedForm(fileName: FilePath, resourcePath: PathElem): UserTask =
-    copy(maybeForm = Some(EmbeddedDeploymentForm(StaticFile(fileName, resourcePath))))
 
   // HasExtProperties
   def prop(prop: (PropKey, String)): UserTask =

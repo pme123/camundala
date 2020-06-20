@@ -6,10 +6,11 @@ import pme123.camundala.camunda.service.restService.RequestPath.Path
 import pme123.camundala.examples.playground.UsersAndGroups.{adminGroup, guest, hans, peter, worker}
 import pme123.camundala.examples.playground.bpmns.swapiHost
 import pme123.camundala.model.bpmn.{Bpmn, BpmnProcess, StartEvent, UserTask}
-import pme123.camundala.model.bpmn.UserTaskForm.FormField.Constraint.Required
 import pme123.camundala.model.bpmn.UserTaskForm.FormField.{EnumField, SimpleField}
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
 import eu.timepit.refined.auto._
+import pme123.camundala.model.bpmn.Constraint.Required
+import pme123.camundala.model.bpmn.ops._
 
 object PlaygroundBpmn {
 
@@ -24,7 +25,7 @@ object PlaygroundBpmn {
           .value("films", "Films")
           .value("vehicles", "Vehicles")
           .value("starships", "Starships")
-          .validate(Required)
+          .required
       }
 
   val callSwapiTask = RestServiceTempl(
@@ -56,7 +57,7 @@ object PlaygroundBpmn {
               .--- {
                 SimpleField("swapiResult")
                   .label("SWAPI Result")
-                  .validate(Required)
+                  .required
               })
       )
 
