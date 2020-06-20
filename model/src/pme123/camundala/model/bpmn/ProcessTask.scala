@@ -1,7 +1,6 @@
 package pme123.camundala.model.bpmn
 
 import eu.timepit.refined.auto._
-import pme123.camundala.model.bpmn.ScriptLanguage.Groovy
 import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, DmnImpl, ExternalTask}
 
 sealed trait ProcessTask
@@ -31,18 +30,6 @@ case class ServiceTask(id: BpmnNodeId,
 
   def external(topic: String): ServiceTask = copy(implementation = ExternalTask(topic))
 
-  // HasExtInOutputs
-  def inputExpression(key: PropKey, expression: String): ServiceTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))
-
-  def inputInline(key: PropKey, inlineScript: String): ServiceTask = copy(extInOutputs = extInOutputs.inputInline(key, inlineScript))
-
-  def inputJson(key: PropKey, json: String): ServiceTask = copy(extInOutputs = extInOutputs.inputJson(key, json))
-
-  def outputExpression(key: PropKey, expression: String): ServiceTask = copy(extInOutputs = extInOutputs.outputExpression(key, expression))
-
-  def outputInline(key: PropKey, inlineScript: String): ServiceTask = copy(extInOutputs = extInOutputs.outputInline(key, inlineScript))
-
-  def outputJson(key: PropKey, json: String): ServiceTask = copy(extInOutputs = extInOutputs.outputJson(key, json))
 }
 
 case class SendTask(id: BpmnNodeId,
@@ -56,19 +43,6 @@ case class SendTask(id: BpmnNodeId,
   def delegate(expression: String): SendTask = copy(implementation = DelegateExpression(expression))
 
   def external(topic: String): SendTask = copy(implementation = ExternalTask(topic))
-
-  // HasExtInOutputs
-  def inputExpression(key: PropKey, expression: String): SendTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))
-
-  def inputInline(key: PropKey, inlineScript: String): SendTask = copy(extInOutputs = extInOutputs.inputInline(key, inlineScript))
-
-  def inputJson(key: PropKey, json: String): SendTask = copy(extInOutputs = extInOutputs.inputJson(key, json))
-
-  def outputExpression(key: PropKey, expression: String): SendTask = copy(extInOutputs = extInOutputs.outputExpression(key, expression))
-
-  def outputInline(key: PropKey, inlineScript: String): SendTask = copy(extInOutputs = extInOutputs.outputInline(key, inlineScript))
-
-  def outputJson(key: PropKey, json: String): SendTask = copy(extInOutputs = extInOutputs.outputJson(key, json))
 
 }
 
@@ -121,21 +95,6 @@ case class UserTask(id: BpmnNodeId,
 
   def candidateUser(user: User): UserTask = copy(candidateUsers = candidateUsers :+ user)
 
-  // HasExtInOutputs
-  def inputExpression(key: PropKey, expression: String): UserTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))
-
-  def inputInline(key: PropKey, inlineScript: String): UserTask = copy(extInOutputs = extInOutputs.inputInline(key, inlineScript))
-
-  def inputExternal(key: PropKey, scriptPath: FilePath, language: ScriptLanguage = Groovy, includes: Seq[String] = Seq.empty): UserTask = copy(extInOutputs = extInOutputs.inputExternal(key, scriptPath, language, includes))
-
-  def inputJson(key: PropKey, json: String): UserTask = copy(extInOutputs = extInOutputs.inputJson(key, json))
-
-  def outputExpression(key: PropKey, expression: String): UserTask = copy(extInOutputs = extInOutputs.outputExpression(key, expression))
-
-  def outputInline(key: PropKey, inlineScript: String): UserTask = copy(extInOutputs = extInOutputs.outputInline(key, inlineScript))
-
-  def outputJson(key: PropKey, json: String): UserTask = copy(extInOutputs = extInOutputs.outputJson(key, json))
-
 }
 
 //<businessRuleTask id="CountryRiskTask" name="Country Risk" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:resultVariable="approvalRequired" camunda:decisionRef="country-risk" camunda:mapDecisionResult="singleEntry">
@@ -150,21 +109,6 @@ case class BusinessRuleTask(id: BpmnNodeId,
 
   def dmn(decisionRef: FilePath, resultVariable: Identifier = "ruleResult"): BusinessRuleTask = copy(implementation =
     DmnImpl(StaticFile(decisionRef), resultVariable))
-
-  // HasExtInOutputs
-  def inputExpression(key: PropKey, expression: String): BusinessRuleTask = copy(extInOutputs = extInOutputs.inputExpression(key, expression))
-
-  def inputExternal(key: PropKey, scriptPath: FilePath, language: ScriptLanguage = Groovy, includes: Seq[String] = Seq.empty): BusinessRuleTask = copy(extInOutputs = extInOutputs.inputExternal(key, scriptPath, language, includes))
-
-  def inputInline(key: PropKey, inlineScript: String): BusinessRuleTask = copy(extInOutputs = extInOutputs.inputInline(key, inlineScript))
-
-  def inputJson(key: PropKey, json: String): BusinessRuleTask = copy(extInOutputs = extInOutputs.inputJson(key, json))
-
-  def outputExpression(key: PropKey, expression: String): BusinessRuleTask = copy(extInOutputs = extInOutputs.outputExpression(key, expression))
-
-  def outputInline(key: PropKey, inlineScript: String): BusinessRuleTask = copy(extInOutputs = extInOutputs.outputInline(key, inlineScript))
-
-  def outputJson(key: PropKey, json: String): BusinessRuleTask = copy(extInOutputs = extInOutputs.outputJson(key, json))
 
 }
 

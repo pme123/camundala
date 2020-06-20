@@ -10,6 +10,4 @@ case class SequenceFlow(id: BpmnNodeId,
 
   def expression(expr: String): SequenceFlow = copy(maybeExpression = Some(Expression(expr)))
 
-  def prop(prop: (PropKey, String)): SequenceFlow = copy(extProperties = extProperties :+ Prop(prop._1, prop._2))
-
 }

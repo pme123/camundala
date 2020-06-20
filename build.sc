@@ -21,6 +21,7 @@ object Version {
   //val zioMacros = "1.0.0-RC18-2+99-bb2ded5f-SNAPSHOT"//"
   val zioLogging = "0.3.0"
   val refined = "0.9.14"
+  val quicklens = "1.6.0"
 
   // config
   val zioConfig = "1.0.0-RC20"
@@ -59,7 +60,7 @@ object Libs {
   val zio = ivy"dev.zio::zio:${Version.zio}"
   val zioLogging = ivy"dev.zio::zio-logging-slf4j:${Version.zioLogging}"
   val refinded = ivy"eu.timepit::refined:${Version.refined}"
-
+  // val quicklens = ivy"com.softwaremill.quicklens::quicklens:${Version.quicklens}"
   // config
   val zioConfig = ivy"dev.zio::zio-config:${Version.zioConfig}"
   val zioConfigTypesafe = ivy"dev.zio::zio-config-typesafe:${Version.zioConfig}"

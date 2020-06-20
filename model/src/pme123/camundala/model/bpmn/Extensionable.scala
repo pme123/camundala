@@ -5,7 +5,6 @@ import pme123.camundala.model.bpmn.ScriptLanguage.Groovy
 
 
 trait HasExtProperties {
-
   def extProperties: ExtProperties
 }
 
@@ -54,6 +53,54 @@ trait HasExtInOutputs {
   def extInOutputs: ExtInOutputs
 
   def inOutStaticFiles: Set[StaticFile] = extInOutputs.staticFiles
+
+  protected def inputExpressionExt(key: PropKey, expression: String): ExtInOutputs = extInOutputs.inputExpression(key, expression)
+
+  def inputInlineExt(key: PropKey, inlineScript: String): ExtInOutputs = extInOutputs.inputInline(key, inlineScript)
+
+  def inputJsonExt(key: PropKey, json: String): ExtInOutputs = extInOutputs.inputJson(key, json)
+
+  def outputExpressionExt(key: PropKey, expression: String): ExtInOutputs = extInOutputs.outputExpression(key, expression)
+
+  def outputInlineExt(key: PropKey, inlineScript: String): ExtInOutputs = extInOutputs.outputInline(key, inlineScript)
+
+  def outputJsonExt(key: PropKey, json: String): ExtInOutputs = extInOutputs.outputJson(key, json)
+
+
+}
+
+trait WithInOutputs[T] {
+  def extInOutputs(hasInOutputs: T): ExtInOutputs
+
+  def inOutputs(hasInOutputs: T, addInOut: ExtInOutputs): T
+}
+
+object WithInOutputs {
+
+  def apply[A](implicit withProperties: WithInOutputs[A]): WithInOutputs[A] = withProperties
+
+  //needed only if we want to support notation: show(...)
+  def inOutputs[A: WithInOutputs](hasInOuts: A, addInOut: ExtInOutputs): A =
+    WithInOutputs[A].inOutputs(hasInOuts, addInOut)
+
+
+  //type class instances
+  def instance[A](func2: A => ExtInOutputs, func: (A, ExtInOutputs) => A): WithInOutputs[A] =
+    new WithInOutputs[A] {
+      def inOutputs(hasProps: A, inOut: ExtInOutputs): A =
+        func(hasProps, inOut)
+
+      def extInOutputs(hasProps: A): ExtInOutputs = func2(hasProps)
+    }
+
+  implicit val userTask: WithInOutputs[UserTask] =
+    instance(node => node.extInOutputs, (node, addInOut: ExtInOutputs) => node.copy(extInOutputs = addInOut))
+  implicit val serviceTask: WithInOutputs[ServiceTask] =
+    instance(node => node.extInOutputs, (node, addInOut: ExtInOutputs) => node.copy(extInOutputs = addInOut))
+  implicit val sendTask: WithInOutputs[SendTask] =
+    instance(node => node.extInOutputs, (node, addInOut: ExtInOutputs) => node.copy(extInOutputs = addInOut))
+  implicit val businessRuleTask: WithInOutputs[BusinessRuleTask] =
+    instance(node => node.extInOutputs, (node, addInOut: ExtInOutputs) => node.copy(extInOutputs = addInOut))
 }
 
 case class ExtProperties(properties: Seq[Prop] = Seq.empty) {
@@ -79,6 +126,8 @@ case class ExtInOutputs(inputs: Seq[InputOutput] = Nil, outputs: Seq[InputOutput
   def inputJson(key: PropKey, json: String): ExtInOutputs = copy(inputs = inputs :+ InputOutput(key, JsonExpression(json)))
 
   def outputExpression(key: PropKey, expression: String): ExtInOutputs = copy(outputs = outputs :+ InputOutput(key, Expression(expression)))
+
+  def outputExternal(key: PropKey, scriptPath: FilePath, language: ScriptLanguage = Groovy, includes: Seq[String] = Seq.empty): ExtInOutputs = copy(outputs = outputs :+ InputOutput(key, ExternalScript(StaticFile(scriptPath, includes = includes), language)))
 
   def outputInline(key: PropKey, inlineScript: String): ExtInOutputs = copy(outputs = outputs :+ InputOutput(key, InlineScript(inlineScript)))
 

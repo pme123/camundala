@@ -12,6 +12,7 @@ import pme123.camundala.camunda.service.restService
 import pme123.camundala.camunda.service.restService.Response.{HandledError, NoContent, WithContent}
 import pme123.camundala.camunda.service.restService._
 import pme123.camundala.camunda.{CamundaLayers, JsonEnDecoders}
+import pme123.camundala.model.bpmn.ops._
 import pme123.camundala.model.bpmn._
 import zio.Runtime.default.unsafeRun
 import zio.{UIO, ZIO, logging}
