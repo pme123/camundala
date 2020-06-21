@@ -13,10 +13,15 @@ case class Bpmn(id: BpmnId,
 
   def process(proc: BpmnProcess): Bpmn = copy(processes = processes :+ proc)
 
+  lazy val idVal: String = idAsVal(id.value)
+
   def generateDsl(): String =
     s"""
-       |Bpmn("$id", ${xml.generateDsl()})
-       |   ${processes.map(_.generateDsl()).mkString}
+       |lazy val $idVal: Bpmn =
+       |  Bpmn("$id", ${xml.generateDsl()})
+       |${processes.map(p => s"    .###(${p.idVal})").mkString("\n")}
+       |
+       |${processes.map(_.generateDsl()).mkString("\n")}
        |""".stripMargin
 
   lazy val processMap: Map[BpmnId, BpmnProcess] = processes.map(p => p.id -> p).toMap
@@ -46,11 +51,28 @@ case class BpmnProcess(id: ProcessId,
 
   def users(): Seq[User] = userTasks.flatMap(_.users()) ++ starterUsers.users
 
+  def allNodes: Seq[BpmnNode] =
+    startEvents ++
+      userTasks ++
+      serviceTasks ++
+      businessRuleTasks ++
+      sendTasks ++
+      exclusiveGateways ++
+      parallelGateways ++
+      sequenceFlows
+
+  lazy val idVal: String = idAsVal(id.value)
+
   def generateDsl(): String =
-    s""".### {
-       |    BpmnProcess("${id.value}")
-       |${genDsl(startEvents)}${genDsl(userTasks)}${genDsl(serviceTasks)}${genDsl(sendTasks)}${genDsl(businessRuleTasks)}${genDsl(exclusiveGateways)}${genDsl(parallelGateways)}${genDsl(sequenceFlows)}
-       |}""".stripMargin
+  s"""lazy val $idVal: BpmnProcess =
+     |  BpmnProcess("$id")
+     |${allNodes.map(n => s"   .***(${n.idVal})").mkString("\n")}
+     |
+     |${allNodes.map(_.generateDsl()).mkString("\n")}
+     |""".stripMargin
+
+  private def nodeIds(nodes: Seq[BpmnNode]) =
+    nodes.map(_.id)
 
   private def genDsl(nodes: Seq[BpmnNode]) =
     nodes.map(_.generateDsl()).mkString
@@ -121,13 +143,13 @@ case class BpmnProcess(id: ProcessId,
 trait BpmnNode {
   def id: BpmnNodeId
 
+  lazy val idVal: String = idAsVal(id.value)
+
   def generate(): String =
-    s"""${getClass.getSimpleName}("${id.value}")"""
+    s"""${getClass.getSimpleName}("$id")"""
 
   def generateDsl(): String =
-    s""".*** {
-       |         ${getClass.getSimpleName}("${id.value}")
-       |}""".stripMargin
+    s"""lazy val $idVal: ${getClass.getSimpleName} = ${generate()}"""
 }
 
 

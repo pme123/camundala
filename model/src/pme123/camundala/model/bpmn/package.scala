@@ -86,4 +86,15 @@ package object bpmn {
     ZIO.fromEither(refineV[TrimmedNonEmpty](username))
       .mapError(ex => ModelException(s"Could not create Username $username:\n $ex"))
 
+  def idAsVal(id: String) =
+    id
+      .replace(".", "_")
+      .replace("-", "_")
+
+  def generateTitle(text:String): String =
+    s"""
+       |/${"*" * 50}
+       | * $text
+       | ${"*" * 50}/
+       | """.stripMargin
 }
