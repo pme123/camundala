@@ -32,10 +32,10 @@ object TestData {
             .prop("KPI-Ratio", "Tweet Approved")
         ))
       .###(
-        BpmnProcess("TestDemoProcess"
-        ).*** {
-          StartEvent("startEvent")
-        }.*** {
+        BpmnProcess("TestDemoProcess")
+          .*** {
+            StartEvent("startEvent")
+          }.*** {
           ServiceTask("external-task-example")
             .external("myTopic")
         }

@@ -36,8 +36,8 @@ package object bpmn {
 
   //TODO problem in zio-config with And
   type TrimmedNonEmpty = /*Trimmed And*/ NonEmpty
-  type Username = String Refined  TrimmedNonEmpty
-  type Password = String Refined  TrimmedNonEmpty
+  type Username = String Refined TrimmedNonEmpty
+  type Password = String Refined TrimmedNonEmpty
   type Email = String Refined EmailRegex
 
   def bpmnIdFromFilePath(fileName: FilePath): ZIO[Any, ModelException, BpmnId] =
@@ -86,12 +86,16 @@ package object bpmn {
     ZIO.fromEither(refineV[TrimmedNonEmpty](username))
       .mapError(ex => ModelException(s"Could not create Username $username:\n $ex"))
 
-  def idAsVal(id: String) =
-    id
-      .replace(".", "_")
-      .replace("-", "_")
+  def idAsVal(id: String): String =
+    id.split("""[_.-]""")
+      .toList match {
+      case Nil => ""
+      case head :: Nil => head
+      case head :: tail => head +
+        tail.map(str => str.head.toUpper +: str.drop(1)).mkString
+    }
 
-  def generateTitle(text:String): String =
+  def generateTitle(text: String): String =
     s"""
        |/${"*" * 50}
        | * $text

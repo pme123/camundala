@@ -6,6 +6,9 @@ import zio.test.Assertion._
 
 object BpmnSuite extends DefaultRunnableSpec {
   override def spec: ZSpec[TestEnvironment, Any] = suite("BpmnSuite")(
+    test("Generate IdAsVal") {
+      assert(bpmn.idAsVal("my_val-with.extension"))(equalTo("myValWithExtension"))
+    },
     test("Extract Static Files") {
       assert(TestData.bpmn.staticFiles.size)(equalTo(2) ?? "Number of static files")
     },

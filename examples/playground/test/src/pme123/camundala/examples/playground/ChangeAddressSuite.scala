@@ -30,8 +30,8 @@ class ChangeAddressSuite {
 
   @BeforeClass
   val init: Unit = unsafeRun {
-    (bpmnRegister.registerBpmn(bpmn.addressBpmn) *>
-      bpmnService.generateBpmn(bpmn.addressBpmn.id))
+    (bpmnRegister.registerBpmn(bpmn.ChangeAddressBpmn) *>
+      bpmnService.generateBpmn(bpmn.ChangeAddressBpmn.id))
       .mapError(e =>
         logging.log.error("Problem generating BPMN files" + e.toString))
       .map(paths => logging.log.info(s"Paths generated: $paths"))
@@ -55,7 +55,7 @@ class ChangeAddressSuite {
     "_generated/bpmn/country-risk.dmn"))
   def testHappyPath(): Unit = {
 
-    val process = bpmn.changeAddressProcess
+    val process = bpmn.ChangeAddressDemo
 
     val processInstance = runtimeService.startProcessInstanceByKey(process.id.value,  Map[String, AnyRef]("customer" -> "meier").asJava)
 

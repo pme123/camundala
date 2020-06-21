@@ -16,26 +16,45 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
                              complianceGroup: Group = adminGroup,
                              addressHost: Host = Host.unknown) {
 
-  lazy val addressBpmn: Bpmn =
+  lazy val ChangeAddressBpmn: Bpmn =
     Bpmn("ChangeAddress.bpmn", "ChangeAddress.bpmn")
-      .###(changeAddressProcess)
+      .processes(
+        ChangeAddressDemo
+      )
 
-  lazy val changeAddressProcess: BpmnProcess =
+  lazy val ChangeAddressDemo: BpmnProcess =
     BpmnProcess("ChangeAddressDemo")
-      .starterGroup(maGroup)
-      .***(CustomerSearchStartEvent)
-      .***(GetAddressTask)
-      .***(AddressChangeTask)
-      .***(CountryRiskTask)
-      .***(ApprovalRequiredGateway)
-      .***(NoApprovalRequiredSequenceFlow)
-      .***(SaveToFCSTask)
-      .***(ApprovalRequiredSequenceFlow)
-      .***(ApproveAddressTask)
-      .***(AddressApprovedGateway)
-      .***(AddressApprovedSequenceFlow)
-      .***(AddressNotApprovedSequenceFlow)
-      .***(InformMATask)
+      .startEvents(
+        CustomerSearchStartEvent
+      )
+      .userTasks(
+        ApproveAddressTask,
+        AddressChangeTask,
+        InformMATask
+      )
+      .serviceTasks(
+        GetAddressTask,
+        SaveToFCSTask
+      )
+      .businessRuleTasks(
+        CountryRiskTask
+      )
+      .sendTasks(
+
+      )
+      .exclusiveGateways(
+        ApprovalRequiredGateway,
+        AddressApprovedGateway
+      )
+      .parallelGateways(
+
+      )
+      .sequenceFlows(
+        ApprovalRequiredSequenceFlow,
+        NoApprovalRequiredSequenceFlow,
+        AddressApprovedSequenceFlow,
+        AddressNotApprovedSequenceFlow,
+      )
 
   lazy val CustomerSearchStartEvent: StartEvent = StartEvent("CustomerSearchStartEvent")
     .form(GeneratedForm()

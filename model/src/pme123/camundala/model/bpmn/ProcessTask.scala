@@ -47,7 +47,7 @@ case class CandidateGroups(groups: Group*) extends UsersAndGroups {
   def asString(str: String): String =
     (groups.map(_.id.value) ++ asList(str)).distinct.mkString(",")
 
-  def :+(group: Group): CandidateGroups = CandidateGroups(groups = groups :+ group: _*)
+  def ++(candGroups: Seq[Group]): CandidateGroups = CandidateGroups(groups = groups ++ candGroups: _*)
 
 }
 
@@ -59,7 +59,7 @@ case class CandidateUsers(users: User*) extends UsersAndGroups {
   def asString(str: String): String =
     (users.map(_.username.value) ++ asList(str)).distinct.mkString(",")
 
-  def :+(user: User): CandidateUsers = CandidateUsers(users = users :+ user: _*)
+  def ++(candUsers: Seq[User]): CandidateUsers = CandidateUsers(users = users ++ candUsers: _*)
 
 }
 
@@ -81,9 +81,13 @@ case class UserTask(id: BpmnNodeId,
 
   def users(): Seq[User] = candidateUsers.users
 
-  def candidateGroup(group: Group): UserTask = copy(candidateGroups = candidateGroups :+ group)
+  def candidateGroups(candGroups: Group*): UserTask = copy(candidateGroups = candidateGroups ++ candGroups)
 
-  def candidateUser(user: User): UserTask = copy(candidateUsers = candidateUsers :+ user)
+  def candidateGroup(group: Group): UserTask = candidateGroups(group)
+
+  def candidateUsers(users: User*): UserTask = copy(candidateUsers = candidateUsers ++ users)
+
+  def candidateUser(user: User): UserTask = candidateUsers(user)
 
 }
 

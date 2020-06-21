@@ -9,9 +9,11 @@ case class Bpmn(id: BpmnId,
 
   def users(): Seq[User] = processes.flatMap(_.users())
 
-  def ###(proc: BpmnProcess): Bpmn = process(proc)
+  def processes(procs: BpmnProcess*): Bpmn = copy(processes = processes ++ procs)
 
-  def process(proc: BpmnProcess): Bpmn = copy(processes = processes :+ proc)
+  def process(proc: BpmnProcess): Bpmn = processes(proc)
+
+  def ###(proc: BpmnProcess): Bpmn = processes(proc)
 
   lazy val idVal: String = idAsVal(id.value)
 
@@ -19,7 +21,9 @@ case class Bpmn(id: BpmnId,
     s"""
        |lazy val $idVal: Bpmn =
        |  Bpmn("$id", ${xml.generateDsl()})
-       |${processes.map(p => s"    .###(${p.idVal})").mkString("\n")}
+       |    .processes(
+       |       ${processes.map(p => s"${p.idVal}").mkString(",\n")}
+       |    )
        |
        |${processes.map(_.generateDsl()).mkString("\n")}
        |""".stripMargin
@@ -51,31 +55,40 @@ case class BpmnProcess(id: ProcessId,
 
   def users(): Seq[User] = userTasks.flatMap(_.users()) ++ starterUsers.users
 
-  def allNodes: Seq[BpmnNode] =
-    startEvents ++
-      userTasks ++
-      serviceTasks ++
-      businessRuleTasks ++
-      sendTasks ++
-      exclusiveGateways ++
-      parallelGateways ++
-      sequenceFlows
+  /**
+    * create an ordered list of all nodes, grouped by there names
+    */
+  def allNodes: Seq[(String, Seq[BpmnNode])] =
+    Seq(("startEvents", startEvents),
+      ("userTasks", userTasks),
+      ("serviceTasks", serviceTasks),
+      ("businessRuleTasks", businessRuleTasks),
+      ("sendTasks", sendTasks),
+      ("exclusiveGateways", exclusiveGateways),
+      ("parallelGateways", parallelGateways),
+      ("sequenceFlows", sequenceFlows)
+    )
 
   lazy val idVal: String = idAsVal(id.value)
 
   def generateDsl(): String =
-  s"""lazy val $idVal: BpmnProcess =
-     |  BpmnProcess("$id")
-     |${allNodes.map(n => s"   .***(${n.idVal})").mkString("\n")}
-     |
-     |${allNodes.map(_.generateDsl()).mkString("\n")}
-     |""".stripMargin
-
-  private def nodeIds(nodes: Seq[BpmnNode]) =
-    nodes.map(_.id)
-
-  private def genDsl(nodes: Seq[BpmnNode]) =
-    nodes.map(_.generateDsl()).mkString
+    s"""lazy val $idVal: BpmnProcess =
+       |  BpmnProcess("$id")
+       |${
+      allNodes.map { case (name: String, nodes: Seq[BpmnNode]) =>
+        s"""    .$name(
+           |${nodes.map(n => s"        ${n.idVal}").mkString(",\n")}
+           |    )""".stripMargin
+      }.mkString("\n")
+    }
+       |
+       |${
+      allNodes.map { case (name: String, nodes: Seq[BpmnNode]) =>
+        s"""//*** $name ***
+           |${nodes.map(_.generateDsl()).mkString("\n")}""".stripMargin
+      }.mkString("\n")
+    }
+       |""".stripMargin
 
   def staticFiles: Set[StaticFile] =
     startEvents.flatMap(_.formStaticFiles).toSet ++
@@ -97,45 +110,65 @@ case class BpmnProcess(id: ProcessId,
   lazy val parallelGatewayMap: Map[BpmnNodeId, ParallelGateway] = parallelGateways.map(g => g.id -> g).toMap
   lazy val sequenceFlowMap: Map[BpmnNodeId, SequenceFlow] = sequenceFlows.map(g => g.id -> g).toMap
 
-  def starterGroup(group: Group): BpmnProcess = copy(starterGroups = starterGroups :+ group)
+  def starterGroups(groups: Group*): BpmnProcess = copy(starterGroups = starterGroups ++ groups)
+
+  def starterGroup(group: Group): BpmnProcess = starterGroups(group)
 
   def ***(group: Group): BpmnProcess = starterGroup(group)
 
-  def starterUser(user: User): BpmnProcess = copy(starterUsers = starterUsers :+ user)
+  def starterUsers(users: User*): BpmnProcess = copy(starterUsers = starterUsers ++ users)
+
+  def starterUser(user: User): BpmnProcess = starterUsers(user)
 
   def ***(user: User): BpmnProcess = starterUser(user)
 
-  def userTask(userTask: UserTask): BpmnProcess = copy(userTasks = userTasks :+ userTask)
+  def startEvents(events: StartEvent*): BpmnProcess = copy(startEvents = startEvents ++ events)
 
-  def ***(task: UserTask): BpmnProcess = userTask(task)
+  def startEvent(event: StartEvent): BpmnProcess = startEvents(event)
 
-  def serviceTask(task: ServiceTask): BpmnProcess = copy(serviceTasks = serviceTasks :+ task)
+  def ***(event: StartEvent): BpmnProcess = startEvents(event)
 
-  def ***(task: ServiceTask): BpmnProcess = serviceTask(task)
+  def userTasks(tasks: UserTask*): BpmnProcess = copy(userTasks = userTasks ++ tasks)
 
-  def businessRuleTask(task: BusinessRuleTask): BpmnProcess = copy(businessRuleTasks = businessRuleTasks :+ task)
+  def userTask(task: UserTask): BpmnProcess = userTasks(task)
 
-  def ***(task: BusinessRuleTask): BpmnProcess = businessRuleTask(task)
+  def ***(task: UserTask): BpmnProcess = userTasks(task)
 
-  def sendTask(task: SendTask): BpmnProcess = copy(sendTasks = sendTasks :+ task)
+  def serviceTasks(tasks: ServiceTask*): BpmnProcess = copy(serviceTasks = serviceTasks ++ tasks)
 
-  def ***(task: SendTask): BpmnProcess = sendTask(task)
+  def serviceTask(task: ServiceTask): BpmnProcess = serviceTasks(task)
 
-  def startEvent(event: StartEvent): BpmnProcess = copy(startEvents = startEvents :+ event)
+  def ***(task: ServiceTask): BpmnProcess = serviceTasks(task)
 
-  def ***(event: StartEvent): BpmnProcess = startEvent(event)
+  def businessRuleTasks(tasks: BusinessRuleTask*): BpmnProcess = copy(businessRuleTasks = businessRuleTasks ++ tasks)
 
-  def exclusiveGateway(gateway: ExclusiveGateway): BpmnProcess = copy(exclusiveGateways = exclusiveGateways :+ gateway)
+  def businessRuleTask(task: BusinessRuleTask): BpmnProcess = businessRuleTasks(task)
 
-  def ***(gateway: ExclusiveGateway): BpmnProcess = exclusiveGateway(gateway)
+  def ***(task: BusinessRuleTask): BpmnProcess = businessRuleTasks(task)
 
-  def parallelGateway(gateway: ParallelGateway): BpmnProcess = copy(parallelGateways = parallelGateways :+ gateway)
+  def sendTasks(tasks: SendTask*): BpmnProcess = copy(sendTasks = sendTasks ++ tasks)
 
-  def ***(gateway: ParallelGateway): BpmnProcess = parallelGateway(gateway)
+  def sendTask(task: SendTask): BpmnProcess = sendTasks(task)
 
-  def sequenceFlow(flow: SequenceFlow): BpmnProcess = copy(sequenceFlows = sequenceFlows :+ flow)
+  def ***(task: SendTask): BpmnProcess = sendTasks(task)
 
-  def ***(flow: SequenceFlow): BpmnProcess = sequenceFlow(flow)
+  def exclusiveGateways(gateways: ExclusiveGateway*): BpmnProcess = copy(exclusiveGateways = exclusiveGateways ++ gateways)
+
+  def exclusiveGateway(gateway: ExclusiveGateway): BpmnProcess = exclusiveGateways(gateway)
+
+  def ***(gateway: ExclusiveGateway): BpmnProcess = exclusiveGateways(gateway)
+
+  def parallelGateways(gateways: ParallelGateway*): BpmnProcess = copy(parallelGateways = parallelGateways ++ gateways)
+
+  def parallelGateway(gateway: ParallelGateway): BpmnProcess = parallelGateways(gateway)
+
+  def ***(gateway: ParallelGateway): BpmnProcess = parallelGateways(gateway)
+
+  def sequenceFlows(flows: SequenceFlow*): BpmnProcess = copy(sequenceFlows = sequenceFlows ++ flows)
+
+  def sequenceFlow(flow: SequenceFlow): BpmnProcess = sequenceFlows(flow)
+
+  def ***(flow: SequenceFlow): BpmnProcess = sequenceFlows(flow)
 
 }
 
