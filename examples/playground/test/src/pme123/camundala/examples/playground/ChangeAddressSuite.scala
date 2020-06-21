@@ -9,6 +9,7 @@ import pme123.camundala.camunda.{CamundaLayers, bpmnService}
 import pme123.camundala.model.ModelLayers
 import pme123.camundala.model.register.bpmnRegister
 import UsersAndGroups._
+import org.camunda.bpm.engine.test.assertions.bpmn.TaskAssert
 
 import scala.annotation.meta.getter
 import zio._
@@ -33,11 +34,12 @@ class ChangeAddressSuite {
       bpmnService.generateBpmn(bpmn.addressBpmn.id))
       .mapError(e =>
         logging.log.error("Problem generating BPMN files" + e.toString))
-      .map(paths => logging.log.info(""))
+      .map(paths => logging.log.info(s"Paths generated: $paths"))
       .provideCustomLayer(
         ModelLayers.bpmnRegisterLayer ++
           CamundaLayers.bpmnServiceLayer ++
-          CamundaLayers.logLayer("ChangeAddressSuite"))
+          CamundaLayers.logLayer("ChangeAddressSuite")
+      ).unit
   }
 
   @(Rule@getter)
@@ -64,6 +66,7 @@ class ChangeAddressSuite {
       .task()
       .hasName(bpmn.addressChangeUserTask.id.value)
       .hasCandidateGroup(UsersAndGroups.kubeGroup.id.value)
-      .isNotAssigned()
+      .isNotAssigned
+    () // returns Unit
   }
 }

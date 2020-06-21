@@ -141,7 +141,41 @@ trait CamundalaModule
     "-language:postfixOps", // Allows operator syntax in postfix position (deprecated since Scala 2.10)
 
     "-feature", // Emit warning and location for usages of features that should be imported explicitly.
-    "-Xfatal-warnings"            // Fail the compilation if there are any warnings -> check https://alexn.org/blog/2020/05/26/scala-fatal-warnings.html
+    "-Xfatal-warnings", // Fail the compilation if there are any warnings -> check https://alexn.org/blog/2020/05/26/scala-fatal-warnings.html
+    "-Wconf:any:warning-verbose",
+    "-Wunused",
+  // Warnings as errors! -> check https://alexn.org/blog/2020/05/26/scala-fatal-warnings.html
+  "-Xfatal-warnings",
+
+  // Linting options
+  "-unchecked",
+  "-Xcheckinit",
+  "-Xlint:adapted-args",
+  "-Xlint:constant",
+  "-Xlint:delayedinit-select",
+  "-Xlint:deprecation",
+  "-Xlint:doc-detached",
+  "-Xlint:inaccessible",
+  "-Xlint:infer-any",
+  "-Xlint:missing-interpolator",
+  "-Xlint:nullary-override",
+  "-Xlint:nullary-unit",
+  "-Xlint:option-implicit",
+  "-Xlint:package-object-classes",
+  "-Xlint:poly-implicit-overload",
+  "-Xlint:private-shadow",
+  "-Xlint:stars-align",
+  "-Xlint:type-parameter-shadow",
+  "-Wdead-code",
+  "-Wextra-implicit",
+  "-Wnumeric-widen",
+  "-Wunused:implicits",
+  "-Wunused:imports",
+  "-Wunused:locals",
+  "-Wunused:params",
+  "-Wunused:patvars",
+  "-Wunused:privates",
+  "-Wvalue-discard"
   )
 
   def pomSettings = PomSettings(

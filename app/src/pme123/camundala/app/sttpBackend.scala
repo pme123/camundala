@@ -12,15 +12,6 @@ import zio._
 object sttpBackend {
   type SttpTaskBackend = SttpBackend[Task, Nothing, WebSocketHandler]
 
-  def makeSttpBackend: UIO[Managed[Throwable, SttpBackend[Task, Nothing, WebSocketHandler]]] =
-    ZIO
-      .runtime[Any]
-      .map { implicit rts =>
-        Managed.fromEffect(
-          AsyncHttpClientZioBackend()
-        )
-      }
-
   def sttpBackendLayer: TaskLayer[Has[SttpBackend[Task, Nothing, WebSocketHandler]]] =
         Managed.fromEffect(
           AsyncHttpClientZioBackend()

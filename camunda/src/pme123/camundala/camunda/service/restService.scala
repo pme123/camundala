@@ -23,6 +23,8 @@ import zio.clock.Clock
 import zio.duration._
 import zio.logging.Logging
 
+import scala.annotation.nowarn
+
 object restService {
 
   type RestService = Has[Service]
@@ -294,6 +296,7 @@ object restService {
   }
 
   sealed trait RequestBody {
+    @nowarn("cat=unused-params")
     def mapStr(mappings: Map[String, String]): RequestBody = this
   }
 
@@ -315,6 +318,7 @@ object restService {
     }
 
     sealed trait Part {
+      @nowarn("cat=unused-params")
       def mapStr(mappings: Map[String, String]): Part = this
 
     }

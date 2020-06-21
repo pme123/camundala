@@ -3,7 +3,9 @@ package pme123.camundala.model.bpmn
 import eu.timepit.refined.auto._
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField._
-import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormFieldType.{BooleanType, DateType, EnumType, LongType, StringType}
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormFieldType._
+
+import scala.annotation.nowarn
 
 trait HasForm
   extends BpmnNode {
@@ -28,7 +30,7 @@ object WithForm {
   //type class instances
   def instance[A](func: (A, UserTaskForm) => A): WithForm[A] =
     new WithForm[A] {
-      def form(field: A, form:UserTaskForm): A =
+      def form(field: A, form: UserTaskForm): A =
         func(field, form)
     }
 
@@ -106,7 +108,8 @@ object UserTaskForm {
 
       def allFields(): Seq[FormField] = Seq(this)
 
-      def prop(prop: (PropKey, String)): FormField = this
+      @nowarn("cat=unused-params")
+      def prop(key: PropKey, value: String): FormField = this
 
     }
 
@@ -183,7 +186,7 @@ object UserTaskForm {
 
         def width(w: Int): SimpleField = copy(width = w)
 
-        override def prop(prop: (PropKey, String)): SimpleField = copy(properties = properties :+ Prop(prop._1, prop._2))
+        override def prop(key: PropKey, value: String): SimpleField = copy(properties = properties :+ Prop(key, value))
       }
 
       case class EnumField(id: String,
@@ -202,9 +205,9 @@ object UserTaskForm {
 
         def width(w: Int): EnumField = copy(width = w)
 
-        def value(prop: (PropKey, String)): EnumField = copy(values = values :+ EnumValue(prop._1, prop._2))
+        def value(key: PropKey, value: String): EnumField = copy(values = values :+ EnumValue(key, value))
 
-        override def prop(prop: (PropKey, String)): EnumField = copy(properties = properties :+ Prop(prop._1, prop._2))
+        override def prop(key: PropKey, value: String): EnumField = copy(properties = properties :+ Prop(key, value))
       }
 
       case class EnumValues(enums: Seq[EnumValue]) {

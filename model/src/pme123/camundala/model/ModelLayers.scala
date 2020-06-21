@@ -10,7 +10,7 @@ import zio.logging.slf4j.Slf4jLogger
 object ModelLayers {
 
    def logLayer(loggerName: String, prefix: String = "pme123.camundala.model"): ULayer[Logging] =
-    Slf4jLogger.make((context, message) =>
+    Slf4jLogger.make((_, message) =>
       message,
       Some(s"$prefix.$loggerName")
     )

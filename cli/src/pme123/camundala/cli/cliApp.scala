@@ -224,13 +224,11 @@ object cliApp {
           .forever
 
       (projectInfo: ProjectInfo) =>
-        for {
-          _ <- intro *> printProject(projectInfo)
-          _ <- appStart()
-          _ <- appUpdate() // make sure Registry is initialized
-          d <- cliRunner
-        } yield d
-
+        intro *>
+          printProject(projectInfo) *>
+          appStart() *>
+          appUpdate() *> // make sure Registry is initialized
+          cliRunner
   }
 
   private val width = 84

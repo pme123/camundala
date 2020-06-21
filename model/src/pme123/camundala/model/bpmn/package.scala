@@ -40,11 +40,6 @@ package object bpmn {
   type Password = String Refined  TrimmedNonEmpty
   type Email = String Refined EmailRegex
 
-  case class Sensitive(secret: Password) {
-    def value: String = secret.value
-    override def toString: String = "*" * 10
-  }
-
   def bpmnIdFromFilePath(fileName: FilePath): ZIO[Any, ModelException, BpmnId] =
     bpmnIdFromStr(fileName.value)
 

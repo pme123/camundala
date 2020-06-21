@@ -7,6 +7,8 @@ import pme123.camundala.services.StandardApp.StandardAppDeps
 import zio.console.Console
 import zio.{ExitCode, ZIO, ZLayer}
 
+import scala.annotation.nowarn
+
 trait StandardCliApp extends zio.App {
 
   protected def appRunnerLayer: ZLayer[StandardAppDeps, Nothing, AppRunner]
@@ -14,10 +16,9 @@ trait StandardCliApp extends zio.App {
   protected def ident: String
   protected def projectInfo: ProjectInfo
 
+  @nowarn("cat=w-flag-dead-code")
   def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] =
-    (for {
-      _ <- runCli
-    } yield ())
+    runCli
       // you have to provide all the layers here so all fibers have the same register
       .provideCustomLayer(ServicesLayers.appDepsLayer >>> CliLayers.cliLayer(appRunnerLayer))
       .fold(

@@ -9,7 +9,9 @@ import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField._
 import pme123.camundala.model.bpmn._
 import pme123.camundala.model.bpmn.ops._
 
+import scala.annotation.nowarn
 
+@nowarn("cat=lint-missing-interpolator")
 case class ChangeAddressBpmn(maGroup: Group = adminGroup,
                              complianceGroup: Group = adminGroup,
                              addressHost: Host = Host.unknown) {
