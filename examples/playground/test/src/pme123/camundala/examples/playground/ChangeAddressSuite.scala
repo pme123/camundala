@@ -64,7 +64,7 @@ class ChangeAddressSuite {
       .hasVariables("customer")
       .isWaitingAt("GetAddressTask")
       .task()
-      .hasName(bpmn.addressChangeUserTask.id.value)
+      .hasName(bpmn.AddressChangeTask.id.value)
       .hasCandidateGroup(UsersAndGroups.kubeGroup.id.value)
       .isNotAssigned
     () // returns Unit

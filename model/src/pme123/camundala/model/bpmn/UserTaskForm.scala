@@ -66,10 +66,10 @@ object UserTaskForm {
   }
 
   object GeneratedForm {
-    def text(id: String): SimpleField =
+    def textField(id: String): SimpleField =
       SimpleField(id)
 
-    def boolean(id: String): SimpleField =
+    def booleanField(id: String): SimpleField =
       SimpleField(id, `type` = BooleanType)
 
     def longField(id: String): SimpleField =

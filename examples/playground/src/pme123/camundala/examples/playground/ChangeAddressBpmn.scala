@@ -23,72 +23,40 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
   lazy val changeAddressProcess: BpmnProcess =
     BpmnProcess("ChangeAddressDemo")
       .starterGroup(maGroup)
-      .*** {
-        StartEvent("CustomerSearchStartEvent")
-          .form(GeneratedForm()
-            .--- {
-              EnumField("customer") // replace with Lookup Source
-                .label("Customer")
-                .value("muller", "Peter Müller")
-                .value("meier", "Heidi Meier")
-                .value("arnold", "Heinrich Arnold")
-                .value("schuler", "Petra Schuler")
-                .value("meinrad", "Helga Meinrad")
-                .required
-            })
-          .prop("waitForTask", "true")
-      }.*** {
-      AddressService(addressHost).getAddress("GetAddressTask")
-    }.*** {
-      addressChangeUserTask
-    }.*** {
-      BusinessRuleTask("CountryRiskTask")
-        .dmn("country-risk.dmn", "approvalRequired")
-        .inputExternal("currentCountry", "scripts/dmn-in-existing-country.groovy")
-        .inputExternal("targetCountry", "scripts/dmn-in-new-country.groovy")
-    }.*** {
-      ExclusiveGateway("ApprovalRequiredGateway")
-    }.*** {
-      SequenceFlow("NoApprovalRequiredSequenceFlow")
-        .expression("${!approvalRequired}")
-    }.*** {
-      AddressService(addressHost).saveAddress("SaveToFCSTask")
-    }.*** {
-      SequenceFlow("ApprovalRequiredSequenceFlow")
-        .expression("${approvalRequired}")
-    }.*** {
-      UserTask("ApproveAddressTask")
-        .candidateGroup(complianceGroup)
-        .form(approveAddress)
-        .outputExpression("compliance", "${currentUser()}")
-        .prop("jsonVariable", "formJson")
-    }.*** {
-      ExclusiveGateway("AddressApprovedGateway")
-    }.*** {
-      SequenceFlow("AddressApprovedSequenceFlow")
-        .expression("${approveAddress}")
-    }.*** {
-      SequenceFlow("AddressNotApprovedSequenceFlow")
-        .expression("${!approveAddress}")
-    }.*** {
-      UserTask("InformMATask")
-        .candidateGroup(maGroup)
-        .form(GeneratedForm()
-          .---(text("message")
-            .default("Sorry we could not change the Address")
-            .prop("display", "message")
-            .prop("icon", "info")
-            .readonly
-          )
-          .---(text("compliance")
-            .label("Not approved by:")
-            .readonly
-          )
+      .***(CustomerSearchStartEvent)
+      .***(GetAddressTask)
+      .***(AddressChangeTask)
+      .***(CountryRiskTask)
+      .***(ApprovalRequiredGateway)
+      .***(NoApprovalRequiredSequenceFlow)
+      .***(SaveToFCSTask)
+      .***(ApprovalRequiredSequenceFlow)
+      .***(ApproveAddressTask)
+      .***(AddressApprovedGateway)
+      .***(AddressApprovedSequenceFlow)
+      .***(AddressNotApprovedSequenceFlow)
+      .***(InformMATask)
 
-        )
-    }
+  lazy val CustomerSearchStartEvent: StartEvent = StartEvent("CustomerSearchStartEvent")
+    .form(GeneratedForm()
+      .--- {
+        enumField("customer") // replace with Lookup Source
+          .label("Customer")
+          .value("muller", "Peter Müller")
+          .value("meier", "Heidi Meier")
+          .value("arnold", "Heinrich Arnold")
+          .value("schuler", "Petra Schuler")
+          .value("meinrad", "Helga Meinrad")
+          .required
+      })
+    .prop("waitForTask", "true")
 
-  lazy val addressChangeUserTask: UserTask = UserTask("AddressChangeTask")
+  lazy val CountryRiskTask: BusinessRuleTask = BusinessRuleTask("CountryRiskTask")
+    .dmn("country-risk.dmn", "approvalRequired")
+    .inputExternal("currentCountry", "scripts/dmn-in-existing-country.groovy")
+    .inputExternal("targetCountry", "scripts/dmn-in-new-country.groovy")
+
+  lazy val AddressChangeTask: UserTask = UserTask("AddressChangeTask")
     .candidateGroup(maGroup)
     .inputExternal("formJson", "scripts/form-json.groovy", includes = Seq(ConditionExpression.asJson))
     .form(addressChangeForm)
@@ -99,35 +67,36 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
 
   lazy val addressChangeForm: GeneratedForm =
     GeneratedForm()
-      .---(text("customer")
-        .readonly)
-      .---(address("existing", readOnly = true))
-      .---(address("new"))
+      .---(textField("customer").readonly)
+      .---(addressGroup("existing", readOnly = true))
+      .---(addressGroup("new"))
 
-  lazy val approveAddress: GeneratedForm =
+  lazy val ApproveAddressTask: UserTask = UserTask("ApproveAddressTask")
+    .candidateGroup(complianceGroup)
+    .form(approveAddressForm)
+    .outputExpression("compliance", "${currentUser()}")
+    .prop("jsonVariable", "formJson")
+
+  lazy val approveAddressForm: GeneratedForm =
     GeneratedForm()
-      .---(
-        GroupField("infosGroup")
-          .---(RowGroupField("infosGroup")
-            .---(text("customer")
-              .width(8)
-              .readonly)
-            .---(text("kube")
-              .width(8)
-              .readonly))
-      )
-      .---(address("existing", readOnly = true))
-      .---(address("new", readOnly = true))
-      .---(boolean("approveAddress")
-        .prop("isPrimary", "true")
-        .prop("display", "button"))
-      .---(boolean("disapproveAddress")
-        .prop("display", "button"))
+      .---(infoGroup)
+      .---(addressGroup("existing", readOnly = true))
+      .---(addressGroup("new", readOnly = true))
+      .---(approveButton)
+      .---(disapproveButton)
 
-  private def address(prefix: String, readOnly: Boolean = false): GroupField = {
+  lazy val infoGroup: GroupField =
+    groupField("infosGroup")
+      .---(
+        rowGroupField("infosGroup")
+          .---(textField("customer").width(8).readonly)
+          .---(textField("kube").width(8).readonly)
+      )
+
+  def addressGroup(prefix: String, readOnly: Boolean = false): GroupField = {
     def addressField(fieldId: String) = {
-      val field = text(s"/${prefix}Address/$fieldId")
-        .label(s"#address.$fieldId")
+      val field = textField(s"/${prefix}Address/$fieldId")
+        .label(s"#addressGroup.$fieldId")
       if (readOnly) field.readonly else field.required
     }
 
@@ -143,4 +112,47 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
       )
   }
 
+  lazy val approveButton: SimpleField = booleanField("approveAddress")
+    .prop("isPrimary", "true")
+    .prop("display", "button")
+  lazy val disapproveButton: SimpleField = booleanField("disapproveAddress")
+    .prop("display", "button")
+
+  lazy val InformMATask: UserTask = UserTask("InformMATask")
+    .candidateGroup(maGroup)
+    .form(GeneratedForm()
+      .---(
+        textField("message")
+          .default("Sorry we could not change the Address")
+          .prop("display", "message")
+          .prop("icon", "info")
+          .readonly
+      )
+      .---(
+        textField("compliance")
+          .label("Not approved by:")
+          .readonly
+      )
+    )
+
+  private lazy val GetAddressTask = AddressService(addressHost).getAddress("GetAddressTask")
+  private lazy val SaveToFCSTask = AddressService(addressHost).saveAddress("SaveToFCSTask")
+  private lazy val ApprovalRequiredGateway = ExclusiveGateway("ApprovalRequiredGateway")
+  private lazy val AddressApprovedGateway = ExclusiveGateway("AddressApprovedGateway")
+
+  private lazy val ApprovalRequiredSequenceFlow =
+    SequenceFlow("ApprovalRequiredSequenceFlow")
+      .expression("${approvalRequired}")
+
+  private lazy val NoApprovalRequiredSequenceFlow =
+    SequenceFlow("NoApprovalRequiredSequenceFlow")
+      .expression("${!approvalRequired}")
+
+  private lazy val AddressApprovedSequenceFlow =
+    SequenceFlow("AddressApprovedSequenceFlow")
+      .expression("${approveAddress}")
+
+  private lazy val AddressNotApprovedSequenceFlow =
+    SequenceFlow("AddressNotApprovedSequenceFlow")
+      .expression("${!approveAddress}")
 }
