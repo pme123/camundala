@@ -1,17 +1,15 @@
 package pme123.camundala.services
 
-import java.io.PrintWriter
+import java.io.{File, PrintWriter}
 
 import eu.timepit.refined.auto._
-import pme123.camundala.model.bpmn.Url
-import zio.test.Assertion._
-import zio.test.{DefaultRunnableSpec, ZSpec, assert, environment, suite, test}
-import sttp.client._
-import java.io.File
-import sttp.tapir.openapi.OpenAPI
-import sttp.tapir.docs.openapi._
 import pme123.camundala.camunda.DeployRequest
+import pme123.camundala.model.bpmn.Url
+import sttp.client._
 import sttp.model.Uri
+import zio.test.Assertion._
+import zio.test.TestAspect.ignore
+import zio.test._
 
 object HttpServerSuite extends DefaultRunnableSpec {
 
@@ -22,19 +20,20 @@ object HttpServerSuite extends DefaultRunnableSpec {
   def spec: ZSpec[environment.TestEnvironment, Any] =
     suite("HttpServerSuite")(
       test("get Index") {
-        getAndAssert(uri"$url")
+        assert(get(uri"$url"))(containsString("<title>Camundala API</title>"))
       },
       test("get Depoyment") {
-        getAndAssert(uri"$url/deployment")
+        assert(get(uri"$url/deployment"))(equalTo("Services are up and running"))
       },
       test("get Depoyment with Deploy Id") {
-        getAndAssert(uri"$url/myId/deployment", Some("myId"))
+        assert(get(uri"$url/myId/deployment"))(equalTo(s"Services are up and running for DeployId: myId"))
 
       },
       test("post Deploy Multpart") {
         val testFile = File.createTempFile("user-123", ".bpmn")
         val pw = new PrintWriter(testFile)
-        pw.write("This is not a photo")
+        pw.write("""<?xml version="1.0" encoding="UTF-8"?>
+                   |<definitions></definitions>""".stripMargin)
         pw.close()
         import DeployRequest._
         // testing
@@ -50,15 +49,14 @@ object HttpServerSuite extends DefaultRunnableSpec {
         println("Got result: " + result)
 
         assert(result)(equalTo("Services are up and running"))
-      }
+      } @@ ignore // needs work to make reliable test
     )
 
-  private def getAndAssert(uri: Uri, deployId: Option[String] = None) = {
-    val result: String = basicRequest
+  private def get(uri: Uri) = {
+    basicRequest
       .response(asStringAlways)
       .get(uri)
       .send()
       .body
-    assert(result)(equalTo("Services are up and running" + deployId.map(di => s" for DeployId: $di").getOrElse("")))
   }
 }

@@ -65,7 +65,7 @@ class ChangeAddressSuite {
       .task()
      /* .hasName(bpmn.AddressChangeTask.id.value)
       .hasCandidateGroup(UsersAndGroups.kubeGroup.id.value)
-      .isNotAssigned
-    () // returns Unit*/
+      .isNotAssigned*/
+    () // returns Unit
   }
 }

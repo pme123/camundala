@@ -1,10 +1,10 @@
 
 import eu.timepit.refined.auto._
 import pme123.camundala.model.bpmn._
-import pme123.camundala.model.deploy.Deploys
+import pme123.camundala.model.deploy.{CamundaEndpoint, Deploy, Deploys, DockerConfig}
+import pme123.camundala.model.bpmn.ops._
 
-val bpmns: Seq[Bpmn] =
-  Seq(
+val bpmn: Bpmn =
     Bpmn("TwitterDemoProcess.bpmn", "TwitterDemoProcess.bpmn")
       .### {
         BpmnProcess("TwitterDemoProcess")
@@ -40,6 +40,18 @@ val bpmns: Seq[Bpmn] =
             .prop("KPI-Ratio", "Tweet Approved")
         }
       }
-  )
 
-Deploys.standard(bpmns, dockerDir = "examples/docker")
+lazy val devDeploy =
+  Deploy()
+    .bpmn(bpmn)
+    .---(DockerConfig.DefaultDevConfig.dockerDir("examples/docker"))
+
+lazy val remoteDeploy =
+  devDeploy
+      .id("remote")
+    .---(CamundaEndpoint.DefaultRemoteEndpoint)
+    .---(DockerConfig.DefaultRemoteConfig.dockerDir("examples/docker"))
+
+Deploys()
+  .+++(devDeploy)
+  .+++(remoteDeploy)

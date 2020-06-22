@@ -90,7 +90,7 @@ object HttpEndpointServer {
 
   import HttpEndpoint._
 
-  lazy val allRoutes: HttpRoutes[Task] = //indexLogic <+>
+  lazy val allRoutes: HttpRoutes[Task] =
     camundaDeployDummyLogic <+> camundaDeployDummyWithIdLogic <+>
       openApiSwaggerRoutes <+> openApiRedocRoutes
 
