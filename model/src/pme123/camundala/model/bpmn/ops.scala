@@ -36,6 +36,16 @@ object ops {
       WithProperties[A].prop(a, key, value)
   }
 
+  implicit class WithInFlowOps[A: WithInFlow](a: A) {
+    def inFlow(flow: SequenceFlow): A =
+      WithInFlow[A].inFlow(a, flow)
+  }
+
+  implicit class WithOutFlowOps[A: WithOutFlow](a: A) {
+    def outFlow(flow: SequenceFlow): A =
+      WithOutFlow[A].outFlow(a, flow)
+  }
+
   implicit class WithInOutputsOps[A: WithInOutputs](a: A) {
 
     def inOutputs(inOutputs: ExtInOutputs): A =

@@ -7,18 +7,22 @@ sealed trait BpmnEvent
 
 case class StartEvent(id: BpmnNodeId,
                       maybeForm: Option[UserTaskForm] = None,
-                      extProperties: ExtProperties = ExtProperties.none
+                      extProperties: ExtProperties = ExtProperties.none,
+                      outFlows: Seq[SequenceFlow] = Seq.empty
                      )
   extends BpmnEvent
-    with HasForm {
+    with HasForm
+    with HasOutFlows {
 
 }
 
 case class EndEvent(id: BpmnNodeId,
                     extProperties: ExtProperties = ExtProperties.none,
-                    inputs: Seq[InputOutput] = Nil
+                    inputs: Seq[InputOutput] = Nil,
+                    inFlows: Seq[SequenceFlow] = Seq.empty
                    )
-  extends BpmnEvent {
+  extends BpmnEvent
+    with HasInFlows {
 
 }
 

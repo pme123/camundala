@@ -16,25 +16,29 @@ object bpmnGenerator {
     def generate(xmlFile: StaticFile): Task[Bpmn]
   }
 
+  def generate(xmlFile: StaticFile): RIO[BpmnGenerator, Bpmn] =
+    ZIO.accessM(_.get.generate(xmlFile))
+
   type BpmnGeneratorDeps = Logging with AppConfig
 
   lazy val live: URLayer[BpmnGeneratorDeps, BpmnGenerator] =
     ZLayer.fromServices[Logger[String], appConfig.Service, Service] { (log, configService) =>
 
-      (xmlFile: StaticFile) => for {
-        config <- configService.get()
-        xml: Elem <- StreamHelper(config.basePath).xml(xmlFile)
-        bpmnId <- bpmnIdFromFilePath(xmlFile.fileName)
-        processes <- XBpmn(xml).createProcesses()
-        bpmn = Bpmn(bpmnId, xmlFile, processes)
-        _ <- log.debug(
-          s"""
-             |Generated BPMN of $bpmnId
-             |${"*" * 50}
-             |${bpmn.generateDsl()}
-             |${"*" * 50}
-             |""".stripMargin)
-      } yield bpmn
+      (xmlFile: StaticFile) =>
+        for {
+          config <- configService.get()
+          xml: Elem <- StreamHelper(config.basePath).xml(xmlFile)
+          bpmnId <- bpmnIdFromFilePath(xmlFile.fileName)
+          processes <- XBpmn(xml).createProcesses()
+          bpmn = Bpmn(bpmnId, xmlFile, processes)
+          _ <- log.debug(
+            s"""
+               |Generated BPMN of $bpmnId
+               |${"*" * 50}
+               |${bpmn.generateDsl()}
+               |${"*" * 50}
+               |""".stripMargin)
+        } yield bpmn
 
     }
 }

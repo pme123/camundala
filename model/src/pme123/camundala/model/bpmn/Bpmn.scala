@@ -46,6 +46,7 @@ case class BpmnProcess(id: ProcessId,
                        businessRuleTasks: Seq[BusinessRuleTask] = Seq.empty,
                        sendTasks: Seq[SendTask] = Seq.empty,
                        startEvents: Seq[StartEvent] = Seq.empty,
+                       endEvents: Seq[EndEvent] = Seq.empty,
                        exclusiveGateways: Seq[ExclusiveGateway] = Seq.empty,
                        parallelGateways: Seq[ParallelGateway] = Seq.empty,
                        sequenceFlows: Seq[SequenceFlow] = Seq.empty,
@@ -66,13 +67,15 @@ case class BpmnProcess(id: ProcessId,
       ("sendTasks", sendTasks),
       ("exclusiveGateways", exclusiveGateways),
       ("parallelGateways", parallelGateways),
+      ("endEvents", endEvents),
       ("sequenceFlows", sequenceFlows)
     )
 
   lazy val idVal: String = idAsVal(id.value)
 
   def generateDsl(): String =
-    s"""lazy val $idVal: BpmnProcess =
+    s"""//### $idVal ###
+       |lazy val $idVal: BpmnProcess =
        |  BpmnProcess("$id")
        |${
       allNodes.map { case (name: String, nodes: Seq[BpmnNode]) =>
@@ -174,6 +177,7 @@ case class BpmnProcess(id: ProcessId,
 
 // org.camunda.bpm.model.bpmn.instance.FlowNode
 trait BpmnNode {
+  self =>
   def id: BpmnNodeId
 
   lazy val idVal: String = idAsVal(id.value)
@@ -182,7 +186,17 @@ trait BpmnNode {
     s"""${getClass.getSimpleName}("$id")"""
 
   def generateDsl(): String =
-    s"""lazy val $idVal: ${getClass.getSimpleName} = ${generate()}"""
+    s"""lazy val $idVal: ${getClass.getSimpleName} = ${generate()}""".stripMargin +
+      (self match {
+        case n: HasInFlows =>
+          n.generateInFlowDsl
+        case _ => ""
+      }) +
+      (self match {
+        case n: HasOutFlows =>
+          n.generateOutFlowDsl
+        case _ => ""
+      })
 }
 
 

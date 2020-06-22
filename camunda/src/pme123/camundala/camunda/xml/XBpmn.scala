@@ -46,26 +46,29 @@ case class XBpmnProcess(xmlElem: Elem) {
   val userTasks: Seq[XUserTask] =
     (xmlElem \ "userTask").map { case e: Elem => XUserTask(e) }
 
-  val serviceTasks: Seq[XServiceTask[ServiceTask]] =
+  val serviceTasks: Seq[XServiceTask] =
     (xmlElem \ "serviceTask").map { case e: Elem => XServiceTask(e) }
 
-  val businessRuleTasks: Seq[XBusinessRuleTask[BusinessRuleTask]] =
+  val businessRuleTasks: Seq[XBusinessRuleTask] =
     (xmlElem \ "businessRuleTask").map { case e: Elem => XBusinessRuleTask(e) }
 
-  val sendTasks: Seq[XSendTask[SendTask]] =
+  val sendTasks: Seq[XSendTask] =
     (xmlElem \ "sendTask").map { case e: Elem => XSendTask(e) }
 
-  val startEvents: Seq[XStartEvent[StartEvent]] =
+  val startEvents: Seq[XStartEvent] =
     (xmlElem \ "startEvent").map { case e: Elem => XStartEvent(e) }
 
-  val exclusiveGateways: Seq[XExclusiveGateway[ExclusiveGateway]] =
-    (xmlElem \ "exclusiveGateway").map { case e: Elem => XExclusiveGateway[ExclusiveGateway](e) }
+  val endEvents: Seq[XEndEvent] =
+    (xmlElem \ "endEvent").map { case e: Elem => XEndEvent(e) }
 
-  val parallelGateways: Seq[XParallelGateway[ParallelGateway]] =
-    (xmlElem \ "parallelGateway").map { case e: Elem => XParallelGateway[ParallelGateway](e) }
+  val exclusiveGateways: Seq[XExclusiveGateway] =
+    (xmlElem \ "exclusiveGateway").map { case e: Elem => XExclusiveGateway(e) }
 
-  val sequenceFlows: Seq[XSequenceFlow[SequenceFlow]] =
-    (xmlElem \ "sequenceFlow").map { case e: Elem => XSequenceFlow[SequenceFlow](e) }
+  val parallelGateways: Seq[XParallelGateway] =
+    (xmlElem \ "parallelGateway").map { case e: Elem => XParallelGateway(e) }
+
+  val sequenceFlows: Seq[XSequenceFlow] =
+    (xmlElem \ "sequenceFlow").map { case e: Elem => XSequenceFlow(e) }
 
   def merge(maybeProcess: Option[BpmnProcess]): Task[XMergeResult] =
     maybeProcess match {
@@ -119,6 +122,7 @@ case class XBpmnProcess(xmlElem: Elem) {
       bRuleTasks <- Task.foreach(businessRuleTasks)(_.create())
       sendTasks <- Task.foreach(sendTasks)(_.create())
       startEvents <- Task.foreach(startEvents)(_.create())
+      endEvents <- Task.foreach(endEvents)(_.create())
       exGateways <- Task.foreach(exclusiveGateways)(_.create())
       pGateways <- Task.foreach(parallelGateways)(_.create())
       seqFlows <- Task.foreach(sequenceFlows)(_.create())
@@ -132,6 +136,7 @@ case class XBpmnProcess(xmlElem: Elem) {
         bRuleTasks,
         sendTasks,
         startEvents,
+        endEvents,
         exGateways,
         pGateways,
         seqFlows

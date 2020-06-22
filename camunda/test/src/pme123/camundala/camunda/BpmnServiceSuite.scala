@@ -14,7 +14,7 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
   import TestData._
 
   def spec: ZSpec[environment.TestEnvironment, Any] =
-    suite("BpmnSuite")(
+    suite("BpmnServiceSuite")(
       testM("the BPMN Model is merged") {
         for {
           bpmnXml <- bpmnXmlTask

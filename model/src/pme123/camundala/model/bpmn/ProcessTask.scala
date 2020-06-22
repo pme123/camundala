@@ -21,19 +21,27 @@ sealed trait ImplementationTask
 case class ServiceTask(id: BpmnNodeId,
                        implementation: TaskImplementation = DelegateExpression("#{YOURAdapter}"),
                        extProperties: ExtProperties = ExtProperties.none,
-                       extInOutputs: ExtInOutputs = ExtInOutputs.none
+                       extInOutputs: ExtInOutputs = ExtInOutputs.none,
+                       inFlows: Seq[SequenceFlow] = Seq.empty,
+                       outFlows: Seq[SequenceFlow] = Seq.empty
                       )
   extends ProcessTask
-    with ImplementationTask {
+    with ImplementationTask
+    with HasInFlows
+    with HasOutFlows {
 }
 
 case class SendTask(id: BpmnNodeId,
                     implementation: TaskImplementation = DelegateExpression("#{YOURAdapter}"),
                     extProperties: ExtProperties = ExtProperties.none,
-                    extInOutputs: ExtInOutputs = ExtInOutputs.none
+                    extInOutputs: ExtInOutputs = ExtInOutputs.none,
+                    inFlows: Seq[SequenceFlow] = Seq.empty,
+                    outFlows: Seq[SequenceFlow] = Seq.empty
                    )
   extends ProcessTask
-    with ImplementationTask {
+    with ImplementationTask
+    with HasInFlows
+    with HasOutFlows {
 }
 
 trait UsersAndGroups {
@@ -72,10 +80,14 @@ case class UserTask(id: BpmnNodeId,
                     candidateUsers: CandidateUsers = CandidateUsers.none,
                     maybeForm: Option[UserTaskForm] = None,
                     extProperties: ExtProperties = ExtProperties.none,
-                    extInOutputs: ExtInOutputs = ExtInOutputs.none
+                    extInOutputs: ExtInOutputs = ExtInOutputs.none,
+                    inFlows: Seq[SequenceFlow] = Seq.empty,
+                    outFlows: Seq[SequenceFlow] = Seq.empty
                    )
   extends ProcessTask
-    with HasForm {
+    with HasForm
+    with HasInFlows
+    with HasOutFlows {
 
   def groups(): Seq[Group] = candidateGroups.groups
 
@@ -96,10 +108,19 @@ case class UserTask(id: BpmnNodeId,
 case class BusinessRuleTask(id: BpmnNodeId,
                             implementation: TaskImplementation = DmnImpl("yourDMN"),
                             extProperties: ExtProperties = ExtProperties.none,
-                            extInOutputs: ExtInOutputs = ExtInOutputs.none
+                            extInOutputs: ExtInOutputs = ExtInOutputs.none,
+                            inFlows: Seq[SequenceFlow] = Seq.empty,
+                            outFlows: Seq[SequenceFlow] = Seq.empty
                            )
   extends ProcessTask
-    with ImplementationTask {
+    with ImplementationTask
+    with HasInFlows
+    with HasOutFlows {
+
+  override def generateDsl(): String =
+    super.generateDsl() +
+      generateInFlowDsl +
+      generateOutFlowDsl
 
   def dmn(decisionRef: FilePath, resultVariable: Identifier = "ruleResult"): BusinessRuleTask = copy(implementation =
     DmnImpl(StaticFile(decisionRef), resultVariable))

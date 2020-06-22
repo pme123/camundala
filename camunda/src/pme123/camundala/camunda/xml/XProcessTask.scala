@@ -38,16 +38,23 @@ trait XImplementationTask[T <: ImplementationTask]
          } yield result
 }
 
-case class XServiceTask[T <: ServiceTask](xmlElem: Elem)
-  extends XImplementationTask[T] {
+case class XServiceTask(xmlElem: Elem)
+  extends XImplementationTask[ServiceTask]
+    with XHasInFlows[ServiceTask]
+    with XHasOutFlows[ServiceTask] {
+
   val tagName = "ServiceTask"
 
   def create(): IO[ModelException, ServiceTask] =
     for {
       nodeId <- xBpmnId
+      inFlows <- incomingFlows
+      outFlows <- outgoingFlows
     } yield
       ServiceTask(
-        nodeId
+        nodeId,
+        inFlows = inFlows,
+        outFlows = outFlows
       )
 
 }
@@ -57,17 +64,25 @@ object XServiceTask {
   def unapply(node: Node): Option[Elem] = elementUnapply(node, bpmn("serviceTask"))
 }
 
-case class XSendTask[T <: SendTask](xmlElem: Elem)
-  extends XImplementationTask[T] {
+case class XSendTask(xmlElem: Elem)
+  extends XImplementationTask[SendTask]
+    with XHasInFlows[SendTask]
+    with XHasOutFlows[SendTask] {
+
   val tagName = "SendTask"
 
   def create(): IO[ModelException, SendTask] =
     for {
       nodeId <- xBpmnId
+      inFlows <- incomingFlows
+      outFlows <- outgoingFlows
     } yield
       SendTask(
-        nodeId
+        nodeId,
+        inFlows = inFlows,
+        outFlows = outFlows
       )
+
 }
 
 object XSendTask {
@@ -77,6 +92,7 @@ object XSendTask {
 
 trait XHasForm[T <: HasForm]
   extends XBpmnNode[T] {
+
   override def merge(maybeNode: Option[T]): Task[XMergeResult] =
     for {XMergeResult(xml, warnings) <- super.merge(maybeNode)
          result <- UIO.succeed {
@@ -94,17 +110,23 @@ trait XHasForm[T <: HasForm]
 
 case class XUserTask(xmlElem: Elem)
   extends XProcessTask[UserTask]
-    with XHasForm[UserTask] {
+    with XHasForm[UserTask]
+    with XHasInFlows[UserTask]
+    with XHasOutFlows[UserTask] {
+
+  val tagName = "UserTask"
 
   def create(): IO[ModelException, UserTask] =
     for {
       nodeId <- xBpmnId
+      inFlows <- incomingFlows
+      outFlows <- outgoingFlows
     } yield
       UserTask(
-        nodeId
+        nodeId,
+        inFlows = inFlows,
+        outFlows = outFlows
       )
-
-  val tagName = "UserTask"
 
   override def merge(maybeNode: Option[UserTask]): Task[XMergeResult] =
     for {XMergeResult(xml, warnings) <- super.merge(maybeNode)
@@ -123,15 +145,22 @@ case class XUserTask(xmlElem: Elem)
 
 }
 
-case class XBusinessRuleTask[T <: BusinessRuleTask](xmlElem: Elem)
-  extends XImplementationTask[T] {
+case class XBusinessRuleTask(xmlElem: Elem)
+  extends XImplementationTask[BusinessRuleTask]
+    with XHasInFlows[BusinessRuleTask]
+    with XHasOutFlows[BusinessRuleTask] {
+
   val tagName = "BusinessRuleTask"
 
   def create(): IO[ModelException, BusinessRuleTask] =
     for {
       nodeId <- xBpmnId
+      inFlows <- incomingFlows
+      outFlows <- outgoingFlows
     } yield
       BusinessRuleTask(
-        nodeId
+        nodeId,
+        inFlows = inFlows,
+        outFlows = outFlows
       )
 }
