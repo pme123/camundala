@@ -16,6 +16,24 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
                              complianceGroup: Group = adminGroup,
                              addressHost: Host = Host.unknown) {
 
+  /**
+    * small test case to reproduce Test Assert Problem
+    * see https://forum.camunda.org/t/how-to-provide-an-external-script-in-camunda-assert/21080
+    */
+  lazy val ChangeAddressTestBpmn: Bpmn =
+    Bpmn("ChangeAddressTest.bpmn", "ChangeAddressTest.bpmn")
+      .processes(
+        BpmnProcess("ChangeAddressDemo")
+          .***(CustomerSearchStartEvent)
+          .***(
+            UserTask("CustomerEditTask")
+              .===(GeneratedForm()
+                .---(textField("customer"))
+              )
+          ).serviceTask(GetAddressTask)
+          .userTask(AddressChangeTask)
+      )
+
   lazy val ChangeAddressBpmn: Bpmn =
     Bpmn("ChangeAddress.bpmn", "ChangeAddress.bpmn")
       .processes(
@@ -24,6 +42,7 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
 
   lazy val ChangeAddressDemo: BpmnProcess =
     BpmnProcess("ChangeAddressDemo")
+      .starterGroups(userGroup)
       .startEvents(
         CustomerSearchStartEvent
       )
@@ -66,6 +85,7 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
           .value("arnold", "Heinrich Arnold")
           .value("schuler", "Petra Schuler")
           .value("meinrad", "Helga Meinrad")
+          .default("muller")
           .required
       })
     .prop("waitForTask", "true")
@@ -76,7 +96,7 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
     .inputExternal("targetCountry", "scripts/dmn-in-new-country.groovy")
 
   lazy val AddressChangeTask: UserTask = UserTask("AddressChangeTask")
-    .candidateGroup(maGroup)
+    .candidateGroups(maGroup, adminGroup)
     .inputExternal("formJson", "scripts/form-json.groovy", includes = Seq(ConditionExpression.asJson))
     .form(addressChangeForm)
     .outputExpression("formJson", "${formJson}")
@@ -91,7 +111,7 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
       .---(addressGroup("new"))
 
   lazy val ApproveAddressTask: UserTask = UserTask("ApproveAddressTask")
-    .candidateGroup(complianceGroup)
+    .candidateGroups(complianceGroup, adminGroup)
     .form(approveAddressForm)
     .outputExpression("compliance", "${currentUser()}")
     .prop("jsonVariable", "formJson")
@@ -138,7 +158,7 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
     .prop("display", "button")
 
   lazy val InformMATask: UserTask = UserTask("InformMATask")
-    .candidateGroup(maGroup)
+    .candidateGroups(maGroup, adminGroup)
     .form(GeneratedForm()
       .---(
         textField("message")

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0rzdsyh" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.5.0">
+  <bpmn:collaboration id="Collaboration_08clrht">
+    <bpmn:participant id="Participant_0r0o6oa" name="Change Address Test" processRef="ChangeAddressDemo" />
+  </bpmn:collaboration>
+  <bpmn:process id="ChangeAddressDemo" name="Change Address Test" isExecutable="true">
+    <bpmn:startEvent id="CustomerSearchStartEvent" name="Customer Search">
+      <bpmn:outgoing>SequenceFlow_1cvy6h7</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1cvy6h7" sourceRef="CustomerSearchStartEvent" targetRef="CustomerEditTask" />
+    <bpmn:sequenceFlow id="SequenceFlow_1yxqwew" sourceRef="CustomerEditTask" targetRef="GetAddressTask" />
+    <bpmn:userTask id="CustomerEditTask" name="Customer Edit Task">
+      <bpmn:incoming>SequenceFlow_1cvy6h7</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1yxqwew</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="GetAddressTask" name="Get Address">
+      <bpmn:incoming>SequenceFlow_1yxqwew</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1gundau</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1gundau" sourceRef="GetAddressTask" targetRef="AddressChangeTask" />
+    <bpmn:endEvent id="EndEvent_1h55npf">
+      <bpmn:incoming>SequenceFlow_16d57fg</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="AddressChangeTask" name="Address Change">
+      <bpmn:incoming>SequenceFlow_1gundau</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_16d57fg</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_16d57fg" sourceRef="AddressChangeTask" targetRef="EndEvent_1h55npf" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_08clrht">
+      <bpmndi:BPMNShape id="Participant_0r0o6oa_di" bpmnElement="Participant_0r0o6oa" isHorizontal="true">
+        <dc:Bounds x="160" y="40" width="1250" height="290" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1d4374z_di" bpmnElement="CustomerSearchStartEvent">
+        <dc:Bounds x="228" y="139" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="203" y="182" width="86" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1h55npf_di" bpmnElement="EndEvent_1h55npf">
+        <dc:Bounds x="752" y="139" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1cvy6h7_di" bpmnElement="SequenceFlow_1cvy6h7">
+        <di:waypoint x="264" y="157" />
+        <di:waypoint x="330" y="157" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1yxqwew_di" bpmnElement="SequenceFlow_1yxqwew">
+        <di:waypoint x="430" y="157" />
+        <di:waypoint x="470" y="157" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_0w0rfdg_di" bpmnElement="CustomerEditTask">
+        <dc:Bounds x="330" y="117" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_1pyaz9g_di" bpmnElement="GetAddressTask">
+        <dc:Bounds x="470" y="117" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1gundau_di" bpmnElement="SequenceFlow_1gundau">
+        <di:waypoint x="570" y="157" />
+        <di:waypoint x="610" y="157" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_0qn08b8_di" bpmnElement="AddressChangeTask">
+        <dc:Bounds x="610" y="117" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_16d57fg_di" bpmnElement="SequenceFlow_16d57fg">
+        <di:waypoint x="710" y="157" />
+        <di:waypoint x="752" y="157" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

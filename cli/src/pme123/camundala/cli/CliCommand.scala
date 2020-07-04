@@ -22,6 +22,12 @@ object CliCommand {
         .map(GenerateBpmns)
     }
 
+  lazy val runScenariosOpts: Opts[RunScenarios] =
+    Opts.subcommand("runScenarios", "Runs the Test Scenarios that are configured in the Deploy.") {
+      deployId
+        .map(RunScenarios)
+    }
+
   lazy val createUsersAndGroupsOpts: Opts[CreateUsersAndGroups] =
     Opts.subcommand("createUsers", "Creates all Groups and Users that are used in the Deploy.") {
       deployId
@@ -72,6 +78,8 @@ object CliCommand {
   case class ValidateBpmn(bpmnId: BpmnId)
 
   case class GenerateBpmns(deployId: DeployId)
+
+  case class RunScenarios(deployId: DeployId)
 
   case class CreateUsersAndGroups(deployId: DeployId)
 

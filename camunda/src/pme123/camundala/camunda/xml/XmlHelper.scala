@@ -10,6 +10,7 @@ object XmlHelper {
   val camundaXmlnsAttr: Attribute = Attribute("xmlns", camundaPrefix, xmlnsCamunda, Null)
 
   val delegateExpression = "delegateExpression"
+  val javaClass = "class"
   val candidateStarterGroups = "candidateStarterGroups"
   val candidateStarterUsers = "candidateStarterUsers"
   val candidateGroups = "candidateGroups"

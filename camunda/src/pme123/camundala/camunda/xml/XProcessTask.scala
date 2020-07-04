@@ -2,7 +2,7 @@ package pme123.camundala.camunda.xml
 
 import pme123.camundala.camunda.xml.XmlHelper.QName._
 import pme123.camundala.camunda.xml.XmlHelper._
-import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, DmnImpl, ExternalTask}
+import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, DmnImpl, ExternalTask, JavaClass}
 import pme123.camundala.model.bpmn.UserTaskForm.EmbeddedDeploymentForm
 import pme123.camundala.model.bpmn._
 import zio.{IO, Task, UIO, ZIO}
@@ -24,6 +24,8 @@ trait XImplementationTask[T <: ImplementationTask]
              .map {
                case DelegateExpression(expresssion) =>
                  xml % Attribute(camundaPrefix, delegateExpression, expresssion, camundaXmlnsAttr)
+               case JavaClass(className) =>
+                 xml % Attribute(camundaPrefix, javaClass, className, camundaXmlnsAttr)
                case ExternalTask(topic) =>
                  xml % Attribute(camundaPrefix, "topic", topic,
                    Attribute(camundaPrefix, "type", "external", camundaXmlnsAttr))

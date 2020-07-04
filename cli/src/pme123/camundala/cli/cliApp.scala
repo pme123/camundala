@@ -9,6 +9,7 @@ import pme123.camundala.camunda._
 import pme123.camundala.camunda.bpmnGenerator.BpmnGenerator
 import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.httpDeployClient.HttpDeployClient
+import pme123.camundala.camunda.scenarioRunner.{ScenarioResult, ScenarioRunner}
 import pme123.camundala.camunda.userManagement.UserManagement
 import pme123.camundala.cli.ProjectInfo._
 import pme123.camundala.model.bpmn._
@@ -21,16 +22,17 @@ import zio._
 import zio.clock.Clock
 import zio.console.{Console, putStr => p, putStrLn => pl}
 import zio.interop.catz._
+import zio.logging.Logging
 
 object cliApp {
 
   type CliApp = Has[Service]
 
   trait Service {
-    def run(projectInfo: ProjectInfo): ZIO[Console, Throwable, Nothing]
+    def run(projectInfo: ProjectInfo): Task[Nothing]
   }
 
-  def run(projectInfo: ProjectInfo): ZIO[CliApp with Console, Throwable, Nothing] =
+  def run(projectInfo: ProjectInfo): RIO[CliApp, Nothing] =
     ZIO.accessM(_.get.run(projectInfo))
 
   type CliAppDeps =
@@ -42,7 +44,9 @@ object cliApp {
       with HttpDeployClient
       with DockerComposer
       with BpmnGenerator
+      with ScenarioRunner
       with AppRunner
+      with Logging
 
   lazy val live: URLayer[CliAppDeps, CliApp] = ZLayer.fromServices[
     Clock.Service,
@@ -53,19 +57,23 @@ object cliApp {
     httpDeployClient.Service,
     dockerComposer.Service,
     bpmnGenerator.Service,
+    scenarioRunner.Service,
     appRunner.Service,
+    logging.Logger[String],
     Service] {
-    (clock, console, userManagmnt, bpmnService, deployReg, deployClient, dockerService, generator, appRunner) =>
+    (clock, console, userManagmnt, bpmnService, deployReg, deployClient, dockerService, generator, scenarioRunner, appRunner, log) =>
 
       import CliCommand._
 
       lazy val command = Command[Task[ExitCode]]("", "CLI for Camunda")(
-        (validateBpmnOpts orElse generateBpmnsOpts orElse createUsersAndGroupsOpts
+        (validateBpmnOpts orElse generateBpmnsOpts orElse runScenariosOpts orElse createUsersAndGroupsOpts
           orElse deployCommand orElse dockerCommand orElse appCommand).map {
           case ValidateBpmn(bpmnId) =>
             validateBpmn(bpmnId)
           case GenerateBpmns(deployId) =>
             generateBpmns(deployId)
+          case RunScenarios(deployId) =>
+            runScenarios(deployId)
           case CreateUsersAndGroups(deployId) =>
             createUsersAndGroups(deployId)
           case other =>
@@ -138,6 +146,13 @@ object cliApp {
             results.foldLeft("")((r, bpmn) => s"$r${scala.Console.RESET}\nGenerated ${bpmn.id} - copy and paste the following output to your bpmnModels.sc file: ${scala.Console.GREEN}\n\n${bpmn.generateDsl()}")
         )
 
+      def runScenarios(deployId: DeployId) =
+        runWithDeployId[Seq[ScenarioResult]](deployId, "Run Scenarios", deploy =>
+          Task.foreach(deploy.scenarios)(scenario => scenarioRunner.run(scenario)),
+          results =>
+            results.foldLeft("")((r, scenarioResult) => s"$r${scala.Console.RESET}\n$scenarioResult")
+        )
+
       def deployCreate(deployId: DeployId) =
         runWithDeployId[Seq[DeployResult]](deployId, "Deploy BPMN", deploy =>
           deployClient.deploy(deploy),
@@ -157,16 +172,16 @@ object cliApp {
           results => results.mkString(" - ", "\n - ", ""))
 
       def appStart() =
-        runUnit("Start App", () => appRunner.start().map(_ => ""))
+        runUnit("Start App", () => appRunner.start().as(""))
 
       def appStop() =
-        runUnit("Stop App", () => appRunner.stop().map(_ => ""))
+        runUnit("Stop App", () => appRunner.stop().as(""))
 
       def appRestart() =
-        runUnit("Restart App", () => appRunner.restart().map(_ => ""))
+        runUnit("Restart App", () => appRunner.restart().as(""))
 
       def appUpdate() =
-        runUnit("Update App (Register)", () => appRunner.update().map(_ => ""))
+        runUnit("Update App (Register)", () => appRunner.update().as(""))
 
       def dockerUp(deployId: DeployId) =
         runDocker(deployId, "Docker Up", dockerService.runDockerUp(_).provideLayer(ZLayer.succeed(clock)))
@@ -220,15 +235,15 @@ object cliApp {
           input <- console.getStrLn
           _ <- CommandIOApp.run(command, input.split(" ").toList)
         } yield ())
-          .tapError(e => console.putStrLn(s"Error: $e"))
           .forever
 
       (projectInfo: ProjectInfo) =>
-        intro *>
+        (intro *>
           printProject(projectInfo) *>
           appStart() *>
           appUpdate() *> // make sure Registry is initialized
-          cliRunner
+          cliRunner)
+          .provideLayer(ZLayer.succeed(console))
   }
 
   private val width = 84

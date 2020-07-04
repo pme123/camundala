@@ -12,8 +12,11 @@ import scala.annotation.nowarn
 trait StandardCliApp extends zio.App {
 
   protected def appRunnerLayer: ZLayer[StandardAppDeps, Nothing, AppRunner]
+
   protected def title: String
+
   protected def ident: String
+
   protected def projectInfo: ProjectInfo
 
   @nowarn("cat=w-flag-dead-code")
@@ -21,10 +24,7 @@ trait StandardCliApp extends zio.App {
     runCli
       // you have to provide all the layers here so all fibers have the same register
       .provideCustomLayer(ServicesLayers.appDepsLayer >>> CliLayers.cliLayer(appRunnerLayer))
-      .fold(
-        _ => ExitCode.failure,
-        _ => ExitCode.success
-      )
+      .exitCode
 
   protected def runCli: ZIO[CliApp with Console, Throwable, Nothing] =
     cliApp.run(projectInfo)

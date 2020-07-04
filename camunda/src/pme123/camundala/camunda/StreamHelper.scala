@@ -11,28 +11,41 @@ import scala.xml.{Elem, Node, XML}
 
 case class StreamHelper(basePath: String) {
 
-  def inputStream(staticFile: StaticFile): InputStream = {
+  def inputStream(staticFile: StaticFile): Option[InputStream] = {
     val file = new File(s"$basePath/${staticFile.pathWithName}")
     if (file.exists())
-      new FileInputStream(file) // prefer from File so in development no restart is needed
-    else
-      getClass.getClassLoader.getResourceAsStream(staticFile.pathWithName)
+      Some(new FileInputStream(file)) // prefer from File so in development no restart is needed
+    else {
+      Option(getClass.getClassLoader.getResourceAsStream(staticFile.pathWithName))
+    }
   }
 
-  def asString(staticFile: StaticFile): String =
-    (staticFile.includes.mkString("", "\n", "\n") +
-      IOUtils.toString(inputStream(staticFile), "UTF-8"))
-      .trim
+  def inputStreamM(staticFile: StaticFile): IO[StreamHelperException, InputStream] =
+    ZIO.fromOption(inputStream(staticFile))
+      .orElseFail(StreamHelperException(s"Problem loading Static File: ${staticFile.pathWithName}"))
+
+  def asString(staticFile: StaticFile): Option[String] =
+    inputStream(staticFile).map(is =>
+      (staticFile.includes.mkString("", "\n", "\n") +
+        IOUtils.toString(is, "UTF-8"))
+        .trim
+    )
+
+  def asStringM(staticFile: StaticFile): IO[StreamHelperException, String] =
+    ZIO.fromOption(asString(staticFile))
+      .orElseFail(StreamHelperException(s"Problem loading Static File: ${staticFile.pathWithName}"))
+
 
   def inputStream(xml: Node): InputStream =
     new ByteArrayInputStream(xml.toString.getBytes)
 
-  def inputStreamManaged(staticFile: StaticFile): Managed[Throwable, InputStream] = {
-    Managed.make(Task.effect(
-      inputStream(staticFile)
-    ))(
-      is => UIO.succeed(is.close())
+  def inputStreamManaged(staticFile: StaticFile): Option[Managed[Throwable, InputStream]] = {
+    inputStream(staticFile).map(is =>
+      Managed.make(Task.effect(is))(
+        is => UIO.succeed(is.close())
+      )
     )
+
   }
 
   def xml(staticFile: StaticFile): Task[Elem] = {
@@ -54,7 +67,7 @@ case class StreamHelper(basePath: String) {
     )
   }
 
-  case class StreamHelperException(msg: String, override val cause: Option[Throwable])
+  case class StreamHelperException(msg: String, override val cause: Option[Throwable] = None)
     extends CamundalaException
 
 }

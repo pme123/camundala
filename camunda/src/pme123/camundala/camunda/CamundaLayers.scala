@@ -5,7 +5,9 @@ import org.camunda.bpm.engine.rest.util.EngineUtil
 import pme123.camundala.app.sttpBackend
 import pme123.camundala.camunda.bpmnGenerator.BpmnGenerator
 import pme123.camundala.camunda.bpmnService.BpmnService
+import pme123.camundala.camunda.camundaProcessEngine.CamundaProcessEngine
 import pme123.camundala.camunda.httpDeployClient.HttpDeployClient
+import pme123.camundala.camunda.scenarioRunner.ScenarioRunner
 import pme123.camundala.camunda.service.restService
 import pme123.camundala.camunda.service.restService.RestService
 import pme123.camundala.camunda.userManagement.UserManagement
@@ -14,6 +16,7 @@ import pme123.camundala.model.ModelLayers
 import zio._
 import zio.clock.Clock
 import zio.logging.Logging
+import zio.random.Random
 
 object CamundaLayers {
 
@@ -32,6 +35,10 @@ object CamundaLayers {
       ZIO.effect(pe().close()).ignore
     )
 
-  lazy val userManagementLayer: TaskLayer[UserManagement] = processEngineLayer ++ logLayer("UserManagement") >>> userManagement.live
+  lazy val camundaProcessEngineLayer: TaskLayer[CamundaProcessEngine] = processEngineLayer >>> camundaProcessEngine.live
+
+  lazy val userManagementLayer: TaskLayer[UserManagement] = camundaProcessEngineLayer ++ logLayer("UserManagement") >>> userManagement.live
+
+  lazy val scenarioRunnerLayer: TaskLayer[ScenarioRunner] = camundaProcessEngineLayer ++ Random.live ++ logLayer("ScenarioRunner") >>> scenarioRunner.live
 
 }

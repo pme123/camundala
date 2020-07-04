@@ -46,7 +46,7 @@ object httpServer
 
 
         lazy val routes: HttpRoutes[Task] = HttpEndpointServer.allRoutes <+>
-          (HttpRoutes.of[Task] {
+          HttpRoutes.of[Task] {
             case req@POST -> Root / "deployment" / "create" =>
               req.decode[Multipart[Task]] { m =>
                 deployMultipart(m)
@@ -63,7 +63,7 @@ object httpServer
                       Ok(_))
                 )
               }
-          })
+          }
 
         def deployMultipart(m: Multipart[Task], deployId: DeployId = DeployId) = {
           import pme123.camundala.camunda.DeployRequest._
@@ -74,18 +74,18 @@ object httpServer
                 .map(v => Some(new String(v.toArray)))
                 .catchAll(e =>
                   log.info(s"Problem receiving ${e.getMessage}") *>
-                    ZIO.succeed(None)
+                    ZIO.none
                 )
-            }.getOrElse(ZIO.succeed(None))
+            }.getOrElse(ZIO.none)
           }
 
           (for {
             files <- ZIO.foreach(m.parts.filter(p => p.name.isEmpty || !ReservedKeywords.contains(p.name.get)))(p =>
               p.filename.map(fn => p.body.compile.toVector.flatMap(v => filePathFromStr(fn).map(x => DeployFile(x, v))))
                 .getOrElse(Task.fail(InvalidRequestException(s"No file name found in the deployment resource described by form parameter '${p.name.getOrElse("")}'."))))
-            file <- ZIO.fromOption(files.headOption).mapError(_ => InvalidRequestException(s"No file in the Multipart of the Request from the Modeler."))
+            file <- ZIO.fromOption(files.headOption).orElseFail(InvalidRequestException(s"No file in the Multipart of the Request from the Modeler."))
             maybeBpmnId <- forName(m, DeploymentName)
-            bpmnIdStr <- ZIO.fromOption(maybeBpmnId).mapError(_ => HttpServerException(s"BpmnId ($DeploymentName) must be set!"))
+            bpmnIdStr <- ZIO.fromOption(maybeBpmnId).orElseFail(HttpServerException(s"BpmnId ($DeploymentName) must be set!"))
             bpmnId <- bpmnIdFromStr(bpmnIdStr)
             enableDuplFiltering <- forName(m, EnableDuplicateFiltering).map(_.exists(_.toBoolean))
             deployChangedOnly <- forName(m, DeployChangedOnly).map(_.exists(_.toBoolean))

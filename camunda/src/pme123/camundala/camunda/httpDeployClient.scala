@@ -85,11 +85,7 @@ object httpDeployClient {
               mergeResult <- bpmnServ.mergeBpmn(bpmn.id)
               _ <- log.info(s"Deploy ${bpmn.id} to ${endpoint.url.value}")
               _ <- log.debug(mergeResult.xmlElem.toString)
-              config <- confService.get()
-              staticFiles <- ZIO.foreach(bpmn.staticFiles)(st =>
-                filePathFromStr(st.fileName.value)
-                  .map(pk => FilePart(pk, st.fileName, StreamHelper(config.basePath).asString(st)))
-              )
+              staticFiles <- loadStaticFiles(bpmn)
               bpmnName <- filePathFromStr(bpmn.xml.fileName.value)
               body = MultipartBody(Set(
                 StringPart(DeploymentName, bpmn.id.value),
@@ -129,7 +125,7 @@ object httpDeployClient {
                 } yield ()
               )
             } yield r
-          }.map(_ => ())
+          }.unit
             .catchAll(er => UIO(er.printStackTrace()) *> ZIO.fail(er match {
               case ex: HttpDeployClientException => ex
               case _ => HttpDeployClientException(s"There is Problem delete the Deployments - see the stack trace")
@@ -144,10 +140,11 @@ object httpDeployClient {
               ))
               deployResults <- JsonEnDecoders.toResult[Seq[DeployResult]](toHost(endpoint), response)
             } yield deployResults
-          }.catchAll(er => UIO(er.printStackTrace()) *> ZIO.fail(er match {
-            case ex: HttpDeployClientException => ex
-            case _ => HttpDeployClientException(s"There is Problem with getting the Deployments - see the stack trace")
-          }))
+          }.catchAll(er => UIO(er.printStackTrace()) *>
+            ZIO.fail(er match {
+              case ex: HttpDeployClientException => ex
+              case _ => HttpDeployClientException(s"There is Problem with getting the Deployments - see the stack trace")
+            }))
 
           private def mergeDeployFile(deployFile: DeployFile): Task[MergeResult] =
             for {
@@ -169,8 +166,21 @@ object httpDeployClient {
             } yield deployResults
           }
 
+          private def loadStaticFiles(bpmn: Bpmn): ZIO[Any, HttpDeployClientException, List[FilePart]] = {
+
+            ZIO.foreach(bpmn.staticFiles)(st =>
+              confService.get()
+                .flatMap(config => ZIO.fromOption(StreamHelper(config.basePath).asString(st)))
+                .flatMap(is =>
+                  filePathFromStr(st.fileName.value)
+                    .map(pk => FilePart(pk, st.fileName, is)))
+                .orElseFail(HttpDeployClientException(s"Could not load Static File: ${st.pathWithName}"))
+            )
+          }
+
         }
     }
+
 
   private def toHost(endpoint: CamundaEndpoint) = {
     Host(endpoint.url, BasicAuth(endpoint.user, endpoint.password))

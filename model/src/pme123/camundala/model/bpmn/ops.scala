@@ -2,7 +2,7 @@ package pme123.camundala.model.bpmn
 
 import pme123.camundala.model.bpmn.Constraint._
 import pme123.camundala.model.bpmn.ScriptLanguage.Groovy
-import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask}
+import pme123.camundala.model.bpmn.TaskImplementation.{DelegateExpression, ExternalTask, JavaClass}
 import pme123.camundala.model.bpmn.UserTaskForm.{EmbeddedDeploymentForm, GeneratedForm, WithConstraint}
 
 object ops {
@@ -14,18 +14,20 @@ object ops {
     def delegate(expression: String): A =
       set(DelegateExpression(expression))
 
+    def javaClass(className: String): A =
+      set(JavaClass(className))
+
     def external(topic: String): A =
       set(ExternalTask(topic))
 
   }
 
   implicit class FormularOps[A: WithForm](a: A) {
+
     def form(form: UserTaskForm): A =
       WithForm[A].form(a, form)
 
     def ===(utf: UserTaskForm): A = form(utf)
-
-    def generatedForm: A = form(GeneratedForm())
 
     def embeddedForm(fileName: FilePath, resourcePath: PathElem): A =
       form(EmbeddedDeploymentForm(StaticFile(fileName, resourcePath)))

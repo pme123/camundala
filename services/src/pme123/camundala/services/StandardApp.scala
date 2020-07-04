@@ -10,7 +10,7 @@ import pme123.camundala.app.appRunner.AppRunner
 import pme123.camundala.camunda.StreamHelper
 import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.AppConfig
-import pme123.camundala.model.bpmn.StaticFile
+import pme123.camundala.model.bpmn.{CamundalaException, StaticFile}
 import pme123.camundala.model.deploy.Deploys
 import pme123.camundala.model.register.bpmnRegister.BpmnRegister
 import pme123.camundala.model.register.deployRegister.DeployRegister
@@ -19,6 +19,7 @@ import pme123.camundala.services.httpServer.HttpServer
 import zio._
 import zio.logging.{Logging, log}
 import zio.stm.TRef
+
 import scala.jdk.CollectionConverters._
 
 object StandardApp {
@@ -33,26 +34,26 @@ object StandardApp {
           val camundaRef = refs.head
           val httpServerRef = refs.last
 
-          def readScript(): Task[Deploys] = bpmnModels()
-            .use { deploysReader =>
-              val manager = new ScriptEngineManager(getClass.getClassLoader)
-              for {
-                e <- ZIO.effect(manager.getEngineByExtension("scala"))
-                _ <- log.info(s"Script Engine: $e from: ${manager.getEngineFactories.asScala.map(f => s"names: ${f.getEngineName} - extensions: ${f.getExtensions}")}")
-                scriptResult <- ZIO.effect(e.eval(deploysReader))
-                deploys <- scriptResult match {
-                  case d: Deploys => UIO(d)
-                  case other => Task.fail(new Exception(s"Script did not contain Deploys: $other"))
-                }
-              } yield deploys
-            }
+          def readScript(): Task[Deploys] = bpmnModels().use { zDeploysReader =>
+            val manager = new ScriptEngineManager(getClass.getClassLoader)
+            for {
+              reader <- zDeploysReader
+              e <- ZIO.effect(manager.getEngineByExtension("scala"))
+              _ <- log.info(s"Script Engine: $e from: ${manager.getEngineFactories.asScala.map(f => s"names: ${f.getEngineName} - extensions: ${f.getExtensions}")}")
+              scriptResult <- ZIO.effect(e.eval(reader))
+              deploys <- scriptResult match {
+                case d: Deploys => UIO(d)
+                case other => Task.fail(new Exception(s"Script did not contain Deploys: $other"))
+              }
+            } yield deploys
+          }
 
-          def bpmnModels(): Managed[Throwable, InputStreamReader] =
-
-            ZManaged.make(configService.get().map(config => StreamHelper(config.basePath).inputStream(bpmnModel))
+          def bpmnModels(): ZManaged[Any, NoResourceException, ZIO[Any, Throwable, InputStreamReader]] =
+            ZManaged.makeEffect(configService.get()
+              .flatMap(config => StreamHelper(config.basePath).inputStreamM(bpmnModel))
               .map(i => new InputStreamReader(i)))(r =>
-              ZIO.effect(r.close()).catchAll(e => UIO(e.printStackTrace()) *> UIO.unit)
-            ).mapError(_ => NoResourceException(s"Resource ${bpmnModel.pathWithName} could not be found"))
+              r.map(_.close()).catchAll(e => UIO(e.printStackTrace()).unit)
+            ).orElseFail(NoResourceException(s"Resource ${bpmnModel.pathWithName} could not be found"))
 
 
           new appRunner.Service {
@@ -74,10 +75,10 @@ object StandardApp {
 
             def stop(): Task[Unit] = for {
               maybeHttpFiber <- httpServerRef.get.commit
-              httpFiber <- ZIO.fromOption(maybeHttpFiber).mapError(_ => new Exception("Service already down"))
+              httpFiber <- ZIO.fromOption(maybeHttpFiber).orElseFail(StandardAppException("Service already down"))
               _ <- httpFiber.interrupt
               maybeCamundaFiber <- camundaRef.get.commit
-              camFiber <- ZIO.fromOption(maybeCamundaFiber).mapError(_ => new Exception("Service already down"))
+              camFiber <- ZIO.fromOption(maybeCamundaFiber).orElseFail(StandardAppException("Service already down"))
               _ <- camFiber.interrupt
             } yield ()
 
@@ -105,4 +106,9 @@ object StandardApp {
           log.error(s"Problem shutting down the Spring Container.\n${ex.getMessage}", Cause.fail(ex))
         )
     )
+
+  case class StandardAppException(msg: String,
+                                  override val cause: Option[Throwable] = None)
+    extends CamundalaException
+
 }

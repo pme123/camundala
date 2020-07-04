@@ -20,6 +20,9 @@ object bpmnService {
 
     def mergeBpmn(bpmnId: BpmnId): Task[MergeResult]
 
+    /*
+    Genenerate the BPMN and persists id under _generated
+     */
     def generateBpmn(bpmnId: BpmnId): Task[List[String]]
 
     def validateBpmn(bpmnId: BpmnId): Task[ValidateWarnings]
@@ -69,18 +72,21 @@ object bpmnService {
           def generateBpmn(bpmnId: BpmnId): Task[List[String]] =
             for {
               mergeResult <- mergeBpmn(bpmnId)
+              _ = println("MERGE RESULT: " + mergeResult.warnings)
               config <- configService.get()
               staticFiles <- ZIO.foreach(mergeResult.maybeBpmn.toList.flatMap(_.staticFiles))(st =>
-                ZIO((s"${config.basePath}/_generated/${st.pathWithName}", StreamHelper(config.basePath).asString(st))))
+                StreamHelper(config.basePath).asStringM(st).bimap(
+                  ex => BpmnServiceException(s"Problem generating Static File $st", Some(ex)),
+                  content => (s"${config.basePath}/${st.pathWithName}", content))
+              )
               bpmnFile <- ZIO.fromOption(mergeResult.maybeBpmn.map(bpmn => (s"${config.basePath}/_generated/${bpmn.xml.pathWithName}", mergeResult.xmlElem.toString)))
-                .mapError(_ => BpmnServiceException(s"There is no BPMN with id $bpmnId"))
+                .orElseFail(BpmnServiceException(s"There is no BPMN with id $bpmnId"))
               paths <- ZIO.foreach(staticFiles :+ bpmnFile) { case (path, content) =>
                 ZIO(new File(path).getParentFile.mkdirs()) *>
                   ZManaged.make(ZIO(new PrintWriter(new File(path)))
                   )(pw => UIO(pw.close()))
                     .use(pw =>
-                      ZIO(pw.write(content))
-                        .map(_ => path)
+                      ZIO(pw.write(content)).as(path)
                     )
               }
             } yield paths
@@ -99,7 +105,7 @@ object bpmnService {
         }
     }
 
-  case class BpmnServiceException(msg: String)
+  case class BpmnServiceException(msg: String, override val cause: Option[Throwable] = None)
     extends CamundalaException
 
 }

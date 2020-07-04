@@ -1,6 +1,6 @@
 package pme123.camundala.camunda
 
-import org.camunda.bpm.engine.ProcessEngine
+import pme123.camundala.camunda.camundaProcessEngine.CamundaProcessEngine
 import pme123.camundala.model.bpmn.{CamundalaException, Group, User}
 import zio.logging.{Logger, Logging}
 import zio.{Has, Task, ZLayer}
@@ -15,17 +15,17 @@ object userManagement {
     def createUser(user: User): Task[User]
   }
 
-  type UserManagementDeps = Has[() => ProcessEngine] with Logging
+  type UserManagementDeps = CamundaProcessEngine with Logging
 
   lazy val live: ZLayer[UserManagementDeps, Throwable, UserManagement] =
-    ZLayer.fromServices[() => ProcessEngine, Logger[String], Service] {
+    ZLayer.fromServices[camundaProcessEngine.Service, Logger[String], Service] {
       (processEngine, log) =>
 
         new Service {
           def createGroup(group: Group): Task[Group] = {
             lazy val create =
               for {
-                identityService <- Task(processEngine().getIdentityService)
+                identityService <- processEngine.identityService
                 groupEntity <- Task(identityService.newGroup(group.id.value))
                 _ <- Task {
                   group.maybeName.foreach(groupEntity.setName)
@@ -36,7 +36,7 @@ object userManagement {
               } yield ()
 
             (for {
-              identityService <- Task(processEngine().getIdentityService)
+              identityService <- processEngine.identityService
               existing <- Task(identityService.createGroupQuery().groupId(group.id.value).count())
               _ <- if (existing == 0)
                 create
@@ -48,7 +48,7 @@ object userManagement {
 
           def createUser(user: User): Task[User] = {
             lazy val create = for {
-              identityService <- Task(processEngine().getIdentityService)
+              identityService <- processEngine.identityService
               userEntity <- Task(identityService.newUser(user.username.value))
               _ <- Task {
                 user.maybeName.foreach(userEntity.setLastName)
@@ -61,7 +61,7 @@ object userManagement {
             } yield ()
 
             for {
-              identityService <- Task(processEngine().getIdentityService)
+              identityService <- processEngine.identityService
               query = identityService.createUserQuery().userId(user.username.value)
               existing <- Task(query.count())
               _ <- if (existing == 0)

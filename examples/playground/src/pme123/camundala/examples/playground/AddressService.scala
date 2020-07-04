@@ -28,7 +28,7 @@ case class AddressService(addressHost: Host = Host.unknown) {
     RestServiceTempl(
       Request(
         addressHost,
-        path = Path("%customer", "11"),
+        path = Path("customer", "11"),
         responseVariable = "existingAddress",
         mappings = Map("customer" -> "dummyCustomerId"),
         maybeMocked = if (addressHost == Host.unknown) maybeMockData else None

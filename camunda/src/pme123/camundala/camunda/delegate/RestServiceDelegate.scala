@@ -15,7 +15,7 @@ import pme123.camundala.camunda.{CamundaLayers, JsonEnDecoders}
 import pme123.camundala.model.bpmn.ops._
 import pme123.camundala.model.bpmn._
 import zio.Runtime.default.unsafeRun
-import zio.{UIO, ZIO, logging}
+import zio.{Cause, UIO, ZIO, logging}
 
 
 /**
@@ -31,15 +31,18 @@ class RestServiceDelegate
     val response = unsafeRun(
       (for {
         (req, mappings) <- ZIO.fromEither(requestRes)
-        reqMappings <- ZIO.foreach(mappings){
+        reqMappings <- ZIO.foreach(mappings) {
           case (k, Some(v)) =>
-          UIO(k -> v)
+            UIO(k -> v)
           case (k, _) =>
             ZIO.fail(RestServiceException(s"There is no Variable '$k' for mapping in your Bag"))
         }
         response <- restService.call(req.copy(mappings = reqMappings.toMap))
         _ <- logging.log.debug(s"Rest call ${req.host.url} successful:\n$response")
       } yield (req.responseVariable, response))
+        .catchAll {
+          cex: Throwable => logging.log.error(s"Error: $cex", Cause.fail(cex)) *> ZIO.never
+        }
         .provideCustomLayer(CamundaLayers.logLayer("RestServiceDelegate") ++
           CamundaLayers.restServicetLayer)
     )
@@ -76,7 +79,8 @@ object RestServiceDelegate
 
     def asServiceTask(id: BpmnNodeId): ServiceTask =
       ServiceTask(id)
-        .delegate("#{restService}")
+        .javaClass("pme123.camundala.camunda.delegate.RestServiceDelegate")
+        //.delegate("#{restService}")
         .inputJson("request", request.asJson.toString())
   }
 
