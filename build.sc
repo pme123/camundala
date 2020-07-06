@@ -86,6 +86,7 @@ object Libs {
   val scalaXml = ivy"org.scala-lang.modules::scala-xml:${Version.scalaXml}"
   val sttpCirce = ivy"com.softwaremill.sttp.client::circe::${Version.sttp}"
   val circe = ivy"io.circe::circe-generic:${Version.circe}"
+  val circeParser = ivy"io.circe::circe-parser:${Version.circe}"
   val circeRefined = ivy"io.circe::circe-refined:${Version.circe}"
   val groovy = ivy"org.codehaus.groovy:groovy-all:${Version.groovy}"
 
@@ -230,7 +231,9 @@ object model extends ModuleWithTests {
       Libs.zio,
       //   Libs.zioMacros,
       Libs.zioLogging,
-      Libs.refinded
+      Libs.refinded,
+      Libs.circe,
+      Libs.circeParser
     )
   }
 }

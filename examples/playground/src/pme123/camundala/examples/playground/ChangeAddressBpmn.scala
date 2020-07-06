@@ -90,19 +90,22 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
       })
     .prop("waitForTask", "true")
 
+  private val existingAddress: PropKey = "existingAddress"
+  private val countryIso: PropKey = "countryIso"
+  private val newAddress: PropKey = "newAddress"
+
   lazy val CountryRiskTask: BusinessRuleTask = BusinessRuleTask("CountryRiskTask")
     .dmn("country-risk.dmn", "approvalRequired")
-    .inputExternal("currentCountry", "scripts/dmn-in-existing-country.groovy")
-    .inputExternal("targetCountry", "scripts/dmn-in-new-country.groovy")
+    .inputExpression("currentCountry", s"""$${$existingAddress.get("$countryIso")}""")
+    .inputExpression("targetCountry", s"""$${$newAddress.get("$countryIso")}""")
 
   lazy val AddressChangeTask: UserTask = UserTask("AddressChangeTask")
     .candidateGroups(maGroup, adminGroup)
-    .inputExternal("formJson", "scripts/form-json.groovy", includes = Seq(ConditionExpression.asJson))
     .form(addressChangeForm)
-    .outputExpression("formJson", "${formJson}")
-    .outputExpression("newAddress", "${S(formJson).prop(\"newAddress\")}")
+    .inputFromJson(existingAddress, addressChangeForm)
+    .outputMap(existingAddress, addressChangeForm)
+    .outputMap(newAddress, addressChangeForm)
     .outputExpression("kube", "${currentUser()}")
-    .prop("jsonVariable", "formJson")
 
   lazy val addressChangeForm: GeneratedForm =
     GeneratedForm()
@@ -113,6 +116,7 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
   lazy val ApproveAddressTask: UserTask = UserTask("ApproveAddressTask")
     .candidateGroups(complianceGroup, adminGroup)
     .form(approveAddressForm)
+    .inputFromMap(existingAddress, approveAddressForm)
     .outputExpression("compliance", "${currentUser()}")
     .prop("jsonVariable", "formJson")
 
@@ -134,8 +138,8 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
 
   def addressGroup(prefix: String, readOnly: Boolean = false): GroupField = {
     def addressField(fieldId: String) = {
-      val field = textField(s"/${prefix}Address/$fieldId")
-        .label(s"#addressGroup.$fieldId")
+      val field = textField(s"${prefix}Address$KeyDelimeter$fieldId")
+        .label(s"#address.$fieldId")
       if (readOnly) field.readonly else field.required
     }
 
@@ -146,7 +150,7 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
           .width(4))
         .---(addressField("city")
           .width(8))
-        .---(addressField("countryIso")
+        .---(addressField(countryIso)
           .width(4))
       )
   }

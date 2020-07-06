@@ -1,6 +1,9 @@
 package pme123.camundala.model
 
 import eu.timepit.refined.auto._
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm._
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField.{GroupField, RowGroupField}
 import pme123.camundala.model.bpmn._
 import pme123.camundala.model.bpmn.ops._
 
@@ -40,4 +43,29 @@ object TestData {
             .external("myTopic")
         }
       )
+
+  lazy val addressChangeForm: GeneratedForm =
+    GeneratedForm()
+      .---(textField("customer").readonly)
+      .---(addressGroup("existing", readOnly = true))
+      .---(addressGroup("new"))
+
+  def addressGroup(prefix: String, readOnly: Boolean = false): GroupField = {
+    def addressField(fieldId: String) = {
+      val field = textField(s"${prefix}Address$KeyDelimeter$fieldId")
+        .label(s"#address.$fieldId")
+      if (readOnly) field.readonly else field.required
+    }
+
+    GroupField(s"${prefix}AddressGroup")
+      .---(addressField("street"))
+      .---(RowGroupField(s"${prefix}CityCountry")
+        .---(addressField("zipCode")
+          .width(4))
+        .---(addressField("city")
+          .width(8))
+        .---(addressField("countryIso")
+          .width(4))
+      )
+  }
 }

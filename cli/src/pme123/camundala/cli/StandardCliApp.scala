@@ -19,7 +19,6 @@ trait StandardCliApp extends zio.App {
 
   protected def projectInfo: ProjectInfo
 
-  @nowarn("cat=w-flag-dead-code")
   def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] =
     runCli
       // you have to provide all the layers here so all fibers have the same register

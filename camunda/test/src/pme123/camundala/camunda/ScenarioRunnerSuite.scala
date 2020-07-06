@@ -23,7 +23,7 @@ class ScenarioRunnerSuite {
   lazy val processInstance = runtimeService.startProcessInstanceByKey("myProcess Id",  Map[String, AnyRef]("customer" -> "meier").asJava)
 
   @Test
-  def testHappyPath(): Unit = {
+  def testHappyPath(): TestResult = {
     unsafeRun(
       (for {
         result <- scenarioRunner.run(ProcessScenario("myScenario", twitterProcess))

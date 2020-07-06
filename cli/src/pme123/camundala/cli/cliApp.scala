@@ -22,7 +22,6 @@ import zio._
 import zio.clock.Clock
 import zio.console.{Console, putStr => p, putStrLn => pl}
 import zio.interop.catz._
-import zio.logging.Logging
 
 object cliApp {
 
@@ -46,7 +45,6 @@ object cliApp {
       with BpmnGenerator
       with ScenarioRunner
       with AppRunner
-      with Logging
 
   lazy val live: URLayer[CliAppDeps, CliApp] = ZLayer.fromServices[
     Clock.Service,
@@ -59,9 +57,8 @@ object cliApp {
     bpmnGenerator.Service,
     scenarioRunner.Service,
     appRunner.Service,
-    logging.Logger[String],
     Service] {
-    (clock, console, userManagmnt, bpmnService, deployReg, deployClient, dockerService, generator, scenarioRunner, appRunner, log) =>
+    (clock, console, userManagmnt, bpmnService, deployReg, deployClient, dockerService, generator, scenarioRunner, appRunner) =>
 
       import CliCommand._
 

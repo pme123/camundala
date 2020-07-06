@@ -40,6 +40,8 @@ package object bpmn {
   type Password = String Refined TrimmedNonEmpty
   type Email = String Refined EmailRegex
 
+  val KeyDelimeter = "__"
+
   def bpmnIdFromFilePath(fileName: FilePath): ZIO[Any, ModelException, BpmnId] =
     bpmnIdFromStr(fileName.value)
 

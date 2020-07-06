@@ -8,7 +8,7 @@ import pme123.camundala.model.bpmn.UserTaskForm.{EmbeddedDeploymentForm, Generat
 object ops {
 
   implicit class WithTaskImplOps[A: WithTaskImpl](a: A) {
-    def set(taskImpl:TaskImplementation): A =
+    def set(taskImpl: TaskImplementation): A =
       WithTaskImpl[A].set(a, taskImpl)
 
     def delegate(expression: String): A =
@@ -68,15 +68,26 @@ object ops {
     def inputJson(key: PropKey, json: String): A =
       inOutputs(extInOutputs().inputJson(key, json))
 
+    def inputFromJson(key: PropKey, generatedForm: GeneratedForm): A =
+      inOutputs(extInOutputs().inputFromJson(key, generatedForm))
+
+    def inputFromMap(key: PropKey, generatedForm: GeneratedForm): A =
+      inOutputs(extInOutputs().inputFromMap(key, generatedForm))
+
     def outputExpression(key: PropKey, expression: String): A =
       inOutputs(extInOutputs().outputExpression(key, expression))
+
     def outputExternal(key: PropKey, scriptPath: FilePath, language: ScriptLanguage = Groovy, includes: Seq[String] = Seq.empty): A =
       inOutputs(extInOutputs().outputExternal(key, scriptPath, language, includes))
+
     def outputInline(key: PropKey, inlineScript: String): A =
       inOutputs(extInOutputs().outputInline(key, inlineScript))
 
     def outputJson(key: PropKey, json: String): A =
       inOutputs(extInOutputs().outputJson(key, json))
+
+    def outputMap(key: PropKey, form: GeneratedForm): A =
+      inOutputs(extInOutputs().outputMap(key, form))
 
   }
 
