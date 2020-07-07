@@ -89,6 +89,9 @@ object ops {
     def outputMap(key: PropKey, form: GeneratedForm): A =
       inOutputs(extInOutputs().outputMap(key, form))
 
+    def outputToJson(key: PropKey, form: GeneratedForm): A =
+      inOutputs(extInOutputs().outputToJson(key, form))
+
   }
 
   implicit class ValidationOps[A: WithConstraint](a: A) {

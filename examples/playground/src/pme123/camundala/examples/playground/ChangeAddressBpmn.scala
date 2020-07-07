@@ -96,15 +96,15 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
 
   lazy val CountryRiskTask: BusinessRuleTask = BusinessRuleTask("CountryRiskTask")
     .dmn("country-risk.dmn", "approvalRequired")
-    .inputExpression("currentCountry", s"""$${$existingAddress.get("$countryIso")}""")
-    .inputExpression("targetCountry", s"""$${$newAddress.get("$countryIso")}""")
+    .inputExpression("currentCountry", s"""$${S($existingAddress).prop("$countryIso").stringValue()}""")
+    .inputExpression("targetCountry", s"""$${S($newAddress).prop("$countryIso").stringValue()}""")
 
   lazy val AddressChangeTask: UserTask = UserTask("AddressChangeTask")
     .candidateGroups(maGroup, adminGroup)
     .form(addressChangeForm)
     .inputFromJson(existingAddress, addressChangeForm)
-    .outputMap(existingAddress, addressChangeForm)
-    .outputMap(newAddress, addressChangeForm)
+    .outputToJson(existingAddress, addressChangeForm)
+    .outputToJson(newAddress, addressChangeForm)
     .outputExpression("kube", "${currentUser()}")
 
   lazy val addressChangeForm: GeneratedForm =
@@ -116,7 +116,7 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
   lazy val ApproveAddressTask: UserTask = UserTask("ApproveAddressTask")
     .candidateGroups(complianceGroup, adminGroup)
     .form(approveAddressForm)
-    .inputFromMap(existingAddress, approveAddressForm)
+    .inputFromJson(existingAddress, approveAddressForm)
     .outputExpression("compliance", "${currentUser()}")
     .prop("jsonVariable", "formJson")
 
@@ -165,11 +165,7 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
     .candidateGroups(maGroup, adminGroup)
     .form(GeneratedForm()
       .---(
-        textField("message")
-          .default("Sorry we could not change the Address")
-          .prop("display", "message")
-          .prop("icon", "info")
-          .readonly
+        infoField("message", "Sorry we could not change the Address")
       )
       .---(
         textField("compliance")
@@ -177,6 +173,17 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
           .readonly
       )
     )
+
+  private def messageField(id: String, message: String, maybeIcon: Option[String] = None) = {
+    textField(id)
+      .default(message)
+      .prop("display", "message")
+      .prop("icon", maybeIcon.orNull)
+      .readonly
+  }
+  private def infoField(id: String, message: String) = {
+    messageField(id, message, Some("info"))
+  }
 
   private lazy val GetAddressTask = AddressService(addressHost).getAddress("GetAddressTask")
   private lazy val SaveToFCSTask = AddressService(addressHost).saveAddress("SaveToFCSTask")

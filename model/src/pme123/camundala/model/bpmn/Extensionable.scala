@@ -202,7 +202,13 @@ case class ExtInOutputs(
   def outputMap(key: PropKey, form: GeneratedForm): ExtInOutputs =
     copy(outputs =
       outputs :+
-        InputOutputMap.outputFromForm(key, form)
+        InputOutputMap.outputToMap(key, form)
+    )
+
+  def outputToJson(key: PropKey, form: GeneratedForm): ExtInOutputs =
+    copy(outputs =
+      outputs :+
+        InputOutputExpression.outputToJson(key, form)
     )
 
   def outputExternal(
@@ -269,6 +275,18 @@ object InputOutput {
           expr
       }
 
+    def outputToJson(key: PropKey, generatedForm: GeneratedForm): InputOutputExpression =
+      InputOutputExpression(key,
+        JsonExpression(
+          generatedForm.allFields()
+            .filter(_.id.startsWith(s"$key$KeyDelimeter"))
+            .map { f =>
+              s""""${propName(key, f.id)}": "$$${f.id}""""
+            }.mkString("{", ",\n", "}")
+        )
+      )
+
+
     def inputFromMap(key: PropKey, generatedForm: GeneratedForm): Seq[InputOutputExpression] =
       generatedForm.allFields()
         .filter(_.id.startsWith(s"$key$KeyDelimeter"))
@@ -285,7 +303,7 @@ object InputOutput {
     extends InputOutput
 
   object InputOutputMap {
-    def outputFromForm(key: PropKey, form: GeneratedForm): InputOutputMap =
+    def outputToMap(key: PropKey, form: GeneratedForm): InputOutputMap =
       InputOutputMap(key,
         form.allFields()
           .filter(_.id.startsWith(s"$key$KeyDelimeter"))

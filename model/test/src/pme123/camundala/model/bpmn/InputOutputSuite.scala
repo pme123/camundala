@@ -2,7 +2,7 @@ package pme123.camundala.model.bpmn
 
 import eu.timepit.refined.auto._
 import pme123.camundala.model.TestData
-import pme123.camundala.model.bpmn.ConditionExpression.Expression
+import pme123.camundala.model.bpmn.ConditionExpression.{Expression, JsonExpression}
 import pme123.camundala.model.bpmn.InputOutput.{InputOutputExpression, InputOutputMap}
 import zio.test.Assertion._
 import zio.test.{suite, _}
@@ -33,11 +33,20 @@ object InputOutputSuite extends DefaultRunnableSpec {
         }
       ),
       suite("InputOutputMap")(
-        test("Output From Form") {
+        test("Output to Map") {
           assert(
             InputOutputMap("existingAddress", Map("street" -> s"$${existingAddress__street}", "zipCode" -> s"$${existingAddress__zipCode}", "city" -> s"$${existingAddress__city}", "countryIso" -> s"$${existingAddress__countryIso}"))
           )(
-            equalTo(InputOutputMap.outputFromForm("existingAddress", TestData.addressChangeForm)))
+            equalTo(InputOutputMap.outputToMap("existingAddress", TestData.addressChangeForm)))
+        },
+        test("Output to Json") {
+          assert(
+            InputOutputExpression("existingAddress", JsonExpression(
+              s"""{"street": "$$existingAddress__street",
+                 |"zipCode": "$$existingAddress__zipCode",
+                 |"city": "$$existingAddress__city",
+                 |"countryIso": "$$existingAddress__countryIso"}""".stripMargin)))(equalTo(
+            InputOutputExpression.outputToJson("existingAddress", TestData.addressChangeForm)))
         }
       )
     )

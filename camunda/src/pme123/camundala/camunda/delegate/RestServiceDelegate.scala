@@ -79,8 +79,8 @@ object RestServiceDelegate
 
     def asServiceTask(id: BpmnNodeId): ServiceTask =
       ServiceTask(id)
-        .javaClass("pme123.camundala.camunda.delegate.RestServiceDelegate")
-        //.delegate("#{restService}")
+        //  .javaClass("pme123.camundala.camunda.delegate.RestServiceDelegate")
+        .delegate("#{restService}")
         .inputJson("request", request.asJson.toString())
   }
 
