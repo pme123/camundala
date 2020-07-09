@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0rzdsyh" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.5.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0rzdsyh" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.5.0">
   <bpmn:collaboration id="Collaboration_08clrht">
     <bpmn:participant id="Participant_0r0o6oa" name="Change Address Test" processRef="ChangeAddressDemo" />
   </bpmn:collaboration>
@@ -10,6 +10,20 @@
     <bpmn:sequenceFlow id="SequenceFlow_1cvy6h7" sourceRef="CustomerSearchStartEvent" targetRef="CustomerEditTask" />
     <bpmn:sequenceFlow id="SequenceFlow_1yxqwew" sourceRef="CustomerEditTask" targetRef="GetAddressTask" />
     <bpmn:userTask id="CustomerEditTask" name="Customer Edit Task">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Input_2hdem5u">
+            <camunda:map>
+              <camunda:entry />
+            </camunda:map>
+          </camunda:inputParameter>
+          <camunda:outputParameter name="result">
+            <camunda:map>
+              <camunda:entry key="wer">werte</camunda:entry>
+            </camunda:map>
+          </camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1cvy6h7</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1yxqwew</bpmn:outgoing>
     </bpmn:userTask>

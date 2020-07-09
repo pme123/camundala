@@ -96,9 +96,9 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
 
   lazy val CountryRiskTask: BusinessRuleTask = BusinessRuleTask("CountryRiskTask")
     .dmn("country-risk.dmn", "approvalRequired")
-    .inputExpression("currentCountry", s"""$${S($existingAddress).prop("$countryIso").stringValue()}""")
-    .inputExpression("targetCountry", s"""$${S($newAddress).prop("$countryIso").stringValue()}""")
-
+    .inputStringFromJsonPath("currentCountry", Seq(existingAddress, countryIso))
+    .inputStringFromJsonPath("targetCountry", Seq(newAddress, countryIso))
+ //TODO Test -> .stringValue???
   lazy val AddressChangeTask: UserTask = UserTask("AddressChangeTask")
     .candidateGroups(maGroup, adminGroup)
     .form(addressChangeForm)
@@ -174,14 +174,14 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
       )
     )
 
-  private def messageField(id: String, message: String, maybeIcon: Option[String] = None) = {
+   def messageField(id: String, message: String, maybeIcon: Option[String] = None): SimpleField = {
     textField(id)
       .default(message)
       .prop("display", "message")
-      .prop("icon", maybeIcon.orNull)
+      .prop("icon", maybeIcon)
       .readonly
   }
-  private def infoField(id: String, message: String) = {
+   def infoField(id: String, message: String): SimpleField = {
     messageField(id, message, Some("info"))
   }
 

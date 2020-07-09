@@ -111,6 +111,8 @@ object UserTaskForm {
       @nowarn("cat=unused-params")
       def prop(key: PropKey, value: String): FormField = this
 
+      @nowarn("cat=unused-params")
+      def prop(key: PropKey, maybeValue: Option[String]): FormField = this
     }
 
     object FormField {
@@ -187,6 +189,12 @@ object UserTaskForm {
         def width(w: Int): SimpleField = copy(width = w)
 
         override def prop(key: PropKey, value: String): SimpleField = copy(properties = properties :+ Prop(key, value))
+
+        override def prop(key: PropKey, maybeValue: Option[String]): SimpleField =
+          maybeValue match {
+            case None => this
+            case Some(value) => prop(key, value)
+          }
       }
 
       case class EnumField(id: String,
@@ -208,6 +216,12 @@ object UserTaskForm {
         def value(key: PropKey, value: String): EnumField = copy(values = values :+ EnumValue(key, value))
 
         override def prop(key: PropKey, value: String): EnumField = copy(properties = properties :+ Prop(key, value))
+
+        override def prop(key: PropKey, maybeValue: Option[String]): EnumField =
+          maybeValue match {
+            case None => this
+            case Some(value) => prop(key, value)
+          }
       }
 
       case class EnumValues(enums: Seq[EnumValue]) {

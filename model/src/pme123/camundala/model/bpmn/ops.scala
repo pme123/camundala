@@ -59,6 +59,9 @@ object ops {
     def inputExpression(key: PropKey, expression: String): A =
       inOutputs(extInOutputs().inputExpression(key, expression))
 
+    def inputStringFromJsonPath(key: PropKey, path: JsonPath): A =
+      inOutputs(extInOutputs().inputStringFromJsonPath(key, path))
+
     def inputExternal(key: PropKey, scriptPath: FilePath, language: ScriptLanguage = Groovy, includes: Seq[String] = Seq.empty): A =
       inOutputs(extInOutputs().inputExternal(key, scriptPath, language, includes))
 

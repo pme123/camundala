@@ -3,7 +3,7 @@
   <collaboration id="Collaboration_19t23ei">
     <participant id="ChangeAddressDemoParticipant" name="Change Address Demo" processRef="ChangeAddressDemo" />
   </collaboration>
-  <process id="ChangeAddressDemo" name="Change Address Demo" isExecutable="true">
+  <process id="ChangeAddressDemo" name="Change Address Camundala" isExecutable="true">
     <startEvent id="CustomerSearchStartEvent" name="Customer Search">
       <outgoing>SequenceFlow_1bzdi90</outgoing>
     </startEvent>

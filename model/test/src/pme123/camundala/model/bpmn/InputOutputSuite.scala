@@ -14,6 +14,13 @@ object InputOutputSuite extends DefaultRunnableSpec {
     suite("InputOutputSuite")(
       suite("InputOutputExpression")(
         test("Input from Json") {
+          val jsonPath: JsonPath = Seq("existingAddress", "street")
+          assert(
+            InputOutputExpression("existingAddress__street", Expression(s"""$${S(existingAddress).prop("street")}"""))
+          )(
+            equalTo(InputOutputExpression.inputStringFromJsonPath("existingAddress__street", jsonPath)))
+        },
+        test("Input String from Json Path") {
           assert(
             Seq(InputOutputExpression("existingAddress__street", Expression(s"""$${S(existingAddress).prop("street")}""")),
               InputOutputExpression("existingAddress__zipCode", Expression(s"""$${S(existingAddress).prop("zipCode")}""")),

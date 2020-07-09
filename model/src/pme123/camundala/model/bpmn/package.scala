@@ -4,14 +4,14 @@ import eu.timepit.refined._
 import eu.timepit.refined.auto._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean._
-import eu.timepit.refined.collection.NonEmpty
+import eu.timepit.refined.collection.{MinSize, NonEmpty}
 import eu.timepit.refined.string.{MatchesRegex, Trimmed}
 import zio.ZIO
 
 package object bpmn {
 
   // NCName see https://stackoverflow.com/questions/1631396/what-is-an-xsncname-type-and-when-should-it-be-used
-  type IdRegex = MatchesRegex["""^[a-zA-Z_][\w|\-|\.]+$"""]
+  type IdRegex = MatchesRegex["""^[a-zA-Z_][\w\-\.]+$"""]
   type FileNameRegex = IdRegex
   type FilePathRegex = MatchesRegex["""^[a-zA-Z_]+[\w\-\.\/]+$"""]
   type PathElemRegex = MatchesRegex["""^[%\w_\.]+[\w\-\.\/]*$"""]
@@ -26,6 +26,7 @@ package object bpmn {
   type PathElem = String Refined PathElemRegex
   type PropKey = String Refined IdRegex
   type Identifier = String Refined IdRegex
+  type JsonPath = Seq[String] //Refined  collection.MinSize[2]
 
   type DeployId = String Refined IdRegex
   val DeployId: DeployId = "default"

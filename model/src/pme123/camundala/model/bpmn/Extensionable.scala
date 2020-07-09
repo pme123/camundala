@@ -161,6 +161,9 @@ case class ExtInOutputs(
   def inputExpression(key: PropKey, expression: String): ExtInOutputs =
     copy(inputs = inputs :+ InputOutputExpression(key, Expression(expression)))
 
+  def inputStringFromJsonPath(key: PropKey, path: JsonPath): ExtInOutputs =
+    copy(inputs = inputs :+ InputOutputExpression.inputStringFromJsonPath(key, path))
+
   def inputInline(key: PropKey, inlineScript: String): ExtInOutputs =
     copy(inputs =
       inputs :+ InputOutputExpression(key, InlineScript(inlineScript))
@@ -263,6 +266,14 @@ object InputOutput {
   }
 
   object InputOutputExpression {
+
+    def inputStringFromJsonPath(key: PropKey, path: JsonPath): InputOutputExpression =
+      InputOutputExpression(key,
+        path.toList match {
+          case Nil => Expression("No Json Path defined!")// this should not happen > Refined JsonPath requires 2 elements
+          case obj :: tail =>
+            Expression(s"""$${S($obj)${tail.map(v => s""".prop("$v")""").mkString}.stringValue()}""")
+        })
 
     def inputFromJson(key: PropKey, generatedForm: GeneratedForm): Seq[InputOutputExpression] =
       generatedForm.allFields()
