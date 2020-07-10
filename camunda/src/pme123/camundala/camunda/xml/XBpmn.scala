@@ -1,12 +1,7 @@
 package pme123.camundala.camunda.xml
 
 import pme123.camundala.camunda.xml.XmlHelper._
-import pme123.camundala.model.bpmn.ConditionExpression.{
-  Expression,
-  ExternalScript,
-  InlineScript,
-  JsonExpression
-}
+import pme123.camundala.model.bpmn.ConditionExpression.{Expression, ExternalScript, GroovyJsonExpression, InlineScript, JsonExpression}
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField.EnumField
@@ -406,11 +401,11 @@ trait XBpmnNode[T <: BpmnNode] {
         <camunda:script scriptFormat={language.key} resource={
           s"deployment://${ref.fileName}"
         } />
-      case jsonExpre: JsonExpression =>
-        <camunda:script scriptFormat="Groovy">
-          {jsonExpre.value}
-        </camunda:script>
       case Expression(value) => value
+      case expression: ConditionExpression => // GroovyJsonExpression | JsonExpression
+        <camunda:script scriptFormat="Groovy">
+          {expression.value}
+        </camunda:script>
     }
   }
 

@@ -98,12 +98,11 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
     .dmn("country-risk.dmn", "approvalRequired")
     .inputStringFromJsonPath("currentCountry", Seq(existingAddress, countryIso))
     .inputStringFromJsonPath("targetCountry", Seq(newAddress, countryIso))
- //TODO Test -> .stringValue???
+  //TODO Test -> .stringValue???
   lazy val AddressChangeTask: UserTask = UserTask("AddressChangeTask")
     .candidateGroups(maGroup, adminGroup)
     .form(addressChangeForm)
     .inputFromJson(existingAddress, addressChangeForm)
-    .outputToJson(existingAddress, addressChangeForm)
     .outputToJson(newAddress, addressChangeForm)
     .outputExpression("kube", "${currentUser()}")
 
@@ -174,14 +173,15 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
       )
     )
 
-   def messageField(id: String, message: String, maybeIcon: Option[String] = None): SimpleField = {
+  def messageField(id: String, message: String, maybeIcon: Option[String] = None): SimpleField = {
     textField(id)
       .default(message)
       .prop("display", "message")
       .prop("icon", maybeIcon)
       .readonly
   }
-   def infoField(id: String, message: String): SimpleField = {
+
+  def infoField(id: String, message: String): SimpleField = {
     messageField(id, message, Some("info"))
   }
 

@@ -25,6 +25,8 @@ Doing Camunda with Scala.
   * Deployed Models run on any Camunda Engine - no Extras needed.
 
 # Feature List
+## Mapping
+See [doc/mapping](doc/mapping.MD)
 ## CLI
 **Feature** | **Descr** | **State**
 --- | --- | --- 

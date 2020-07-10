@@ -4,6 +4,8 @@ import pme123.camundala.model.bpmn.ScriptLanguage.Groovy
 
 sealed trait ConditionExpression {
 
+  def value: String
+
   def staticFiles: Set[StaticFile] = Set.empty
 }
 
@@ -17,6 +19,7 @@ object ConditionExpression {
   case class ExternalScript(ref: StaticFile, language: ScriptLanguage = Groovy) extends ConditionExpression {
     override def staticFiles: Set[StaticFile] = Set(ref)
 
+    val value = "" // there is no value
   }
 
   case class JsonExpression(jsonStr: String) extends ConditionExpression {
@@ -42,6 +45,25 @@ object ConditionExpression {
       |
       |    S(JsonOutput.toJson(json))
       |}""".stripMargin
+
+  case class GroovyJsonExpression(jsonStr: String) extends ConditionExpression {
+
+    def value: String =
+      s"""
+         |import groovy.json.JsonOutput
+         |import static org.camunda.spin.Spin.*
+         |
+         |result = JsonOutput.toJson($jsonStr)
+         |println(\"\"\"Groovy String: $jsonStr\"\"\")
+         |S(result)
+         |""".stripMargin
+
+  }
+
+  object GroovyJsonExpression {
+    def apply(vars: Map[String, String]): GroovyJsonExpression =
+      GroovyJsonExpression(s"""[${vars.map { case (k, v) => s""""$k" : "$v"""" }.mkString(",\n")}]""")
+  }
 
   // case class ExternalScript() extends ConditionExpression
 }

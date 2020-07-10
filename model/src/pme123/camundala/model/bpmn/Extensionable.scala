@@ -1,7 +1,7 @@
 package pme123.camundala.model.bpmn
 
 import eu.timepit.refined.refineV
-import pme123.camundala.model.bpmn.ConditionExpression.{Expression, ExternalScript, InlineScript, JsonExpression}
+import pme123.camundala.model.bpmn.ConditionExpression.{Expression, ExternalScript, GroovyJsonExpression, InlineScript, JsonExpression}
 import pme123.camundala.model.bpmn.InputOutput.{InputOutputExpression, InputOutputMap}
 import pme123.camundala.model.bpmn.ScriptLanguage.Groovy
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
@@ -288,12 +288,12 @@ object InputOutput {
 
     def outputToJson(key: PropKey, generatedForm: GeneratedForm): InputOutputExpression =
       InputOutputExpression(key,
-        JsonExpression(
+        GroovyJsonExpression(
           generatedForm.allFields()
             .filter(_.id.startsWith(s"$key$KeyDelimeter"))
             .map { f =>
-              s""""${propName(key, f.id)}": "$$${f.id}""""
-            }.mkString("{", ",\n", "}")
+              propName(key, f.id) -> f.id
+            }.toMap
         )
       )
 
