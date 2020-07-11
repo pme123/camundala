@@ -22,3 +22,34 @@ case class Group(id: Identifier, maybeName: Option[String] = None, `type`: Ident
 object Group {
   val Camundala: Identifier = "Camundala"
 }
+
+trait UsersAndGroups {
+
+  def asList(usersAndGroups: String): Seq[String] =
+    usersAndGroups.split(",").toList.map(_.trim).filter(_.nonEmpty)
+}
+
+case class CandidateGroups(groups: Group*) extends UsersAndGroups {
+
+  def asString(str: String): String =
+    (groups.map(_.id.value) ++ asList(str)).distinct.mkString(",")
+
+  def ++(candGroups: Seq[Group]): CandidateGroups = CandidateGroups(groups = groups ++ candGroups: _*)
+
+}
+
+object CandidateGroups {
+  val none: CandidateGroups = CandidateGroups()
+}
+
+case class CandidateUsers(users: User*) extends UsersAndGroups {
+  def asString(str: String): String =
+    (users.map(_.username.value) ++ asList(str)).distinct.mkString(",")
+
+  def ++(candUsers: Seq[User]): CandidateUsers = CandidateUsers(users = users ++ candUsers: _*)
+
+}
+
+object CandidateUsers {
+  val none: CandidateUsers = CandidateUsers()
+}

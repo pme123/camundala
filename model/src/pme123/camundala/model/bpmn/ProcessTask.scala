@@ -25,8 +25,7 @@ case class ServiceTask(id: BpmnNodeId,
                        inFlows: Seq[SequenceFlow] = Seq.empty,
                        outFlows: Seq[SequenceFlow] = Seq.empty
                       )
-  extends ProcessTask
-    with ImplementationTask
+  extends ImplementationTask
     with HasInFlows
     with HasOutFlows {
 }
@@ -38,41 +37,9 @@ case class SendTask(id: BpmnNodeId,
                     inFlows: Seq[SequenceFlow] = Seq.empty,
                     outFlows: Seq[SequenceFlow] = Seq.empty
                    )
-  extends ProcessTask
-    with ImplementationTask
+  extends ImplementationTask
     with HasInFlows
     with HasOutFlows {
-}
-
-trait UsersAndGroups {
-
-  def asList(usersAndGroups: String): Seq[String] =
-    usersAndGroups.split(",").toList.map(_.trim).filter(_.nonEmpty)
-}
-
-case class CandidateGroups(groups: Group*) extends UsersAndGroups {
-
-  def asString(str: String): String =
-    (groups.map(_.id.value) ++ asList(str)).distinct.mkString(",")
-
-  def ++(candGroups: Seq[Group]): CandidateGroups = CandidateGroups(groups = groups ++ candGroups: _*)
-
-}
-
-object CandidateGroups {
-  val none: CandidateGroups = CandidateGroups()
-}
-
-case class CandidateUsers(users: User*) extends UsersAndGroups {
-  def asString(str: String): String =
-    (users.map(_.username.value) ++ asList(str)).distinct.mkString(",")
-
-  def ++(candUsers: Seq[User]): CandidateUsers = CandidateUsers(users = users ++ candUsers: _*)
-
-}
-
-object CandidateUsers {
-  val none: CandidateUsers = CandidateUsers()
 }
 
 case class UserTask(id: BpmnNodeId,
@@ -106,14 +73,13 @@ case class UserTask(id: BpmnNodeId,
 //<businessRuleTask id="CountryRiskTask" name="Country Risk" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:resultVariable="approvalRequired" camunda:decisionRef="country-risk" camunda:mapDecisionResult="singleEntry">
 // only implementation DMN supported
 case class BusinessRuleTask(id: BpmnNodeId,
-                            implementation: TaskImplementation = DmnImpl("yourDMN"),
+                            implementation: TaskImplementation = DmnImpl.notImplemented,
                             extProperties: ExtProperties = ExtProperties.none,
                             extInOutputs: ExtInOutputs = ExtInOutputs.none,
                             inFlows: Seq[SequenceFlow] = Seq.empty,
                             outFlows: Seq[SequenceFlow] = Seq.empty
                            )
-  extends ProcessTask
-    with ImplementationTask
+  extends ImplementationTask
     with HasInFlows
     with HasOutFlows {
 
@@ -127,3 +93,41 @@ case class BusinessRuleTask(id: BpmnNodeId,
 
 }
 
+case class CallActivity(id: BpmnNodeId,
+                        calledElement: CalledBpmn = CalledBpmn.notImplemented,
+                        extProperties: ExtProperties = ExtProperties.none,
+                        extInOutputs: ExtInOutputs = ExtInOutputs.none,
+                        extInOuts: ExtCallActivityInOuts = ExtCallActivityInOuts.none,
+                        inFlows: Seq[SequenceFlow] = Seq.empty,
+                        outFlows: Seq[SequenceFlow] = Seq.empty
+                       )
+  extends ProcessTask
+    with HasInFlows
+    with HasOutFlows {
+
+  def calledElement(process: BpmnProcess): CallActivity =
+    copy(calledElement = CalledBpmn(process))
+
+  def in(source: PropKey, target: PropKey): CallActivity =
+    copy(extInOuts = extInOuts :+ extInOuts.in(source, target))
+
+  def out(source: PropKey, target: PropKey): CallActivity =
+    copy(extInOuts = extInOuts :+ extInOuts.out(source, target))
+
+  def inExpressionFromJsonPath(path: JsonPath, target: PropKey): CallActivity =
+    copy(extInOuts = extInOuts :+ extInOuts.inExpressionFromJsonPath(path, target))
+
+  def outExpressionFromJsonPath(path: JsonPath, target: PropKey): CallActivity =
+    copy(extInOuts = extInOuts :+ extInOuts.outExpressionFromJsonPath(path, target))
+
+}
+
+case class CalledBpmn(process: BpmnProcess,
+                      decisionRefBinding: String = "deployment" // only supported
+                     ) {
+
+}
+
+object CalledBpmn {
+  def notImplemented: CalledBpmn = CalledBpmn(BpmnProcess("NotImplemented"))
+}

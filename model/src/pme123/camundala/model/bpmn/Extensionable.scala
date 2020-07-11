@@ -1,10 +1,12 @@
 package pme123.camundala.model.bpmn
 
 import eu.timepit.refined.refineV
+import pme123.camundala.model.bpmn.CallActivityInOut.{SourceExpressionInOut, SourceInOut}
 import pme123.camundala.model.bpmn.ConditionExpression.{Expression, ExternalScript, GroovyJsonExpression, InlineScript, JsonExpression}
 import pme123.camundala.model.bpmn.InputOutput.{InputOutputExpression, InputOutputMap}
 import pme123.camundala.model.bpmn.ScriptLanguage.Groovy
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField.{EnumValue, EnumValues}
 
 trait HasExtProperties {
   def extProperties: ExtProperties
@@ -270,9 +272,9 @@ object InputOutput {
     def inputStringFromJsonPath(key: PropKey, path: JsonPath): InputOutputExpression =
       InputOutputExpression(key,
         path.toList match {
-          case Nil => Expression("No Json Path defined!")// this should not happen > Refined JsonPath requires 2 elements
+          case Nil => Expression("No Json Path defined!") // this should not happen > Refined JsonPath requires 2 elements
           case obj :: tail =>
-            Expression(s"""$${S($obj)${tail.map(v => s""".prop("$v")""").mkString}.stringValue()}""")
+            Expression(s"""$${$obj${tail.map(v => s""".prop("$v")""").mkString}.stringValue()}""")
         })
 
     def inputFromJson(key: PropKey, generatedForm: GeneratedForm): Seq[InputOutputExpression] =
@@ -280,7 +282,7 @@ object InputOutput {
         .filter(_.id.startsWith(s"$key$KeyDelimeter"))
         .map { f =>
           refineV[IdRegex](s"${f.id}")
-            .map(InputOutputExpression(_, Expression(s"""$${S($key).prop("${propName(key, f.id)}")}""")))
+            .map(InputOutputExpression(_, Expression(s"""$${$key.prop("${propName(key, f.id)}")}""")))
         }.collect {
         case Right(expr) =>
           expr
@@ -326,4 +328,56 @@ object InputOutput {
   private def propName(key: PropKey, id: String) = {
     id.replace(s"$key$KeyDelimeter", "")
   }
+}
+
+
+case class ExtCallActivityInOuts(
+                                  ins: Seq[CallActivityInOut] = Nil,
+                                  outs: Seq[CallActivityInOut] = Nil
+                                ) {
+
+  def in(source: PropKey, target: PropKey): ExtCallActivityInOuts =
+    copy(ins = ins :+ SourceInOut(source, target))
+
+  def out(source: PropKey, target: PropKey): ExtCallActivityInOuts =
+    copy(outs = outs :+ SourceInOut(source, target))
+
+  def inExpressionFromJsonPath(path: JsonPath, target: PropKey): ExtCallActivityInOuts =
+    copy(ins = ins :+ SourceExpressionInOut.expressionFromJsonPath(path, target))
+
+  def outExpressionFromJsonPath(path: JsonPath, target: PropKey): ExtCallActivityInOuts =
+    copy(outs = outs :+ SourceExpressionInOut.expressionFromJsonPath(path, target))
+
+  def :+(inOuts: ExtCallActivityInOuts): ExtCallActivityInOuts =
+    ExtCallActivityInOuts(ins ++ inOuts.ins, outs ++ inOuts.outs)
+
+}
+
+object ExtCallActivityInOuts {
+  def none: ExtCallActivityInOuts = ExtCallActivityInOuts()
+}
+
+sealed trait CallActivityInOut {
+}
+
+object CallActivityInOut {
+
+  case object AllInOut extends CallActivityInOut
+
+  case class SourceInOut(source: PropKey, target: PropKey) extends CallActivityInOut
+
+  case class SourceExpressionInOut(sourceExpression: Expression, target: PropKey) extends CallActivityInOut
+
+  object SourceExpressionInOut {
+
+    def expressionFromJsonPath(sourcePath: JsonPath, target: PropKey): SourceExpressionInOut =
+      SourceExpressionInOut(
+        sourcePath.toList match {
+          case Nil => Expression("No Json Path defined!") // this should not happen > Refined JsonPath requires 2 elements
+          case obj :: tail =>
+            Expression(s"""$${$obj${tail.map(v => s""".prop("$v")""").mkString}.stringValue()}""")
+        },
+        target)
+  }
+
 }

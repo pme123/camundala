@@ -54,7 +54,7 @@ object ConditionExpression {
          |import static org.camunda.spin.Spin.*
          |
          |result = JsonOutput.toJson($jsonStr)
-         |println(\"\"\"Groovy String: $jsonStr\"\"\")
+         |println("Groovy String: $$result")
          |S(result)
          |""".stripMargin
 
@@ -62,7 +62,7 @@ object ConditionExpression {
 
   object GroovyJsonExpression {
     def apply(vars: Map[String, String]): GroovyJsonExpression =
-      GroovyJsonExpression(s"""[${vars.map { case (k, v) => s""""$k" : "$v"""" }.mkString(",\n")}]""")
+      GroovyJsonExpression(s"""[${vars.map { case (k, v) => s""""$k": $v""" }.mkString(",\n")}]""")
   }
 
   // case class ExternalScript() extends ConditionExpression

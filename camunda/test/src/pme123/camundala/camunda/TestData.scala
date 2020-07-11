@@ -6,6 +6,8 @@ import pme123.camundala.camunda.service.restService.Request
 import pme123.camundala.camunda.service.restService.Request.Auth.BasicAuth
 import pme123.camundala.camunda.service.restService.Request.Host
 import pme123.camundala.camunda.service.restService.RequestPath.Path
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
+import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm._
 import pme123.camundala.model.bpmn._
 import pme123.camundala.model.bpmn.ops._
 import zio.{Task, UIO, ZIO, ZManaged}
@@ -60,7 +62,7 @@ object TestData {
 
   }
 
-  val twitterProcess: BpmnProcess =
+  lazy val twitterProcess: BpmnProcess =
     BpmnProcess("TwitterDemoProcess")
       .starterGroup(worker)
       .starterGroup(guest)
@@ -99,19 +101,32 @@ object TestData {
         .prop("KPI-Ratio", "Tweet Approved")
     }
 
-  val testProcess: BpmnProcess =
+  lazy val testProcess: BpmnProcess =
     BpmnProcess("TestDemoProcess"
     ).*** {
       StartEvent("startEvent")
     }.*** {
       ServiceTask("CallSwapiServiceTask")
         .external("myTopic")
+    }.***{
+      CallActivity("SayHelloCallActivity")
+        .calledElement("TwitterDemoProcess.bpmn", subProcess)
     }.*** {
       ServiceTask("external-task-example")
         .external("myTopic")
     }.*** {
       SendTask("send-task-example")
         .external("myTopic")
+    }
+
+  lazy val subProcess: BpmnProcess =
+    BpmnProcess("MySubProcess"
+    ).*** {
+      StartEvent("startEvent")
+    }.*** {
+      UserTask("SayHelloTask")
+        .form(GeneratedForm()
+        .---(textField("hello").default("Hi there, Welcome in the Subtask")))
     }
 
   val bpmn: Bpmn = Bpmn("TwitterDemoProcess.bpmn", "TwitterDemoProcess.bpmn")

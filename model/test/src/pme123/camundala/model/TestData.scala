@@ -9,6 +9,14 @@ import pme123.camundala.model.bpmn.ops._
 
 object TestData {
 
+  private val testDemoProcess: BpmnProcess = BpmnProcess("TestDemoProcess")
+    .*** {
+      StartEvent("startEvent")
+    }.*** {
+    ServiceTask("external-task-example")
+      .external("myTopic")
+  }
+
   val bpmn: Bpmn =
     Bpmn("TwitterDemoProcess.bpmn", "TwitterDemoProcess.bpmn")
       .###(
@@ -33,15 +41,13 @@ object TestData {
           ServiceTask("service_task_publish_on_twitter")
             .delegate("#{tweetAdapter}")
             .prop("KPI-Ratio", "Tweet Approved")
+        ).***(
+          CallActivity("myTestSubProcess")
+            .calledElement(testDemoProcess)
+            .in("KPI-Ratio", "ratio")
         ))
       .###(
-        BpmnProcess("TestDemoProcess")
-          .*** {
-            StartEvent("startEvent")
-          }.*** {
-          ServiceTask("external-task-example")
-            .external("myTopic")
-        }
+        testDemoProcess
       )
 
   lazy val addressChangeForm: GeneratedForm =

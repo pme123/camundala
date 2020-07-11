@@ -71,6 +71,9 @@ case class XBpmnProcess(xmlElem: Elem) {
   val sendTasks: Seq[XSendTask] =
     (xmlElem \ "sendTask").map { case e: Elem => XSendTask(e) }
 
+  val callActivities: Seq[XCallActivity] =
+    (xmlElem \ "callActivity").map { case e: Elem => XCallActivity(e) }
+
   val startEvents: Seq[XStartEvent] =
     (xmlElem \ "startEvent").map { case e: Elem => XStartEvent(e) }
 
@@ -203,6 +206,7 @@ case class XBpmnProcess(xmlElem: Elem) {
       sTasks <- Task.foreach(serviceTasks)(_.create())
       bRuleTasks <- Task.foreach(businessRuleTasks)(_.create())
       sendTasks <- Task.foreach(sendTasks)(_.create())
+      callActivities <- Task.foreach(callActivities)(_.create())
       startEvents <- Task.foreach(startEvents)(_.create())
       endEvents <- Task.foreach(endEvents)(_.create())
       exGateways <- Task.foreach(exclusiveGateways)(_.create())
@@ -216,6 +220,7 @@ case class XBpmnProcess(xmlElem: Elem) {
       sTasks,
       bRuleTasks,
       sendTasks,
+      callActivities,
       startEvents,
       endEvents,
       exGateways,

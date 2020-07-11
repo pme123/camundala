@@ -98,7 +98,7 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
     .dmn("country-risk.dmn", "approvalRequired")
     .inputStringFromJsonPath("currentCountry", Seq(existingAddress, countryIso))
     .inputStringFromJsonPath("targetCountry", Seq(newAddress, countryIso))
-  //TODO Test -> .stringValue???
+
   lazy val AddressChangeTask: UserTask = UserTask("AddressChangeTask")
     .candidateGroups(maGroup, adminGroup)
     .form(addressChangeForm)

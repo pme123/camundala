@@ -31,8 +31,6 @@ object WithTaskImpl {
     instance((task, taskImpl) => task.copy(implementation = taskImpl))
   implicit val sendTask: WithTaskImpl[SendTask] =
     instance((task, taskImpl) => task.copy(implementation = taskImpl))
-  implicit val businessRuleTask: WithTaskImpl[BusinessRuleTask] =
-    instance((task, taskImpl) => task.copy(implementation = taskImpl))
 
 }
 
@@ -62,6 +60,9 @@ object TaskImplementation {
 
   object DmnImpl {
     def apply(decisionRef: FilePath): DmnImpl = new DmnImpl(StaticFile(decisionRef))
+
+    def notImplemented: DmnImpl = DmnImpl(StaticFile("NotImplemented"))
+
   }
 
 }

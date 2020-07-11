@@ -92,6 +92,45 @@ object XSendTask {
   def unapply(node: Node): Option[Elem] = elementUnapply(node, bpmn("sendTask"))
 }
 
+case class XCallActivity(xmlElem: Elem)
+  extends XProcessTask[CallActivity]
+    with XHasInFlows[CallActivity]
+    with XHasOutFlows[CallActivity] {
+
+  val tagName = "CallActivity"
+
+  def create(): IO[ModelException, CallActivity] =
+    for {
+      nodeId <- xBpmnId
+      inFlows <- incomingFlows
+      outFlows <- outgoingFlows
+    } yield
+      CallActivity(
+        nodeId,
+        inFlows = inFlows,
+        outFlows = outFlows
+      )
+
+  override def merge(maybeNode: Option[CallActivity]): Task[XMergeResult] =
+    for {XMergeResult(xml, warnings) <- super.merge(maybeNode)
+         result <- UIO.succeed {
+           val newElem = maybeNode
+             .map(_.calledElement)
+             .map {
+               case CalledBpmn(_, process, decisionRefBinding) =>
+                 xml % Attribute(null, "calledElement", process.idVal,
+                   Attribute(camundaPrefix, "decisionRefBinding", decisionRefBinding, camundaXmlnsAttr))
+             }.getOrElse(xml)
+           XMergeResult(newElem, warnings)
+         }
+         } yield result
+}
+
+object XCallActivity {
+
+  def unapply(node: Node): Option[Elem] = elementUnapply(node, bpmn("callActivity"))
+}
+
 trait XHasForm[T <: HasForm]
   extends XBpmnNode[T] {
 

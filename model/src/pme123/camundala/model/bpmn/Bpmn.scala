@@ -45,6 +45,7 @@ case class BpmnProcess(id: ProcessId,
                        serviceTasks: Seq[ServiceTask] = Seq.empty,
                        businessRuleTasks: Seq[BusinessRuleTask] = Seq.empty,
                        sendTasks: Seq[SendTask] = Seq.empty,
+                       callActivities: Seq[CallActivity] = Seq.empty,
                        startEvents: Seq[StartEvent] = Seq.empty,
                        endEvents: Seq[EndEvent] = Seq.empty,
                        exclusiveGateways: Seq[ExclusiveGateway] = Seq.empty,
@@ -65,6 +66,7 @@ case class BpmnProcess(id: ProcessId,
       ("serviceTasks", serviceTasks),
       ("businessRuleTasks", businessRuleTasks),
       ("sendTasks", sendTasks),
+      ("callActivities", callActivities),
       ("exclusiveGateways", exclusiveGateways),
       ("parallelGateways", parallelGateways),
       ("endEvents", endEvents),
@@ -148,6 +150,12 @@ case class BpmnProcess(id: ProcessId,
   def businessRuleTask(task: BusinessRuleTask): BpmnProcess = businessRuleTasks(task)
 
   def ***(task: BusinessRuleTask): BpmnProcess = businessRuleTasks(task)
+
+  def callActivities(activities: CallActivity*): BpmnProcess = copy(callActivities = callActivities ++ activities)
+
+  def callActivity(activity: CallActivity): BpmnProcess = callActivities(activity)
+
+  def ***(activity: CallActivity): BpmnProcess = callActivities(activity)
 
   def sendTasks(tasks: SendTask*): BpmnProcess = copy(sendTasks = sendTasks ++ tasks)
 

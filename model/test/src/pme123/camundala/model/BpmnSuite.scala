@@ -16,7 +16,8 @@ object BpmnSuite extends DefaultRunnableSpec {
       val bpmnStr = TestData.bpmn.generateDsl()
       println(s"BPMN: ${bpmnStr}")
       assert(bpmnStr)(containsString("""("TwitterDemoProcess.bpmn",""")) &&
-        assert(bpmnStr)(containsString("""BpmnProcess("TwitterDemoProcess")"""))
+        assert(bpmnStr)(containsString("""BpmnProcess("TwitterDemoProcess")""")) &&
+        assert(bpmnStr)(containsString("""CallActivity("myTestSubProcess")"""))
     }
   )
 

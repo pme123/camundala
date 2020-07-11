@@ -2,11 +2,11 @@ package pme123.camundala.model.bpmn
 
 import eu.timepit.refined.auto._
 import pme123.camundala.model.TestData
-import pme123.camundala.model.bpmn.ConditionExpression.{Expression, JsonExpression}
+import pme123.camundala.model.bpmn.ConditionExpression.{Expression, GroovyJsonExpression}
 import pme123.camundala.model.bpmn.InputOutput.{InputOutputExpression, InputOutputMap}
 import zio.test.Assertion._
-import zio.test.{suite, _}
 import zio.test.environment.TestEnvironment
+import zio.test.{suite, _}
 
 object InputOutputSuite extends DefaultRunnableSpec {
 
@@ -16,16 +16,16 @@ object InputOutputSuite extends DefaultRunnableSpec {
         test("Input from Json") {
           val jsonPath: JsonPath = Seq("existingAddress", "street")
           assert(
-            InputOutputExpression("existingAddress__street", Expression(s"""$${S(existingAddress).prop("street")}"""))
+            InputOutputExpression("existingAddress__street", Expression(s"""$${existingAddress.prop("street").stringValue()}"""))
           )(
             equalTo(InputOutputExpression.inputStringFromJsonPath("existingAddress__street", jsonPath)))
         },
         test("Input String from Json Path") {
           assert(
-            Seq(InputOutputExpression("existingAddress__street", Expression(s"""$${S(existingAddress).prop("street")}""")),
-              InputOutputExpression("existingAddress__zipCode", Expression(s"""$${S(existingAddress).prop("zipCode")}""")),
-              InputOutputExpression("existingAddress__city", Expression(s"""$${S(existingAddress).prop("city")}""")),
-              InputOutputExpression("existingAddress__countryIso", Expression(s"""$${S(existingAddress).prop("countryIso")}""")))
+            Seq(InputOutputExpression("existingAddress__street", Expression(s"""$${existingAddress.prop("street")}""")),
+              InputOutputExpression("existingAddress__zipCode", Expression(s"""$${existingAddress.prop("zipCode")}""")),
+              InputOutputExpression("existingAddress__city", Expression(s"""$${existingAddress.prop("city")}""")),
+              InputOutputExpression("existingAddress__countryIso", Expression(s"""$${existingAddress.prop("countryIso")}""")))
           )(
             equalTo(InputOutputExpression.inputFromJson("existingAddress", TestData.addressChangeForm)))
         },
@@ -48,11 +48,11 @@ object InputOutputSuite extends DefaultRunnableSpec {
         },
         test("Output to Json") {
           assert(
-            InputOutputExpression("existingAddress", JsonExpression(
-              s"""{"street": "$$existingAddress__street",
-                 |"zipCode": "$$existingAddress__zipCode",
-                 |"city": "$$existingAddress__city",
-                 |"countryIso": "$$existingAddress__countryIso"}""".stripMargin)))(equalTo(
+            InputOutputExpression("existingAddress", GroovyJsonExpression(
+              s"""["street": existingAddress__street,
+                 |"zipCode": existingAddress__zipCode,
+                 |"city": existingAddress__city,
+                 |"countryIso": existingAddress__countryIso]""".stripMargin)))(equalTo(
             InputOutputExpression.outputToJson("existingAddress", TestData.addressChangeForm)))
         }
       )
