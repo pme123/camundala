@@ -110,6 +110,7 @@ case class BpmnProcess(id: ProcessId,
   lazy val serviceTaskMap: Map[BpmnNodeId, ServiceTask] = serviceTasks.map(t => t.id -> t).toMap
   lazy val businessRuleTaskMap: Map[BpmnNodeId, BusinessRuleTask] = businessRuleTasks.map(t => t.id -> t).toMap
   lazy val sendTaskMap: Map[BpmnNodeId, SendTask] = sendTasks.map(t => t.id -> t).toMap
+  lazy val callActivityMap: Map[BpmnNodeId, CallActivity] = callActivities.map(ca => ca.id -> ca).toMap
   lazy val startEventMap: Map[BpmnNodeId, StartEvent] = startEvents.map(e => e.id -> e).toMap
   lazy val exclusiveGatewayMap: Map[BpmnNodeId, ExclusiveGateway] = exclusiveGateways.map(g => g.id -> g).toMap
   lazy val parallelGatewayMap: Map[BpmnNodeId, ParallelGateway] = parallelGateways.map(g => g.id -> g).toMap

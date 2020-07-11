@@ -108,13 +108,16 @@ object TestData {
     }.*** {
       ServiceTask("CallSwapiServiceTask")
         .external("myTopic")
-    }.***{
+    }.*** {
       CallActivity("SayHelloCallActivity")
-        .calledElement("TwitterDemoProcess.bpmn", subProcess)
+        .calledElement(subProcess)
     }.*** {
       ServiceTask("external-task-example")
         .external("myTopic")
-    }.*** {
+    }.***{
+      BusinessRuleTask("dmnTableRef")
+        .dmn("MyDmn.dmn")
+     }.*** {
       SendTask("send-task-example")
         .external("myTopic")
     }
@@ -122,14 +125,13 @@ object TestData {
   lazy val subProcess: BpmnProcess =
     BpmnProcess("MySubProcess"
     ).*** {
-      StartEvent("startEvent")
-    }.*** {
       UserTask("SayHelloTask")
         .form(GeneratedForm()
-        .---(textField("hello").default("Hi there, Welcome in the Subtask")))
+          .---(textField("hello").default("Hi there, Welcome in the Subtask")))
     }
 
   val bpmn: Bpmn = Bpmn("TwitterDemoProcess.bpmn", "TwitterDemoProcess.bpmn")
     .process(twitterProcess)
     .process(testProcess)
+    .process(subProcess)
 }

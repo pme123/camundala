@@ -19,7 +19,7 @@ object BpmnGeneratorSuite extends DefaultRunnableSpec {
           _ <- bpmnRegister.registerBpmn(bpmn)
           bpmn <- bpmnGenerator.generate(StaticFile("TwitterDemoProcess.bpmn"))
         } yield {
-          assert(bpmn.processes.length)(equalTo(2) ?? "number of generated Processes")
+          assert(bpmn.processes.length)(equalTo(3) ?? "number of generated Processes")
         }
       },
 

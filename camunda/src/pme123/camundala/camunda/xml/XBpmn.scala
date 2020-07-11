@@ -143,9 +143,15 @@ case class XBpmnProcess(xmlElem: Elem) {
             businessRuleTasks,
             "BusinessRuleTask"
           )
+          XMergeResult(xmlCallActivity, warningsCallActivity) <- mergeExtensionable(
+            xmlBusinessRuleService,
+            p.callActivityMap,
+            callActivities,
+            "CallActivity"
+          )
         } yield XMergeResult(
-          xmlBusinessRuleService,
-          warningsUser ++ warningsService ++ warningsBusinessRule ++ warningsStartEvent ++ warningsExclusiveGateway ++ warningsParallelGateway ++ warningsSequenceFlow
+          xmlCallActivity,
+          warningsUser ++ warningsService ++ warningsBusinessRule ++ warningsCallActivity ++ warningsStartEvent ++ warningsExclusiveGateway ++ warningsParallelGateway ++ warningsSequenceFlow
         )
     }
 

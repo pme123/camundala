@@ -27,7 +27,9 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
           userTaskInputParam = mergeResult.xmlElem \\ "userTask" \\ "inputParameter"
           userTaskForm = userTasks.head.attributeAsText(QName.camunda("formKey"))
           serviceTasks = mergeResult.xmlElem \\ "serviceTask"
+          businessRuleTask = mergeResult.xmlElem \\ "businessRuleTask"
           sendTasks = mergeResult.xmlElem \\ "sendTask"
+          callActivities = mergeResult.xmlElem \\ "callActivity"
           startEvents = mergeResult.xmlElem \\ "startEvent"
           startEventForm = startEvents.head.attributeAsText(QName.camunda("formKey"))
           exclusiveGateways = mergeResult.xmlElem \\ "exclusiveGateway"
@@ -41,26 +43,30 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
           sequenceFlowConditionals = mergeResult.xmlElem \\ "sequenceFlow" \\ "conditionExpression"
           _ = println(s"userTasks.head: ${userTasks.head.attribute(xmlnsCamunda, candidateUsers)}")
         } yield {
-          assert(mergeResult.warnings.value.length)(equalTo(13) ?? "warnings") &&
+          assert(mergeResult.warnings.value.length)(equalTo(8 + 11 + 5) ?? "warnings") &&
             assert(mergeResult.warnings.value.head.msg)(equalTo("You have 2 ExclusiveGateway in the XML-Model, but you have 1 in Scala")) &&
             assert(mergeResult.warnings.value(1).msg)(equalTo("There is NOT a ExclusiveGateway with id 'gateway_join' in Scala.")) &&
-            assert(processes.size)(equalTo(2) ?? "processes") &&
+            assert(processes.size)(equalTo(3) ?? "processes") &&
             assert(processes.head \@ "id")(equalTo("TwitterDemoProcess")) &&
             assert(processes.head.attribute(xmlnsCamunda, candidateStarterUsers).get.head.text)(equalTo("heidi,peter,alina") ?? "candidateStarterUsers") &&
             assert(processes.head.attribute(xmlnsCamunda, candidateStarterGroups).get.head.text)(equalTo("worker,guest") ?? "candidateStarterUsers") &&
-            assert(userTasks.size)(equalTo(1) ?? "userTasks") &&
+            assert(userTasks.size)(equalTo(2) ?? "userTasks") &&
             assert(userTaskForm)(equalTo("embedded:deployment:static/forms/reviewTweet.html")) &&
             assert(userTaskProps.length)(equalTo(3) ?? "userTaskProps") &&
             assert(userTasks.head \@ "id")(equalTo("user_task_review_tweet")) &&
             assert(userTasks.head.attribute(xmlnsCamunda, candidateUsers).get.head.text)(equalTo("heidi") ?? "candidateUsers") &&
             assert(userTasks.head.attribute(xmlnsCamunda, candidateGroups).get.head.text)(equalTo("worker,player") ?? "candidateGroups") &&
             assert(serviceTasks.length)(equalTo(4) ?? "serviceTasks") &&
+            assert(businessRuleTask.length)(equalTo(1) ?? "businessRuleTask") &&
+            assert(businessRuleTask.head.attribute(xmlnsCamunda, "decisionRef").get.head.text)(equalTo("MyDmn") ?? "businessRuleTask.decisionRef") &&
             assert(sendTasks.length)(equalTo(1) ?? "sendTasks") &&
+            assert(callActivities.length)(equalTo(1) ?? "callActivities") &&
+            assert(callActivities.head.attribute("calledElement").get.head.text)(equalTo("MySubProcess") ?? "callActivities.calledElement") &&
             assert(serviceTaskProp.length)(equalTo(1) ?? "serviceTaskProp") &&
-            assert(startEvents.length)(equalTo(2) ?? "startEvents") &&
+            assert(startEvents.length)(equalTo(3) ?? "startEvents") &&
             assert(startEventForm)(equalTo("embedded:deployment:static/forms/createTweet.html")) &&
             assert(startEventProp.length)(equalTo(1) ?? "startEventProp") &&
-            assert(exclusiveGateways.length)(equalTo(2) ?? "exclusiveGateways") &&
+            assert(exclusiveGateways.length)(equalTo(3) ?? "exclusiveGateways") &&
             assert(exclusiveGatewayProp.length)(equalTo(1) ?? "exclusiveGatewayProp") &&
             assert(delegateExpression)(equalTo("#{emailAdapter}")) &&
             assert(externalTask)(equalTo("myTopic")) &&
@@ -74,14 +80,14 @@ object BpmnServiceSuite extends DefaultRunnableSpec {
           _ <- bpmnRegister.registerBpmn(bpmn)
           valWarns <- bpmnService.validateBpmn("TwitterDemoProcess.bpmn")
         } yield
-          assert(valWarns.value.size)(equalTo(13) ?? "warnings")
+          assert(valWarns.value.size)(equalTo(8 + 11 + 5) ?? "warnings")
       },
       testM("the BPMN Model is generated") {
         for {
           _ <- bpmnRegister.registerBpmn(bpmn)
           paths <- bpmnService.generateBpmn("TwitterDemoProcess.bpmn")
         } yield {
-          assert(paths.length)(equalTo(3) ?? "number of generated Paths")
+          assert(paths.length)(equalTo(4) ?? "number of generated Paths")
         }
       },
 

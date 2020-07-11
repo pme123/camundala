@@ -117,7 +117,7 @@ case class XCallActivity(xmlElem: Elem)
            val newElem = maybeNode
              .map(_.calledElement)
              .map {
-               case CalledBpmn(_, process, decisionRefBinding) =>
+               case CalledBpmn(process, decisionRefBinding) =>
                  xml % Attribute(null, "calledElement", process.idVal,
                    Attribute(camundaPrefix, "decisionRefBinding", decisionRefBinding, camundaXmlnsAttr))
              }.getOrElse(xml)

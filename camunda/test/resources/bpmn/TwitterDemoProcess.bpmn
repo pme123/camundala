@@ -3,6 +3,7 @@
   <collaboration id="Collaboration_19t23ei">
     <participant id="Participant_059fm3c" processRef="TwitterDemoProcess" />
     <participant id="Participant_1snfrd2" name="TestDemoProcess" processRef="TestDemoProcess" />
+    <participant id="Participant_MySubProcess" name="My Sub Process" processRef="MySubProcess" />
   </collaboration>
   <process id="TwitterDemoProcess" name="TwitterDemoProcess" isExecutable="true" camunda:candidateStarterUsers="alina">
     <serviceTask id="service_task_send_rejection_notification" name="Send rejection notification">
@@ -14,18 +15,10 @@
       <outgoing>no</outgoing>
       <outgoing>yes</outgoing>
     </exclusiveGateway>
-    <exclusiveGateway id="gateway_join" name="Join">
-      <incoming>SequenceFlow_4</incoming>
-      <incoming>SequenceFlow_3</incoming>
-      <outgoing>SequenceFlow_5</outgoing>
-    </exclusiveGateway>
     <serviceTask id="service_task_publish_on_twitter" name="Publish on Twitter">
       <incoming>yes</incoming>
       <outgoing>SequenceFlow_3</outgoing>
     </serviceTask>
-    <endEvent id="end_event_tweet_handled" name="Tweet handled">
-      <incoming>SequenceFlow_5</incoming>
-    </endEvent>
     <startEvent id="start_event_new_tweet" name="Tweet written" camunda:initiator="initiator">
       <outgoing>SequenceFlow_9</outgoing>
     </startEvent>
@@ -49,34 +42,74 @@
     <sequenceFlow id="SequenceFlow_2" name="" sourceRef="user_task_review_tweet" targetRef="gateway_approved" />
     <sequenceFlow id="SequenceFlow_9" name="" sourceRef="start_event_new_tweet" targetRef="user_task_review_tweet" />
     <sequenceFlow id="SequenceFlow_3" name="" sourceRef="service_task_publish_on_twitter" targetRef="gateway_join" />
-    <sequenceFlow id="SequenceFlow_5" name="" sourceRef="gateway_join" targetRef="end_event_tweet_handled" />
     <sequenceFlow id="yes" name="yes" sourceRef="gateway_approved" targetRef="service_task_publish_on_twitter" />
     <sequenceFlow id="no" name="no	" sourceRef="gateway_approved" targetRef="service_task_send_rejection_notification" />
     <sequenceFlow id="SequenceFlow_4" name="" sourceRef="service_task_send_rejection_notification" targetRef="gateway_join" />
+    <exclusiveGateway id="gateway_join" name="Join">
+      <incoming>SequenceFlow_4</incoming>
+      <incoming>SequenceFlow_3</incoming>
+      <outgoing>SequenceFlow_5</outgoing>
+    </exclusiveGateway>
+    <endEvent id="end_event_tweet_handled" name="Tweet handled">
+      <incoming>SequenceFlow_5</incoming>
+    </endEvent>
+    <sequenceFlow id="SequenceFlow_5" name="" sourceRef="gateway_join" targetRef="end_event_tweet_handled" />
   </process>
   <process id="TestDemoProcess" name="TestDemoProcess" isExecutable="true">
-    <sequenceFlow id="SequenceFlow_0u2afzo" sourceRef="external-task-example" targetRef="send-task-example" />
+    <sequenceFlow id="SequenceFlow_0u2afzo" sourceRef="external-task-example" targetRef="dmnTableRef" />
     <sequenceFlow id="SequenceFlow_18o60le" sourceRef="startEvent" targetRef="CallSwapiServiceTask" />
-    <sequenceFlow id="SequenceFlow_0rv2dtk" sourceRef="send-task-example" targetRef="EndEvent_035u7ja" />
-    <endEvent id="EndEvent_035u7ja">
-      <incoming>SequenceFlow_0rv2dtk</incoming>
-    </endEvent>
-    <sendTask id="send-task-example" name="Send Task Example">
-      <incoming>SequenceFlow_0u2afzo</incoming>
-      <outgoing>SequenceFlow_0rv2dtk</outgoing>
-    </sendTask>
     <startEvent id="startEvent">
       <outgoing>SequenceFlow_18o60le</outgoing>
     </startEvent>
-    <serviceTask id="external-task-example" name="External Task Example">
-      <incoming>SequenceFlow_0xa77rh</incoming>
-      <outgoing>SequenceFlow_0u2afzo</outgoing>
-    </serviceTask>
     <serviceTask id="CallSwapiServiceTask" name="CallSwapiServiceTask&#10;">
       <incoming>SequenceFlow_18o60le</incoming>
       <outgoing>SequenceFlow_0xa77rh</outgoing>
     </serviceTask>
-    <sequenceFlow id="SequenceFlow_0xa77rh" sourceRef="CallSwapiServiceTask" targetRef="external-task-example" />
+    <sequenceFlow id="SequenceFlow_0xa77rh" sourceRef="CallSwapiServiceTask" targetRef="SayHelloCallActivity" />
+    <serviceTask id="external-task-example" name="External Task Example">
+      <incoming>SequenceFlow_03rzfc1</incoming>
+      <outgoing>SequenceFlow_0u2afzo</outgoing>
+    </serviceTask>
+    <sequenceFlow id="SequenceFlow_03rzfc1" sourceRef="SayHelloCallActivity" targetRef="external-task-example" />
+    <callActivity id="SayHelloCallActivity" name="Say Hello">
+      <incoming>SequenceFlow_0xa77rh</incoming>
+      <outgoing>SequenceFlow_03rzfc1</outgoing>
+    </callActivity>
+    <sequenceFlow id="SequenceFlow_1grwwza" sourceRef="dmnTableRef" targetRef="ExclusiveGateway_05qi86o" />
+    <sequenceFlow id="SequenceFlow_1vw7q27" sourceRef="ExclusiveGateway_05qi86o" targetRef="send-task-example" />
+    <endEvent id="EndEvent_035u7ja">
+      <incoming>SequenceFlow_0rv2dtk</incoming>
+      <incoming>equenceFlowIsOk</incoming>
+    </endEvent>
+    <sequenceFlow id="SequenceFlow_0rv2dtk" sourceRef="send-task-example" targetRef="EndEvent_035u7ja" />
+    <exclusiveGateway id="ExclusiveGateway_05qi86o" default="SequenceFlow_1vw7q27">
+      <incoming>SequenceFlow_1grwwza</incoming>
+      <outgoing>SequenceFlow_1vw7q27</outgoing>
+      <outgoing>equenceFlowIsOk</outgoing>
+    </exclusiveGateway>
+    <sequenceFlow id="equenceFlowIsOk" name="is Ok" sourceRef="ExclusiveGateway_05qi86o" targetRef="EndEvent_035u7ja" />
+    <sendTask id="send-task-example" name="Send Task Example">
+      <incoming>SequenceFlow_1vw7q27</incoming>
+      <outgoing>SequenceFlow_0rv2dtk</outgoing>
+    </sendTask>
+    <businessRuleTask id="dmnTableRef" name="DMN Table Ref">
+      <incoming>SequenceFlow_0u2afzo</incoming>
+      <outgoing>SequenceFlow_1grwwza</outgoing>
+    </businessRuleTask>
+  </process>
+  <process id="MySubProcess" name="My Sub Process" isExecutable="true" camunda:isStartableInTasklist="false">
+    <startEvent id="StartEvent_0jtwlon">
+      <outgoing>SequenceFlow_043jgm0</outgoing>
+    </startEvent>
+    <sequenceFlow id="SequenceFlow_043jgm0" sourceRef="StartEvent_0jtwlon" targetRef="SayHelloTask" />
+    <endEvent id="EndEvent_1ytvtpg">
+      <incoming>SequenceFlow_0emksbp</incoming>
+    </endEvent>
+    <sequenceFlow id="SequenceFlow_0emksbp" sourceRef="SayHelloTask" targetRef="EndEvent_1ytvtpg" />
+    <userTask id="SayHelloTask" name="Say Hello">
+      <incoming>SequenceFlow_043jgm0</incoming>
+      <outgoing>SequenceFlow_0emksbp</outgoing>
+    </userTask>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_TwitterDemoProcess">
     <bpmndi:BPMNPlane id="BPMNPlane_TwitterDemoProcess" bpmnElement="Collaboration_19t23ei">
@@ -117,7 +150,7 @@
         <omgdc:Bounds x="286" y="154" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_1ql9j8z_di" bpmnElement="external-task-example">
-        <omgdc:Bounds x="400" y="500" width="100" height="80" />
+        <omgdc:Bounds x="540" y="500" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="BPMNShape_Review_Tweet_3" targetElement="BPMNShape_Approved__3">
         <omgdi:waypoint x="386" y="194" />
@@ -173,14 +206,14 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Participant_1snfrd2_di" bpmnElement="Participant_1snfrd2" isHorizontal="true">
-        <omgdc:Bounds x="124" y="430" width="694" height="250" />
+        <omgdc:Bounds x="124" y="430" width="1104" height="240" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_035u7ja_di" bpmnElement="EndEvent_035u7ja">
-        <omgdc:Bounds x="682" y="522" width="36" height="36" />
+        <omgdc:Bounds x="1092" y="522" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0u2afzo_di" bpmnElement="SequenceFlow_0u2afzo">
-        <omgdi:waypoint x="500" y="540" />
-        <omgdi:waypoint x="530" y="540" />
+        <omgdi:waypoint x="640" y="540" />
+        <omgdi:waypoint x="680" y="540" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="StartEvent_1ukn3m3_di" bpmnElement="startEvent">
         <omgdc:Bounds x="162" y="522" width="36" height="36" />
@@ -190,18 +223,70 @@
         <omgdi:waypoint x="250" y="540" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0rv2dtk_di" bpmnElement="SequenceFlow_0rv2dtk">
-        <omgdi:waypoint x="630" y="540" />
-        <omgdi:waypoint x="682" y="540" />
+        <omgdi:waypoint x="1020" y="490" />
+        <omgdi:waypoint x="1110" y="490" />
+        <omgdi:waypoint x="1110" y="522" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="SendTask_00n36ur_di" bpmnElement="send-task-example">
-        <omgdc:Bounds x="530" y="500" width="100" height="80" />
+        <omgdc:Bounds x="920" y="450" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_1labsw4_di" bpmnElement="CallSwapiServiceTask">
         <omgdc:Bounds x="250" y="500" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0xa77rh_di" bpmnElement="SequenceFlow_0xa77rh">
         <omgdi:waypoint x="350" y="540" />
-        <omgdi:waypoint x="400" y="540" />
+        <omgdi:waypoint x="390" y="540" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_0sebbc1_di" bpmnElement="Participant_MySubProcess" isHorizontal="true">
+        <omgdc:Bounds x="124" y="700" width="496" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_0jtwlon_di" bpmnElement="StartEvent_0jtwlon">
+        <omgdc:Bounds x="202" y="792" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_043jgm0_di" bpmnElement="SequenceFlow_043jgm0">
+        <omgdi:waypoint x="238" y="810" />
+        <omgdi:waypoint x="320" y="810" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_1ytvtpg_di" bpmnElement="EndEvent_1ytvtpg">
+        <omgdc:Bounds x="492" y="792" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0emksbp_di" bpmnElement="SequenceFlow_0emksbp">
+        <omgdi:waypoint x="420" y="810" />
+        <omgdi:waypoint x="492" y="810" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_03rzfc1_di" bpmnElement="SequenceFlow_03rzfc1">
+        <omgdi:waypoint x="490" y="540" />
+        <omgdi:waypoint x="540" y="540" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="CallActivity_0uvi6yc_di" bpmnElement="SayHelloCallActivity">
+        <omgdc:Bounds x="390" y="500" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0nb5xcj_di" bpmnElement="SayHelloTask">
+        <omgdc:Bounds x="320" y="770" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_05qi86o_di" bpmnElement="ExclusiveGateway_05qi86o" isMarkerVisible="true">
+        <omgdc:Bounds x="815" y="515" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1vw7q27_di" bpmnElement="SequenceFlow_1vw7q27">
+        <omgdi:waypoint x="840" y="515" />
+        <omgdi:waypoint x="840" y="490" />
+        <omgdi:waypoint x="920" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1grwwza_di" bpmnElement="SequenceFlow_1grwwza">
+        <omgdi:waypoint x="780" y="540" />
+        <omgdi:waypoint x="815" y="540" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BusinessRuleTask_1apbvez_di" bpmnElement="dmnTableRef">
+        <omgdc:Bounds x="680" y="500" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0dk5pg2_di" bpmnElement="equenceFlowIsOk">
+        <omgdi:waypoint x="840" y="565" />
+        <omgdi:waypoint x="840" y="600" />
+        <omgdi:waypoint x="1110" y="600" />
+        <omgdi:waypoint x="1110" y="558" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="963" y="582" width="26" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
