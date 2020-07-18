@@ -30,7 +30,7 @@ case class AddressService(addressHost: Host = Host.unknown) {
         addressHost,
         path = Path("customer", "11"),
         responseVariable = "existingAddress",
-        mappings = Map("customer" -> "dummyCustomerId"),
+        mappings = Map("clientKey" -> "dummyCustomerId"),
         maybeMocked = if (addressHost == Host.unknown) maybeMockData else None
       )
     ).asServiceTask(id)
@@ -43,10 +43,10 @@ case class AddressService(addressHost: Host = Host.unknown) {
         path = Path("address", "modify"),
         body = StringBody(
           """{
-            | custId: %customer,
+            | custId: %clientKey,
             | address: %newAddress,
             |}""".stripMargin),
-        mappings = Map("newAddress" -> "{...}", "customer" -> "12141"),
+        mappings = Map("newAddress" -> "{...}", "clientKey" -> "12141"),
         maybeMocked = if (addressHost == Host.unknown) Some(MockData(204)) else None
       )
     ).asServiceTask(id)

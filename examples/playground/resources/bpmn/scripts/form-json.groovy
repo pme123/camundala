@@ -1,9 +1,9 @@
 existingAddr = execution.getVariableTyped('existingAddress').getValue()
-customer = execution.getVariable('customer')
+clientKey = execution.getVariable('clientKey')
 
 formJson = """{
         "existingAddress": $existingAddr,
-        "customer": "$customer"
+        "clientKey": "$clientKey"
     }"""
 asJson(formJson)
 

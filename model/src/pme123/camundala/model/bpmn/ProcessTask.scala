@@ -108,8 +108,14 @@ case class CallActivity(id: BpmnNodeId,
   def calledElement(process: BpmnProcess): CallActivity =
     copy(calledElement = CalledBpmn(process))
 
+  def in(sourceAndTarget: PropKey): CallActivity =
+    copy(extInOuts = extInOuts :+ extInOuts.in(sourceAndTarget, sourceAndTarget))
+
   def in(source: PropKey, target: PropKey): CallActivity =
     copy(extInOuts = extInOuts :+ extInOuts.in(source, target))
+
+  def out(sourceAndTarget: PropKey): CallActivity =
+    copy(extInOuts = extInOuts :+ extInOuts.out(sourceAndTarget, sourceAndTarget))
 
   def out(source: PropKey, target: PropKey): CallActivity =
     copy(extInOuts = extInOuts :+ extInOuts.out(source, target))
@@ -123,7 +129,7 @@ case class CallActivity(id: BpmnNodeId,
 }
 
 case class CalledBpmn(process: BpmnProcess,
-                      decisionRefBinding: String = "deployment" // only supported
+                      decisionRefBinding: String = "latest" // only supported
                      ) {
 
 }

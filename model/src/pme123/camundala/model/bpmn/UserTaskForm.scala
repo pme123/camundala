@@ -37,7 +37,7 @@ object WithForm {
   implicit val userTask: WithForm[UserTask] =
     instance((node, form) => node.copy(maybeForm = Some(form)))
 
-  implicit val enumField: WithForm[StartEvent] =
+  implicit val startEvent: WithForm[StartEvent] =
     instance((node, form) => node.copy(maybeForm = Some(form)))
 
 }

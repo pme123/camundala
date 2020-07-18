@@ -53,7 +53,7 @@ object restService {
             case MockData(status, body) => Task.fail(RestServiceException(s"There was a Server Problem with Status $status\n$body"))
           }
 
-
+          //noinspection SimplifyTapInspection
           lazy val sendRequest: Task[SttpResponse[Either[String, String]]] =
             basicRequest
               .headers(request.headers.toMap)
@@ -202,19 +202,9 @@ object restService {
 
   /**
     *
-    * @param host
-    * @param method
-    * @param path
-    * @param queryParams
-    * @param headers
-    * @param body
-    * @param responseRead
-    * @param handledErrors
-    * @param responseVariable
     * @param mappings You can have variables in your path, queryParams or body - like `%YourVariable`.
     *                 Your mappings: Map("YourVariable" -> "YourValue").
     *                 If a mapping is not provided - it throws an RestServiceException.
-    * @param maybeMocked
     */
   case class Request(host: Host = Host.unknown,
                      method: RequestMethod = Get,

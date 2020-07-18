@@ -46,14 +46,14 @@ object ConditionExpression {
       |    S(JsonOutput.toJson(json))
       |}""".stripMargin
 
-  case class GroovyJsonExpression(jsonStr: String) extends ConditionExpression {
+  case class GroovyJsonExpression(groovyJsonStr: String) extends ConditionExpression {
 
     def value: String =
       s"""
          |import groovy.json.JsonOutput
          |import static org.camunda.spin.Spin.*
          |
-         |result = JsonOutput.toJson($jsonStr)
+         |result = JsonOutput.toJson($groovyJsonStr)
          |println("Groovy String: $$result")
          |S(result)
          |""".stripMargin

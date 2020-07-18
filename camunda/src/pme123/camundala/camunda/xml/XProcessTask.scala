@@ -118,8 +118,8 @@ case class XCallActivity(xmlElem: Elem)
              .map(_.calledElement)
              .map {
                case CalledBpmn(process, decisionRefBinding) =>
-                 xml % Attribute(null, "calledElement", process.idVal,
-                   Attribute(camundaPrefix, "decisionRefBinding", decisionRefBinding, camundaXmlnsAttr))
+                 xml % Attribute(null, "calledElement", process.id.value,
+                   Attribute(camundaPrefix, "calledElementBinding", decisionRefBinding, camundaXmlnsAttr))
              }.getOrElse(xml)
            XMergeResult(newElem, warnings)
          }

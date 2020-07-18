@@ -362,11 +362,11 @@ sealed trait CallActivityInOut {
 
 object CallActivityInOut {
 
-  case object AllInOut extends CallActivityInOut
+  case class AllInOut(local: Boolean = false) extends CallActivityInOut
 
-  case class SourceInOut(source: PropKey, target: PropKey) extends CallActivityInOut
+  case class SourceInOut(source: PropKey, target: PropKey, local: Boolean = false) extends CallActivityInOut
 
-  case class SourceExpressionInOut(sourceExpression: Expression, target: PropKey) extends CallActivityInOut
+  case class SourceExpressionInOut(sourceExpression: Expression, target: PropKey, local: Boolean = false) extends CallActivityInOut
 
   object SourceExpressionInOut {
 

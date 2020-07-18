@@ -24,11 +24,11 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
     Bpmn("ChangeAddressTest.bpmn", "ChangeAddressTest.bpmn")
       .processes(
         BpmnProcess("ChangeAddressDemo")
-          .***(CustomerSearchStartEvent)
+          .***(MyStartEvent)
           .***(
             UserTask("CustomerEditTask")
               .===(GeneratedForm()
-                .---(textField("customer"))
+                .---(textField("clientKey"))
               )
           ).serviceTask(GetAddressTask)
           .userTask(AddressChangeTask)
@@ -42,13 +42,14 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
 
   lazy val ChangeAddressDemo: BpmnProcess =
     BpmnProcess("ChangeAddressDemo")
-      .starterGroups(userGroup)
+      .starterGroups(maGroup)
       .startEvents(
-        CustomerSearchStartEvent
+        MyStartEvent
       )
       .userTasks(
-        ApproveAddressTask,
+        FindCustomerUserTask,
         AddressChangeTask,
+        ApproveAddressTask,
         InformMATask
       )
       .serviceTasks(
@@ -61,6 +62,14 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
       .sendTasks(
 
       )
+      .callActivities(
+        CallActivity("FindCustomerCallActivity")
+          .calledElement(FindCustomer(addressHost).process)
+          .in(FindCustomer.lastname)
+          .in(FindCustomer.firstname)
+          .in(FindCustomer.birthday)
+          .out(FindCustomer.foundCustomers)
+      )
       .exclusiveGateways(
         ApprovalRequiredGateway,
         AddressApprovedGateway
@@ -69,26 +78,39 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
 
       )
       .sequenceFlows(
+        SearchSequenceFlow,
         ApprovalRequiredSequenceFlow,
         NoApprovalRequiredSequenceFlow,
         AddressApprovedSequenceFlow,
         AddressNotApprovedSequenceFlow,
       )
 
-  lazy val CustomerSearchStartEvent: StartEvent = StartEvent("CustomerSearchStartEvent")
-    .form(GeneratedForm()
-      .--- {
-        enumField("customer") // replace with Lookup Source
-          .label("Customer")
-          .value("muller", "Peter Müller")
-          .value("meier", "Heidi Meier")
-          .value("arnold", "Heinrich Arnold")
-          .value("schuler", "Petra Schuler")
-          .value("meinrad", "Helga Meinrad")
-          .default("muller")
-          .required
-      })
-    .prop("waitForTask", "true")
+  lazy val MyStartEvent: StartEvent =
+    StartEvent("MyStartEvent")
+      .prop("waitForTask", "true")
+
+  lazy val FindCustomerUserTask: UserTask =
+    UserTask("FindCustomerUserTask")
+      .candidateGroup(maGroup)
+      .form(GeneratedForm()
+        .---(
+          rowGroupField("searchGroup")
+            .---(textField("search__name").required)
+            .---(textField("search__firstname"))
+            .---(dateField("search_birthday"))
+        )
+        .---(textField("foundCustomers")
+          .prop("display", "tableJson")
+          .prop("columns", "firstName,name,streetNo,postcodeWithPlace,clientKey")
+          .prop("idColumn", "clientKey")
+          .prop("sortColumn", "name")
+          .prop("actions", "edit:#selectCustomer")
+
+        )
+      )
+      .prop("waitForTask", "true")
+      .inputExpression("foundCustomersActionValue", "")
+      .outputExpression("clientKey", s"$${foundCustomersActionValue}")
 
   private val existingAddress: PropKey = "existingAddress"
   private val countryIso: PropKey = "countryIso"
@@ -108,7 +130,7 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
 
   lazy val addressChangeForm: GeneratedForm =
     GeneratedForm()
-      .---(textField("customer").readonly)
+      .---(textField("clientKey").readonly)
       .---(addressGroup("existing", readOnly = true))
       .---(addressGroup("new"))
 
@@ -131,7 +153,7 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
     groupField("infosGroup")
       .---(
         rowGroupField("infosGroup")
-          .---(textField("customer").width(8).readonly)
+          .---(textField("clientKey").width(8).readonly)
           .---(textField("kube").width(8).readonly)
       )
 
@@ -189,6 +211,10 @@ case class ChangeAddressBpmn(maGroup: Group = adminGroup,
   private lazy val SaveToFCSTask = AddressService(addressHost).saveAddress("SaveToFCSTask")
   private lazy val ApprovalRequiredGateway = ExclusiveGateway("ApprovalRequiredGateway")
   private lazy val AddressApprovedGateway = ExclusiveGateway("AddressApprovedGateway")
+
+  private lazy val SearchSequenceFlow =
+    SequenceFlow("SearchSequenceFlow")
+      .expression(s"$${clientKey == null  || clientKey.trim().isEmpty()}")
 
   private lazy val ApprovalRequiredSequenceFlow =
     SequenceFlow("ApprovalRequiredSequenceFlow")
