@@ -2,11 +2,10 @@ package pme123.camundala.model.bpmn
 
 import eu.timepit.refined.refineV
 import pme123.camundala.model.bpmn.CallActivityInOut.{SourceExpressionInOut, SourceInOut}
-import pme123.camundala.model.bpmn.ConditionExpression.{Expression, ExternalScript, GroovyJsonExpression, InlineScript, JsonExpression}
+import pme123.camundala.model.bpmn.ConditionExpression._
 import pme123.camundala.model.bpmn.InputOutput.{InputOutputExpression, InputOutputMap}
 import pme123.camundala.model.bpmn.ScriptLanguage.Groovy
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
-import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField.{EnumValue, EnumValues}
 
 trait HasExtProperties {
   def extProperties: ExtProperties
@@ -84,6 +83,9 @@ trait HasExtInOutputs {
 
   def inputJsonExt(key: PropKey, json: String): ExtInOutputs =
     extInOutputs.inputJson(key, json)
+
+  def inputDynJsonExt(key: PropKey, json: String, variables: VariableDefs = VariableDefs.none): ExtInOutputs =
+    extInOutputs.inputDynJson(key, json, variables)
 
   def outputExpressionExt(key: PropKey, expression: String): ExtInOutputs =
     extInOutputs.outputExpression(key, expression)
@@ -184,8 +186,11 @@ case class ExtInOutputs(
       )
     )
 
-  def inputJson(key: PropKey, json: String): ExtInOutputs =
-    copy(inputs = inputs :+ InputOutputExpression(key, JsonExpression(json)))
+  def inputJson(key: PropKey, json: String, variables: VariableDefs = VariableDefs.none): ExtInOutputs =
+    copy(inputs = inputs :+ InputOutputExpression(key, JsonExpression(json, variables)))
+
+  def inputDynJson(key: PropKey, json: String, variables: VariableDefs = VariableDefs.none): ExtInOutputs =
+    copy(inputs = inputs :+ InputOutputExpression(key, DynJsonExpression(json, variables)))
 
   def inputFromJson(key: PropKey, generatedForm: GeneratedForm): ExtInOutputs =
     copy(inputs =
@@ -290,7 +295,7 @@ object InputOutput {
 
     def outputToJson(key: PropKey, generatedForm: GeneratedForm): InputOutputExpression =
       InputOutputExpression(key,
-        GroovyJsonExpression(
+        DynJsonExpression(
           generatedForm.allFields()
             .filter(_.id.startsWith(s"$key$KeyDelimeter"))
             .map { f =>

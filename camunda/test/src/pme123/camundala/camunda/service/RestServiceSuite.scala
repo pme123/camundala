@@ -31,18 +31,18 @@ object RestServiceSuite extends DefaultRunnableSpec {
             RequestMethod.Get,
             Path("hello"),
             queryParams))
-          assert(result)(equalTo(uri"$url/hello?name=Mäder&iq=99"))
+          assert(result)(equalTo(uri"$url/hello?name=Mäder & Söhne&iq=99"))
         },
         test("without path and query params") {
           val result = restService.uri(Request(host,
             queryParams = queryParams))
-          assert(result)(equalTo(uri"$url?name=Mäder&iq=99"))
+          assert(result)(equalTo(uri"$url?name=Mäder & Söhne&iq=99"))
         },
         test("with path and query params and mapping") {
           val result = restService.uri(Request(host,
             path = Path("hello", "%variable"),
-            queryParams = Params(key1 -> "Mäder", key2 -> "%value"),
-            mappings = Map("variable" -> "Kurt", "value" -> "101")))
+            queryParams = Params(key1 -> "Mäder", key2 -> "%value", key3 -> "%other"),
+            ), Map("variable" -> Some("Kurt"), "value" -> Some("101"), "other" -> None))
           assert(result)(equalTo(uri"$url/hello/Kurt?name=Mäder&iq=101"))
         },
         test("with body and mapping") {
@@ -51,9 +51,9 @@ object RestServiceSuite extends DefaultRunnableSpec {
               |"type": "%strType"
               |}""".stripMargin,
             Map("object" ->
-              """{
+              Some("""{
                 |"sub": "great"
-                |}""".stripMargin, "strType" -> "bool"))
+                |}""".stripMargin), "strType" -> Some("bool")))
           assert(result)(equalTo(
             """{ "name": {
               |"sub": "great"
@@ -65,7 +65,7 @@ object RestServiceSuite extends DefaultRunnableSpec {
       suite("Call Service")(
         testM("SWAPI with get method") {
           for {
-            result <- restService.call(testRequest)
+            result <- restService.call(testRequest, Map.empty)
           } yield
             assert(result)(isSubtype[restService.Response.WithContent](anything))
         }
@@ -74,5 +74,6 @@ object RestServiceSuite extends DefaultRunnableSpec {
 
   val key1: PropKey = "name"
   val key2: PropKey = "iq"
-  val queryParams: Params = Params(key1 -> "Mäder", key2 -> "99")
+  val key3: PropKey = "other"
+  val queryParams: Params = Params(key1 -> "Mäder & Söhne", key2 -> "99")
 }

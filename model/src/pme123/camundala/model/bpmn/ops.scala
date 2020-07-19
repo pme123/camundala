@@ -68,8 +68,11 @@ object ops {
     def inputInline(key: PropKey, inlineScript: String): A =
       inOutputs(extInOutputs().inputInline(key, inlineScript))
 
-    def inputJson(key: PropKey, json: String): A =
-      inOutputs(extInOutputs().inputJson(key, json))
+    def inputJson(key: PropKey, json: String, variables: VariableDefs = VariableDefs.none): A =
+      inOutputs(extInOutputs().inputJson(key, json, variables))
+
+    def inputDynJson(key: PropKey, json: String, variables: VariableDefs = VariableDefs.none): A =
+      inOutputs(extInOutputs().inputDynJson(key, json, variables))
 
     def inputFromJson(key: PropKey, generatedForm: GeneratedForm): A =
       inOutputs(extInOutputs().inputFromJson(key, generatedForm))

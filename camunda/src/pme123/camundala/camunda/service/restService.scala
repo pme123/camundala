@@ -16,8 +16,8 @@ import pme123.camundala.camunda.service.restService.Response.{HandledError, NoCo
 import pme123.camundala.camunda.service.restService.ResponseRead.{NoResponseRead, StringRead}
 import pme123.camundala.model.bpmn._
 import sttp.client.{Empty, NothingT, RequestT, SttpBackend, basicRequest, multipart, Request => SttpRequest, Response => SttpResponse}
-import sttp.model.StatusCode
 import sttp.model.Uri._
+import sttp.model.{StatusCode, Uri}
 import zio._
 import zio.clock.Clock
 import zio.duration._
@@ -30,11 +30,11 @@ object restService {
   type RestService = Has[Service]
 
   trait Service {
-    def call(request: Request): Task[Response]
+    def call(request: Request, inputMappings: Map[String, Option[String]] = Map.empty): Task[Response]
   }
 
-  def call(request: Request): RIO[RestService, Response] =
-    ZIO.accessM(_.get.call(request))
+  def call(request: Request, inputMappings: Map[String, Option[String]]): RIO[RestService, Response] =
+    ZIO.accessM(_.get.call(request, inputMappings))
 
   type RestServiceDeps = Has[SttpTaskBackend] with Logging with Clock
 
@@ -44,12 +44,12 @@ object restService {
 
         implicit def sttpBackend: SttpBackend[Task, Nothing, NothingT] = backend
 
-        (request: Request) => {
+        (request: Request, inputMappings: Map[String, Option[String]]) => {
 
           def mockRequest(mockData: MockData): Task[Response] = mockData match {
             case MockData(_, Json.Null) => UIO(NoContent)
-            case MockData(status, body) if request.handledErrors.contains(status) => UIO(HandledError(status, Right(body.toString())))
-            case MockData(status, body) if status < 400 => UIO(WithContent(status, body.toString()))
+            case MockData(status, body) if request.handledErrors.contains(status) => UIO(HandledError(status, Right(mapStr(body.toString(), inputMappings))))
+            case MockData(status, body) if status < 400 => UIO(WithContent(status, mapStr(body.toString(), inputMappings)))
             case MockData(status, body) => Task.fail(RestServiceException(s"There was a Server Problem with Status $status\n$body"))
           }
 
@@ -58,8 +58,8 @@ object restService {
             basicRequest
               .headers(request.headers.toMap)
               .withAuth(request.host.auth)
-              .withMethod(request)
-              .withBody(request)
+              .withMethod(request.method, uri(request, inputMappings))
+              .withBody(request, inputMappings)
               .withResponse(request.responseRead)
               .send()
               .tapError(error =>
@@ -107,23 +107,21 @@ object restService {
         }
     }
 
-  private[service] def uri(request: Request) = {
+  private[service] def uri(request: Request, inputMappings: Map[String, Option[String]] = Map.empty): Uri = {
     val uri = s"${
-      request.host.url
+      mapStr(request.host.url, inputMappings)
     }${
-      request.path
+      request.path.mapStr(inputMappings)
     }${
-      request.queryParams
+      request.queryParams.mapStr(inputMappings)
     }"
-    uri"${
-      mapStr(uri, request.mappings)
-    }"
+    uri"$uri"
   }
 
-  private[service] def mapStr(str: String, mappings: Map[String, String]) =
-    mappings.foldLeft(str) {
+  private[service] def mapStr(str: String, inputMappings: Map[String, Option[String]]): String =
+    inputMappings.foldLeft(str) {
       case (r, (k, v)) =>
-        r.replace(s"%$k", v)
+        r.replace(s"%$k", v.getOrElse("null"))
     }
 
   implicit class CRequestT(sttpRequest: RequestT[Empty, Either[String, String], Nothing]) {
@@ -144,28 +142,21 @@ object restService {
 
     import RequestMethod._
 
-    def withMethod(request: Request): SttpRequest[Either[String, String], Nothing] = request.method match {
+    def withMethod(method: RequestMethod, uri: Uri): SttpRequest[Either[String, String], Nothing] = method match {
       case Get =>
-        sttpRequest
-          .get(uri(request))
+        sttpRequest.get(uri)
       case Delete =>
-        sttpRequest
-          .delete(uri(request))
+        sttpRequest.delete(uri)
       case Head =>
-        sttpRequest
-          .head(uri(request))
+        sttpRequest.head(uri)
       case Options =>
-        sttpRequest
-          .options(uri(request))
+        sttpRequest.options(uri)
       case Put =>
-        sttpRequest
-          .put(uri(request))
+        sttpRequest.put(uri)
       case Post =>
-        sttpRequest
-          .post(uri(request))
+        sttpRequest.post(uri)
       case Patch =>
-        sttpRequest
-          .patch(uri(request))
+        sttpRequest.patch(uri)
     }
 
   }
@@ -174,13 +165,16 @@ object restService {
 
     import RequestBody._
 
-    def withBody(request: Request): SttpRequest[Either[String, String], Nothing] =
-      request.body.mapStr(request.mappings) match {
+    def withBody(request: Request, inputMappings: Map[String, Option[String]]): SttpRequest[Either[String, String], Nothing] =
+      request.body.mapStr(inputMappings) match {
         case NoBody =>
           sttpRequest
         case StringBody(str) =>
           sttpRequest
             .body(str)
+        case strBody: Base64Body =>
+          sttpRequest
+            .body(strBody.decoded())
         case MultipartBody(parts) =>
           sttpRequest
             .multipartBody(
@@ -202,9 +196,10 @@ object restService {
 
   /**
     *
-    * @param mappings You can have variables in your path, queryParams or body - like `%YourVariable`.
-    *                 Your mappings: Map("YourVariable" -> "YourValue").
-    *                 If a mapping is not provided - it throws an RestServiceException.
+    * @param variableDefs You can have variables in your path, queryParams or body - like `$YourVariable`.
+    *                     Your mappings: Map("YourVariable" -> "YourValue").
+    *                     If a mapping is not provided - it will set primitive values with null.
+    *                     For Json it will throw a throws a RestServiceException.
     */
   case class Request(host: Host = Host.unknown,
                      method: RequestMethod = Get,
@@ -215,7 +210,7 @@ object restService {
                      responseRead: ResponseRead = StringRead,
                      handledErrors: Seq[Int] = Nil,
                      responseVariable: String = "jsonResult",
-                     mappings: Map[String, String] = Map.empty,
+                     variableDefs: VariableDefs = VariableDefs.none,
                      maybeMocked: Option[MockData] = None
                     )
 
@@ -271,23 +266,25 @@ object restService {
 
   }
 
-  sealed trait RequestPath
+  sealed trait RequestPath {
+    def mapStr(inputMappings: Map[String, Option[String]]): String
+  }
 
   object RequestPath {
 
     case object NoPath extends RequestPath {
-      override def toString: String = ""
+      def mapStr(inputMappings: Map[String, Option[String]]): String = ""
     }
 
     case class Path(elems: PathElem*) extends RequestPath {
-      override def toString: String = elems.mkString("/", "/", "")
+      def mapStr(inputMappings: Map[String, Option[String]]): String = elems.map(e => restService.mapStr(e.value, inputMappings)).mkString("/", "/", "")
     }
 
   }
 
   sealed trait RequestBody {
     @nowarn("cat=unused-params")
-    def mapStr(mappings: Map[String, String]): RequestBody = this
+    def mapStr(inputMappings: Map[String, Option[String]]): RequestBody = this
   }
 
   object RequestBody {
@@ -295,29 +292,46 @@ object restService {
     case object NoBody extends RequestBody
 
     case class StringBody(str: String) extends RequestBody {
-      override def mapStr(mappings: Map[String, String]): RequestBody =
-        copy(str = restService.mapStr(str, mappings))
+      override def mapStr(inputMappings: Map[String, Option[String]]): RequestBody = {
+        copy(str = restService.mapStr(str, inputMappings))
+      }
 
+    }
+
+    case class Base64Body(str: String) extends RequestBody {
+      override def toString: String =
+        new String(java.util.Base64.getEncoder.encode(str.getBytes()))
+
+      def decoded(): String = new String(java.util.Base64.getDecoder.decode(str))
+
+      override def mapStr(inputMappings: Map[String, Option[String]]): RequestBody =
+        StringBody(restService.mapStr(decoded(), inputMappings))
+    }
+
+    object Base64Body {
+
+      def base64Body(str: String): Base64Body =
+        Base64Body(new String(java.util.Base64.getEncoder.encode(str.getBytes())))
     }
 
     case class MultipartBody(parts: Set[Part]) extends RequestBody {
 
-      override def mapStr(mappings: Map[String, String]): RequestBody =
-        copy(parts = parts.map(_.mapStr(mappings)))
+      override def mapStr(inputMappings: Map[String, Option[String]]): RequestBody =
+        copy(parts = parts.map(_.mapStr(inputMappings)))
 
     }
 
     sealed trait Part {
       @nowarn("cat=unused-params")
-      def mapStr(mappings: Map[String, String]): Part = this
+      def mapStr(inputMappings: Map[String, Option[String]]): Part = this
 
     }
 
     object Part {
 
       case class StringPart(name: PropKey, value: String) extends Part {
-        override def mapStr(mappings: Map[String, String]): StringPart =
-          copy(value = restService.mapStr(value, mappings))
+        override def mapStr(inputMappings: Map[String, Option[String]]): StringPart =
+          copy(value = restService.mapStr(value, inputMappings))
       }
 
       case class FilePart(name: FilePath, fileName: FilePath, data: String) extends Part
@@ -326,17 +340,25 @@ object restService {
 
   }
 
-  sealed trait QueryParams
+  sealed trait QueryParams {
+    def mapStr(inputMappings: Map[String, Option[String]]): String
+  }
 
   object QueryParams {
 
     case object NoParams extends QueryParams {
-      override def toString: String = ""
+      def mapStr(inputMappings: Map[String, Option[String]]): String = ""
     }
 
     case class Params(elems: (PropKey, String)*) extends QueryParams {
-      override def toString: String =
-        elems.map { case (k, v) => s"$k=$v" }.mkString("?", "&", "")
+      def mapStr(inputMappings: Map[String, Option[String]]): String =
+        elems.map { case (k, v) =>
+          k -> restService.mapStr(v, inputMappings) // replaces with Mappings
+        }.filter {
+          case (_, v) => v != "null" // don't add if the query parameter is not set
+        }.map { case (k, v) =>
+          s"$k=$v"
+        }.mkString("?", "&", "") // sttp uri interpolator takes care of path encoding
 
     }
 

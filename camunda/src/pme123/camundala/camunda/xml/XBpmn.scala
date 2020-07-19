@@ -2,7 +2,7 @@ package pme123.camundala.camunda.xml
 
 import pme123.camundala.camunda.xml.XmlHelper._
 import pme123.camundala.model.bpmn.CallActivityInOut.{AllInOut, SourceExpressionInOut, SourceInOut}
-import pme123.camundala.model.bpmn.ConditionExpression.{Expression, ExternalScript, GroovyJsonExpression, InlineScript, JsonExpression}
+import pme123.camundala.model.bpmn.ConditionExpression.{Expression, ExternalScript, DynJsonExpression, InlineScript, JsonExpression}
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField.EnumField

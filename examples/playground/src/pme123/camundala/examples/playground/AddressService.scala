@@ -3,12 +3,12 @@ package pme123.camundala.examples.playground
 import eu.timepit.refined.auto._
 import io.circe.parser._
 import pme123.camundala.camunda.delegate.RestServiceDelegate.RestServiceTempl
-import pme123.camundala.camunda.service.restService.{MockData, Request}
 import pme123.camundala.camunda.service.restService.Request.Host
-import pme123.camundala.camunda.service.restService.RequestBody.StringBody
+import pme123.camundala.camunda.service.restService.RequestBody.Base64Body
 import pme123.camundala.camunda.service.restService.RequestMethod.Post
 import pme123.camundala.camunda.service.restService.RequestPath.Path
-import pme123.camundala.model.bpmn.{BpmnNodeId, ServiceTask}
+import pme123.camundala.camunda.service.restService.{MockData, Request}
+import pme123.camundala.model.bpmn._
 
 case class AddressService(addressHost: Host = Host.unknown) {
 
@@ -28,9 +28,9 @@ case class AddressService(addressHost: Host = Host.unknown) {
     RestServiceTempl(
       Request(
         addressHost,
-        path = Path("customer", "11"),
+        path = Path("customer", "%clientKey"),
         responseVariable = "existingAddress",
-        mappings = Map("clientKey" -> "dummyCustomerId"),
+        variableDefs = VariableDefs(VariableDef("clientKey")),
         maybeMocked = if (addressHost == Host.unknown) maybeMockData else None
       )
     ).asServiceTask(id)
@@ -41,12 +41,12 @@ case class AddressService(addressHost: Host = Host.unknown) {
         addressHost,
         Post,
         path = Path("address", "modify"),
-        body = StringBody(
-          """{
-            | custId: %clientKey,
-            | address: %newAddress,
+        body = Base64Body.base64Body(
+          s"""{
+            | "custId": "%clientKey",
+            | "address": %newAddress
             |}""".stripMargin),
-        mappings = Map("newAddress" -> "{...}", "clientKey" -> "12141"),
+        variableDefs = VariableDefs(VariableDef("newAddress" , VariableType.Json), VariableDef("clientKey")),
         maybeMocked = if (addressHost == Host.unknown) Some(MockData(204)) else None
       )
     ).asServiceTask(id)

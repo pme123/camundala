@@ -10,7 +10,7 @@ import pme123.camundala.model.bpmn.Constraint.Required
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm
 import pme123.camundala.model.bpmn.UserTaskForm.GeneratedForm.FormField.{EnumField, SimpleField}
 import pme123.camundala.model.bpmn.ops._
-import pme123.camundala.model.bpmn.{Bpmn, BpmnProcess, StartEvent, UserTask}
+import pme123.camundala.model.bpmn.{Bpmn, BpmnProcess, StartEvent, UserTask, VariableDef, VariableDefs}
 
 object PlaygroundBpmn {
 
@@ -31,11 +31,10 @@ object PlaygroundBpmn {
   val callSwapiTask = RestServiceTempl(
     Request(
       swapiHost,
-      path = Path("%category/"),
+      path = Path("$category/"),
       responseVariable = "swapiResult",
-      mappings = Map("category" -> "people")
-    )
-  ).asServiceTask("CallSwapiServiceTask")
+      variableDefs = VariableDefs(VariableDef(("category")))
+  )).asServiceTask("CallSwapiServiceTask")
 
   val swapiProcess =
     BpmnProcess("SwapiProcess")

@@ -1,15 +1,15 @@
 package pme123.camundala.camunda
 
-import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.refined._
 import io.circe.parser.decode
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 import pme123.camundala.camunda.httpDeployClient.HttpDeployClientException
 import pme123.camundala.camunda.service.restService.Request.{Auth, Host}
 import pme123.camundala.camunda.service.restService.RequestBody.Part
 import pme123.camundala.camunda.service.restService._
 import pme123.camundala.camunda.xml.{ValidateWarning, ValidateWarnings}
-import pme123.camundala.model.bpmn.Sensitive
+import pme123.camundala.model.bpmn.{Sensitive, VariableDef, VariableDefs, VariableType}
 import zio.ZIO
 
 trait JsonEnDecoders {
@@ -39,6 +39,12 @@ trait JsonEnDecoders {
   implicit val ResponseReadDecoder: Decoder[ResponseRead] = deriveDecoder[ResponseRead]
   implicit val MockDataEncoder: Encoder[MockData] = deriveEncoder[MockData]
   implicit val MockDataDecoder: Decoder[MockData] = deriveDecoder[MockData]
+  implicit val VariableTypeEncoder: Encoder[VariableType] = deriveEncoder[VariableType]
+  implicit val VariableTypeDecoder: Decoder[VariableType] = deriveDecoder[VariableType]
+  implicit val VariableDefEncoder: Encoder[VariableDef] = deriveEncoder[VariableDef]
+  implicit val VariableDefDecoder: Decoder[VariableDef] = deriveDecoder[VariableDef]
+  implicit val VariableDefsEncoder: Encoder[VariableDefs] = deriveEncoder[VariableDefs]
+  implicit val VariableDefsDecoder: Decoder[VariableDefs] = deriveDecoder[VariableDefs]
   implicit val RequestEncoder: Encoder[Request] = deriveEncoder[Request]
   implicit val RequestDecoder: Decoder[Request] = deriveDecoder[Request]
 

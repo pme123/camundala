@@ -22,13 +22,16 @@ object ConditionExpression {
     val value = "" // there is no value
   }
 
-  case class JsonExpression(jsonStr: String) extends ConditionExpression {
+  case class JsonExpression(jsonStr: String, variables: VariableDefs = VariableDefs.none) extends ConditionExpression {
 
     def value: String =
       s"""
          |$asJson
-         |println("JSON STR: "+ "\"\"$jsonStr"\"\")
+         |
+         |$variables
+         |
          |def str = "\"\"$jsonStr"\"\"
+         |println("JSON STR: "+ str)
          |asJson(str)
          |""".stripMargin
 
@@ -46,12 +49,14 @@ object ConditionExpression {
       |    S(JsonOutput.toJson(json))
       |}""".stripMargin
 
-  case class GroovyJsonExpression(groovyJsonStr: String) extends ConditionExpression {
+  case class DynJsonExpression(groovyJsonStr: String, variables: VariableDefs = VariableDefs.none) extends ConditionExpression {
 
     def value: String =
       s"""
          |import groovy.json.JsonOutput
          |import static org.camunda.spin.Spin.*
+         |
+         |$variables
          |
          |result = JsonOutput.toJson($groovyJsonStr)
          |println("Groovy String: $$result")
@@ -60,9 +65,9 @@ object ConditionExpression {
 
   }
 
-  object GroovyJsonExpression {
-    def apply(vars: Map[String, String]): GroovyJsonExpression =
-      GroovyJsonExpression(s"""[${vars.map { case (k, v) => s""""$k": $v""" }.mkString(",\n")}]""")
+  object DynJsonExpression {
+    def apply(vars: Map[String, String]): DynJsonExpression =
+      DynJsonExpression(s"""[${vars.map { case (k, v) => s""""$k": $v""" }.mkString(",\n")}]""")
   }
 
   // case class ExternalScript() extends ConditionExpression

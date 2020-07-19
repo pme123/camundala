@@ -12,10 +12,10 @@ import pme123.camundala.camunda.service.restService
 import pme123.camundala.camunda.service.restService.Response.{HandledError, NoContent, WithContent}
 import pme123.camundala.camunda.service.restService._
 import pme123.camundala.camunda.{CamundaLayers, JsonEnDecoders}
-import pme123.camundala.model.bpmn.ops._
 import pme123.camundala.model.bpmn._
+import pme123.camundala.model.bpmn.ops._
 import zio.Runtime.default.unsafeRun
-import zio.{Cause, UIO, ZIO, logging}
+import zio.{Cause, ZIO, logging}
 
 
 /**
@@ -27,17 +27,11 @@ class RestServiceDelegate
     with JsonEnDecoders {
 
   def execute(execution: DelegateExecution): Unit = {
-    val requestRes = extractVariables(execution) // this can not be done in a ZIO fibre (Camunda execution must be in the main Thread)
+    val requestRes = extractVariable(execution) // this can not be done in a ZIO fibre (Camunda execution must be in the main Thread)
     val response = unsafeRun(
       (for {
         (req, mappings) <- ZIO.fromEither(requestRes)
-        reqMappings <- ZIO.foreach(mappings) {
-          case (k, Some(v)) =>
-            UIO(k -> v)
-          case (k, _) =>
-            ZIO.fail(RestServiceException(s"There is no Variable '$k' for mapping in your Bag"))
-        }
-        response <- restService.call(req.copy(mappings = reqMappings.toMap))
+        response <- restService.call(req, mappings)
         _ <- logging.log.debug(s"Rest call ${req.host.url} successful:\n$response")
       } yield (req.responseVariable, response))
         .catchAll {
@@ -56,19 +50,27 @@ class RestServiceDelegate
     }
   }
 
-  private def extractVariables(execution: DelegateExecution) = {
+  private def extractVariable(execution: DelegateExecution): Either[Throwable, (Request, Map[String, Option[String]])] = {
     for {
       json <- Option(execution.getVariableTyped[JsonValue]("request"))
         .map(Right(_))
         .getOrElse(Left(RestServiceException("There is no Variable 'request' in your Bag.")))
       request <- decode[Request](json.getValueSerialized)
-    } yield (request, request.mappings
-      .keys
-      .map { k =>
-        k ->
-          Option(execution.getVariable(k)).map(_.toString)
-      }
-      .toMap)
+    } yield (request,
+      request.variableDefs.defs
+        .map {
+          case VariableDef(key, VariableType.Json, defaultValue) =>
+            val json = execution.getVariableTyped[JsonValue](key)
+            key.value -> (if (json == null) {
+              println(s"The JSON Variable '$key' is not set!")
+              None
+            } else Option(json.getValue).map(_.toString).orElse(defaultValue))
+          case VariableDef(key, VariableType.BusinessKey, _) =>
+            (key.value -> Some(execution.getBusinessKey))
+          case VariableDef(key, _, defaultValue) =>
+            (key.value -> Option(execution.getVariable(key.value)).map(_.toString).orElse(defaultValue))
+        }.toMap
+    )
   }
 }
 
@@ -81,7 +83,7 @@ object RestServiceDelegate
       ServiceTask(id)
         //  .javaClass("pme123.camundala.camunda.delegate.RestServiceDelegate")
         .delegate("#{restService}")
-        .inputJson("request", request.asJson.toString())
+        .inputJson("request", request.asJson.toString()) // mapping is done in the Service, request.variableDefs)
   }
 
   case class RestServiceException(msg: String) extends CamundalaException

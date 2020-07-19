@@ -2,7 +2,7 @@ package pme123.camundala.model.bpmn
 
 import eu.timepit.refined.auto._
 import pme123.camundala.model.TestData
-import pme123.camundala.model.bpmn.ConditionExpression.{Expression, GroovyJsonExpression}
+import pme123.camundala.model.bpmn.ConditionExpression.{Expression, DynJsonExpression}
 import pme123.camundala.model.bpmn.InputOutput.{InputOutputExpression, InputOutputMap}
 import zio.test.Assertion._
 import zio.test.environment.TestEnvironment
@@ -48,7 +48,7 @@ object InputOutputSuite extends DefaultRunnableSpec {
         },
         test("Output to Json") {
           assert(
-            InputOutputExpression("existingAddress", GroovyJsonExpression(
+            InputOutputExpression("existingAddress", DynJsonExpression(
               s"""["street": existingAddress__street,
                  |"zipCode": existingAddress__zipCode,
                  |"city": existingAddress__city,
