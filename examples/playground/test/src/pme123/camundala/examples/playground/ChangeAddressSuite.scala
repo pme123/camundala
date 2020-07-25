@@ -42,11 +42,11 @@ class ChangeAddressSuite {
       ).unit
   }
 
-
+/*
   @Before
   def initTest: Unit = {
     //    Mocks.register("restService", new RestServiceDelegate())
-  }
+  }*/
 
   import org.camunda.bpm.engine.test.mock.Mocks
   import org.junit.After
@@ -73,7 +73,7 @@ class ChangeAddressSuite {
     val processInstance = runtimeService.startProcessInstanceByKey(process.id.value,
       Map[String, AnyRef]("customer" -> "meier").asJava)
 
-    val taskService = processEngineRule.getTaskService
+   // val taskService = processEngineRule.getTaskService
 
     assertThat(processInstance)
       .isStarted
@@ -104,7 +104,6 @@ class ChangeAddressSuite {
 
   @Test
   @Deployment(resources = Array(
-    "_generated/bpmn/scripts/form-json.groovy",
     "_generated/bpmn/ChangeAddressTest.bpmn"
   ))
   def testHappyPathTest(): Unit = {
@@ -123,14 +122,14 @@ class ChangeAddressSuite {
     val taskQuery = taskService.createTaskQuery
     jassertThat(taskQuery.count()).isEqualTo(1L)
     taskService.complete(taskQuery.singleResult.getId)
-    jassertThat(runtimeService.createProcessInstanceQuery.count).isEqualTo(0)
+  //  jassertThat(runtimeService.createProcessInstanceQuery.count).isEqualTo(0)
 
     // AddressChangeTask
     val taskQuery2 = taskService.createTaskQuery
-    jassertThat(taskQuery.count()).isEqualTo(1L)
+    jassertThat(taskQuery2.count()).isEqualTo(1L)
     taskService.complete(taskQuery2.singleResult.getId)
     jassertThat(runtimeService.createProcessInstanceQuery.count).isEqualTo(0)
-
+    ()
   }
 
   @Test
@@ -152,11 +151,11 @@ class ChangeAddressSuite {
       .serviceTask.name("Archive Invoice")
       .camundaClass("pme123.camundala.examples.playground.ArchiveInvoiceService")
       .endEvent.name("Invoice processed")
-      .moveToLastGateway.condition("no", "${!approved}")
+      .moveToLastGateway.condition("no", s"$${!approved}")
       .userTask.name("Review Invoice")
       .camundaAssignee("demo")
       .exclusiveGateway.name("Review successful?")
-      .gatewayDirection(GatewayDirection.Diverging).condition("no", "${!clarified}")
+      .gatewayDirection(GatewayDirection.Diverging).condition("no", s"$${!clarified}")
       .endEvent.name("Invoice not processed")
       .moveToLastGateway.condition("yes", "${clarified}")
       .connectTo("approveInvoice")
@@ -171,9 +170,9 @@ class ChangeAddressSuite {
     org.junit.Assert.assertEquals(1, taskQuery.count)
     taskService.complete(taskQuery.singleResult.getId)
     // check and complete task "Approve Invoice"
-    val variables: Map[String, Any] = Map("approved" -> true)
+    //val variables: Map[String, Any] = Map("approved" -> true)
     org.junit.Assert.assertEquals(1, taskQuery.count)
-    taskService.complete(taskQuery.singleResult.getId, variables.asJava)
+    //taskService.complete(taskQuery.singleResult.getId, variables.asJava)
     // check and complete task "Prepare Bank Transfer"
     org.junit.Assert.assertEquals(1, taskQuery.count)
     taskService.complete(taskQuery.singleResult.getId)

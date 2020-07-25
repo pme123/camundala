@@ -224,6 +224,14 @@ trait ModuleWithTests extends CamundalaModule {
 
 }
 
+object dsl extends ModuleWithTests {
+  override def ivyDeps = {
+    Agg(
+      Libs.refinded
+    )
+  }
+}
+
 object model extends ModuleWithTests {
 
   override def ivyDeps = {

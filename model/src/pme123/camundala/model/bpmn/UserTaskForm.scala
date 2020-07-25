@@ -275,10 +275,6 @@ object UserTaskForm {
 
     def apply[A](implicit validation: WithConstraint[A]): WithConstraint[A] = validation
 
-    //needed only if we want to support notation: show(...)
-    def validate[A: WithConstraint](validation: A, constraint: Constraint): A =
-      WithConstraint[A].validate(validation, constraint)
-
     //type class instances
     def instance[A](func: (A, Constraint) => A): WithConstraint[A] =
       new WithConstraint[A] {

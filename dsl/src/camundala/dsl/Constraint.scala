@@ -1,25 +1,26 @@
-package pme123.camundala.model.bpmn
+package camundala.dsl
+
 
 import eu.timepit.refined.auto._
 
 sealed trait Constraint {
-  def name: PropKey
+  def name: Identifier
 
   def config: Option[String]
 }
 
 object Constraint {
 
-  case class Custom(name: PropKey, config: Option[String]) extends Constraint
+  case class Custom(name: Identifier, config: Option[String]) extends Constraint
 
   case object Required extends Constraint {
-    val name: PropKey = "required"
+    val name: Identifier = "required"
 
     val config: Option[String] = None
   }
 
   case object Readonly extends Constraint {
-    val name: PropKey = "readonly"
+    val name: Identifier = "readonly"
 
     val config: Option[String] = None
   }
@@ -32,19 +33,22 @@ object Constraint {
   }
 
   case class Minlength(value: Int) extends MinMax {
-    val name: PropKey = "minlength"
+    val name: Identifier = "minlength"
   }
 
   case class Maxlength(value: Int) extends MinMax {
-    val name: PropKey = "maxlength"
+    val name: Identifier = "maxlength"
   }
 
   case class Min(value: Int) extends MinMax {
-    val name: PropKey = "min"
+    val name: Identifier = "min"
   }
 
   case class Max(value: Int) extends MinMax {
-    val name: PropKey = "max"
+    val name: Identifier = "max"
   }
 
 }
+
+
+
