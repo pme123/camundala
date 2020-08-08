@@ -9,7 +9,7 @@ case class UserTask(id: Identifier,
                     outputParams: Parameters = Parameters.none,
                     inFlows: Seq[SequenceFlow] = Seq.empty,
                     outFlows: Seq[SequenceFlow] = Seq.empty
-                   ) {
+                   ) extends ProcessNode {
 
   def canEdit(group: BpmnGroup, groups: BpmnGroup*): UserTask = copy(candidateGroups = (candidateGroups :+ group) ++ groups)
 

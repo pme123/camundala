@@ -1,86 +1,12 @@
-package camundala.dsl
+package tools
 
-import camundala.dsl.GeneratedForm.{booleanField, textField}
-import camundala.dsl.TestData.groups.{GroupOne, GroupTwo}
+import camundala.dsl._
 import eu.timepit.refined.auto._
+import camundala.dsl.GeneratedForm.{booleanField, textField}
 
 //noinspection TypeAnnotation
-object TestData {
+object ToolsTestData {
 
-  // fluent
-  val fluentBpmn =
-    bpmn("FluentBpmnExample") --- (
-      process("FluentProcess")
-        .canStart(
-          user("FluentUser")
-            .firstName("Peter")
-            .name("Meier")
-        )
-        .canStart(
-          group("FluentGroup")
-            .groupType("TestGroup")
-            .name("Fancy Name")
-        ) ---
-        startEvent("MyStart")
-        --- (
-          userTask("UserTask1")
-            .canEdit(
-              user("UserONE")
-                .firstName("Peter")
-                .name("Meier")
-                .isInGroups(GroupOne, GroupTwo)
-            )
-            .embeddedForm("myEmbededForm"),
-          userTask("UserTask2")
-            .canEdit(
-              group("MyGroupOne")
-                .groupType("TestGroup")
-                .name("Fancy Name")
-            )
-            .form(
-              generatedForm()
-                .fields(
-                  textField("id"),
-                  booleanField("isItTrue").required,
-                  textField("helloThere")
-                    .label("Hello There!")
-                    .default("Hoi")
-                    .minlength(12)
-                    .maxlength(123)
-                    .prop("width", "12")
-                )
-            )
-            .prop("color", "blue")
-            .prop("size", "huge")
-            .inputText("textField", s"$${hello}")
-            .inputGroovy("groovyInline", "println('Groovy rocks')")
-            .inputGroovyRef("groovyFile", "println('Groovy rocks again')")
-      ) --- (
-        serviceTask("ServiceTask1")
-          .prop("color", "red")
-          .prop("size", "small")
-          .inputText("textField", s"$${hello}")
-          .inputGroovy("groovyInline", "println('Groovy rocks')")
-          .inputGroovyRef(
-            "groovyFile",
-            "println('Groovy rocks again')"
-          )
-        ) --- (
-        sendTask("SendTask1")
-          .prop(
-            "color",
-            "red"
-          )
-        ) --- (
-        businessRuleTask("BusinessRuleTask2")
-          .prop(
-            "color",
-            "blue"
-          )
-        )
-    )
-
-  // separated
   object bpmns {
 
     import processes._
@@ -103,23 +29,30 @@ object TestData {
 
     import businessRuleTasks._
     import callActivities._
+    import endEvents._
     import groups._
     import sendTasks._
     import serviceTasks._
     import startEvents._
-    import endEvents._
     import userTasks._
     import users._
-    import sequenceFlows._
 
     val SeparatedProcess1 =
       process("SeparatedProcess1")
-        .canStart(UserOne)
-        .canStart(GroupTwo)
-        .startEvents(StartEvent1)
-        .endEvents(EndEvent1)
-        .userTasks(UserTask1, UserTask2)
-        .serviceTasks(ServiceTask1, ServiceTask2)
+        .canStart(
+          UserOne)
+        .canStart(
+          GroupTwo)
+        .startEvents(
+          StartEvent1)
+        .endEvents(
+          EndEvent1)
+        .userTasks(
+          UserTask1,
+          UserTask2)
+        .serviceTasks(
+          ServiceTask1,
+          ServiceTask2)
         .callActivities(
           CallActivity1,
           CallActivity2
@@ -131,9 +64,9 @@ object TestData {
           UserTwo
         ) --- (
         StartEvent2
-      ) --- (
+        ) --- (
         EndEvent2
-      ) --- (
+        ) --- (
         UserTask1,
         UserTask2
       ) --- (
@@ -148,7 +81,7 @@ object TestData {
       ) --- (
         CallActivity1,
         CallActivity2
-    )
+      )
   }
 
   object groups {
@@ -328,19 +261,19 @@ object TestData {
     val EmbeddedForm1 =
       embeddedForm("myEmbededForm")
 
-    import GeneratedForm._
-
     val GeneratedForm1 =
       generatedForm()
         .fields(
           textField("id"),
-          booleanField("isItTrue").required,
+          booleanField("isItTrue")
+            .required,
           textField("helloThere")
             .label("Hello There!")
             .default("Hoi")
             .minlength(12)
             .maxlength(123)
             .prop("width", "12")
+
         )
   }
 

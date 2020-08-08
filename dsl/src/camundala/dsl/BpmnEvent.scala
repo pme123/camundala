@@ -1,6 +1,6 @@
 package camundala.dsl
 
-sealed trait BpmnEvent
+sealed trait BpmnEvent extends ProcessNode
 
 case class StartEvent(id: Identifier,
                       maybeForm: Option[BpmnForm] = None,

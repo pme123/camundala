@@ -22,7 +22,7 @@ object Version {
   val zioLogging = "0.3.0"
   val refined = "0.9.14"
   val quicklens = "1.6.0"
-
+  val slf4j = "1.7.30"
   // config
   val zioConfig = "1.0.0-RC20"
 
@@ -118,6 +118,7 @@ object Libs {
   val zioTest = ivy"dev.zio::zio-test:${Version.zio}"
   val zioTestJunit = ivy"dev.zio::zio-test-junit:${Version.zio}"
   val zioTestSbt = ivy"dev.zio::zio-test-sbt:${Version.zio}"
+  val slf4j = ivy"org.slf4j:slf4j-simple:${Version.slf4j}"
 }
 
 trait CamundalaModule
@@ -211,7 +212,8 @@ trait ModuleWithTests extends CamundalaModule {
       Libs.zioTestJunit,
       Libs.zioTestSbt,
       Libs.camundaAssert,
-      Libs.assertJ
+      Libs.assertJ,
+      Libs.slf4j
     )
 
     def testOne(args: String*) = T.command {
@@ -228,6 +230,17 @@ object dsl extends ModuleWithTests {
   override def ivyDeps = {
     Agg(
       Libs.refinded
+    )
+  }
+}
+
+object tools extends ModuleWithTests {
+  override def moduleDeps = Seq(dsl)
+
+  override def ivyDeps = {
+    Agg(
+      Libs.zio,
+      Libs.zioLogging
     )
   }
 }

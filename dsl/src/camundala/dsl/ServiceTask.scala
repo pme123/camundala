@@ -7,4 +7,4 @@ case class ServiceTask(id: Identifier,
                        outputParams: Parameters = Parameters.none,
                           inFlows: Seq[SequenceFlow] = Seq.empty,
                            outFlows: Seq[SequenceFlow] = Seq.empty
-                       )
+                       ) extends ProcessNode

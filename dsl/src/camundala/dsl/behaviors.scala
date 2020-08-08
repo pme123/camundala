@@ -194,8 +194,6 @@ object HasOutParameters {
 
   implicit val businessRuleTaskHasParameter: HasOutParameters[BusinessRuleTask] =
     new HasOutParameters[BusinessRuleTask] {
-      def inputParam(has: BusinessRuleTask, p: Parameter): BusinessRuleTask = has.copy(inputParams = has.inputParams :+ p)
-
       def outputParam(has: BusinessRuleTask, p: Parameter): BusinessRuleTask = has.copy(outputParams = has.inputParams :+ p)
     }
 
@@ -215,7 +213,7 @@ object HasCondition {
 
   implicit val sequenceFlowHasParameter: HasCondition[SequenceFlow] =
     new HasCondition[SequenceFlow] {
-      def condition(has: SequenceFlow, c: Condition): SequenceFlow = has.copy(maybeExpression = Some(c))
+      def condition(has: SequenceFlow, c: Condition): SequenceFlow = has.copy(maybeCondition = Some(c))
     }
 }
 
