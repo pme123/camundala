@@ -55,7 +55,6 @@ case class XBpmn(bpmnXml: Elem) {
 
 case class XBpmnProcess(xmlElem: Elem) {
 
-  val tagName: String = "Process"
   val idEffect: ZIO[Any, ModelException, ProcessId] = processIdFromStr(
     xmlElem \@ "id"
   )

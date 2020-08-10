@@ -1,6 +1,6 @@
 package camundala.dsl
 
-sealed trait Gateway extends ProcessNode
+sealed trait Gateway extends IdentifiableNode
 
 case class ExclusiveGateway(id: Identifier,
                             properties: Properties = Properties.none,

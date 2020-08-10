@@ -1,16 +1,22 @@
 package camundala
 
-import camundala.tools.behaviors.GeneratesDsl
+import camundala.dsl.{IdRegex, IdentifiableNode, Identifier}
+import eu.timepit.refined.refineV
+import zio.ZIO
 
 package object tools {
 
+  def identifierFromStr(str: String): ZIO[Any, DslException, Identifier] =
+    ZIO
+      .fromEither(refineV[IdRegex](str.split("/").last))
+      .mapError(ex => DslException(s"'$str' is not a valid Identifier.\n $ex"))
 
-  implicit class GeneratesDslOps[A: GeneratesDsl](a: A) {
+  def asList(commaSeparatedString: String): Seq[String] =
+    commaSeparatedString.split(",").toList.map(_.trim).filter(_.nonEmpty)
 
-    def generate(): String =
-      GeneratesDsl[A].generate(a)
+  def toMap[A <: IdentifiableNode](
+                                            processNodes: Seq[A]
+                                          ): Map[Identifier, A] =
+    processNodes.map(pn => pn.id -> pn).toMap
 
-    def generateChildren(): String =
-      GeneratesDsl[A].generateChildren(a)
-  }
 }

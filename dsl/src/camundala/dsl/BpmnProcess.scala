@@ -17,7 +17,7 @@ case class BpmnProcess(
     sequenceFlows: Seq[SequenceFlow] = Seq.empty,
     exclusiveGateways: Seq[ExclusiveGateway] = Seq.empty,
     parallelGateways: Seq[ParallelGateway] = Seq.empty
-) {
+)  extends IdentifiableNode {
 
   def canStart(group: BpmnGroup, groups: BpmnGroup*): BpmnProcess =
     copy(starterGroups = (starterGroups :+ group) ++ groups)
@@ -82,7 +82,7 @@ case class BpmnProcess(
   /**
     * create an ordered list of all nodes, grouped by there names
     */
-  val allNodes: Seq[(NodeKey, Seq[ProcessNode])] =
+  val allNodes: Seq[(NodeKey, Seq[IdentifiableNode])] =
     Seq(
       (NodeKey.startEvents, startEvents),
       (NodeKey.userTasks, userTasks),
@@ -103,8 +103,8 @@ object BpmnProcess {
     BpmnProcess("dummy")
   val allNodeKeys: Seq[NodeKey] =
     process.allNodes.map(_._1)
-  val emptyAllNodes: Map[NodeKey, Seq[ProcessNode]] =
-    allNodeKeys.map(_ -> Seq.empty[ProcessNode]).toMap
+  val emptyAllNodes: Map[NodeKey, Seq[IdentifiableNode]] =
+    allNodeKeys.map(_ -> Seq.empty[IdentifiableNode]).toMap
 
   sealed trait NodeKey {
     def name: String
@@ -156,6 +156,6 @@ object BpmnProcess {
   }
 }
 
-trait ProcessNode {
+trait IdentifiableNode {
   def id: Identifier
 }

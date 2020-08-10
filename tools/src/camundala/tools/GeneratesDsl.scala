@@ -1,7 +1,7 @@
 package camundala.tools
 
 import camundala.dsl.BpmnProcess._
-import camundala.dsl.{BpmnProcess, ProcessNode, _}
+import camundala.dsl.{BpmnProcess, IdentifiableNode, _}
 
 object GeneratesDsl {
 
@@ -20,7 +20,7 @@ object GeneratesDsl {
       generateNodes(allNodes)
   }
 
-  def generateBpmns(bpmns: Seq[Bpmn]): String = {
+  private def generateBpmns(bpmns: Seq[Bpmn]): String = {
     s"""
          |object bpmns {
          |import processes._
@@ -38,7 +38,7 @@ object GeneratesDsl {
          .mkString("\n")}}""".stripMargin
   }
 
-  def generateProcesses(processes: Seq[BpmnProcess]): String =
+  private def generateProcesses(processes: Seq[BpmnProcess]): String =
     s"""
          |object processes {
          |   import ${allNodeKeys.map(k => s"$k._").mkString(", ")}
@@ -58,7 +58,7 @@ object GeneratesDsl {
          .mkString("\n")}
          |}""".stripMargin
 
-  def generateNodes(processNodes: Map[NodeKey, Seq[ProcessNode]]): String =
+  private def generateNodes(processNodes: Map[NodeKey, Seq[IdentifiableNode]]): String =
     processNodes.map {
       case (k, nodes) =>
         s"""
