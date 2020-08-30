@@ -3,11 +3,9 @@ package pme123.camundala.services
 import java.io.InputStreamReader
 
 import javax.script.ScriptEngineManager
-import org.springframework.boot.SpringApplication
-import org.springframework.context.ConfigurableApplicationContext
 import pme123.camundala.app.appRunner
 import pme123.camundala.app.appRunner.AppRunner
-import pme123.camundala.camunda.StreamHelper
+import pme123.camundala.camunda.{CamundaApp, StreamHelper}
 import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.AppConfig
 import pme123.camundala.model.bpmn.{CamundalaException, StaticFile}
@@ -17,7 +15,7 @@ import pme123.camundala.model.register.deployRegister.DeployRegister
 import pme123.camundala.model.register.{bpmnRegister, deployRegister}
 import pme123.camundala.services.httpServer.HttpServer
 import zio._
-import zio.logging.{Logging, log}
+import zio.logging.Logging
 import zio.stm.TRef
 
 import scala.jdk.CollectionConverters._
@@ -61,7 +59,7 @@ object StandardApp {
             def start(): Task[Unit] = for {
               httpServerFiber <- httpServService.serve().fork
               _ <- httpServerRef.set(Some(httpServerFiber)).commit
-              camundaFork <- managedSpringApp(clazz).useForever.fork.provideLayer(ZLayer.succeed(log))
+              camundaFork <- CamundaApp.managedSpringApp(clazz).useForever.fork.provideLayer(ZLayer.succeed(log))
               _ <- camundaRef.set(Some(camundaFork)).commit
             } yield ()
 
@@ -86,25 +84,6 @@ object StandardApp {
               stop() *> start()
           }
         }
-    )
-
-  /**
-    * create SpringApplication as a ZManaged Resource.
-    */
-  def managedSpringApp(clazz: Class[_], args: List[String] = List.empty): ZManaged[Logging, Throwable, ConfigurableApplicationContext] =
-    ZManaged.make(
-      log.info("Starting Spring Container...") *>
-        ZIO.effect(
-          SpringApplication.run(clazz, args: _*)
-        )
-    )(ctx =>
-      log.info("Spring Container Stopping...") *>
-        ZIO.effect(
-          if (ctx.isActive)
-            SpringApplication.exit(ctx)
-        ).catchAll((ex: Throwable) =>
-          log.error(s"Problem shutting down the Spring Container.\n${ex.getMessage}", Cause.fail(ex))
-        )
     )
 
   case class StandardAppException(msg: String,
