@@ -11,6 +11,8 @@ import scala.annotation.nowarn
 
 trait StandardCliApp extends zio.App {
 
+  protected def standalone = true
+
   protected def appRunnerLayer: ZLayer[StandardAppDeps, Nothing, AppRunner]
 
   protected def title: String
@@ -26,5 +28,5 @@ trait StandardCliApp extends zio.App {
       .exitCode
 
   protected def runCli: ZIO[CliApp with Console, Throwable, Nothing] =
-    cliApp.run(projectInfo)
+    cliApp.run(projectInfo, standalone)
 }

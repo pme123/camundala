@@ -27,11 +27,11 @@ object cliApp {
   type CliApp = Has[Service]
 
   trait Service {
-    def run(projectInfo: ProjectInfo): Task[Nothing]
+    def run(projectInfo: ProjectInfo, standalone: Boolean): Task[Nothing]
   }
 
-  def run(projectInfo: ProjectInfo): RIO[CliApp, Nothing] =
-    ZIO.accessM(_.get.run(projectInfo))
+  def run(projectInfo: ProjectInfo, standalone: Boolean): RIO[CliApp, Nothing] =
+    ZIO.accessM(_.get.run(projectInfo, standalone))
 
   type CliAppDeps =
     Clock
@@ -233,11 +233,12 @@ object cliApp {
         } yield ())
           .forever
 
-      (projectInfo: ProjectInfo) =>
+      (projectInfo: ProjectInfo, standalone: Boolean) =>
         (intro *>
           printProject(projectInfo) *>
-          appStart() *>
-          appUpdate() *> // make sure Registry is initialized
+          (console.putStr("STANDALONE") *>
+            appStart()).when(!standalone) *>
+            appUpdate() *> // make sure Registry is initialized
           cliRunner)
           .provideLayer(ZLayer.succeed(console))
   }

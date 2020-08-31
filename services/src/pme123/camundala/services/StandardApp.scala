@@ -56,6 +56,7 @@ object StandardApp {
           new appRunner.Service {
 
             def start(): Task[Unit] = for {
+            _ <- log.info("START APP")
               httpServerFiber <- httpServService.serve().fork
               _ <- httpServerRef.set(Some(httpServerFiber)).commit
               camundaFork <- CamundaApp.managedSpringApp(clazz).useForever.fork.provideLayer(ZLayer.succeed(log))
