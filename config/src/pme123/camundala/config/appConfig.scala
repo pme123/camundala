@@ -6,7 +6,7 @@ import zio._
 import zio.config.ConfigDescriptor._
 import zio.config.refined._
 import zio.config.typesafe.TypesafeConfig
-import zio.config.{Config, config, refined}
+import zio.config.{ZConfig, config, refined}
 import zio.logging.Logging
 
 object appConfig {
@@ -70,7 +70,7 @@ object appConfig {
     val confWrapper =
       nested("camundala")(appConf)(ConfWrapper.apply, ConfWrapper.unapply)
 
-    lazy val sourceLayer: TaskLayer[Config[ConfWrapper]] = TypesafeConfig.fromDefaultLoader(confWrapper)
+    lazy val sourceLayer: TaskLayer[ZConfig[ConfWrapper]] = TypesafeConfig.fromDefaultLoader(confWrapper)
 
     ZLayer.fromService(log =>
       () => config[ConfWrapper]

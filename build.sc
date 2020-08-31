@@ -17,21 +17,21 @@ object Version {
   val scalaVersion = "2.13.2"
 
   // model
-  val zio = "1.0.0-RC20" //+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT" //"
+  val zio = "1.0.1" //+99-bb2ded5f-SNAPSHOT"//+119-559be413-SNAPSHOT" //"
   //val zioMacros = "1.0.0-RC18-2+99-bb2ded5f-SNAPSHOT"//"
-  val zioLogging = "0.3.0"
+  val zioLogging = "0.4.0"
   val refined = "0.9.14"
   val quicklens = "1.6.0"
   val slf4j = "1.7.30"
   // config
-  val zioConfig = "1.0.0-RC20"
+  val zioConfig = "1.0.0-RC26"
 
   // services
-  val zioCats = "2.1.3.0-RC15"
+  val zioCats = "2.1.4.0"
   val http4s = "0.21.3"
   val circe = "0.13.0"
-  val sttp = "2.0.6"
-  val tapir = "0.15.3"
+  val sttp = "2.2.6"
+  val tapir = "0.16.16"
 
   // camunda
   val spring = "2.2.4.RELEASE"
@@ -287,6 +287,9 @@ object camunda
       Libs.h2,
       Libs.postgres,
       Libs.scalaXml,
+      Libs.zio,
+      Libs.sttpClient,
+      Libs.sttpCore,
       Libs.sttpCirce,
       Libs.circe,
       Libs.circeRefined

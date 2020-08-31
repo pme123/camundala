@@ -1,6 +1,6 @@
 package pme123.camundala.camunda.xml
 
-import pme123.camundala.model.bpmn.{BpmnEvent, EndEvent, ModelException, StartEvent}
+import pme123.camundala.model.bpmn.{BpmnEvent, EndEvent, ModelException, SequenceFlow, StartEvent}
 import zio.IO
 
 import scala.xml.Elem

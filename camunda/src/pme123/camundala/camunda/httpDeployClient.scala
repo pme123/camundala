@@ -166,7 +166,7 @@ object httpDeployClient {
             } yield deployResults
           }
 
-          private def loadStaticFiles(bpmn: Bpmn): ZIO[Any, HttpDeployClientException, List[FilePart]] = {
+          private def loadStaticFiles(bpmn: Bpmn): ZIO[Any, HttpDeployClientException, Set[FilePart]] = {
 
             ZIO.foreach(bpmn.staticFiles)(st =>
               confService.get()

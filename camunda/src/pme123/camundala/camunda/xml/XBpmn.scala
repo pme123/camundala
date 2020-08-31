@@ -49,7 +49,7 @@ case class XBpmn(bpmnXml: Elem) {
       }
   }
 
-  def createProcesses(): Task[List[BpmnProcess]] =
+  def createProcesses(): Task[Seq[BpmnProcess]] =
     Task.foreach(processes)(_.createProcess())
 }
 
