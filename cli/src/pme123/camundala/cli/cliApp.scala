@@ -3,8 +3,7 @@ package pme123.camundala.cli
 import cats.effect.ExitCode
 import com.monovore.decline._
 import com.monovore.decline.effect.CommandIOApp
-import pme123.camundala.app.appRunner
-import pme123.camundala.app.appRunner.AppRunner
+import pme123.camundala.services.appRunner.AppRunner
 import pme123.camundala.camunda._
 import pme123.camundala.camunda.bpmnGenerator.BpmnGenerator
 import pme123.camundala.camunda.bpmnService.BpmnService
@@ -16,7 +15,7 @@ import pme123.camundala.model.bpmn._
 import pme123.camundala.model.deploy.{Deploy, DockerConfig}
 import pme123.camundala.model.register.deployRegister
 import pme123.camundala.model.register.deployRegister.DeployRegister
-import pme123.camundala.services.dockerComposer
+import pme123.camundala.services.{appRunner, dockerComposer}
 import pme123.camundala.services.dockerComposer.DockerComposer
 import zio._
 import zio.clock.Clock

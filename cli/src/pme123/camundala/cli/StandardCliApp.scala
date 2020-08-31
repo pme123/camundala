@@ -1,6 +1,6 @@
 package pme123.camundala.cli
 
-import pme123.camundala.app.appRunner.AppRunner
+import pme123.camundala.services.appRunner.AppRunner
 import pme123.camundala.cli.cliApp.CliApp
 import pme123.camundala.services.ServicesLayers
 import pme123.camundala.services.StandardApp.StandardAppDeps

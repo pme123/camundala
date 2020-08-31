@@ -4,7 +4,6 @@ import java.util.concurrent.TimeUnit
 
 import eu.timepit.refined.auto._
 import io.circe.Json
-import pme123.camundala.app.sttpBackend.SttpTaskBackend
 import pme123.camundala.camunda.service.restService.QueryParams.NoParams
 import pme123.camundala.camunda.service.restService.Request.Auth.{BasicAuth, BearerAuth, DigestAuth, NoAuth}
 import pme123.camundala.camunda.service.restService.Request.{Auth, Host}
@@ -14,6 +13,7 @@ import pme123.camundala.camunda.service.restService.RequestMethod.Get
 import pme123.camundala.camunda.service.restService.RequestPath.NoPath
 import pme123.camundala.camunda.service.restService.Response.{HandledError, NoContent, WithContent}
 import pme123.camundala.camunda.service.restService.ResponseRead.{NoResponseRead, StringRead}
+import pme123.camundala.camunda.sttpBackend.SttpTaskBackend
 import pme123.camundala.model.bpmn._
 import sttp.client.{Empty, NothingT, RequestT, SttpBackend, basicRequest, multipart, Request => SttpRequest, Response => SttpResponse}
 import sttp.model.Uri._

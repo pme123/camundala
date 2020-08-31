@@ -1,6 +1,6 @@
-package pme123.camundala.app
+package pme123.camundala.services
 
-import zio._
+import zio.{Has, RIO, Task, ZIO}
 
 object appRunner {
   type AppRunner = Has[Service]

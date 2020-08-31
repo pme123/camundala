@@ -2,7 +2,6 @@ package pme123.camundala.camunda
 
 import org.camunda.bpm.engine.ProcessEngine
 import org.camunda.bpm.engine.rest.util.EngineUtil
-import pme123.camundala.app.sttpBackend
 import pme123.camundala.camunda.bpmnGenerator.BpmnGenerator
 import pme123.camundala.camunda.bpmnService.BpmnService
 import pme123.camundala.camunda.camundaProcessEngine.CamundaProcessEngine

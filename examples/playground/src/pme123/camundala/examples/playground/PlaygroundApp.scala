@@ -2,7 +2,7 @@ package pme123.camundala.examples.playground
 
 import eu.timepit.refined.auto._
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import pme123.camundala.app.appRunner.AppRunner
+import pme123.camundala.services.appRunner.AppRunner
 import pme123.camundala.examples.common.StandardExampleCliApp
 import pme123.camundala.model.bpmn.StaticFile
 import pme123.camundala.services.StandardApp

@@ -1,6 +1,6 @@
 package pme123.camundala.services
 
-import pme123.camundala.app.sttpBackend.SttpTaskBackend
+import pme123.camundala.camunda.sttpBackend.SttpTaskBackend
 import pme123.camundala.model.bpmn.Url
 import pme123.camundala.model.deploy.DockerConfig
 import sttp.client._

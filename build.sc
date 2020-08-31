@@ -128,11 +128,9 @@ trait CamundalaModule
 
   def publishVersion = Version.projectVersion
 
-
   override def artifactName = s"camundala-${super.artifactName()}"
 
-  override def scalacOptions =
-    defaultScalaOpts
+  override def scalacOptions = defaultScalaOpts
 
   val defaultScalaOpts = Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
@@ -271,24 +269,11 @@ object config extends ModuleWithTests {
   }
 }
 
-object app extends CamundalaModule {
-
-  override def moduleDeps = Seq()
-
-  override def ivyDeps = {
-    Agg(
-      Libs.zio,
-      Libs.sttpClient,
-      Libs.sttpCore
-    )
-  }
-}
-
 object camunda
   extends ModuleWithTests
     with BuildInfo {
 
-  override def moduleDeps = Seq(model, config, app)
+  override def moduleDeps = Seq(model, config)
 
   override def ivyDeps = {
     Agg(

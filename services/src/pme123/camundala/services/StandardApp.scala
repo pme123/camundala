@@ -3,8 +3,7 @@ package pme123.camundala.services
 import java.io.InputStreamReader
 
 import javax.script.ScriptEngineManager
-import pme123.camundala.app.appRunner
-import pme123.camundala.app.appRunner.AppRunner
+import appRunner.AppRunner
 import pme123.camundala.camunda.{CamundaApp, StreamHelper}
 import pme123.camundala.config.appConfig
 import pme123.camundala.config.appConfig.AppConfig

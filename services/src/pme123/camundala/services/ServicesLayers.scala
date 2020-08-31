@@ -1,7 +1,6 @@
 package pme123.camundala.services
 
-import pme123.camundala.app.sttpBackend
-import pme123.camundala.camunda.CamundaLayers
+import pme123.camundala.camunda.{CamundaLayers, sttpBackend}
 import pme123.camundala.config.ConfigLayers
 import pme123.camundala.model.ModelLayers
 import pme123.camundala.services.StandardApp.StandardAppDeps
