@@ -2,9 +2,8 @@
 
 Doing Camunda with Scala.
 
+# REPLACED 
 > This project is on hold for now - I started a new version - you find it here: https://github.com/pme123/camundala-dsl
-
-# WORK IN PROGRESS / EXPERIMENTAL
 
 # Key Focus
 
