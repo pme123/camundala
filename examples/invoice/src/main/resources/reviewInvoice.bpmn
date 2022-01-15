@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  exporter="Camunda Modeler"
+                  exporterVersion="4.7.0"
+                  expressionLanguage="http://www.w3.org/1999/XPath"
+                  id="Definitions_1k1vca8"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  typeLanguage="http://www.w3.org/2001/XMLSchema">
+   <bpmn:process camunda:candidateStarterGroups=""
+                 camunda:candidateStarterUsers=""
+                 camunda:isStartableInTasklist="false"
+                 id="ReviewInvoiceP"
+                 isClosed="false"
+                 isExecutable="true"
+                 name="Review Invoice"
+                 processType="None">
+      <bpmn:startEvent id="StartInvoiceReviewSE"
+                       isInterrupting="true"
+                       name="Start Invoice Review"
+                       parallelMultiple="false">
+         <bpmn:outgoing>SequenceFlow_1ggutts__StartInvoiceReviewSE__AssignReviewerUT</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_1ggutts__StartInvoiceReviewSE__AssignReviewerUT"
+                         sourceRef="StartInvoiceReviewSE"
+                         targetRef="AssignReviewerUT"/>
+      <bpmn:sequenceFlow id="SequenceFlow_144f11w__AssignReviewerUT__ReviewInvoiceUT"
+                         sourceRef="AssignReviewerUT"
+                         targetRef="ReviewInvoiceUT"/>
+      <bpmn:endEvent id="EndReviewProcessEE" name="End Review Process">
+         <bpmn:incoming>SequenceFlow_0vvoxt0__ReviewInvoiceUT__EndReviewProcessEE</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_0vvoxt0__ReviewInvoiceUT__EndReviewProcessEE"
+                         sourceRef="ReviewInvoiceUT"
+                         targetRef="EndReviewProcessEE"/>
+      <bpmn:userTask completionQuantity="1"
+                     id="AssignReviewerUT"
+                     implementation="##unspecified"
+                     isForCompensation="false"
+                     name="Assign Reviewer"
+                     startQuantity="1">
+         <bpmn:incoming>SequenceFlow_1ggutts__StartInvoiceReviewSE__AssignReviewerUT</bpmn:incoming>
+         <bpmn:outgoing>SequenceFlow_144f11w__AssignReviewerUT__ReviewInvoiceUT</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:userTask camunda:dueDate="${dateTime().plusDays(2).toDate()}"
+                     completionQuantity="1"
+                     id="ReviewInvoiceUT"
+                     implementation="##unspecified"
+                     isForCompensation="false"
+                     name="Review Invoice"
+                     startQuantity="1">
+         <bpmn:incoming>SequenceFlow_144f11w__AssignReviewerUT__ReviewInvoiceUT</bpmn:incoming>
+         <bpmn:outgoing>SequenceFlow_0vvoxt0__ReviewInvoiceUT__EndReviewProcessEE</bpmn:outgoing>
+      </bpmn:userTask>
+   </bpmn:process>
+   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+      <bpmndi:BPMNPlane bpmnElement="ReviewInvoiceP" id="BPMNPlane_1">
+         <bpmndi:BPMNEdge bpmnElement="SequenceFlow_0vvoxt0__ReviewInvoiceUT__EndReviewProcessEE"
+                          id="SequenceFlow_0vvoxt0_di">
+            <di:waypoint x="530" y="97"/>
+            <di:waypoint x="592" y="97"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="SequenceFlow_144f11w__AssignReviewerUT__ReviewInvoiceUT"
+                          id="SequenceFlow_144f11w_di">
+            <di:waypoint x="370" y="97"/>
+            <di:waypoint x="430" y="97"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="SequenceFlow_1ggutts__StartInvoiceReviewSE__AssignReviewerUT"
+                          id="SequenceFlow_1ggutts_di">
+            <di:waypoint x="215" y="97"/>
+            <di:waypoint x="270" y="97"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNShape bpmnElement="StartInvoiceReviewSE" id="_BPMNShape_StartEvent_2">
+            <dc:Bounds height="36" width="36" x="179" y="79"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="27" width="62" x="166" y="122"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="EndReviewProcessEE" id="EndEvent_1og1zom_di">
+            <dc:Bounds height="36" width="36" x="592" y="79"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="27" width="59" x="581" y="122"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="AssignReviewerUT" id="UserTask_01n44zw_di">
+            <dc:Bounds height="80" width="100" x="270" y="57"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="ReviewInvoiceUT" id="UserTask_055nly4_di">
+            <dc:Bounds height="80" width="100" x="430" y="57"/>
+         </bpmndi:BPMNShape>
+      </bpmndi:BPMNPlane>
+   </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  exporter="Camunda Modeler"
+                  exporterVersion="4.7.0"
+                  expressionLanguage="http://www.w3.org/1999/XPath"
+                  id="Definitions_1k1vca8"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  typeLanguage="http://www.w3.org/2001/XMLSchema">
+   <bpmn:process camunda:isStartableInTasklist="false"
+                 id="ReviewInvoice"
+                 isClosed="false"
+                 isExecutable="true"
+                 name="Review Invoice"
+                 processType="None">
+      <bpmn:startEvent id="StartEvent_1"
+                       isInterrupting="true"
+                       name="Start Invoice Review"
+                       parallelMultiple="false">
+         <bpmn:outgoing>SequenceFlow_1ggutts</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_1ggutts"
+                         sourceRef="StartEvent_1"
+                         targetRef="assignReviewer"/>
+      <bpmn:sequenceFlow id="SequenceFlow_144f11w"
+                         sourceRef="assignReviewer"
+                         targetRef="reviewInvoice"/>
+      <bpmn:endEvent id="EndEvent_1og1zom" name="End Review Process">
+         <bpmn:incoming>SequenceFlow_0vvoxt0</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_0vvoxt0"
+                         sourceRef="reviewInvoice"
+                         targetRef="EndEvent_1og1zom"/>
+      <bpmn:userTask completionQuantity="1"
+                     id="assignReviewer"
+                     implementation="##unspecified"
+                     isForCompensation="false"
+                     name="Assign Reviewer"
+                     startQuantity="1">
+         <bpmn:incoming>SequenceFlow_1ggutts</bpmn:incoming>
+         <bpmn:outgoing>SequenceFlow_144f11w</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:userTask camunda:dueDate="${dateTime().plusDays(2).toDate()}"
+                     completionQuantity="1"
+                     id="reviewInvoice"
+                     implementation="##unspecified"
+                     isForCompensation="false"
+                     name="Review Invoice"
+                     startQuantity="1">
+         <bpmn:incoming>SequenceFlow_144f11w</bpmn:incoming>
+         <bpmn:outgoing>SequenceFlow_0vvoxt0</bpmn:outgoing>
+      </bpmn:userTask>
+   </bpmn:process>
+   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+      <bpmndi:BPMNPlane bpmnElement="ReviewInvoice" id="BPMNPlane_1">
+         <bpmndi:BPMNEdge bpmnElement="SequenceFlow_0vvoxt0" id="SequenceFlow_0vvoxt0_di">
+            <di:waypoint x="530" y="97"/>
+            <di:waypoint x="592" y="97"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="SequenceFlow_144f11w" id="SequenceFlow_144f11w_di">
+            <di:waypoint x="370" y="97"/>
+            <di:waypoint x="430" y="97"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="SequenceFlow_1ggutts" id="SequenceFlow_1ggutts_di">
+            <di:waypoint x="215" y="97"/>
+            <di:waypoint x="270" y="97"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNShape bpmnElement="StartEvent_1" id="_BPMNShape_StartEvent_2">
+            <dc:Bounds height="36" width="36" x="179" y="79"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="27" width="62" x="166" y="122"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="EndEvent_1og1zom" id="EndEvent_1og1zom_di">
+            <dc:Bounds height="36" width="36" x="592" y="79"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="27" width="59" x="581" y="122"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="assignReviewer" id="UserTask_01n44zw_di">
+            <dc:Bounds height="80" width="100" x="270" y="57"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="reviewInvoice" id="UserTask_055nly4_di">
+            <dc:Bounds height="80" width="100" x="430" y="57"/>
+         </bpmndi:BPMNShape>
+      </bpmndi:BPMNPlane>
+   </bpmndi:BPMNDiagram>
+</bpmn:definitions>
