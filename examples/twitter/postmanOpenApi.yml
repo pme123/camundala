@@ -1,0 +1,299 @@
+openapi: 3.0.3
+info:
+  title: Twitter Process API
+  version: '1.0'
+  description: |2
+
+
+    Generated Open API:
+
+    - **openApi.yml**: Documentation of the Processes (this Documentation😊).
+    - **postmanOpenApi.yml**: Open Api that you can import to Postman!
+      Be aware that this needs some adjustments.
+
+    >WARNING: This is an experimental way and not approved.
+
+    There is no README.md in the Project.
+
+    There is no CHANGELOG.md in the Package.
+servers:
+- url: http://localhost:8887/engine-rest
+paths:
+  /process-definition/key/{key}/start:
+    post:
+      tags:
+      - TwitterDemoP
+      summary: 'TwitterDemoP: StartProcessInstance'
+      description: This runs the Twitter Approvement Process.
+      operationId: 'TwitterDemoP: StartProcessInstance'
+      parameters:
+      - name: key
+        in: path
+        description: The Process- or Decision-DefinitionKey of the Process or Decision
+        required: true
+        schema:
+          type: string
+          default: TwitterDemoP
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              standard:
+                value:
+                  variables:
+                    email:
+                      value: me@myself.com
+                      type: String
+                    content:
+                      value: Test Tweet
+                      type: String
+                  businessKey: example-businesskey
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/--REMOVE:ReviewTweetUT--:
+    post:
+      tags:
+      - TwitterDemoP
+      summary: 'ReviewTweetUT: GetActiveTask'
+      description: ''
+      operationId: 'ReviewTweetUT: GetActiveTask'
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/form-variables/--REMOVE:ReviewTweetUT--:
+    get:
+      tags:
+      - TwitterDemoP
+      summary: 'ReviewTweetUT: GetTaskFormVariables'
+      description: |+
+        Retrieves the form variables for a task.
+        The form variables take form data specified on the task into account.
+        If form fields are defined, the variable types and default values of the form fields are taken into account.
+
+      operationId: 'ReviewTweetUT: GetTaskFormVariables'
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      - name: variableNames
+        in: query
+        description: |-
+          A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+          It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+          If the query parameter contains non-existent variable names, the variable names are ignored.
+        required: false
+        schema:
+          type: string
+          default: ''
+      - name: deserializeValues
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/complete/--REMOVE:ReviewTweetUT--:
+    post:
+      tags:
+      - TwitterDemoP
+      summary: 'ReviewTweetUT: CompleteTask'
+      description: ''
+      operationId: 'ReviewTweetUT: CompleteTask'
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskIn'
+            examples:
+              standard:
+                value:
+                  variables:
+                    approved:
+                      value: true
+                      type: Boolean
+                  withVariablesInReturn: true
+              Tweet accepted:
+                value:
+                  variables:
+                    approved:
+                      value: true
+                      type: Boolean
+                  withVariablesInReturn: true
+              Tweet rejected:
+                value:
+                  variables:
+                    approved:
+                      value: false
+                      type: Boolean
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+components:
+  schemas:
+    CBoolean:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: boolean
+        type:
+          type: string
+    CDouble:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: number
+          format: double
+        type:
+          type: string
+    CEnum:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+        type:
+          type: string
+    CFile:
+      required:
+      - value
+      - valueInfo
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+          description: The File's content as Base64 encoded String.
+        valueInfo:
+          $ref: '#/components/schemas/CFileValueInfo'
+        type:
+          type: string
+    CFileValueInfo:
+      required:
+      - filename
+      type: object
+      properties:
+        filename:
+          type: string
+        mimetype:
+          type: string
+    CInteger:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: integer
+        type:
+          type: string
+    CJson:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+        type:
+          type: string
+    CLong:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int64
+        type:
+          type: string
+    CNull:
+      type: object
+    CString:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+        type:
+          type: string
+    CamundaVariable:
+      oneOf:
+      - $ref: '#/components/schemas/CBoolean'
+      - $ref: '#/components/schemas/CDouble'
+      - $ref: '#/components/schemas/CEnum'
+      - $ref: '#/components/schemas/CFile'
+      - $ref: '#/components/schemas/CInteger'
+      - $ref: '#/components/schemas/CJson'
+      - $ref: '#/components/schemas/CLong'
+      - $ref: '#/components/schemas/CNull'
+      - $ref: '#/components/schemas/CString'
+    CompleteTaskIn:
+      required:
+      - variables
+      - withVariablesInReturn
+      type: object
+      properties:
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+        withVariablesInReturn:
+          type: boolean
+          description: Set to false will not return the Process Variables and the
+            Result Status is 204.
+      description: 'A JSON object with the following properties: (at least an empty
+        JSON object {} or an empty request body)'
+    Map_CamundaVariable:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/CamundaVariable'
+    StartProcessIn:
+      required:
+      - variables
+      - withVariablesInReturn
+      type: object
+      properties:
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+        businessKey:
+          type: string
+          description: The business key of the process instance.
+        withVariablesInReturn:
+          type: boolean
+          description: Set to false will not return the Process Variables.
+      description: 'A JSON object with the following properties: (at least an empty
+        JSON object {} or an empty request body)'
