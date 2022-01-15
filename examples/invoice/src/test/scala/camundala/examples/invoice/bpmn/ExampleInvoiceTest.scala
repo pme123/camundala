@@ -2,21 +2,9 @@ package camundala.examples.invoice.bpmn
 
 import camundala.domain.*
 import camundala.examples.invoice.bpmn.InvoiceApi.*
-import camundala.examples.invoice.bpmn.InvoiceDomain.ReviewInvoiceP
 import camundala.test.*
-import org.camunda.bpm.engine.runtime.ProcessInstance
-import org.camunda.bpm.engine.task.IdentityLink
-import org.camunda.bpm.engine.test.assertions.bpmn.AbstractAssertions.processEngine
-import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.*
-import org.camunda.bpm.engine.test.mock.Mocks
-import org.camunda.bpm.engine.test.{Deployment, ProcessEngineRule, ProcessEngineTestCase}
-import org.camunda.bpm.engine.variable.VariableMap
-import org.camunda.bpm.engine.variable.impl.VariableMapImpl
-import org.camunda.bpm.extension.mockito.ProcessExpressions.registerCallActivityMock
 import org.junit.Assert.{assertEquals, assertTrue}
-import org.junit.{After, Before, Rule, Test}
-import org.mockito.Mockito.mock
-import org.mockito.{Mock, MockitoAnnotations}
+import org.junit.Test
 
 import java.util
 import java.util.{HashSet, List, Set}
@@ -76,7 +64,7 @@ class ExampleInvoiceTest extends TestRunner:
 */
   import scala.jdk.CollectionConverters.IterableHasAsScala
 
-  def checkGroupIds =
+  private def checkGroupIds =
     custom {
       val links = taskService.getIdentityLinksForTask(task.getId).asScala
       val approverGroups = new util.HashSet[String]
