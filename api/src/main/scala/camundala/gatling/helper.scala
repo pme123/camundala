@@ -164,6 +164,9 @@ private def check[T <: Product: Encoder](
       result
         .find(_.key == key)
         .map {
+          case CamundaProperty(_, CFile(_,_, _)) =>
+            println("We cannot test Files")
+            true
           case CamundaProperty(_, CJson(cValue, _)) =>
             val cJson = toJson(cValue).deepDropNullValues
             val pJson = toJson(pValue.value.toString).deepDropNullValues

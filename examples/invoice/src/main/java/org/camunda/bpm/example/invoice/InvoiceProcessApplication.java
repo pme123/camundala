@@ -59,8 +59,8 @@ public class InvoiceProcessApplication extends ServletProcessApplication {
     processEngineConfiguration.setDbMetricsReporterActivate(true);
     processEngineConfiguration.getDbMetricsReporter().setReporterId("REPORTER");
 
-    startProcessInstances(processEngine, "InvoiceReceipt", 1);
-    startProcessInstances(processEngine, "InvoiceReceipt", null);
+    startProcessInstances(processEngine, "InvoiceReceiptP", 1);
+    startProcessInstances(processEngine, "InvoiceReceiptP", null);
 
     //disable reporting
     processEngineConfiguration.setDbMetricsReporterActivate(false);

@@ -21,7 +21,7 @@ object InvoiceServletProcessApplication:
   def main(args: Array[String]): Unit =
     SpringApplication.run(classOf[InvoiceServletProcessApplication], args: _*)
 
-  val invoicePa = new InvoiceProcessApplication()
+  lazy val invoicePa = new InvoiceProcessApplication()
 
   @EventListener
   def onPostDeploy(event: PostDeployEvent): Unit =
