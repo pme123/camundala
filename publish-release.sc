@@ -90,6 +90,7 @@ def release(version: String): Unit = {
       "push",
       "--all",
     )
+    println(s"Published Version: $version")
   }
 }
 private def replaceVersion(newVersion: String) = {
