@@ -69,7 +69,7 @@ lazy val tapirDependencies = Seq(
   "com.lihaoyi" %% "os-lib" % "0.8.0",
   "org.planet42" %% "laika-core" % "0.18.0"
 )
-val camundaVersion = "7.15.0"
+val camundaVersion = "7.16.0"
 lazy val camundaTestDependencies = Seq(
   // provide Camunda interaction
   "org.camunda.bpm" % "camunda-engine" % camundaVersion,
@@ -121,17 +121,16 @@ lazy val exampleTwitter = project
   .dependsOn(api, test, gatling)
   .enablePlugins(GatlingPlugin)
 
-val springBootVersion = "2.4.4"
+val springBootVersion = "2.6.2"
 val h2Version = "1.4.200"
 // Twitter
 val twitter4jVersion = "4.0.7"
 val camundaDependencies = Seq(
   "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion,
   "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion,
-  "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
-  "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.11.0",
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
+  "io.netty" % "netty-all" % "4.1.73.Final", // needed for Spring Boot Version > 2.5.*
   "com.h2database" % "h2" % h2Version
 )
 
