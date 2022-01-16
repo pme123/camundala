@@ -95,12 +95,5 @@ def release(version: String): Unit = {
 }
 private def replaceVersion(newVersion: String) = {
   val versionsPath = pwd / "version"
-  val versions: Seq[String] = read.lines ! versionsPath
-
-  val updatedVersions: String = versions.toList match {
-    case _::xs => (s"projectV=$newVersion"::xs).mkString("\n")
-    case _ => ""
-  }
-
-  write.over(versionsPath, updatedVersions)
+  write.over(versionsPath, newVersion)
 }

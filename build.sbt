@@ -3,9 +3,7 @@ import sbt.url
 import scala.util.Using
 
 lazy val projectVersion = Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
-val scala2Version = "2.13.7"
 val scala3Version = "3.1.0"
-val zioVersion = "1.0.8"
 val org = "io.github.pme123"
 
 ThisBuild / versionScheme := Some("semver-spec")
