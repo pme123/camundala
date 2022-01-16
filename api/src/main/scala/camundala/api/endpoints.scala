@@ -146,13 +146,13 @@ case class ApiEndpoints(
     tag: String,
     endpoints: Seq[ApiEndpoint[_, _, _]]
 ):
-  def create(): Seq[PublicEndpoint[?, ?, ?, ?]] =
+  def create(): Seq[Endpoint[?, ?, ?, ?, ?]] =
     println(s"Start API: $tag - ${endpoints.size} Endpoints")
     endpoints.flatMap(_.withTag(tag).create())
 
   def createPostman()(implicit
       tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, ?, ?, ?]] =
+  ): Seq[Endpoint[?, ?, ?, ?, ?]] =
     println(s"Start Postman API: $tag")
     endpoints.flatMap(_.withTag(tag).createPostman())
 
@@ -204,9 +204,9 @@ trait ApiEndpoint[
 
   def createPostman()(implicit
       tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, ?, ?, ?]]
+  ): Seq[Endpoint[?, ?, ?, ?, ?]]
 
-  def postmanBaseEndpoint: PublicEndpoint[?, ?, ?, ?] =
+  def postmanBaseEndpoint: Endpoint[?, ?, ?, ?, ?] =
     Some(
       endpoint
         .name(postmanName)
@@ -215,13 +215,13 @@ trait ApiEndpoint[
         .description(descr)
     ).map(ep => inMapperPostman().map(ep.in).getOrElse(ep)).get
 
-  def create(): Seq[PublicEndpoint[?, ?, ?, ?]] =
+  def create(): Seq[Endpoint[?, ?, ?, ?, ?]] =
     Seq(
       endpoint
         .name(s"$endpointType: $apiName")
         .tag(tag)
         .in(endpointType / apiName)
-        .summary(apiName)
+        .summary(s"$endpointType: $apiName")
         .description(descr)
         .head
     ).map(ep => inMapper().map(ep.in).getOrElse(ep))
@@ -259,7 +259,7 @@ case class StartProcessInstance[
 
   def createPostman()(implicit
       tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, ?, ?, ?]] =
+  ): Seq[Endpoint[?, ?, ?, ?, ?]] =
     Seq(
       postmanBaseEndpoint
         .in(postPath(processDefinitionKey))
@@ -357,7 +357,7 @@ case class GetTaskFormVariables[
 
   def createPostman()(implicit
       tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, ?, ?, ?]] =
+  ): Seq[Endpoint[?, ?, ?, ?, ?]] =
     Seq(
       postmanBaseEndpoint
         .get
@@ -402,7 +402,7 @@ case class CompleteTask[
 
   def createPostman()(implicit
       tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, ?, ?, ?]] =
+  ): Seq[Endpoint[?, ?, ?, ?, ?]] =
     Seq(
       postmanBaseEndpoint
         .in(postPath)
@@ -433,7 +433,7 @@ case class GetActiveTask(
 
   def createPostman()(implicit
       tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, ?, ?, ?]] =
+  ): Seq[Endpoint[?, ?, ?, ?, ?]] =
     Seq(
       postmanBaseEndpoint
         .in(postPath)
@@ -467,7 +467,7 @@ case class UserTaskEndpoint[
 
   def createPostman()(implicit
       tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, ?, ?, ?]] =
+  ): Seq[Endpoint[?, ?, ?, ?, ?]] =
     val in = completeTask.restApi.copy(
       requestInput = RequestInput(restApi.requestOutput.examples)
     )

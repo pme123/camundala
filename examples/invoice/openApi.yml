@@ -64,7 +64,7 @@ paths:
     head:
       tags:
       - InvoiceReceiptP
-      summary: InvoiceReceiptP
+      summary: 'Process: InvoiceReceiptP'
       description: This starts the Invoice Receipt Process.
       operationId: 'Process: InvoiceReceiptP'
       requestBody:
@@ -6204,7 +6204,7 @@ paths:
     head:
       tags:
       - InvoiceReceiptP
-      summary: invoice-assign-approver
+      summary: 'DecisionDmn: invoice-assign-approver'
       description: |2
 
 
@@ -6239,7 +6239,7 @@ paths:
     head:
       tags:
       - InvoiceReceiptP
-      summary: ApproveInvoiceUT
+      summary: 'UserTask: ApproveInvoiceUT'
       description: Approve the invoice (or not).
       operationId: 'UserTask: ApproveInvoiceUT'
       requestBody:
@@ -12385,7 +12385,7 @@ paths:
     head:
       tags:
       - InvoiceReceiptP
-      summary: PrepareBankTransferUT
+      summary: 'UserTask: PrepareBankTransferUT'
       description: Prepare the bank transfer in the Financial Accounting System.
       operationId: 'UserTask: PrepareBankTransferUT'
       requestBody:
@@ -18524,7 +18524,7 @@ paths:
     head:
       tags:
       - ReviewInvoiceP
-      summary: ReviewInvoiceP
+      summary: 'Process: ReviewInvoiceP'
       description: This starts the Review Invoice Process.
       operationId: 'Process: ReviewInvoiceP'
       requestBody:
@@ -24664,7 +24664,7 @@ paths:
     head:
       tags:
       - ReviewInvoiceP
-      summary: AssignReviewerUT
+      summary: 'UserTask: AssignReviewerUT'
       description: Select the Reviewer.
       operationId: 'UserTask: AssignReviewerUT'
       requestBody:
@@ -30804,7 +30804,7 @@ paths:
     head:
       tags:
       - ReviewInvoiceP
-      summary: ReviewInvoiceUT
+      summary: 'UserTask: ReviewInvoiceUT'
       description: Review Invoice and approve.
       operationId: 'UserTask: ReviewInvoiceUT'
       requestBody:

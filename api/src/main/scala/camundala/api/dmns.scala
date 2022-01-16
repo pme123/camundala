@@ -35,9 +35,9 @@ case class EvaluateDecision[
        |- _decisionDefinitionKey_: `$apiName`,
        |""".stripMargin
 
-  def createPostman()(implicit
+  def createPostman()(using
       tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, ?, ?, ?]] =
+  ): Seq[Endpoint[?, ?, ?, ?, ?]] =
     Seq(
       postmanBaseEndpoint
         .in(postPath(apiName))
@@ -57,6 +57,5 @@ case class EvaluateDecision[
         CamundaVariable.toCamunda(example)
       )
     }
-    
-end EvaluateDecision
 
+end EvaluateDecision
