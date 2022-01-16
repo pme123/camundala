@@ -30,7 +30,6 @@ lazy val api = project
   .configure(publicationSettings)
   .settings(projectSettings("api"))
   .settings(
-    publishArtifact := true,
     libraryDependencies ++=
       tapirDependencies ++
         camundaTestDependencies ++
@@ -45,7 +44,6 @@ lazy val test = project
   .configure(publicationSettings)
   .settings(projectSettings("test"))
   .settings(
-    publishArtifact := true,
     libraryDependencies ++=
         camundaTestDependencies,
   ).dependsOn(api)
@@ -55,7 +53,6 @@ lazy val gatling = project
   .configure(publicationSettings)
   .settings(projectSettings("gatling"))
   .settings(
-    publishArtifact := true,
     libraryDependencies ++=
       gatlingDependencies,
     scalacOptions ++= Seq(
