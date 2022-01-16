@@ -24,7 +24,7 @@ private implicit val workDir: Path = {
 @arg(doc = "> Creates a new Release and publishes to Maven Central")
 @main
 def release(version: String): Unit = {
-  println(s"Publishing bps-test-gatling: $version")
+  println(s"Publishing camundala: $version")
 
   val releaseVersion = """^(\d+)\.(\d+)\.(\d+)(-.*)?$"""
   if (!version.matches(releaseVersion))
