@@ -11,11 +11,7 @@ import io.circe.parser.*
 import io.circe.syntax.*
 import io.circe.{Decoder, Encoder, Json}
 import io.gatling.core.Predef.*
-import io.gatling.core.structure.{
-  ChainBuilder,
-  PopulationBuilder,
-  ScenarioBuilder
-}
+import io.gatling.core.structure.*
 import io.gatling.http.Predef.*
 import io.gatling.http.protocol.HttpProtocolBuilder
 import io.gatling.http.request.builder.{HttpRequestBuilder, resolveParamJList}

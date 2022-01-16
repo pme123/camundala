@@ -1,6 +1,8 @@
 import sbt.url
 
-lazy val projectVersion = scala.io.Source.fromFile("version").mkString.trim
+import scala.util.Using
+
+lazy val projectVersion = Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
 val scala2Version = "2.13.7"
 val scala3Version = "3.1.0"
 val zioVersion = "1.0.8"
@@ -14,7 +16,7 @@ lazy val root = project
   .settings(
     name := "camundala"
   )
-  .aggregate(api, exampleTwitter, exampleInvoice)
+  .aggregate(api, test, gatling, exampleTwitter, exampleInvoice)
 
 def projectSettings(projName: String): Seq[Def.Setting[_]] = Seq(
   name := s"camundala-$projName",
@@ -33,13 +35,34 @@ lazy val api = project
       tapirDependencies ++
         camundaTestDependencies ++
         gatlingDependencies,
-    // To cross compile with Dotty and Scala 2
     scalacOptions ++= Seq(
       "-Xmax-inlines",
       "50" // is declared as erased, but is in fact used
     )
   )
-//.enablePlugins(JavaAppPackaging)
+lazy val test = project
+  .in(file("./test"))
+  .configure(publicationSettings)
+  .settings(projectSettings("test"))
+  .settings(
+    publishArtifact := true,
+    libraryDependencies ++=
+        camundaTestDependencies,
+  ).dependsOn(api)
+
+lazy val gatling = project
+  .in(file("./gatling"))
+  .configure(publicationSettings)
+  .settings(projectSettings("gatling"))
+  .settings(
+    publishArtifact := true,
+    libraryDependencies ++=
+      gatlingDependencies,
+    scalacOptions ++= Seq(
+      "-Xmax-inlines",
+      "50" // is declared as erased, but is in fact used
+    )
+  ).dependsOn(api)
 
 val tapirVersion = "0.19.3"
 lazy val tapirDependencies = Seq(
@@ -72,23 +95,12 @@ lazy val camundaTestDependencies = Seq(
   "com.novocode" % "junit-interface" % "0.11"
 )
 
-val gatlingDependencies = Seq(
+lazy val gatlingDependencies = Seq(
   "io.gatling.highcharts" % "gatling-charts-highcharts" % "3.7.2",
   "io.gatling" % "gatling-test-framework" % "3.7.2"
 )
 
 // EXAMPLES
-lazy val exampleTwitter = project
-  .in(file("./examples/twitter"))
-  .settings(projectSettings("example-twitter"))
-  .configure(preventPublication)
-  .settings(
-    libraryDependencies ++= camundaDependencies :+
-      "org.twitter4j" % "twitter4j-core" % twitter4jVersion
-  )
-  .dependsOn(api)
-  .enablePlugins(GatlingPlugin)
-
 lazy val exampleInvoice = project
   .in(file("./examples/invoice"))
   .settings(projectSettings("example-invoice"))
@@ -100,7 +112,18 @@ lazy val exampleInvoice = project
     // https://mvnrepository.com/artifact/org.camunda.bpm.example/camunda-example-invoice
     // libraryDependencies += "org.camunda.bpm.example" % "camunda-example-invoice" % camundaVersion % Test
   )
-  .dependsOn(api)
+  .dependsOn(api, test, gatling)
+  .enablePlugins(GatlingPlugin)
+
+lazy val exampleTwitter = project
+  .in(file("./examples/twitter"))
+  .settings(projectSettings("example-twitter"))
+  .configure(preventPublication)
+  .settings(
+    libraryDependencies ++= camundaDependencies :+
+      "org.twitter4j" % "twitter4j-core" % twitter4jVersion
+  )
+  .dependsOn(api, test, gatling)
   .enablePlugins(GatlingPlugin)
 
 val springBootVersion = "2.4.4"
@@ -127,40 +150,6 @@ lazy val developerList = List(
     url = url("https://github.com/pme123")
   )
 )
-/*
-// https://github.com/djspiewak/sbt-github-actions
-ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
-ThisBuild / githubWorkflowPublishTargetBranches +=
-  RefPredicate.StartsWith(Ref.Tag("v"))
-
-ThisBuild / crossScalaVersions := Seq(scala3Version, scala2Version)
-
-ThisBuild / githubWorkflowPublish := Seq(WorkflowStep.Sbt(List("ci-release")))
-
-ThisBuild / githubWorkflowPublish := Seq(
-  WorkflowStep.Sbt(
-    List("ci-release"),
-    env = Map(
-      "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
-      "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
-      "SONATYPE_PASSWORD" -> "${{ secrets.SONATYPE_PASSWORD }}",
-      "SONATYPE_USERNAME" -> "${{ secrets.SONATYPE_USERNAME }}"
-    )
-  )
-)
-
-inThisBuild(List(
-  licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
-  homepage := Some(url("https://github.com/pme123/camundala-dsl")),
-  scmInfo := Some(
-    ScmInfo(
-      url("https://github.com/pme123/camunda-dsl"),
-      "scm:git:github.com:/pme123/camunda-dsl"
-    )
-  ),
-  developers := developerList
-))
- */
 
 lazy val publicationSettings: Project => Project = _.settings(
   publishMavenStyle := true,

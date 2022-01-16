@@ -2,7 +2,6 @@ package camundala
 package test
 
 import camundala.bpmn.*
-import camundala.camunda.*
 import camundala.domain.*
 import org.assertj.core.api.MapAssert
 import org.camunda.bpm.engine.ProcessEngineConfiguration
