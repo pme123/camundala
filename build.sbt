@@ -6,7 +6,7 @@ lazy val projectVersion = Using(scala.io.Source.fromFile("version"))(_.mkString.
 val scala3Version = "3.1.0"
 val org = "io.github.pme123"
 
-ThisBuild / versionScheme := Some("semver-spec")
+ThisBuild / versionScheme := Some("early-semver")
 
 lazy val root = project
   .in(file("."))

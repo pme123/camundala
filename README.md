@@ -43,7 +43,7 @@ Due to problems with the `"org.xerial.sbt" % "sbt-sonatype"` Plugin you have to 
   - login
   - check Staging Repository
   - hit _close_ Button (this will take some time)
-  - hit _release_ Button
+  - hit _release_ Button (this will take some time)
 
 > if you do not see any of the buttons or repository hit the _refresh_ Button.
 
