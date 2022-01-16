@@ -68,7 +68,7 @@ trait SimulationRunner extends Simulation:
     processScenario(scenarioName)(
       (process.start(scenarioName) +:
         flatten(requests)) ++
-        process.check(): _*
+        process.check(scenarioName): _*
     )
 
   def flatten(
@@ -129,10 +129,10 @@ trait SimulationRunner extends Simulation:
   )
 
     def start(scenario: String)(implicit
-                                tenantId: Option[String]
+        tenantId: Option[String]
     ): ChainBuilder =
       exec(
-        http(s"Start Process ${process.id}")
+        http(s"Start '$scenario' of '${process.id}'")
           .post(s"/process-definition/key/${process.id}${tenantId
             .map(id => s"/tenant-id/$id")
             .getOrElse("")}/start")
@@ -192,22 +192,22 @@ trait SimulationRunner extends Simulation:
         )
       )
 
-    def check(): Seq[ChainBuilder] = {
+    def check(scenario: String = ""): Seq[ChainBuilder] = {
       Seq(
         exec(_.set("processState", null)),
         retryOrFail(
-          exec(checkFinished()).exitHereIfFailed,
+          exec(checkFinished(scenario)).exitHereIfFailed,
           processCondition
         ),
-        exec(checkVars()).exitHereIfFailed
+        exec(checkVars(scenario)).exitHereIfFailed
       )
     }
 
-    def checkVars()(implicit
-        tenantId: Option[String]
-    ): ChainBuilder =
+    def checkVars(
+        scenario: String
+    )(using tenantId: Option[String]): ChainBuilder =
       exec(
-        http(s"Check Process ${process.id}") // 8
+        http(s"Check '$scenario' of '${process.id}'") // 8
           .get(
             "/history/variable-instance?processInstanceIdIn=#{processInstanceId}&deserializeValues=false"
           )
@@ -226,10 +226,10 @@ trait SimulationRunner extends Simulation:
           )
       ).exitHereIfFailed
 
-    def checkFinished()(implicit
+    def checkFinished(scenario: String)(using
         tenantId: Option[String]
     ) =
-      http(s"Check finished Process ${process.id}")
+      http(s"Check finished '$scenario' of '${process.id}'")
         .get(s"/history/process-instance/#{processInstanceId}")
         .auth()
         .check(checkMaxCount)
@@ -259,8 +259,8 @@ trait SimulationRunner extends Simulation:
   end extension
 
   extension [
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
   ](userTask: UserTask[In, Out])
 
     def getAndComplete(): Seq[ChainBuilder] = {
@@ -321,19 +321,19 @@ trait SimulationRunner extends Simulation:
         )
 
     def exists(
-                key: String
-              ): UserTask[TestOverrides, Out] =
+        key: String
+    ): UserTask[TestOverrides, Out] =
       overrideUserTask(key, TestOverrideType.Exists)
 
     def notExists(
-                   key: String
-                 ): UserTask[TestOverrides, Out] =
+        key: String
+    ): UserTask[TestOverrides, Out] =
       overrideUserTask(key, TestOverrideType.NotExists)
 
     def isEquals(
-                  key: String,
-                  value: Any
-                ): UserTask[TestOverrides, Out] =
+        key: String,
+        value: Any
+    ): UserTask[TestOverrides, Out] =
       overrideUserTask(
         key,
         TestOverrideType.IsEquals,
@@ -341,9 +341,9 @@ trait SimulationRunner extends Simulation:
       )
 
     def hasSize(
-                 key: String,
-                 size: Int
-               ): UserTask[TestOverrides, Out] =
+        key: String,
+        size: Int
+    ): UserTask[TestOverrides, Out] =
       overrideUserTask(
         key,
         TestOverrideType.HasSize,
@@ -351,10 +351,10 @@ trait SimulationRunner extends Simulation:
       )
 
     def overrideUserTask(
-                      key: String,
-                      overrideType: TestOverrideType,
-                      value: Option[CamundaVariable] = None
-                    ): UserTask[TestOverrides, Out] =
+        key: String,
+        overrideType: TestOverrideType,
+        value: Option[CamundaVariable] = None
+    ): UserTask[TestOverrides, Out] =
       UserTask(
         InOutDescr(
           userTask.id,
