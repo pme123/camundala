@@ -27,30 +27,6 @@ case class TestOverrides(overrides: Seq[TestOverride]) //Seq[TestOverride])
 enum TestOverrideType:
   case Exists, NotExists, IsEquals, HasSize
 
-/*
-def overrides[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema,
-    T <: InOut[In, Out, T]
-](
-    inOut: InOut[In, Out, T],
-    key: String,
-    overrideType: TestOverrideType,
-    value: Option[CamundaVariable] = None
-): InOutDescr[In, TestOverrides] =
-  val testOverride = TestOverride(key,overrideType, value)
-  val newOverrides: Seq[TestOverride] = inOut.out match
-    case TestOverrides(overrides) =>
-      overrides :+ testOverride
-    case other =>
-      Seq(testOverride)
-  InOutDescr(
-    inOut.id,
-    inOut.in,
-    TestOverrides(newOverrides),
-    inOut.descr
-  )
- */
 def addOverride[
     T <: Product
 ](
@@ -164,9 +140,20 @@ private def check[T <: Product: Encoder](
       result
         .find(_.key == key)
         .map {
-          case CamundaProperty(_, CFile(_,_, _)) =>
-            println("We cannot test Files")
-            true
+          case CamundaProperty(_, cValue @ CFile(_, cFileValueInfo @ CFileValueInfo(cFileName, _), _)) =>
+            val matches = pValue match
+              case CFile(_, CFileValueInfo(pFileName, _), _) =>
+                cFileName == pFileName
+              case o =>
+                false
+            if (!matches)
+              println(
+                s"cFile: ${cValue.getClass} / pFile: ${pValue.getClass}"
+              )
+              println(
+                s"!!! The File value '${pValue}'\n of $key does not match the result variable: '$cFileValueInfo'."
+              )
+            matches
           case CamundaProperty(_, CJson(cValue, _)) =>
             val cJson = toJson(cValue).deepDropNullValues
             val pJson = toJson(pValue.value.toString).deepDropNullValues

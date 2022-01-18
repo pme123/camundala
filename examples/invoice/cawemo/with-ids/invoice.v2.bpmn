@@ -168,12 +168,6 @@
                     startQuantity="1">
          <extensionElements>
             <camunda:in businessKey="#{execution.processBusinessKey}"/>
-            <camunda:in source="creditor" target="creditor"/>
-            <camunda:in source="amount" target="amount"/>
-            <camunda:in source="invoiceCategory" target="invoiceCategory"/>
-            <camunda:in source="invoiceNumber" target="invoiceNumber"/>
-            <camunda:in source="invoiceDocument" target="invoiceDocument"/>
-            <camunda:out source="clarified" target="clarified"/>
          </extensionElements>
          <incoming>NoSF__InvoiceApprovedEG__ReviewInvoiceCA</incoming>
          <outgoing>sequenceFlow_183__ReviewInvoiceCA__ReviewSuccessfulEG</outgoing>

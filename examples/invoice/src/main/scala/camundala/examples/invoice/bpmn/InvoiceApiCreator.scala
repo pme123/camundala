@@ -14,25 +14,24 @@ object InvoiceApiCreator extends APICreator {
   def version = "1.0"
 
   override lazy val serverPort = 8034
-  
+
   override def basePath: Path = pwd / "examples" / "invoice"
 
-
   apiEndpoints(
-      invoiceReceiptProcess
-        .endpoints(
-          invoiceAssignApproverDMN2.endpoint,
-          approveInvoiceUT.endpoint
-            .withOutExample("Invoice approved", ApproveInvoice())
-            .withOutExample("Invoice NOT approved", ApproveInvoice(false)),
-          prepareBankTransferUT.endpoint
-        ),
-      reviewInvoiceProcess.endpoints(
-        assignReviewerUT.endpoint,
-        reviewInvoiceUT.endpoint
-          .withOutExample("Invoice clarified", InvoiceReviewed())
-          .withOutExample("Invoice NOT clarified", InvoiceReviewed(false))
-      )
+    InvoiceReceiptP
+      .endpoints(
+        invoiceAssignApproverDMN2.endpoint,
+        approveInvoiceUT.endpoint
+          .withOutExample("Invoice approved", ApproveInvoice())
+          .withOutExample("Invoice NOT approved", ApproveInvoice(false)),
+        prepareBankTransferUT.endpoint
+      ),
+    ReviewInvoiceP.endpoints(
+      assignReviewerUT.endpoint,
+      reviewInvoiceUT.endpoint
+        .withOutExample("Invoice clarified", InvoiceReviewed())
+        .withOutExample("Invoice NOT clarified", InvoiceReviewed(false))
     )
+  )
 
 }

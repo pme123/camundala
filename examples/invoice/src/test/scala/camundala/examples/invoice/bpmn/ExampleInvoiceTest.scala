@@ -29,14 +29,14 @@ class ExampleInvoiceTest extends TestRunner:
 
   @Test
   def testReviewReview(): Unit =
-    test(reviewInvoiceProcess)(
+    test(ReviewInvoiceP)(
       assignReviewerUT,
       reviewInvoiceUT
     )
 
   @Test
   def testInvoiceReceipt(): Unit =
-    test(invoiceReceiptProcess)(
+    test(InvoiceReceiptP)(
       invoiceAssignApproverDMN2,
       // checkGroupIds,
       approveInvoiceUT,

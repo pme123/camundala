@@ -18,44 +18,44 @@ class InvoiceSimulation extends SimulationRunner {
 
   simulate(
     processScenario("Review Invoice")(
-      reviewInvoiceProcess,
+      ReviewInvoiceP,
       assignReviewerUT.getAndComplete(),
       reviewInvoiceUT.getAndComplete(),
     ),
     processScenario("Invoice Receipt")(
-      invoiceReceiptProcess,
+      InvoiceReceiptP,
       approveInvoiceUT.getAndComplete(),
       prepareBankTransferUT.getAndComplete(),
     ),
     processScenario("Invoice Receipt with Review")(
-      invoiceReceiptProcess
+      InvoiceReceiptP
         .withOut(InvoiceReceiptCheck(clarified = Some(true))),
       approveInvoiceUT
         .withOut(ApproveInvoice(false))
         .getAndComplete(), // do not approve
-      invoiceReceiptProcess
+      InvoiceReceiptP
         .switchToCalledProcess(), // switch to Review Process (Call Activity)
       assignReviewerUT.getAndComplete(),
       reviewInvoiceUT.getAndComplete(),
-      reviewInvoiceProcess.check(), // check if sub process successful
-      invoiceReceiptProcess.switchToMainProcess(),
+      ReviewInvoiceP.check(), // check if sub process successful
+      InvoiceReceiptP.switchToMainProcess(),
       approveInvoiceUT.getAndComplete(), // now approve
       prepareBankTransferUT.getAndComplete()
     ),
     processScenario("Invoice Receipt with Review failed")(
-      invoiceReceiptProcess
+      InvoiceReceiptP
         .withOut(InvoiceReceiptCheck(approved = false, clarified = Some(false))),
       approveInvoiceUT
         .withOut(ApproveInvoice(false))
         .getAndComplete(), // do not approve
-      invoiceReceiptProcess
+      InvoiceReceiptP
         .switchToCalledProcess(), // switch to Review Process (Call Activity)
       assignReviewerUT.getAndComplete(),
       reviewInvoiceUT.withOut(InvoiceReviewed(false)).getAndComplete(),
-      reviewInvoiceProcess
+      ReviewInvoiceP
         .withOut(InvoiceReviewed(false))
         .check(), // check if sub process successful
-      invoiceReceiptProcess.switchToMainProcess(),
+      InvoiceReceiptP.switchToMainProcess(),
     )
   )
 }

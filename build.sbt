@@ -14,7 +14,7 @@ lazy val root = project
   .settings(
     name := "camundala"
   )
-  .aggregate(api, test, gatling, exampleTwitter, exampleInvoice)
+  .aggregate(api, camunda, test, gatling, exampleTwitter, exampleInvoice)
 
 def projectSettings(projName: String): Seq[Def.Setting[_]] = Seq(
   name := s"camundala-$projName",
@@ -37,6 +37,20 @@ lazy val api = project
       "50" // is declared as erased, but is in fact used
     )
   )
+
+lazy val camunda = project
+  .in(file("./camunda"))
+  .configure(publicationSettings)
+  .settings(projectSettings("camunda"))
+  .settings(
+    libraryDependencies +=
+      "org.camunda.bpm" % "camunda-engine" % camundaVersion,
+    scalacOptions ++= Seq(
+      "-Xmax-inlines",
+      "50" // is declared as erased, but is in fact used
+    )
+  ).dependsOn(api)
+
 lazy val test = project
   .in(file("./test"))
   .configure(publicationSettings)
@@ -107,7 +121,7 @@ lazy val exampleInvoice = project
     // https://mvnrepository.com/artifact/org.camunda.bpm.example/camunda-example-invoice
     // libraryDependencies += "org.camunda.bpm.example" % "camunda-example-invoice" % camundaVersion % Test
   )
-  .dependsOn(api, test, gatling)
+  .dependsOn(camunda, test, gatling)
   .enablePlugins(GatlingPlugin)
 
 lazy val exampleTwitter = project

@@ -67,8 +67,17 @@ case class Process[
     elements: Seq[ProcessNode | InOut[?,?,?]] = Seq.empty
 ) extends InOut[In, Out, Process[In, Out]]:
 
+  def inOuts: Seq[InOut[?, ?, ?]] = elements.collect {
+    case io: InOut[?, ?, ?] => io
+  }
+
   def withInOutDescr(descr: InOutDescr[In, Out]): Process[In, Out] =
     copy(inOutDescr = descr)
+
+  def withElements(
+                    elements: (ProcessNode | InOut[?, ?, ?])*
+                  ): Process[In, Out] =
+    this.copy(elements = elements)
 
 case class UserTask[
     In <: Product: Encoder: Decoder: Schema,
@@ -103,6 +112,11 @@ object CallActivity:
       Out <: Product: Encoder: Decoder: Schema
   ](process: Process[In, Out]): CallActivity[In, Out] =
     CallActivity(process.inOutDescr)
+
+  def init(id: String): CallActivity[NoInput, NoOutput] =
+    CallActivity(
+      InOutDescr(id, NoInput(), NoOutput())
+    )
 
 case class ServiceTask[
     In <: Product: Encoder: Decoder: Schema,
