@@ -486,3 +486,7 @@ implicit lazy val CompleteTaskInDecoder: Decoder[CompleteTaskIn] = deriveDecoder
 implicit lazy val GetActiveTaskInSchema: Schema[GetActiveTaskIn] = Schema.derived
 implicit lazy val GetActiveTaskInEncoder: Encoder[GetActiveTaskIn] = deriveEncoder
 implicit lazy val GetActiveTaskInDecoder: Decoder[GetActiveTaskIn] = deriveDecoder
+
+implicit lazy val CompleteTaskOutSchema: Schema[CompleteTaskOut] = Schema.derived
+implicit lazy val CompleteTaskOutEncoder: Encoder[CompleteTaskOut] = deriveEncoder
+implicit lazy val CompleteTaskOutDecoder: Decoder[CompleteTaskOut] = deriveDecoder

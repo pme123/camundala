@@ -4,22 +4,18 @@ package gatling
 import camundala.api.*
 import camundala.api.CamundaVariable.*
 import camundala.bpmn
-import camundala.bpmn.{DecisionDmn, InOut, Process, UserTask, *}
+import camundala.bpmn.*
 import camundala.domain.*
-import io.circe.generic.auto.*
 import io.circe.parser.*
 import io.circe.syntax.*
-import io.circe.{Decoder, Encoder, Json}
 import io.gatling.core.Predef.*
 import io.gatling.core.structure.*
 import io.gatling.http.Predef.*
 import io.gatling.http.protocol.HttpProtocolBuilder
 import io.gatling.http.request.builder.{HttpRequestBuilder, resolveParamJList}
 import sttp.tapir.docs.openapi.{OpenAPIDocsInterpreter, OpenAPIDocsOptions}
-import sttp.tapir.generic.auto.*
 import sttp.tapir.openapi.circe.yaml.*
 import sttp.tapir.openapi.{Contact, Info, OpenAPI, Server}
-import sttp.tapir.{Endpoint, EndpointInput, EndpointOutput, Schema}
 
 import scala.concurrent.duration.*
 

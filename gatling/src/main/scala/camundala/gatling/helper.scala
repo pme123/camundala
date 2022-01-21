@@ -10,9 +10,6 @@ import camundala.domain.*
 import camundala.gatling.TestOverrideType.*
 import io.circe.{Decoder, Encoder}
 import io.circe.Json.JArray
-import sttp.tapir.Schema
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
 
 import scala.jdk.CollectionConverters.*
 
@@ -183,3 +180,15 @@ private def check[T <: Product: Encoder](
         }
     }
     .forall(_ == true)
+
+implicit lazy val TestOverridesSchema: Schema[TestOverrides] = Schema.derived
+implicit lazy val TestOverridesEncoder: Encoder[TestOverrides] = deriveEncoder
+implicit lazy val TestOverridesDecoder: Decoder[TestOverrides] = deriveDecoder
+
+implicit lazy val TestOverrideSchema: Schema[TestOverride] = Schema.derived
+implicit lazy val TestOverrideEncoder: Encoder[TestOverride] = deriveEncoder
+implicit lazy val TestOverrideDecoder: Decoder[TestOverride] = deriveDecoder
+
+implicit lazy val TestOverrideTypeSchema: Schema[TestOverrideType] = Schema.derived
+implicit lazy val TestOverrideTypeEncoder: Encoder[TestOverrideType] = deriveEncoder
+implicit lazy val TestOverrideTypeDecoder: Decoder[TestOverrideType] = deriveDecoder
