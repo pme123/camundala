@@ -3,10 +3,6 @@ package bpmn
 
 import domain.*
 
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
-import io.circe.{Json, parser}
-
 trait BpmnDsl:
 
   def process[

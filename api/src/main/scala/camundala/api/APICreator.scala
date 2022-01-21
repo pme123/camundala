@@ -1,14 +1,13 @@
 package camundala
 package api
 
+import domain.*
 import bpmn.*
-import io.circe.generic.auto.*
 import laika.api.*
 import laika.ast.MessageFilter
 import laika.format.*
 import laika.markdown.github.GitHubFlavor
 import sttp.tapir.docs.openapi.{OpenAPIDocsInterpreter, OpenAPIDocsOptions}
-import sttp.tapir.generic.auto.*
 import sttp.tapir.openapi.circe.yaml.*
 import sttp.tapir.openapi.{Contact, Info, OpenAPI, Server}
 

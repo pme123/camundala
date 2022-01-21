@@ -1,13 +1,13 @@
 package camundala
 package api
 
-import io.circe.generic.auto.*
+import domain.*
+import io.circe.generic.semiauto.*
 import io.circe.syntax.*
 import io.circe.*
 import sttp.model.StatusCode
-import sttp.tapir.Schema
+import sttp.tapir.{Schema, SchemaType}
 import sttp.tapir.Schema.annotations.description
-import sttp.tapir.generic.auto.*
 
 import java.util.Base64
 import scala.annotation.tailrec
@@ -33,6 +33,29 @@ case class CamundaAuthError(
     resourceName: String = "User",
     resourceId: String = "Mary"
 )
+
+implicit lazy val StatusCodeSchema: Schema[StatusCode] =
+  Schema(SchemaType.SInteger())
+implicit lazy val StatusCodeEncoder: Encoder[StatusCode] =
+  Encoder.instance(st => st.code.asJson)
+implicit lazy val StatusCodeDecoder: Decoder[StatusCode] =
+  (c: HCursor) => c.value.as[Int].map(StatusCode(_))
+
+implicit lazy val RequestErrorOutputSchema: Schema[RequestErrorOutput] =
+  Schema.derived
+implicit lazy val RequestErrorOutputEncoder: Encoder[RequestErrorOutput] =
+  deriveEncoder
+implicit lazy val RequestErrorOutputDecoder: Decoder[RequestErrorOutput] =
+  deriveDecoder
+implicit lazy val CamundaErrorSchema: Schema[CamundaError] = Schema.derived
+implicit lazy val CamundaErrorEncoder: Encoder[CamundaError] = deriveEncoder
+implicit lazy val CamundaErrorDecoder: Decoder[CamundaError] = deriveDecoder
+implicit lazy val CamundaAuthErrorSchema: Schema[CamundaAuthError] =
+  Schema.derived
+implicit lazy val CamundaAuthErrorEncoder: Encoder[CamundaAuthError] =
+  deriveEncoder
+implicit lazy val CamundaAuthErrorDecoder: Decoder[CamundaAuthError] =
+  deriveDecoder
 
 @description(
   """Output for /history/variable-instance?processInstanceIdIn=#{processInstanceId}
@@ -107,6 +130,48 @@ object CamundaVariable:
       case v: CEnum => v.asJson
       case CNull => Json.Null
     }
+
+  implicit lazy val CamundaVariableSchema: Schema[CamundaVariable] =
+    Schema.derived
+
+  implicit lazy val CStringSchema: Schema[CString] = Schema.derived
+  implicit lazy val CStringEncoder: Encoder[CString] = deriveEncoder
+  implicit lazy val CStringDecoder: Decoder[CString] = deriveDecoder
+
+  implicit lazy val CIntegerSchema: Schema[CInteger] = Schema.derived
+  implicit lazy val CIntegerEncoder: Encoder[CInteger] = deriveEncoder
+  implicit lazy val CIntegerDecoder: Decoder[CInteger] = deriveDecoder
+
+  implicit lazy val CLongSchema: Schema[CLong] = Schema.derived
+  implicit lazy val CLongEncoder: Encoder[CLong] = deriveEncoder
+  implicit lazy val CLongDecoder: Decoder[CLong] = deriveDecoder
+
+  implicit lazy val CDoubleSchema: Schema[CDouble] = Schema.derived
+  implicit lazy val CDoubleEncoder: Encoder[CDouble] = deriveEncoder
+  implicit lazy val CDoubleDecoder: Decoder[CDouble] = deriveDecoder
+
+  implicit lazy val CBooleanSchema: Schema[CBoolean] = Schema.derived
+  implicit lazy val CBooleanEncoder: Encoder[CBoolean] = deriveEncoder
+  implicit lazy val CBooleanDecoder: Decoder[CBoolean] = deriveDecoder
+
+  implicit lazy val CFileSchema: Schema[CFile] = Schema.derived
+  implicit lazy val CFileEncoder: Encoder[CFile] = deriveEncoder
+  implicit lazy val CFileDecoder: Decoder[CFile] = deriveDecoder
+
+  implicit lazy val CFileValueInfoSchema: Schema[CFileValueInfo] =
+    Schema.derived
+  implicit lazy val CFileValueInfoEncoder: Encoder[CFileValueInfo] =
+    deriveEncoder
+  implicit lazy val CFileValueInfoDecoder: Decoder[CFileValueInfo] =
+    deriveDecoder
+
+  implicit lazy val CJsonSchema: Schema[CJson] = Schema.derived
+  implicit lazy val CJsonEncoder: Encoder[CJson] = deriveEncoder
+  implicit lazy val CJsonDecoder: Decoder[CJson] = deriveDecoder
+
+  implicit lazy val CEnumSchema: Schema[CEnum] = Schema.derived
+  implicit lazy val CEnumEncoder: Encoder[CEnum] = deriveEncoder
+  implicit lazy val CEnumDecoder: Decoder[CEnum] = deriveDecoder
 
   import reflect.Selectable.reflectiveSelectable
 
@@ -225,14 +290,6 @@ object CamundaVariable:
 
 end CamundaVariable
 
-case class FileInOut(
-    fileName: String,
-    @description("The content of the File as a Byte Array.")
-    content: Array[Byte],
-    mimeType: Option[String]
-):
-  lazy val contentAsBase64: String = Base64.getEncoder.encodeToString(content)
-
 @description(
   "A JSON object with the following properties: (at least an empty JSON object {} or an empty request body)"
 )
@@ -273,8 +330,10 @@ case class CompleteTaskIn(
 )
 case class GetActiveTaskIn(
     @description(
-      """The id of the process - you want to get the active tasks.
-        |> This is the result id of the `StartProcessOut`""".stripMargin
+      """
+        |The id of the process - you want to get the active tasks.
+        |> This is the result id of the `StartProcessOut`
+        |"""
     )
     processInstanceId: String = "{{processInstanceId}}",
     @description("We are only interested in the active Task(s)")
@@ -417,3 +476,13 @@ case class GetActiveTaskOut(
     |""".stripMargin
 )
 type FormVariables = Map[String, CamundaVariable]
+
+implicit lazy val StartProcessInSchema: Schema[StartProcessIn] = Schema.derived
+implicit lazy val StartProcessInEncoder: Encoder[StartProcessIn] = deriveEncoder
+implicit lazy val StartProcessInDecoder: Decoder[StartProcessIn] = deriveDecoder
+implicit lazy val CompleteTaskInSchema: Schema[CompleteTaskIn] = Schema.derived
+implicit lazy val CompleteTaskInEncoder: Encoder[CompleteTaskIn] = deriveEncoder
+implicit lazy val CompleteTaskInDecoder: Decoder[CompleteTaskIn] = deriveDecoder
+implicit lazy val GetActiveTaskInSchema: Schema[GetActiveTaskIn] = Schema.derived
+implicit lazy val GetActiveTaskInEncoder: Encoder[GetActiveTaskIn] = deriveEncoder
+implicit lazy val GetActiveTaskInDecoder: Decoder[GetActiveTaskIn] = deriveDecoder

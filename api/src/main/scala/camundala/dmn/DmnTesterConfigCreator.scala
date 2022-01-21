@@ -4,7 +4,6 @@ package dmn
 import camundala.api.*
 import camundala.bpmn.*
 import camundala.domain.*
-import io.circe.generic.auto.*
 import io.circe.syntax.*
 import org.latestbit.circe.adt.codec.JsonTaggedAdt
 
@@ -60,6 +59,7 @@ trait DmnTesterConfigCreator extends App:
       case Some(v) => v
       case v => v
 
+    //noinspection ScalaUnnecessaryParentheses
     unwrapValue match
       case v: (Double | Int | Long | Short | String | Float) =>
         TesterInput(

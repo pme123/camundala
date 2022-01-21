@@ -17,12 +17,15 @@ export sttp.model.StatusCode
 
 // circe
 export io.circe.{Decoder, Encoder, Json}
+export io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+
 // One import for this ADT/JSON codec
 export org.latestbit.circe.adt.codec.JsonTaggedAdt
 
 // tapir
 export sttp.tapir.EndpointIO.Example
 export sttp.tapir.EndpointOutput.Void
+export sttp.tapir.Endpoint
 export sttp.tapir.PublicEndpoint
 export sttp.tapir.endpoint
 export sttp.tapir.EndpointOutput

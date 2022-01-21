@@ -3,11 +3,6 @@ package bpmn
 
 import domain.*
 
-import scala.deriving.Mirror
-import scala.compiletime.{constValue, constValueTuple}
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
-
 case class Bpmn(path: Path, processes: Process[?, ?]*)
 
 case class InOutDescr[

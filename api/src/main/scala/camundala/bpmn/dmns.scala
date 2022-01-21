@@ -1,9 +1,7 @@
 package camundala
 package bpmn
 
-import camundala.domain.{NoInput, NoOutput}
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
+import camundala.domain.*
 
 case class Dmns(dmns: Seq[Dmn]):
 

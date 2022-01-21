@@ -4,8 +4,6 @@ package examples.invoice.bpmn
 import api.*
 import bpmn.*
 import domain.*
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
 
 object InvoiceApi extends BpmnDsl:
 
@@ -74,6 +72,46 @@ object InvoiceApi extends BpmnDsl:
       @description("Flag that is set by the Reviewer (only set if there was a review).")
       clarified: Option[Boolean] = None
   )
+
+  implicit lazy val PrepareBankTransferSchema: Schema[PrepareBankTransfer] = Schema.derived
+  implicit lazy val PrepareBankTransferEncoder: Encoder[PrepareBankTransfer] = deriveEncoder
+  implicit lazy val PrepareBankTransferDecoder: Decoder[PrepareBankTransfer] = deriveDecoder
+
+  implicit lazy val AssignedReviewerSchema: Schema[AssignedReviewer] = Schema.derived
+  implicit lazy val AssignedReviewerEncoder: Encoder[AssignedReviewer] = deriveEncoder
+  implicit lazy val AssignedReviewerDecoder: Decoder[AssignedReviewer] = deriveDecoder
+
+  implicit lazy val InvoiceReviewedSchema: Schema[InvoiceReviewed] = Schema.derived
+  implicit lazy val InvoiceReviewedEncoder: Encoder[InvoiceReviewed] = deriveEncoder
+  implicit lazy val InvoiceReviewedDecoder: Decoder[InvoiceReviewed] = deriveDecoder
+
+  implicit lazy val InvoiceReceiptSchema: Schema[InvoiceReceipt] = Schema.derived
+  implicit lazy val InvoiceReceiptEncoder: Encoder[InvoiceReceipt] = deriveEncoder
+  implicit lazy val InvoiceReceiptDecoder: Decoder[InvoiceReceipt] = deriveDecoder
+
+  implicit lazy val InvoiceCategorySchema: Schema[InvoiceCategory] = Schema.derived
+  implicit lazy val InvoiceCategoryEncoder: Encoder[InvoiceCategory] = deriveEncoder
+  implicit lazy val InvoiceCategoryDecoder: Decoder[InvoiceCategory] = deriveDecoder
+
+  implicit lazy val InvoiceReceiptCheckSchema: Schema[InvoiceReceiptCheck] = Schema.derived
+  implicit lazy val InvoiceReceiptCheckEncoder: Encoder[InvoiceReceiptCheck] = deriveEncoder
+  implicit lazy val InvoiceReceiptCheckDecoder: Decoder[InvoiceReceiptCheck] = deriveDecoder
+
+  implicit lazy val ApproveInvoiceSchema: Schema[ApproveInvoice] = Schema.derived
+  implicit lazy val ApproveInvoiceEncoder: Encoder[ApproveInvoice] = deriveEncoder
+  implicit lazy val ApproveInvoiceDecoder: Decoder[ApproveInvoice] = deriveDecoder
+
+  implicit lazy val SelectApproverGroupSchema: Schema[SelectApproverGroup] = Schema.derived
+  implicit lazy val SelectApproverGroupEncoder: Encoder[SelectApproverGroup] = deriveEncoder
+  implicit lazy val SelectApproverGroupDecoder: Decoder[SelectApproverGroup] = deriveDecoder
+
+  implicit lazy val AssignApproverGroupsSchema: Schema[AssignApproverGroups] = Schema.derived
+  implicit lazy val AssignApproverGroupsEncoder: Encoder[AssignApproverGroups] = deriveEncoder
+  implicit lazy val AssignApproverGroupsDecoder: Decoder[AssignApproverGroups] = deriveDecoder
+
+  implicit lazy val ApproverGroupSchema: Schema[ApproverGroup] = Schema.derived
+  implicit lazy val ApproverGroupEncoder: Encoder[ApproverGroup] = deriveEncoder
+  implicit lazy val ApproverGroupDecoder: Decoder[ApproverGroup] = deriveDecoder
 
   val InvoiceReceiptPIdent = "InvoiceReceiptP"
 

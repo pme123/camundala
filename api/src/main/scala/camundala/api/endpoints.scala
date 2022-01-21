@@ -6,11 +6,8 @@ import camundala.bpmn.*
 import camundala.domain.*
 import io.circe.*
 import io.circe.Json.JNumber
-import io.circe.generic.auto.*
 import io.circe.syntax.*
-import sttp.tapir.generic.auto.*
 import sttp.tapir.json.circe.*
-import sttp.tapir.{Endpoint, EndpointInput, EndpointOutput, path}
 
 import java.util.Base64
 import scala.reflect.ClassTag
@@ -588,3 +585,5 @@ end extension
 
 private val errorHandlingLink =
   s"See the [Introduction](https://docs.camunda.org/manual/$camundaVersion/reference/rest/overview/#error-handling) for the error response format."
+
+

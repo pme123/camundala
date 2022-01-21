@@ -1,19 +1,37 @@
 package camundala
 package domain
 
-import camundala.api.FileInOut
+import bpmn.*
+
+import java.util.Base64
 import io.circe.{ACursor, Decoder, Encoder, HCursor, Json}
-import sttp.tapir.{Schema, SchemaType}
-import io.circe.generic.auto.*
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax.*
 import org.camunda.bpm.engine.variable.Variables.fileValue
-import sttp.tapir.generic.Derived
-import sttp.tapir.generic.auto.*
 
 import scala.jdk.CollectionConverters.*
 
 case class NoInput()
 case class NoOutput()
+case class FileInOut(
+                      fileName: String,
+                      @description("The content of the File as a Byte Array.")
+                      content: Array[Byte],
+                      mimeType: Option[String]
+                    ):
+  lazy val contentAsBase64: String = Base64.getEncoder.encodeToString(content)
+
+implicit lazy val NoInputSchema: Schema[NoInput] = Schema.derived
+implicit lazy val NoInputEncoder: Encoder[NoInput] = deriveEncoder
+implicit lazy val NoInputDecoder: Decoder[NoInput] = deriveDecoder
+
+implicit lazy val NoOutputSchema: Schema[NoOutput] = Schema.derived
+implicit lazy val NoOutputEncoder: Encoder[NoOutput] = deriveEncoder
+implicit lazy val NoOutputDecoder: Decoder[NoOutput] = deriveDecoder
+
+implicit lazy val FileInOutSchema: Schema[FileInOut] = Schema.derived
+implicit lazy val FileInOutEncoder: Encoder[FileInOut] = deriveEncoder
+implicit lazy val FileInOutDecoder: Decoder[FileInOut] = deriveDecoder
 
 extension (product: Product)
   def names(): Seq[String] = product.productElementNames.toSeq
@@ -60,42 +78,6 @@ extension (product: Product)
       }
 
 end extension
-/*
-case class ManyInOut[
-    T <: Product: Encoder: Decoder: Schema
-](inOut: T, examples: T*):
-  def toSeq: Seq[T] = inOut +: examples
-
-object ManyInOut:
-  def apply[
-      T <: Product: Encoder: Decoder: Schema
-  ](inOuts: Seq[T]): ManyInOut[T] =
-    ManyInOut(inOuts.head, inOuts.tail: _*)
-
-implicit def encodeManyInOut[
-    T <: Product: Encoder: Decoder: Schema
-]: Encoder[ManyInOut[T]] = new Encoder[ManyInOut[T]] {
-  final def apply(a: ManyInOut[T]): Json =
-    Json.arr(
-      (a.inOut.asJson +: a.examples.map(_.asJson)): _*
-    ) //Seq(a.inOut, a.examples).map(_.asJson))
-}
-
-implicit def decodeManyInOut[
-    T <: Product: Encoder: Decoder: Schema
-]: Decoder[ManyInOut[T]] = new Decoder[ManyInOut[T]] {
-  final def apply(c: HCursor): Decoder.Result[ManyInOut[T]] =
-    for {
-      arr <- c.as[Seq[T]]
-    } yield {
-      ManyInOut(arr)
-    }
-}
-
-implicit def schemaForNel[T <: Product: Encoder: Decoder: Schema]
-    : Schema[ManyInOut[T]] =
-  Schema[ManyInOut[T]](SchemaType.SArray(implicitly[Schema[T]])(_.toSeq))
-*/
 
 def valueToJson(value: Any): Json =
   value match

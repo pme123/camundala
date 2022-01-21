@@ -5,9 +5,9 @@ import camundala.bpmn.DecisionDmn
 import io.circe.{Decoder, Encoder}
 import sttp.model.StatusCode
 import sttp.tapir.*
-import io.circe.generic.auto.*
+import sttp.tapir.Schema
+import io.circe.generic.semiauto.*
 import io.circe.syntax.*
-import sttp.tapir.generic.auto.*
 
 import scala.reflect.ClassTag
 
@@ -57,5 +57,7 @@ case class EvaluateDecision[
         CamundaVariable.toCamunda(example)
       )
     }
-
+  implicit lazy val EvaluateDecisionInSchema: Schema[EvaluateDecisionIn] = Schema.derived
+  implicit lazy val EvaluateDecisionInEncoder: Encoder[EvaluateDecisionIn] = deriveEncoder
+  implicit lazy val EvaluateDecisionInDecoder: Decoder[EvaluateDecisionIn] = deriveDecoder
 end EvaluateDecision

@@ -77,7 +77,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    Travel Expenses: {}
                   invoiceNumber: I-12345
                   invoiceDocument:
                     fileName: invoice.pdf
@@ -6220,7 +6221,8 @@ paths:
               standard:
                 value:
                   amount: 1050.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    Travel Expenses: {}
         required: true
       responses:
         '200':
@@ -6233,8 +6235,8 @@ paths:
                 standard:
                   value:
                     approverGroups:
-                    - accounting
-                    - sales
+                    - accounting: {}
+                    - sales: {}
   /UserTask/ApproveInvoiceUT:
     head:
       tags:
@@ -6252,7 +6254,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    Travel Expenses: {}
                   invoiceNumber: I-12345
                   invoiceDocument:
                     fileName: invoice.pdf
@@ -12398,7 +12401,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    Travel Expenses: {}
                   invoiceNumber: I-12345
                   invoiceDocument:
                     fileName: invoice.pdf
@@ -18537,7 +18541,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    Travel Expenses: {}
                   invoiceNumber: I-12345
                   invoiceDocument:
                     fileName: invoice.pdf
@@ -24677,7 +24682,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    Travel Expenses: {}
                   invoiceNumber: I-12345
                   invoiceDocument:
                     fileName: invoice.pdf
@@ -30817,7 +30823,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    Travel Expenses: {}
                   invoiceNumber: I-12345
                   invoiceDocument:
                     fileName: invoice.pdf
