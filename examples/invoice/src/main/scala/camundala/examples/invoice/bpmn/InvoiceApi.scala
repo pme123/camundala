@@ -22,10 +22,7 @@ object InvoiceApi extends BpmnDsl:
       )
   )
 
-  val invoiceCategoryDescr: String =
-    enumDescr[InvoiceCategory]("There are three possible Categories")
-
-  @description(invoiceCategoryDescr)
+  @description("There are three possible Categories")
   enum InvoiceCategory derives JsonTaggedAdt.PureEncoder:
     case `Travel Expenses`
     case Misc
@@ -41,10 +38,7 @@ object InvoiceApi extends BpmnDsl:
       approverGroups: Seq[ApproverGroup] = Seq(ApproverGroup.management)
   )
 
-  val approverGroupDescr: String = enumDescr[ApproverGroup](
-    "The following Groups can approve the invoice:"
-  )
-  @description(approverGroupDescr)
+  @description("These Groups can approve the invoice.")
   enum ApproverGroup derives JsonTaggedAdt.PureEncoder:
     case accounting, sales, management
 

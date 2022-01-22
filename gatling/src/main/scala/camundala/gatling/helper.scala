@@ -21,7 +21,7 @@ case class TestOverride(
 
 case class TestOverrides(overrides: Seq[TestOverride]) //Seq[TestOverride])
 
-enum TestOverrideType:
+enum TestOverrideType derives JsonTaggedAdt.PureEncoder :
   case Exists, NotExists, IsEquals, HasSize
 
 def addOverride[

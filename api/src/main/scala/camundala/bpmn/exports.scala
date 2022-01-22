@@ -51,27 +51,3 @@ def toJson(json: String): Json =
 def toJsonString[T <: Product: Encoder](product: T): String =
   product.asJson.deepDropNullValues.toString
 
-/** <pre> Only works if you have it as a constant, like:
-  *
-  * val invoiceCategoryDescr: String = enumDescr[InvoiceCategory]("There are
-  * three possible Categories")
-  *
-  * @description(invoiceCategoryDescr)
-  *   invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`
-  */
-inline def enumDescr[E](
-    descr: String
-)(using m: Mirror.SumOf[E]): String =
-  enumDescr(Some(descr))
-
-inline def enumDescr[E](
-    descr: Option[String] = None
-)(using m: Mirror.SumOf[E]): String =
-  val name = constValue[m.MirroredLabel]
-  val values =
-    constValueTuple[m.MirroredElemLabels].productIterator.mkString(", ")
-  val enumDescription =
-    s"Enumeration $name: \n- $values"
-  descr
-    .map(_ + s"\n\n$enumDescription")
-    .getOrElse(enumDescription)

@@ -37044,8 +37044,7 @@ components:
           description: Flag that is set by the Reviewer
     Misc:
       type: object
-      description: "There are three possible Categories\n\nEnumeration InvoiceCategory:\
-        \ \n- Travel Expenses, Misc, Software License Costs"
+      description: There are three possible Categories
     PrepareBankTransfer:
       type: object
       description: Prepares the bank transfer for the invoice. Only readOnly fields
@@ -37063,21 +37062,16 @@ components:
           $ref: '#/components/schemas/InvoiceCategory'
     Software License Costs:
       type: object
-      description: "There are three possible Categories\n\nEnumeration InvoiceCategory:\
-        \ \n- Travel Expenses, Misc, Software License Costs"
+      description: There are three possible Categories
     Travel Expenses:
       type: object
-      description: "There are three possible Categories\n\nEnumeration InvoiceCategory:\
-        \ \n- Travel Expenses, Misc, Software License Costs"
+      description: There are three possible Categories
     accounting:
       type: object
-      description: "The following Groups can approve the invoice:\n\nEnumeration ApproverGroup:\
-        \ \n- accounting, sales, management"
+      description: These Groups can approve the invoice.
     management:
       type: object
-      description: "The following Groups can approve the invoice:\n\nEnumeration ApproverGroup:\
-        \ \n- accounting, sales, management"
+      description: These Groups can approve the invoice.
     sales:
       type: object
-      description: "The following Groups can approve the invoice:\n\nEnumeration ApproverGroup:\
-        \ \n- accounting, sales, management"
+      description: These Groups can approve the invoice.
