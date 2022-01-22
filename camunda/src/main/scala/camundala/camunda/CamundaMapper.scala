@@ -15,24 +15,24 @@ trait CamundaMapper:
     Out <: Product: Encoder: Decoder: Schema](process: Process[In, Out])
 
     inline def mapOut[A](inline path: Out => A) = ${ mapImpl('path) }
+    inline def mapIn[A](inline path: In => A) = ${ mapImpl('path) }
 
-object CamundaMapper extends CamundaMapper, BpmnDsl, App:
+object CamundaMapper extends CamundaMapper, BpmnDsl,App:
 
   val p = process(
     "testProcess",
     TestIn(),
     TestOut()
   )
-  println("REsult: " + p.mapOut(_.t2.each.okidoki))
+  private val value: Any = p.mapOut(_.t2.each.other)
+  println(s"REsult: $value \n" + value.getClass)
 
 case class Mapping[From, To](fromPath: Seq[String])
 
 case class TestIn(name: String = "Peter", t2: T2 = T2())
 case class TestOut(hello: String = "Ferry", t2: Option[T2] = Some(T2()))
 
-
-
-case class T2(okidoki:String = "???")
+case class T2(okidoki:String = "???", other: Boolean = true)
 
 trait MapperFunctor[F[_]] {
   def map[A, B](fa: F[A], f: A => B): F[B]
@@ -54,5 +54,6 @@ object MapperFunctor :
   }
 
 extension [F[_]: MapperFunctor, A](fa: F[A])
-  @compileTimeOnly("each can only be used as a path component inside modify")
+  @compileTimeOnly("each can only be used as a path component inside mapIn/mapOut")
   def each: A = ???
+
