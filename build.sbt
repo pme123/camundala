@@ -106,7 +106,7 @@ lazy val camundaTestDependencies = Seq(
 
 lazy val gatlingDependencies = Seq(
   "io.gatling.highcharts" % "gatling-charts-highcharts" % "3.7.2",
-  "io.gatling" % "gatling-test-framework" % "3.7.2"
+  "io.gatling" % "gatling-test-framework" % "3.7.2",
 )
 
 // EXAMPLES
@@ -144,8 +144,11 @@ val camundaDependencies = Seq(
   "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion,
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
+  "org.codehaus.groovy" % "groovy-jsr223" % "3.0.8",
   "io.netty" % "netty-all" % "4.1.73.Final", // needed for Spring Boot Version > 2.5.*
-  "com.h2database" % "h2" % h2Version
+  "com.h2database" % "h2" % h2Version,
+  //"org.slf4j" % "slf4j-simple" % "1.7.33" % IntegrationTest
+
 )
 
 
@@ -172,7 +175,7 @@ lazy val publicationSettings: Project => Project = _.settings(
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   homepage := Some(url("https://github.com/pme123/camundala-dsl")),
   startYear := Some(2021),
-  logLevel := Level.Debug,
+ // logLevel := Level.Debug,
   scmInfo := Some(
     ScmInfo(
       url("https://github.com/pme123/camundala-dsl"),
@@ -184,12 +187,12 @@ lazy val publicationSettings: Project => Project = _.settings(
 
 lazy val preventPublication: Project => Project =
   _.settings(
-    publish := {},
-    publishTo := Some(
+  //  publish := {},
+  /*  publishTo := Some(
       Resolver
         .file("Unused transient repository", target.value / "fakepublish")
     ),
     publishArtifact := false,
     publishLocal := {},
-    packagedArtifacts := Map.empty
+    packagedArtifacts := Map.empty */
   ) // doesn't work - https://github.com/sbt/sbt-pgp/issues/42

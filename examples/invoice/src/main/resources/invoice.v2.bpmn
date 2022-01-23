@@ -168,6 +168,11 @@
                     startQuantity="1">
          <extensionElements>
             <camunda:in businessKey="#{execution.processBusinessKey}"/>
+            <camunda:inputOutput>
+               <camunda:outputParameter name="youCanGo">
+                  <camunda:script scriptFormat="Groovy">clarified</camunda:script>
+               </camunda:outputParameter>
+            </camunda:inputOutput>
             <camunda:in source="creditor" target="creditor"/>
             <camunda:in source="amount" target="amount"/>
             <camunda:in source="invoiceCategory" target="invoiceCategory"/>

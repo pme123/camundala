@@ -21,7 +21,7 @@ trait OAuthSimulationRunner extends SimulationRunner:
   def fsso: Fsso
 
   override def authHeader: HttpRequestBuilder => HttpRequestBuilder =
-    _.header("Authorization", s"Bearer $${access_token}")
+    _.header("Authorization", s"Bearer #{access_token}")
 
   override def preRequests: Seq[ChainBuilder] = Seq(getToken)
 

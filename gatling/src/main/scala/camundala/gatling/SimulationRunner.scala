@@ -305,7 +305,7 @@ trait SimulationRunner extends Simulation:
 
     private def completeTask(): HttpRequestBuilder =
       http(s"Complete Task ${userTask.id}")
-        .post(s"/task/$${taskId}/complete")
+        .post(s"/task/#{taskId}/complete")
         .auth()
         .queryParam("deserializeValues", false)
         .body(

@@ -11,42 +11,44 @@ import scala.quoted.{Expr, Quotes}
 import scala.annotation.compileTimeOnly
 
 trait CamundaMapper:
-  extension [In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema](process: Process[In, Out])
-/*
-    inline def mapOut[A](inline path: Out => A) =
-      ${ mapImpl('path) }
-    inline def mapIn[A](inline path: In => A) = ${ mapImpl('path) }
+  extension [
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
+  ](process: Process[In, Out])
+    def dd : String= ???
+  /*  inline def mapOut[A](inline path: Out => A)(
+        inline targetName: String
+    ): PathMapper =
+      ${ mapImpl('path, 'targetName) }
 */
-    inline def mapTo[A](inline path: Out => A)(inline targetName: String) =
-      ${ mapImpl2('path, 'targetName) }
-object CamundaMapper extends CamundaMapper, BpmnDsl,App:
+object CamundaMapper extends CamundaMapper, BpmnDsl, App:
 
   val p = process(
     "testProcess",
     TestIn(),
     TestOut()
   )
- // private val value: Any = p.mapOut(_.t2.each.other)
+  // private val value: Any = p.mapOut(_.t2.each.other)
   //println(s"REsult: $value \n" + value.getClass)
 
-  private val value2: Any = p.mapTo(_.t2.each.other)("otherField")
-  println(s"REsult: $value2 \n" + value2.getClass)
+//  private val value2: PathMapper = p.mapOut(_.t2.each.other)("otherField")
+//  println(s"Result: $value2 \n" + value2.printGroovy())
 
 case class Mapping[From, To](fromPath: Seq[String])
 
 case class TestIn(name: String = "Peter", t2: T2 = T2())
 case class TestOut(hello: String = "Ferry", t2: Option[T2] = Some(T2()))
 
-case class T2(okidoki:String = "???", other: Boolean = true)
+case class T2(okidoki: String = "???", other: Boolean = true)
 
 trait MapperFunctor[F[_]] {
   def map[A, B](fa: F[A], f: A => B): F[B]
   def each[A](fa: F[A], f: A => A): F[A] = map(fa, f)
-  def eachWhere[A](fa: F[A], f: A => A, cond: A => Boolean): F[A] = map(fa, x => if cond(x) then f(x) else x)
+  def eachWhere[A](fa: F[A], f: A => A, cond: A => Boolean): F[A] =
+    map(fa, x => if cond(x) then f(x) else x)
 }
 
-object MapperFunctor :
+object MapperFunctor:
   given MapperFunctor[List] with {
     def map[A, B](fa: List[A], f: A => B): List[B] = fa.map(f)
   }
@@ -60,6 +62,7 @@ object MapperFunctor :
   }
 
 extension [F[_]: MapperFunctor, A](fa: F[A])
-  @compileTimeOnly("each can only be used as a path component inside mapIn/mapOut")
+  @compileTimeOnly(
+    "each can only be used as a path component inside mapIn/mapOut"
+  )
   def each: A = ???
-
