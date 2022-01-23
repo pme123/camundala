@@ -5,7 +5,7 @@
                   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
                   exporter="Camunda Modeler"
-                  exporterVersion="4.7.0"
+                  exporterVersion="3.5.0"
                   expressionLanguage="http://www.w3.org/1999/XPath"
                   id="Definitions_1k1vca8"
                   targetNamespace="http://bpmn.io/schema/bpmn"
@@ -16,10 +16,7 @@
                  isExecutable="true"
                  name="Review Invoice"
                  processType="None">
-      <bpmn:startEvent id="StartEvent_1"
-                       isInterrupting="true"
-                       name="Start Invoice Review"
-                       parallelMultiple="false">
+      <bpmn:startEvent id="StartEvent_1" isInterrupting="true" parallelMultiple="false">
          <bpmn:outgoing>SequenceFlow_1ggutts</bpmn:outgoing>
       </bpmn:startEvent>
       <bpmn:sequenceFlow id="SequenceFlow_1ggutts"
@@ -28,13 +25,15 @@
       <bpmn:sequenceFlow id="SequenceFlow_144f11w"
                          sourceRef="AssignReviewerUT"
                          targetRef="ReviewInvoiceUT"/>
-      <bpmn:endEvent id="EndReviewProcessEE" name="End Review Process">
+      <bpmn:endEvent id="EndEvent_1og1zom">
          <bpmn:incoming>SequenceFlow_0vvoxt0</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="SequenceFlow_0vvoxt0"
                          sourceRef="ReviewInvoiceUT"
-                         targetRef="EndReviewProcessEE"/>
-      <bpmn:userTask completionQuantity="1"
+                         targetRef="EndEvent_1og1zom"/>
+      <bpmn:userTask camunda:assignee="demo"
+                     camunda:formKey="embedded:app:forms/assign-reviewer.html"
+                     completionQuantity="1"
                      id="AssignReviewerUT"
                      implementation="##unspecified"
                      isForCompensation="false"
@@ -43,7 +42,9 @@
          <bpmn:incoming>SequenceFlow_1ggutts</bpmn:incoming>
          <bpmn:outgoing>SequenceFlow_144f11w</bpmn:outgoing>
       </bpmn:userTask>
-      <bpmn:userTask camunda:dueDate="${dateTime().plusDays(2).toDate()}"
+      <bpmn:userTask camunda:assignee="${reviewer}"
+                     camunda:dueDate="${dateTime().plusDays(2).toDate()}"
+                     camunda:formKey="embedded:app:forms/review-invoice.html"
                      completionQuantity="1"
                      id="ReviewInvoiceUT"
                      implementation="##unspecified"
@@ -56,30 +57,24 @@
    </bpmn:process>
    <bpmndi:BPMNDiagram id="BPMNDiagram_1">
       <bpmndi:BPMNPlane bpmnElement="ReviewInvoiceP" id="BPMNPlane_1">
-         <bpmndi:BPMNEdge bpmnElement="SequenceFlow_0vvoxt0" id="SequenceFlow_0vvoxt0_di">
-            <di:waypoint x="530" y="97"/>
-            <di:waypoint x="592" y="97"/>
+         <bpmndi:BPMNShape bpmnElement="StartEvent_1" id="_BPMNShape_StartEvent_2">
+            <dc:Bounds height="36" width="36" x="179" y="79"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNEdge bpmnElement="SequenceFlow_1ggutts" id="SequenceFlow_1ggutts_di">
+            <di:waypoint x="215" y="97"/>
+            <di:waypoint x="270" y="97"/>
          </bpmndi:BPMNEdge>
          <bpmndi:BPMNEdge bpmnElement="SequenceFlow_144f11w" id="SequenceFlow_144f11w_di">
             <di:waypoint x="370" y="97"/>
             <di:waypoint x="430" y="97"/>
          </bpmndi:BPMNEdge>
-         <bpmndi:BPMNEdge bpmnElement="SequenceFlow_1ggutts" id="SequenceFlow_1ggutts_di">
-            <di:waypoint x="215" y="97"/>
-            <di:waypoint x="270" y="97"/>
-         </bpmndi:BPMNEdge>
-         <bpmndi:BPMNShape bpmnElement="StartEvent_1" id="_BPMNShape_StartEvent_2">
-            <dc:Bounds height="36" width="36" x="179" y="79"/>
-            <bpmndi:BPMNLabel>
-               <dc:Bounds height="27" width="62" x="166" y="122"/>
-            </bpmndi:BPMNLabel>
-         </bpmndi:BPMNShape>
-         <bpmndi:BPMNShape bpmnElement="EndReviewProcessEE" id="EndEvent_1og1zom_di">
+         <bpmndi:BPMNShape bpmnElement="EndEvent_1og1zom" id="EndEvent_1og1zom_di">
             <dc:Bounds height="36" width="36" x="592" y="79"/>
-            <bpmndi:BPMNLabel>
-               <dc:Bounds height="27" width="59" x="581" y="122"/>
-            </bpmndi:BPMNLabel>
          </bpmndi:BPMNShape>
+         <bpmndi:BPMNEdge bpmnElement="SequenceFlow_0vvoxt0" id="SequenceFlow_0vvoxt0_di">
+            <di:waypoint x="530" y="97"/>
+            <di:waypoint x="592" y="97"/>
+         </bpmndi:BPMNEdge>
          <bpmndi:BPMNShape bpmnElement="AssignReviewerUT" id="UserTask_01n44zw_di">
             <dc:Bounds height="80" width="100" x="270" y="57"/>
          </bpmndi:BPMNShape>
