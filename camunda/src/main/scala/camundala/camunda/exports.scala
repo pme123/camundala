@@ -42,3 +42,6 @@ trait ProjectPaths:
   lazy val cawemoPath: Path = projectPath / "cawemo"
   lazy val withIdPath: Path = cawemoPath / "with-ids"
   lazy val generatedPath: Path = projectPath / "src" / "main" / "resources"
+  
+  
+  

@@ -13,10 +13,13 @@ import scala.annotation.compileTimeOnly
 trait CamundaMapper:
   extension [In <: Product: Encoder: Decoder: Schema,
     Out <: Product: Encoder: Decoder: Schema](process: Process[In, Out])
-
-    inline def mapOut[A](inline path: Out => A) = ${ mapImpl('path) }
+/*
+    inline def mapOut[A](inline path: Out => A) =
+      ${ mapImpl('path) }
     inline def mapIn[A](inline path: In => A) = ${ mapImpl('path) }
-
+*/
+    inline def mapTo[A](inline path: Out => A)(inline targetName: String) =
+      ${ mapImpl2('path, 'targetName) }
 object CamundaMapper extends CamundaMapper, BpmnDsl,App:
 
   val p = process(
@@ -24,8 +27,11 @@ object CamundaMapper extends CamundaMapper, BpmnDsl,App:
     TestIn(),
     TestOut()
   )
-  private val value: Any = p.mapOut(_.t2.each.other)
-  println(s"REsult: $value \n" + value.getClass)
+ // private val value: Any = p.mapOut(_.t2.each.other)
+  //println(s"REsult: $value \n" + value.getClass)
+
+  private val value2: Any = p.mapTo(_.t2.each.other)("otherField")
+  println(s"REsult: $value2 \n" + value2.getClass)
 
 case class Mapping[From, To](fromPath: Seq[String])
 

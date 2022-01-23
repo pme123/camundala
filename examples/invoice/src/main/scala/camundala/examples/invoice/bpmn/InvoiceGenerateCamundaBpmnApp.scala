@@ -1,7 +1,7 @@
 package camundala.examples.invoice.bpmn
 
 import camundala.bpmn.*
-import camundala.camunda.GenerateCamundaBpmn
+import camundala.camunda.*
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
 

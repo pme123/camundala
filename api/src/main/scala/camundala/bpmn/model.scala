@@ -3,8 +3,6 @@ package bpmn
 
 import domain.*
 
-case class Bpmn(path: Path, processes: Process[?, ?]*)
-
 case class InOutDescr[
     In <: Product: Encoder: Decoder: Schema,
     Out <: Product: Encoder: Decoder: Schema
@@ -44,7 +42,8 @@ trait InOut[
     )
 trait ProcessElement extends Product:
   def id: String
-  def label: String = getClass.getSimpleName.head.toString.toLowerCase + getClass.getSimpleName.tail
+  def label: String =
+    getClass.getSimpleName.head.toString.toLowerCase + getClass.getSimpleName.tail
   def descr: Option[String] | String
   lazy val maybeDescr: Option[String] = descr match
     case d: Option[String] => d
@@ -59,7 +58,7 @@ case class Process[
     Out <: Product: Encoder: Decoder: Schema
 ](
     inOutDescr: InOutDescr[In, Out],
-    elements: Seq[ProcessNode | InOut[?,?,?]] = Seq.empty
+    elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty
 ) extends InOut[In, Out, Process[In, Out]]:
 
   def inOuts: Seq[InOut[?, ?, ?]] = elements.collect {
@@ -70,8 +69,8 @@ case class Process[
     copy(inOutDescr = descr)
 
   def withElements(
-                    elements: (ProcessNode | InOut[?, ?, ?])*
-                  ): Process[In, Out] =
+      elements: (ProcessNode | InOut[?, ?, ?])*
+  ): Process[In, Out] =
     this.copy(elements = elements)
 
 case class UserTask[
@@ -79,7 +78,8 @@ case class UserTask[
     Out <: Product: Encoder: Decoder: Schema
 ](
     inOutDescr: InOutDescr[In, Out]
-) extends ProcessNode, InOut[In, Out, UserTask[In, Out]]:
+) extends ProcessNode,
+      InOut[In, Out, UserTask[In, Out]]:
 
   def withInOutDescr(descr: InOutDescr[In, Out]): UserTask[In, Out] =
     copy(inOutDescr = descr)
@@ -96,7 +96,8 @@ case class CallActivity[
     Out <: Product: Encoder: Decoder: Schema
 ](
     inOutDescr: InOutDescr[In, Out]
-) extends ProcessNode, InOut[In, Out, CallActivity[In, Out]]:
+) extends ProcessNode,
+      InOut[In, Out, CallActivity[In, Out]]:
 
   def withInOutDescr(descr: InOutDescr[In, Out]): CallActivity[In, Out] =
     copy(inOutDescr = descr)
@@ -118,7 +119,8 @@ case class ServiceTask[
     Out <: Product: Encoder: Decoder: Schema
 ](
     inOutDescr: InOutDescr[In, Out]
-) extends ProcessNode, InOut[In, Out, ServiceTask[In, Out]]:
+) extends ProcessNode,
+      InOut[In, Out, ServiceTask[In, Out]]:
 
   def withInOutDescr(descr: InOutDescr[In, Out]): ServiceTask[In, Out] =
     copy(inOutDescr = descr)
@@ -131,9 +133,9 @@ object ServiceTask:
     )
 
 case class EndEvent(
-                     id: String,
-                     descr: Option[String] | String = None
-                   ) extends ProcessNode:
+    id: String,
+    descr: Option[String] | String = None
+) extends ProcessNode:
 
   def withDescr(descr: String): EndEvent =
     copy(descr = descr)
