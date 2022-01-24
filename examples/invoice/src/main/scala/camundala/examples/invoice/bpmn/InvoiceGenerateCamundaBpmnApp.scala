@@ -17,8 +17,6 @@ object InvoiceGenerateCamundaBpmnApp extends GenerateCamundaBpmn, App:
     InvoiceReceiptP.bpmn
       .withElements(
         reviewInvoiceCA
-       //   .mapOut(_.clarified, "youCanGo")
-          .mapIn(InvoiceReceipt())(_.amount, "amountMapped")
       )
   )
   private lazy val reviewInvoice: Bpmn =
