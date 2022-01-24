@@ -22,9 +22,12 @@ case class BpmnInOut(
     inMappers: Seq[PathMapper] = Seq.empty
 ):
   lazy val id: String = inOut.id
-  
+
   def withOutMapper(pathMapper: PathMapper): BpmnInOut =
-    copy(outMappers = outMappers :+pathMapper)
+    copy(outMappers = outMappers :+ pathMapper)
+
+  def withInMapper(pathMapper: PathMapper): BpmnInOut =
+    copy(inMappers = inMappers :+ pathMapper)
 
 case class PathMapper(
     varName: String,

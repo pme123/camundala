@@ -9,27 +9,45 @@ import scala.quoted.*
 
 object CamundaMapperMacros:
 
-  def toMapper(
+  def toOutMapper(
       bpmnInOut: Expr[BpmnInOut],
+      varName: Expr[String],
+      mapType: Expr[MapType],
+      path: Expr[Seq[PathEntry]],
+      isOut: Expr[Boolean]
+  )(using
+      Quotes
+  ): Expr[BpmnInOut] =
+    '{
+      if($isOut)
+        ${ bpmnInOut }.withOutMapper(
+          ${ pathMapper(varName, mapType, path) }
+        )
+      else
+        ${ bpmnInOut }.withInMapper(
+          ${ pathMapper(varName, mapType, path) }
+        )  
+    }
+    
+  private def pathMapper(
       varName: Expr[String],
       mapType: Expr[MapType],
       path: Expr[Seq[PathEntry]]
   )(using
       Quotes
-  ): Expr[BpmnInOut] =
+  ): Expr[PathMapper] =
     '{
       println(s"PATH: ${$path}")
       if (${ path }.isEmpty)
         throwErr("The first element must be a PathElem in a Mapper.")
-      ${bpmnInOut}.withOutMapper(
-        PathMapper($varName, $mapType, $path)
-      )
+      PathMapper($varName, $mapType, $path)
     }
 
   def mapImpl[S, A](
       bpmnInOut: Expr[BpmnInOut],
       sourcePath: Expr[S => A],
-      targetName: Expr[String]
+      targetName: Expr[String],
+      isOut: Expr[Boolean]
   )(using Quotes, Type[S], Type[A]) =
     import quotes.reflect.*
 
@@ -103,7 +121,6 @@ object CamundaMapperMacros:
       /** Single inlined path */
       case Inlined(_, _, Block(List(DefDef(_, _, _, Some(p))), _)) =>
         toPath(p)
-        // Inlined(EmptyTree,List(),Ident(path))
       case _ =>
         report.throwError(unsupportedShapeInfo(focusTree))
     }
@@ -115,10 +132,11 @@ object CamundaMapperMacros:
         '{ PathEntry.OptionalPath }
     }
     val str = Expr(Type.show[A])
-    val mapType = '{ MapType($str)}
-    toMapper(
+    val mapType = '{ MapType($str) }
+    toOutMapper(
       bpmnInOut,
       targetName,
       mapType,
-      Varargs(mapperEntries)
+      Varargs(mapperEntries),
+      isOut
     )

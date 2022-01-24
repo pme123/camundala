@@ -5,17 +5,8 @@ import bpmn.*
 import camundala.camunda.CamundaMapperMacros.mapImpl
 import org.camunda.bpm.model.bpmn.{BpmnModelInstance, Bpmn as CBpmn}
 import io.circe.generic.auto.*
-import org.camunda.bpm.model.bpmn.builder.{
-  AbstractFlowNodeBuilder,
-  CallActivityBuilder
-}
-import org.camunda.bpm.model.bpmn.instance.camunda.{
-  CamundaIn,
-  CamundaInputOutput,
-  CamundaOut,
-  CamundaOutputParameter,
-  CamundaScript
-}
+import org.camunda.bpm.model.bpmn.builder.{AbstractFlowNodeBuilder, CallActivityBuilder}
+import org.camunda.bpm.model.bpmn.instance.camunda.{CamundaIn, CamundaInputOutput, CamundaInputParameter, CamundaOut, CamundaOutputParameter, CamundaScript}
 import sttp.tapir.generic.auto.*
 
 import java.io.File
@@ -54,10 +45,13 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
       BpmnInOut(inOut)
 
   extension [In <: Product, Out <: Product](ca: CallActivity[In, Out])
+    inline def mapOut[A](inline path: Out => A, targetName: String): BpmnInOut =
+      ${ mapImpl('{ BpmnInOut(ca) }, 'path, 'targetName, '{ true }) }
 
-    inline def mapOut[A](inline path: Out => A, targetName: String) =
-      ${ mapImpl('{BpmnInOut(ca)}, 'path, 'targetName) }
-
+    inline def mapIn[T, A](
+        inline prototype: In
+    )(inline path: T => A, targetName: String): BpmnInOut =
+      ${ mapImpl('{ BpmnInOut(ca) }, 'path, 'targetName, '{ false }) }
 
   extension (bpmnProcess: BpmnProcess)
 
@@ -101,7 +95,11 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
           }
 
         println(s"TT ${ca.inOut.out}")
-        mergeOutputParams(builder, ca.outMappers)
+        val inout =
+          summon[CBpmnModelInstance].newInstance(classOf[CamundaInputOutput])
+        builder.addExtensionElement(inout)
+        mergeInputParams(inout, ca.inMappers)
+        mergeOutputParams(inout, ca.outMappers)
         ca.inOut.in match
           case p: Product =>
             mergeIn(p)
@@ -110,13 +108,24 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
             println(s"TT $p")
             mergeOut(p)
 
-  def mergeOutputParams(
-      builder: AbstractFlowNodeBuilder[?, ?],
+  def mergeInputParams(
+      inout: CamundaInputOutput,
       mappers: Seq[PathMapper]
   ): FromCamundable[Unit] =
-    val inout =
-      summon[CBpmnModelInstance].newInstance(classOf[CamundaInputOutput])
-    builder.addExtensionElement(inout)
+    mappers
+      .foreach { case pm @ PathMapper(varName, _, _) =>
+        val cp = summon[CBpmnModelInstance].newInstance(
+          classOf[CamundaInputParameter]
+        )
+        cp.setCamundaName(varName)
+        inout.getCamundaInputParameters.add(cp)
+        cp.setValue(inOutScript(pm))
+      }
+
+  def mergeOutputParams(
+                         inout: CamundaInputOutput,
+                         mappers: Seq[PathMapper]
+                       ): FromCamundable[Unit] =
     mappers
       .foreach { case pm @ PathMapper(varName, _, _) =>
         val cp = summon[CBpmnModelInstance].newInstance(
@@ -124,10 +133,16 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
         )
         cp.setCamundaName(varName)
         inout.getCamundaOutputParameters.add(cp)
-        val script: CamundaScript =
-          summon[CBpmnModelInstance].newInstance(classOf[CamundaScript])
-        script.setCamundaScriptFormat("Groovy")
-        script.setTextContent(pm.printGroovy())
-        cp.setValue(script)
+        cp.setValue(inOutScript(pm))
       }
+
+  def inOutScript(
+      pm: PathMapper
+  ): FromCamundable[CamundaScript] =
+    val script: CamundaScript =
+      summon[CBpmnModelInstance].newInstance(classOf[CamundaScript])
+    script.setCamundaScriptFormat("Groovy")
+    script.setTextContent(pm.printGroovy())
+    script
+
 end GenerateCamundaBpmn

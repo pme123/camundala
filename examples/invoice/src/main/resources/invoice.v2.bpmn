@@ -169,9 +169,9 @@
          <extensionElements>
             <camunda:in businessKey="#{execution.processBusinessKey}"/>
             <camunda:inputOutput>
-               <camunda:outputParameter name="youCanGo">
-                  <camunda:script scriptFormat="Groovy">clarified</camunda:script>
-               </camunda:outputParameter>
+               <camunda:inputParameter name="amountMapped">
+                  <camunda:script scriptFormat="Groovy">amount</camunda:script>
+               </camunda:inputParameter>
             </camunda:inputOutput>
             <camunda:in source="creditor" target="creditor"/>
             <camunda:in source="amount" target="amount"/>
