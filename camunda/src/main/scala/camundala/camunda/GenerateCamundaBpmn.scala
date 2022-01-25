@@ -5,8 +5,18 @@ import bpmn.*
 import camundala.camunda.CamundaMapperMacros.mapImpl
 import org.camunda.bpm.model.bpmn.{BpmnModelInstance, Bpmn as CBpmn}
 import io.circe.generic.auto.*
-import org.camunda.bpm.model.bpmn.builder.{AbstractFlowNodeBuilder, CallActivityBuilder}
-import org.camunda.bpm.model.bpmn.instance.camunda.{CamundaIn, CamundaInputOutput, CamundaInputParameter, CamundaOut, CamundaOutputParameter, CamundaScript}
+import org.camunda.bpm.model.bpmn.builder.{
+  AbstractFlowNodeBuilder,
+  CallActivityBuilder
+}
+import org.camunda.bpm.model.bpmn.instance.camunda.{
+  CamundaIn,
+  CamundaInputOutput,
+  CamundaInputParameter,
+  CamundaOut,
+  CamundaOutputParameter,
+  CamundaScript
+}
 import sttp.tapir.generic.auto.*
 
 import java.io.File
@@ -45,14 +55,25 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
       BpmnInOut(inOut)
 
   extension [In <: Product, Out <: Product](ca: CallActivity[In, Out])
-    inline def mapOut[A](inline path: Out => A, targetName: String): BpmnInOut =
-      ${ mapImpl('{ BpmnInOut(ca) }, 'path, 'targetName, '{ true }) }
 
     inline def mapIn[T, A](
-        inline prototype: In
-    )(inline path: T => A, targetName: String): BpmnInOut =
+        inline prototype: T
+    )(inline path: T => A, inline targetName: In => A): BpmnInOut =
       ${ mapImpl('{ BpmnInOut(ca) }, 'path, 'targetName, '{ false }) }
 
+    inline def mapOut[T, A](inline path: Out => A, inline targetName: T => A): BpmnInOut =
+      ${ mapImpl('{ BpmnInOut(ca) }, 'path, 'targetName, '{ true }) }
+
+  extension [In <: Product, Out <: Product](bpmnInOut: BpmnInOut)
+
+    inline def mapIn[T, A](
+                            inline prototype: T
+                          )(inline path: T => A, inline targetName: In => A): BpmnInOut =
+      ${ mapImpl('{ bpmnInOut }, 'path, 'targetName, '{ false }) }
+
+    inline def mapOut[T, A](inline path: Out => A, inline targetName: T => A): BpmnInOut =
+      ${ mapImpl('{ bpmnInOut }, 'path, 'targetName, '{ true }) }
+      
   extension (bpmnProcess: BpmnProcess)
 
     def toCamunda: FromCamundable[Unit] =
@@ -123,9 +144,9 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
       }
 
   def mergeOutputParams(
-                         inout: CamundaInputOutput,
-                         mappers: Seq[PathMapper]
-                       ): FromCamundable[Unit] =
+      inout: CamundaInputOutput,
+      mappers: Seq[PathMapper]
+  ): FromCamundable[Unit] =
     mappers
       .foreach { case pm @ PathMapper(varName, _, _) =>
         val cp = summon[CBpmnModelInstance].newInstance(

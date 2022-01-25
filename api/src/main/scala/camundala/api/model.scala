@@ -302,6 +302,19 @@ case class StartProcessIn(
     withVariablesInReturn: Boolean = true
 )
 
+@description(
+  "A JSON object with the following properties: (at least an empty JSON object {} or an empty request body)"
+)
+case class CorrelateMessageIn(//TODO
+                               messageName: String,
+                           // use the description of the object
+                           variables: Map[ExampleName, CamundaVariable],
+                           @description("The business key of the process instance.")
+                           businessKey: Option[String] = Some("example-businesskey"),
+                           @description("Set to false will not return the Process Variables.")
+                           withVariablesInReturn: Boolean = true
+                         )
+
 /*
 @endpointInput("task/{taskId}/form-variables")
 case class GetTaskFormVariablesPath(

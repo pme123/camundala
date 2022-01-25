@@ -11,7 +11,7 @@ object CamundaMapperMacros:
 
   def toOutMapper(
       bpmnInOut: Expr[BpmnInOut],
-      varName: Expr[String],
+      varName: Expr[PathEntry],
       mapType: Expr[MapType],
       path: Expr[Seq[PathEntry]],
       isOut: Expr[Boolean]
@@ -26,11 +26,11 @@ object CamundaMapperMacros:
       else
         ${ bpmnInOut }.withInMapper(
           ${ pathMapper(varName, mapType, path) }
-        )  
+        )
     }
-    
+
   private def pathMapper(
-      varName: Expr[String],
+      varName: Expr[PathEntry],
       mapType: Expr[MapType],
       path: Expr[Seq[PathEntry]]
   )(using
@@ -40,15 +40,19 @@ object CamundaMapperMacros:
       println(s"PATH: ${$path}")
       if (${ path }.isEmpty)
         throwErr("The first element must be a PathElem in a Mapper.")
-      PathMapper($varName, $mapType, $path)
+      $varName match
+        case PathEntry.PathElem(name) =>
+          PathMapper(name, $mapType, $path)
+        case other =>
+          throwErr("Only one field is supported for the Target path")
     }
 
-  def mapImpl[S, A](
+  def mapImpl[S, A, T](
       bpmnInOut: Expr[BpmnInOut],
       sourcePath: Expr[S => A],
-      targetName: Expr[String],
+      targetField: Expr[T => A],
       isOut: Expr[Boolean]
-  )(using Quotes, Type[S], Type[A]) =
+  )(using Quotes, Type[S], Type[A], Type[T]) =
     import quotes.reflect.*
 
     def unsupportedShapeInfo(tree: Tree) =
@@ -110,33 +114,33 @@ object CamundaMapperMacros:
         case i: Ident if i.name.startsWith("_") =>
           Seq.empty
         case _ =>
-          report.throwError(unsupportedShapeInfo(sourcePath.asTerm))
+          report.throwError(unsupportedShapeInfo(tree))
       }
     }
 
-    val focusTree: Tree = sourcePath.asTerm
-    println(s"FocusTree2: ${focusTree.getClass} $focusTree")
-
-    val path: Seq[PathSymbol] = focusTree match {
+    def path(focusTree: Tree): Seq[Expr[PathEntry]] =
+      println(s"FOCUSTREE: ${focusTree}")
+      val path = focusTree match
       /** Single inlined path */
       case Inlined(_, _, Block(List(DefDef(_, _, _, Some(p))), _)) =>
         toPath(p)
       case _ =>
         report.throwError(unsupportedShapeInfo(focusTree))
-    }
-    val mapperEntries = path.map {
-      case PathSymbol.Field(name) =>
-        val n = Expr(name)
-        '{ PathEntry.PathElem($n) }
-      case _: PathSymbol.FunctionDelegate =>
-        '{ PathEntry.OptionalPath }
-    }
+
+      path.map {
+        case PathSymbol.Field(name) =>
+          val n = Expr(name)
+          '{ PathEntry.PathElem($n) }
+        case _: PathSymbol.FunctionDelegate =>
+          '{ PathEntry.OptionalPath }
+      }
+    path(sourcePath.asTerm)
     val str = Expr(Type.show[A])
     val mapType = '{ MapType($str) }
     toOutMapper(
       bpmnInOut,
-      targetName,
+      path(targetField.asTerm).head,
       mapType,
-      Varargs(mapperEntries),
+      Varargs(path(sourcePath.asTerm)),
       isOut
     )

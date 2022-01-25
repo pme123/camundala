@@ -170,7 +170,7 @@ object ${name}GenerateCamundaBpmnApp extends GenerateCamundaBpmn:
       .map { case (fileName, procs) =>
         s"""Bpmn(withIdPath / "$fileName", ${procs
           .map(p => identName(p.id))
-          .mkString(", ")})"""
+          .mkString("", ".bpmn, ", ".bpmn")})"""
       }
       .mkString(",\n         ")})
 
