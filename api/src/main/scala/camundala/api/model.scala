@@ -295,25 +295,27 @@ end CamundaVariable
 )
 case class StartProcessIn(
     // use the description of the object
-    variables: Map[ExampleName, CamundaVariable],
+    variables: Map[String, CamundaVariable],
     @description("The business key of the process instance.")
     businessKey: Option[String] = Some("example-businesskey"),
     @description("Set to false will not return the Process Variables.")
     withVariablesInReturn: Boolean = true
 )
 
-@description(
-  "A JSON object with the following properties: (at least an empty JSON object {} or an empty request body)"
-)
-case class CorrelateMessageIn(//TODO
-                               messageName: String,
-                           // use the description of the object
-                           variables: Map[ExampleName, CamundaVariable],
-                           @description("The business key of the process instance.")
-                           businessKey: Option[String] = Some("example-businesskey"),
-                           @description("Set to false will not return the Process Variables.")
-                           withVariablesInReturn: Boolean = true
-                         )
+case class CorrelationMessageIn (
+                                messageName: String,
+                                businessKey: Option[String] = None,
+                                tenantId: Option[String] = None,
+                                withoutTenantId: Option[Boolean] = None,
+                                processInstanceId: Option[String] = None,
+                                correlationKeys: Option[Map[String, CamundaVariable]] = None,
+                                localCorrelationKeys: Option[Map[String, CamundaVariable]] = None,
+                                processVariables: Option[Map[String, CamundaVariable]] = None,
+                                processVariablesLocal: Option[Map[String, CamundaVariable]] = None,
+                                all: Boolean = false,
+                                resultEnabled: Boolean = true,
+                                variablesInResultEnabled: Boolean = true
+                              )
 
 /*
 @endpointInput("task/{taskId}/form-variables")
@@ -493,6 +495,10 @@ type FormVariables = Map[String, CamundaVariable]
 implicit lazy val StartProcessInSchema: Schema[StartProcessIn] = Schema.derived
 implicit lazy val StartProcessInEncoder: Encoder[StartProcessIn] = deriveEncoder
 implicit lazy val StartProcessInDecoder: Decoder[StartProcessIn] = deriveDecoder
+implicit lazy val CorrelationMessageInSchema: Schema[CorrelationMessageIn] = Schema.derived
+implicit lazy val CorrelationMessageInEncoder: Encoder[CorrelationMessageIn] = deriveEncoder
+implicit lazy val CorrelationMessageInDecoder: Decoder[CorrelationMessageIn] = deriveDecoder
+
 implicit lazy val CompleteTaskInSchema: Schema[CompleteTaskIn] = Schema.derived
 implicit lazy val CompleteTaskInEncoder: Encoder[CompleteTaskIn] = deriveEncoder
 implicit lazy val CompleteTaskInDecoder: Decoder[CompleteTaskIn] = deriveDecoder

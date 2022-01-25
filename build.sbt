@@ -50,6 +50,7 @@ lazy val camunda = project
       "50" // is declared as erased, but is in fact used
     )
   ).dependsOn(api)
+  .enablePlugins(GatlingPlugin)
 
 lazy val test = project
   .in(file("./test"))
