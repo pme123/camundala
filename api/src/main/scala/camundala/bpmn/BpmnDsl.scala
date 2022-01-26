@@ -134,3 +134,16 @@ trait BpmnDsl:
       descr: Option[String] | String = None
   ): EndEvent =
     EndEvent(id, descr)
+
+  def receiveMessageEvent[
+      Msg <: Product: Encoder: Decoder: Schema
+  ](
+      messageName: String,
+      in: Msg = NoInput(),
+      id: Option[String] = None,
+      descr: Option[String] | String = None
+  ): ReceiveMessageEvent[Msg] =
+    ReceiveMessageEvent(
+      messageName,
+      InOutDescr(id.getOrElse(messageName), in, NoOutput(), descr)
+    )

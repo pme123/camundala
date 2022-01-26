@@ -188,12 +188,12 @@ lazy val publicationSettings: Project => Project = _.settings(
 
 lazy val preventPublication: Project => Project =
   _.settings(
-  //  publish := {},
-  /*  publishTo := Some(
+    publish := {},
+    publishTo := Some(
       Resolver
         .file("Unused transient repository", target.value / "fakepublish")
     ),
     publishArtifact := false,
     publishLocal := {},
-    packagedArtifacts := Map.empty */
+    packagedArtifacts := Map.empty
   ) // doesn't work - https://github.com/sbt/sbt-pgp/issues/42

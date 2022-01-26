@@ -29,7 +29,7 @@ trait SimulationRunner extends Simulation:
   // there are Requests that wait until the process is ready - like getTask.
   // the Simulation waits 1 second between the Requests.
   // so with a timeout of 10 sec it will try 10 times (retryDuration = 1.second)
-  def timeoutInSec: Int = 10
+  def maxCount: Int = 10
   def retryDuration: FiniteDuration = 1.second
   // the number of parallel execution of a simulation.
   // for example run the process 3 times (userAtOnce = 3)
@@ -124,9 +124,7 @@ trait SimulationRunner extends Simulation:
       process: Process[In, Out]
   )
 
-    def start(scenario: String)(implicit
-        tenantId: Option[String]
-    ): ChainBuilder =
+    def start(scenario: String): ChainBuilder =
       exec(
         http(s"Start '$scenario' of '${process.id}'")
           .post(s"/process-definition/key/${process.id}${tenantId
@@ -142,6 +140,7 @@ trait SimulationRunner extends Simulation:
             )
           ) //.check(printBody)
           .check(extractJson("$.id", "processInstanceId"))
+          .check(extractJson("$.businessKey", "businessKey"))
       ).exitHereIfFailed
 
     def exists(
@@ -359,6 +358,32 @@ trait SimulationRunner extends Simulation:
           userTask.descr
         )
       )
+  end extension
+
+  extension [
+      In <: Product: Encoder: Decoder: Schema
+  ](event: ReceiveMessageEvent[In])
+
+    def correlate(): ChainBuilder =
+      retryOrFail(
+        exec(
+          http(s"Correlate Message '${event.messageName}' of '${event.id}'")
+            .post(s"/message")
+            .auth()
+            .body(
+              StringBody(
+                CorrelationMessageIn(
+                  messageName = event.messageName,
+                  processInstanceId = Some("#{processInstanceId}"),
+                  processVariables = Some(CamundaVariable.toCamunda(event.in))
+                ).asJson.toString
+              )
+            )
+            .check(checkMaxCount)
+            .check(status.saveAs("lastStatus"))
+        ).exitHereIfFailed,
+        statusCondition(200)
+      ).exitHereIfFailed
 
   end extension
 
@@ -389,8 +414,8 @@ trait SimulationRunner extends Simulation:
     bodyString
       .transformWithSession { (_: String, session: Session) =>
         assert(
-          session("retryCount").as[Int] <= timeoutInSec,
-          s"!!! The retryCount reached the maximun of $timeoutInSec"
+          session("retryCount").as[Int] <= maxCount,
+          s"!!! The retryCount reached the maximum of $maxCount"
         )
       }
   }
