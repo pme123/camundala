@@ -7,6 +7,7 @@ import camundala.domain.*
 import io.circe.*
 import io.circe.Json.JNumber
 import io.circe.syntax.*
+import sttp.tapir.PublicEndpoint
 import sttp.tapir.json.circe.*
 
 import java.util.Base64
@@ -50,7 +51,7 @@ case class CamundaRestApi[
 
   def inMapper[T <: Product: Encoder: Decoder: Schema](
       createInput: (example: In) => T
-  ): Option[EndpointInput[_]] =
+  ): Option[EndpointInput[T]] =
     if (requestInput.noInput)
       None
     else
@@ -64,15 +65,15 @@ case class CamundaRestApi[
             )
           }.toList)
       )
-  def inMapper(): Option[EndpointInput[_]] =
+  def inMapper(): Option[EndpointInput[In]] =
     inMapper(x => x)
 
   def inMapper[T <: Product: Encoder: Decoder: Schema](
       body: T
-  ): Option[EndpointInput[_]] =
+  ): Option[EndpointInput[T]] =
     inMapper(_ => body)
 
-  lazy val noInputMapper: Option[EndpointInput[_]] =
+  lazy val noInputMapper: Option[EndpointInput[In]] =
     None
 
   def outMapper[
@@ -82,7 +83,7 @@ case class CamundaRestApi[
         ]: Encoder: Decoder: Schema: ClassTag
   ](
       createOutput: (example: Out) => T
-  ): Option[EndpointOutput[_]] =
+  ): Option[EndpointOutput[T]] =
     if (requestOutput.noOutdput)
       None
     else
@@ -108,13 +109,13 @@ case class CamundaRestApi[
         ]: Encoder: Decoder: Schema: ClassTag
   ](
       body: T
-  ): Option[EndpointOutput[_]] =
+  ): Option[EndpointOutput[T]] =
     outMapper(_ => body)
 
-  def outMapper(): Option[EndpointOutput[_]] =
+  def outMapper(): Option[EndpointOutput[Out]] =
     outMapper(x => x)
 
-  lazy val noOutputMapper: Option[EndpointOutput[_]] =
+  lazy val noOutputMapper: Option[EndpointOutput[Out]] =
     None
 
 end CamundaRestApi
@@ -143,16 +144,16 @@ case class ApiEndpoints(
     tag: String,
     endpoints: Seq[ApiEndpoint[_, _, _]]
 ):
-  def create(): Seq[Endpoint[?, ?, ?, ?, ?]] =
+  def create(): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     println(s"Start API: $tag - ${endpoints.size} Endpoints")
     endpoints.flatMap(_.withTag(tag).create())
-
+/*
   def createPostman()(implicit
       tenantId: Option[String]
   ): Seq[Endpoint[?, ?, ?, ?, ?]] =
     println(s"Start Postman API: $tag")
     endpoints.flatMap(_.withTag(tag).createPostman())
-
+*/
 end ApiEndpoints
 
 trait ApiEndpoint[
@@ -171,13 +172,13 @@ trait ApiEndpoint[
   lazy val inExample: In = restApi.requestInput.examples.values.head
   lazy val outExample: Out = restApi.requestOutput.examples.values.head
   def outStatusCode: StatusCode
-  protected def inMapper(): Option[EndpointInput[_]] =
+  protected def inMapper(): Option[EndpointInput[In]] =
     restApi.inMapper()
-  protected def outMapper(): Option[EndpointOutput[_]] =
+  protected def outMapper(): Option[EndpointOutput[Out]] =
     restApi.outMapper()
-  protected def inMapperPostman(): Option[EndpointInput[_]] =
+ /* protected def inMapperPostman(): Option[EndpointInput[_]] =
     restApi.inMapper()
-
+*/
   def withRestApi(restApi: CamundaRestApi[In, Out]): T
 
   def withName(n: String): T =
@@ -198,7 +199,7 @@ trait ApiEndpoint[
     withRestApi(
       restApi.copy(requestOutput = restApi.requestOutput :+ (label, example))
     )
-
+/*
   def createPostman()(implicit
       tenantId: Option[String]
   ): Seq[Endpoint[?, ?, ?, ?, ?]]
@@ -211,8 +212,8 @@ trait ApiEndpoint[
         .summary(postmanName)
         .description(descr)
     ).map(ep => inMapperPostman().map(ep.in).getOrElse(ep)).get
-
-  def create(): Seq[Endpoint[?, ?, ?, ?, ?]] =
+*/
+  def create(): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     Seq(
       endpoint
         .name(s"$endpointType: $apiName")
@@ -224,12 +225,12 @@ trait ApiEndpoint[
     ).map(ep => inMapper().map(ep.in).getOrElse(ep))
       .map(ep => outMapper().map(ep.out).getOrElse(ep))
 
-  protected def tenantIdPath(id: String): EndpointInput[?] =
+  protected def tenantIdPath(id: String): EndpointInput[String] =
     path[String]("tenant-id")
       .description("The tenant, the process is deployed for.")
       .default(id)
 
-  protected def definitionKeyPath(key: String): EndpointInput[?] =
+  protected def definitionKeyPath(key: String): EndpointInput[String] =
     path[String]("key")
       .description(
         "The Process- or Decision-DefinitionKey of the Process or Decision"
@@ -253,7 +254,7 @@ case class StartProcessInstance[
       restApi: CamundaRestApi[In, Out]
   ): StartProcessInstance[In, Out] =
     copy(restApi = restApi)
-
+/*
   def createPostman()(implicit
       tenantId: Option[String]
   ): Seq[Endpoint[?, ?, ?, ?, ?]] =
@@ -262,21 +263,21 @@ case class StartProcessInstance[
         .in(postPath(processDefinitionKey))
         .post
     )
-
+*/
   private def postPath(name: String)(implicit tenantId: Option[String]) =
     val basePath =
       "process-definition" / "key" / definitionKeyPath(name)
     tenantId
       .map(id => basePath / "tenant-id" / tenantIdPath(id) / "start")
       .getOrElse(basePath / "start")
-
+/*
   override protected def inMapperPostman() =
     restApi.inMapper[StartProcessIn] { (example: In) =>
       StartProcessIn(
         CamundaVariable.toCamunda(example)
       )
     }
-
+*/
   override lazy val descr: String = restApi.maybeDescr.getOrElse("") /*+
     s"""
        |
@@ -351,7 +352,7 @@ case class GetTaskFormVariables[
       restApi: CamundaRestApi[NoInput, Out]
   ): GetTaskFormVariables[Out] =
     copy(restApi = restApi)
-
+/*
   def createPostman()(implicit
       tenantId: Option[String]
   ): Seq[Endpoint[?, ?, ?, ?, ?]] =
@@ -373,13 +374,13 @@ case class GetTaskFormVariables[
             .default(false)
         )
     )
-
+*/
   private lazy val getPath =
     "task" / taskIdPath() / "form-variables" / s"--REMOVE:${restApi.name}--"
-
+/*
   override protected def inMapperPostman() =
     restApi.noInputMapper
-
+*/
 end GetTaskFormVariables
 
 case class CompleteTask[
@@ -396,7 +397,7 @@ case class CompleteTask[
       restApi: CamundaRestApi[In, NoOutput]
   ): CompleteTask[In] =
     copy(restApi = restApi)
-
+/*
   def createPostman()(implicit
       tenantId: Option[String]
   ): Seq[Endpoint[?, ?, ?, ?, ?]] =
@@ -405,15 +406,15 @@ case class CompleteTask[
         .in(postPath)
         .post
     )
-
+*/
   private lazy val postPath =
     "task" / taskIdPath() / "complete" / s"--REMOVE:${restApi.name}--"
-
+/*
   override protected def inMapperPostman() =
     restApi.inMapper[CompleteTaskIn] { (example: In) =>
       CompleteTaskIn(CamundaVariable.toCamunda(example))
     }
-
+*/
 end CompleteTask
 
 case class GetActiveTask(
@@ -427,7 +428,7 @@ case class GetActiveTask(
   def withRestApi(
       restApi: CamundaRestApi[NoInput, NoOutput]
   ): GetActiveTask = copy(restApi = restApi)
-
+/*
   def createPostman()(implicit
       tenantId: Option[String]
   ): Seq[Endpoint[?, ?, ?, ?, ?]] =
@@ -436,13 +437,13 @@ case class GetActiveTask(
         .in(postPath)
         .post
     )
-
+*/
   private lazy val postPath =
     "task" / s"--REMOVE:${restApi.name}--"
-
+/*
   override protected def inMapperPostman() =
     restApi.inMapper(GetActiveTaskIn())
-
+*/
 end GetActiveTask
 
 case class UserTaskEndpoint[
@@ -462,6 +463,7 @@ case class UserTaskEndpoint[
       restApi: CamundaRestApi[In, Out]
   ): UserTaskEndpoint[In, Out] = copy(restApi = restApi)
 
+  /*
   def createPostman()(implicit
       tenantId: Option[String]
   ): Seq[Endpoint[?, ?, ?, ?, ?]] =
@@ -482,6 +484,7 @@ case class UserTaskEndpoint[
         .withRestApi(in)
         .withTag(restApi.tag)
         .createPostman()
+*/
 
 end UserTaskEndpoint
 

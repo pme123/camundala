@@ -34,7 +34,7 @@ case class EvaluateDecision[
        |Decision DMN:
        |- _decisionDefinitionKey_: `$apiName`,
        |""".stripMargin
-
+/*
   def createPostman()(using
       tenantId: Option[String]
   ): Seq[Endpoint[?, ?, ?, ?, ?]] =
@@ -43,20 +43,21 @@ case class EvaluateDecision[
         .in(postPath(apiName))
         .post
     )
-
+*/
   private def postPath(name: String)(implicit tenantId: Option[String]) =
     val basePath =
       "decision-definition" / "key" / definitionKeyPath(name)
     tenantId
       .map(id => basePath / "tenant-id" / tenantIdPath(id) / "evaluate")
       .getOrElse(basePath / "evaluate") / s"--REMOVE:${restApi.name}--"
-
+/*
   override protected def inMapperPostman() =
     restApi.inMapper[EvaluateDecisionIn] { (example: In) =>
       EvaluateDecisionIn(
         CamundaVariable.toCamunda(example)
       )
     }
+*/
   implicit lazy val EvaluateDecisionInSchema: Schema[EvaluateDecisionIn] = Schema.derived
   implicit lazy val EvaluateDecisionInEncoder: Encoder[EvaluateDecisionIn] = deriveEncoder
   implicit lazy val EvaluateDecisionInDecoder: Decoder[EvaluateDecisionIn] = deriveDecoder

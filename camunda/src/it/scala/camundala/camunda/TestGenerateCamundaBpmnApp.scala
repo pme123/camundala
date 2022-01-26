@@ -6,7 +6,7 @@ import camundala.camunda.GenerateCamundaBpmn
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
 
-object TestGenerateCamundaBpmnApp extends GenerateCamundaBpmn:
+object TestGenerateCamundaBpmnApp extends GenerateCamundaBpmn, App:
 
   val projectPath = pwd / "camunda" / "src" / "it"
   override lazy val generatedPath: Path = projectPath / "resources"

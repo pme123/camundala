@@ -75,19 +75,19 @@ trait APICreator extends App:
       case s: ApiEndpoints => Seq(s)
     }
     writeOpenApi(openApiPath, openApi(ep))
-    writeOpenApi(postmanOpenApiPath, postmanOpenApi(ep))
+ //   writeOpenApi(postmanOpenApiPath, postmanOpenApi(ep))
     println(s"Check Open API Docu: $openApiDocuPath")
 
 
   def openApi(apiEP: Seq[ApiEndpoints]): OpenAPI =
     openAPIDocsInterpreter
       .toOpenAPI(apiEP.flatMap(_.create()), info(title))
-
+/*
   def postmanOpenApi(apiEP: Seq[ApiEndpoints]): OpenAPI =
     openAPIDocsInterpreter
       .toOpenAPI(apiEP.flatMap(_.createPostman()), info(title))
       .servers(servers)
-
+*/
   lazy val openAPIDocsInterpreter = OpenAPIDocsInterpreter(docsOptions =
     OpenAPIDocsOptions.default.copy(defaultDecodeFailureOutput = _ => None)
   )
