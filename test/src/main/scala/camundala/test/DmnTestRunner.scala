@@ -3,18 +3,13 @@ package test
 
 import domain.*
 import bpmn.*
-import camundala.bpmn.{ProcessNode, DecisionDmn, Process}
+import camundala.bpmn.{DecisionDmn, Process, ProcessNode}
 import org.camunda.bpm.dmn.engine.{DmnDecision, DmnDecisionResult, DmnEngine}
 import org.camunda.bpm.dmn.engine.test.DmnEngineRule
 import org.camunda.bpm.engine.runtime.ProcessInstance
 import org.camunda.bpm.engine.test.ProcessEngineRule
 import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests
-import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.{
-  assertThat,
-  repositoryService,
-  runtimeService,
-  task
-}
+import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.{assertThat, repositoryService, runtimeService, task}
 import org.camunda.bpm.engine.test.mock.Mocks
 import org.junit.Assert.{assertEquals, fail}
 import org.junit.{Before, Rule}
@@ -24,6 +19,8 @@ import org.camunda.bpm.engine.variable.VariableMap
 import org.camunda.bpm.engine.variable.Variables
 import org.camunda.bpm.model.dmn.DmnModelInstance
 
+import java.time.{LocalDateTime, ZonedDateTime}
+import java.util.Date
 import scala.collection.immutable
 import scala.jdk.CollectionConverters.*
 
@@ -57,6 +54,11 @@ trait DmnTestRunner extends TestDsl:
         val expKey = decisionDmn.out.productElementNames.next()
         val expResult = decisionDmn.out.productIterator.next() match
           case e: scala.reflect.Enum => e.toString
+          case ldt : LocalDateTime =>
+            import java.time.ZoneId
+            Date.from(ldt.atZone(ZoneId.systemDefault).toInstant)
+          case zdt: ZonedDateTime =>
+            Date.from(zdt.toInstant)
           case o => o
         println(s"assert $expKey: $resultEntry == $expResult")
         assert(resultEntry == expResult)

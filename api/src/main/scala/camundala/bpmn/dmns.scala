@@ -2,6 +2,10 @@ package camundala
 package bpmn
 
 import camundala.domain.*
+import org.joda.time.LocalTime
+
+import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
+import java.util.Date
 
 case class Dmns(dmns: Seq[Dmn]):
 
@@ -12,7 +16,7 @@ object Dmns:
 
 case class Dmn(path: Path, decisions: DecisionDmn[?,?]*)
 
-type DmnValueType = String | Boolean | Int | Long | Double | scala.reflect.Enum
+type DmnValueType = String | Boolean | Int | Long | Double | Date | LocalDateTime | ZonedDateTime | scala.reflect.Enum
 
 enum DecisionResultType:
   case singleEntry // TypedValue
