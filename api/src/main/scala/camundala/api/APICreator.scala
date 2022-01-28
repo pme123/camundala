@@ -75,19 +75,18 @@ trait APICreator extends App:
       case s: ApiEndpoints => Seq(s)
     }
     writeOpenApi(openApiPath, openApi(ep))
- //   writeOpenApi(postmanOpenApiPath, postmanOpenApi(ep))
+    writeOpenApi(postmanOpenApiPath, postmanOpenApi(ep))
     println(s"Check Open API Docu: $openApiDocuPath")
-
 
   def openApi(apiEP: Seq[ApiEndpoints]): OpenAPI =
     openAPIDocsInterpreter
       .toOpenAPI(apiEP.flatMap(_.create()), info(title))
-/*
+
   def postmanOpenApi(apiEP: Seq[ApiEndpoints]): OpenAPI =
     openAPIDocsInterpreter
       .toOpenAPI(apiEP.flatMap(_.createPostman()), info(title))
       .servers(servers)
-*/
+
   lazy val openAPIDocsInterpreter = OpenAPIDocsInterpreter(docsOptions =
     OpenAPIDocsOptions.default.copy(defaultDecodeFailureOutput = _ => None)
   )
@@ -155,11 +154,11 @@ trait APICreator extends App:
     def endpoint(tag: String, processName: String): ApiEndpoints =
       endpoints(Nil, Some(tag), Some(processName))
 
-    def endpoints(activities: ApiEndpoint[_, _, _]*): ApiEndpoints =
+    def endpoints(activities: ApiEndpoint[?,?,?,?]*): ApiEndpoints =
       endpoints(activities, None, None)
 
     def endpoints(
-        activities: Seq[ApiEndpoint[_, _, _]],
+        activities: Seq[ApiEndpoint[?,?,?,?]],
         tag: Option[String] = None,
         processName: Option[String] = None
     ): ApiEndpoints =
@@ -201,11 +200,11 @@ trait APICreator extends App:
     def endpoint: ApiEndpoints =
       endpoints()
 
-    def endpoints(activities: ApiEndpoint[_, _, _]*): ApiEndpoints =
+    def endpoints(activities: ApiEndpoint[?,?,?,?]*): ApiEndpoints =
       endpoints(activities, process.id, process.id)
 
     def endpoints(
-        activities: Seq[ApiEndpoint[_, _, _]],
+        activities: Seq[ApiEndpoint[?,?,?,?]],
         tag: String,
         processName: String
     ): ApiEndpoints =
@@ -226,7 +225,7 @@ trait APICreator extends App:
       In <: Product: Encoder: Decoder: Schema: ClassTag,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](userTask: UserTask[In, Out])
-    def endpoint: ApiEndpoint[In, Out, UserTaskEndpoint[In, Out]] =
+    def endpoint: ApiEndpoint[In, NoInput, Out, UserTaskEndpoint[In, Out]] =
       UserTaskEndpoint(
         CamundaRestApi(
           userTask.inOutDescr,
@@ -264,7 +263,7 @@ trait APICreator extends App:
       In <: Product: Encoder: Decoder: Schema: ClassTag,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](dmn: DecisionDmn[In, Out])
-    def endpoint: ApiEndpoint[In, Out, EvaluateDecision[In, Out]] =
+    def endpoint: ApiEndpoint[In, EvaluateDecisionIn, Out, EvaluateDecision[In, Out]] =
       EvaluateDecision(
         dmn,
         CamundaRestApi(

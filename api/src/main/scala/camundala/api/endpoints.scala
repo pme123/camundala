@@ -124,7 +124,7 @@ object CamundaRestApi:
 
   def apply[
       In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema:ClassTag
+      Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](
       e: InOutDescr[In, Out],
       tag: String,
@@ -142,24 +142,25 @@ end CamundaRestApi
 
 case class ApiEndpoints(
     tag: String,
-    endpoints: Seq[ApiEndpoint[_, _, _]]
+    endpoints: Seq[ApiEndpoint[?, ?, ?, ?]]
 ):
   def create(): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     println(s"Start API: $tag - ${endpoints.size} Endpoints")
     endpoints.flatMap(_.withTag(tag).create())
-/*
-  def createPostman()(implicit
+
+  def createPostman()(using
       tenantId: Option[String]
-  ): Seq[Endpoint[?, ?, ?, ?, ?]] =
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     println(s"Start Postman API: $tag")
     endpoints.flatMap(_.withTag(tag).createPostman())
-*/
+
 end ApiEndpoints
 
 trait ApiEndpoint[
     In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema:ClassTag,
-    T <: ApiEndpoint[In, Out, T]
+    PIn <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema: ClassTag,
+    T <: ApiEndpoint[In, PIn, Out, T]
 ] extends Product:
   def restApi: CamundaRestApi[In, Out]
 
@@ -176,9 +177,8 @@ trait ApiEndpoint[
     restApi.inMapper()
   protected def outMapper(): Option[EndpointOutput[Out]] =
     restApi.outMapper()
- /* protected def inMapperPostman(): Option[EndpointInput[_]] =
-    restApi.inMapper()
-*/
+  protected def inMapperPostman(): Option[EndpointInput[PIn]]
+
   def withRestApi(restApi: CamundaRestApi[In, Out]): T
 
   def withName(n: String): T =
@@ -199,12 +199,12 @@ trait ApiEndpoint[
     withRestApi(
       restApi.copy(requestOutput = restApi.requestOutput :+ (label, example))
     )
-/*
-  def createPostman()(implicit
-      tenantId: Option[String]
-  ): Seq[Endpoint[?, ?, ?, ?, ?]]
 
-  def postmanBaseEndpoint: Endpoint[?, ?, ?, ?, ?] =
+  def createPostman()(using
+      tenantId: Option[String]
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]]
+
+  def postmanBaseEndpoint: PublicEndpoint[?, Unit, ?, Any] =
     Some(
       endpoint
         .name(postmanName)
@@ -212,7 +212,7 @@ trait ApiEndpoint[
         .summary(postmanName)
         .description(descr)
     ).map(ep => inMapperPostman().map(ep.in).getOrElse(ep)).get
-*/
+
   def create(): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     Seq(
       endpoint
@@ -244,7 +244,7 @@ case class StartProcessInstance[
 ](
     processDefinitionKey: String,
     restApi: CamundaRestApi[In, Out]
-) extends ApiEndpoint[In, Out, StartProcessInstance[In, Out]]:
+) extends ApiEndpoint[In, StartProcessIn, Out, StartProcessInstance[In, Out]]:
   val endpointType = "Process"
   val apiName = processDefinitionKey
 
@@ -254,30 +254,30 @@ case class StartProcessInstance[
       restApi: CamundaRestApi[In, Out]
   ): StartProcessInstance[In, Out] =
     copy(restApi = restApi)
-/*
-  def createPostman()(implicit
+
+  def createPostman()(using
       tenantId: Option[String]
-  ): Seq[Endpoint[?, ?, ?, ?, ?]] =
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     Seq(
       postmanBaseEndpoint
         .in(postPath(processDefinitionKey))
         .post
     )
-*/
-  private def postPath(name: String)(implicit tenantId: Option[String]) =
+
+  private def postPath(name: String)(using tenantId: Option[String]) =
     val basePath =
       "process-definition" / "key" / definitionKeyPath(name)
     tenantId
       .map(id => basePath / "tenant-id" / tenantIdPath(id) / "start")
       .getOrElse(basePath / "start")
-/*
-  override protected def inMapperPostman() =
+
+  protected def inMapperPostman(): Option[EndpointInput[StartProcessIn]] =
     restApi.inMapper[StartProcessIn] { (example: In) =>
       StartProcessIn(
         CamundaVariable.toCamunda(example)
       )
     }
-*/
+
   override lazy val descr: String = restApi.maybeDescr.getOrElse("") /*+
     s"""
        |
@@ -336,15 +336,15 @@ case class GetTaskFormVariables[
     Out <: Product: Encoder: Decoder: Schema: ClassTag
 ](
     restApi: CamundaRestApi[NoInput, Out]
-) extends ApiEndpoint[NoInput, Out, GetTaskFormVariables[Out]]:
+) extends ApiEndpoint[NoInput, NoInput, Out, GetTaskFormVariables[Out]]:
 
   val apiName = "no API!"
   val endpointType = "no API!"
   override val descr = s"""Retrieves the form variables for a task.
-                |The form variables take form data specified on the task into account.
-                |If form fields are defined, the variable types and default values of the form fields are taken into account.
-                |
-                |${restApi.maybeDescr.getOrElse("")}""".stripMargin
+                          |The form variables take form data specified on the task into account.
+                          |If form fields are defined, the variable types and default values of the form fields are taken into account.
+                          |
+                          |${restApi.maybeDescr.getOrElse("")}""".stripMargin
 
   val outStatusCode = StatusCode.Ok
 
@@ -352,13 +352,12 @@ case class GetTaskFormVariables[
       restApi: CamundaRestApi[NoInput, Out]
   ): GetTaskFormVariables[Out] =
     copy(restApi = restApi)
-/*
-  def createPostman()(implicit
+
+  def createPostman()(using
       tenantId: Option[String]
-  ): Seq[Endpoint[?, ?, ?, ?, ?]] =
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     Seq(
-      postmanBaseEndpoint
-        .get
+      postmanBaseEndpoint.get
         .in(getPath)
         .in(
           query[String]("variableNames")
@@ -374,20 +373,20 @@ case class GetTaskFormVariables[
             .default(false)
         )
     )
-*/
+
   private lazy val getPath =
     "task" / taskIdPath() / "form-variables" / s"--REMOVE:${restApi.name}--"
-/*
+
   override protected def inMapperPostman() =
     restApi.noInputMapper
-*/
+
 end GetTaskFormVariables
 
 case class CompleteTask[
     In <: Product: Encoder: Decoder: Schema
 ](
     restApi: CamundaRestApi[In, NoOutput]
-) extends ApiEndpoint[In, NoOutput, CompleteTask[In]]:
+) extends ApiEndpoint[In, CompleteTaskIn, NoOutput, CompleteTask[In]]:
 
   val outStatusCode = StatusCode.Ok
   val endpointType = "no API!"
@@ -397,29 +396,29 @@ case class CompleteTask[
       restApi: CamundaRestApi[In, NoOutput]
   ): CompleteTask[In] =
     copy(restApi = restApi)
-/*
-  def createPostman()(implicit
+
+  def createPostman()(using
       tenantId: Option[String]
-  ): Seq[Endpoint[?, ?, ?, ?, ?]] =
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     Seq(
       postmanBaseEndpoint
         .in(postPath)
         .post
     )
-*/
+
   private lazy val postPath =
     "task" / taskIdPath() / "complete" / s"--REMOVE:${restApi.name}--"
-/*
+
   override protected def inMapperPostman() =
     restApi.inMapper[CompleteTaskIn] { (example: In) =>
       CompleteTaskIn(CamundaVariable.toCamunda(example))
     }
-*/
+
 end CompleteTask
 
 case class GetActiveTask(
     restApi: CamundaRestApi[NoInput, NoOutput]
-) extends ApiEndpoint[NoInput, NoOutput, GetActiveTask]:
+) extends ApiEndpoint[NoInput, GetActiveTaskIn, NoOutput, GetActiveTask]:
 
   val endpointType = "no Api!"
   val apiName = "no API!"
@@ -428,22 +427,22 @@ case class GetActiveTask(
   def withRestApi(
       restApi: CamundaRestApi[NoInput, NoOutput]
   ): GetActiveTask = copy(restApi = restApi)
-/*
-  def createPostman()(implicit
+
+  def createPostman()(using
       tenantId: Option[String]
-  ): Seq[Endpoint[?, ?, ?, ?, ?]] =
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     Seq(
       postmanBaseEndpoint
         .in(postPath)
         .post
     )
-*/
+
   private lazy val postPath =
     "task" / s"--REMOVE:${restApi.name}--"
-/*
+
   override protected def inMapperPostman() =
     restApi.inMapper(GetActiveTaskIn())
-*/
+
 end GetActiveTask
 
 case class UserTaskEndpoint[
@@ -454,7 +453,7 @@ case class UserTaskEndpoint[
     getActiveTask: GetActiveTask,
     getTaskFormVariables: GetTaskFormVariables[In],
     completeTask: CompleteTask[Out]
-) extends ApiEndpoint[In, Out, UserTaskEndpoint[In, Out]]:
+) extends ApiEndpoint[In, NoInput, Out, UserTaskEndpoint[In, Out]]:
   val outStatusCode = StatusCode.Ok //not used
   val endpointType = "UserTask"
   val apiName = restApi.name
@@ -463,10 +462,9 @@ case class UserTaskEndpoint[
       restApi: CamundaRestApi[In, Out]
   ): UserTaskEndpoint[In, Out] = copy(restApi = restApi)
 
-  /*
-  def createPostman()(implicit
+  def createPostman()(using
       tenantId: Option[String]
-  ): Seq[Endpoint[?, ?, ?, ?, ?]] =
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     val in = completeTask.restApi.copy(
       requestInput = RequestInput(restApi.requestOutput.examples)
     )
@@ -484,7 +482,8 @@ case class UserTaskEndpoint[
         .withRestApi(in)
         .withTag(restApi.tag)
         .createPostman()
-*/
+
+  override protected def inMapperPostman() = ???
 
 end UserTaskEndpoint
 
@@ -588,5 +587,3 @@ end extension
 
 private val errorHandlingLink =
   s"See the [Introduction](https://docs.camunda.org/manual/$camundaVersion/reference/rest/overview/#error-handling) for the error response format."
-
-
