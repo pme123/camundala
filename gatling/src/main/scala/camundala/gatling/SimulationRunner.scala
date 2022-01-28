@@ -192,7 +192,7 @@ trait SimulationRunner extends Simulation:
         exec(_.set("processState", null)),
         retryOrFail(
           exec(checkFinished(scenario)).exitHereIfFailed,
-          processCondition
+          processFinishedCondition
         ),
         exec(checkVars(scenario)).exitHereIfFailed
       )
@@ -385,6 +385,31 @@ trait SimulationRunner extends Simulation:
         statusCondition(200)
       ).exitHereIfFailed
 
+    def sendSignal(
+        readyVariable: String,
+        readyValue: Any = true
+    ): Seq[ChainBuilder] =
+      Seq(
+        exec(_.set(readyVariable, null)),
+        retryOrFail(
+          exec(loadVariable(readyVariable)).exitHereIfFailed,
+          processReadyCondition(readyVariable, readyValue)
+        ),
+        exec(
+          http(s"SendSignal '${event.messageName}' of '${event.id}'")
+            .post(s"/signal")
+            .auth()
+            .body(
+              StringBody(
+                SendSignalIn(
+                  name = event.messageName,
+                  variables = Some(CamundaVariable.toCamunda(event.in))
+                ).asJson.toString
+              )
+            )
+            .check(status.is(204))
+        ).exitHereIfFailed
+      )
   end extension
 
   private def retryOrFail(
@@ -419,9 +444,23 @@ trait SimulationRunner extends Simulation:
         )
       }
   }
+
+  private def loadVariable(
+                    variableName: String
+                  )(using tenantId: Option[String]): ChainBuilder =
+    exec(
+      http(s"Load Variable '$variableName'")
+        .get(
+          s"/variable-instance?variableName=$variableName&processInstanceIdIn=#{processInstanceId}&deserializeValues=false"
+        )
+        .auth()
+        .check(
+          extractJson("$[*].value", variableName)
+        )
+    ).exitHereIfFailed
+
   def authHeader: HttpRequestBuilder => HttpRequestBuilder = b => b
 
   extension (builder: HttpRequestBuilder)
     def auth(): HttpRequestBuilder = authHeader(builder)
-
 end SimulationRunner

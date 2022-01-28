@@ -7,7 +7,6 @@ import io.gatling.core.Predef.*
 import io.gatling.core.structure.ChainBuilder
 import camundala.bpmn.*
 import camundala.domain.*
-import camundala.gatling.TestOverrideType.*
 import io.circe.{Decoder, Encoder}
 import io.circe.Json.JArray
 
@@ -53,10 +52,13 @@ def taskCondition(): Session => Boolean = session => {
 }
 
 // check if the process is  not active
-def processCondition: Session => Boolean = session =>
-  println("<<< retryCount: " + session("retryCount").as[Int])
+def processFinishedCondition: Session => Boolean = session =>
   val status = session.attributes.get("processState")
   status.contains("ACTIVE")
+// check if there is a variable in the process with a certain value
+def processReadyCondition(key: String, value: Any): Session => Boolean = session =>
+  val status = session.attributes.get(key)
+  status.contains(value)
 
 def extractJson(path: String, key: String) =
   jsonPath(path)
@@ -86,6 +88,7 @@ def checkProps[T <: Product: Encoder](
       check(product, result)
 
 private def check(overrides: Seq[TestOverride], result: Seq[CamundaProperty]) =
+  import TestOverrideType.*
   overrides
     .map {
       case TestOverride(k, Exists, _) =>

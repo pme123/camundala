@@ -302,20 +302,44 @@ case class StartProcessIn(
     withVariablesInReturn: Boolean = true
 )
 
-case class CorrelationMessageIn (
-                                messageName: String,
-                                businessKey: Option[String] = None,
-                                tenantId: Option[String] = None,
-                                withoutTenantId: Option[Boolean] = None,
-                                processInstanceId: Option[String] = None,
-                                correlationKeys: Option[Map[String, CamundaVariable]] = None,
-                                localCorrelationKeys: Option[Map[String, CamundaVariable]] = None,
-                                processVariables: Option[Map[String, CamundaVariable]] = None,
-                                processVariablesLocal: Option[Map[String, CamundaVariable]] = None,
-                                all: Boolean = false,
-                                resultEnabled: Boolean = true,
-                                variablesInResultEnabled: Boolean = true
-                              )
+case class CorrelationMessageIn(
+    messageName: String,
+    businessKey: Option[String] = None,
+    tenantId: Option[String] = None,
+    withoutTenantId: Option[Boolean] = None,
+    processInstanceId: Option[String] = None,
+    correlationKeys: Option[Map[String, CamundaVariable]] = None,
+    localCorrelationKeys: Option[Map[String, CamundaVariable]] = None,
+    processVariables: Option[Map[String, CamundaVariable]] = None,
+    processVariablesLocal: Option[Map[String, CamundaVariable]] = None,
+    all: Boolean = false,
+    resultEnabled: Boolean = true,
+    variablesInResultEnabled: Boolean = true
+)
+
+case class SendSignalIn(
+    @description("The name of the signal to deliver.")
+    name: String,
+    @description(
+      """
+Specifies a tenant to deliver the signal. The signal can only be received on executions or process definitions which belongs to the given tenant.
+
+Note: Cannot be used in combination with executionId.
+"""
+    )
+    tenantId: Option[String] = None,
+    withoutTenantId: Option[Boolean] = None,
+    @description("""
+Optionally specifies a single execution which is notified by the signal.
+
+Note: If no execution id is defined the signal is broadcasted to all subscribed handlers.
+""")
+    executionId: Option[String] = None,
+    @description(
+      """A JSON object containing variable key-value pairs. Each key is a variable name and each value a JSON variable value object."""
+    )
+    variables: Option[Map[String, CamundaVariable]] = None
+)
 
 /*
 @endpointInput("task/{taskId}/form-variables")
@@ -495,17 +519,29 @@ type FormVariables = Map[String, CamundaVariable]
 implicit lazy val StartProcessInSchema: Schema[StartProcessIn] = Schema.derived
 implicit lazy val StartProcessInEncoder: Encoder[StartProcessIn] = deriveEncoder
 implicit lazy val StartProcessInDecoder: Decoder[StartProcessIn] = deriveDecoder
-implicit lazy val CorrelationMessageInSchema: Schema[CorrelationMessageIn] = Schema.derived
-implicit lazy val CorrelationMessageInEncoder: Encoder[CorrelationMessageIn] = deriveEncoder
-implicit lazy val CorrelationMessageInDecoder: Decoder[CorrelationMessageIn] = deriveDecoder
+implicit lazy val CorrelationMessageInSchema: Schema[CorrelationMessageIn] =
+  Schema.derived
+implicit lazy val CorrelationMessageInEncoder: Encoder[CorrelationMessageIn] =
+  deriveEncoder
+implicit lazy val CorrelationMessageInDecoder: Decoder[CorrelationMessageIn] =
+  deriveDecoder
+implicit lazy val SendSignalInSchema: Schema[SendSignalIn] = Schema.derived
+implicit lazy val SendSignalInEncoder: Encoder[SendSignalIn] = deriveEncoder
+implicit lazy val SendSignalInDecoder: Decoder[SendSignalIn] = deriveDecoder
 
 implicit lazy val CompleteTaskInSchema: Schema[CompleteTaskIn] = Schema.derived
 implicit lazy val CompleteTaskInEncoder: Encoder[CompleteTaskIn] = deriveEncoder
 implicit lazy val CompleteTaskInDecoder: Decoder[CompleteTaskIn] = deriveDecoder
-implicit lazy val GetActiveTaskInSchema: Schema[GetActiveTaskIn] = Schema.derived
-implicit lazy val GetActiveTaskInEncoder: Encoder[GetActiveTaskIn] = deriveEncoder
-implicit lazy val GetActiveTaskInDecoder: Decoder[GetActiveTaskIn] = deriveDecoder
+implicit lazy val GetActiveTaskInSchema: Schema[GetActiveTaskIn] =
+  Schema.derived
+implicit lazy val GetActiveTaskInEncoder: Encoder[GetActiveTaskIn] =
+  deriveEncoder
+implicit lazy val GetActiveTaskInDecoder: Decoder[GetActiveTaskIn] =
+  deriveDecoder
 
-implicit lazy val CompleteTaskOutSchema: Schema[CompleteTaskOut] = Schema.derived
-implicit lazy val CompleteTaskOutEncoder: Encoder[CompleteTaskOut] = deriveEncoder
-implicit lazy val CompleteTaskOutDecoder: Decoder[CompleteTaskOut] = deriveDecoder
+implicit lazy val CompleteTaskOutSchema: Schema[CompleteTaskOut] =
+  Schema.derived
+implicit lazy val CompleteTaskOutEncoder: Encoder[CompleteTaskOut] =
+  deriveEncoder
+implicit lazy val CompleteTaskOutDecoder: Decoder[CompleteTaskOut] =
+  deriveDecoder
