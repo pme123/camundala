@@ -57,15 +57,25 @@ def processFinishedCondition: Session => Boolean = session =>
   status.contains("ACTIVE")
 // check if there is a variable in the process with a certain value
 def processReadyCondition(key: String, value: Any): Session => Boolean = session =>
-  val status = session.attributes.get(key)
-  status.contains(value)
+  val variable = session.attributes.get(key)
+  println(s"processReadyCondition: ${variable.getClass} - ${value.getClass} - ${!variable.contains(value.toString)}")
+  !variable.contains(value)
 
 def extractJson(path: String, key: String) =
   jsonPath(path)
-    .ofType[String]
+    .ofType[Any]
     .transform { v =>
       println(s"<<< Extracted $key: $v"); v
     } // save the data
+    .saveAs(key)
+
+def extractJsonOptional(path: String, key: String) =
+  jsonPath(path)
+    .ofType[Any]
+    .transform { v =>
+      println(s"<<< Extracted $key: $v"); v
+    }
+    .optional
     .saveAs(key)
 
 val printBody =

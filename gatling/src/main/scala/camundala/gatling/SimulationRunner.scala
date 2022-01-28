@@ -124,6 +124,34 @@ trait SimulationRunner extends Simulation:
       process: Process[In, Out]
   )
 
+    def correlate(
+        msgName: String = process.id,
+        businessKey: Option[String] = None
+    ): ChainBuilder =
+      exec(
+        http(s"Correlate Message '$msgName' of '${process.id}'")
+          .post(s"/message")
+          .auth()
+          .body(
+            StringBody(
+              CorrelationMessageIn(
+                messageName = msgName,
+                tenantId = tenantId,
+                businessKey = businessKey,
+                processVariables = Some(CamundaVariable.toCamunda(process.in))
+              ).asJson.toString
+            )
+          ) // Camunda returns different results depending if the process is running!
+          .check {
+            extractJsonOptional("$[*].processInstance.id", "processInstanceId")
+          }.check{
+            extractJsonOptional("$[*].execution.processInstanceId", "processInstanceId2")
+          }
+      ).exitHereIfFailed
+        .exec { session =>
+            session.set("processInstanceId", session.attributes.get("processInstanceId2").orElse(session.attributes.get("processInstanceId")).getOrElse("NOT-SET"))
+        }
+
     def start(scenario: String): ChainBuilder =
       exec(
         http(s"Start '$scenario' of '${process.id}'")
@@ -138,7 +166,7 @@ trait SimulationRunner extends Simulation:
                 businessKey = Some(scenario)
               ).asJson.toString
             )
-          ) //.check(printBody)
+          )
           .check(extractJson("$.id", "processInstanceId"))
           .check(extractJson("$.businessKey", "businessKey"))
       ).exitHereIfFailed
@@ -383,7 +411,7 @@ trait SimulationRunner extends Simulation:
             .check(status.saveAs("lastStatus"))
         ).exitHereIfFailed,
         statusCondition(200)
-      ).exitHereIfFailed
+      )
 
     def sendSignal(
         readyVariable: String,
@@ -392,7 +420,7 @@ trait SimulationRunner extends Simulation:
       Seq(
         exec(_.set(readyVariable, null)),
         retryOrFail(
-          exec(loadVariable(readyVariable)).exitHereIfFailed,
+          loadVariable(readyVariable),
           processReadyCondition(readyVariable, readyValue)
         ),
         exec(
@@ -446,14 +474,15 @@ trait SimulationRunner extends Simulation:
   }
 
   private def loadVariable(
-                    variableName: String
-                  )(using tenantId: Option[String]): ChainBuilder =
+      variableName: String
+  )(using tenantId: Option[String]): ChainBuilder =
     exec(
       http(s"Load Variable '$variableName'")
         .get(
           s"/variable-instance?variableName=$variableName&processInstanceIdIn=#{processInstanceId}&deserializeValues=false"
         )
         .auth()
+        .check(checkMaxCount)
         .check(
           extractJson("$[*].value", variableName)
         )
