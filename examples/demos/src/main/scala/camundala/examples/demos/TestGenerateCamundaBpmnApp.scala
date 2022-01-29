@@ -1,15 +1,14 @@
-package camundala.camunda
+package camundala.examples.demos
 
 import camundala.bpmn.*
+import camundala.camunda.*
 import camundala.domain.*
-import camundala.camunda.GenerateCamundaBpmn
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
 
 object TestGenerateCamundaBpmnApp extends GenerateCamundaBpmn, App:
 
-  val projectPath = pwd / "camunda" / "src" / "it"
-  override lazy val generatedPath: Path = projectPath / "resources"
+  val projectPath = pwd / "examples" / "demos"
 
   import TestDomain.*
   run(

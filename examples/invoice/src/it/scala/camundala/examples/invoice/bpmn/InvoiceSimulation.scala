@@ -20,12 +20,12 @@ class InvoiceSimulation extends SimulationRunner {
     processScenario("Review Invoice")(
       ReviewInvoiceP,
       assignReviewerUT.getAndComplete(),
-      reviewInvoiceUT.getAndComplete(),
+      reviewInvoiceUT.getAndComplete()
     ),
-  /*  processScenario("Invoice Receipt")(
+    processScenario("Invoice Receipt")(
       InvoiceReceiptP,
       approveInvoiceUT.getAndComplete(),
-      prepareBankTransferUT.getAndComplete(),
+      prepareBankTransferUT.getAndComplete()
     ),
     processScenario("Invoice Receipt with Review")(
       InvoiceReceiptP
@@ -44,7 +44,9 @@ class InvoiceSimulation extends SimulationRunner {
     ),
     processScenario("Invoice Receipt with Review failed")(
       InvoiceReceiptP
-        .withOut(InvoiceReceiptCheck(approved = false, clarified = Some(false))),
+        .withOut(
+          InvoiceReceiptCheck(approved = false, clarified = Some(false))
+        ),
       approveInvoiceUT
         .withOut(ApproveInvoice(false))
         .getAndComplete(), // do not approve
@@ -55,7 +57,7 @@ class InvoiceSimulation extends SimulationRunner {
       ReviewInvoiceP
         .withOut(InvoiceReviewed(false))
         .check(), // check if sub process successful
-      InvoiceReceiptP.switchToMainProcess(),
-    )*/
+      InvoiceReceiptP.switchToMainProcess()
+    )
   )
 }

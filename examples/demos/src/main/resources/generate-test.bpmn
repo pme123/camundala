@@ -16,12 +16,12 @@
    <bpmn:collaboration id="Collaboration_18peu8k" isClosed="false">
       <bpmn:participant id="participant-camundala-generate-test"
                         name="camundala-generate-test"
-                        processRef="CamundalaGenerateTestP"/>
+                        processRef="camundala-generate-test"/>
       <bpmn:participant id="Participant_camundala-generate-subtest"
                         name="camundala-generate-subtest"
                         processRef="camundala-generate-subtest"/>
    </bpmn:collaboration>
-   <bpmn:process id="CamundalaGenerateTestP"
+   <bpmn:process id="camundala-generate-test"
                  isClosed="false"
                  isExecutable="true"
                  name="camundala-generate-test"
@@ -39,12 +39,7 @@
                          name="Call Process"
                          startQuantity="1">
          <extensionElements xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL">
-            <camunda:inputOutput>
-               <camunda:inputParameter name="putTag">
-                  <camunda:script scriptFormat="Groovy">someObj
-.isOk</camunda:script>
-               </camunda:inputParameter>
-            </camunda:inputOutput>
+            <camunda:inputOutput/>
             <camunda:in source="putTag" target="putTag"/>
             <camunda:out source="result" target="result"/>
             <camunda:out source="success" target="success"/>
@@ -61,30 +56,29 @@
    </bpmn:process>
    <bpmn:process id="camundala-generate-subtest"
                  isClosed="false"
-                 isExecutable="false"
+                 isExecutable="true"
                  name="camundala-generate-subtest"
                  processType="None">
       <bpmn:startEvent id="Event_1fxj7jv" isInterrupting="true" parallelMultiple="false">
          <bpmn:outgoing>Flow_0bka3dn</bpmn:outgoing>
       </bpmn:startEvent>
-      <bpmn:userTask completionQuantity="1"
-                     id="DoSomethingUT"
-                     implementation="##unspecified"
-                     isForCompensation="false"
-                     name="Do something"
-                     startQuantity="1">
-         <bpmn:incoming>Flow_0bka3dn</bpmn:incoming>
-         <bpmn:outgoing>Flow_0f4l32n</bpmn:outgoing>
-      </bpmn:userTask>
       <bpmn:endEvent id="Event_1ni9jkv">
          <bpmn:incoming>Flow_0f4l32n</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_0bka3dn"
                          sourceRef="Event_1fxj7jv"
-                         targetRef="DoSomethingUT"/>
+                         targetRef="Activity_0o523f2"/>
       <bpmn:sequenceFlow id="Flow_0f4l32n"
-                         sourceRef="DoSomethingUT"
+                         sourceRef="Activity_0o523f2"
                          targetRef="Event_1ni9jkv"/>
+      <bpmn:task completionQuantity="1"
+                 id="Activity_0o523f2"
+                 isForCompensation="false"
+                 name="Do something"
+                 startQuantity="1">
+         <bpmn:incoming>Flow_0bka3dn</bpmn:incoming>
+         <bpmn:outgoing>Flow_0f4l32n</bpmn:outgoing>
+      </bpmn:task>
    </bpmn:process>
    <bpmndi:BPMNDiagram id="BPMNDiagram_1">
       <bpmndi:BPMNPlane bpmnElement="Collaboration_18peu8k" id="BPMNPlane_1">
@@ -93,13 +87,13 @@
                            isHorizontal="true">
             <dc:Bounds height="126" width="511" x="129" y="84"/>
          </bpmndi:BPMNShape>
-         <bpmndi:BPMNEdge bpmnElement="Flow_0n7va8z" id="Flow_0n7va8z_di">
-            <di:waypoint x="215" y="147"/>
-            <di:waypoint x="330" y="147"/>
-         </bpmndi:BPMNEdge>
          <bpmndi:BPMNEdge bpmnElement="Flow_0636v7g" id="Flow_0636v7g_di">
             <di:waypoint x="430" y="147"/>
             <di:waypoint x="552" y="147"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="Flow_0n7va8z" id="Flow_0n7va8z_di">
+            <di:waypoint x="215" y="147"/>
+            <di:waypoint x="330" y="147"/>
          </bpmndi:BPMNEdge>
          <bpmndi:BPMNShape bpmnElement="StartEvent_1" id="_BPMNShape_StartEvent_2">
             <dc:Bounds height="36" width="36" x="179" y="129"/>
@@ -115,22 +109,22 @@
                            isHorizontal="true">
             <dc:Bounds height="150" width="511" x="129" y="290"/>
          </bpmndi:BPMNShape>
-         <bpmndi:BPMNEdge bpmnElement="Flow_0bka3dn" id="Flow_0bka3dn_di">
-            <di:waypoint x="215" y="350"/>
-            <di:waypoint x="270" y="350"/>
-         </bpmndi:BPMNEdge>
          <bpmndi:BPMNEdge bpmnElement="Flow_0f4l32n" id="Flow_0f4l32n_di">
             <di:waypoint x="370" y="350"/>
             <di:waypoint x="432" y="350"/>
          </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="Flow_0bka3dn" id="Flow_0bka3dn_di">
+            <di:waypoint x="215" y="350"/>
+            <di:waypoint x="270" y="350"/>
+         </bpmndi:BPMNEdge>
          <bpmndi:BPMNShape bpmnElement="Event_1fxj7jv" id="Event_1fxj7jv_di">
             <dc:Bounds height="36" width="36" x="179" y="332"/>
          </bpmndi:BPMNShape>
-         <bpmndi:BPMNShape bpmnElement="DoSomethingUT" id="Activity_17xlenq_di">
-            <dc:Bounds height="80" width="100" x="270" y="310"/>
-         </bpmndi:BPMNShape>
          <bpmndi:BPMNShape bpmnElement="Event_1ni9jkv" id="Event_1ni9jkv_di">
             <dc:Bounds height="36" width="36" x="432" y="332"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Activity_0o523f2" id="Activity_0vm23ds_di">
+            <dc:Bounds height="80" width="100" x="270" y="310"/>
          </bpmndi:BPMNShape>
       </bpmndi:BPMNPlane>
    </bpmndi:BPMNDiagram>

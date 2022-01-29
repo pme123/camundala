@@ -2,7 +2,8 @@ import sbt.url
 
 import scala.util.Using
 
-lazy val projectVersion = Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
+lazy val projectVersion =
+  Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
 val scala3Version = "3.1.0"
 val org = "io.github.pme123"
 
@@ -14,7 +15,15 @@ lazy val root = project
   .settings(
     name := "camundala"
   )
-  .aggregate(api, camunda, test, gatling, exampleTwitter, exampleInvoice)
+  .aggregate(
+    api,
+    camunda,
+    test,
+    gatling,
+    exampleTwitter,
+    exampleInvoice,
+    exampleDemos
+  )
 
 def projectSettings(projName: String): Seq[Def.Setting[_]] = Seq(
   name := s"camundala-$projName",
@@ -49,7 +58,8 @@ lazy val camunda = project
       "-Xmax-inlines",
       "50" // is declared as erased, but is in fact used
     )
-  ).dependsOn(api)
+  )
+  .dependsOn(api)
   .enablePlugins(GatlingPlugin)
 
 lazy val test = project
@@ -58,8 +68,9 @@ lazy val test = project
   .settings(projectSettings("test"))
   .settings(
     libraryDependencies ++=
-        camundaTestDependencies,
-  ).dependsOn(api)
+      camundaTestDependencies
+  )
+  .dependsOn(api)
 
 lazy val gatling = project
   .in(file("./gatling"))
@@ -72,7 +83,8 @@ lazy val gatling = project
       "-Xmax-inlines",
       "50" // is declared as erased, but is in fact used
     )
-  ).dependsOn(api)
+  )
+  .dependsOn(api)
 
 val tapirVersion = "0.19.3"
 lazy val tapirDependencies = Seq(
@@ -107,7 +119,7 @@ lazy val camundaTestDependencies = Seq(
 
 lazy val gatlingDependencies = Seq(
   "io.gatling.highcharts" % "gatling-charts-highcharts" % "3.7.2",
-  "io.gatling" % "gatling-test-framework" % "3.7.2",
+  "io.gatling" % "gatling-test-framework" % "3.7.2"
 )
 
 // EXAMPLES
@@ -136,7 +148,17 @@ lazy val exampleTwitter = project
   .dependsOn(api, test, gatling)
   .enablePlugins(GatlingPlugin)
 
-val springBootVersion = "2.6.2"
+lazy val exampleDemos = project
+  .in(file("./examples/demos"))
+  .settings(projectSettings("example-demos"))
+  .configure(preventPublication)
+  .settings(
+    libraryDependencies ++= camundaDependencies
+  )
+  .dependsOn(camunda, test, gatling)
+  .enablePlugins(GatlingPlugin)
+
+val springBootVersion = "2.3.0.RELEASE"
 val h2Version = "1.4.200"
 // Twitter
 val twitter4jVersion = "4.0.7"
@@ -145,14 +167,14 @@ val camundaDependencies = Seq(
   "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion,
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
+  "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
+  "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.13.0",
   "org.codehaus.groovy" % "groovy-jsr223" % "3.0.8",
   "io.netty" % "netty-all" % "4.1.73.Final", // needed for Spring Boot Version > 2.5.*
-  "com.h2database" % "h2" % h2Version,
+  "com.h2database" % "h2" % h2Version
   //"org.slf4j" % "slf4j-simple" % "1.7.33" % IntegrationTest
 
 )
-
-
 
 lazy val developerList = List(
   Developer(
@@ -176,7 +198,7 @@ lazy val publicationSettings: Project => Project = _.settings(
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   homepage := Some(url("https://github.com/pme123/camundala-dsl")),
   startYear := Some(2021),
- // logLevel := Level.Debug,
+  // logLevel := Level.Debug,
   scmInfo := Some(
     ScmInfo(
       url("https://github.com/pme123/camundala-dsl"),

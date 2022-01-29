@@ -18,32 +18,32 @@
     <bpmn:sequenceFlow id="Flow_0n7va8z" sourceRef="StartEvent_1" targetRef="Activity_16e9ecc" />
     <bpmn:sequenceFlow id="Flow_0636v7g" sourceRef="Activity_16e9ecc" targetRef="Event_1rjp2nk" />
   </bpmn:process>
-  <bpmn:process id="camundala-generate-subtest" name="camundala-generate-subtest" isExecutable="false">
+  <bpmn:process id="camundala-generate-subtest" name="camundala-generate-subtest" isExecutable="true">
     <bpmn:startEvent id="Event_1fxj7jv">
       <bpmn:outgoing>Flow_0bka3dn</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:userTask id="Activity_0o523f2" name="Do something">
-      <bpmn:incoming>Flow_0bka3dn</bpmn:incoming>
-      <bpmn:outgoing>Flow_0f4l32n</bpmn:outgoing>
-    </bpmn:userTask>
     <bpmn:endEvent id="Event_1ni9jkv">
       <bpmn:incoming>Flow_0f4l32n</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0bka3dn" sourceRef="Event_1fxj7jv" targetRef="Activity_0o523f2" />
     <bpmn:sequenceFlow id="Flow_0f4l32n" sourceRef="Activity_0o523f2" targetRef="Event_1ni9jkv" />
+    <bpmn:task id="Activity_0o523f2" name="Do something">
+      <bpmn:incoming>Flow_0bka3dn</bpmn:incoming>
+      <bpmn:outgoing>Flow_0f4l32n</bpmn:outgoing>
+    </bpmn:task>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_18peu8k">
       <bpmndi:BPMNShape id="Participant_00zlcua_di" bpmnElement="participant-camundala-generate-test" isHorizontal="true">
         <dc:Bounds x="129" y="84" width="511" height="126" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_0n7va8z_di" bpmnElement="Flow_0n7va8z">
-        <di:waypoint x="215" y="147" />
-        <di:waypoint x="330" y="147" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0636v7g_di" bpmnElement="Flow_0636v7g">
         <di:waypoint x="430" y="147" />
         <di:waypoint x="552" y="147" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0n7va8z_di" bpmnElement="Flow_0n7va8z">
+        <di:waypoint x="215" y="147" />
+        <di:waypoint x="330" y="147" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="179" y="129" width="36" height="36" />
@@ -57,22 +57,22 @@
       <bpmndi:BPMNShape id="Participant_0sn77x7_di" bpmnElement="Participant_camundala-generate-subtest" isHorizontal="true">
         <dc:Bounds x="129" y="290" width="511" height="150" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_0bka3dn_di" bpmnElement="Flow_0bka3dn">
-        <di:waypoint x="215" y="350" />
-        <di:waypoint x="270" y="350" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0f4l32n_di" bpmnElement="Flow_0f4l32n">
         <di:waypoint x="370" y="350" />
         <di:waypoint x="432" y="350" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0bka3dn_di" bpmnElement="Flow_0bka3dn">
+        <di:waypoint x="215" y="350" />
+        <di:waypoint x="270" y="350" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_1fxj7jv_di" bpmnElement="Event_1fxj7jv">
         <dc:Bounds x="179" y="332" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_17xlenq_di" bpmnElement="Activity_0o523f2">
-        <dc:Bounds x="270" y="310" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1ni9jkv_di" bpmnElement="Event_1ni9jkv">
         <dc:Bounds x="432" y="332" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0vm23ds_di" bpmnElement="Activity_0o523f2">
+        <dc:Bounds x="270" y="310" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
