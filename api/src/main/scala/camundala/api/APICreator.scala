@@ -274,4 +274,18 @@ trait APICreator extends App:
       )
   end extension
 
+  extension [
+    In <: Product: Encoder: Decoder: Schema: ClassTag,
+  ](event: ReceiveMessageEvent[In])
+    def endpoint: ApiEndpoint[In, SendSignalIn, NoOutput, SendSignal[In]] =
+      SendSignal(
+        event,
+        CamundaRestApi(
+          event.inOutDescr,
+          event.id,
+          evaluateDecisionErrors
+        )
+      )
+  end extension
+
 end APICreator

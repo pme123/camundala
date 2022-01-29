@@ -150,7 +150,7 @@ case class ApiEndpoints(
 
   def createPostman()(using
       tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+  ): Seq[PublicEndpoint[?, Unit, Unit, Any]] =
     println(s"Start Postman API: $tag")
     endpoints.flatMap(_.withTag(tag).createPostman())
 
@@ -177,7 +177,9 @@ trait ApiEndpoint[
     restApi.inMapper()
   protected def outMapper(): Option[EndpointOutput[Out]] =
     restApi.outMapper()
-  protected def inMapperPostman(): Option[EndpointInput[PIn]]
+  protected def inMapperPostman()(using
+      tenantId: Option[String]
+  ): Option[EndpointInput[PIn]]
 
   def withRestApi(restApi: CamundaRestApi[In, Out]): T
 
@@ -202,16 +204,22 @@ trait ApiEndpoint[
 
   def createPostman()(using
       tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, Unit, ?, Any]]
+  ): Seq[PublicEndpoint[?, Unit, Unit, Any]]
 
-  def postmanBaseEndpoint: PublicEndpoint[?, Unit, ?, Any] =
+  def postmanBaseEndpoint(using
+      tenantId: Option[String]
+  ): PublicEndpoint[?, Unit, Unit, Any] =
     Some(
       endpoint
         .name(postmanName)
         .tag(tag)
         .summary(postmanName)
         .description(descr)
-    ).map(ep => inMapperPostman().map(ep.in).getOrElse(ep)).get
+    ).map((ep: Endpoint[Unit, Unit, Unit, Unit, Any]) =>
+      inMapperPostman()
+        .map((ei: EndpointInput[PIn]) => ep.in(ei))
+        .getOrElse(ep)
+    ).get
 
   def create(): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     Seq(
@@ -257,7 +265,7 @@ case class StartProcessInstance[
 
   def createPostman()(using
       tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+  ): Seq[PublicEndpoint[?, Unit, Unit, Any]] =
     Seq(
       postmanBaseEndpoint
         .in(postPath(processDefinitionKey))
@@ -271,7 +279,9 @@ case class StartProcessInstance[
       .map(id => basePath / "tenant-id" / tenantIdPath(id) / "start")
       .getOrElse(basePath / "start")
 
-  protected def inMapperPostman(): Option[EndpointInput[StartProcessIn]] =
+  protected def inMapperPostman()(using
+      tenantId: Option[String]
+  ): Option[EndpointInput[StartProcessIn]] =
     restApi.inMapper[StartProcessIn] { (example: In) =>
       StartProcessIn(
         CamundaVariable.toCamunda(example)
@@ -355,7 +365,7 @@ case class GetTaskFormVariables[
 
   def createPostman()(using
       tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+  ): Seq[PublicEndpoint[?, Unit, Unit, Any]] =
     Seq(
       postmanBaseEndpoint.get
         .in(getPath)
@@ -377,7 +387,9 @@ case class GetTaskFormVariables[
   private lazy val getPath =
     "task" / taskIdPath() / "form-variables" / s"--REMOVE:${restApi.name}--"
 
-  override protected def inMapperPostman() =
+  override protected def inMapperPostman()(using
+      tenantId: Option[String]
+  ) =
     restApi.noInputMapper
 
 end GetTaskFormVariables
@@ -399,7 +411,7 @@ case class CompleteTask[
 
   def createPostman()(using
       tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+  ): Seq[PublicEndpoint[?, Unit, Unit, Any]] =
     Seq(
       postmanBaseEndpoint
         .in(postPath)
@@ -409,7 +421,9 @@ case class CompleteTask[
   private lazy val postPath =
     "task" / taskIdPath() / "complete" / s"--REMOVE:${restApi.name}--"
 
-  override protected def inMapperPostman() =
+  override protected def inMapperPostman()(using
+      tenantId: Option[String]
+  ) =
     restApi.inMapper[CompleteTaskIn] { (example: In) =>
       CompleteTaskIn(CamundaVariable.toCamunda(example))
     }
@@ -430,7 +444,7 @@ case class GetActiveTask(
 
   def createPostman()(using
       tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+  ): Seq[PublicEndpoint[?, Unit, Unit, Any]] =
     Seq(
       postmanBaseEndpoint
         .in(postPath)
@@ -440,7 +454,9 @@ case class GetActiveTask(
   private lazy val postPath =
     "task" / s"--REMOVE:${restApi.name}--"
 
-  override protected def inMapperPostman() =
+  override protected def inMapperPostman()(using
+      tenantId: Option[String]
+  ) =
     restApi.inMapper(GetActiveTaskIn())
 
 end GetActiveTask
@@ -464,7 +480,7 @@ case class UserTaskEndpoint[
 
   def createPostman()(using
       tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+  ): Seq[PublicEndpoint[?, Unit, Unit, Any]] =
     val in = completeTask.restApi.copy(
       requestInput = RequestInput(restApi.requestOutput.examples)
     )
@@ -483,7 +499,9 @@ case class UserTaskEndpoint[
         .withTag(restApi.tag)
         .createPostman()
 
-  override protected def inMapperPostman() = ???
+  override protected def inMapperPostman()(using
+      tenantId: Option[String]
+  ) = ???
 
 end UserTaskEndpoint
 

@@ -36,8 +36,8 @@ case class EvaluateDecision[
        |""".stripMargin
 
   def createPostman()(using
-      tenantId: Option[String]
-  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+                           tenantId: Option[String]
+  ) =
     Seq(
       postmanBaseEndpoint
         .in(postPath(apiName))
@@ -51,8 +51,10 @@ case class EvaluateDecision[
       .map(id => basePath / "tenant-id" / tenantIdPath(id) / "evaluate")
       .getOrElse(basePath / "evaluate") / s"--REMOVE:${restApi.name}--"
 
-  override protected def inMapperPostman() =
-    restApi.inMapper[EvaluateDecisionIn] { (example: In) =>
+  override protected def inMapperPostman()(using
+                                           tenantId: Option[String]
+  ): Option[EndpointInput[EvaluateDecisionIn]] =
+    restApi.inMapper { (example: In) =>
       EvaluateDecisionIn(
         CamundaVariable.toCamunda(example)
       )
