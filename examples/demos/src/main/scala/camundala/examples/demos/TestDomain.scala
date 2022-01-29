@@ -10,7 +10,7 @@ object TestDomain extends BpmnDsl:
 
   // process In
   case class ProcessIn(name: String = "example", someObj: SomeObj = SomeObj())
-  case class SomeObj(tag: String = "okidoki", isOk: Boolean = false)
+  case class SomeObj(tag: String = "okidoki", isOk: String = "false")
   // process Out
   case class ProcessOut()//success: Boolean = true, successStr: String = "ok")
 

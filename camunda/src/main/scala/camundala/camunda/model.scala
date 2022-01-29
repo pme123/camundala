@@ -34,10 +34,24 @@ case class PathMapper(
     varType: MapType,
     path: Seq[PathEntry]
 ):
+  // flag if it can be matched with a simple Expression:
+  // ${myObj.prop("myField").stringValue()}
+  // this is possible if there are only PathElems in the path.
+  lazy val isInOutMapper: Boolean =
+    path.forall(_.isInstanceOf[PathEntry.PathElem])
+
   def printGroovy(): String =
     toMappingEntries
       .map(_.printGroovy())
       .mkString("\n.")
+
+  def printExpression(): String =
+    toMappingEntries
+     .map(_.name) match
+      case Nil => throwErr("The Path must start")
+      case x::xs =>
+        s"$${" + x + xs.mkString(".prop(\"", "\").prop(\"", s"\")${varType.expr}") + "}"
+
 
   def toMappingEntries: List[MappingEntry] =
     val head = path.headOption match
@@ -57,11 +71,17 @@ enum PathEntry:
   case OptionalPath
   case PathElem(name: String)
 
-enum MapType:
-  case Boolean, Int, Long, Double, String, Json
+enum MapType(val expr: String):
+  case Boolean extends MapType(".boolValue()")
+  case Int extends MapType(".numberValue()")
+  case Long extends MapType(".numberValue()")
+  case Double extends MapType(".numberValue()")
+  case String extends MapType(".stringValue()")
+  case Json  extends MapType("")
 
 object MapType:
   def apply(className: String): MapType =
+    println(s"CLASSNAME: $className")
     className match {
       case n if n.contains("Boolean") => MapType.Boolean
       case n if n.contains("Int") => MapType.Int

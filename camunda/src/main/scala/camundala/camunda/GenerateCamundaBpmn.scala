@@ -61,19 +61,28 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
     )(inline path: T => A, inline targetName: In => A): BpmnInOut =
       ${ mapImpl('{ BpmnInOut(ca) }, 'path, 'targetName, '{ false }) }
 
-    inline def mapOut[T, A](inline path: Out => A, inline targetName: T => A): BpmnInOut =
+    inline def mapIn[T, A](inline path: T => A, inline targetName: In => A): BpmnInOut =
+        ${ mapImpl('{ BpmnInOut(ca) }, 'path, 'targetName, '{ false }) }
+
+    inline def mapOut[T, A](
+        inline path: Out => A,
+        inline targetName: T => A
+    ): BpmnInOut =
       ${ mapImpl('{ BpmnInOut(ca) }, 'path, 'targetName, '{ true }) }
 
   extension [In <: Product, Out <: Product](bpmnInOut: BpmnInOut)
 
     inline def mapIn[T, A](
-                            inline prototype: T
-                          )(inline path: T => A, inline targetName: In => A): BpmnInOut =
+        inline prototype: T
+    )(inline path: T => A, inline targetName: In => A): BpmnInOut =
       ${ mapImpl('{ bpmnInOut }, 'path, 'targetName, '{ false }) }
 
-    inline def mapOut[T, A](inline path: Out => A, inline targetName: T => A): BpmnInOut =
+    inline def mapOut[T, A](
+        inline path: Out => A,
+        inline targetName: T => A
+    ): BpmnInOut =
       ${ mapImpl('{ bpmnInOut }, 'path, 'targetName, '{ true }) }
-      
+
   extension (bpmnProcess: BpmnProcess)
 
     def toCamunda: FromCamundable[Unit] =
@@ -99,11 +108,7 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
           elem.builder()
         def mergeIn(p: Product): FromCamundable[Unit] =
           p.productElementNames.foreach { v =>
-            val param: CamundaIn =
-              summon[CBpmnModelInstance].newInstance(classOf[CamundaIn])
-            param.setCamundaSource(v)
-            param.setCamundaTarget(v)
-            builder.addExtensionElement(param)
+            mapInputs(builder, v, ca.inMappers)
           }
 
         def mergeOut(p: Product): FromCamundable[Unit] =
@@ -119,8 +124,8 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
         val inout =
           summon[CBpmnModelInstance].newInstance(classOf[CamundaInputOutput])
         builder.addExtensionElement(inout)
-        mergeInputParams(inout, ca.inMappers)
-        mergeOutputParams(inout, ca.outMappers)
+     //   mergeInputParams(inout, ca.inMappers)
+     //   mergeOutputParams(inout, ca.outMappers)
         ca.inOut.in match
           case p: Product =>
             mergeIn(p)
@@ -128,6 +133,51 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
           case p: Product =>
             println(s"TT $p")
             mergeOut(p)
+
+  def mapInputs(
+      builder: AbstractFlowNodeBuilder[CallActivityBuilder, CCallActivity],
+      paramName: String,
+      mappers: Seq[PathMapper]
+  ): FromCamundable[Unit] =
+    println(s"MAPPING all: $mappers")
+
+    val mappingInOut = mappers
+      .filter(mp => {
+        println(s"MP: $paramName $mp")
+        mp.varName == paramName
+      })
+      .filter(_.isInOutMapper)
+    println(s"MAPPING : $mappingInOut")
+    if (mappingInOut.isEmpty)
+      addInOut(builder, paramName)
+    else
+      mappingInOut.foreach(pm =>
+        addInOut(builder, paramName, Some(pm.printExpression()))
+      )
+
+  def addInOut(
+      builder: AbstractFlowNodeBuilder[CallActivityBuilder, CCallActivity],
+      paramName: String,
+      expression: Option[String] = None
+  ): FromCamundable[Unit] =
+    val param: CamundaIn =
+      summon[CBpmnModelInstance].newInstance(classOf[CamundaIn])
+    expression match
+      case Some(expr) => param.setCamundaSourceExpression(expr)
+      case _ => param.setCamundaSource(paramName)
+
+    param.setCamundaTarget(paramName)
+    builder.addExtensionElement(param)
+  /*
+  mappers
+        .foreach { case pm @ PathMapper(varName, _, _) =>
+          val cp = summon[CBpmnModelInstance].newInstance(
+            classOf[CamundaInputParameter]
+          )
+          cp.setCamundaName(varName)
+         // inout.getCamundaInputParameters.add(cp)
+          cp.setValue(inOutScript(pm))
+        }*/
 
   def mergeInputParams(
       inout: CamundaInputOutput,

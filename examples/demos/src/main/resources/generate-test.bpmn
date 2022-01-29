@@ -40,7 +40,8 @@
                          startQuantity="1">
          <extensionElements xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL">
             <camunda:inputOutput/>
-            <camunda:in source="putTag" target="putTag"/>
+            <camunda:in sourceExpression="${someObj.prop(&#34;isOk&#34;).stringValue()}"
+                        target="putTag"/>
             <camunda:out source="result" target="result"/>
             <camunda:out source="success" target="success"/>
          </extensionElements>
