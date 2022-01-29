@@ -5,7 +5,7 @@
 _/        _/    _/  _/    _/    _/  _/    _/  _/    _/  _/    _/  _/    _/  _/  _/    _/
  _/_/_/    _/_/_/  _/    _/    _/    _/_/_/  _/    _/    _/_/_/    _/_/_/  _/    _/_/_/
 
- Invoice Example                                            >>> the Scala DSL for Camunda
+ Demos                                                    >>> the Scala DSL for Camunda
 
   Spring-Boot: ${spring-boot.formatted-version}
   Camunda Platform: ${camunda.bpm.formatted-version}
