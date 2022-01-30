@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1pv82bi" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1pv82bi" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
   <bpmn:collaboration id="Collaboration_18peu8k">
     <bpmn:participant id="participant-camundala-generate-test" name="camundala-generate-test" processRef="camundala-generate-test" />
     <bpmn:participant id="Participant_camundala-generate-subtest" name="camundala-generate-subtest" processRef="camundala-generate-subtest" />
@@ -28,6 +28,11 @@
     <bpmn:sequenceFlow id="Flow_0bka3dn" sourceRef="Event_1fxj7jv" targetRef="Activity_0o523f2" />
     <bpmn:sequenceFlow id="Flow_0f4l32n" sourceRef="Activity_0o523f2" targetRef="Event_1ni9jkv" />
     <bpmn:task id="Activity_0o523f2" name="Do something">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="result">What a CallActivity!</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0bka3dn</bpmn:incoming>
       <bpmn:outgoing>Flow_0f4l32n</bpmn:outgoing>
     </bpmn:task>

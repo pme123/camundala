@@ -40,9 +40,9 @@
                          startQuantity="1">
          <extensionElements xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL">
             <camunda:inputOutput/>
-            <camunda:in sourceExpression="${someObj.prop(&#34;isOk&#34;).stringValue()}"
-                        target="putTag"/>
-            <camunda:out source="result" target="result"/>
+            <camunda:in source="putTag" target="putTag"/>
+            <camunda:in source="success" target="success"/>
+            <camunda:out source="result" target="successStr"/>
             <camunda:out source="success" target="success"/>
          </extensionElements>
          <bpmn:incoming>Flow_0n7va8z</bpmn:incoming>
@@ -77,6 +77,11 @@
                  isForCompensation="false"
                  name="Do something"
                  startQuantity="1">
+         <bpmn:extensionElements>
+            <camunda:inputOutput>
+               <camunda:outputParameter name="result">What a CallActivity!</camunda:outputParameter>
+            </camunda:inputOutput>
+         </bpmn:extensionElements>
          <bpmn:incoming>Flow_0bka3dn</bpmn:incoming>
          <bpmn:outgoing>Flow_0f4l32n</bpmn:outgoing>
       </bpmn:task>

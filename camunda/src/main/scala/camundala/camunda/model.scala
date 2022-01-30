@@ -7,39 +7,44 @@ case class Bpmn(path: Path, processes: BpmnProcess*)
 
 case class BpmnProcess(
     process: Process[?, ?],
-    elements: Seq[BpmnInOut] = Seq.empty
+    elements: Seq[BpmnInOut[?,?]] = Seq.empty
 ):
   lazy val id: String = process.id
 
   def withElements(
-      elements: BpmnInOut*
+      elements: BpmnInOut[?,?]*
   ): BpmnProcess =
     this.copy(elements = elements)
 
-case class BpmnInOut(
-    inOut: InOut[?, ?, ?],
+case class BpmnInOut[
+  In <: Product,
+  Out <: Product,
+](
+    inOut: InOut[In,Out, ?],
     outMappers: Seq[PathMapper] = Seq.empty,
     inMappers: Seq[PathMapper] = Seq.empty
 ):
   lazy val id: String = inOut.id
 
-  def withOutMapper(pathMapper: PathMapper): BpmnInOut =
+  def withOutMapper(pathMapper: PathMapper): BpmnInOut[In, Out] =
+    println(s"OUTPUT: $pathMapper")
     copy(outMappers = outMappers :+ pathMapper)
 
-  def withInMapper(pathMapper: PathMapper): BpmnInOut =
+  def withInMapper(pathMapper: PathMapper): BpmnInOut[In, Out] =
+    println(s"INPUT: $pathMapper")
     copy(inMappers = inMappers :+ pathMapper)
 
 case class PathMapper(
     varName: String,
     varType: MapType,
-    path: Seq[PathEntry]
+    path: List[PathEntry]
 ):
   // flag if it can be matched with a simple Expression:
   // ${myObj.prop("myField").stringValue()}
   // this is possible if there are only PathElems in the path.
   lazy val isInOutMapper: Boolean =
     path.forall(_.isInstanceOf[PathEntry.PathElem])
-
+  
   def printGroovy(): String =
     toMappingEntries
       .map(_.printGroovy())
@@ -48,7 +53,8 @@ case class PathMapper(
   def printExpression(): String =
     toMappingEntries
      .map(_.name) match
-      case Nil => throwErr("The Path must start")
+      case Nil => throwErr("The Path is empty - It must have more than one element!")
+      case x::Nil => throwErr(s"The Path is '$x' - It must have more than one element!")
       case x::xs =>
         s"$${" + x + xs.mkString(".prop(\"", "\").prop(\"", s"\")${varType.expr}") + "}"
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
                   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
                   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
                   xmlns:modeler="http://camunda.org/schema/modeler/1.0"
@@ -69,6 +70,11 @@
                  isForCompensation="false"
                  name="Do something"
                  startQuantity="1">
+         <bpmn:extensionElements>
+            <camunda:inputOutput>
+               <camunda:outputParameter name="result">What a CallActivity!</camunda:outputParameter>
+            </camunda:inputOutput>
+         </bpmn:extensionElements>
          <bpmn:incoming>Flow_0bka3dn</bpmn:incoming>
          <bpmn:outgoing>Flow_0f4l32n</bpmn:outgoing>
       </bpmn:task>

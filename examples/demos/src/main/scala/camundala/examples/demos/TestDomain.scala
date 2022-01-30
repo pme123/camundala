@@ -8,16 +8,17 @@ import sttp.tapir.generic.auto.*
 
 object TestDomain extends BpmnDsl:
 
-  // process In
-  case class ProcessIn(name: String = "example", someObj: SomeObj = SomeObj())
   case class SomeObj(tag: String = "okidoki", isOk: String = "false")
+  case class ValueWrapper(success: Boolean = false)
+
+// process In
+  case class ProcessIn(name: String = "example", someObj: SomeObj = SomeObj(), success: ValueWrapper = ValueWrapper())
   // process Out
-  case class ProcessOut()//success: Boolean = true, successStr: String = "ok")
+  case class ProcessOut(success: ValueWrapper = ValueWrapper(), successStr: String = "What a CallActivity!")
 
   // call Activity In
-  case class Complex(putTag: String = "voila")
-  case class SomeResult(result: String = "successful?", success: ValueWrapper = ValueWrapper())
-  case class ValueWrapper(success: Boolean = false)
+  case class CallProcessIn(putTag: String = "voila", success: ValueWrapper = ValueWrapper())
+  case class CallProcessOut(result: String = "What a CallActivity!", success: ValueWrapper = ValueWrapper())
 
   // generate-test.bpmn
   val CamundalaGenerateTestPIdent = "camundala-generate-test"
@@ -28,10 +29,10 @@ object TestDomain extends BpmnDsl:
   )
 
   val CallProcessCAIdent = "CallProcessCA"
-  lazy val CallProcessCA: CallActivity[Complex, SomeResult] = callActivity(
+  lazy val CallProcessCA: CallActivity[CallProcessIn, CallProcessOut] = callActivity(
     CallProcessCAIdent,
-    in = Complex(),
-    out = SomeResult(),
+    in = CallProcessIn(),
+    out = CallProcessOut(),
     descr = None
   )
 

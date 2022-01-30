@@ -50,39 +50,39 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
     def bpmn =
       BpmnProcess(process)
 
-  extension (inOut: InOut[?, ?, ?])
-    implicit def toBpmn: BpmnInOut =
-      BpmnInOut(inOut)
-
-  extension [In <: Product, Out <: Product](ca: CallActivity[In, Out])
+  extension [In <: Product, Out <: Product](inOut: InOut[In, Out, ?])
 
     inline def mapIn[T, A](
-        inline prototype: T
-    )(inline path: T => A, inline targetName: In => A): BpmnInOut =
-      ${ mapImpl('{ BpmnInOut(ca) }, 'path, 'targetName, '{ false }) }
-
-    inline def mapIn[T, A](inline path: T => A, inline targetName: In => A): BpmnInOut =
-        ${ mapImpl('{ BpmnInOut(ca) }, 'path, 'targetName, '{ false }) }
+        inline path: T => A,
+        inline targetName: In => A
+    ): BpmnInOut[In, Out] =
+      ${ mapImpl('{ BpmnInOut(inOut) }, 'path, 'targetName, '{ false }) }
 
     inline def mapOut[T, A](
         inline path: Out => A,
         inline targetName: T => A
-    ): BpmnInOut =
-      ${ mapImpl('{ BpmnInOut(ca) }, 'path, 'targetName, '{ true }) }
+    ): BpmnInOut[In, Out] =
+      ${ mapImpl('{ BpmnInOut(inOut) }, 'path, 'targetName, '{ true }) }
 
-  extension [In <: Product, Out <: Product](bpmnInOut: BpmnInOut)
+  /*
+  extension [In <: Product, Out <: Product, IO <: InOut[In, Out, IO]](
+      bpmnInOut: BpmnInOut[In, Out, IO]
+  )
 
     inline def mapIn[T, A](
-        inline prototype: T
-    )(inline path: T => A, inline targetName: In => A): BpmnInOut =
-      ${ mapImpl('{ bpmnInOut }, 'path, 'targetName, '{ false }) }
+        inline path: T => A,
+        inline targetName: In => A
+    ): BpmnInOut[In, Out, IO] =
+      bpmnInOut
+        .withOutMapper(mapper(path, targetName))
 
     inline def mapOut[T, A](
         inline path: Out => A,
         inline targetName: T => A
-    ): BpmnInOut =
-      ${ mapImpl('{ bpmnInOut }, 'path, 'targetName, '{ true }) }
-
+    ): BpmnInOut[In, Out, IO] =
+      bpmnInOut
+        .withOutMapper(mapper(path, targetName))
+   */
   extension (bpmnProcess: BpmnProcess)
 
     def toCamunda: FromCamundable[Unit] =
@@ -93,48 +93,44 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
           mergeCallActivity(ca)
       }
 
-    def mergeCallActivity(ca: BpmnInOut): FromCamundable[Unit] =
-      println(s"INOUT: $ca")
-
+    def mergeCallActivity[In <: Product, Out <: Product](
+        ca: BpmnInOut[In, Out]
+    ): FromCamundable[Unit] =
       val cCA: CCallActivity = summon[CBpmnModelInstance]
         .getModelElementById(ca.id)
       println(s"CallActivity: $ca")
-      println(s"cCA: $cCA")
       merge(cCA)
 
       def merge(elem: CCallActivity): FromCamundable[Unit] =
         val builder
             : AbstractFlowNodeBuilder[CallActivityBuilder, CCallActivity] =
           elem.builder()
-        def mergeIn(p: Product): FromCamundable[Unit] =
-          p.productElementNames.foreach { v =>
-            mapInputs(builder, v, ca.inMappers)
-          }
 
-        def mergeOut(p: Product): FromCamundable[Unit] =
+        def mergeInOut(
+            isIn: Boolean,
+            p: Product,
+            mappers: Seq[PathMapper]
+        ): FromCamundable[Unit] =
           p.productElementNames.foreach { v =>
-            val param: CamundaOut =
-              summon[CBpmnModelInstance].newInstance(classOf[CamundaOut])
-            param.setCamundaSource(v)
-            param.setCamundaTarget(v)
-            builder.addExtensionElement(param)
+            mapInOuts(isIn, builder, v, mappers)
           }
 
         println(s"TT ${ca.inOut.out}")
         val inout =
           summon[CBpmnModelInstance].newInstance(classOf[CamundaInputOutput])
         builder.addExtensionElement(inout)
-     //   mergeInputParams(inout, ca.inMappers)
-     //   mergeOutputParams(inout, ca.outMappers)
+        //   mergeInputParams(inout, ca.inMappers)
+        //   mergeOutputParams(inout, ca.outMappers)
         ca.inOut.in match
           case p: Product =>
-            mergeIn(p)
+            mergeInOut(true, p, ca.inMappers)
         ca.inOut.out match
           case p: Product =>
             println(s"TT $p")
-            mergeOut(p)
+            mergeInOut(false, p, ca.outMappers)
 
-  def mapInputs(
+  def mapInOuts(
+      isIn: Boolean,
       builder: AbstractFlowNodeBuilder[CallActivityBuilder, CCallActivity],
       paramName: String,
       mappers: Seq[PathMapper]
@@ -142,31 +138,67 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
     println(s"MAPPING all: $mappers")
 
     val mappingInOut = mappers
+      .filter(_.isInOutMapper)
       .filter(mp => {
         println(s"MP: $paramName $mp")
-        mp.varName == paramName
+        if(isIn)
+          mp.varName == paramName
+        else
+          mp.path.head match
+            case PathEntry.PathElem(n) =>
+              n == paramName
+            case _ => false
       })
-      .filter(_.isInOutMapper)
     println(s"MAPPING : $mappingInOut")
     if (mappingInOut.isEmpty)
-      addInOut(builder, paramName)
+      addInOut(isIn, builder, paramName)
     else
-      mappingInOut.foreach(pm =>
-        addInOut(builder, paramName, Some(pm.printExpression()))
-      )
+      mappingInOut.foreach(pm => addInOut(isIn, builder, paramName, Some(pm)))
 
   def addInOut(
+      isIn: Boolean,
       builder: AbstractFlowNodeBuilder[CallActivityBuilder, CCallActivity],
       paramName: String,
-      expression: Option[String] = None
+      pathMapper: Option[PathMapper] = None
+  ): FromCamundable[Unit] =
+    if (isIn)
+      addIn(builder, paramName, pathMapper)
+    else
+      addOut(builder, paramName, pathMapper)
+
+  def addIn(
+      builder: AbstractFlowNodeBuilder[CallActivityBuilder, CCallActivity],
+      paramName: String,
+      pathMapper: Option[PathMapper] = None
   ): FromCamundable[Unit] =
     val param: CamundaIn =
       summon[CBpmnModelInstance].newInstance(classOf[CamundaIn])
-    expression match
-      case Some(expr) => param.setCamundaSourceExpression(expr)
-      case _ => param.setCamundaSource(paramName)
+    pathMapper match
+      case None => param.setCamundaSource(paramName)
+      case Some(PathMapper(_, _, (PathEntry.PathElem(n)) :: Nil)) =>
+        param.setCamundaSource(n)
+      case Some(pm) => param.setCamundaSourceExpression(pm.printExpression())
 
     param.setCamundaTarget(paramName)
+    builder.addExtensionElement(param)
+
+  def addOut(
+      builder: AbstractFlowNodeBuilder[CallActivityBuilder, CCallActivity],
+      paramName: String,
+      pathMapper: Option[PathMapper] = None
+  ): FromCamundable[Unit] =
+    val param: CamundaOut =
+      summon[CBpmnModelInstance].newInstance(classOf[CamundaOut])
+    pathMapper match // same as In but no common interface!?
+      case Some(PathMapper(varName, _, (PathEntry.PathElem(n)) :: Nil)) =>
+        param.setCamundaSource(paramName)
+        param.setCamundaTarget(varName)
+      case Some(pm @ PathMapper(varName, _, (PathEntry.PathElem(n)) :: _)) =>
+        param.setCamundaSourceExpression(pm.printExpression())
+        param.setCamundaTarget(varName)
+      case _ =>
+        param.setCamundaSource(paramName)
+        param.setCamundaTarget(paramName)
     builder.addExtensionElement(param)
   /*
   mappers

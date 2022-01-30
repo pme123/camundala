@@ -2,7 +2,7 @@ package camundala
 package api
 
 import domain.*
-import io.circe.generic.semiauto.*
+import bpmn.*
 import io.circe.syntax.*
 import io.circe.*
 import sttp.model.StatusCode
@@ -205,10 +205,9 @@ object CamundaVariable:
         CJson(
           product.asJson.deepDropNullValues.hcursor
             .downField(key)
-            .as[Json]
-            .toOption
-            .map(_.toString)
-            .getOrElse(s"$v could NOT be Parsed to a JSON!")
+            .as[Json] match
+            case Right(v) => v.toString
+            case Left(ex) => throwErr(s"$key of $v could NOT be Parsed to a JSON!\n$ex")
         )
       case v =>
         valueToCamunda(v)

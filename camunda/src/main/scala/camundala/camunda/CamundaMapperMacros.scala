@@ -4,35 +4,39 @@ import camundala.api.CamundaVariable
 import camundala.bpmn.throwErr
 import io.circe.Json
 import io.circe.Json.JBoolean
+import camundala.bpmn.*
 
 import scala.quoted.*
 
 object CamundaMapperMacros:
 
-  def toOutMapper(
-      bpmnInOut: Expr[BpmnInOut],
+  def toOutMapper[
+    In <: Product,
+    Out <: Product,
+  ](
+      bpmnInOut: Expr[BpmnInOut[In,Out]],
       varName: Expr[PathEntry],
       mapType: Expr[MapType],
       path: Expr[Seq[PathEntry]],
       isOut: Expr[Boolean]
   )(using
-      Quotes
-  ): Expr[BpmnInOut] =
+      Quotes, Type[In], Type[Out]
+  ): Expr[BpmnInOut[In,Out]] =
     '{
       if($isOut)
         ${ bpmnInOut }.withOutMapper(
-          ${ pathMapper(varName, mapType, path) }
+          ${ pathMapper(varName, mapType, '{$path.toList}) }
         )
       else
         ${ bpmnInOut }.withInMapper(
-          ${ pathMapper(varName, mapType, path) }
+          ${ pathMapper(varName, mapType, '{$path.toList}) }
         )
     }
 
   private def pathMapper(
       varName: Expr[PathEntry],
       mapType: Expr[MapType],
-      path: Expr[Seq[PathEntry]]
+      path: Expr[List[PathEntry]]
   )(using
       Quotes
   ): Expr[PathMapper] =
@@ -47,12 +51,12 @@ object CamundaMapperMacros:
           throwErr("Only one field is supported for the Target path")
     }
 
-  def mapImpl[S, A, T](
-      bpmnInOut: Expr[BpmnInOut],
+  def mapImpl[In <: Product, Out <: Product, S, A, T](
+      bpmnInOut: Expr[BpmnInOut[In,Out]],
       sourcePath: Expr[S => A],
       targetField: Expr[T => A],
       isOut: Expr[Boolean]
-  )(using Quotes, Type[S], Type[A], Type[T]) =
+  )(using Quotes, Type[In], Type[Out], Type[S], Type[A], Type[T]) =
     import quotes.reflect.*
 
     def unsupportedShapeInfo(tree: Tree) =
@@ -71,7 +75,7 @@ object CamundaMapperMacros:
           args: List[Term]
       )
 
-    def toPath(tree: Tree): Seq[PathSymbol] = {
+    def toPath(tree: Tree): List[PathSymbol] = {
       tree match {
         /** Field access */
         case Select(deep, ident) =>
@@ -112,13 +116,13 @@ object CamundaMapperMacros:
           toPath(deep) ++ idents.flatMap(toPath)
         /** Wild card from path */
         case i: Ident if i.name.startsWith("_") =>
-          Seq.empty
+          List.empty
         case _ =>
           report.throwError(unsupportedShapeInfo(tree))
       }
     }
 
-    def path(focusTree: Tree): Seq[Expr[PathEntry]] =
+    def path(focusTree: Tree): List[Expr[PathEntry]] =
       println(s"FOCUSTREE: ${focusTree}")
       val path = focusTree match
       /** Single inlined path */
@@ -134,6 +138,7 @@ object CamundaMapperMacros:
         case _: PathSymbol.FunctionDelegate =>
           '{ PathEntry.OptionalPath }
       }
+
     path(sourcePath.asTerm)
     val str = Expr(Type.show[A])
     val mapType = '{ MapType($str) }
