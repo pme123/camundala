@@ -1,7 +1,9 @@
 package camundala
 package camunda
 
-import camundala.bpmn.*
+import camundala.bpmn.{InOut, *}
+
+import scala.language.implicitConversions
 
 case class Bpmn(path: Path, processes: BpmnProcess*)
 
@@ -12,9 +14,16 @@ case class BpmnProcess(
   lazy val id: String = process.id
 
   def withElements(
-      elements: BpmnInOut[?,?]*
-  ): BpmnProcess =
-    this.copy(elements = elements)
+                    elements:(InOut[?,?,?] | BpmnInOut[?,?])*
+                  ): BpmnProcess =
+
+    this.copy(elements = elements.map{
+      case inOut: InOut[?,?,?] => BpmnInOut(inOut)
+      case bpmnInOut: BpmnInOut[?,?] => bpmnInOut
+    })
+
+object BpmnProcess:
+  implicit def elem(inOut: InOut[?,?, ?]): BpmnInOut[?,?] = BpmnInOut(inOut)
 
 case class BpmnInOut[
   In <: Product,
@@ -44,7 +53,7 @@ case class PathMapper(
   // this is possible if there are only PathElems in the path.
   lazy val isInOutMapper: Boolean =
     path.forall(_.isInstanceOf[PathEntry.PathElem])
-  
+
   def printGroovy(): String =
     toMappingEntries
       .map(_.printGroovy())

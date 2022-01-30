@@ -8,6 +8,7 @@ import sttp.tapir.generic.auto.*
 object InvoiceGenerateCamundaBpmnApp extends GenerateCamundaBpmn, App:
 
   val projectPath = pwd / "examples" / "invoice"
+
   import InvoiceApi.*
 
   run(invoiceBpmn, reviewInvoice)
