@@ -64,25 +64,23 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
     ): BpmnInOut[In, Out] =
       ${ mapImpl('{ BpmnInOut(inOut) }, 'path, 'targetName, '{ true }) }
 
-  /*
-  extension [In <: Product, Out <: Product, IO <: InOut[In, Out, IO]](
-      bpmnInOut: BpmnInOut[In, Out, IO]
+
+  extension [In <: Product, Out <: Product](
+      bpmnInOut: BpmnInOut[In, Out]
   )
 
     inline def mapIn[T, A](
-        inline path: T => A,
-        inline targetName: In => A
-    ): BpmnInOut[In, Out, IO] =
-      bpmnInOut
-        .withOutMapper(mapper(path, targetName))
+                            inline path: T => A,
+                            inline targetName: In => A
+                          ): BpmnInOut[In, Out] =
+      ${ mapImpl('{ bpmnInOut }, 'path, 'targetName, '{ false }) }
 
     inline def mapOut[T, A](
-        inline path: Out => A,
-        inline targetName: T => A
-    ): BpmnInOut[In, Out, IO] =
-      bpmnInOut
-        .withOutMapper(mapper(path, targetName))
-   */
+                             inline path: Out => A,
+                             inline targetName: T => A
+                           ): BpmnInOut[In, Out] =
+      ${ mapImpl('{ bpmnInOut }, 'path, 'targetName, '{ true }) }
+
   extension (bpmnProcess: BpmnProcess)
 
     def toCamunda: FromCamundable[Unit] =

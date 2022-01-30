@@ -17,8 +17,8 @@ object TestGenerateCamundaBpmnApp extends GenerateCamundaBpmn, App:
       CamundalaGenerateTestP.bpmn
         .withElements(
           CallProcessCA
+            .mapIn[ProcessIn, String](_.someObj.isOk, _.putTag)
             .mapOut[ProcessOut, String](_.result, _.successStr)
-           //.mapIn[ProcessIn, String](_.someObj.isOk, _.putTag)
         )
     )
   )
