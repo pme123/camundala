@@ -100,6 +100,9 @@ val camundaVersion = "7.16.0"
 lazy val camundaTestDependencies = Seq(
   // provide Camunda interaction
   "org.camunda.bpm" % "camunda-engine" % camundaVersion,
+  "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
+  "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.13.0",
+  "org.codehaus.groovy" % "groovy-jsr223" % "3.0.8",
   //
   //"org.camunda.bpm.dmn" % "camunda-engine-dmn" % camundaVersion % Provided,
   // provide test helper
@@ -167,9 +170,6 @@ val camundaDependencies = Seq(
   "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion,
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
-  "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
-  "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.13.0",
-  "org.codehaus.groovy" % "groovy-jsr223" % "3.0.8",
   "io.netty" % "netty-all" % "4.1.73.Final", // needed for Spring Boot Version > 2.5.*
   "com.h2database" % "h2" % h2Version
   //"org.slf4j" % "slf4j-simple" % "1.7.33" % IntegrationTest
