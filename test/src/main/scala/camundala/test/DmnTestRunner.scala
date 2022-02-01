@@ -24,7 +24,7 @@ import java.util.Date
 import scala.collection.immutable
 import scala.jdk.CollectionConverters.*
 
-trait DmnTestRunner extends TestDsl:
+trait DmnTestRunner:
 
   def dmnPath: ResourcePath
 
@@ -37,8 +37,8 @@ trait DmnTestRunner extends TestDsl:
     new java.io.ByteArrayInputStream(os.read.bytes(dmnPath))
 
   def test[
-      In <: Product,
-      Out <: Product
+      In <: Product: Encoder: Decoder,
+      Out <: Product: Encoder: Decoder
   ](decisionDmn: => DecisionDmn[In, Out]): Unit =
     val variables: VariableMap = Variables.createVariables
     for (k, v) <- decisionDmn.inOutDescr.in.asDmnVars()

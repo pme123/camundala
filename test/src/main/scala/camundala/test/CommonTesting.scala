@@ -3,7 +3,9 @@ package test
 
 import camundala.bpmn.*
 import camundala.domain.*
-import org.assertj.core.api.MapAssert
+import io.circe.{Decoder, Encoder}
+import org.assertj.core.api.{Condition, MapAssert}
+import org.assertj.core.data.MapEntry
 import org.camunda.bpm.engine.ProcessEngineConfiguration
 import org.camunda.bpm.engine.impl.test.TestHelper
 import org.camunda.bpm.engine.runtime.{Job, ProcessInstance}
@@ -11,6 +13,8 @@ import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests
 import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.*
 import org.camunda.bpm.engine.test.mock.Mocks
 import org.camunda.bpm.engine.test.{ProcessEngineRule, ProcessEngineTestCase}
+import org.camunda.spin.Spin
+import org.camunda.spin.impl.json.jackson.JacksonJsonNode
 import org.junit.Assert.{assertEquals, assertNotNull, fail}
 import org.junit.{Before, Rule}
 import org.mockito.MockitoAnnotations
@@ -30,13 +34,6 @@ trait CommonTesting extends TestDsl:
 
   @Rule
   def processEngineRule = new ProcessEngineRule
-
-  def test[
-    In <: Product,
-    Out <: Product
-  ](process: Process[In, Out])(
-    activities: (ProcessNode | CustomTests)*
-  ): Unit
 
   @Before
   def init(): Unit =
@@ -63,13 +60,36 @@ trait CommonTesting extends TestDsl:
       Mocks.register(key, value)
     }
 
-  def checkOutput[T <: Product](out: T): FromProcessInstance[Unit] =
+  def checkOutput(out: Map[String, Any]): FromProcessInstance[Unit] =
     val assertion = assertThat(summon[CProcessInstance])
     val variables = assertion.variables()
+    //println(s"CHECK: ${variables.extractingByKeys("success").is(Condition())}")
+    def checkValue(key: String, value: Any): Condition[util.Map[String, Any]] = Condition(
+      me => {
+        println(s"ME ${me.get(key)} ${me.get(key).getClass} - $value ${value.getClass}")
+        value match
+          case jn: JacksonJsonNode =>
+            val cJson = toJson(jn.toString)
+            val pJson = me.get(key) match
+              case jn2: JacksonJsonNode =>
+                toJson(me.get(key).toString)
+              case other =>
+                toJson(Spin.JSON(other).toString)
+            val setCJson = cJson.as[Set[Json]].toOption.getOrElse(cJson)
+            val setPJson = pJson.as[Set[Json]].toOption.getOrElse(pJson)
+            println(s"ME ${setCJson} ${setCJson.getClass} - $setPJson ${setPJson.getClass}")
+
+            setCJson == setPJson
+          case _ =>
+            me.get(key) == value
+      },
+      "Check variable"
+    )
     for
-      (k, v) <- out.asVarsWithoutEnums()
+      (k, v) <- out
       _ = assertion.hasVariables(k)
     yield
-      variables.containsEntry(k, v)
+      println(s"CHECK: ${v.getClass}")
+      variables.has(checkValue(k,v))//containsEntry(k, v)
 
 end CommonTesting

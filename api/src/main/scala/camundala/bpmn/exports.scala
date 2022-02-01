@@ -10,7 +10,7 @@ import scala.compiletime.{constValue, constValueTuple}
 val camundaVersion = "7.15"
 
 // os
-export os.{pwd, Path, read}
+export os.{pwd, Path, ResourcePath, read}
 
 // sttp
 export sttp.model.StatusCode

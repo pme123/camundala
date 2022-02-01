@@ -3,6 +3,8 @@ package test
 
 import domain.*
 import bpmn.*
+import io.circe.syntax.*
+import io.circe.*
 import org.camunda.bpm.engine.ProcessEngineConfiguration
 import org.camunda.bpm.engine.impl.test.TestHelper
 import org.camunda.bpm.engine.runtime.{Job, ProcessInstance}
@@ -10,32 +12,39 @@ import org.camunda.bpm.engine.test.{ProcessEngineRule, ProcessEngineTestCase}
 import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests
 import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.{assertThat, managementService, repositoryService, runtimeService, task}
 import org.camunda.bpm.engine.test.mock.Mocks
+import org.camunda.bpm.engine.variable.value.TypedValue
 import org.junit.Assert.{assertEquals, assertNotNull, fail}
 import org.junit.{Before, Rule}
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 
+import scala.jdk.CollectionConverters.*
 import java.io.FileNotFoundException
 import java.util
 
 trait TestRunner extends CommonTesting:
 
   def test[
-      In <: Product,
-      Out <: Product
+    In <: Product: Encoder: Decoder,
+    Out <: Product: Encoder: Decoder
   ](process: Process[In, Out])(
-      activities: (ProcessNode | CustomTests)*
+      activities: ElementToTest*
   ): Unit =
     ProcessToTest(process, activities.toList).run()
 
 
-  extension (processToTest: ProcessToTest[?, ?])
+  extension [
+    In <: Product: Encoder: Decoder,
+    Out <: Product: Encoder: Decoder
+  ](processToTest: ProcessToTest[In, Out])
     def run(): Unit =
       val ProcessToTest(
         Process(InOutDescr(id, in, out, descr), _),
         elements
       ) = processToTest
-      implicit val processInstance = runtimeService.startProcessInstanceByKey(
+      //TODO that does not work for JSONs - see https://forum.camunda.org/t/unit-testing-a-process-that-uses-json/32727
+      println(s"INPUTS: ${in.asJavaVars()}")
+      implicit val processInstance: CProcessInstance = runtimeService.startProcessInstanceByKey(
         id,
         in.asJavaVars()
       )
@@ -43,28 +52,27 @@ trait TestRunner extends CommonTesting:
         .isStarted()
       // run manual tasks
       elements.foreach {
-        case ut: UserTask[?, ?] => ut.run()
-        case st: ServiceTask[?, ?] => st.run()
-        case dd: DecisionDmn[?, ?] => dd.run()
-        case ca: CallActivity[?, ?] => ca.run()
-        case ee: EndEvent => ee.run()
-        //(a: Activity[?,?,?]) => a.run(processInstance)
+        case NodeToTest(ut: UserTask[?, ?], _, out) => ut.run(out)
+        case NodeToTest(st: ServiceTask[?, ?], _, _) => st.run()
+        case NodeToTest(ca: CallActivity[?, ?], _, _) => ca.run()
+        case NodeToTest(dd: DecisionDmn[?, ?], _, out) => dd.run(out)
+        case NodeToTest(ee: EndEvent, _, _) => ee.run()
         case ct: CustomTests => ct.tests()
         case other =>
-          throw IllegalArgumentException(
-            s"This Activity is not supported: $other"
+          throw new IllegalArgumentException(
+            s"This TestStep is not supported: $other"
           )
       }
-      checkOutput(out)
+      checkOutput(out.asValueMap())
       assertThat(processInstance).isEnded
   end extension
 
   extension (userTask: UserTask[?, ?])
-    def run(): FromProcessInstance[Unit] =
-      val UserTask(InOutDescr(id, in, out, descr)) = userTask
+
+    def run(out: Map[String, Any]): FromProcessInstance[Unit] =
       val t = task()
       assertThat(t)
-        .hasDefinitionKey(id)
+        .hasDefinitionKey(userTask.id)
       /*    userTask.maybeForm.foreach {
         case EmbeddedForm(formKey) =>
           assertThat(t).hasFormKey(formKey.toString)
@@ -89,32 +97,29 @@ trait TestRunner extends CommonTesting:
         assertThat(t).hasDueDate(toCamundaDate(date.expression))
       )
        */
-      BpmnAwareTests.complete(t, out.asJavaVars())
+      BpmnAwareTests.complete(t, out.asJava)
       assertThat(summon[CProcessInstance])
-        .hasPassed(id)
+        .hasPassed(userTask.id)
   end extension
 
   extension (serviceTask: ServiceTask[?, ?])
     def run(): FromProcessInstance[Unit] =
-      val ServiceTask(InOutDescr(id, in, out, descr)) = serviceTask
       val archiveInvoiceJob = managementService.createJobQuery.singleResult
       assertNotNull(archiveInvoiceJob)
       managementService.executeJob(archiveInvoiceJob.getId)
       assertThat(summon[CProcessInstance])
-        .hasPassed(id)
+        .hasPassed(serviceTask.id)
   end extension
 
   extension (callActivity: CallActivity[?, ?])
-    def run(): FromProcessInstance[Unit] =
-      val CallActivity(InOutDescr(id, in, out, descr)) =
-        callActivity
+    def run(): FromProcessInstance[Unit] = ()
       //checkOutput(out)
   end extension
 
   extension (decisionDmn: DecisionDmn[?, ?])
-    def run(): FromProcessInstance[Unit] =
-      val DecisionDmn(InOutDescr(id, in, out, descr)) =
-        decisionDmn
+    def run(out: Map[String, Any]): FromProcessInstance[Unit] =
+    //  assertThat(summon[CProcessInstance])
+    //    .hasPassed(decisionDmn.id)
       checkOutput(out)
   end extension
 

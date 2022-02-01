@@ -165,8 +165,8 @@ private def check[T <: Product: Encoder](
               )
             matches
           case CamundaProperty(_, CJson(cValue, _)) =>
-            val cJson = toJson(cValue).deepDropNullValues
-            val pJson = toJson(pValue.value.toString).deepDropNullValues
+            val cJson = toJson(cValue)
+            val pJson = toJson(pValue.value.toString)
             val setCJson = cJson.as[Set[Json]].toOption.getOrElse(cJson)
             val setPJson = pJson.as[Set[Json]].toOption.getOrElse(pJson)
             val matches: Boolean = setCJson == setPJson

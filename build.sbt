@@ -131,6 +131,7 @@ lazy val exampleInvoice = project
   .settings(projectSettings("example-invoice"))
   .configure(preventPublication)
   .settings(
+    Test / parallelExecution := false,
     // for invoice-example
     resolvers += "Sonatype OSS Camunda" at "https://app.camunda.com/nexus/content/repositories/camunda-bpm/",
     libraryDependencies ++= camundaDependencies

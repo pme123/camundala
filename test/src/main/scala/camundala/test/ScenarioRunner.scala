@@ -23,30 +23,33 @@ import scala.jdk.CollectionConverters.*
 trait ScenarioRunner extends CommonTesting:
 
   def test[
-      In <: Product,
-      Out <: Product
+      In <: Product: Encoder: Decoder,
+      Out <: Product: Encoder: Decoder
   ](process: Process[In, Out])(
-      elements: (ProcessNode | CustomTests)*
+      elements: ElementToTest*
   ): Unit =
     ProcessToTest(process, elements.toList).run()
-
   lazy val mockedProcess = mock(classOf[ProcessScenario])
 
-  extension (processToTest: ProcessToTest[?, ?])
+  extension [
+      In <: Product: Encoder: Decoder,
+      Out <: Product: Encoder: Decoder
+  ](processToTest: ProcessToTest[In, Out])
 
     def run(): Unit =
+      println(s"PROCESS TO RUN: $processToTest")
       val scenario = prepare()
       exec(scenario)
 
     private def prepare(): Scenario =
-      val ProcessToTest(p: Process[?, ?], elements) = processToTest
+      val ProcessToTest(p: Process[In, Out], elements) = processToTest
       println(s"HEAD: ${p.elements.headOption}")
       elements.foreach {
-        case ut: UserTask[?, ?] => ut.prepare()
-        case st: ServiceTask[?, ?] => st.prepare()
-        case dd: DecisionDmn[?, ?] => dd.prepare()
-        case ca: CallActivity[?, ?] => ca.prepare()
-        case ee: EndEvent => ee.prepare()
+        case NodeToTest(ut: UserTask[?, ?], _, out) => ut.prepare(out)
+        case NodeToTest(st: ServiceTask[?, ?], _, out) => st.prepare(out)
+        case NodeToTest(ca: CallActivity[?, ?], _, out) => ca.prepare(out)
+        case NodeToTest(dd: DecisionDmn[?, ?], _, _) => dd.prepare()
+        case NodeToTest(ee: EndEvent, _, _) => ee.prepare()
         case ct: CustomTests => // nothing to prepare
         case other =>
           throw new IllegalArgumentException(
@@ -59,11 +62,11 @@ trait ScenarioRunner extends CommonTesting:
       val ProcessToTest(process, elements) = processToTest
       implicit val processInstance = scenario.instance(mockedProcess)
       elements.foreach {
-        case ut: UserTask[?, ?] => ut.exec()
-        case st: ServiceTask[?, ?] => st.exec()
-        case dd: DecisionDmn[?, ?] => dd.exec()
-        case ca: CallActivity[?, ?] => ca.exec()
-        case ee: EndEvent => ee.exec()
+        case NodeToTest(ut: UserTask[?, ?], _, _) => ut.exec()
+        case NodeToTest(st: ServiceTask[?, ?], _, out) => st.exec(out)
+        case NodeToTest(ca: CallActivity[?, ?], _, _) => ca.exec()
+        case NodeToTest(dd: DecisionDmn[?, ?], _, out) => dd.exec(out)
+        case NodeToTest(ee: EndEvent, _, _) => ee.exec()
         case ct: CustomTests => // not supported
           println("CustomTests are not supported!")
         case other =>
@@ -76,7 +79,10 @@ trait ScenarioRunner extends CommonTesting:
   end extension
 
   // Processes are executed
-  extension (process: Process[?, ?])
+  extension [
+      In <: Product: Encoder: Decoder,
+      Out <: Product: Encoder: Decoder
+  ](process: Process[In, Out])
     def prepare(): Scenario =
       val Process(InOutDescr(id, in, out, descr), _) = process
       Scenario
@@ -86,21 +92,21 @@ trait ScenarioRunner extends CommonTesting:
 
     def exec(): FromProcessInstance[Unit] =
       assertThat(summon[CProcessInstance]).isEnded
-      checkOutput(process.out)
+      checkOutput(process.out.asValueMap())
 
   end extension
 
   // UserTasks are mocked
   extension (userTask: UserTask[?, ?])
-    def prepare(): Unit = 
+    def prepare(out: Map[String, Any]): Unit =
       when(mockedProcess.waitsAtUserTask(userTask.id))
         .thenReturn { task =>
           println(s"USERTASK: ${userTask.out}")
-          task.complete(userTask.out.asJavaVars())
+          task.complete(out.asJava)
         }
 
     def exec(): FromProcessInstance[Unit] = ()
-   /*   val UserTask(InOutDescr(id, in, out, descr)) = userTask
+  /*   val UserTask(InOutDescr(id, in, out, descr)) = userTask
       val t = task()
       assertThat(t)
         .hasDefinitionKey(id)
@@ -112,26 +118,28 @@ trait ScenarioRunner extends CommonTesting:
   // ServiceTasks are mocked
   extension (serviceTask: ServiceTask[?, ?])
 
-    def prepare(): Unit =
+    def prepare(out: Map[String, Any]): Unit =
       when(mockedProcess.waitsAtServiceTask(serviceTask.id))
         .thenReturn { task =>
-          task.complete(serviceTask.out.asJavaVars())
+          task.complete(out.asJava)
         }
 
-    def exec(): FromProcessInstance[Unit] =
+    def exec(out: Map[String, Any]): FromProcessInstance[Unit] =
       assertThat(summon[CProcessInstance])
         .hasPassed(serviceTask.id)
-      checkOutput(serviceTask.out)
+      checkOutput(out)
 
   end extension
 
   // CallActivities are mocked
   extension (callActivity: CallActivity[?, ?])
-    def prepare(): Unit =
+
+    def prepare(out: Map[String, Any]): Unit =
       when(mockedProcess.waitsAtMockedCallActivity(callActivity.id))
         .thenReturn { ca =>
-          ca.complete(callActivity.out.asJavaVars())
+          ca.complete(out.asJava)
         }
+
     def exec(): FromProcessInstance[Unit] =
       assertThat(summon[CProcessInstance])
         .hasPassed(callActivity.id)
@@ -140,8 +148,8 @@ trait ScenarioRunner extends CommonTesting:
   // DecisionDmn are executed
   extension (decisionDmn: DecisionDmn[?, ?])
     def prepare(): Unit = ()
-    def exec(): FromProcessInstance[Unit] =
-      checkOutput(decisionDmn.out)
+    def exec(out: Map[String, Any]): FromProcessInstance[Unit] =
+      checkOutput(out)
   end extension
 
   // EndEvents are passed

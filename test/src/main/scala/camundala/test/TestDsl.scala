@@ -1,8 +1,15 @@
 package camundala
 package test
 
-import camundala.bpmn.{Process, ProcessNode}
-import os.{Path, ResourcePath, pwd}
+import camundala.bpmn.*
+
+import scala.annotation.tailrec
+import scala.language.implicitConversions
+import scala.jdk.CollectionConverters.*
+
+
+val baseResource: ResourcePath = os.resource
+def formResource: ResourcePath = os.resource / "static" / "forms"
 
 trait TestDsl:
 
@@ -19,7 +26,26 @@ trait TestDsl:
   end extension
 
   def serviceRegistry(key: String, value: Any): ServiceRegistry = ServiceRegistry(key, value)
-  val baseResource: ResourcePath = os.resource
-  def formResource: ResourcePath = os.resource / "static" / "forms"
 
   def custom(tests: => Unit): CustomTests = CustomTests(() => tests)
+
+
+  def test[
+    In <: Product: Encoder: Decoder,
+    Out <: Product: Encoder: Decoder
+  ](process: Process[In, Out])(
+    activities: ElementToTest*
+  ): Unit
+
+
+  implicit def toTest[
+    In <: Product: Encoder: Decoder,
+    Out <: Product: Encoder: Decoder
+  ](inOut: InOut[In,Out, ?] & ProcessNode): NodeToTest =
+    println(s"INPOUT toTest: $inOut")
+    NodeToTest(inOut, inOut.in.asValueMap(), inOut.out.asValueMap())
+
+  implicit def toTest(pn: EndEvent): NodeToTest =
+    println(s"PROCESSNODE toTest: $pn")
+    NodeToTest(pn)
+

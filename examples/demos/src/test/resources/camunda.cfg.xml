@@ -13,6 +13,11 @@
         <property name="idGenerator">
             <bean class="org.camunda.bpm.engine.impl.persistence.StrongUuidGenerator"/>
         </property>
+        <property name="processEnginePlugins">
+            <list>
+                <bean class="org.camunda.spin.plugin.impl.SpinProcessEnginePlugin"/>
+            </list>
+        </property>
 
     </bean>
 </beans>

@@ -37,7 +37,7 @@ class ExampleInvoiceTest extends TestRunner:
   @Test
   def testInvoiceReceipt(): Unit =
     test(InvoiceReceiptP)(
-      invoiceAssignApproverDMN2,
+    //TODO  invoiceAssignApproverDMN2,
       // checkGroupIds,
       approveInvoiceUT,
       prepareBankTransferUT,

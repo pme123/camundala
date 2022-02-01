@@ -5,8 +5,6 @@ package bpmn
 import camundala.api.*
 import camundala.bpmn.*
 import camundala.domain.*
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
 
 object TwitterApi extends BpmnDsl:
   implicit def tenantId: Option[String] = Some("{{tenantId}}")
@@ -52,3 +50,10 @@ object TwitterApi extends BpmnDsl:
     TweetHandledEEIdent,
     descr = None
   )
+
+  implicit lazy val CreateTweetSchema: Schema[CreateTweet] = Schema.derived
+  implicit lazy val CreateTweetEncoder: Encoder[CreateTweet] = deriveEncoder
+  implicit lazy val CreateTweetDecoder: Decoder[CreateTweet] = deriveDecoder
+  implicit lazy val ReviewTweetSchema: Schema[ReviewTweet] = Schema.derived
+  implicit lazy val ReviewTweetEncoder: Encoder[ReviewTweet] = deriveEncoder
+  implicit lazy val ReviewTweetDecoder: Decoder[ReviewTweet] = deriveDecoder
