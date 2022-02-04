@@ -1,9 +1,6 @@
 package camundala
 package camunda
 
-
-export scala.jdk.CollectionConverters.*
-
 export os.Path
 
 export java.util.ArrayList

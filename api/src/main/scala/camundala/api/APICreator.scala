@@ -3,14 +3,11 @@ package api
 
 import domain.*
 import bpmn.*
-import laika.api.*
-import laika.ast.MessageFilter
-import laika.format.*
-import laika.markdown.github.GitHubFlavor
 import sttp.tapir.docs.openapi.{OpenAPIDocsInterpreter, OpenAPIDocsOptions}
 import sttp.tapir.openapi.circe.yaml.*
 import sttp.tapir.openapi.{Contact, Info, OpenAPI, Server}
 
+import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
 trait APICreator extends App:
@@ -28,9 +25,25 @@ trait APICreator extends App:
   def createChangeLog(): String =
     val changeLogFile = basePath / "CHANGELOG.md"
     if (changeLogFile.toIO.exists())
-      createChangeLog(read(changeLogFile))
+      //  createChangeLog(read(changeLogFile))
+      s"""
+         |# Changelog
+         |
+         |<details>
+         |<summary>CHANGELOG.md</summary>
+         |<p>
+         |
+         |${read
+        .lines(changeLogFile)
+        .tail
+        .map(_.replace("##", "###"))
+        .mkString("\n")}
+         |
+         |</p>
+         |</details>
+         |""".stripMargin
     else
-      "There is no CHANGELOG.md in the Package."
+      ""
 
   def createReadme(): String =
     val readme = basePath / "README.md"
@@ -98,49 +111,6 @@ trait APICreator extends App:
     os.write(path, yaml)
     println(s"Created Open API $path")
 
-  private def createChangeLog(changeLog: String): String =
-
-    val transformer = Transformer
-      .from(Markdown)
-      .to(HTML)
-      .using(GitHubFlavor)
-      .withRawContent
-      .strict
-      .failOnMessages(MessageFilter.None)
-      // .renderMessages(MessageFilter.Error)
-      .build
-    transformer.transform(changeLog) match
-      case Right(value) => s"""
-                              |<details>
-                              |<summary><b>CHANGELOG</b></summary>
-                              |<p>
-                              |
-                              |$value
-                              |
-                              |</p>
-                              |</details>
-                              |""".stripMargin
-      case Left(value) =>
-        println(s"Problem CHANGELOG: $value")
-        s"""CHANGELOG.md could not be created!
-           |
-           |Use Format:
-           |
-           |## 0.19.0 - 2021-09-10
-           |### Fixed
-           |- Fixed missing git push for master branch.
-           |
-           |## 0.18.1 - 2021-09-08
-           |### Fixed
-           |- Problem with Status 200 was not handled properly.
-           |
-           |### Added
-           |- Helper to create ProceedProcess object.
-           |
-           |Problem:
-           |
-           |$value""".stripMargin
-
   extension [
       In <: Product: Encoder: Decoder: Schema: ClassTag,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
@@ -150,17 +120,22 @@ trait APICreator extends App:
     def endpoint: ApiEndpoints =
       endpoints()
 
+    // override the tag and processName with the same value
+    def endpoint(tag: String): ApiEndpoints =
+      endpoint(tag, tag)
+
     // override the processName / tag
     def endpoint(tag: String, processName: String): ApiEndpoints =
-      endpoints(Nil, Some(tag), Some(processName))
+      endpoints(Some(tag), Some(processName))
 
-    def endpoints(activities: ApiEndpoint[?,?,?,?]*): ApiEndpoints =
-      endpoints(activities, None, None)
+    //noinspection NoTailRecursionAnnotation
+    def endpoints(activities: ApiEndpoint[?, ?, ?, ?]*): ApiEndpoints =
+      endpoints(None, None, activities:_*)
 
     def endpoints(
-        activities: Seq[ApiEndpoint[?,?,?,?]],
         tag: Option[String] = None,
-        processName: Option[String] = None
+        processName: Option[String] = None,
+        activities: ApiEndpoint[?, ?, ?, ?]*
     ): ApiEndpoints =
       val (name, process) = processes.headOption.getOrElse(
         throwErr("processes must have at least one entry.")
@@ -193,6 +168,10 @@ trait APICreator extends App:
       Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](process: Process[In, Out])
 
+    // override the tag and processName with the same value
+    def endpoint(tag: String): ApiEndpoints =
+      endpoint(tag, tag)
+
     // override the processName / tag
     def endpoint(tag: String, processName: String): ApiEndpoints =
       endpoints(Nil, tag, processName)
@@ -200,11 +179,11 @@ trait APICreator extends App:
     def endpoint: ApiEndpoints =
       endpoints()
 
-    def endpoints(activities: ApiEndpoint[?,?,?,?]*): ApiEndpoints =
+    def endpoints(activities: ApiEndpoint[?, ?, ?, ?]*): ApiEndpoints =
       endpoints(activities, process.id, process.id)
 
     def endpoints(
-        activities: Seq[ApiEndpoint[?,?,?,?]],
+        activities: Seq[ApiEndpoint[?, ?, ?, ?]],
         tag: String,
         processName: String
     ): ApiEndpoints =
@@ -263,7 +242,8 @@ trait APICreator extends App:
       In <: Product: Encoder: Decoder: Schema: ClassTag,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](dmn: DecisionDmn[In, Out])
-    def endpoint: ApiEndpoint[In, EvaluateDecisionIn, Out, EvaluateDecision[In, Out]] =
+    def endpoint
+        : ApiEndpoint[In, EvaluateDecisionIn, Out, EvaluateDecision[In, Out]] =
       EvaluateDecision(
         dmn,
         CamundaRestApi(
@@ -275,8 +255,22 @@ trait APICreator extends App:
   end extension
 
   extension [
-    In <: Product: Encoder: Decoder: Schema: ClassTag,
+      In <: Product: Encoder: Decoder: Schema: ClassTag
   ](event: ReceiveMessageEvent[In])
+    def endpoint: ApiEndpoint[In, CorrelateMessageIn, NoOutput, CorrelateMessage[In]] =
+      CorrelateMessage(
+        event,
+        CamundaRestApi(
+          event.inOutDescr,
+          event.id,
+          evaluateDecisionErrors
+        )
+      )
+  end extension
+
+  extension [
+    In <: Product: Encoder: Decoder: Schema: ClassTag
+  ](event: ReceiveSignalEvent[In])
     def endpoint: ApiEndpoint[In, SendSignalIn, NoOutput, SendSignal[In]] =
       SendSignal(
         event,
@@ -288,4 +282,11 @@ trait APICreator extends App:
       )
   end extension
 
+/*TODO
+  implicit def toEndpoint[
+    In <: Product: Encoder: Decoder: Schema: ClassTag,
+    Out <: Product: Encoder: Decoder: Schema: ClassTag
+  ](process: Process[In, Out]): ApiEndpoints =
+    process.endpoint
+ */
 end APICreator

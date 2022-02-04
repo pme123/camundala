@@ -134,7 +134,7 @@ trait SimulationRunner extends Simulation:
           .auth()
           .body(
             StringBody(
-              CorrelationMessageIn(
+              CorrelateMessageIn(
                 messageName = msgName,
                 tenantId = tenantId,
                 businessKey = businessKey,
@@ -400,7 +400,7 @@ trait SimulationRunner extends Simulation:
             .auth()
             .body(
               StringBody(
-                CorrelationMessageIn(
+                CorrelateMessageIn(
                   messageName = event.messageName,
                   processInstanceId = Some("#{processInstanceId}"),
                   processVariables = Some(CamundaVariable.toCamunda(event.in))

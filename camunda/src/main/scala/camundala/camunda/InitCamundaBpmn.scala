@@ -10,6 +10,7 @@ import sttp.tapir.generic.auto.*
 import java.io.File
 import scala.language.implicitConversions
 import scala.util.matching.Regex
+import scala.jdk.CollectionConverters.*
 
 trait InitCamundaBpmn extends BpmnDsl, ProjectPaths, App:
 

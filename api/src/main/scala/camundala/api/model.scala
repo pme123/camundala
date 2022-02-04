@@ -301,7 +301,7 @@ case class StartProcessIn(
     withVariablesInReturn: Boolean = true
 )
 
-case class CorrelationMessageIn(
+case class CorrelateMessageIn(
     messageName: String,
     businessKey: Option[String] = None,
     tenantId: Option[String] = None,
@@ -518,11 +518,11 @@ type FormVariables = Map[String, CamundaVariable]
 implicit lazy val StartProcessInSchema: Schema[StartProcessIn] = Schema.derived
 implicit lazy val StartProcessInEncoder: Encoder[StartProcessIn] = deriveEncoder
 implicit lazy val StartProcessInDecoder: Decoder[StartProcessIn] = deriveDecoder
-implicit lazy val CorrelationMessageInSchema: Schema[CorrelationMessageIn] =
+implicit lazy val CorrelationMessageInSchema: Schema[CorrelateMessageIn] =
   Schema.derived
-implicit lazy val CorrelationMessageInEncoder: Encoder[CorrelationMessageIn] =
+implicit lazy val CorrelationMessageInEncoder: Encoder[CorrelateMessageIn] =
   deriveEncoder
-implicit lazy val CorrelationMessageInDecoder: Decoder[CorrelationMessageIn] =
+implicit lazy val CorrelationMessageInDecoder: Decoder[CorrelateMessageIn] =
   deriveDecoder
 implicit lazy val SendSignalInSchema: Schema[SendSignalIn] = Schema.derived
 implicit lazy val SendSignalInEncoder: Encoder[SendSignalIn] = deriveEncoder

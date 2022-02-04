@@ -163,3 +163,22 @@ object ReceiveMessageEvent:
       id,
       InOutDescr(id, NoInput(), NoOutput())
     )
+
+case class ReceiveSignalEvent[
+  In <: Product: Encoder: Decoder: Schema
+](
+   messageName: String,
+   inOutDescr: InOutDescr[In, NoOutput]
+ ) extends ProcessNode,
+  InOut[In, NoOutput, ReceiveSignalEvent[In]]:
+
+  def withInOutDescr(descr: InOutDescr[In, NoOutput]): ReceiveSignalEvent[In] =
+    copy(inOutDescr = descr)
+
+object ReceiveSignalEvent:
+
+  def init(id: String): ReceiveSignalEvent[NoInput] =
+    ReceiveSignalEvent(
+      id,
+      InOutDescr(id, NoInput(), NoOutput())
+    )

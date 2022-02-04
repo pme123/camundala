@@ -9,20 +9,20 @@ import sttp.tapir.*
 
 import scala.reflect.ClassTag
 
-case class SendSignal[
+case class CorrelateMessage[
     In <: Product: Encoder: Decoder: Schema: ClassTag
 ](
-    event: ReceiveSignalEvent[In],
+    event: ReceiveMessageEvent[In],
     restApi: CamundaRestApi[In, NoOutput]
-) extends ApiEndpoint[In, SendSignalIn, NoOutput, SendSignal[In]]:
+) extends ApiEndpoint[In, CorrelateMessageIn, NoOutput, CorrelateMessage[In]]:
 
   val outStatusCode = StatusCode.NoContent
-  val endpointType = "Signal"
+  val endpointType = "Message"
   val apiName = event.messageName
 
   def withRestApi(
       restApi: CamundaRestApi[In, NoOutput]
-  ): SendSignal[In] =
+  ): CorrelateMessage[In] =
     copy(restApi = restApi)
 
   override lazy val descr: String = restApi.maybeDescr.getOrElse("") +
@@ -47,11 +47,11 @@ case class SendSignal[
       tenantId: Option[String]
   ) =
     restApi.inMapper { (example: In) =>
-      SendSignalIn(
+      CorrelateMessageIn(
         apiName,
         tenantId = tenantId,
-        variables = Some(CamundaVariable.toCamunda(example))
+        processVariables = Some(CamundaVariable.toCamunda(example))
       )
     }
 
-end SendSignal
+end CorrelateMessage
