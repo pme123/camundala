@@ -42,10 +42,8 @@ trait TestDsl:
     In <: Product: Encoder: Decoder,
     Out <: Product: Encoder: Decoder
   ](inOut: InOut[In,Out, ?] & ProcessNode): NodeToTest =
-    println(s"INPOUT toTest: $inOut")
     NodeToTest(inOut, inOut.in.asValueMap(), inOut.out.asValueMap())
 
   implicit def toTest(pn: EndEvent): NodeToTest =
-    println(s"PROCESSNODE toTest: $pn")
     NodeToTest(pn)
 

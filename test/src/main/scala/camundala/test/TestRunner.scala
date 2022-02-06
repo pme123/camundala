@@ -42,8 +42,6 @@ trait TestRunner extends CommonTesting:
         Process(InOutDescr(id, in, out, descr), _),
         elements
       ) = processToTest
-      //TODO that does not work for JSONs - see https://forum.camunda.org/t/unit-testing-a-process-that-uses-json/32727
-      println(s"INPUTS: ${in.asJavaVars()}")
       implicit val processInstance: CProcessInstance = runtimeService.startProcessInstanceByKey(
         id,
         in.asJavaVars()

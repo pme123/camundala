@@ -3,7 +3,8 @@ package camundala.examples.invoice.bpmn
 import camundala.examples.invoice.bpmn.InvoiceApi.*
 import camundala.test.*
 import org.junit.Test
-
+import io.circe.generic.auto.*
+import sttp.tapir.generic.auto.*
 class ExampleInvoiceDmnTest extends DmnTestRunner:
 
   val dmnPath = baseResource / "invoiceBusinessDecisions.dmn"

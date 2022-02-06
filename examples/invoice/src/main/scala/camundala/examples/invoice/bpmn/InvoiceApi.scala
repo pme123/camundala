@@ -4,7 +4,9 @@ package examples.invoice.bpmn
 import api.*
 import bpmn.*
 import domain.*
-
+import sttp.tapir.json.circe.*
+import io.circe.generic.auto.*
+import sttp.tapir.generic.auto.*
 object InvoiceApi extends BpmnDsl:
 
   @description("Received Invoice that need approval.")
@@ -66,7 +68,7 @@ object InvoiceApi extends BpmnDsl:
       @description("Flag that is set by the Reviewer (only set if there was a review).")
       clarified: Option[Boolean] = None
   )
-
+/*
   implicit lazy val PrepareBankTransferSchema: Schema[PrepareBankTransfer] = Schema.derived
   implicit lazy val PrepareBankTransferEncoder: Encoder[PrepareBankTransfer] = deriveEncoder
   implicit lazy val PrepareBankTransferDecoder: Decoder[PrepareBankTransfer] = deriveDecoder
@@ -99,13 +101,12 @@ object InvoiceApi extends BpmnDsl:
   implicit lazy val SelectApproverGroupEncoder: Encoder[SelectApproverGroup] = deriveEncoder
   implicit lazy val SelectApproverGroupDecoder: Decoder[SelectApproverGroup] = deriveDecoder
 
+  implicit lazy val ApproverGroupSchema: Schema[ApproverGroup] = Schema.derived
+
   implicit lazy val AssignApproverGroupsSchema: Schema[AssignApproverGroups] = Schema.derived
   implicit lazy val AssignApproverGroupsEncoder: Encoder[AssignApproverGroups] = deriveEncoder
   implicit lazy val AssignApproverGroupsDecoder: Decoder[AssignApproverGroups] = deriveDecoder
-
-  implicit lazy val ApproverGroupSchema: Schema[ApproverGroup] = Schema.derived
-  implicit lazy val ApproverGroupEncoder: Encoder[ApproverGroup] = deriveEncoder
-  implicit lazy val ApproverGroupDecoder: Decoder[ApproverGroup] = deriveDecoder
+*/
 
   val InvoiceReceiptPIdent = "InvoiceReceiptP"
 

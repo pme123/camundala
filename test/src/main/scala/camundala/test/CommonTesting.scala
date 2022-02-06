@@ -64,32 +64,46 @@ trait CommonTesting extends TestDsl:
     val assertion = assertThat(summon[CProcessInstance])
     val variables = assertion.variables()
     //println(s"CHECK: ${variables.extractingByKeys("success").is(Condition())}")
-    def checkValue(key: String, value: Any): Condition[util.Map[String, Any]] = Condition(
-      me => {
-        println(s"ME ${me.get(key)} ${me.get(key).getClass} - $value ${value.getClass}")
-        value match
-          case jn: JacksonJsonNode =>
-            val cJson = toJson(jn.toString)
-            val pJson = me.get(key) match
-              case jn2: JacksonJsonNode =>
-                toJson(me.get(key).toString)
-              case other =>
-                toJson(Spin.JSON(other).toString)
-            val setCJson = cJson.as[Set[Json]].toOption.getOrElse(cJson)
-            val setPJson = pJson.as[Set[Json]].toOption.getOrElse(pJson)
-            println(s"ME ${setCJson} ${setCJson.getClass} - $setPJson ${setPJson.getClass}")
+    def checkValue(key: String, value: Any): Condition[util.Map[String, Any]] =
+      Condition(
+        me => {
+          println(
+            s"ME ${me.get(key)} ${me.get(key).getClass} - $value ${value.getClass}"
+          )
+          value match
+            case jn: JacksonJsonNode =>
+              val cJson = toJson(jn.toString)
+              val pJson = toJson(
+                me.get(key) match
+                  case jn2: JacksonJsonNode =>
+                    me.get(key).toString
+                  case other: util.Collection[?] =>
+                    other.asScala.toSeq
+                      .map {
+                        case a: String =>
+                          s"\"$a\""
+                        case o =>
+                          o.toString
+                      }
+                      .mkString("[", ", ", "]")
+              )
+              val setCJson = cJson.as[Set[Json]].toOption.getOrElse(cJson)
+              val setPJson = pJson.as[Set[Json]].toOption.getOrElse(pJson)
+              println(
+                s"ME2 ${setCJson} ${setCJson.getClass} - $setPJson ${setPJson.getClass}"
+              )
 
-            setCJson == setPJson
-          case _ =>
-            me.get(key) == value
-      },
-      "Check variable"
-    )
+              setCJson == setPJson
+            case _ =>
+              me.get(key) == value
+        },
+        s"Check variable $key has $value"
+      )
     for
       (k, v) <- out
       _ = assertion.hasVariables(k)
     yield
       println(s"CHECK: ${v.getClass}")
-      variables.has(checkValue(k,v))//containsEntry(k, v)
+      variables.has(checkValue(k, v)) //containsEntry(k, v)
 
 end CommonTesting

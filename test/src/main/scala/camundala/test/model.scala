@@ -36,10 +36,12 @@ case class ProcessToTest[
 )
 
 sealed trait ElementToTest
-case class NodeToTest(inOut: ProcessNode, in: Map[String, Any] = Map.empty, out: Map[String, Any] = Map.empty)
-  extends ElementToTest
-case class CustomTests(tests: () => Unit)
-  extends ElementToTest
+case class NodeToTest(
+    inOut: ProcessNode,
+    in: Map[String, Any] = Map.empty,
+    out: Map[String, Any] = Map.empty
+) extends ElementToTest
+case class CustomTests(tests: () => Unit) extends ElementToTest
 
 extension [T <: Product: Encoder](product: T)
   def names(): Seq[String] = product.productElementNames.toSeq
@@ -51,34 +53,48 @@ extension [T <: Product: Encoder](product: T)
 
   def asValueMap(): Map[String, Any] =
     asVars()
-      .filterNot { case k -> v => v.isInstanceOf[None.type] } // don't send null
-      .map { case (k, v) => k -> objectToValueMap(k, v) }
+      .filterNot { case k -> v =>
+        v.isInstanceOf[None.type]
+      } // don't send null
+      .map { case (k, v) => k -> objectToVM(k, v) }
 
-  private def objectToValueMap(
-                                key: String,
-                                value: Any
-                              ):Any =
+  def objectToVM(
+      key: String,
+      value: Any
+  ): Any =
     value match
-      case Some(v) => objectToValueMap(key, v)
+      case Some(v) => objectToVM(key, v)
+      case c: Iterable[?] =>
+       val f =  c.map(objectToVM(key, _))
+        println(s"ITERABLE: ${f.head.getClass} - $f")
+        valueToVM(key, f)
+      case v =>
+        valueToVM(key, v)
+
+  def valueToVM(key: String, value: Any): Any =
+    value match
+      case v: scala.reflect.Enum =>
+        v.toString
       case FileInOut(fileName, content, mimeType) =>
         fileValue(fileName)
           .file(content)
-          .mimeType(mimeType.orNull).create
-      case e: scala.reflect.Enum =>
-        e.toString
+          .mimeType(mimeType.orNull)
+          .create
       case v: Product =>
+        println(s"PRODUCT: ${product}")
         product.asJson.deepDropNullValues.hcursor
           .downField(key)
           .as[Json] match
           case Right(v) =>
             println(s"JSON: ${v}")
-            val jsonValue = Spin.JSON(v.toString) //new JsonValueImpl(Spin.JSON(v.toString), null, null, true)
+            val jsonValue = Spin.JSON(
+              v.toString
+            ) //new JsonValueImpl(Spin.JSON(v.toString), null, null, true)
             println(s"SPIN: ${jsonValue}")
             jsonValue
           case Left(ex) =>
             throwErr(s"$key of $v could NOT be Parsed to a JSON!\n$ex")
-      case v =>
-        value
+      case _ => value
 
   def asJavaVars(): java.util.Map[String, Any] =
     asValueMap().asJava

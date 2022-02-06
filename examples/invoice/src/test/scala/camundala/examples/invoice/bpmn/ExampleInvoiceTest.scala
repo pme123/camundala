@@ -5,6 +5,9 @@ import camundala.examples.invoice.bpmn.InvoiceApi.*
 import camundala.test.*
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
+import io.circe.generic.auto.*
+import io.circe.syntax.*
+import sttp.tapir.generic.auto.*
 
 import java.util
 import java.util.{HashSet, List, Set}
@@ -36,9 +39,10 @@ class ExampleInvoiceTest extends TestRunner:
 
   @Test
   def testInvoiceReceipt(): Unit =
+    println(s"InvoiceReceiptP: ${invoiceAssignApproverDMN2.out.asJson}")
     test(InvoiceReceiptP)(
-    //TODO  invoiceAssignApproverDMN2,
-      // checkGroupIds,
+      invoiceAssignApproverDMN2,
+      checkGroupIds,
       approveInvoiceUT,
       prepareBankTransferUT,
       archiveInvoiceST,
