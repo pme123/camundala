@@ -87,6 +87,7 @@ trait ScenarioRunner extends CommonTesting:
       val Process(InOutDescr(id, in, out, descr), _) = process
       Scenario
         .run(mockedProcess)
+   //     .withMockedProcess("ReviewInvoiceP") //TODO see https://forum.camunda.org/t/mocking-call-activities-for-the-camunda-scenario-tests/27161/3
         .startByKey(process.id, process.in.asJavaVars())
         .execute()
 
@@ -137,6 +138,7 @@ trait ScenarioRunner extends CommonTesting:
     def prepare(out: Map[String, Any]): Unit =
       when(mockedProcess.waitsAtMockedCallActivity(callActivity.id))
         .thenReturn { ca =>
+          println(s"CCALLACTIVITY complet: ${callActivity}")
           ca.complete(out.asJava)
         }
 
