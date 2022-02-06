@@ -56,13 +56,13 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
         inline path: T => A,
         inline targetName: In => A
     ): BpmnInOut[In, Out] =
-      ${ mapImpl('{ BpmnInOut(inOut) }, 'path, 'targetName, '{ false }) }
+      ${ mapImpl[In, Out, T, A, In]('{ BpmnInOut(inOut) }, 'path, 'targetName, '{ false }) }
 
     inline def mapOut[T, A](
         inline path: Out => A,
         inline targetName: T => A
     ): BpmnInOut[In, Out] =
-      ${ mapImpl('{ BpmnInOut(inOut) }, 'path, 'targetName, '{ true }) }
+      ${ mapImpl[In, Out, Out, A, T]('{ BpmnInOut(inOut) }, 'path, 'targetName, '{ true }) }
 
 
   extension [In <: Product, Out <: Product](

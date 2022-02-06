@@ -6,7 +6,7 @@ import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.{Ignore, Test}
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
-
+import io.circe.syntax.*
 import java.util
 import java.util.{HashSet, List, Set}
 import scala.compiletime.{constValue, constValueTuple}

@@ -2,6 +2,8 @@ package camundala
 package test
 
 import bpmn.*
+import io.circe.*
+import io.circe.generic.auto
 import io.circe.syntax.*
 import camundala.domain.FileInOut
 import org.camunda.bpm.engine.variable.Variables.fileValue
@@ -52,11 +54,13 @@ extension [T <: Product: Encoder](product: T)
       .toMap
 
   def asValueMap(): Map[String, Any] =
+    println(s"asVars(): ${asVars()}")
     asVars()
       .filterNot { case k -> v =>
         v.isInstanceOf[None.type]
       } // don't send null
-      .map { case (k, v) => k -> objectToVM(k, v) }
+      .map { case (k, v) =>
+        k -> objectToVM(k, v) }
 
   def objectToVM(
       key: String,
@@ -72,6 +76,7 @@ extension [T <: Product: Encoder](product: T)
         valueToVM(key, v)
 
   def valueToVM(key: String, value: Any): Any =
+    println(s"valueToVM($key: String, $value: Any)")
     value match
       case v: scala.reflect.Enum =>
         v.toString
@@ -81,7 +86,8 @@ extension [T <: Product: Encoder](product: T)
           .mimeType(mimeType.orNull)
           .create
       case v: Product =>
-        println(s"PRODUCT: ${product}")
+        println(s"PRODUCT: $key :: ${product}")
+
         product.asJson.deepDropNullValues.hcursor
           .downField(key)
           .as[Json] match

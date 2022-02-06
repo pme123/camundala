@@ -23,7 +23,7 @@ import java.io.FileNotFoundException
 import java.util
 
 trait TestRunner extends CommonTesting:
-
+  import io.circe.syntax.*
   def test[
     In <: Product: Encoder: Decoder,
     Out <: Product: Encoder: Decoder

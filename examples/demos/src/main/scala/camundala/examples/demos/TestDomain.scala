@@ -12,28 +12,50 @@ object TestDomain extends BpmnDsl:
   case class ValueWrapper(success: Boolean = false)
 
 // process In
-  case class ProcessIn(name: String = "example", someObj: SomeObj = SomeObj(), success: ValueWrapper = ValueWrapper())
+  case class ProcessIn(
+      name: String = "example",
+      optionExample: Option[String] = Some("optionValue"),
+      listExample: Seq[String] = List("a", "b"),
+      someObj: SomeObj = SomeObj(),
+      success: ValueWrapper = ValueWrapper()
+  )
   // process Out
-  case class ProcessOut(success: ValueWrapper = ValueWrapper(), successStr: String = "What a CallActivity!")
+  case class ProcessOut(
+      success: ValueWrapper = ValueWrapper(),
+      successStr: String = "What a CallActivity!",
+      optionResult: Option[String] = Some("optionValue"),
+      listResult: Seq[String] = List("a", "b"),
+  )
 
   // call Activity In
-  case class CallProcessIn(putTag: String = "voila", success: ValueWrapper = ValueWrapper())
-  case class CallProcessOut(result: String = "What a CallActivity!", success: ValueWrapper = ValueWrapper())
+  case class CallProcessIn(
+      putTag: String = "voila",
+      success: ValueWrapper = ValueWrapper(),
+      someOption: Option[String] = Some("optionValue"),
+      someList: Seq[String] = List("listValue")
+  )
+  case class CallProcessOut(
+      result: String = "What a CallActivity!",
+      success: ValueWrapper = ValueWrapper(),
+      someOption: Option[String] = Some("optionValue"),
+      someList: List[String] = List("optionValue"),
+  )
 
   // generate-test.bpmn
   val CamundalaGenerateTestPIdent = "camundala-generate-test"
   lazy val CamundalaGenerateTestP = process(
     CamundalaGenerateTestPIdent,
     in = ProcessIn(),
-    out = ProcessOut(),
+    out = ProcessOut()
   )
 
   val CallProcessCAIdent = "CallProcessCA"
-  lazy val CallProcessCA: CallActivity[CallProcessIn, CallProcessOut] = callActivity(
-    CallProcessCAIdent,
-    in = CallProcessIn(),
-    out = CallProcessOut(),
-    descr = None
-  )
+  lazy val CallProcessCA: CallActivity[CallProcessIn, CallProcessOut] =
+    callActivity(
+      CallProcessCAIdent,
+      in = CallProcessIn(),
+      out = CallProcessOut(),
+      descr = None
+    )
 
 end TestDomain
