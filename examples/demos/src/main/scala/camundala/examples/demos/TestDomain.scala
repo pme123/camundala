@@ -22,6 +22,7 @@ object TestDomain extends BpmnDsl:
   // process Out
   case class ProcessOut(
       success: ValueWrapper = ValueWrapper(),
+  //TODO    isBoolean: String = "false",
       successStr: String = "What a CallActivity!",
       optionResult: Option[String] = Some("optionValue"),
       listResult: Seq[String] = List("a", "b"),

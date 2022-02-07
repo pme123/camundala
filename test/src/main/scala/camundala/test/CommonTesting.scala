@@ -97,7 +97,7 @@ trait CommonTesting extends TestDsl:
             case _ =>
               me.get(key) == value
         },
-        s"Check variable $key has $value"
+        s"Check variable $key has $value (${value.getClass})"
       )
     for
       (k, v) <- out

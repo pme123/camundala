@@ -81,6 +81,11 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
                            ): BpmnInOut[In, Out] =
       ${ mapImpl('{ bpmnInOut }, 'path, 'targetName, '{ true }) }
 
+    inline def mapOut[T, A, B](
+                               inline path: Out => A,
+                               inline targetName: T => B
+                             ): BpmnInOut[In, Out] =
+        ${ mapImpl('{ bpmnInOut }, 'path, 'targetName, '{ true }) }
   extension (bpmnProcess: BpmnProcess)
 
     def toCamunda: FromCamundable[Unit] =

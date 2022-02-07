@@ -60,11 +60,10 @@ object CamundaMapperMacros:
     import quotes.reflect.*
 
     def unsupportedShapeInfo(tree: Tree) =
-      s"Unsupported path element. Path must have shape: _.field1.field2.each.field3.(...), got: ${tree.show}"
+      s"Unsupported path element. Path must have shape: _.field1.field2.(...).asBoolean, got: ${tree.show}"
 
     def methodSupported(method: String) =
-      Seq("at", "each", "eachWhere", "eachRight", "eachLeft", "atOrElse",
-        "index", "when").contains(method)
+      Seq("asBoolean", "asInt", "asLong", "asDouble", "asString").contains(method)
 
     enum PathSymbol:
       case Field(name: String)

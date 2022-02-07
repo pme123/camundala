@@ -27,7 +27,7 @@ export org.camunda.bpm.model.bpmn.instance.{
   ExclusiveGateway as CExclusiveGateway,
   ParallelGateway as CParallelGateway,
   EndEvent as CEndEvent,
-  ConditionExpression as CConditionExpression,
+  ConditionExpression as CConditionExpression
 }
 
 // context function def f(using BpmnModelInstance): T
@@ -39,6 +39,12 @@ trait ProjectPaths:
   lazy val cawemoPath: Path = projectPath / "cawemo"
   lazy val withIdPath: Path = cawemoPath / "with-ids"
   lazy val generatedPath: Path = projectPath / "src" / "main" / "resources"
-  
-  
-  
+
+trait AsString[A]:
+  def asString(v: A): String
+
+given AsString[Boolean] with
+  def asString(v: Boolean): String = v.toString
+
+extension(b: Boolean)
+  def asString: String = b.toString
