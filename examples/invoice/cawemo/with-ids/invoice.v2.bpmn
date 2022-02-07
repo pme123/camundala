@@ -6,6 +6,7 @@
              xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
              xmlns:signavio="http://www.signavio.com"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             camunda:diagramRelationId="10e196fc-baec-47ff-853b-751cf6b9e99f"
              exporter="Camunda Modeler"
              exporterVersion="4.11.1"
              expressionLanguage="http://www.w3.org/1999/XPath"

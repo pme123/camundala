@@ -22,39 +22,29 @@ info:
     This based on this Project: https://github.com/pme123/spring-boot-datakurre-plugins
 
 
+    # Changelog
+
     <details>
-    <summary><b>CHANGELOG</b></summary>
+    <summary>CHANGELOG.md</summary>
     <p>
 
 
-    <h1 id="changelog" class="section">Changelog</h1>
-    <p>All notable changes to this project will be documented in this file.</p>
-    <ul>
-      <li>Types of Changes (L3):</li>
-    </ul>
-    <ul>
-      <li>Added: new features</li>
-    </ul>
-    <ul>
-      <li>Changed: changes in existing functionality</li>
-    </ul>
-    <ul>
-      <li>Deprecated: soon-to-be-removed features</li>
-    </ul>
-    <ul>
-      <li>Removed: now removed features</li>
-    </ul>
-    <ul>
-      <li>Fixed: any bug fixes</li>
-    </ul>
-    <ul>
-      <li>Security: in case of vulnerabilities</li>
-    </ul>
-    <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
-    and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+    All notable changes to this project will be documented in this file.
 
-    <h2 id="unreleased" class="section">Unreleased</h2>
-    <p>Initial Version</p>
+    * Types of Changes (L3):
+      * Added: new features
+      * Changed: changes in existing functionality
+      * Deprecated: soon-to-be-removed features
+      * Removed: now removed features
+      * Fixed: any bug fixes
+      * Security: in case of vulnerabilities
+
+
+    The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+    and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+    ### Unreleased
+    Initial Version
 
     </p>
     </details>
@@ -67,7 +57,11 @@ paths:
       tags:
       - InvoiceReceiptP
       summary: 'InvoiceReceiptP: StartProcessInstance'
-      description: This starts the Invoice Receipt Process.
+      description: |2
+
+        This starts the Invoice Receipt Process.
+
+        <iframe src="https://cawemo.com/embed/e289c19a-8a57-4467-8583-de72a5e57488" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
       operationId: 'InvoiceReceiptP: StartProcessInstance'
       parameters:
       - name: key
@@ -116,6 +110,10 @@ paths:
       - InvoiceReceiptP
       summary: 'invoice-assign-approver: EvaluateDecision'
       description: |2
+
+        Decision Table on who must approve the Invoice.
+
+        <iframe src="https://cawemo.com/embed/155ba236-d5d1-42f7-8b56-3e90e0bb98d4" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
 
 
         Decision DMN:

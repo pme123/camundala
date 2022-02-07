@@ -4,8 +4,9 @@
                   xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
                   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  camunda:diagramRelationId="ae91fbac-5809-424d-983f-977d8010c5b3"
                   exporter="Camunda Modeler"
-                  exporterVersion="3.5.0"
+                  exporterVersion="4.11.1"
                   expressionLanguage="http://www.w3.org/1999/XPath"
                   id="Definitions_1k1vca8"
                   targetNamespace="http://bpmn.io/schema/bpmn"
@@ -16,7 +17,10 @@
                  isExecutable="true"
                  name="Review Invoice"
                  processType="None">
-      <bpmn:startEvent id="StartEvent_1" isInterrupting="true" parallelMultiple="false">
+      <bpmn:startEvent id="StartEvent_1"
+                       isInterrupting="true"
+                       name="Review"
+                       parallelMultiple="false">
          <bpmn:outgoing>SequenceFlow_1ggutts</bpmn:outgoing>
       </bpmn:startEvent>
       <bpmn:sequenceFlow id="SequenceFlow_1ggutts"
@@ -25,12 +29,12 @@
       <bpmn:sequenceFlow id="SequenceFlow_144f11w"
                          sourceRef="AssignReviewerUT"
                          targetRef="ReviewInvoiceUT"/>
-      <bpmn:endEvent id="EndEvent_1og1zom">
+      <bpmn:endEvent id="InvoiceReviewedEE" name="Invoice Reviewed">
          <bpmn:incoming>SequenceFlow_0vvoxt0</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="SequenceFlow_0vvoxt0"
                          sourceRef="ReviewInvoiceUT"
-                         targetRef="EndEvent_1og1zom"/>
+                         targetRef="InvoiceReviewedEE"/>
       <bpmn:userTask camunda:assignee="demo"
                      camunda:formKey="embedded:app:forms/assign-reviewer.html"
                      completionQuantity="1"
@@ -57,24 +61,30 @@
    </bpmn:process>
    <bpmndi:BPMNDiagram id="BPMNDiagram_1">
       <bpmndi:BPMNPlane bpmnElement="ReviewInvoiceP" id="BPMNPlane_1">
-         <bpmndi:BPMNShape bpmnElement="StartEvent_1" id="_BPMNShape_StartEvent_2">
-            <dc:Bounds height="36" width="36" x="179" y="79"/>
-         </bpmndi:BPMNShape>
-         <bpmndi:BPMNEdge bpmnElement="SequenceFlow_1ggutts" id="SequenceFlow_1ggutts_di">
-            <di:waypoint x="215" y="97"/>
-            <di:waypoint x="270" y="97"/>
+         <bpmndi:BPMNEdge bpmnElement="SequenceFlow_0vvoxt0" id="SequenceFlow_0vvoxt0_di">
+            <di:waypoint x="530" y="97"/>
+            <di:waypoint x="592" y="97"/>
          </bpmndi:BPMNEdge>
          <bpmndi:BPMNEdge bpmnElement="SequenceFlow_144f11w" id="SequenceFlow_144f11w_di">
             <di:waypoint x="370" y="97"/>
             <di:waypoint x="430" y="97"/>
          </bpmndi:BPMNEdge>
-         <bpmndi:BPMNShape bpmnElement="EndEvent_1og1zom" id="EndEvent_1og1zom_di">
-            <dc:Bounds height="36" width="36" x="592" y="79"/>
-         </bpmndi:BPMNShape>
-         <bpmndi:BPMNEdge bpmnElement="SequenceFlow_0vvoxt0" id="SequenceFlow_0vvoxt0_di">
-            <di:waypoint x="530" y="97"/>
-            <di:waypoint x="592" y="97"/>
+         <bpmndi:BPMNEdge bpmnElement="SequenceFlow_1ggutts" id="SequenceFlow_1ggutts_di">
+            <di:waypoint x="215" y="97"/>
+            <di:waypoint x="270" y="97"/>
          </bpmndi:BPMNEdge>
+         <bpmndi:BPMNShape bpmnElement="StartEvent_1" id="_BPMNShape_StartEvent_2">
+            <dc:Bounds height="36" width="36" x="179" y="79"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="14" width="37" x="179" y="122"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="InvoiceReviewedEE" id="EndEvent_1og1zom_di">
+            <dc:Bounds height="36" width="36" x="592" y="79"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="14" width="87" x="567" y="122"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
          <bpmndi:BPMNShape bpmnElement="AssignReviewerUT" id="UserTask_01n44zw_di">
             <dc:Bounds height="80" width="100" x="270" y="57"/>
          </bpmndi:BPMNShape>

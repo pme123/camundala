@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="invoiceBusinessDecisions" name="Invoice Business Decisions" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.11.1">
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="invoiceBusinessDecisions" name="Invoice Business Decisions" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.11.1" camunda:diagramRelationId="773d86b9-dadb-456f-9cc7-98ac6b355a79">
   <decision id="invoiceClassification" name="Invoice Classification">
     <decisionTable id="decisionTable">
       <input id="clause1" label="Invoice Amount" camunda:inputVariable="">
@@ -127,11 +127,12 @@
         <dc:Bounds height="55" width="100" x="153" y="215" />
       </dmndi:DMNShape>
       <dmndi:DMNShape id="DMNShape_1ay7af5" dmnElementRef="invoice-assign-approver">
-        <dc:Bounds height="55" width="100" x="224" y="84" />
+        <dc:Bounds height="55" width="100" x="240" y="84" />
       </dmndi:DMNShape>
       <dmndi:DMNEdge id="DMNEdge_1wn1950" dmnElementRef="InformationRequirement_1kkeocv">
-        <di:waypoint x="218" y="215" />
-        <di:waypoint x="258" y="139" />
+        <di:waypoint x="203" y="215" />
+        <di:waypoint x="290" y="159" />
+        <di:waypoint x="290" y="139" />
       </dmndi:DMNEdge>
     </dmndi:DMNDiagram>
   </dmndi:DMNDI>

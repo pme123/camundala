@@ -291,6 +291,13 @@ object CamundaVariable:
 
 end CamundaVariable
 
+def cawemoDescr(descr: String, cawemoLink: String) =
+  s"""
+    |$descr
+    |
+    |<iframe src="https://cawemo.com/embed/$cawemoLink" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
+    |""".stripMargin
+
 @description(
   "A JSON object with the following properties: (at least an empty JSON object {} or an empty request body)"
 )

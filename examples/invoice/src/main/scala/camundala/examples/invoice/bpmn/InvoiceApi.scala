@@ -113,7 +113,7 @@ object InvoiceApi extends BpmnDsl:
   lazy val InvoiceReceiptP =
     process(
       id = InvoiceReceiptPIdent,
-      descr = "This starts the Invoice Receipt Process.",
+      descr = cawemoDescr("This starts the Invoice Receipt Process.", "e289c19a-8a57-4467-8583-de72a5e57488" ),
       in = InvoiceReceipt(),
       out = InvoiceReceiptCheck() // just for testing
     )
@@ -122,8 +122,8 @@ object InvoiceApi extends BpmnDsl:
       : DecisionDmn[SelectApproverGroup, AssignApproverGroups] = collectEntries(
     decisionDefinitionKey = "invoice-assign-approver",
     in = SelectApproverGroup(),
-    out = AssignApproverGroups()
-  )
+    out = AssignApproverGroups(),
+  ).withDescr(cawemoDescr("Decision Table on who must approve the Invoice.", "155ba236-d5d1-42f7-8b56-3e90e0bb98d4"))
 
   lazy val invoiceAssignApproverDMN2
       : DecisionDmn[SelectApproverGroup, AssignApproverGroups] =
@@ -165,7 +165,7 @@ object InvoiceApi extends BpmnDsl:
     val processId = "ReviewInvoiceP"
     process(
       id = processId,
-      descr = "This starts the Review Invoice Process.",
+      descr = cawemoDescr("This starts the Review Invoice Process.", "cc9f978a-e98a-4b01-991d-36d682574cda"),
       in = InvoiceReceipt(),
       out = InvoiceReviewed()
     )
