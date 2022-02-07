@@ -412,6 +412,11 @@ trait SimulationRunner extends Simulation:
         ).exitHereIfFailed,
         statusCondition(200)
       )
+  end extension
+
+  extension [
+    In <: Product: Encoder: Decoder: Schema
+  ](event: ReceiveSignalEvent[In])
 
     def sendSignal(
         readyVariable: String,

@@ -228,6 +228,8 @@ object CamundaVariable:
         CDouble(v)
       case v: scala.reflect.Enum =>
         CEnum(v.toString)
+      case other if other == null =>
+        CNull
 
   case object CNull extends CamundaVariable:
     val value: Null = null
