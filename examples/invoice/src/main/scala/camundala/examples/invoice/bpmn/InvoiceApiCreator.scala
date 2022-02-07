@@ -13,6 +13,8 @@ object InvoiceApiCreator extends APICreator {
 
   def version = "1.0"
 
+  override val cawemoFolder = Some("a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala")
+
   override lazy val serverPort = 8034
 
   override def basePath: Path = pwd / "examples" / "invoice"

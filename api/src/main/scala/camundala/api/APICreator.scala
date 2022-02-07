@@ -13,6 +13,7 @@ import scala.reflect.ClassTag
 trait APICreator extends App:
 
   def basePath: Path = pwd
+  def cawemoFolder: Option[String] = None
   def openApiPath: Path = basePath / "openApi.yml"
   def openApiDocuPath: Path = basePath / "OpenApi.html"
   def postmanOpenApiPath: Path = basePath / "postmanOpenApi.yml"
@@ -62,6 +63,8 @@ trait APICreator extends App:
        |  Be aware that this needs some adjustments.
        |
        |>WARNING: This is an experimental way and not approved.
+       |
+       |**${cawemoFolder.map(f => s"[Check Project on Cawemo](https://cawemo.com/folders/$f)").mkString}**
        |
        |${createReadme()}
        |
