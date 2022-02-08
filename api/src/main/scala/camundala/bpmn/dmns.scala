@@ -2,7 +2,10 @@ package camundala
 package bpmn
 
 import camundala.domain.*
+import io.circe.HCursor
 import org.joda.time.LocalTime
+import sttp.tapir.SchemaType
+import sttp.tapir.SchemaType.SProduct
 
 import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 import java.util.Date
@@ -50,6 +53,26 @@ case class DecisionDmn[
       case o: Product if o.isResultList =>
         DecisionResultType.resultList
   }
+
+case class SingleResult[Out <: Product: Encoder: Decoder: Schema](result: Out)
+import io.circe.syntax.*
+implicit def SingleResultSchema[T <: Product: Encoder: Decoder: Schema]: Schema[SingleResult[T]] =
+    Schema(SProduct(), "result" -> implicitly[Schema[T]])
+
+implicit def SingleResultEncoder[T <: Product: Encoder: Decoder: Schema]: Encoder[SingleResult[T]] = new Encoder[SingleResult[T]] {
+  final def apply(sr: SingleResult[T]): Json = Json.obj(
+    ("result", sr.asJson)
+  )
+}
+implicit def SingleResultDecoder[T <: Product: Encoder: Decoder: Schema]: Decoder[SingleResult[T]] = new Decoder[SingleResult[T]] {
+  final def apply(c: HCursor): Decoder.Result[SingleResult[T]] =
+    for
+      result <- c.downField("result").as[T]
+    yield
+      SingleResult[T](result)
+
+}
+
 object DecisionDmn:
 
   def init(id: String): DecisionDmn[NoInput, NoOutput] =
