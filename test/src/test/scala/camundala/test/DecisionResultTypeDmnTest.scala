@@ -18,7 +18,7 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
   case class CollectEntries(indexes: Int*)
   // Many Output Parameter
   case class ManyOutResult(index: Int, emoji: String)
-  case class SingleResult(result: ManyOutResult)
+  case class BadManyOutResult(index: Int, manyOutResult: ManyOutResult)
   case class ResultList(results: ManyOutResult*)
 
   private lazy val singleEntryDMN = singleEntry(
@@ -30,7 +30,7 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
   private lazy val singleResultDMN = singleResult(
     decisionDefinitionKey = "singleResult",
     in = Input("A"),
-    out = SingleResult(ManyOutResult(1, "🤩"))
+    out = ManyOutResult(1, "🤩")
   )
 
   private lazy val collectEntriesDMN = collectEntries(
@@ -94,7 +94,7 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
   private def singleResultDMNBadOutput = singleResult(
     decisionDefinitionKey = "singleResult",
     in = Input("A"),
-    out = ManyOutResult(1, "🤩")
+    out = BadManyOutResult(1, ManyOutResult(1, "🤩"))
   )
 
   private def collectEntriesDMNBadOutput = collectEntries(

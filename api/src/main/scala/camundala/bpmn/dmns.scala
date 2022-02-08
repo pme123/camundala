@@ -4,8 +4,8 @@ package bpmn
 import camundala.domain.*
 import io.circe.HCursor
 import org.joda.time.LocalTime
-import sttp.tapir.SchemaType
-import sttp.tapir.SchemaType.SProduct
+import sttp.tapir.*
+import sttp.tapir.SchemaType.{SProduct, SProductField}
 
 import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 import java.util.Date
@@ -17,9 +17,10 @@ case class Dmns(dmns: Seq[Dmn]):
 object Dmns:
   def none: Dmns = Dmns(Nil)
 
-case class Dmn(path: Path, decisions: DecisionDmn[?,?]*)
+case class Dmn(path: Path, decisions: DecisionDmn[?, ?]*)
 
-type DmnValueType = String | Boolean | Int | Long | Double | Date | LocalDateTime | ZonedDateTime | scala.reflect.Enum
+type DmnValueType = String | Boolean | Int | Long | Double | Date |
+  LocalDateTime | ZonedDateTime | scala.reflect.Enum
 
 enum DecisionResultType:
   case singleEntry // TypedValue
@@ -32,7 +33,8 @@ case class DecisionDmn[
     Out <: Product: Encoder: Decoder: Schema
 ](
     inOutDescr: InOutDescr[In, Out]
-) extends ProcessNode, InOut[In, Out, DecisionDmn[In, Out]]:
+) extends ProcessNode,
+      InOut[In, Out, DecisionDmn[In, Out]]:
 
   override val label =
     """// use singleEntry / collectEntries / singleResult / resultList
@@ -56,20 +58,30 @@ case class DecisionDmn[
 
 case class SingleResult[Out <: Product: Encoder: Decoder: Schema](result: Out)
 import io.circe.syntax.*
-implicit def SingleResultSchema[T <: Product: Encoder: Decoder: Schema]: Schema[SingleResult[T]] =
-    Schema(SProduct(), "result" -> implicitly[Schema[T]])
 
-implicit def SingleResultEncoder[T <: Product: Encoder: Decoder: Schema]: Encoder[SingleResult[T]] = new Encoder[SingleResult[T]] {
+implicit def schemaForSingleResult[A <: Product: Encoder: Decoder](implicit
+    sa: Schema[A]
+): Schema[SingleResult[A]] =
+  Schema[SingleResult[A]](
+    SchemaType.SCoproduct(List(sa), None) { case SingleResult(_) =>
+      Some(sa)
+    },
+    for {
+      na <- sa.name
+    } yield Schema.SName("SingleResult", List(na.show))
+  )
+
+implicit def SingleResultEncoder[T <: Product: Encoder: Decoder: Schema]
+    : Encoder[SingleResult[T]] = new Encoder[SingleResult[T]] {
   final def apply(sr: SingleResult[T]): Json = Json.obj(
     ("result", sr.asJson)
   )
 }
-implicit def SingleResultDecoder[T <: Product: Encoder: Decoder: Schema]: Decoder[SingleResult[T]] = new Decoder[SingleResult[T]] {
+implicit def SingleResultDecoder[T <: Product: Encoder: Decoder: Schema]
+    : Decoder[SingleResult[T]] = new Decoder[SingleResult[T]] {
   final def apply(c: HCursor): Decoder.Result[SingleResult[T]] =
-    for
-      result <- c.downField("result").as[T]
-    yield
-      SingleResult[T](result)
+    for result <- c.downField("result").as[T]
+    yield SingleResult[T](result)
 
 }
 
@@ -94,7 +106,8 @@ extension (output: Product)
       (output.productIterator.next() match
         case _: Iterable[?] => false
         case p: Product =>
-          p.productIterator.size > 1
+          p.productIterator.size > 1 &&
+            p.productIterator.forall(_.isInstanceOf[DmnValueType])
         case _ => false
       )
 

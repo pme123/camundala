@@ -94,9 +94,9 @@ trait BpmnDsl:
       out: Out
   ): DecisionDmn[In, SingleResult[Out]] =
     require(
-      out.isSingleResult,
-      """A singleResult must look like `case class SingleResult(result: ManyOutResult)`
-        | with `case class ManyOutResult(index: Int, emoji: String)`
+      SingleResult(out).isSingleResult,
+      """A singleResult must look like `case class ManyOutResult(index: Int, emoji: String)`
+        |> a case class with more than one `DmnValueType`s.
         |""".stripMargin
     )
     dmn(decisionDefinitionKey, in, SingleResult(out))
