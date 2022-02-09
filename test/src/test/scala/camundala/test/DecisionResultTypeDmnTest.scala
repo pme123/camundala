@@ -13,9 +13,6 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
   val dmnPath: ResourcePath = baseResource / "DecisionResultTypes.dmn"
 
   case class Input(letter: String)
-  // Single Output Parameter
-  case class SingleEntry(index: Int)
-  case class CollectEntries(indexes: Int*)
   // Many Output Parameter
   case class ManyOutResult(index: Int, emoji: String)
   case class BadManyOutResult(index: Int, manyOutResult: ManyOutResult)
@@ -23,25 +20,25 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
   private lazy val singleEntryDMN = singleEntry(
     decisionDefinitionKey = "singleEntry",
     in = Input("A"),
-    out = 1
+    out = SingleEntry(1)
   )
 
   private lazy val singleResultDMN = singleResult(
     decisionDefinitionKey = "singleResult",
     in = Input("A"),
-    out = ManyOutResult(1, "🤩")
+    out = SingleResult(ManyOutResult(1, "🤩"))
   )
 
   private lazy val collectEntriesDMN = collectEntries(
     decisionDefinitionKey = "collectEntries",
     in = Input("A"),
-    out = Seq(1, 2)
+    out = CollectEntries(1, 2)
   )
 
   private lazy val resultListDMN = resultList(
     decisionDefinitionKey = "resultList",
     in = Input("A"),
-    out = List(ManyOutResult(1, "🤩"), ManyOutResult(2, "😂"))
+    out = ResultList(List(ManyOutResult(1, "🤩"), ManyOutResult(2, "😂")))
   )
 
   @Test
@@ -86,16 +83,16 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
   private def collectEntriesDMNEmptySeq = collectEntries(
     decisionDefinitionKey = "collectEntries",
     in = Input("A"),
-    out = Seq.empty[Int]
+    out = CollectEntries(Seq.empty[Int])
   )
 
   private def resultListDMNBadOutput = resultList(
     decisionDefinitionKey = "resultList",
     in = Input("A"),
-    out = Seq(BadManyOutResult(1, ManyOutResult(1, "🤩")))
+    out = ResultList(BadManyOutResult(1, ManyOutResult(1, "🤩")))
   )
   private def resultListDMNEmptySeq = resultList(
     decisionDefinitionKey = "resultList",
     in = Input("A"),
-    out = Seq.empty[ManyOutResult]
+    out = ResultList(Seq.empty[ManyOutResult])
   )

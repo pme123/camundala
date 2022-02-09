@@ -59,27 +59,62 @@ case class DecisionDmn[
 
 // String | Boolean | Int | Long | Double | Date |
 //  LocalDateTime | ZonedDateTime | scala.reflect.Enum
-implicit def DmnValueTypeEncoder[T <: DmnValueType]
-: Encoder[T] = new Encoder[T] {
-  final def apply(dv: T): Json = valueToJson(dv)
-}
+implicit def DmnValueTypeEncoder[T <: DmnValueType]: Encoder[T] =
+  new Encoder[T] {
+    final def apply(dv: T): Json = valueToJson(dv)
+  }
 
 implicit def DmnValueTypeDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
-: Decoder[T] = new Decoder[T] {
+    : Decoder[T] = new Decoder[T] {
   final def apply(c: HCursor): Decoder.Result[T] =
     for result <- c.as[T]
-      yield result
+    yield result
 
 }
 
-case class SingleEntry[Out <: DmnValueType: Encoder: Decoder: Schema](result: Out)
-case class CollectEntries[Out <: DmnValueType: Encoder: Decoder: Schema](result: Seq[Out])
+/** Example for a SingleEntry Output of a DMN Table. This returns one
+  * `DmnValueType` in the variable `result`.
+  */
+case class SingleEntry[Out <: DmnValueType: Encoder: Decoder: Schema](
+    result: Out
+)
+
+/** Example for a CollectEntries Output of a DMN Table. This returns a Sequence
+  * of `DmnValueType`s in the variable `result`.
+  */
+case class CollectEntries[Out <: DmnValueType: Encoder: Decoder: Schema](
+    result: Seq[Out]
+)
+object CollectEntries:
+  def apply[Out <: DmnValueType: Encoder: Decoder: Schema](
+      result: Out,
+      results: Out*
+  ): CollectEntries[Out] =
+    new CollectEntries[Out](result +: results)
+
+/** Example for a SingleResult Output of a DMN Table. This returns one `Product`
+  * (case class) with more than one fields of `DmnValueType`s in the variable
+  * `result`.
+  */
 case class SingleResult[Out <: Product: Encoder: Decoder: Schema](result: Out)
-case class ResultList[Out <: Product: Encoder: Decoder: Schema](result: Seq[Out])
+
+/** Example for a ResultList Output of a DMN Table. This returns a Sequence of
+  * `Product`s (case classes) with more than one fields of `DmnValueType`s in
+  * the variable `result`.
+  */
+case class ResultList[Out <: Product: Encoder: Decoder: Schema](
+    result: Seq[Out]
+)
+object ResultList:
+  def apply[Out <: Product: Encoder: Decoder: Schema](
+      result: Out,
+      results: Out*
+  ): ResultList[Out] =
+    new ResultList[Out](result +: results)
 
 implicit def schemaForSingleEntry[A <: DmnValueType: Encoder: Decoder](implicit
-                                                                   sa: Schema[A]
-                                                                  ): Schema[SingleEntry[A]] =
+                                                                       sa: Schema[A]
+                                                                      ): Schema[SingleEntry[A]] =
   Schema[SingleEntry[A]](
     SchemaType.SCoproduct(List(sa), None) { case SingleEntry(_) =>
       Some(sa)
@@ -90,22 +125,22 @@ implicit def schemaForSingleEntry[A <: DmnValueType: Encoder: Decoder](implicit
   )
 
 implicit def SingleEntryEncoder[T <: DmnValueType: Encoder: Decoder: Schema]
-: Encoder[SingleEntry[T]] = new Encoder[SingleEntry[T]] {
+    : Encoder[SingleEntry[T]] = new Encoder[SingleEntry[T]] {
   final def apply(sr: SingleEntry[T]): Json = Json.obj(
     ("result", sr.asJson)
   )
 }
 implicit def SingleEntryDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
-: Decoder[SingleEntry[T]] = new Decoder[SingleEntry[T]] {
+    : Decoder[SingleEntry[T]] = new Decoder[SingleEntry[T]] {
   final def apply(c: HCursor): Decoder.Result[SingleEntry[T]] =
     for result <- c.downField("result").as[T]
-      yield SingleEntry[T](result)
+    yield SingleEntry[T](result)
 
 }
 
-implicit def schemaForCollectEntries[A <: DmnValueType: Encoder: Decoder](implicit
-                                                                 sa: Schema[A]
-                                                                ): Schema[CollectEntries[A]] =
+implicit def schemaForCollectEntries[A <: DmnValueType: Encoder: Decoder](
+    implicit sa: Schema[A]
+): Schema[CollectEntries[A]] =
   Schema[CollectEntries[A]](
     SchemaType.SCoproduct(List(sa), None) { case CollectEntries(_) =>
       Some(sa)
@@ -116,16 +151,16 @@ implicit def schemaForCollectEntries[A <: DmnValueType: Encoder: Decoder](implic
   )
 
 implicit def CollectEntriesEncoder[T <: DmnValueType: Encoder: Decoder: Schema]
-: Encoder[CollectEntries[T]] = new Encoder[CollectEntries[T]] {
+    : Encoder[CollectEntries[T]] = new Encoder[CollectEntries[T]] {
   final def apply(sr: CollectEntries[T]): Json = Json.obj(
     ("result", sr.asJson)
   )
 }
 implicit def CollectEntriesDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
-: Decoder[CollectEntries[T]] = new Decoder[CollectEntries[T]] {
+    : Decoder[CollectEntries[T]] = new Decoder[CollectEntries[T]] {
   final def apply(c: HCursor): Decoder.Result[CollectEntries[T]] =
     for result <- c.downField("result").as[Seq[T]]
-      yield CollectEntries[T](result)
+    yield CollectEntries[T](result)
 
 }
 
@@ -156,8 +191,8 @@ implicit def SingleResultDecoder[T <: Product: Encoder: Decoder: Schema]
 }
 
 implicit def schemaForResultList[A <: Product: Encoder: Decoder](implicit
-                                                                   sa: Schema[A]
-                                                                  ): Schema[ResultList[A]] =
+    sa: Schema[A]
+): Schema[ResultList[A]] =
   Schema[ResultList[A]](
     SchemaType.SCoproduct(List(sa), None) { case ResultList(_) =>
       Some(sa)
@@ -168,16 +203,16 @@ implicit def schemaForResultList[A <: Product: Encoder: Decoder](implicit
   )
 
 implicit def ResultListEncoder[T <: Product: Encoder: Decoder: Schema]
-: Encoder[ResultList[T]] = new Encoder[ResultList[T]] {
+    : Encoder[ResultList[T]] = new Encoder[ResultList[T]] {
   final def apply(sr: ResultList[T]): Json = Json.obj(
     ("result", sr.asJson)
   )
 }
 implicit def ResultListDecoder[T <: Product: Encoder: Decoder: Schema]
-: Decoder[ResultList[T]] = new Decoder[ResultList[T]] {
+    : Decoder[ResultList[T]] = new Decoder[ResultList[T]] {
   final def apply(c: HCursor): Decoder.Result[ResultList[T]] =
     for result <- c.downField("result").as[Seq[T]]
-      yield ResultList[T](result)
+    yield ResultList[T](result)
 
 }
 
@@ -231,4 +266,3 @@ extension (output: Product)
   def hasManyOutputVars: Boolean =
     isSingleResult || isResultList
 end extension // Product
-

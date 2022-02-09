@@ -35,16 +35,17 @@ implicit lazy val FileInOutEncoder: Encoder[FileInOut] = deriveEncoder
 implicit lazy val FileInOutDecoder: Decoder[FileInOut] = deriveDecoder
 
 def valueToJson(value: Any): Json =
-  value match
+  (value match
     case v: Int =>
-      v.asJson
+     Json.fromInt(v)
     case v: Long =>
-      v.asJson
+      Json.fromLong(v)
     case v: Boolean =>
-      v.asJson
+      Json.fromBoolean(v)
     case v: Float =>
-      v.asJson
+      Json.fromFloat(v).getOrElse(Json.Null)
     case v: Double =>
-      v.asJson
+      Json.fromDouble(v).getOrElse(Json.Null)
     case v =>
-      v.toString.asJson
+      Json.fromString(v.toString))
+

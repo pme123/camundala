@@ -1,6 +1,7 @@
 package camundala.examples.invoice.bpmn
 
 import camundala.examples.invoice.bpmn.InvoiceApi.*
+import camundala.bpmn.*
 import camundala.test.*
 import org.junit.Test
 import io.circe.generic.auto.*

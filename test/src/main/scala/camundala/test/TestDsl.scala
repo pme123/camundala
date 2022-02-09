@@ -36,8 +36,7 @@ trait TestDsl:
   ](process: Process[In, Out])(
     activities: ElementToTest*
   ): Unit
-
-
+  
   implicit def toTest[
     In <: Product: Encoder: Decoder,
     Out <: Product: Encoder: Decoder

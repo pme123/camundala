@@ -1,5 +1,6 @@
 package camundala.examples.invoice.bpmn
 
+import camundala.bpmn.*
 import camundala.domain.*
 import camundala.examples.invoice.bpmn.InvoiceApi.*
 import camundala.test.*
@@ -40,7 +41,6 @@ class ExampleInvoiceTest extends ScenarioRunner:
 
   @Test
   def testInvoiceReceipt(): Unit =
-    println(s"InvoiceReceiptP: ${invoiceAssignApproverDMN2.out.asJson}")
     test(InvoiceReceiptP)(
       invoiceAssignApproverDMN2,
       checkGroupIds,
