@@ -35,7 +35,7 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
   private lazy val collectEntriesDMN = collectEntries(
     decisionDefinitionKey = "collectEntries",
     in = Input("A"),
-    out = CollectEntries(1, 2)
+    out = Seq(1, 2)
   )
 
   private lazy val resultListDMN = resultList(
@@ -65,10 +65,6 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
     test(singleResultDMNBadOutput)
 
   @Test(expected = classOf[IllegalArgumentException])
-  def testCollectEntriesBadOutput(): Unit =
-    test(collectEntriesDMNBadOutput)
-
-  @Test(expected = classOf[IllegalArgumentException])
   def testCollectEntriesEmptySeq(): Unit =
     test(collectEntriesDMNEmptySeq)
 
@@ -87,15 +83,10 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
     out = BadManyOutResult(1, ManyOutResult(1, "🤩"))
   )
 
-  private def collectEntriesDMNBadOutput = collectEntries(
-    decisionDefinitionKey = "collectEntries",
-    in = Input("A"),
-    out = ManyOutResult(1, "🤩")
-  )
   private def collectEntriesDMNEmptySeq = collectEntries(
     decisionDefinitionKey = "collectEntries",
     in = Input("A"),
-    out = CollectEntries()
+    out = Seq.empty[Int]
   )
 
   private def resultListDMNBadOutput = resultList(

@@ -23,7 +23,7 @@ import java.time.{LocalDateTime, ZonedDateTime}
 import java.util.Date
 import scala.collection.immutable
 import scala.jdk.CollectionConverters.*
-
+import scala.jdk.CollectionConverters.*
 trait DmnTestRunner:
 
   def dmnPath: ResourcePath
@@ -99,11 +99,14 @@ trait DmnTestRunner:
             case e => Seq("bad input" -> s"Expected Seq[?], but got $e")
 
         assert(expResultDmn.size == resultList.size)
+        val sortedResult = resultList.flatMap(_.values.asScala.toSeq).sortBy(_.toString)
+        val sortedExpected = expResultDmn.sortBy(_.toString)
         for i <- expResultDmn.indices
         yield
-          val rMap = resultList(i)
-          println(s"assert $expKey: ${rMap.get(expKey)} == ${expResultDmn(i)}")
-          assert(rMap.get(expKey) == expResultDmn(i))
+          val result = sortedResult(i)
+          val expected = sortedExpected(i)
+          println(s"assert: $result == $expected (expected)")
+          assert(result == expected)
 
       case DecisionResultType.resultList => // ResultList
         val resultList = result.getResultList.asScala

@@ -73,6 +73,9 @@ implicit def DmnValueTypeDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
 }
 
 case class SingleEntry[Out <: DmnValueType: Encoder: Decoder: Schema](result: Out)
+case class CollectEntries[Out <: DmnValueType: Encoder: Decoder: Schema](result: Seq[Out])
+case class SingleResult[Out <: Product: Encoder: Decoder: Schema](result: Out)
+case class ResultList[Out <: Product: Encoder: Decoder: Schema](result: Seq[Out])
 
 implicit def schemaForSingleEntry[A <: DmnValueType: Encoder: Decoder](implicit
                                                                    sa: Schema[A]
@@ -100,7 +103,31 @@ implicit def SingleEntryDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
 
 }
 
-case class SingleResult[Out <: Product: Encoder: Decoder: Schema](result: Out)
+implicit def schemaForCollectEntries[A <: DmnValueType: Encoder: Decoder](implicit
+                                                                 sa: Schema[A]
+                                                                ): Schema[CollectEntries[A]] =
+  Schema[CollectEntries[A]](
+    SchemaType.SCoproduct(List(sa), None) { case CollectEntries(_) =>
+      Some(sa)
+    },
+    for {
+      na <- sa.name
+    } yield Schema.SName("CollectEntries", List(na.show))
+  )
+
+implicit def CollectEntriesEncoder[T <: DmnValueType: Encoder: Decoder: Schema]
+: Encoder[CollectEntries[T]] = new Encoder[CollectEntries[T]] {
+  final def apply(sr: CollectEntries[T]): Json = Json.obj(
+    ("result", sr.asJson)
+  )
+}
+implicit def CollectEntriesDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
+: Decoder[CollectEntries[T]] = new Decoder[CollectEntries[T]] {
+  final def apply(c: HCursor): Decoder.Result[CollectEntries[T]] =
+    for result <- c.downField("result").as[Seq[T]]
+      yield CollectEntries[T](result)
+
+}
 
 implicit def schemaForSingleResult[A <: Product: Encoder: Decoder](implicit
     sa: Schema[A]
@@ -127,8 +154,6 @@ implicit def SingleResultDecoder[T <: Product: Encoder: Decoder: Schema]
     yield SingleResult[T](result)
 
 }
-
-case class ResultList[Out <: Product: Encoder: Decoder: Schema](result: Seq[Out])
 
 implicit def schemaForResultList[A <: Product: Encoder: Decoder](implicit
                                                                    sa: Schema[A]

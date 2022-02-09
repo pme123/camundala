@@ -73,17 +73,17 @@ trait BpmnDsl:
 
   def collectEntries[
       In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema
+      Out <: DmnValueType: Encoder: Decoder: Schema
   ](
       decisionDefinitionKey: String,
       in: In,
-      out: Out
-  ): DecisionDmn[In, Out] =
+      out: Seq[Out]
+  ): DecisionDmn[In, CollectEntries[Out]] =
     require(
-      out.isCollectEntries,
+      CollectEntries(out).isCollectEntries,
       "A collectEntries must look like `case class CollectEntries(indexes: Int*)`"
     )
-    dmn(decisionDefinitionKey, in, out)
+    dmn(decisionDefinitionKey, in, CollectEntries(out))
   
   def singleResult[
       In <: Product: Encoder: Decoder: Schema,
