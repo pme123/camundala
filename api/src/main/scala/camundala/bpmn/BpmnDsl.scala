@@ -59,17 +59,17 @@ trait BpmnDsl:
 
   def singleEntry[
       In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema
+      Out <: DmnValueType: Decoder: Schema
   ](
       decisionDefinitionKey: String,
       in: In,
       out: Out
-  ): DecisionDmn[In, Out] =
+  ): DecisionDmn[In, SingleEntry[Out]] =
     require(
-      out.isSingleEntry,
-      "A singleEntry must look like `case class SingleEntry(result: DmnValueType)`"
+      SingleEntry(out).isSingleEntry,
+      "A singleEntry must look like `12` of type `DmnValueType`"
     )
-    dmn(decisionDefinitionKey, in, out)
+    dmn(decisionDefinitionKey, in, SingleEntry(out))
 
   def collectEntries[
       In <: Product: Encoder: Decoder: Schema,
@@ -111,8 +111,9 @@ trait BpmnDsl:
   ): DecisionDmn[In, ResultList[Out]] =
     require(
       ResultList(out).isResultList,
-      """A resultList must look like `case class ResultList(results: ManyOutResult*)`
+      """A resultList must look like `case class Seq(ManyOutResult*)`
         | with `case class ManyOutResult(index: Int, emoji: String)`
+        | > a case class with more than one `DmnValueType`s.
         |""".stripMargin
     )
     dmn(decisionDefinitionKey, in, ResultList(out))

@@ -23,7 +23,7 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
   private lazy val singleEntryDMN = singleEntry(
     decisionDefinitionKey = "singleEntry",
     in = Input("A"),
-    out = SingleEntry(1)
+    out = 1
   )
 
   private lazy val singleResultDMN = singleResult(
@@ -61,10 +61,6 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
     test(resultListDMN  )
 
   @Test(expected = classOf[IllegalArgumentException])
-  def testSingleEntryBadOutput(): Unit =
-    test(singleEntryDMNBadOutput)
-
-  @Test(expected = classOf[IllegalArgumentException])
   def testSingleResultBadOutput(): Unit =
     test(singleResultDMNBadOutput)
 
@@ -84,11 +80,6 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
   def testResultListEmptySeq(): Unit =
     test(resultListDMNEmptySeq)
 
-  private def singleEntryDMNBadOutput = singleEntry(
-    decisionDefinitionKey = "singleEntry",
-    in = Input("A"),
-    out = ManyOutResult(1, "🤩")
-  )
 
   private def singleResultDMNBadOutput = singleResult(
     decisionDefinitionKey = "singleResult",

@@ -57,6 +57,49 @@ case class DecisionDmn[
         DecisionResultType.resultList
   }
 
+// String | Boolean | Int | Long | Double | Date |
+//  LocalDateTime | ZonedDateTime | scala.reflect.Enum
+implicit def DmnValueTypeEncoder[T <: DmnValueType]
+: Encoder[T] = new Encoder[T] {
+  final def apply(dv: T): Json = valueToJson(dv)
+}
+
+implicit def DmnValueTypeDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
+: Decoder[T] = new Decoder[T] {
+  final def apply(c: HCursor): Decoder.Result[T] =
+    for result <- c.as[T]
+      yield result
+
+}
+
+case class SingleEntry[Out <: DmnValueType: Encoder: Decoder: Schema](result: Out)
+
+implicit def schemaForSingleEntry[A <: DmnValueType: Encoder: Decoder](implicit
+                                                                   sa: Schema[A]
+                                                                  ): Schema[SingleEntry[A]] =
+  Schema[SingleEntry[A]](
+    SchemaType.SCoproduct(List(sa), None) { case SingleEntry(_) =>
+      Some(sa)
+    },
+    for {
+      na <- sa.name
+    } yield Schema.SName("SingleEntry", List(na.show))
+  )
+
+implicit def SingleEntryEncoder[T <: DmnValueType: Encoder: Decoder: Schema]
+: Encoder[SingleEntry[T]] = new Encoder[SingleEntry[T]] {
+  final def apply(sr: SingleEntry[T]): Json = Json.obj(
+    ("result", sr.asJson)
+  )
+}
+implicit def SingleEntryDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
+: Decoder[SingleEntry[T]] = new Decoder[SingleEntry[T]] {
+  final def apply(c: HCursor): Decoder.Result[SingleEntry[T]] =
+    for result <- c.downField("result").as[T]
+      yield SingleEntry[T](result)
+
+}
+
 case class SingleResult[Out <: Product: Encoder: Decoder: Schema](result: Out)
 
 implicit def schemaForSingleResult[A <: Product: Encoder: Decoder](implicit

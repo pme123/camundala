@@ -1,6 +1,6 @@
 package camundala.test
 
-import camundala.bpmn.BpmnDsl
+import camundala.bpmn.*
 import io.circe.generic.auto.*
 import org.junit.Test
 import os.{Path, ResourcePath}
@@ -21,17 +21,15 @@ class DecisionTypesTest extends DmnTestRunner, BpmnDsl:
   private lazy val localDateTimeDMN = singleEntry(
     decisionDefinitionKey = "DecisionTypes",
     in = Input(ldtIn),
-    out = Output(ldtOut)
+    out = ldtOut
   )
 
   case class ZInput(dateTest: ZonedDateTime)
-  case class ZOutput(dateOut: ZonedDateTime)
-
 
   private lazy val zonedDateTimeDMN = singleEntry(
     decisionDefinitionKey = "DecisionTypes",
     in = ZInput(ZonedDateTime.of(ldtIn, ZoneId.systemDefault)),
-    out = ZOutput(ZonedDateTime.of(ldtOut, ZoneId.systemDefault))
+    out = ZonedDateTime.of(ldtOut, ZoneId.systemDefault)
   )
 
   @Test
