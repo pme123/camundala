@@ -19,7 +19,6 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
   // Many Output Parameter
   case class ManyOutResult(index: Int, emoji: String)
   case class BadManyOutResult(index: Int, manyOutResult: ManyOutResult)
-  case class ResultList(results: ManyOutResult*)
 
   private lazy val singleEntryDMN = singleEntry(
     decisionDefinitionKey = "singleEntry",
@@ -42,7 +41,7 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
   private lazy val resultListDMN = resultList(
     decisionDefinitionKey = "resultList",
     in = Input("A"),
-    out = ResultList(ManyOutResult(1, "🤩"), ManyOutResult(2, "😂"))
+    out = List(ManyOutResult(1, "🤩"), ManyOutResult(2, "😂"))
   )
 
   @Test
@@ -111,10 +110,10 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
   private def resultListDMNBadOutput = resultList(
     decisionDefinitionKey = "resultList",
     in = Input("A"),
-    out = ManyOutResult(1, "🤩")
+    out = Seq(BadManyOutResult(1, ManyOutResult(1, "🤩")))
   )
   private def resultListDMNEmptySeq = resultList(
     decisionDefinitionKey = "resultList",
     in = Input("A"),
-    out = ResultList()
+    out = Seq.empty[ManyOutResult]
   )

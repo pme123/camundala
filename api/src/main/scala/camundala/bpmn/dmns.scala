@@ -3,6 +3,7 @@ package bpmn
 
 import camundala.domain.*
 import io.circe.HCursor
+import io.circe.syntax.*
 import org.joda.time.LocalTime
 import sttp.tapir.*
 import sttp.tapir.SchemaType.{SProduct, SProductField}
@@ -57,7 +58,6 @@ case class DecisionDmn[
   }
 
 case class SingleResult[Out <: Product: Encoder: Decoder: Schema](result: Out)
-import io.circe.syntax.*
 
 implicit def schemaForSingleResult[A <: Product: Encoder: Decoder](implicit
     sa: Schema[A]
@@ -82,6 +82,34 @@ implicit def SingleResultDecoder[T <: Product: Encoder: Decoder: Schema]
   final def apply(c: HCursor): Decoder.Result[SingleResult[T]] =
     for result <- c.downField("result").as[T]
     yield SingleResult[T](result)
+
+}
+
+case class ResultList[Out <: Product: Encoder: Decoder: Schema](result: Seq[Out])
+
+implicit def schemaForResultList[A <: Product: Encoder: Decoder](implicit
+                                                                   sa: Schema[A]
+                                                                  ): Schema[ResultList[A]] =
+  Schema[ResultList[A]](
+    SchemaType.SCoproduct(List(sa), None) { case ResultList(_) =>
+      Some(sa)
+    },
+    for {
+      na <- sa.name
+    } yield Schema.SName("ResultList", List(na.show))
+  )
+
+implicit def ResultListEncoder[T <: Product: Encoder: Decoder: Schema]
+: Encoder[ResultList[T]] = new Encoder[ResultList[T]] {
+  final def apply(sr: ResultList[T]): Json = Json.obj(
+    ("result", sr.asJson)
+  )
+}
+implicit def ResultListDecoder[T <: Product: Encoder: Decoder: Schema]
+: Decoder[ResultList[T]] = new Decoder[ResultList[T]] {
+  final def apply(c: HCursor): Decoder.Result[ResultList[T]] =
+    for result <- c.downField("result").as[Seq[T]]
+      yield ResultList[T](result)
 
 }
 
@@ -127,7 +155,8 @@ extension (output: Product)
         case p: Iterable[?] =>
           p.headOption match
             case Some(p: Product) =>
-              p.productIterator.size > 1
+              p.productIterator.size > 1 &&
+                p.productIterator.forall(_.isInstanceOf[DmnValueType])
             case o => false
         case o => false
       )

@@ -107,15 +107,15 @@ trait BpmnDsl:
   ](
       decisionDefinitionKey: String,
       in: In,
-      out: Out
-  ): DecisionDmn[In, Out] =
+      out: Seq[Out]
+  ): DecisionDmn[In, ResultList[Out]] =
     require(
-      out.isResultList,
+      ResultList(out).isResultList,
       """A resultList must look like `case class ResultList(results: ManyOutResult*)`
         | with `case class ManyOutResult(index: Int, emoji: String)`
         |""".stripMargin
     )
-    dmn(decisionDefinitionKey, in, out)
+    dmn(decisionDefinitionKey, in, ResultList(out))
 
   def serviceTask[
       In <: Product: Encoder: Decoder: Schema,
