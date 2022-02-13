@@ -144,12 +144,22 @@ trait SimulationRunner extends Simulation:
           ) // Camunda returns different results depending if the process is running!
           .check {
             extractJsonOptional("$[*].processInstance.id", "processInstanceId")
-          }.check{
-            extractJsonOptional("$[*].execution.processInstanceId", "processInstanceId2")
+          }
+          .check {
+            extractJsonOptional(
+              "$[*].execution.processInstanceId",
+              "processInstanceId2"
+            )
           }
       ).exitHereIfFailed
         .exec { session =>
-            session.set("processInstanceId", session.attributes.get("processInstanceId2").orElse(session.attributes.get("processInstanceId")).getOrElse("NOT-SET"))
+          session.set(
+            "processInstanceId",
+            session.attributes
+              .get("processInstanceId2")
+              .orElse(session.attributes.get("processInstanceId"))
+              .getOrElse("NOT-SET")
+          )
         }
 
     def start(scenario: String): ChainBuilder =
@@ -164,7 +174,7 @@ trait SimulationRunner extends Simulation:
               StartProcessIn(
                 CamundaVariable.toCamunda(process.in),
                 businessKey = Some(scenario)
-              ).asJson.toString
+              ).asJson.deepDropNullValues.toString
             )
           )
           .check(extractJson("$.id", "processInstanceId"))
@@ -226,32 +236,43 @@ trait SimulationRunner extends Simulation:
       )
     }
 
+    // checks if a variable has this value.
+    // it tries up to the time defined.
+    def checkRunningVars(
+                          variable: String,
+                          value: Any
+    ): Seq[ChainBuilder] = {
+      Seq(
+        exec(_.set(variable, null)),
+        retryOrFail(
+          loadVariable(variable),
+          processReadyCondition(variable, value)
+        )
+      )
+    }
+
     def checkVars(
         scenario: String
-    )(using tenantId: Option[String]): ChainBuilder =
-      exec(
-        http(s"Check '$scenario' of '${process.id}'") // 8
-          .get(
-            "/history/variable-instance?processInstanceIdIn=#{processInstanceId}&deserializeValues=false"
-          )
-          .auth()
-          .check(
-            bodyString
-              .transform { body =>
-                parse(body)
-                  .flatMap(_.as[Seq[CamundaProperty]]) match {
-                  case Right(value) => checkProps(process.out, value)
-                  case Left(exc) =>
-                    s"\n!!! Problem parsing Result Body to a List of CamundaProperty.\n$exc\n$body"
-                }
-              }
-              .is(true)
-          )
-      ).exitHereIfFailed
-
-    def checkFinished(scenario: String)(using
-        tenantId: Option[String]
     ) =
+      http(s"Check '$scenario' of '${process.id}'") // 8
+        .get(
+          "/history/variable-instance?processInstanceIdIn=#{processInstanceId}&deserializeValues=false"
+        )
+        .auth()
+        .check(
+          bodyString
+            .transform { body =>
+              parse(body)
+                .flatMap(_.as[Seq[CamundaProperty]]) match {
+                case Right(value) => checkProps(process.out, value)
+                case Left(exc) =>
+                  s"\n!!! Problem parsing Result Body to a List of CamundaProperty.\n$exc\n$body"
+              }
+            }
+            .is(true)
+        )
+
+    def checkFinished(scenario: String) =
       http(s"Check finished '$scenario' of '${process.id}'")
         .get(s"/history/process-instance/#{processInstanceId}")
         .auth()
@@ -339,7 +360,7 @@ trait SimulationRunner extends Simulation:
           StringBody(
             CompleteTaskOut(
               CamundaVariable.toCamunda(userTask.out)
-            ).asJson.toString
+            ).asJson.deepDropNullValues.toString
           )
         )
 
@@ -393,31 +414,50 @@ trait SimulationRunner extends Simulation:
   ](event: ReceiveMessageEvent[In])
 
     def correlate(): ChainBuilder =
-      retryOrFail(
-        exec(
-          http(s"Correlate Message '${event.messageName}' of '${event.id}'")
-            .post(s"/message")
-            .auth()
-            .body(
-              StringBody(
-                CorrelateMessageIn(
-                  messageName = event.messageName,
-                  processInstanceId = Some("#{processInstanceId}"),
-                  processVariables = Some(CamundaVariable.toCamunda(event.in))
-                ).asJson.toString
-              )
-            )
-            .check(checkMaxCount)
-            .check(status.saveAs("lastStatus"))
-        ).exitHereIfFailed,
-        statusCondition(200)
+      correlateMsg(None)
+
+    def correlate(
+        readyVariable: String,
+        readyValue: Any,
+        tenantId: Option[String]
+    ): Seq[ChainBuilder] = {
+      Seq(
+        exec(_.set(readyVariable, null)),
+        retryOrFail(
+          loadVariable(readyVariable),
+          processReadyCondition(readyVariable, readyValue)
+        ),
+        correlateMsg(tenantId)
       )
+    }
+
+    private def correlateMsg(tenantId: Option[String] = None) =
+      val processInstanceId = tenantId match
+        case Some(_) => None
+        case _ => Some("#{processInstanceId}")
+      exec(
+        http(s"Correlate Message '${event.messageName}' of '${event.id}'")
+          .post(s"/message")
+          .auth()
+          .body(
+            StringBody(
+              CorrelateMessageIn(
+                messageName = event.messageName,
+                tenantId = tenantId,
+                processInstanceId = processInstanceId,
+                processVariables = Some(CamundaVariable.toCamunda(event.in))
+              ).asJson.deepDropNullValues.toString
+            )
+          )
+          .check(checkMaxCount)
+          .check(status.saveAs("lastStatus"))
+      ).exitHereIfFailed
+
   end extension
 
   extension [
-    In <: Product: Encoder: Decoder: Schema
+      In <: Product: Encoder: Decoder: Schema
   ](event: ReceiveSignalEvent[In])
-
     def sendSignal(
         readyVariable: String,
         readyValue: Any = true
@@ -437,7 +477,7 @@ trait SimulationRunner extends Simulation:
                 SendSignalIn(
                   name = event.messageName,
                   variables = Some(CamundaVariable.toCamunda(event.in))
-                ).asJson.toString
+                ).asJson.deepDropNullValues.deepDropNullValues.toString
               )
             )
             .check(status.is(204))
@@ -480,11 +520,11 @@ trait SimulationRunner extends Simulation:
 
   private def loadVariable(
       variableName: String
-  )(using tenantId: Option[String]): ChainBuilder =
+  ): ChainBuilder =
     exec(
       http(s"Load Variable '$variableName'")
         .get(
-          s"/variable-instance?variableName=$variableName&processInstanceIdIn=#{processInstanceId}&deserializeValues=false"
+          s"/history/variable-instance?variableName=$variableName&processInstanceIdIn=#{processInstanceId}&deserializeValues=false"
         )
         .auth()
         .check(checkMaxCount)
