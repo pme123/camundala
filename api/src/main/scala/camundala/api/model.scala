@@ -201,13 +201,15 @@ object CamundaVariable:
             mimeType
           )
         )
-      case v: Product if !v.isInstanceOf[scala.reflect.Enum] =>
+      case v: (Product | Iterable[?] | Map[?, ?])
+          if !v.isInstanceOf[scala.reflect.Enum] =>
         CJson(
           product.asJson.deepDropNullValues.hcursor
             .downField(key)
             .as[Json] match
             case Right(v) => v.toString
-            case Left(ex) => throwErr(s"$key of $v could NOT be Parsed to a JSON!\n$ex")
+            case Left(ex) =>
+              throwErr(s"$key of $v could NOT be Parsed to a JSON!\n$ex")
         )
       case v =>
         valueToCamunda(v)
@@ -230,6 +232,8 @@ object CamundaVariable:
         CEnum(v.toString)
       case other if other == null =>
         CNull
+      case other =>
+        throwErr(s"Unexpected Value to map to CamundaVariable: $other")
 
   case object CNull extends CamundaVariable:
     val value: Null = null
@@ -293,10 +297,10 @@ end CamundaVariable
 
 def cawemoDescr(descr: String, cawemoLink: String) =
   s"""
-    |$descr
-    |
-    |<iframe src="https://cawemo.com/embed/$cawemoLink" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
-    |""".stripMargin
+     |$descr
+     |
+     |<iframe src="https://cawemo.com/embed/$cawemoLink" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
+     |""".stripMargin
 
 @description(
   "A JSON object with the following properties: (at least an empty JSON object {} or an empty request body)"

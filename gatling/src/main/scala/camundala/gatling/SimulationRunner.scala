@@ -162,7 +162,7 @@ trait SimulationRunner extends Simulation:
           )
         }
 
-    def start(scenario: String): ChainBuilder =
+    def start(scenario: String, expectedStatus: Int = 200): ChainBuilder =
       exec(
         http(s"Start '$scenario' of '${process.id}'")
           .post(s"/process-definition/key/${process.id}${tenantId
@@ -177,8 +177,13 @@ trait SimulationRunner extends Simulation:
               ).asJson.deepDropNullValues.toString
             )
           )
-          .check(extractJson("$.id", "processInstanceId"))
-          .check(extractJson("$.businessKey", "businessKey"))
+          .check(status.is(expectedStatus))
+          .checkIf(expectedStatus == 200){
+            extractJson("$.id", "processInstanceId")
+          }
+         .checkIf(expectedStatus == 200){
+           extractJson("$.businessKey", "businessKey")
+          }
       ).exitHereIfFailed
 
     def exists(
