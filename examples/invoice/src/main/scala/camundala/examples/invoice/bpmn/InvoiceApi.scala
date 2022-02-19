@@ -7,6 +7,7 @@ import domain.*
 import sttp.tapir.json.circe.*
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
+
 object InvoiceApi extends BpmnDsl:
 
   @description("Received Invoice that need approval.")
@@ -25,7 +26,7 @@ object InvoiceApi extends BpmnDsl:
   )
 
   @description("There are three possible Categories")
-  enum InvoiceCategory derives JsonTaggedAdt.PureEncoder:
+  enum InvoiceCategory derives JsonTaggedAdt.PureEncoder, JsonTaggedAdt.PureDecoder:
     case `Travel Expenses`
     case Misc
     case `Software License Costs`

@@ -68,6 +68,9 @@
       <outgoing>sequenceFlow_178__AssignApproverGroupBRT__ApproveInvoiceUT</outgoing>
     </businessRuleTask>
     <startEvent id="InvoiceReceivedSE" name="Invoice&#10;received" camunda:exclusive="false" camunda:formKey="embedded:app:forms/start-form.html">
+      <extensionElements>
+        <camunda:executionListener class="camundala.examples.invoice.listener.InvoiceValidator" event="start" />
+      </extensionElements>
       <outgoing>SequenceFlow_1__InvoiceReceivedSE__AssignApproverGroupBRT</outgoing>
     </startEvent>
     <endEvent id="InvoiceNotProcessedEE" name="Invoice not&#10;processed" camunda:exclusive="false">

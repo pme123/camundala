@@ -58,6 +58,11 @@ class InvoiceSimulation extends SimulationRunner {
         .withOut(InvoiceReviewed(false))
         .check(), // check if sub process successful
       InvoiceReceiptP.switchToMainProcess()
+    ),
+    processScenario("Bad Validation")(
+      InvoiceReceiptP
+      .withIn(InvoiceReceipt(null))
+        .start("Bad Validation", 500)
     )
   )
 }
