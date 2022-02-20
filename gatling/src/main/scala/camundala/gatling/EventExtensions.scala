@@ -7,7 +7,14 @@ import io.gatling.core.Predef.*
 import io.gatling.core.structure.ChainBuilder
 import io.gatling.http.Predef.*
 
+import scala.language.implicitConversions
+
 trait EventExtensions:
+
+  implicit def defaultReceiveMessageEvent[
+    In <: Product: Encoder: Decoder: Schema,
+  ](event: ReceiveMessageEvent[In]): WithConfig[Seq[ChainBuilder]] =
+    event.correlate()
 
   extension [
     In <: Product: Encoder: Decoder: Schema

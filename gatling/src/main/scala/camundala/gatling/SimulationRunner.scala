@@ -17,10 +17,10 @@ import io.gatling.http.request.builder.HttpRequestBuilder
 import scala.concurrent.duration.*
 
 trait SimulationRunner
-  extends Simulation,
-    ProcessExtensions,
-    UserTaskExtensions,
-    EventExtensions:
+    extends Simulation,
+      ProcessExtensions,
+      UserTaskExtensions,
+      EventExtensions:
 
   implicit def config: SimulationConfig = SimulationConfig()
 
@@ -90,5 +90,5 @@ trait SimulationRunner
     setUp(processScenarios.map(_.toGatling): _*)
       .protocols(httpProtocol)
       .assertions(global.failedRequests.count.is(0))
-  
+
 end SimulationRunner
