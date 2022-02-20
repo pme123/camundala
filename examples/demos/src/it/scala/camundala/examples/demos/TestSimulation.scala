@@ -9,11 +9,14 @@ import scala.concurrent.duration.*
 // exampleDemos/GatlingIt/testOnly *TestSimulation
 class TestSimulation extends SimulationRunner {
 
-  override val serverPort = 8033
+  override implicit def config: SimulationConfig =
+    super.config.withPort(8033)
+
+
   import TestDomain.*
   simulate(
     processScenario("Test Process")(
-      CamundalaGenerateTestP,
-    ),
+      CamundalaGenerateTestP
+    )
   )
 }

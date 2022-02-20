@@ -14,33 +14,33 @@ import scala.concurrent.duration.*
 // exampleInvoice/GatlingIt/testOnly *InvoiceSimulation
 class InvoiceSimulation extends SimulationRunner {
 
-  override val serverPort = 8034
+  override implicit def config: SimulationConfig =
+    super.config.withPort(8034)
 
   simulate(
     processScenario("Review Invoice")(
       ReviewInvoiceP,
-      assignReviewerUT.getAndComplete(),
-      reviewInvoiceUT.getAndComplete()
+      assignReviewerUT,
+      reviewInvoiceUT
     ),
     processScenario("Invoice Receipt")(
       InvoiceReceiptP,
-      approveInvoiceUT.getAndComplete(),
-      prepareBankTransferUT.getAndComplete()
+      approveInvoiceUT,
+      prepareBankTransferUT
     ),
     processScenario("Invoice Receipt with Review")(
       InvoiceReceiptP
         .withOut(InvoiceReceiptCheck(clarified = Some(true))),
       approveInvoiceUT
-        .withOut(ApproveInvoice(false))
-        .getAndComplete(), // do not approve
+        .withOut(ApproveInvoice(false)), // do not approve
       InvoiceReceiptP
         .switchToCalledProcess(), // switch to Review Process (Call Activity)
-      assignReviewerUT.getAndComplete(),
-      reviewInvoiceUT.getAndComplete(),
+      assignReviewerUT,
+      reviewInvoiceUT,
       ReviewInvoiceP.check(), // check if sub process successful
       InvoiceReceiptP.switchToMainProcess(),
-      approveInvoiceUT.getAndComplete(), // now approve
-      prepareBankTransferUT.getAndComplete()
+      approveInvoiceUT, // now approve
+      prepareBankTransferUT
     ),
     processScenario("Invoice Receipt with Review failed")(
       InvoiceReceiptP
@@ -48,12 +48,11 @@ class InvoiceSimulation extends SimulationRunner {
           InvoiceReceiptCheck(approved = false, clarified = Some(false))
         ),
       approveInvoiceUT
-        .withOut(ApproveInvoice(false))
-        .getAndComplete(), // do not approve
+        .withOut(ApproveInvoice(false)), // do not approve
       InvoiceReceiptP
         .switchToCalledProcess(), // switch to Review Process (Call Activity)
-      assignReviewerUT.getAndComplete(),
-      reviewInvoiceUT.withOut(InvoiceReviewed(false)).getAndComplete(),
+      assignReviewerUT,
+      reviewInvoiceUT.withOut(InvoiceReviewed(false)),
       ReviewInvoiceP
         .withOut(InvoiceReviewed(false))
         .check(), // check if sub process successful
@@ -61,7 +60,7 @@ class InvoiceSimulation extends SimulationRunner {
     ),
     processScenario("Bad Validation")(
       InvoiceReceiptP
-      .withIn(InvoiceReceipt(null))
+        .withIn(InvoiceReceipt(null))
         .start("Bad Validation", 500)
     )
   )

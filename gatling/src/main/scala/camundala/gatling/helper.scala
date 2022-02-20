@@ -4,13 +4,25 @@ package gatling
 import camundala.api.{CamundaProperty, CamundaVariable}
 import camundala.api.CamundaVariable.*
 import io.gatling.core.Predef.*
+import io.gatling.core.structure.*
+import io.gatling.http.Predef.*
 import io.gatling.core.structure.ChainBuilder
 import camundala.bpmn.*
 import camundala.domain.*
 import io.circe.{Decoder, Encoder}
 import io.circe.Json.JArray
+import io.gatling.core.check.CheckBuilder
+import io.gatling.core.check.CheckBuilder.Validate
+import io.gatling.core.check.string.BodyStringCheckType
+import io.gatling.http.Predef.http
+import io.gatling.http.check.HttpCheck
+import io.gatling.http.request.builder.HttpRequestBuilder
 
+import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
+
+// context function def f(using BpmnModelInstance): T
+type WithConfig[T] = SimulationConfig ?=> T
 
 case class TestOverride(
     key: String,
@@ -20,7 +32,7 @@ case class TestOverride(
 
 case class TestOverrides(overrides: Seq[TestOverride]) //Seq[TestOverride])
 
-enum TestOverrideType derives JsonTaggedAdt.PureEncoder :
+enum TestOverrideType derives JsonTaggedAdt.PureEncoder:
   case Exists, NotExists, IsEquals, HasSize
 
 def addOverride[
@@ -56,10 +68,14 @@ def processFinishedCondition: Session => Boolean = session =>
   val status = session.attributes.get("processState")
   status.contains("ACTIVE")
 // check if there is a variable in the process with a certain value
-def processReadyCondition(key: String, value: Any): Session => Boolean = session =>
-  val variable = session.attributes.get(key)
-  println(s"processReadyCondition: ${variable.getClass} - ${value.getClass} - ${!variable.contains(value.toString)}")
-  !variable.contains(value)
+def processReadyCondition(key: String, value: Any): Session => Boolean =
+  session =>
+    val variable = session.attributes.get(key)
+    println(
+      s"processReadyCondition: ${variable.getClass} - ${value.getClass} - ${!variable
+        .contains(value.toString)}"
+    )
+    !variable.contains(value)
 
 def extractJson(path: String, key: String) =
   jsonPath(path)
@@ -93,11 +109,11 @@ def checkProps[T <: Product: Encoder](
 ): Boolean =
   out match
     case TestOverrides(overrides) =>
-      check(overrides, result)
+      checkO(overrides, result)
     case product =>
-      check(product, result)
+      checkP(product, result)
 
-private def check(overrides: Seq[TestOverride], result: Seq[CamundaProperty]) =
+private def checkO(overrides: Seq[TestOverride], result: Seq[CamundaProperty]) =
   import TestOverrideType.*
   overrides
     .map {
@@ -140,7 +156,7 @@ private def check(overrides: Seq[TestOverride], result: Seq[CamundaProperty]) =
     }
     .forall(_ == true)
 
-private def check[T <: Product: Encoder](
+private def checkP[T <: Product: Encoder](
     product: T,
     result: Seq[CamundaProperty]
 ): Boolean =
@@ -150,7 +166,14 @@ private def check[T <: Product: Encoder](
       result
         .find(_.key == key)
         .map {
-          case CamundaProperty(_, cValue @ CFile(_, cFileValueInfo @ CFileValueInfo(cFileName, _), _)) =>
+          case CamundaProperty(
+                _,
+                cValue @ CFile(
+                  _,
+                  cFileValueInfo @ CFileValueInfo(cFileName, _),
+                  _
+                )
+              ) =>
             val matches = pValue match
               case CFile(_, CFileValueInfo(pFileName, _), _) =>
                 cFileName == pFileName
@@ -171,7 +194,9 @@ private def check[T <: Product: Encoder](
             val setPJson = pJson.as[Set[Json]].toOption.getOrElse(pJson)
             val matches: Boolean = setCJson == setPJson
             if (!matches)
-              println(s"cJson: ${cValue.getClass} / pJson: ${pValue.value.getClass}")
+              println(
+                s"cJson: ${cValue.getClass} / pJson: ${pValue.value.getClass}"
+              )
               println(
                 s"!!! The pJson value '${toJson(pValue.value.toString)}' of $key does not match the result variable cJson: '${toJson(cValue)}'."
               )
@@ -194,6 +219,56 @@ private def check[T <: Product: Encoder](
     }
     .forall(_ == true)
 
+def checkMaxCount(using config: SimulationConfig) =
+  val maxCount = config.maxCount
+  bodyString
+    .transformWithSession { (_: String, session: Session) =>
+      assert(
+        session("retryCount").as[Int] <= maxCount,
+        s"!!! The retryCount reached the maximum of $maxCount"
+      )
+    }
+
+def loadVariable(variableName: String): WithConfig[ChainBuilder] =
+  exec(
+    http(s"Load Variable '$variableName'")
+      .get(
+        s"/history/variable-instance?variableName=$variableName&processInstanceIdIn=#{processInstanceId}&deserializeValues=false"
+      )
+      .auth()
+      .check(checkMaxCount)
+      .check(
+        extractJson("$[*].value", variableName)
+      )
+  ).exitHereIfFailed
+
+def retryOrFail(
+    chainBuilder: ChainBuilder,
+    condition: Session => Boolean = statusCondition(200),
+) = {
+  exec {
+    _.set("lastStatus", -1)
+      .set("retryCount", 0)
+  }.doWhile(condition(_)) {
+    exec()
+      .pause(1.second)
+      .exec(chainBuilder)
+      .exec { session =>
+        if (session("lastStatus").asOption[Int].nonEmpty)
+          session.set("lastStatus", session("lastStatus").as[Int])
+        else
+          session
+      }
+      .exec(session =>
+        session.set("retryCount", 1 + session("retryCount").as[Int])
+      )
+  }.exitHereIfFailed
+}
+
+extension (builder: HttpRequestBuilder)
+  def auth():WithConfig[HttpRequestBuilder] =
+    summon[SimulationConfig].authHeader(builder)
+
 implicit lazy val TestOverridesSchema: Schema[TestOverrides] = Schema.derived
 implicit lazy val TestOverridesEncoder: Encoder[TestOverrides] = deriveEncoder
 implicit lazy val TestOverridesDecoder: Decoder[TestOverrides] = deriveDecoder
@@ -202,6 +277,9 @@ implicit lazy val TestOverrideSchema: Schema[TestOverride] = Schema.derived
 implicit lazy val TestOverrideEncoder: Encoder[TestOverride] = deriveEncoder
 implicit lazy val TestOverrideDecoder: Decoder[TestOverride] = deriveDecoder
 
-implicit lazy val TestOverrideTypeSchema: Schema[TestOverrideType] = Schema.derived
-implicit lazy val TestOverrideTypeEncoder: Encoder[TestOverrideType] = deriveEncoder
-implicit lazy val TestOverrideTypeDecoder: Decoder[TestOverrideType] = deriveDecoder
+implicit lazy val TestOverrideTypeSchema: Schema[TestOverrideType] =
+  Schema.derived
+implicit lazy val TestOverrideTypeEncoder: Encoder[TestOverrideType] =
+  deriveEncoder
+implicit lazy val TestOverrideTypeDecoder: Decoder[TestOverrideType] =
+  deriveDecoder

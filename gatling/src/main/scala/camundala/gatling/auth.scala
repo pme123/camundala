@@ -7,23 +7,29 @@ import io.gatling.http.Predef.*
 import io.gatling.http.protocol.HttpProtocolBuilder
 import io.gatling.http.request.builder.HttpRequestBuilder
 
-case class Fsso(url: String, bodyForm: Map[String, String])
 
 trait BasicSimulationRunner extends SimulationRunner:
   def username = "demo"
   def password = "demo"
 
-  override def authHeader: HttpRequestBuilder => HttpRequestBuilder =
-    _.basicAuth(username, password)
+  override implicit def config: SimulationConfig =
+    super.config
+      .withAuthHeader((b: HttpRequestBuilder) =>
+        b.basicAuth(username, password)
+      )
+
+case class Fsso(url: String, bodyForm: Map[String, String])
 
 trait OAuthSimulationRunner extends SimulationRunner:
 
   def fsso: Fsso
 
-  override def authHeader: HttpRequestBuilder => HttpRequestBuilder =
-    _.header("Authorization", s"Bearer #{access_token}")
-
-  override def preRequests: Seq[ChainBuilder] = Seq(getToken)
+  override implicit def config: SimulationConfig =
+    super.config
+      .withAuthHeader((b: HttpRequestBuilder) =>
+        b.header("Authorization", s"Bearer #{access_token}")
+      )
+      .withPreRequests(getToken)
 
   private lazy val getToken: ChainBuilder =
     exec(
