@@ -7,7 +7,6 @@ import io.gatling.http.Predef.*
 import io.gatling.http.protocol.HttpProtocolBuilder
 import io.gatling.http.request.builder.HttpRequestBuilder
 
-
 trait BasicSimulationRunner extends SimulationRunner:
   def username = "demo"
   def password = "demo"
@@ -29,9 +28,9 @@ trait OAuthSimulationRunner extends SimulationRunner:
       .withAuthHeader((b: HttpRequestBuilder) =>
         b.header("Authorization", s"Bearer #{access_token}")
       )
-      .withPreRequests(getToken)
+      .withPreRequest(getToken)
 
-  private lazy val getToken: ChainBuilder =
+  private lazy val getToken: () => ChainBuilder = () =>
     exec(
       http("Get Access Token")
         .post(s"${fsso.url}/token")

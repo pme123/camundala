@@ -14,7 +14,10 @@ case class SimulationConfig(
                              // the number of parallel execution of a simulation.
                              // for example run the process 3 times (userAtOnce = 3)
                              userAtOnce: Int = 1,
-                             preRequests: Seq[ChainBuilder] = Nil,
+                             // add requests that needed to be executed before the test requests.
+                             // example get the token for OAuth2
+                             // they must be lazy - otherwise they are blocking!?
+                             preRequests: Seq[() => ChainBuilder] = Nil,
                              // REST endpoint of Camunda
                              endpoint: String = "http://localhost:8080/engine-rest",
                              // you can add authentication with this - default there is none.
@@ -31,8 +34,8 @@ case class SimulationConfig(
   def withTenantId(userAtOnce: Int = 1): SimulationConfig =
     copy(userAtOnce = userAtOnce)
 
-  def withPreRequests(preRequests: ChainBuilder*): SimulationConfig =
-    copy(preRequests = preRequests)
+  def withPreRequest(preRequest: () => ChainBuilder): SimulationConfig =
+    copy(preRequests = preRequests :+ preRequest)
 
   def withAuthHeader(authHeader: HttpRequestBuilder => HttpRequestBuilder = b => b): SimulationConfig =
     copy(authHeader = authHeader)

@@ -67,12 +67,13 @@ def taskCondition(): Session => Boolean = session => {
 def processFinishedCondition: Session => Boolean = session =>
   val status = session.attributes.get("processState")
   status.contains("ACTIVE")
+  
 // check if there is a variable in the process with a certain value
 def processReadyCondition(key: String, value: Any): Session => Boolean =
   session =>
     val variable = session.attributes.get(key)
     println(
-      s"processReadyCondition: ${variable.getClass} - ${value.getClass} - ${!variable
+      s"<<< processReadyCondition: ${variable.getClass} - ${value.getClass} - ${!variable
         .contains(value.toString)}"
     )
     !variable.contains(value)
@@ -181,7 +182,7 @@ private def checkP[T <: Product: Encoder](
                 false
             if (!matches)
               println(
-                s"cFile: ${cValue.getClass} / pFile: ${pValue.getClass}"
+                s"<<< cFile: ${cValue.getClass} / pFile: ${pValue.getClass}"
               )
               println(
                 s"!!! The File value '${pValue}'\n of $key does not match the result variable: '$cFileValueInfo'."
@@ -195,7 +196,7 @@ private def checkP[T <: Product: Encoder](
             val matches: Boolean = setCJson == setPJson
             if (!matches)
               println(
-                s"cJson: ${cValue.getClass} / pJson: ${pValue.value.getClass}"
+                s"<<< cJson: ${cValue.getClass} / pJson: ${pValue.value.getClass}"
               )
               println(
                 s"!!! The pJson value '${toJson(pValue.value.toString)}' of $key does not match the result variable cJson: '${toJson(cValue)}'."
@@ -204,7 +205,7 @@ private def checkP[T <: Product: Encoder](
           case CamundaProperty(_, cValue) =>
             val matches: Boolean = cValue.value == pValue.value
             if (!matches)
-              println(s"cValue: ${cValue.getClass} / pValue ${pValue.getClass}")
+              println(s"<<< cValue: ${cValue.getClass} / pValue ${pValue.getClass}")
               println(
                 s"!!! The value '$pValue' of $key does not match the result variable '${cValue}'.\n $result"
               )

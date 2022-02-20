@@ -7,18 +7,20 @@ import io.gatling.core.Predef.*
 import io.gatling.core.structure.ChainBuilder
 import io.gatling.http.Predef.*
 
-import scala.annotation.targetName
-
 trait EventExtensions:
+
   extension [
     In <: Product: Encoder: Decoder: Schema
   ](event: ReceiveMessageEvent[In])
   
-    @targetName("correlateReceiveMessageEvent")
-    def correlate(): WithConfig[ChainBuilder] =
-      correlateMsg(None)
+    def correlate(): WithConfig[Seq[ChainBuilder]] =
+      Seq(
+        exec(_.set("processState", null)),
+        retryOrFail(
+          correlateMsg(),
+        )
+      )
   
-    @targetName("correlateReceiveMessageEvent")
     def correlate(
                    readyVariable: String,
                    readyValue: Any,

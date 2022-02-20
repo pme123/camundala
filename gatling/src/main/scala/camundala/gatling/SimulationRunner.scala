@@ -46,8 +46,7 @@ trait SimulationRunner
       process: Process[In, Out],
       requests: (ChainBuilder | Seq[ChainBuilder])*
   ): ProcessScenario =
-    println("PROCESS SCENARIO2")
-    ProcessScenario.apply(scenarioName, config.preRequests)
+    ProcessScenario.apply(scenarioName)
       .start(process)
       .steps(requests: _*)
       .check(process)
@@ -55,7 +54,7 @@ trait SimulationRunner
   def processScenario(scenarioName: String)(
       requests: (ChainBuilder | Seq[ChainBuilder])*
   ): ProcessScenario =
-    ProcessScenario.apply(scenarioName, config.preRequests, requests: _*)
+    ProcessScenario.apply(scenarioName, requests: _*)
 
   def simulate[
       In <: Product: Encoder: Decoder: Schema,
@@ -81,7 +80,6 @@ trait SimulationRunner
   ): Unit =
     simulate(
       examples.toSeq.map { case (k, v) =>
-        println(s"Simulate ($k, $v)")
         processScenario(k)(
           v
         )

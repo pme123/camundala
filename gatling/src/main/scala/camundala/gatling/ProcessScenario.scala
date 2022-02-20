@@ -6,6 +6,7 @@ import camundala.bpmn.*
 import io.gatling.core.Predef.*
 import io.gatling.core.structure.{ChainBuilder, PopulationBuilder}
 import io.gatling.http.Predef.*
+import io.gatling.http.request.builder.HttpRequestBuilder
 
 import scala.language.implicitConversions
 
@@ -23,7 +24,6 @@ case class ProcessScenario(
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema
   ](process: Process[In, Out]): ProcessScenario =
-    println(s"Process started with Config: $config")
     copy(requests = requests :+ process.start(scenarioName))
 
   def check[
@@ -36,7 +36,6 @@ case class ProcessScenario(
     copy(requests = requests ++ ProcessScenario.flatten(reqs))
 
   def toGatling: PopulationBuilder =
-    println(s"toGatlin222 ($scenarioName, ${requests.map(_.getClass)})")
     scenario(scenarioName)
       .exec(requests)
       .inject(atOnceUsers(config.userAtOnce))
@@ -45,14 +44,13 @@ object ProcessScenario:
 
   def apply(
       scenarioName: String,
-      preRequests: Seq[ChainBuilder],
       requests: (ChainBuilder | Seq[ChainBuilder])*
   ): WithConfig[ProcessScenario] =
-    println(s"scenarioName: $scenarioName")
+    println(s"<<< Scenario '$scenarioName' added.")
     new ProcessScenario(
       scenarioName,
       summon[SimulationConfig],
-      preRequests ++ flatten(requests)
+      summon[SimulationConfig].preRequests.map(_()) ++ flatten(requests)
     )
 
   private def flatten(
