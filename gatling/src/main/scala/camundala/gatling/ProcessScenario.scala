@@ -9,17 +9,19 @@ import io.gatling.http.Predef.*
 
 import scala.language.implicitConversions
 
-case class ProcessScenario(scenarioName: String,
-                           config: SimulationConfig,
-                           requests: Seq[ChainBuilder]):
+case class ProcessScenario(
+    scenarioName: String,
+    config: SimulationConfig,
+    requests: Seq[ChainBuilder]
+) extends ProcessExtensions:
   import gatling.*
 
   implicit lazy val simulationConfig: SimulationConfig = config
   implicit lazy val tenantId: Option[String] = config.tenantId
 
   def start[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
   ](process: Process[In, Out]): ProcessScenario =
     println(s"Process started with Config: $config")
     copy(requests = requests :+ process.start(scenarioName))
@@ -27,8 +29,8 @@ case class ProcessScenario(scenarioName: String,
   def check[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema
-    ](process: Process[In, Out]): ProcessScenario =
-      copy(requests = requests ++ process.check(scenarioName))
+  ](process: Process[In, Out]): ProcessScenario =
+    copy(requests = requests ++ process.check(scenarioName))
 
   def steps(reqs: (ChainBuilder | Seq[ChainBuilder])*): ProcessScenario =
     copy(requests = requests ++ ProcessScenario.flatten(reqs))
@@ -39,25 +41,24 @@ case class ProcessScenario(scenarioName: String,
       .exec(requests)
       .inject(atOnceUsers(config.userAtOnce))
 
-object ProcessScenario :
+object ProcessScenario:
 
-  def apply(scenarioName: String,
-            preRequests: Seq[ChainBuilder],
-            requests: (ChainBuilder | Seq[ChainBuilder])*): WithConfig[ProcessScenario] =
+  def apply(
+      scenarioName: String,
+      preRequests: Seq[ChainBuilder],
+      requests: (ChainBuilder | Seq[ChainBuilder])*
+  ): WithConfig[ProcessScenario] =
     println(s"scenarioName: $scenarioName")
     new ProcessScenario(
       scenarioName,
       summon[SimulationConfig],
-      preRequests ++ flatten(requests),
+      preRequests ++ flatten(requests)
     )
 
   private def flatten(
-                         requests: Seq[ChainBuilder | Seq[ChainBuilder]]
-                       ): Seq[ChainBuilder] =
-      requests.flatMap {
-        case seq: Seq[ChainBuilder] => seq
-        case o: ChainBuilder => Seq(o)
-      }
-
-
-
+      requests: Seq[ChainBuilder | Seq[ChainBuilder]]
+  ): Seq[ChainBuilder] =
+    requests.flatMap {
+      case seq: Seq[ChainBuilder] => seq
+      case o: ChainBuilder => Seq(o)
+    }

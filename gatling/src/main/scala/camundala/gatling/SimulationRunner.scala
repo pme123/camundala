@@ -16,7 +16,11 @@ import io.gatling.http.request.builder.HttpRequestBuilder
 
 import scala.concurrent.duration.*
 
-trait SimulationRunner extends Simulation:
+trait SimulationRunner
+  extends Simulation,
+    ProcessExtensions,
+    UserTaskExtensions,
+    EventExtensions:
 
   implicit def config: SimulationConfig = SimulationConfig()
 
