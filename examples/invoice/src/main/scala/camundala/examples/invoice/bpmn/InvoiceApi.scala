@@ -27,9 +27,7 @@ object InvoiceApi extends BpmnDsl:
 
   @description("There are three possible Categories")
   enum InvoiceCategory derives JsonTaggedAdt.PureEncoder, JsonTaggedAdt.PureDecoder:
-    case `Travel Expenses`
-    case Misc
-    case `Software License Costs`
+    case `Travel Expenses`, Misc, `Software License Costs`
 
   case class SelectApproverGroup(
       amount: Double = 30.0,

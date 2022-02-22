@@ -64,7 +64,9 @@ trait APICreator extends App:
        |
        |>WARNING: This is an experimental way and not approved.
        |
-       |**${cawemoFolder.map(f => s"[Check Project on Cawemo](https://cawemo.com/folders/$f)").mkString}**
+       |**${cawemoFolder
+      .map(f => s"[Check Project on Cawemo](https://cawemo.com/folders/$f)")
+      .mkString}**
        |
        |${createReadme()}
        |
@@ -133,7 +135,7 @@ trait APICreator extends App:
 
     //noinspection NoTailRecursionAnnotation
     def endpoints(activities: ApiEndpoint[?, ?, ?, ?]*): ApiEndpoints =
-      endpoints(None, None, activities:_*)
+      endpoints(None, None, activities: _*)
 
     def endpoints(
         tag: Option[String] = None,
@@ -166,6 +168,7 @@ trait APICreator extends App:
           )
         ) +: activities
       )
+
   extension [
       In <: Product: Encoder: Decoder: Schema: ClassTag,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
@@ -202,6 +205,14 @@ trait APICreator extends App:
         ) +: activities
       )
   end extension
+
+  implicit def toEndpoint[
+      In <: Product: Encoder: Decoder: Schema: ClassTag,
+      Out <: Product: Encoder: Decoder: Schema: ClassTag
+  ](
+      userTask: UserTask[In, Out]
+  ): ApiEndpoint[In, NoInput, Out, UserTaskEndpoint[In, Out]] =
+    userTask.endpoint
 
   extension [
       In <: Product: Encoder: Decoder: Schema: ClassTag,
@@ -241,6 +252,14 @@ trait APICreator extends App:
       )
   end extension
 
+  implicit def toEndpoint[
+      In <: Product: Encoder: Decoder: Schema: ClassTag,
+      Out <: Product: Encoder: Decoder: Schema: ClassTag
+  ](
+      dmn: DecisionDmn[In, Out]
+  ): ApiEndpoint[In, EvaluateDecisionIn, Out, EvaluateDecision[In, Out]] =
+    dmn.endpoint
+
   extension [
       In <: Product: Encoder: Decoder: Schema: ClassTag,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
@@ -257,10 +276,18 @@ trait APICreator extends App:
       )
   end extension
 
+  implicit def toEndpoint[
+      In <: Product: Encoder: Decoder: Schema: ClassTag
+  ](
+      event: ReceiveMessageEvent[In]
+  ): ApiEndpoint[In, CorrelateMessageIn, NoOutput, CorrelateMessage[In]] =
+    event.endpoint
+
   extension [
       In <: Product: Encoder: Decoder: Schema: ClassTag
   ](event: ReceiveMessageEvent[In])
-    def endpoint: ApiEndpoint[In, CorrelateMessageIn, NoOutput, CorrelateMessage[In]] =
+    def endpoint
+        : ApiEndpoint[In, CorrelateMessageIn, NoOutput, CorrelateMessage[In]] =
       CorrelateMessage(
         event,
         CamundaRestApi(
@@ -271,8 +298,15 @@ trait APICreator extends App:
       )
   end extension
 
-  extension [
+  implicit def toEndpoint[
     In <: Product: Encoder: Decoder: Schema: ClassTag
+  ](
+     event: ReceiveSignalEvent[In]
+   ): ApiEndpoint[In, SendSignalIn, NoOutput, SendSignal[In]] =
+    event.endpoint
+
+  extension [
+      In <: Product: Encoder: Decoder: Schema: ClassTag
   ](event: ReceiveSignalEvent[In])
     def endpoint: ApiEndpoint[In, SendSignalIn, NoOutput, SendSignal[In]] =
       SendSignal(
@@ -285,11 +319,4 @@ trait APICreator extends App:
       )
   end extension
 
-/*TODO
-  implicit def toEndpoint[
-    In <: Product: Encoder: Decoder: Schema: ClassTag,
-    Out <: Product: Encoder: Decoder: Schema: ClassTag
-  ](process: Process[In, Out]): ApiEndpoints =
-    process.endpoint
- */
 end APICreator
