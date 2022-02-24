@@ -39,7 +39,7 @@ In this project you find two examples that uses the Features.
 Just run `amm ./publish-release.sc VERSION`.
 
 Due to problems with the `"org.xerial.sbt" % "sbt-sonatype"` Plugin you have to release manually:
-- https://s01.oss.sonatype.org/#stagingRepositories
+- [](https://s01.oss.sonatype.org/#stagingRepositories)
   - login
   - check Staging Repository
   - hit _close_ Button (this will take some time)
