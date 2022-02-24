@@ -196,13 +196,13 @@ lazy val publicationSettings: Project => Project = _.settings(
   },
   credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credentials"),
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
-  homepage := Some(url("https://github.com/pme123/camundala-dsl")),
+  homepage := Some(url("https://github.com/pme123/camundala")),
   startYear := Some(2021),
   // logLevel := Level.Debug,
   scmInfo := Some(
     ScmInfo(
-      url("https://github.com/pme123/camundala-dsl"),
-      "scm:git:github.com:/pme123/camundala-dsl"
+      url("https://github.com/pme123/camundala"),
+      "scm:git:github.com:/pme123/camundala"
     )
   ),
   developers := developerList
