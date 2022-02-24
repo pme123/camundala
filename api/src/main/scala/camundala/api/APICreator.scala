@@ -116,6 +116,14 @@ trait APICreator extends App:
     os.write(path, yaml)
     println(s"Created Open API $path")
 
+  implicit def toEndpoint[
+      In <: Product: Encoder: Decoder: Schema: ClassTag,
+      Out <: Product: Encoder: Decoder: Schema: ClassTag
+  ](
+      processes: Map[String, Process[In, Out]]
+  ): ApiEndpoints =
+    processes.endpoint
+
   extension [
       In <: Product: Encoder: Decoder: Schema: ClassTag,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
@@ -168,6 +176,14 @@ trait APICreator extends App:
           )
         ) +: activities
       )
+
+  implicit def toEndpoint[
+      In <: Product: Encoder: Decoder: Schema: ClassTag,
+      Out <: Product: Encoder: Decoder: Schema: ClassTag
+  ](
+      process: Process[In, Out]
+  ): ApiEndpoints =
+    process.endpoint
 
   extension [
       In <: Product: Encoder: Decoder: Schema: ClassTag,
@@ -299,10 +315,10 @@ trait APICreator extends App:
   end extension
 
   implicit def toEndpoint[
-    In <: Product: Encoder: Decoder: Schema: ClassTag
+      In <: Product: Encoder: Decoder: Schema: ClassTag
   ](
-     event: ReceiveSignalEvent[In]
-   ): ApiEndpoint[In, SendSignalIn, NoOutput, SendSignal[In]] =
+      event: ReceiveSignalEvent[In]
+  ): ApiEndpoint[In, SendSignalIn, NoOutput, SendSignal[In]] =
     event.endpoint
 
   extension [

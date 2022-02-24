@@ -22,6 +22,7 @@ export io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 
 // One import for this ADT/JSON codec
 export org.latestbit.circe.adt.codec.JsonTaggedAdt
+export org.latestbit.circe.adt.codec.{JsonTaggedAdt => Adt}
 
 // tapir
 export sttp.tapir.EndpointIO.Example
