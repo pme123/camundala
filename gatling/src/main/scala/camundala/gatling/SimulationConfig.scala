@@ -42,3 +42,6 @@ case class SimulationConfig(
 
   def withPort(port: Int): SimulationConfig =
     copy(endpoint = s"http://localhost:$port/engine-rest")
+
+  def withUserAtOnce(userAtOnce: Int): SimulationConfig =
+    copy(userAtOnce = userAtOnce)

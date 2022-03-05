@@ -15,7 +15,10 @@ import scala.concurrent.duration.*
 class InvoiceSimulation extends SimulationRunner {
 
   override implicit def config: SimulationConfig =
-    super.config.withPort(8034)
+    super.config
+      .withPort(8034)
+      //.withUserAtOnce(100) // do load testing
+
 
   simulate(
     processScenario("Review Invoice")(
