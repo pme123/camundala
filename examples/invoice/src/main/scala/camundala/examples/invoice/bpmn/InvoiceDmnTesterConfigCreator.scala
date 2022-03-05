@@ -12,7 +12,7 @@ object InvoiceDmnTesterConfigCreator extends DmnTesterConfigCreator:
     pwd / "examples" / "invoice" / "src" / "main" / "resources"
 
   dmnTester(
-    invoiceAssignApproverDMN.tester
+    InvoiceAssignApproverDMN.tester
       .dmnPath(defaultDmnPath("invoiceBusinessDecisions"))
       .testValues("amount", 249, 250, 999, 1000, 1001)
   )

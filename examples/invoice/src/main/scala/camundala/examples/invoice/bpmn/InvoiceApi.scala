@@ -117,22 +117,32 @@ object InvoiceApi extends BpmnDsl:
       out = InvoiceReceiptCheck() // just for testing
     )
 
-  lazy val invoiceAssignApproverDMN
+  lazy val InvoiceReceiptWithReviewP =
+    InvoiceReceiptP
+      .withOut(InvoiceReceiptCheck(clarified = Some(true)))
+
+  lazy val InvoiceReceiptWithReviewFailedP =
+    InvoiceReceiptP
+      .withOut(
+        InvoiceReceiptCheck(approved = false, clarified = Some(false))
+      )
+    
+  lazy val InvoiceAssignApproverDMN
       : DecisionDmn[SelectApproverGroup, AssignApproverGroups] = collectEntries(
     decisionDefinitionKey = "invoice-assign-approver",
     in = SelectApproverGroup(),
     out = AssignApproverGroups(),
   ).withDescr(cawemoDescr("Decision Table on who must approve the Invoice.", "155ba236-d5d1-42f7-8b56-3e90e0bb98d4"))
 
-  lazy val invoiceAssignApproverDMN2
+  lazy val InvoiceAssignApproverDMN2
       : DecisionDmn[SelectApproverGroup, AssignApproverGroups] =
-    invoiceAssignApproverDMN
+    InvoiceAssignApproverDMN
       .withIn(SelectApproverGroup(1050, InvoiceCategory.`Travel Expenses`))
       .withOut(
         AssignApproverGroups(Seq(ApproverGroup.accounting, ApproverGroup.sales))
       )
 
-  lazy val approveInvoiceUT =
+  lazy val ApproveInvoiceUT =
     userTask(
       id = "ApproveInvoiceUT",
       descr = "Approve the invoice (or not).",
@@ -140,19 +150,19 @@ object InvoiceApi extends BpmnDsl:
       out = ApproveInvoice()
     )
 
-  lazy val prepareBankTransferUT = userTask(
+  lazy val PrepareBankTransferUT = userTask(
     id = "PrepareBankTransferUT",
     descr = "Prepare the bank transfer in the Financial Accounting System.",
     in = InvoiceReceipt(),
     out = PrepareBankTransfer()
   )
 
-  lazy val archiveInvoiceST = serviceTask(
+  lazy val ArchiveInvoiceST = serviceTask(
     id = "ArchiveInvoiceST",
     descr = "Archive the Invoice."
   )
 
-  lazy val reviewInvoiceCA: CallActivity[InvoiceReceipt, InvoiceReviewed] =
+  lazy val ReviewInvoiceCA: CallActivity[InvoiceReceipt, InvoiceReviewed] =
     callActivity(
       id = "ReviewInvoiceCA",
       descr = "Calles the Review Invoice Process.",
@@ -168,13 +178,13 @@ object InvoiceApi extends BpmnDsl:
       in = InvoiceReceipt(),
       out = InvoiceReviewed()
     )
-  lazy val assignReviewerUT = userTask(
+  lazy val AssignReviewerUT = userTask(
     id = "AssignReviewerUT",
     descr = "Select the Reviewer.",
     in = InvoiceReceipt(),
     out = AssignedReviewer()
   )
-  lazy val reviewInvoiceUT = userTask(
+  lazy val ReviewInvoiceUT = userTask(
     id = "ReviewInvoiceUT",
     descr = "Review Invoice and approve.",
     in = InvoiceReceipt(),

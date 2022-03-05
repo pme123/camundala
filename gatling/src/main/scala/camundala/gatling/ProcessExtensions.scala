@@ -27,7 +27,7 @@ trait ProcessExtensions:
         businessKey: Option[String] = None
     ): WithConfig[ChainBuilder] =
       exec(
-        http(s"Correlate Message '$msgName' of '${process.id}'")
+        http(description("Correlate Message", msgName))
           .post(s"/message")
           .auth()
           .body(
@@ -63,7 +63,7 @@ trait ProcessExtensions:
     def start(scenario: String, expectedStatus: Int = 200): WithConfig[ChainBuilder] =
       val tenantId = summon[SimulationConfig].tenantId
       exec(
-        http(s"Start '$scenario' of '${process.id}'")
+        http(description("Start", scenario))
           .post(s"/process-definition/key/${process.id}${tenantId
             .map(id => s"/tenant-id/$id")
             .getOrElse("")}/start")
@@ -160,7 +160,7 @@ trait ProcessExtensions:
     def checkVars(
         scenario: String
     ): WithConfig[HttpRequestBuilder] =
-      http(s"Check '$scenario' of '${process.id}'") // 8
+      http(description("Check", scenario))
         .get(
           "/history/variable-instance?processInstanceIdIn=#{processInstanceId}&deserializeValues=false"
         )
@@ -179,7 +179,7 @@ trait ProcessExtensions:
         )
   
     def checkFinished(scenario: String): WithConfig[HttpRequestBuilder] =
-      http(s"Check finished '$scenario' of '${process.id}'")
+      http(description("Check finished", scenario))
         .get(s"/history/process-instance/#{processInstanceId}")
         .auth()
         .check(checkMaxCount)
@@ -205,5 +205,9 @@ trait ProcessExtensions:
           session("processInstanceIdBackup").as[String]
         )
       )
-  
+
+    private inline def description(prefix: String, scenario: String): String =
+      val d = if(scenario == process.id) scenario else s"$scenario (${process.id})"
+      s"$prefix $d"
+
   end extension

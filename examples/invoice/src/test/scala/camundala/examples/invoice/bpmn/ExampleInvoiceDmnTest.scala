@@ -12,8 +12,8 @@ class ExampleInvoiceDmnTest extends DmnTestRunner:
 
   @Test
   def testSingleResult(): Unit =
-    test(invoiceAssignApproverDMN)
+    test(InvoiceAssignApproverDMN)
 
   @Test
   def testMoreResult(): Unit =
-    test(invoiceAssignApproverDMN2)
+    test(InvoiceAssignApproverDMN2)

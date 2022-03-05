@@ -1,5 +1,5 @@
 package camundala
-package examples.invoice.bpmn
+package examples.twitter.bpmn
 
 import api.*
 import bpmn.*

@@ -35,18 +35,18 @@ class ExampleInvoiceTest extends ScenarioRunner:
   @Test
   def testReviewReview(): Unit =
     test(ReviewInvoiceP)(
-      assignReviewerUT,
-      reviewInvoiceUT
+      AssignReviewerUT,
+      ReviewInvoiceUT
     )
 
   @Test
   def testInvoiceReceipt(): Unit =
     test(InvoiceReceiptP)(
-      invoiceAssignApproverDMN2,
+      InvoiceAssignApproverDMN2,
       checkGroupIds,
-      approveInvoiceUT,
-      prepareBankTransferUT,
-      archiveInvoiceST,
+      ApproveInvoiceUT,
+      PrepareBankTransferUT,
+      ArchiveInvoiceST,
       InvoiceProcessedEE
     )
 

@@ -39,6 +39,17 @@ trait SimulationRunner
       }
       .inject(atOnceUsers(config.userAtOnce))
 
+  inline def processScenario[
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
+    ](inline process: Process[In, Out])(
+      requests: (ChainBuilder | Seq[ChainBuilder])*
+    ): ProcessScenario =
+      processScenario(nameOfVariable(process))(
+        process,
+        requests:_*
+      )
+
   def processScenario[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema

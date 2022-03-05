@@ -21,41 +21,33 @@ class InvoiceSimulation extends SimulationRunner {
 
 
   simulate(
-    processScenario("Review Invoice")(
-      ReviewInvoiceP,
-      assignReviewerUT,
-      reviewInvoiceUT
+    processScenario(ReviewInvoiceP)(
+      AssignReviewerUT,
+      ReviewInvoiceUT
     ),
-    processScenario("Invoice Receipt")(
-      InvoiceReceiptP,
-      approveInvoiceUT,
-      prepareBankTransferUT
+    processScenario(InvoiceReceiptP)(
+      ApproveInvoiceUT,
+      PrepareBankTransferUT
     ),
-    processScenario("Invoice Receipt with Review")(
-      InvoiceReceiptP
-        .withOut(InvoiceReceiptCheck(clarified = Some(true))),
-      approveInvoiceUT
+    processScenario(InvoiceReceiptWithReviewP)(
+      ApproveInvoiceUT
         .withOut(ApproveInvoice(false)), // do not approve
       InvoiceReceiptP
         .switchToCalledProcess(), // switch to Review Process (Call Activity)
-      assignReviewerUT,
-      reviewInvoiceUT,
+      AssignReviewerUT,
+      ReviewInvoiceUT,
       ReviewInvoiceP.check(), // check if sub process successful
       InvoiceReceiptP.switchToMainProcess(),
-      approveInvoiceUT, // now approve
-      prepareBankTransferUT
+      ApproveInvoiceUT, // now approve
+      PrepareBankTransferUT
     ),
-    processScenario("Invoice Receipt with Review failed")(
-      InvoiceReceiptP
-        .withOut(
-          InvoiceReceiptCheck(approved = false, clarified = Some(false))
-        ),
-      approveInvoiceUT
+    processScenario(InvoiceReceiptWithReviewFailedP)(
+      ApproveInvoiceUT
         .withOut(ApproveInvoice(false)), // do not approve
       InvoiceReceiptP
         .switchToCalledProcess(), // switch to Review Process (Call Activity)
-      assignReviewerUT,
-      reviewInvoiceUT.withOut(InvoiceReviewed(false)),
+      AssignReviewerUT,
+      ReviewInvoiceUT.withOut(InvoiceReviewed(false)),
       ReviewInvoiceP
         .withOut(InvoiceReviewed(false))
         .check(), // check if sub process successful

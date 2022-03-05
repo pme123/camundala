@@ -265,6 +265,7 @@ def retryOrFail(
       )
   }.exitHereIfFailed
 }
+inline def nameOfVariable(inline x: Any): String = ${ NameFromVariable.nameOfVariable('x) }
 
 extension (builder: HttpRequestBuilder)
   def auth():WithConfig[HttpRequestBuilder] =
