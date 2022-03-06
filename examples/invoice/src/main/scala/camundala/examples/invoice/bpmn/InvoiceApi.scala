@@ -40,7 +40,7 @@ object InvoiceApi extends BpmnDsl:
   )
 
   @description("These Groups can approve the invoice.")
-  enum ApproverGroup derives JsonTaggedAdt.PureEncoder, JsonTaggedAdt.PureDecoder:
+  enum ApproverGroup derives Adt.PureEncoder, Adt.PureDecoder:
     case accounting, sales, management
 
   @description("""Every Invoice has to be accepted by the Boss.""")

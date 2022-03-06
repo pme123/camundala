@@ -60,6 +60,8 @@ trait CommonTesting extends TestDsl:
       Mocks.register(key, value)
     }
 
+  def setUpMockedCallActivities(): Unit = ()
+
   def checkOutput(out: Map[String, Any]): FromProcessInstance[Unit] =
     val assertion = assertThat(summon[CProcessInstance])
     val variables = assertion.variables()

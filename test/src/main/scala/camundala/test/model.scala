@@ -16,36 +16,39 @@ import scala.annotation.tailrec
 import scala.jdk.CollectionConverters.*
 
 case class TestConfig(
-    deploymentResources: Set[ResourcePath] = Set.empty,
-    serviceRegistries: Set[ServiceRegistry] = Set.empty
-)
+                       deploymentResources: Set[ResourcePath] = Set.empty,
+                       serviceRegistries: Set[ServiceRegistry] = Set.empty,
+                     )
 
 case class ServiceRegistry(key: String, value: Any)
+case class MockedCallActivity(id: String, javaVars: java.util.Map[String, Any])
 
 case class BpmnTestCases(
-    testConfig: TestConfig = TestConfig(),
-    testCases: List[BpmnTestCase] = List.empty
-)
+                          testConfig: TestConfig = TestConfig(),
+                          testCases: List[BpmnTestCase] = List.empty
+                        )
 
 case class BpmnTestCase(processes: List[ProcessToTest[?, ?]] = List.empty)
 
 case class ProcessToTest[
-    In <: Product: Encoder: Decoder,
-    Out <: Product: Encoder: Decoder
+  In <: Product : Encoder : Decoder,
+  Out <: Product : Encoder : Decoder
 ](
-    process: Process[In, Out],
-    steps: List[ElementToTest] = List.empty
-)
+   process: Process[In, Out],
+   steps: List[ElementToTest] = List.empty
+ )
 
 sealed trait ElementToTest
+
 case class NodeToTest(
-    inOut: ProcessNode,
-    in: Map[String, Any] = Map.empty,
-    out: Map[String, Any] = Map.empty
-) extends ElementToTest
+                       inOut: ProcessNode,
+                       in: Map[String, Any] = Map.empty,
+                       out: Map[String, Any] = Map.empty
+                     ) extends ElementToTest
+
 case class CustomTests(tests: () => Unit) extends ElementToTest
 
-extension [T <: Product: Encoder](product: T)
+extension[T <: Product : Encoder] (product: T)
   def names(): Seq[String] = product.productElementNames.toSeq
 
   def asVars(): Map[String, Any] =
@@ -54,23 +57,22 @@ extension [T <: Product: Encoder](product: T)
       .toMap
 
   def asValueMap(): Map[String, Any] =
-    println(s"asVars(): ${asVars()}")
     asVars()
       .filterNot { case k -> v =>
         v.isInstanceOf[None.type]
       } // don't send null
       .map { case (k, v) =>
-        k -> objectToVM(k, v) }
+        k -> objectToVM(k, v)
+      }
 
   def objectToVM(
-      key: String,
-      value: Any
-  ): Any =
+                  key: String,
+                  value: Any
+                ): Any =
     value match
       case Some(v) => objectToVM(key, v)
       case c: Iterable[?] =>
-       val f =  c.map(objectToVM(key, _))
-        println(s"ITERABLE: ${f.head.getClass} - $f")
+        val f = c.map(objectToVM(key, _))
         valueToVM(key, f)
       case v =>
         valueToVM(key, v)

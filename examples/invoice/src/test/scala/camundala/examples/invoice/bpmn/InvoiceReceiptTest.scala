@@ -16,28 +16,18 @@ import java.util.{HashSet, List, Set}
 import scala.compiletime.{constValue, constValueTuple}
 import scala.deriving.Mirror
 
-class ExampleInvoiceTest extends ScenarioRunner:
+class InvoiceReceiptTest extends ScenarioRunner:
 
   lazy val config: TestConfig =
     testConfig
       .deployments(
         baseResource / "invoice.v2.bpmn",
-        baseResource / "reviewInvoice.bpmn",
         baseResource / "invoiceBusinessDecisions.dmn",
         formResource / "approve-invoice.html",
-        formResource / "assign-reviewer.html",
         formResource / "prepare-bank-transfer.html",
-        formResource / "review-invoice.html",
         formResource / "start-form.html"
       )
       .registries()
-
-  @Test
-  def testReviewReview(): Unit =
-    test(`Review Invoice`)(
-      AssignReviewerUT,
-      ReviewInvoiceUT
-    )
 
   @Test
   def testInvoiceReceipt(): Unit =
@@ -50,28 +40,19 @@ class ExampleInvoiceTest extends ScenarioRunner:
       InvoiceProcessedEE
     )
 
-    /*TODO see https://forum.camunda.org/t/mocking-call-activities-for-the-camunda-scenario-tests/27161/2
-  import org.camunda.bpm.engine.test.assertions.bpmn.AbstractAssertions.processEngine
-  import org.camunda.bpm.engine.variable.impl.VariableMapImpl
-  import org.camunda.bpm.extension.mockito.CamundaMockito.registerCallActivityMock
-
   @Test
   def testInvoiceReceiptWithReview(): Unit =
-    processEngineRule.manageDeployment(registerCallActivityMock(ReviewInvoiceP.id)
-      .onExecutionAddVariables(new VariableMapImpl(ReviewInvoiceP.out.asJavaVars()))
-      .deploy(processEngine()));
+    mockSubProcess(`Review Invoice`)
     test(
-      InvoiceReceiptP
-        .withOut(InvoiceReceiptCheck(false))
+      `Invoice Receipt`
+        .withOut(InvoiceReceiptCheck(true, Some(true)))
     )(
-      approveInvoiceUT
+      ApproveInvoiceUT // do not approve
         .withOut(ApproveInvoice(false)),
-      reviewInvoiceCA
-        .withOut(InvoiceReviewed(false)),
-    //  approveInvoiceUT, // now we approve it
-    //  prepareBankTransferUT
+      `Review Invoice clarified`,
+      ApproveInvoiceUT, // now we approve it
+      PrepareBankTransferUT
     )
-*/
 
   import scala.jdk.CollectionConverters.IterableHasAsScala
 
