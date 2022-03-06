@@ -17,8 +17,7 @@ class InvoiceSimulation extends SimulationRunner {
   override implicit def config: SimulationConfig =
     super.config
       .withPort(8034)
-      //.withUserAtOnce(100) // do load testing
-
+  //.withUserAtOnce(100) // do load testing
 
   simulate(
     processScenario(`Review Invoice`)(
@@ -32,26 +31,20 @@ class InvoiceSimulation extends SimulationRunner {
     processScenario(`Invoice Receipt with Review`)(
       ApproveInvoiceUT
         .withOut(ApproveInvoice(false)), // do not approve
-      `Invoice Receipt`
-        .switchToCalledProcess(), // switch to Review Process (Call Activity)
-      AssignReviewerUT,
-      ReviewInvoiceUT,
-      `Review Invoice`.check(), // check if sub process successful
-      `Invoice Receipt`.switchToMainProcess(),
+      subProcess(`Review Invoice clarified`)(
+        AssignReviewerUT,
+        ReviewInvoiceUT // do clarify
+      ),
       ApproveInvoiceUT, // now approve
       PrepareBankTransferUT
     ),
     processScenario(`Invoice Receipt with Review failed`)(
       ApproveInvoiceUT
         .withOut(ApproveInvoice(false)), // do not approve
-      `Invoice Receipt`
-        .switchToCalledProcess(), // switch to Review Process (Call Activity)
-      AssignReviewerUT,
-      ReviewInvoiceUT.withOut(InvoiceReviewed(false)),
-      `Review Invoice`
-        .withOut(InvoiceReviewed(false))
-        .check(), // check if sub process successful
-      `Invoice Receipt`.switchToMainProcess()
+      subProcess(`Review Invoice not clarified`)(
+        AssignReviewerUT,
+        ReviewInvoiceUT.withOut(InvoiceReviewed(false)) // do not clarify
+      )
     ),
     processScenario("Bad Validation")(
       BadValidationP

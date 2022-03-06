@@ -102,6 +102,9 @@ case class CallActivity[
   def withInOutDescr(descr: InOutDescr[In, Out]): CallActivity[In, Out] =
     copy(inOutDescr = descr)
 
+  def asProcess: Process[In, Out] =
+    Process(inOutDescr)
+
 object CallActivity:
   def apply[
       In <: Product: Encoder: Decoder: Schema,
@@ -165,12 +168,12 @@ object ReceiveMessageEvent:
     )
 
 case class ReceiveSignalEvent[
-  In <: Product: Encoder: Decoder: Schema
+    In <: Product: Encoder: Decoder: Schema
 ](
-   messageName: String,
-   inOutDescr: InOutDescr[In, NoOutput]
- ) extends ProcessNode,
-  InOut[In, NoOutput, ReceiveSignalEvent[In]]:
+    messageName: String,
+    inOutDescr: InOutDescr[In, NoOutput]
+) extends ProcessNode,
+      InOut[In, NoOutput, ReceiveSignalEvent[In]]:
 
   def withInOutDescr(descr: InOutDescr[In, NoOutput]): ReceiveSignalEvent[In] =
     copy(inOutDescr = descr)

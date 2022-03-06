@@ -19,6 +19,7 @@ import scala.concurrent.duration.*
 trait SimulationRunner
     extends Simulation,
       ProcessExtensions,
+      CallActivityExtensions,
       UserTaskExtensions,
       EventExtensions:
 
@@ -57,6 +58,19 @@ trait SimulationRunner
       requests: (ChainBuilder | Seq[ChainBuilder])*
   ): ProcessScenario =
     ProcessScenario.apply(scenarioName, requests: _*)
+
+  inline def subProcess[
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
+  ](inline callActivity: CallActivity[In, Out])(
+      requests: (ChainBuilder | Seq[ChainBuilder])*
+  ): Seq[ChainBuilder] = {
+    val name = nameOfVariable(callActivity)
+    Seq(callActivity.switchToSubProcess(name)) ++
+      ProcessScenario.flatten(requests) ++
+      callActivity.asProcess.check(name) :+
+      callActivity.switchToMainProcess()
+  }
 
   def simulate[
       In <: Product: Encoder: Decoder: Schema,

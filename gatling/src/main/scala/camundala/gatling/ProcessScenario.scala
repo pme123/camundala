@@ -60,7 +60,7 @@ object ProcessScenario:
       summon[SimulationConfig].preRequests.map(_()) ++ flatten(requests)
     )
 
-  private def flatten(
+  def flatten(
       requests: Seq[ChainBuilder | Seq[ChainBuilder]]
   ): Seq[ChainBuilder] =
     requests.flatMap {

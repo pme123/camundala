@@ -165,14 +165,21 @@ object InvoiceApi extends BpmnDsl:
     descr = "Archive the Invoice."
   )
 
-  lazy val ReviewInvoiceCA: CallActivity[InvoiceReceipt, InvoiceReviewed] =
+  lazy val `Review Invoice clarified`: CallActivity[InvoiceReceipt, InvoiceReviewed] =
     callActivity(
       id = "ReviewInvoiceCA",
-      descr = "Calles the Review Invoice Process.",
+      descr = "Calls the Review Invoice Process and clarifies the Invoice.",
       in = InvoiceReceipt(),
       out = InvoiceReviewed()
     )
 
+  lazy val `Review Invoice not clarified`: CallActivity[InvoiceReceipt, InvoiceReviewed] =
+      callActivity(
+        id = "ReviewInvoiceCA",
+        descr = "Calls the Review Invoice Process and does not clarify the Invoice.",
+        in = InvoiceReceipt(),
+        out = InvoiceReviewed(false)
+      )
   lazy val `Review Invoice`: Process[InvoiceReceipt, InvoiceReviewed] =
     val processId = "ReviewInvoiceP"
     process(

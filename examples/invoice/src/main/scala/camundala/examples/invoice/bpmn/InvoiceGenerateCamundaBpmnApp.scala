@@ -2,6 +2,7 @@ package camundala.examples.invoice.bpmn
 
 import camundala.bpmn.*
 import camundala.camunda.*
+import camundala.examples.invoice.bpmn
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
 
@@ -17,7 +18,7 @@ object InvoiceGenerateCamundaBpmnApp extends GenerateCamundaBpmn, App:
     withIdPath / "invoice.v2.bpmn",
     `Invoice Receipt`.bpmn
       .withElements(
-        ReviewInvoiceCA
+        `Review Invoice clarified`
       )
   )
   private lazy val reviewInvoice: Bpmn =
