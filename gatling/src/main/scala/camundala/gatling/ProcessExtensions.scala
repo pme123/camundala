@@ -207,7 +207,7 @@ trait ProcessExtensions:
       )
 
     private inline def description(prefix: String, scenario: String): String =
-      val d = if(scenario == process.id) scenario else s"$scenario (${process.id})"
+      val d = if(scenario == process.id) scenario else s"'$scenario' (${process.id})"
       s"$prefix $d"
 
   end extension

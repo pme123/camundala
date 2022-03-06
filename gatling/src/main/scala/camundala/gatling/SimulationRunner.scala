@@ -29,26 +29,16 @@ trait SimulationRunner
       .baseUrl(config.endpoint)
       .header("Content-Type", "application/json")
 
-  def ignore(scenarioName: String)(
-      requests: (ChainBuilder | Seq[ChainBuilder])*
-  ): PopulationBuilder =
-    scenario(scenarioName)
-      .exec { session =>
-        println(s">>> Scenario '$scenarioName' is ignored!")
-        session
-      }
-      .inject(atOnceUsers(config.userAtOnce))
-
   inline def processScenario[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema
-    ](inline process: Process[In, Out])(
+  ](inline process: Process[In, Out])(
       requests: (ChainBuilder | Seq[ChainBuilder])*
-    ): ProcessScenario =
-      processScenario(nameOfVariable(process))(
-        process,
-        requests:_*
-      )
+  ): ProcessScenario =
+    processScenario(nameOfVariable(process))(
+      process,
+      requests: _*
+    )
 
   def processScenario[
       In <: Product: Encoder: Decoder: Schema,
@@ -57,7 +47,8 @@ trait SimulationRunner
       process: Process[In, Out],
       requests: (ChainBuilder | Seq[ChainBuilder])*
   ): ProcessScenario =
-    ProcessScenario.apply(scenarioName)
+    ProcessScenario
+      .apply(scenarioName)
       .start(process)
       .steps(requests: _*)
       .check(process)

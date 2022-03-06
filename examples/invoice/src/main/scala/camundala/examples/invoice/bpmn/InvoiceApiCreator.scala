@@ -20,7 +20,7 @@ object InvoiceApiCreator extends APICreator {
   override def basePath: Path = pwd / "examples" / "invoice"
 
   apiEndpoints(
-    InvoiceReceiptP
+    `Invoice Receipt`
       .endpoints(
         InvoiceAssignApproverDMN2,
         ApproveInvoiceUT
@@ -28,7 +28,7 @@ object InvoiceApiCreator extends APICreator {
           .withOutExample("Invoice NOT approved", ApproveInvoice(false)),
         PrepareBankTransferUT
       ),
-    ReviewInvoiceP.endpoints(
+    `Review Invoice`.endpoints(
       AssignReviewerUT,
       ReviewInvoiceUT
         .withOutExample("Invoice clarified", InvoiceReviewed())

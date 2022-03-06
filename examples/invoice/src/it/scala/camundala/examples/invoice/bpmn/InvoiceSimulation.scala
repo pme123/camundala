@@ -21,41 +21,40 @@ class InvoiceSimulation extends SimulationRunner {
 
 
   simulate(
-    processScenario(ReviewInvoiceP)(
+    processScenario(`Review Invoice`)(
       AssignReviewerUT,
       ReviewInvoiceUT
     ),
-    processScenario(InvoiceReceiptP)(
+    processScenario(`Invoice Receipt`)(
       ApproveInvoiceUT,
       PrepareBankTransferUT
     ),
-    processScenario(InvoiceReceiptWithReviewP)(
+    processScenario(`Invoice Receipt with Review`)(
       ApproveInvoiceUT
         .withOut(ApproveInvoice(false)), // do not approve
-      InvoiceReceiptP
+      `Invoice Receipt`
         .switchToCalledProcess(), // switch to Review Process (Call Activity)
       AssignReviewerUT,
       ReviewInvoiceUT,
-      ReviewInvoiceP.check(), // check if sub process successful
-      InvoiceReceiptP.switchToMainProcess(),
+      `Review Invoice`.check(), // check if sub process successful
+      `Invoice Receipt`.switchToMainProcess(),
       ApproveInvoiceUT, // now approve
       PrepareBankTransferUT
     ),
-    processScenario(InvoiceReceiptWithReviewFailedP)(
+    processScenario(`Invoice Receipt with Review failed`)(
       ApproveInvoiceUT
         .withOut(ApproveInvoice(false)), // do not approve
-      InvoiceReceiptP
+      `Invoice Receipt`
         .switchToCalledProcess(), // switch to Review Process (Call Activity)
       AssignReviewerUT,
       ReviewInvoiceUT.withOut(InvoiceReviewed(false)),
-      ReviewInvoiceP
+      `Review Invoice`
         .withOut(InvoiceReviewed(false))
         .check(), // check if sub process successful
-      InvoiceReceiptP.switchToMainProcess()
+      `Invoice Receipt`.switchToMainProcess()
     ),
     processScenario("Bad Validation")(
-      InvoiceReceiptP
-        .withIn(InvoiceReceipt(null))
+      BadValidationP
         .start("Bad Validation", 500)
     )
   )

@@ -109,7 +109,7 @@ object InvoiceApi extends BpmnDsl:
 
   val InvoiceReceiptPIdent = "InvoiceReceiptP"
 
-  lazy val InvoiceReceiptP =
+  lazy val `Invoice Receipt` =
     process(
       id = InvoiceReceiptPIdent,
       descr = cawemoDescr("This starts the Invoice Receipt Process.", "e289c19a-8a57-4467-8583-de72a5e57488" ),
@@ -117,16 +117,19 @@ object InvoiceApi extends BpmnDsl:
       out = InvoiceReceiptCheck() // just for testing
     )
 
-  lazy val InvoiceReceiptWithReviewP =
-    InvoiceReceiptP
+  lazy val `Invoice Receipt with Review` =
+    `Invoice Receipt`
       .withOut(InvoiceReceiptCheck(clarified = Some(true)))
 
-  lazy val InvoiceReceiptWithReviewFailedP =
-    InvoiceReceiptP
+  lazy val `Invoice Receipt with Review failed` =
+    `Invoice Receipt`
       .withOut(
         InvoiceReceiptCheck(approved = false, clarified = Some(false))
       )
-    
+  lazy val BadValidationP =
+    `Invoice Receipt`
+      .withIn(InvoiceReceipt(null))
+
   lazy val InvoiceAssignApproverDMN
       : DecisionDmn[SelectApproverGroup, AssignApproverGroups] = collectEntries(
     decisionDefinitionKey = "invoice-assign-approver",
@@ -170,7 +173,7 @@ object InvoiceApi extends BpmnDsl:
       out = InvoiceReviewed()
     )
 
-  lazy val ReviewInvoiceP: Process[InvoiceReceipt, InvoiceReviewed] =
+  lazy val `Review Invoice`: Process[InvoiceReceipt, InvoiceReviewed] =
     val processId = "ReviewInvoiceP"
     process(
       id = processId,

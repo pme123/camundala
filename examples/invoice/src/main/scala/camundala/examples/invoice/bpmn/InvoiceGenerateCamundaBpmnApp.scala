@@ -15,12 +15,12 @@ object InvoiceGenerateCamundaBpmnApp extends GenerateCamundaBpmn, App:
 
   private lazy val invoiceBpmn: Bpmn = Bpmn(
     withIdPath / "invoice.v2.bpmn",
-    InvoiceReceiptP.bpmn
+    `Invoice Receipt`.bpmn
       .withElements(
         ReviewInvoiceCA
       )
   )
   private lazy val reviewInvoice: Bpmn =
-    Bpmn(withIdPath / "reviewInvoice.bpmn", ReviewInvoiceP.bpmn)
+    Bpmn(withIdPath / "reviewInvoice.bpmn", `Review Invoice`.bpmn)
 
 end InvoiceGenerateCamundaBpmnApp

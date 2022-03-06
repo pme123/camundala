@@ -13,7 +13,8 @@ import scala.language.implicitConversions
 case class ProcessScenario(
     scenarioName: String,
     config: SimulationConfig,
-    requests: Seq[ChainBuilder]
+    requests: Seq[ChainBuilder],
+    isIgnored: Boolean = false
 ) extends ProcessExtensions:
   import gatling.*
 
@@ -35,9 +36,15 @@ case class ProcessScenario(
   def steps(reqs: (ChainBuilder | Seq[ChainBuilder])*): ProcessScenario =
     copy(requests = requests ++ ProcessScenario.flatten(reqs))
 
+  def ignored = copy(isIgnored = true)
+
   def toGatling: PopulationBuilder =
     scenario(scenarioName)
-      .exec(requests)
+      .doIf(isIgnored)(exec { session =>
+        println(s">>> Scenario '$scenarioName' is ignored!")
+        session
+      })
+      .doIf(!isIgnored)(exec(requests))
       .inject(atOnceUsers(config.userAtOnce))
 
 object ProcessScenario:
