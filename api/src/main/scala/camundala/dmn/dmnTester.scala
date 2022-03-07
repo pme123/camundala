@@ -7,7 +7,8 @@ case class DmnConfig(
     decisionId: String,
     data: TesterData,
     dmnPath: List[String] = List.empty,
-    isActive: Boolean = false
+    isActive: Boolean = false,
+    testUnit: Boolean = false,
 ) 
 
 case class TesterData(

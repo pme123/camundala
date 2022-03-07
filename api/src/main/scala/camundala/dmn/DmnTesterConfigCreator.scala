@@ -39,9 +39,7 @@ trait DmnTesterConfigCreator extends App:
       )
 
     }
-
-  import reflect.Selectable.reflectiveSelectable
-
+  
   private def toConfig[T <: Product](
       product: T,
       addTestValues: Map[String, List[String]]
