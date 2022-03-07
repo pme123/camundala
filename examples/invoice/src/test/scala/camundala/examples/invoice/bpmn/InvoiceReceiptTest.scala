@@ -16,7 +16,7 @@ import java.util.{HashSet, List, Set}
 import scala.compiletime.{constValue, constValueTuple}
 import scala.deriving.Mirror
 
-class InvoiceReceiptTest extends ScenarioRunner:
+class InvoiceReceiptTest extends ScenarioRunner :
 
   lazy val config: TestConfig =
     testConfig
@@ -32,7 +32,7 @@ class InvoiceReceiptTest extends ScenarioRunner:
   @Test
   def testInvoiceReceipt(): Unit =
     test(`Invoice Receipt`)(
-      InvoiceAssignApproverDMN2,
+      AssignApproverGroupBRT,
       checkGroupIds,
       ApproveInvoiceUT,
       PrepareBankTransferUT,
@@ -41,17 +41,34 @@ class InvoiceReceiptTest extends ScenarioRunner:
     )
 
   @Test
-  def testInvoiceReceiptWithReview(): Unit =
+  def testInvoiceReceiptWithReviewClarified(): Unit =
     mockSubProcess(`Review Invoice`)
     test(
       `Invoice Receipt`
         .withOut(InvoiceReceiptCheck(true, Some(true)))
     )(
+      AssignApproverGroupBRT,
       ApproveInvoiceUT // do not approve
         .withOut(ApproveInvoice(false)),
       `Review Invoice clarified`,
       ApproveInvoiceUT, // now we approve it
-      PrepareBankTransferUT
+      PrepareBankTransferUT,
+      InvoiceProcessedEE
+    )
+
+  @Test
+  def testInvoiceReceiptWithReviewNotClarified(): Unit =
+    mockSubProcess(`Review Invoice not clarified`
+      .withId(`Review Invoice`.id).asProcess)
+    test(
+      `Invoice Receipt`
+        .withOut(InvoiceReceiptCheck(false, Some(false)))
+    )(
+      AssignApproverGroupBRT,
+      ApproveInvoiceUT // do not approve
+        .withOut(ApproveInvoice(false)),
+      `Review Invoice not clarified`,
+      InvoiceNotProcessedEE
     )
 
   import scala.jdk.CollectionConverters.IterableHasAsScala

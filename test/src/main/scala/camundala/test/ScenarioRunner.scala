@@ -112,10 +112,11 @@ trait ScenarioRunner extends CommonTesting :
     val iter = nodes.iterator
     when(mockedProcess.waitsAtUserTask(id))
       .thenReturn { task =>
+        println(s"UserTask $id:")
         val node = iter.nextOption()
         if (node.isEmpty)
           fail(s"There is no UserTask expected for $id")
-        println(s"UserTask $id: ${node.get.out}")
+        println(s" - ${node.get.out}")
         assertThat(task)
           .hasDefinitionKey(id)
         task.complete(node.get.out.asJava)
@@ -134,12 +135,14 @@ trait ScenarioRunner extends CommonTesting :
 
   def prepareCallActivity(id: String, nodes: Seq[NodeToTest]): Unit =
     val iter = nodes.iterator
+    println(s"MOCKED: $id")
     when(mockedProcess.waitsAtMockedCallActivity(id))
       .thenReturn { ca =>
         val node = iter.nextOption()
+        println(s"CallActivity $id:")
         if (node.isEmpty)
           fail(s"There is no CallActivity expected for $id")
-        println(s"CallActivity $id: ${node.get.out}")
+        println(s" - ${node.get.out}")
         ca.complete(node.get.out.asJava)
       }
 

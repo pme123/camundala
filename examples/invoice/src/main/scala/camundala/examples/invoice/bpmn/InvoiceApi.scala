@@ -67,45 +67,6 @@ object InvoiceApi extends BpmnDsl:
       @description("Flag that is set by the Reviewer (only set if there was a review).")
       clarified: Option[Boolean] = None
   )
-/*
-  implicit lazy val PrepareBankTransferSchema: Schema[PrepareBankTransfer] = Schema.derived
-  implicit lazy val PrepareBankTransferEncoder: Encoder[PrepareBankTransfer] = deriveEncoder
-  implicit lazy val PrepareBankTransferDecoder: Decoder[PrepareBankTransfer] = deriveDecoder
-
-  implicit lazy val AssignedReviewerSchema: Schema[AssignedReviewer] = Schema.derived
-  implicit lazy val AssignedReviewerEncoder: Encoder[AssignedReviewer] = deriveEncoder
-  implicit lazy val AssignedReviewerDecoder: Decoder[AssignedReviewer] = deriveDecoder
-
-  implicit lazy val InvoiceReviewedSchema: Schema[InvoiceReviewed] = Schema.derived
-  implicit lazy val InvoiceReviewedEncoder: Encoder[InvoiceReviewed] = deriveEncoder
-  implicit lazy val InvoiceReviewedDecoder: Decoder[InvoiceReviewed] = deriveDecoder
-
-  implicit lazy val InvoiceReceiptSchema: Schema[InvoiceReceipt] = Schema.derived
-  implicit lazy val InvoiceReceiptEncoder: Encoder[InvoiceReceipt] = deriveEncoder
-  implicit lazy val InvoiceReceiptDecoder: Decoder[InvoiceReceipt] = deriveDecoder
-
-  implicit lazy val InvoiceCategorySchema: Schema[InvoiceCategory] = Schema.derived
-  implicit lazy val InvoiceCategoryEncoder: Encoder[InvoiceCategory] = deriveEncoder
-  implicit lazy val InvoiceCategoryDecoder: Decoder[InvoiceCategory] = deriveDecoder
-
-  implicit lazy val InvoiceReceiptCheckSchema: Schema[InvoiceReceiptCheck] = Schema.derived
-  implicit lazy val InvoiceReceiptCheckEncoder: Encoder[InvoiceReceiptCheck] = deriveEncoder
-  implicit lazy val InvoiceReceiptCheckDecoder: Decoder[InvoiceReceiptCheck] = deriveDecoder
-
-  implicit lazy val ApproveInvoiceSchema: Schema[ApproveInvoice] = Schema.derived
-  implicit lazy val ApproveInvoiceEncoder: Encoder[ApproveInvoice] = deriveEncoder
-  implicit lazy val ApproveInvoiceDecoder: Decoder[ApproveInvoice] = deriveDecoder
-
-  implicit lazy val SelectApproverGroupSchema: Schema[SelectApproverGroup] = Schema.derived
-  implicit lazy val SelectApproverGroupEncoder: Encoder[SelectApproverGroup] = deriveEncoder
-  implicit lazy val SelectApproverGroupDecoder: Decoder[SelectApproverGroup] = deriveDecoder
-
-  implicit lazy val ApproverGroupSchema: Schema[ApproverGroup] = Schema.derived
-
-  implicit lazy val AssignApproverGroupsSchema: Schema[AssignApproverGroups] = Schema.derived
-  implicit lazy val AssignApproverGroupsEncoder: Encoder[AssignApproverGroups] = deriveEncoder
-  implicit lazy val AssignApproverGroupsDecoder: Decoder[AssignApproverGroups] = deriveDecoder
-*/
 
   val InvoiceReceiptPIdent = "InvoiceReceiptP"
 
@@ -144,6 +105,10 @@ object InvoiceApi extends BpmnDsl:
       .withOut(
         AssignApproverGroups(Seq(ApproverGroup.accounting, ApproverGroup.sales))
       )
+
+  lazy val AssignApproverGroupBRT = // for unit testing you need the BusinessRuleTask
+    InvoiceAssignApproverDMN2
+      .withId("AssignApproverGroupBRT")
 
   lazy val ApproveInvoiceUT =
     userTask(
@@ -204,11 +169,9 @@ object InvoiceApi extends BpmnDsl:
   val InvoiceNotprocessedIdent = "InvoiceNotProcessedEE"
   lazy val InvoiceNotProcessedEE = endEvent(
     InvoiceNotprocessedIdent,
-    descr = None
   )
   val InvoiceProcessedIdent = "InvoiceProcessedEE"
   lazy val InvoiceProcessedEE = endEvent(
     InvoiceProcessedIdent,
-    descr = None
   )
 
