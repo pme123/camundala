@@ -137,6 +137,10 @@
                   isInterrupting="true"
                   name="Invoice&#xA;received"
                   parallelMultiple="false">
+         <extensionElements>
+            <camunda:executionListener class="camundala.examples.invoice.listener.InvoiceValidator"
+                                       event="start"/>
+         </extensionElements>
          <outgoing>SequenceFlow_1__InvoiceReceivedSE__AssignApproverGroupBRT</outgoing>
       </startEvent>
       <endEvent camunda:exclusive="false"
