@@ -4,7 +4,7 @@ import scala.util.Using
 
 lazy val projectVersion =
   Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
-val scala3Version = "3.1.0"
+val scala3Version = "3.1.1"
 val org = "io.github.pme123"
 
 ThisBuild / versionScheme := Some("early-semver")
@@ -86,7 +86,7 @@ lazy val gatling = project
   )
   .dependsOn(api)
 
-val tapirVersion = "0.19.3"
+val tapirVersion = "0.20.1"
 lazy val tapirDependencies = Seq(
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-circe-yaml" % tapirVersion,

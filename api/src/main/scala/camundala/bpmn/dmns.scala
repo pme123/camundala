@@ -6,7 +6,7 @@ import io.circe.HCursor
 import io.circe.syntax.*
 import org.joda.time.LocalTime
 import sttp.tapir.*
-import sttp.tapir.SchemaType.{SProduct, SProductField}
+import sttp.tapir.SchemaType.{SProduct, SProductField, SchemaWithValue}
 
 import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 import java.util.Date
@@ -116,8 +116,8 @@ implicit def schemaForSingleEntry[A <: DmnValueType: Encoder: Decoder](implicit
                                                                        sa: Schema[A]
                                                                       ): Schema[SingleEntry[A]] =
   Schema[SingleEntry[A]](
-    SchemaType.SCoproduct(List(sa), None) { case SingleEntry(_) =>
-      Some(sa)
+    SchemaType.SCoproduct(List(sa), None) { case SingleEntry(x) =>
+      Some(SchemaWithValue(sa, x))
     },
     for {
       na <- sa.name
@@ -142,8 +142,8 @@ implicit def schemaForCollectEntries[A <: DmnValueType: Encoder: Decoder](
     implicit sa: Schema[A]
 ): Schema[CollectEntries[A]] =
   Schema[CollectEntries[A]](
-    SchemaType.SCoproduct(List(sa), None) { case CollectEntries(_) =>
-      Some(sa)
+    SchemaType.SCoproduct(List(sa), None) { case CollectEntries(x) =>
+      x.headOption.map(SchemaWithValue(sa, _))
     },
     for {
       na <- sa.name
@@ -168,8 +168,8 @@ implicit def schemaForSingleResult[A <: Product: Encoder: Decoder](implicit
     sa: Schema[A]
 ): Schema[SingleResult[A]] =
   Schema[SingleResult[A]](
-    SchemaType.SCoproduct(List(sa), None) { case SingleResult(_) =>
-      Some(sa)
+    SchemaType.SCoproduct(List(sa), None) { case SingleResult(x) =>
+      Some(SchemaWithValue(sa, x))
     },
     for {
       na <- sa.name
@@ -194,8 +194,8 @@ implicit def schemaForResultList[A <: Product: Encoder: Decoder](implicit
     sa: Schema[A]
 ): Schema[ResultList[A]] =
   Schema[ResultList[A]](
-    SchemaType.SCoproduct(List(sa), None) { case ResultList(_) =>
-      Some(sa)
+    SchemaType.SCoproduct(List(sa), None) { case ResultList(x) =>
+      x.headOption.map(SchemaWithValue(sa, _))
     },
     for {
       na <- sa.name
