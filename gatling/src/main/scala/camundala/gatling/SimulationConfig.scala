@@ -14,6 +14,8 @@ case class SimulationConfig(
                              // the number of parallel execution of a simulation.
                              // for example run the process 3 times (userAtOnce = 3)
                              userAtOnce: Int = 1,
+                             // you can run the requess of a scenario multiple times. (the preRequests will be run only once - e.g. get a token)
+                             executionCount: Int = 1,
                              // add requests that needed to be executed before the test requests.
                              // example get the token for OAuth2
                              // they must be lazy - otherwise they are blocking!?
@@ -45,3 +47,6 @@ case class SimulationConfig(
 
   def withUserAtOnce(userAtOnce: Int): SimulationConfig =
     copy(userAtOnce = userAtOnce)
+
+  def withExecutionCount(executionCount: Int): SimulationConfig =
+    copy(executionCount = executionCount)
