@@ -31,6 +31,14 @@ trait SimulationRunner
       .header("Content-Type", "application/json")
 
   inline def processScenario[
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema
+  ](inline process: Process[In, Out]): ProcessScenario =
+    processScenario(nameOfVariable(process))(
+      process
+    )
+
+  inline def processScenario[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema
   ](inline process: Process[In, Out])(

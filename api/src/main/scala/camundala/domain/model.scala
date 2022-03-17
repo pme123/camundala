@@ -13,7 +13,18 @@ import scala.annotation.tailrec
 import scala.jdk.CollectionConverters.*
 
 case class NoInput()
+object NoInput:
+  implicit lazy val NoInputSchema: Schema[NoInput] = Schema.derived
+  implicit lazy val NoInputEncoder: Encoder[NoInput] = deriveEncoder
+  implicit lazy val NoInputDecoder: Decoder[NoInput] = deriveDecoder
+
 case class NoOutput()
+object NoOutput :
+  implicit lazy val NoOutputSchema: Schema[NoOutput] = Schema.derived
+  implicit lazy val NoOutputEncoder: Encoder[NoOutput] = deriveEncoder
+  implicit lazy val NoOutputDecoder: Decoder[NoOutput] = deriveDecoder
+
+
 case class FileInOut(
     fileName: String,
     @description("The content of the File as a Byte Array.")
@@ -22,22 +33,15 @@ case class FileInOut(
 ):
   lazy val contentAsBase64: String = Base64.getEncoder.encodeToString(content)
 
-implicit lazy val NoInputSchema: Schema[NoInput] = Schema.derived
-implicit lazy val NoInputEncoder: Encoder[NoInput] = deriveEncoder
-implicit lazy val NoInputDecoder: Decoder[NoInput] = deriveDecoder
-
-implicit lazy val NoOutputSchema: Schema[NoOutput] = Schema.derived
-implicit lazy val NoOutputEncoder: Encoder[NoOutput] = deriveEncoder
-implicit lazy val NoOutputDecoder: Decoder[NoOutput] = deriveDecoder
-
-implicit lazy val FileInOutSchema: Schema[FileInOut] = Schema.derived
-implicit lazy val FileInOutEncoder: Encoder[FileInOut] = deriveEncoder
-implicit lazy val FileInOutDecoder: Decoder[FileInOut] = deriveDecoder
+object FileInOut :
+  implicit lazy val FileInOutSchema: Schema[FileInOut] = Schema.derived
+  implicit lazy val FileInOutEncoder: Encoder[FileInOut] = deriveEncoder
+  implicit lazy val FileInOutDecoder: Decoder[FileInOut] = deriveDecoder
 
 def valueToJson(value: Any): Json =
   value match
     case v: Int =>
-     Json.fromInt(v)
+      Json.fromInt(v)
     case v: Long =>
       Json.fromLong(v)
     case v: Boolean =>
@@ -50,4 +54,3 @@ def valueToJson(value: Any): Json =
       Json.Null
     case v =>
       Json.fromString(v.toString)
-

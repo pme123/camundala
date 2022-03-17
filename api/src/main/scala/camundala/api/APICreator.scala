@@ -205,6 +205,12 @@ trait APICreator extends App:
       endpoints(activities, process.id, process.id)
 
     def endpoints(
+        tag: String,
+        processName: String
+    )(activities: ApiEndpoint[?, ?, ?, ?]*): ApiEndpoints =
+      endpoints(activities, tag, processName)
+
+    def endpoints(
         activities: Seq[ApiEndpoint[?, ?, ?, ?]],
         tag: String,
         processName: String

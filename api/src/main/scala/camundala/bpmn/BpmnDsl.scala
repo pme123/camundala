@@ -63,13 +63,14 @@ trait BpmnDsl:
   ](
       decisionDefinitionKey: String,
       in: In,
-      out: Out
+      out: Out,
+      descr: Option[String] | String = None
   ): DecisionDmn[In, Out] =
     require(
       out.isSingleEntry,
       "A singleEntry must look like `case class SingleEntry(result: DmnValueType)`"
     )
-    dmn(decisionDefinitionKey, in, out)
+    dmn(decisionDefinitionKey, in, out, descr)
 
   def collectEntries[
       In <: Product: Encoder: Decoder: Schema,
@@ -77,13 +78,14 @@ trait BpmnDsl:
   ](
       decisionDefinitionKey: String,
       in: In,
-      out: Out
+      out: Out,
+      descr: Option[String] | String = None
   ): DecisionDmn[In, Out] =
     require(
       out.isCollectEntries,
       "A collectEntries must look like `case class CollectEntries(result: Int*)`"
     )
-    dmn(decisionDefinitionKey, in, out)
+    dmn(decisionDefinitionKey, in, out, descr)
 
   def singleResult[
       In <: Product: Encoder: Decoder: Schema,
@@ -91,7 +93,8 @@ trait BpmnDsl:
   ](
       decisionDefinitionKey: String,
       in: In,
-      out: Out
+      out: Out,
+      descr: Option[String] | String = None
   ): DecisionDmn[In, Out] =
     require(
       out.isSingleResult,
@@ -100,7 +103,7 @@ trait BpmnDsl:
         |> a case class with more than one `DmnValueType`s.
         |""".stripMargin
     )
-    dmn(decisionDefinitionKey, in, out)
+    dmn(decisionDefinitionKey, in, out, descr)
 
   def resultList[
       In <: Product: Encoder: Decoder: Schema,
@@ -108,7 +111,8 @@ trait BpmnDsl:
   ](
       decisionDefinitionKey: String,
       in: In,
-      out: Out
+      out: Out,
+      descr: Option[String] | String = None
   ): DecisionDmn[In, Out] =
     require(
       out.isResultList,
@@ -117,7 +121,7 @@ trait BpmnDsl:
         | > a case class with more than one `DmnValueType`s.
         |""".stripMargin
     )
-    dmn(decisionDefinitionKey, in, out)
+    dmn(decisionDefinitionKey, in, out, descr)
 
   def serviceTask[
       In <: Product: Encoder: Decoder: Schema,
@@ -151,13 +155,13 @@ trait BpmnDsl:
     )
 
   def receiveSignalEvent[
-    Msg <: Product: Encoder: Decoder: Schema
+      Msg <: Product: Encoder: Decoder: Schema
   ](
-     messageName: String,
-     in: Msg = NoInput(),
-     id: Option[String] = None,
-     descr: Option[String] | String = None
-   ): ReceiveSignalEvent[Msg] =
+      messageName: String,
+      in: Msg = NoInput(),
+      id: Option[String] = None,
+      descr: Option[String] | String = None
+  ): ReceiveSignalEvent[Msg] =
     ReceiveSignalEvent(
       messageName,
       InOutDescr(id.getOrElse(messageName), in, NoOutput(), descr)

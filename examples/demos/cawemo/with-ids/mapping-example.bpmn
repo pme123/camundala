@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:modeler="http://camunda.org/schema/modeler/1.0"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  exporter="Camunda Modeler"
+                  exporterVersion="4.11.1"
+                  expressionLanguage="http://www.w3.org/1999/XPath"
+                  id="Definitions_1pv82bi"
+                  modeler:executionPlatform="Camunda Platform"
+                  modeler:executionPlatformVersion="7.15.0"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  typeLanguage="http://www.w3.org/2001/XMLSchema">
+   <bpmn:collaboration id="Collaboration_18peu8k" isClosed="false">
+      <bpmn:participant id="participant-camundala-mapping-example"
+                        name="camundala-mapping-example"
+                        processRef="camundala-mapping-example"/>
+      <bpmn:participant id="Participant_camundala-address-service"
+                        name="camundala-address-service"
+                        processRef="camundala-address-service"/>
+      <bpmn:participant id="Participant_camundala-print-service"
+                        name="camundala-print-service"
+                        processRef="camundala-print-service"/>
+   </bpmn:collaboration>
+   <bpmn:process id="camundala-mapping-example"
+                 isClosed="false"
+                 isExecutable="true"
+                 name="camundala-mapping-example"
+                 processType="None">
+      <bpmn:startEvent id="StartEvent_1"
+                       isInterrupting="true"
+                       name="start"
+                       parallelMultiple="false">
+         <bpmn:outgoing>Flow_0n7va8z</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="Flow_0n7va8z" sourceRef="StartEvent_1" targetRef="GetAddressCA"/>
+      <bpmn:sequenceFlow id="Flow_0636v7g"
+                         sourceRef="GetAddressCA"
+                         targetRef="PrintDocumentCA"/>
+      <bpmn:callActivity calledElement="camundala-address-service"
+                         completionQuantity="1"
+                         id="GetAddressCA"
+                         isForCompensation="false"
+                         name="Get Address"
+                         startQuantity="1">
+         <bpmn:incoming>Flow_0n7va8z</bpmn:incoming>
+         <bpmn:outgoing>Flow_0636v7g</bpmn:outgoing>
+      </bpmn:callActivity>
+      <bpmn:callActivity calledElement="camundala-print-service"
+                         completionQuantity="1"
+                         id="PrintDocumentCA"
+                         isForCompensation="false"
+                         name="Print Document"
+                         startQuantity="1">
+         <bpmn:extensionElements>
+            <camunda:inputOutput>
+               <camunda:outputParameter name="printSucceeded">${true}</camunda:outputParameter>
+            </camunda:inputOutput>
+         </bpmn:extensionElements>
+         <bpmn:incoming>Flow_0636v7g</bpmn:incoming>
+         <bpmn:outgoing>Flow_0vdufu3</bpmn:outgoing>
+      </bpmn:callActivity>
+      <bpmn:sequenceFlow id="Flow_0vdufu3"
+                         sourceRef="PrintDocumentCA"
+                         targetRef="Gateway_0d7gk6c"/>
+      <bpmn:sequenceFlow id="Flow_1ypygkn"
+                         name="yes"
+                         sourceRef="Gateway_0d7gk6c"
+                         targetRef="SucceededEE">
+         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${printSucceeded}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:endEvent id="SucceededEE" name="succeeded">
+         <bpmn:incoming>Flow_1ypygkn</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:exclusiveGateway gatewayDirection="Unspecified"
+                             id="Gateway_0d7gk6c"
+                             name="print succeeded?">
+         <bpmn:incoming>Flow_0vdufu3</bpmn:incoming>
+         <bpmn:outgoing>Flow_1ypygkn</bpmn:outgoing>
+         <bpmn:outgoing>Flow_1pxipyz</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:endEvent id="NotSucceededEE" name="not succeeded">
+         <bpmn:incoming>Flow_1pxipyz</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_1pxipyz"
+                         name="no"
+                         sourceRef="Gateway_0d7gk6c"
+                         targetRef="NotSucceededEE">
+         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!printSucceeded}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+   </bpmn:process>
+   <bpmn:process camunda:isStartableInTasklist="false"
+                 id="camundala-address-service"
+                 isClosed="false"
+                 isExecutable="true"
+                 name="camundala-address-service"
+                 processType="None">
+      <bpmn:startEvent id="Event_1fxj7jv"
+                       isInterrupting="true"
+                       name="start"
+                       parallelMultiple="false">
+         <bpmn:outgoing>Flow_0bka3dn</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:endEvent id="AddressFetchedEE" name="address fetched">
+         <bpmn:incoming>Flow_0f4l32n</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_0f4l32n"
+                         sourceRef="GetAddressST"
+                         targetRef="AddressFetchedEE"/>
+      <bpmn:sequenceFlow id="Flow_0bka3dn"
+                         sourceRef="Event_1fxj7jv"
+                         targetRef="GetAddressST"/>
+      <bpmn:serviceTask camunda:class="camundala.examples.demos.service.AddressService"
+                        completionQuantity="1"
+                        id="GetAddressST"
+                        implementation="##WebService"
+                        isForCompensation="false"
+                        name="Get Address"
+                        startQuantity="1">
+         <bpmn:incoming>Flow_0bka3dn</bpmn:incoming>
+         <bpmn:outgoing>Flow_0f4l32n</bpmn:outgoing>
+      </bpmn:serviceTask>
+   </bpmn:process>
+   <bpmn:process camunda:isStartableInTasklist="false"
+                 id="camundala-print-service"
+                 isClosed="false"
+                 isExecutable="true"
+                 name="camundala-print-service"
+                 processType="None">
+      <bpmn:startEvent id="Event_07hbtx7"
+                       isInterrupting="true"
+                       name="start"
+                       parallelMultiple="false">
+         <bpmn:outgoing>Flow_0nf0i4u</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:endEvent id="PrintedEE" name="printed">
+         <bpmn:incoming>Flow_1w1pc8u</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_1w1pc8u" sourceRef="PrintST" targetRef="PrintedEE"/>
+      <bpmn:sequenceFlow id="Flow_0nf0i4u" sourceRef="Event_07hbtx7" targetRef="PrintST"/>
+      <bpmn:serviceTask camunda:class="camundala.examples.demos.service.PrintService"
+                        completionQuantity="1"
+                        id="PrintST"
+                        implementation="##WebService"
+                        isForCompensation="false"
+                        name="Print"
+                        startQuantity="1">
+         <bpmn:incoming>Flow_0nf0i4u</bpmn:incoming>
+         <bpmn:outgoing>Flow_1w1pc8u</bpmn:outgoing>
+      </bpmn:serviceTask>
+   </bpmn:process>
+   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+      <bpmndi:BPMNPlane bpmnElement="Collaboration_18peu8k" id="BPMNPlane_1">
+         <bpmndi:BPMNShape bpmnElement="participant-camundala-mapping-example"
+                           id="Participant_00zlcua_di"
+                           isHorizontal="true">
+            <dc:Bounds height="254" width="781" x="129" y="84"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNEdge bpmnElement="Flow_0636v7g" id="Flow_0636v7g_di">
+            <di:waypoint x="400" y="147"/>
+            <di:waypoint x="490" y="147"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="Flow_0n7va8z" id="Flow_0n7va8z_di">
+            <di:waypoint x="215" y="147"/>
+            <di:waypoint x="300" y="147"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="Flow_0vdufu3" id="Flow_0vdufu3_di">
+            <di:waypoint x="590" y="147"/>
+            <di:waypoint x="685" y="147"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="Flow_1ypygkn" id="Flow_1ypygkn_di">
+            <di:waypoint x="735" y="147"/>
+            <di:waypoint x="812" y="147"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="14" width="18" x="765" y="129"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="Flow_1pxipyz" id="Flow_1pxipyz_di">
+            <di:waypoint x="710" y="172"/>
+            <di:waypoint x="710" y="260"/>
+            <di:waypoint x="812" y="260"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="14" width="13" x="719" y="213"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNShape bpmnElement="StartEvent_1" id="_BPMNShape_StartEvent_2">
+            <dc:Bounds height="36" width="36" x="179" y="129"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="14" width="22" x="186" y="172"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="GetAddressCA" id="Activity_079q54e_di">
+            <dc:Bounds height="80" width="100" x="300" y="107"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="PrintDocumentCA" id="Activity_1wvil9e_di">
+            <dc:Bounds height="80" width="100" x="490" y="107"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="SucceededEE" id="Event_1rjp2nk_di">
+            <dc:Bounds height="36" width="36" x="812" y="129"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="14" width="54" x="803" y="172"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Gateway_0d7gk6c"
+                           id="Gateway_0d7gk6c_di"
+                           isMarkerVisible="true">
+            <dc:Bounds height="50" width="50" x="685" y="122"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="14" width="84" x="668" y="103"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="NotSucceededEE" id="Event_19fy2aq_di">
+            <dc:Bounds height="36" width="36" x="812" y="242"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="14" width="72" x="794" y="285"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Participant_camundala-print-service"
+                           id="Participant_1rcntsh_di"
+                           isHorizontal="true">
+            <dc:Bounds height="150" width="491" x="129" y="540"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNEdge bpmnElement="Flow_1w1pc8u" id="Flow_1w1pc8u_di">
+            <di:waypoint x="430" y="600"/>
+            <di:waypoint x="522" y="600"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="Flow_0nf0i4u" id="Flow_0nf0i4u_di">
+            <di:waypoint x="215" y="600"/>
+            <di:waypoint x="330" y="600"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNShape bpmnElement="Event_07hbtx7" id="Event_07hbtx7_di">
+            <dc:Bounds height="36" width="36" x="179" y="582"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="14" width="22" x="186" y="625"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="PrintedEE" id="Event_1m32t1e_di">
+            <dc:Bounds height="36" width="36" x="522" y="582"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="14" width="34" x="524" y="625"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="PrintST" id="Activity_05n4ew2_di">
+            <dc:Bounds height="80" width="100" x="330" y="560"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="Participant_camundala-address-service"
+                           id="Participant_0sn77x7_di"
+                           isHorizontal="true">
+            <dc:Bounds height="150" width="491" x="129" y="360"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNEdge bpmnElement="Flow_0f4l32n" id="Flow_0f4l32n_di">
+            <di:waypoint x="430" y="420"/>
+            <di:waypoint x="522" y="420"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="Flow_0bka3dn" id="Flow_0bka3dn_di">
+            <di:waypoint x="215" y="420"/>
+            <di:waypoint x="330" y="420"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNShape bpmnElement="Event_1fxj7jv" id="Event_1fxj7jv_di">
+            <dc:Bounds height="36" width="36" x="179" y="402"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="14" width="22" x="186" y="445"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="AddressFetchedEE" id="Event_1ni9jkv_di">
+            <dc:Bounds height="36" width="36" x="522" y="402"/>
+            <bpmndi:BPMNLabel>
+               <dc:Bounds height="14" width="79" x="501" y="445"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="GetAddressST" id="Activity_0cowdr3_di">
+            <dc:Bounds height="80" width="100" x="330" y="380"/>
+         </bpmndi:BPMNShape>
+      </bpmndi:BPMNPlane>
+   </bpmndi:BPMNDiagram>
+</bpmn:definitions>

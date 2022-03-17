@@ -53,3 +53,7 @@ def toJson(json: String): Json =
 def toJsonString[T <: Product: Encoder](product: T): String =
   product.asJson.deepDropNullValues.toString
 
+// camundala.domain
+export camundala.domain.NoInput
+export camundala.domain.NoOutput
+export camundala.domain.FileInOut

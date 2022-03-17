@@ -50,42 +50,61 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
     def bpmn =
       BpmnProcess(process)
 
+    def bpmn(
+        elements: (InOut[?, ?, ?] | BpmnInOut[?, ?])*
+    ): BpmnProcess =
+      BpmnProcess(process)
+        .withElements(elements: _*)
+
   extension [In <: Product, Out <: Product](inOut: InOut[In, Out, ?])
 
     inline def mapIn[T, A](
         inline path: T => A,
         inline targetName: In => A
     ): BpmnInOut[In, Out] =
-      ${ mapImpl[In, Out, T, A, In]('{ BpmnInOut(inOut) }, 'path, 'targetName, '{ false }) }
+      ${
+        mapImpl[In, Out, T, A, In](
+          '{ BpmnInOut(inOut) },
+          'path,
+          'targetName,
+          '{ false }
+        )
+      }
 
     inline def mapOut[T, A](
         inline path: Out => A,
         inline targetName: T => A
     ): BpmnInOut[In, Out] =
-      ${ mapImpl[In, Out, Out, A, T]('{ BpmnInOut(inOut) }, 'path, 'targetName, '{ true }) }
-
+      ${
+        mapImpl[In, Out, Out, A, T](
+          '{ BpmnInOut(inOut) },
+          'path,
+          'targetName,
+          '{ true }
+        )
+      }
 
   extension [In <: Product, Out <: Product](
       bpmnInOut: BpmnInOut[In, Out]
   )
 
     inline def mapIn[T, A](
-                            inline path: T => A,
-                            inline targetName: In => A
-                          ): BpmnInOut[In, Out] =
+        inline path: T => A,
+        inline targetName: In => A
+    ): BpmnInOut[In, Out] =
       ${ mapImpl('{ bpmnInOut }, 'path, 'targetName, '{ false }) }
 
     inline def mapOut[T, A](
-                             inline path: Out => A,
-                             inline targetName: T => A
-                           ): BpmnInOut[In, Out] =
+        inline path: Out => A,
+        inline targetName: T => A
+    ): BpmnInOut[In, Out] =
       ${ mapImpl('{ bpmnInOut }, 'path, 'targetName, '{ true }) }
 
     inline def mapOut[T, A, B](
-                               inline path: Out => A,
-                               inline targetName: T => B
-                             ): BpmnInOut[In, Out] =
-        ${ mapImpl('{ bpmnInOut }, 'path, 'targetName, '{ true }) }
+        inline path: Out => A,
+        inline targetName: T => B
+    ): BpmnInOut[In, Out] =
+      ${ mapImpl('{ bpmnInOut }, 'path, 'targetName, '{ true }) }
   extension (bpmnProcess: BpmnProcess)
 
     def toCamunda: FromCamundable[Unit] =
@@ -121,7 +140,7 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
         println(s"TT ${ca.inOut.out}")
         val inout =
           summon[CBpmnModelInstance].newInstance(classOf[CamundaInputOutput])
-        builder.addExtensionElement(inout)
+        //builder.addExtensionElement(inout)
         //   mergeInputParams(inout, ca.inMappers)
         //   mergeOutputParams(inout, ca.outMappers)
         ca.inOut.in match
@@ -144,7 +163,7 @@ trait GenerateCamundaBpmn extends BpmnDsl, ProjectPaths, App:
       .filter(_.isInOutMapper)
       .filter(mp => {
         println(s"MP: $paramName $mp")
-        if(isIn)
+        if (isIn)
           mp.varName == paramName
         else
           mp.path.head match
