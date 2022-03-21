@@ -250,7 +250,8 @@ case class StartProcessInstance[
     Out <: Product: Encoder: Decoder: Schema: ClassTag
 ](
     processDefinitionKey: String,
-    restApi: CamundaRestApi[In, Out]
+    restApi: CamundaRestApi[In, Out],
+    usedInDescr: Option[String] = None
 ) extends ApiEndpoint[In, StartProcessIn, Out, StartProcessInstance[In, Out]]:
   val endpointType = "Process"
   val apiName = processDefinitionKey
@@ -287,7 +288,9 @@ case class StartProcessInstance[
       )
     }
 
-  override lazy val descr: String = restApi.maybeDescr.getOrElse("") /*+
+  override lazy val descr: String = restApi.maybeDescr.getOrElse("") +
+    usedInDescr.mkString
+  /*+
     s"""
        |
        |Usage as _CallActivity_:

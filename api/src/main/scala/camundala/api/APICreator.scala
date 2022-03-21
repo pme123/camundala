@@ -10,7 +10,7 @@ import sttp.tapir.openapi.{Contact, Info, OpenAPI, Server}
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
-trait APICreator extends App:
+trait APICreator extends ProcessReferenceCreator, App:
 
   def basePath: Path = pwd
   def cawemoFolder: Option[String] = None
@@ -173,7 +173,9 @@ trait APICreator extends App:
             RequestInput(inputExamples),
             RequestOutput.ok(outputExamples),
             startProcessInstanceErrors
-          )
+          ),
+          Some(docReference(processName
+            .getOrElse(process.id)))
         ) +: activities
       )
 

@@ -18,6 +18,9 @@ object TwitterApiCreator extends APICreator:
 
   override def basePath: Path = pwd / "examples" / "twitter"
 
+  def docProjectUrl(project: String): String =
+    s"https://MYDOCHOST/$project"
+
   apiEndpoints(
     twitterDemoProcess
       .endpoints(

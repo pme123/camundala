@@ -13,6 +13,9 @@ object InvoiceApiCreator extends APICreator {
 
   def version = "1.0"
 
+  def docProjectUrl(project: String): String =
+    s"https://MYDOCHOST/$project"
+
   override val cawemoFolder = Some("a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala")
 
   override lazy val serverPort = 8034
