@@ -151,7 +151,6 @@ case class ApiEndpoints(
   def createPostman()(using
       tenantId: Option[String]
   ): Seq[PublicEndpoint[?, Unit, Unit, Any]] =
-    println(s"Start Postman API: $tag")
     endpoints.flatMap(_.withTag(tag).createPostman())
 
 end ApiEndpoints
@@ -211,9 +210,9 @@ trait ApiEndpoint[
   ): PublicEndpoint[?, Unit, Unit, Any] =
     Some(
       endpoint
-        .name(postmanName)
+        .name(s"$endpointType: $apiName")
         .tag(tag)
-        .summary(postmanName)
+        .summary(s"$endpointType: $apiName")
         .description(descr)
     ).map((ep: Endpoint[Unit, Unit, Unit, Unit, Any]) =>
       inMapperPostman()
@@ -274,7 +273,7 @@ case class StartProcessInstance[
 
   private def postPath(name: String)(using tenantId: Option[String]) =
     val basePath =
-      "process-definition" / "key" / definitionKeyPath(name)
+      "process-definition" / "key" / name
     tenantId
       .map(id => basePath / "tenant-id" / tenantIdPath(id) / "start")
       .getOrElse(basePath / "start")
