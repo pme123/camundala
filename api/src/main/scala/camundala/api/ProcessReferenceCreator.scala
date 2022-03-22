@@ -48,7 +48,7 @@ trait ProcessReferenceCreator:
     val extractId =
       val pattern =
         """<(bpmn:process|process)([^\/>]+)isExecutable="true"([^\/>]*>)""".r
-      val idPattern = ".*id=\"([^\"]*)\".*".r
+      val idPattern = """[\s\S]*id="([^"]*)"[\s\S]*""".r
       pattern
         .findFirstIn(content)
         .map { l =>
@@ -80,14 +80,15 @@ trait ProcessReferenceCreator:
 
   protected lazy val allBpmns =
     projectPaths
-      .map(p =>
+      .map { p =>
+        println(s"Get BPMNs in $p")
         p ->
           (if (os.exists(p)) os.walk(p)
-           else {
-             println(s"THIS PATH DOES NOT EXIST: $p")
-             Seq.empty
-           })
-      )
+          else {
+            println(s"THIS PATH DOES NOT EXIST: $p")
+            Seq.empty
+          })
+      }
       .map { case projectPath -> path =>
         projectPath -> path
           .filterNot(_.toString.contains("/target"))
@@ -98,7 +99,7 @@ trait ProcessReferenceCreator:
   protected def findBpmnFor(
       processName: String
   ): Seq[(String, Seq[(String, String)])] =
-    println(s"\nFind References for $processName}")
+    println(s"Find References for $processName")
     allBpmns
       .flatMap { case (pp, paths) =>
         paths

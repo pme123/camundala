@@ -225,7 +225,8 @@ trait APICreator extends ProcessReferenceCreator, App:
             process.inOutDescr,
             tag,
             requestErrorOutputs = startProcessInstanceErrors
-          )
+          ),
+          Some(docReference(processName))
         ) +: activities
       )
   end extension
