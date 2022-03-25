@@ -163,7 +163,7 @@ private def checkP[T <: Product: Encoder](
 ): Boolean =
   CamundaVariable
     .toCamunda(product)
-    .map { case key -> pValue =>
+    .map { case key -> expectedValue =>
       result
         .find(_.key == key)
         .map {
@@ -175,39 +175,39 @@ private def checkP[T <: Product: Encoder](
                   _
                 )
               ) =>
-            val matches = pValue match
+            val matches = expectedValue match
               case CFile(_, CFileValueInfo(pFileName, _), _) =>
                 cFileName == pFileName
               case o =>
                 false
             if (!matches)
               println(
-                s"<<< cFile: ${cValue.getClass} / pFile: ${pValue.getClass}"
+                s"<<< cFile: ${cValue.getClass} / expectedFile: ${expectedValue.getClass}"
               )
               println(
-                s"!!! The File value '${pValue}'\n of $key does not match the result variable: '$cFileValueInfo'."
+                s"!!! The expected File value '${expectedValue}'\n of $key does not match the result variable: '$cFileValueInfo'."
               )
             matches
           case CamundaProperty(_, CJson(cValue, _)) =>
             val cJson = toJson(cValue)
-            val pJson = toJson(pValue.value.toString)
+            val pJson = toJson(expectedValue.value.toString)
             val setCJson = cJson.as[Set[Json]].toOption.getOrElse(cJson)
             val setPJson = pJson.as[Set[Json]].toOption.getOrElse(pJson)
             val matches: Boolean = setCJson == setPJson
             if (!matches)
               println(
-                s"<<< cJson: ${cValue.getClass} / pJson: ${pValue.value.getClass}"
+                s"<<< cJson: ${cValue.getClass} / expectedJson: ${expectedValue.value.getClass}"
               )
               println(
-                s"!!! The pJson value '${toJson(pValue.value.toString)}' of $key does not match the result variable cJson: '${toJson(cValue)}'."
+                s"!!! The expected Json value '${toJson(expectedValue.value.toString)}' of $key does not match the result variable cJson: '${toJson(cValue)}'."
               )
             matches
           case CamundaProperty(_, cValue) =>
-            val matches: Boolean = cValue.value == pValue.value
+            val matches: Boolean = cValue.value == expectedValue.value
             if (!matches)
-              println(s"<<< cValue: ${cValue.getClass} / pValue ${pValue.getClass}")
+              println(s"<<< cValue: ${cValue.getClass} / expectedValue ${expectedValue.getClass}")
               println(
-                s"!!! The value '$pValue' of $key does not match the result variable '${cValue}'.\n $result"
+                s"!!! The exected value '$expectedValue' of $key does not match the result variable '${cValue}'.\n $result"
               )
             matches
         }
