@@ -1,0 +1,8 @@
+server:
+  port: 8887
+
+camunda.bpm:
+    admin-user:
+      id: demo
+      password: demo
+    filter.create: All

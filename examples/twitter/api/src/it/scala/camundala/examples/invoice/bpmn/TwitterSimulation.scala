@@ -12,7 +12,7 @@ import sttp.tapir.generic.auto.*
 
 import scala.concurrent.duration.*
 
-// exampleTwitter/GatlingIt/testOnly *TwitterSimulation
+// exampleTwitterApi/GatlingIt/testOnly *TwitterSimulation
 class TwitterSimulation extends BasicSimulationRunner:
 
   override implicit def config: SimulationConfig =

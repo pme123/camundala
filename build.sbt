@@ -20,7 +20,9 @@ lazy val root = project
     camunda,
     test,
     gatling,
-    exampleTwitter,
+    exampleTwitterApi,
+    exampleTwitterC7,
+    exampleTwitterC8,
     exampleInvoice,
     exampleDemos
   )
@@ -140,16 +142,32 @@ lazy val exampleInvoice = project
   .dependsOn(camunda, test, gatling)
   .enablePlugins(GatlingPlugin)
 
-lazy val exampleTwitter = project
-  .in(file("./examples/twitter"))
-  .settings(projectSettings("example-twitter"))
+lazy val exampleTwitterApi = project
+  .in(file("./examples/twitter/api"))
+  .settings(projectSettings("example-twitter-api"))
+  .configure(preventPublication)
+  .dependsOn(api, test, gatling)
+  .enablePlugins(GatlingPlugin)
+
+lazy val exampleTwitterC7 = project
+  .in(file("./examples/twitter/camunda7"))
+  .settings(projectSettings("example-twitter-c7"))
   .configure(preventPublication)
   .settings(
     libraryDependencies ++= camundaDependencies :+
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
-  .dependsOn(api, test, gatling)
-  .enablePlugins(GatlingPlugin)
+  .dependsOn(exampleTwitterApi)
+
+lazy val exampleTwitterC8 = project
+  .in(file("./examples/twitter/camunda8"))
+  .settings(projectSettings("example-twitter-c8"))
+  .configure(preventPublication)
+  .settings(
+    libraryDependencies ++= zeebeDependencies :+
+      "org.twitter4j" % "twitter4j-core" % twitter4jVersion
+  )
+  .dependsOn(exampleTwitterApi)
 
 lazy val exampleDemos = project
   .in(file("./examples/demos"))
@@ -161,19 +179,26 @@ lazy val exampleDemos = project
   .dependsOn(camunda, test, gatling)
   .enablePlugins(GatlingPlugin)
 
-val springBootVersion = "2.3.0.RELEASE"
+val springBootVersion = "2.6.1"
 val h2Version = "1.4.200"
 // Twitter
 val twitter4jVersion = "4.0.7"
 val camundaDependencies = Seq(
   "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion,
   "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion,
+  "io.netty" % "netty-all" % "4.1.73.Final", // needed for Spring Boot Version > 2.5.*
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
-  "io.netty" % "netty-all" % "4.1.73.Final", // needed for Spring Boot Version > 2.5.*
   "com.h2database" % "h2" % h2Version
   //"org.slf4j" % "slf4j-simple" % "1.7.33" % IntegrationTest
 
+)
+val zeebeVersion = "1.3.4"
+val zeebeDependencies = Seq(
+  "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
+  "org.springframework.boot" % "spring-boot-starter-webflux" % springBootVersion,
+  "io.camunda" % "spring-zeebe-starter" % zeebeVersion,
+  //"io.camunda" % "spring-zeebe-test" % zeebeVersion % Test,
 )
 
 lazy val developerList = List(
