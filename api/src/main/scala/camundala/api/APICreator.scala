@@ -146,6 +146,12 @@ trait APICreator extends ProcessReferenceCreator, App:
       endpoints(None, None, activities: _*)
 
     def endpoints(
+        tag: String,
+        processName: String
+    )(activities: ApiEndpoint[?, ?, ?, ?]*): ApiEndpoints =
+      endpoints(Some(tag), Some(processName), activities: _*)
+
+    def endpoints(
         tag: Option[String] = None,
         processName: Option[String] = None,
         activities: ApiEndpoint[?, ?, ?, ?]*
@@ -174,8 +180,12 @@ trait APICreator extends ProcessReferenceCreator, App:
             RequestOutput.ok(outputExamples),
             startProcessInstanceErrors
           ),
-          Some(docReference(processName
-            .getOrElse(process.id)))
+          Some(
+            docReference(
+              processName
+                .getOrElse(process.id)
+            )
+          )
         ) +: activities
       )
 

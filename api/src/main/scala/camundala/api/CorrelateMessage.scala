@@ -25,7 +25,7 @@ case class CorrelateMessage[
   ): CorrelateMessage[In] =
     copy(restApi = restApi)
 
-  override lazy val descr: String = restApi.maybeDescr.getOrElse("") +
+  override lazy val descr: String = restApi.maybeDescr.getOrElse("NO DESCR") +
     s"""
        |
        |$endpointType:
