@@ -7,6 +7,8 @@ import sttp.tapir.docs.openapi.{OpenAPIDocsInterpreter, OpenAPIDocsOptions}
 import sttp.tapir.openapi.circe.yaml.*
 import sttp.tapir.openapi.{Contact, Info, OpenAPI, Server}
 
+import java.text.SimpleDateFormat
+import java.util.Date
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
@@ -55,6 +57,8 @@ trait APICreator extends ProcessReferenceCreator, App:
 
   def description: Option[String] = Some(
     s"""
+       |
+       |Created at ${SimpleDateFormat().format(new Date())}
        |
        |Generated Open API:
        |

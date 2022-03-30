@@ -1,0 +1,15 @@
+
+     _/_/_/                                                      _/            _/
+  _/          _/_/_/  _/_/_/  _/_/    _/    _/  _/_/_/      _/_/_/    _/_/_/  _/    _/_/_/
+ _/        _/    _/  _/    _/    _/  _/    _/  _/    _/  _/    _/  _/    _/  _/  _/    _/
+_/        _/    _/  _/    _/    _/  _/    _/  _/    _/  _/    _/  _/    _/  _/  _/    _/
+ _/_/_/    _/_/_/  _/    _/    _/    _/_/_/  _/    _/    _/_/_/    _/_/_/  _/    _/_/_/
+
+ Twitter Camunda 8 Example                                  >>> the Scala DSL for Camunda
+
+  Spring-Boot: ${spring-boot.formatted-version}
+  Camunda Platform: ${camunda.bpm.formatted-version}
+  Open http://localhost:${server.port}
+
+  Based on https://github.com/pme123/spring-boot-datakurre-plugins
+  >>> includes Asko Soukka's cool Cockpit plugins

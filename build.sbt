@@ -198,6 +198,7 @@ val zeebeDependencies = Seq(
   "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
   "org.springframework.boot" % "spring-boot-starter-webflux" % springBootVersion,
   "io.camunda" % "spring-zeebe-starter" % zeebeVersion,
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.2",
   //"io.camunda" % "spring-zeebe-test" % zeebeVersion % Test,
 )
 
