@@ -1,0 +1,380 @@
+openapi: 3.0.3
+info:
+  title: Twitter Process API
+  version: '1.0'
+  description: |2+
+
+
+    Created at 03/04/2022, 15:46
+
+    Generated Open API:
+
+    - **openApi.yml**: Documentation of the Processes (this Documentation😊).
+    - **postmanOpenApi.yml**: Open Api that you can import to Postman!
+      Be aware that this needs some adjustments.
+
+    >WARNING: This is an experimental way and not approved.
+
+    ****
+
+
+    The self-contained process solution contains
+
+    * The process model as BPMN (auto-deployed during startup)
+    * Glue code for the service task
+    * REST endpoint that then starts a process instance
+    * Test case
+
+    Requirements:
+
+    * Java >= 8
+    * Maven
+
+    ## How to run
+
+    * Download/clone the code in this folder.
+    * You need to set your Camunda cloud client connection details in the file `application.properties`. Simply replace the existing sample values.
+    * Run the application:
+
+    ```
+    mvn package exec:java
+    ```
+
+    ```
+    curl -i -X PUT http://localhost:8323/tweet \
+      -H 'cache-control: no-cache' \
+      -H 'content-type: application/json' \
+      -d '{
+      "tweet":"What the f***!",
+      "author":"Sergey",
+      "boss":"Putin"
+    }'
+    ```
+
+    * You should see something like this:
+
+
+servers:
+- url: http://localhost:8887/engine-rest
+paths:
+  /process-definition/key/TwitterDemoProcess/start:
+    post:
+      tags:
+      - TwitterDemoProcess
+      summary: 'Process: TwitterDemoProcess'
+      description: |
+        This runs the Twitter Approvement Process.
+        <details>
+        <summary><b>Used in the 2 Process(es)</b></summary>
+        <p>
+
+
+        - _camundala_
+           - [TwitterDemoP](https://MYDOCHOST/camundala/OpenApi.html#tag/TwitterDemoP)
+           - [TwitterDemoP](https://MYDOCHOST/camundala/OpenApi.html#tag/TwitterDemoP)
+
+
+        - _camundala-dsl_
+           - [TwitterDemoP](https://MYDOCHOST/camundala-dsl/OpenApi.html#tag/TwitterDemoP)
+           - [TwitterDemoP](https://MYDOCHOST/camundala-dsl/OpenApi.html#tag/TwitterDemoP)
+           - [TwitterDemoP](https://MYDOCHOST/camundala-dsl/OpenApi.html#tag/TwitterDemoP)
+
+
+
+
+        </p>
+        </details>
+      operationId: 'Process: TwitterDemoProcess'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              standard:
+                value:
+                  variables:
+                    tweet:
+                      value: Hello Tweet
+                      type: String
+                    author:
+                      value: pme123
+                      type: String
+                    boss:
+                      value: Great Master
+                      type: String
+                  businessKey: example-businesskey
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/--REMOVE:user_task_review_tweet--:
+    post:
+      tags:
+      - TwitterDemoProcess
+      summary: 'no Api!: no API!'
+      description: ''
+      operationId: 'no Api!: no API!'
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/form-variables/--REMOVE:user_task_review_tweet--:
+    get:
+      tags:
+      - TwitterDemoProcess
+      summary: 'no API!: no API!'
+      description: |+
+        Retrieves the form variables for a task.
+        The form variables take form data specified on the task into account.
+        If form fields are defined, the variable types and default values of the form fields are taken into account.
+
+      operationId: 'no API!: no API!'
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      - name: variableNames
+        in: query
+        description: |-
+          A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+          It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+          If the query parameter contains non-existent variable names, the variable names are ignored.
+        required: false
+        schema:
+          type: string
+          default: tweet,author,boss
+      - name: deserializeValues
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/complete/--REMOVE:user_task_review_tweet--:
+    post:
+      tags:
+      - TwitterDemoProcess
+      summary: 'no API!: no API!'
+      description: ''
+      operationId: 'no API!: no API!'
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskIn'
+            examples:
+              standard:
+                value:
+                  variables:
+                    tweet:
+                      value: Hello Tweet
+                      type: String
+                    author:
+                      value: pme123
+                      type: String
+                    boss:
+                      value: Great Master
+                      type: String
+                    approved:
+                      value: false
+                      type: Boolean
+                  withVariablesInReturn: true
+              Tweet accepted:
+                value:
+                  variables:
+                    tweet:
+                      value: Hello Tweet
+                      type: String
+                    author:
+                      value: pme123
+                      type: String
+                    boss:
+                      value: Great Master
+                      type: String
+                    approved:
+                      value: false
+                      type: Boolean
+                  withVariablesInReturn: true
+              Tweet rejected:
+                value:
+                  variables:
+                    tweet:
+                      value: Hello Tweet
+                      type: String
+                    author:
+                      value: pme123
+                      type: String
+                    boss:
+                      value: Great Master
+                      type: String
+                    approved:
+                      value: false
+                      type: Boolean
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+components:
+  schemas:
+    CBoolean:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: boolean
+        type:
+          type: string
+    CDouble:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: number
+          format: double
+        type:
+          type: string
+    CEnum:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+        type:
+          type: string
+    CFile:
+      required:
+      - value
+      - valueInfo
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+          description: The File's content as Base64 encoded String.
+        valueInfo:
+          $ref: '#/components/schemas/CFileValueInfo'
+        type:
+          type: string
+    CFileValueInfo:
+      required:
+      - filename
+      type: object
+      properties:
+        filename:
+          type: string
+        mimetype:
+          type: string
+    CInteger:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: integer
+        type:
+          type: string
+    CJson:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+        type:
+          type: string
+    CLong:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int64
+        type:
+          type: string
+    CNull:
+      type: object
+    CString:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+        type:
+          type: string
+    CamundaVariable:
+      oneOf:
+      - $ref: '#/components/schemas/CBoolean'
+      - $ref: '#/components/schemas/CDouble'
+      - $ref: '#/components/schemas/CEnum'
+      - $ref: '#/components/schemas/CFile'
+      - $ref: '#/components/schemas/CInteger'
+      - $ref: '#/components/schemas/CJson'
+      - $ref: '#/components/schemas/CLong'
+      - $ref: '#/components/schemas/CNull'
+      - $ref: '#/components/schemas/CString'
+    CompleteTaskIn:
+      required:
+      - variables
+      - withVariablesInReturn
+      type: object
+      properties:
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+        withVariablesInReturn:
+          type: boolean
+          description: Set to false will not return the Process Variables and the
+            Result Status is 204.
+      description: 'A JSON object with the following properties: (at least an empty
+        JSON object {} or an empty request body)'
+    Map_CamundaVariable:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/CamundaVariable'
+    StartProcessIn:
+      required:
+      - variables
+      - withVariablesInReturn
+      type: object
+      properties:
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+        businessKey:
+          type: string
+          description: The business key of the process instance.
+        withVariablesInReturn:
+          type: boolean
+          description: Set to false will not return the Process Variables.
+      description: 'A JSON object with the following properties: (at least an empty
+        JSON object {} or an empty request body)'

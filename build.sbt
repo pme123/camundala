@@ -20,7 +20,6 @@ lazy val root = project
     camunda,
     test,
     gatling,
-    exampleTwitterApi,
     exampleTwitterC7,
     exampleTwitterC8,
     exampleInvoice,
@@ -142,13 +141,6 @@ lazy val exampleInvoice = project
   .dependsOn(camunda, test, gatling)
   .enablePlugins(GatlingPlugin)
 
-lazy val exampleTwitterApi = project
-  .in(file("./examples/twitter/api"))
-  .settings(projectSettings("example-twitter-api"))
-  .configure(preventPublication)
-  .dependsOn(api, test, gatling)
-  .enablePlugins(GatlingPlugin)
-
 lazy val exampleTwitterC7 = project
   .in(file("./examples/twitter/camunda7"))
   .settings(projectSettings("example-twitter-c7"))
@@ -157,7 +149,8 @@ lazy val exampleTwitterC7 = project
     libraryDependencies ++= camundaDependencies :+
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
-  .dependsOn(exampleTwitterApi)
+  .dependsOn(api, test, gatling)
+  .enablePlugins(GatlingPlugin)
 
 lazy val exampleTwitterC8 = project
   .in(file("./examples/twitter/camunda8"))
@@ -167,7 +160,8 @@ lazy val exampleTwitterC8 = project
     libraryDependencies ++= zeebeDependencies :+
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
-  .dependsOn(exampleTwitterApi)
+  .dependsOn(api, test, gatling)
+  .enablePlugins(GatlingPlugin)
 
 lazy val exampleDemos = project
   .in(file("./examples/demos"))

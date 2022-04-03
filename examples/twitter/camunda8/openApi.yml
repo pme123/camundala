@@ -1,0 +1,189 @@
+openapi: 3.0.3
+info:
+  title: Twitter Process API
+  version: '1.0'
+  description: |2+
+
+
+    Created at 03/04/2022, 15:46
+
+    Generated Open API:
+
+    - **openApi.yml**: Documentation of the Processes (this Documentation😊).
+    - **postmanOpenApi.yml**: Open Api that you can import to Postman!
+      Be aware that this needs some adjustments.
+
+    >WARNING: This is an experimental way and not approved.
+
+    ****
+
+
+    The self-contained process solution contains
+
+    * The process model as BPMN (auto-deployed during startup)
+    * Glue code for the service task
+    * REST endpoint that then starts a process instance
+    * Test case
+
+    Requirements:
+
+    * Java >= 8
+    * Maven
+
+    ## How to run
+
+    * Download/clone the code in this folder.
+    * You need to set your Camunda cloud client connection details in the file `application.properties`. Simply replace the existing sample values.
+    * Run the application:
+
+    ```
+    mvn package exec:java
+    ```
+
+    ```
+    curl -i -X PUT http://localhost:8323/tweet \
+      -H 'cache-control: no-cache' \
+      -H 'content-type: application/json' \
+      -d '{
+      "tweet":"What the f***!",
+      "author":"Sergey",
+      "boss":"Putin"
+    }'
+    ```
+
+    * You should see something like this:
+
+
+paths:
+  /Process/TwitterDemoProcess:
+    head:
+      tags:
+      - TwitterDemoProcess
+      summary: 'Process: TwitterDemoProcess'
+      description: |
+        This runs the Twitter Approvement Process.
+        <details>
+        <summary><b>Used in the 2 Process(es)</b></summary>
+        <p>
+
+
+        - _camundala_
+           - [TwitterDemoP](https://MYDOCHOST/camundala/OpenApi.html#tag/TwitterDemoP)
+           - [TwitterDemoP](https://MYDOCHOST/camundala/OpenApi.html#tag/TwitterDemoP)
+
+
+        - _camundala-dsl_
+           - [TwitterDemoP](https://MYDOCHOST/camundala-dsl/OpenApi.html#tag/TwitterDemoP)
+           - [TwitterDemoP](https://MYDOCHOST/camundala-dsl/OpenApi.html#tag/TwitterDemoP)
+           - [TwitterDemoP](https://MYDOCHOST/camundala-dsl/OpenApi.html#tag/TwitterDemoP)
+
+
+
+
+        </p>
+        </details>
+      operationId: 'Process: TwitterDemoProcess'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tweet'
+            examples:
+              standard:
+                value:
+                  tweet: Hello Tweet
+                  author: pme123
+                  boss: Great Master
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewedTweet'
+              examples:
+                standard:
+                  value:
+                    tweet: Hello Tweet
+                    author: pme123
+                    boss: Great Master
+                    approved: false
+  /UserTask/user_task_review_tweet:
+    head:
+      tags:
+      - TwitterDemoProcess
+      summary: 'UserTask: user_task_review_tweet'
+      description: ''
+      operationId: 'UserTask: user_task_review_tweet'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tweet'
+            examples:
+              standard:
+                value:
+                  tweet: Hello Tweet
+                  author: pme123
+                  boss: Great Master
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewedTweet'
+              examples:
+                standard:
+                  value:
+                    tweet: Hello Tweet
+                    author: pme123
+                    boss: Great Master
+                    approved: false
+                Tweet accepted:
+                  value:
+                    tweet: Hello Tweet
+                    author: pme123
+                    boss: Great Master
+                    approved: false
+                Tweet rejected:
+                  value:
+                    tweet: Hello Tweet
+                    author: pme123
+                    boss: Great Master
+                    approved: false
+components:
+  schemas:
+    ReviewedTweet:
+      required:
+      - tweet
+      - author
+      - boss
+      - approved
+      type: object
+      properties:
+        tweet:
+          type: string
+        author:
+          type: string
+        boss:
+          type: string
+        approved:
+          type: boolean
+      description: Every Tweet has to be accepted by the Boss.
+    Tweet:
+      required:
+      - tweet
+      - author
+      - boss
+      type: object
+      properties:
+        tweet:
+          type: string
+        author:
+          type: string
+        boss:
+          type: string
+      description: Every employee may create a Tweet.
