@@ -16,14 +16,14 @@ import scala.language.implicitConversions
 trait UserTaskExtensions:
 
   implicit def defaultUserTaskSteps[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
   ](userTask: UserTask[In, Out]): WithConfig[Seq[ChainBuilder]] =
     userTask.getAndComplete()
 
   extension [
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
   ](userTask: UserTask[In, Out])
 
     def getAndComplete(): WithConfig[Seq[ChainBuilder]] = {
@@ -84,19 +84,19 @@ trait UserTaskExtensions:
         )
 
     def exists(
-                key: String
-              ): UserTask[TestOverrides, Out] =
+        key: String
+    ): UserTask[TestOverrides, Out] =
       overrideUserTask(key, TestOverrideType.Exists)
 
     def notExists(
-                   key: String
-                 ): UserTask[TestOverrides, Out] =
+        key: String
+    ): UserTask[TestOverrides, Out] =
       overrideUserTask(key, TestOverrideType.NotExists)
 
     def isEquals(
-                  key: String,
-                  value: Any
-                ): UserTask[TestOverrides, Out] =
+        key: String,
+        value: Any
+    ): UserTask[TestOverrides, Out] =
       overrideUserTask(
         key,
         TestOverrideType.IsEquals,
@@ -104,9 +104,9 @@ trait UserTaskExtensions:
       )
 
     def hasSize(
-                 key: String,
-                 size: Int
-               ): UserTask[TestOverrides, Out] =
+        key: String,
+        size: Int
+    ): UserTask[TestOverrides, Out] =
       overrideUserTask(
         key,
         TestOverrideType.HasSize,
@@ -114,10 +114,10 @@ trait UserTaskExtensions:
       )
 
     def overrideUserTask(
-                          key: String,
-                          overrideType: TestOverrideType,
-                          value: Option[CamundaVariable] = None
-                        ): UserTask[TestOverrides, Out] =
+        key: String,
+        overrideType: TestOverrideType,
+        value: Option[CamundaVariable] = None
+    ): UserTask[TestOverrides, Out] =
       UserTask(
         InOutDescr(
           userTask.id,

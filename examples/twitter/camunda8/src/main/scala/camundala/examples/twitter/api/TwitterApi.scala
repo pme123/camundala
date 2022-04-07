@@ -12,7 +12,7 @@ object TwitterApi extends BpmnDsl:
       boss: String = "Great Master"
   )
 
-  @description("""Every Tweet has to be accepted by the Boss.""")
+  @description("Every Tweet has to be accepted by the Boss.")
   case class ReviewedTweet(
       tweet: String = "Hello Tweet",
       author: String = "pme123",

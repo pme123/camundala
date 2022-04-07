@@ -104,7 +104,7 @@ trait ProcessReferenceCreator:
       .flatMap { case (pp, paths) =>
         paths
           .filter { case p -> c =>
-            c.contains(processName) && !c.contains(s"id=\"$processName\"")
+            c.matches(s"""[\\s\\S]*(:|")$processName"[\\s\\S]*""") && !c.contains(s"id=\"$processName\"")
           }
           .map(pc => docuPath(pp, pc._1, pc._2))
       }
