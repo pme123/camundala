@@ -59,8 +59,13 @@ def statusCondition(status: Int*): Session => Boolean = session => {
 }
 
 def taskCondition(): Session => Boolean = session => {
-  println("<<< retryCount: " + session("retryCount").as[Int])
+  println("<<< retryCount taskCondition: " + session("retryCount").as[Int])
   session.attributes.get("taskId").contains(null)
+}
+
+def processInstanceCondition(): Session => Boolean = session => {
+  println("<<< retryCount processInstanceCondition: " + session("retryCount").as[Int])
+  session.attributes.get("processInstanceId").contains(null)
 }
 
 // check if the process is  not active
@@ -90,7 +95,7 @@ def extractJsonOptional(path: String, key: String) =
   jsonPath(path)
     .ofType[Any]
     .transform { v =>
-      println(s"<<< Extracted $key: $v"); v
+      println(s"<<< Extracted optional $key: $v"); v
     }
     .optional
     .saveAs(key)
@@ -271,17 +276,17 @@ extension (builder: HttpRequestBuilder)
   def auth():WithConfig[HttpRequestBuilder] =
     summon[SimulationConfig].authHeader(builder)
 
-implicit lazy val TestOverridesSchema: Schema[TestOverrides] = Schema.derived
-implicit lazy val TestOverridesEncoder: Encoder[TestOverrides] = deriveEncoder
-implicit lazy val TestOverridesDecoder: Decoder[TestOverrides] = deriveDecoder
+given Schema[TestOverrides] = Schema.derived
+given Encoder[TestOverrides] = deriveEncoder
+given Decoder[TestOverrides] = deriveDecoder
 
-implicit lazy val TestOverrideSchema: Schema[TestOverride] = Schema.derived
-implicit lazy val TestOverrideEncoder: Encoder[TestOverride] = deriveEncoder
-implicit lazy val TestOverrideDecoder: Decoder[TestOverride] = deriveDecoder
+given Schema[TestOverride] = Schema.derived
+given Encoder[TestOverride] = deriveEncoder
+given Decoder[TestOverride] = deriveDecoder
 
-implicit lazy val TestOverrideTypeSchema: Schema[TestOverrideType] =
+given Schema[TestOverrideType] =
   Schema.derived
-implicit lazy val TestOverrideTypeEncoder: Encoder[TestOverrideType] =
+given Encoder[TestOverrideType] =
   deriveEncoder
-implicit lazy val TestOverrideTypeDecoder: Decoder[TestOverrideType] =
+given Decoder[TestOverrideType] =
   deriveDecoder

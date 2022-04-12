@@ -9,7 +9,6 @@ import org.camunda.bpm.engine.variable.`type`.{FileValueType, PrimitiveValueType
 import org.camunda.bpm.engine.variable.impl.`type`.PrimitiveValueTypeImpl.StringTypeImpl
 import org.camunda.bpm.engine.variable.impl.value.FileValueImpl
 import org.camunda.bpm.engine.variable.value.TypedValue
-import org.camunda.spin.impl.json.jackson.JacksonJsonNode
 import sttp.tapir.generic.auto.*
 import sttp.tapir.json.circe.*
 

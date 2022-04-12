@@ -39,9 +39,7 @@ lazy val api = project
   .settings(projectSettings("api"))
   .settings(
     libraryDependencies ++=
-      tapirDependencies ++
-        camundaTestDependencies ++
-        gatlingDependencies,
+      tapirDependencies ,
     scalacOptions ++= Seq(
       "-Xmax-inlines",
       "50" // is declared as erased, but is in fact used
@@ -61,7 +59,6 @@ lazy val camunda = project
     )
   )
   .dependsOn(api)
-  .enablePlugins(GatlingPlugin)
 
 lazy val test = project
   .in(file("./test"))
@@ -101,15 +98,15 @@ lazy val camundaTestDependencies = Seq(
   // provide Camunda interaction
   "org.camunda.bpm" % "camunda-engine" % camundaVersion,
   "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
-  "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.13.0",
-  "org.codehaus.groovy" % "groovy-jsr223" % "3.0.8",
+  "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.13.1",
+  "org.codehaus.groovy" % "groovy-jsr223" % "3.0.10",
   //
   //"org.camunda.bpm.dmn" % "camunda-engine-dmn" % camundaVersion % Provided,
   // provide test helper
   "org.camunda.bpm.assert" % "camunda-bpm-assert" % "10.0.0",
-  "org.assertj" % "assertj-core" % "3.19.0",
+  "org.assertj" % "assertj-core" % "3.22.0",
   "org.camunda.bpm.extension" % "camunda-bpm-assert-scenario" % "1.1.1",
-  "org.camunda.bpm.extension.mockito" % "camunda-bpm-mockito" % "5.14.0",
+  "org.camunda.bpm.extension.mockito" % "camunda-bpm-mockito" % "5.16.0",
   // dmn testing
   //("org.camunda.bpm.extension.dmn.scala" % "dmn-engine" % "1.7.2-SNAPSHOT").cross(CrossVersion.for3Use2_13),
   "de.odysseus.juel" % "juel" % "2.1.3",
@@ -121,8 +118,8 @@ lazy val camundaTestDependencies = Seq(
 )
 
 lazy val gatlingDependencies = Seq(
-  "io.gatling.highcharts" % "gatling-charts-highcharts" % "3.7.2",
-  "io.gatling" % "gatling-test-framework" % "3.7.2"
+  "io.gatling.highcharts" % "gatling-charts-highcharts" % "3.7.5",
+  "io.gatling" % "gatling-test-framework" % "3.7.5"
 )
 
 // EXAMPLES
@@ -160,7 +157,7 @@ lazy val exampleTwitterC8 = project
     libraryDependencies ++= zeebeDependencies :+
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
-  .dependsOn(api, test, gatling)
+  .dependsOn(api, gatling)
   .enablePlugins(GatlingPlugin)
 
 lazy val exampleDemos = project

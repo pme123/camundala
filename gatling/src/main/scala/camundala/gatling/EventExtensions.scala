@@ -1,7 +1,8 @@
-package camundala.gatling
+package camundala
+package gatling
 
-import camundala.api.*
-import camundala.bpmn.*
+import api.*
+import bpmn.*
 import io.circe.syntax.*
 import io.gatling.core.Predef.*
 import io.gatling.core.structure.ChainBuilder
@@ -74,7 +75,11 @@ trait EventExtensions:
     def sendSignal(
                     readyVariable: String,
                     readyValue: Any = true
-                  ): WithConfig[Seq[ChainBuilder]] =
+                  ): WithConfig[Seq[ChainBuilder]] = {
+      val signal = SendSignalIn(
+        name = event.messageName,
+        variables = Some(CamundaVariable.toCamunda(event.in))
+      )
       Seq(
         exec(_.set(readyVariable, null)),
         retryOrFail(
@@ -87,15 +92,13 @@ trait EventExtensions:
             .auth()
             .body(
               StringBody(
-                SendSignalIn(
-                  name = event.messageName,
-                  variables = Some(CamundaVariable.toCamunda(event.in))
-                ).asJson.deepDropNullValues.deepDropNullValues.toString
+                signal.asJson.deepDropNullValues.deepDropNullValues.toString
               )
             )
             .check(status.is(204))
         ).exitHereIfFailed
       )
+    }
   
   end extension
   

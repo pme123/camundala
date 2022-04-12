@@ -7,22 +7,21 @@ import java.util.Base64
 import io.circe.{ACursor, Decoder, Encoder, HCursor, Json}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax.*
-import org.camunda.bpm.engine.variable.Variables.fileValue
 
 import scala.annotation.tailrec
 import scala.jdk.CollectionConverters.*
 
 case class NoInput()
 object NoInput:
-  implicit lazy val NoInputSchema: Schema[NoInput] = Schema.derived
-  implicit lazy val NoInputEncoder: Encoder[NoInput] = deriveEncoder
-  implicit lazy val NoInputDecoder: Decoder[NoInput] = deriveDecoder
+  given Schema[NoInput] = Schema.derived
+  given Encoder[NoInput] = deriveEncoder
+  given Decoder[NoInput] = deriveDecoder
 
 case class NoOutput()
 object NoOutput :
-  implicit lazy val NoOutputSchema: Schema[NoOutput] = Schema.derived
-  implicit lazy val NoOutputEncoder: Encoder[NoOutput] = deriveEncoder
-  implicit lazy val NoOutputDecoder: Decoder[NoOutput] = deriveDecoder
+  given Schema[NoOutput] = Schema.derived
+  given Encoder[NoOutput] = deriveEncoder
+  given Decoder[NoOutput] = deriveDecoder
 
 
 case class FileInOut(
@@ -34,9 +33,9 @@ case class FileInOut(
   lazy val contentAsBase64: String = Base64.getEncoder.encodeToString(content)
 
 object FileInOut :
-  implicit lazy val FileInOutSchema: Schema[FileInOut] = Schema.derived
-  implicit lazy val FileInOutEncoder: Encoder[FileInOut] = deriveEncoder
-  implicit lazy val FileInOutDecoder: Decoder[FileInOut] = deriveDecoder
+  given Schema[FileInOut] = Schema.derived
+  given Encoder[FileInOut] = deriveEncoder
+  given Decoder[FileInOut] = deriveDecoder
 
 def valueToJson(value: Any): Json =
   value match

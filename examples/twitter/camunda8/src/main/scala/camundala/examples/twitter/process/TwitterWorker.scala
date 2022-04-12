@@ -3,7 +3,7 @@ package camundala.examples.twitter.process
 import io.camunda.zeebe.spring.client.annotation.{ZeebeVariablesAsType, ZeebeWorker}
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError
 import camundala.examples.twitter.api.TwitterApi.ReviewedTweet
-import org.camunda.community.examples.twitter.business.{DuplicateTweetException, TwitterService}
+import camundala.examples.twitter.business.{DuplicateTweetException, TwitterService}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

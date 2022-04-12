@@ -36,11 +36,13 @@ trait BpmnDsl:
       Out <: Product: Encoder: Decoder: Schema
   ](
       id: String,
+      subProcessId: String,
       in: In = NoInput(),
       out: Out = NoOutput(),
       descr: Option[String] | String = None
   ): CallActivity[In, Out] =
     CallActivity(
+      subProcessId,
       InOutDescr(id, in, out, descr)
     )
 

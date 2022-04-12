@@ -12,7 +12,7 @@ import sttp.tapir.generic.auto.*
 import scala.concurrent.duration.*
 
 // exampleInvoice/GatlingIt/testOnly *InvoiceSimulation
-class InvoiceSimulation extends SimulationRunner {
+class InvoiceSimulation extends SimulationRunner :
 
   override implicit def config: SimulationConfig =
     super.config
@@ -20,7 +20,7 @@ class InvoiceSimulation extends SimulationRunner {
   //.withUserAtOnce(100) // do load testing
 
   simulate(
-    processScenario(`Review Invoice`)(
+ /*   processScenario(`Review Invoice`)(
       AssignReviewerUT,
       ReviewInvoiceUT
     ),
@@ -31,13 +31,13 @@ class InvoiceSimulation extends SimulationRunner {
     processScenario(`Invoice Receipt with Review`)(
       ApproveInvoiceUT
         .withOut(ApproveInvoice(false)), // do not approve
-      subProcess(`Review Invoice clarified`)(
+      subProcess(`Review Invoice`)(
         AssignReviewerUT,
         ReviewInvoiceUT // do clarify
       ),
       ApproveInvoiceUT, // now approve
       PrepareBankTransferUT
-    ),
+    ),*/
     processScenario(`Invoice Receipt with Review failed`)(
       ApproveInvoiceUT
         .withOut(ApproveInvoice(false)), // do not approve
@@ -45,10 +45,10 @@ class InvoiceSimulation extends SimulationRunner {
         AssignReviewerUT,
         ReviewInvoiceUT.withOut(InvoiceReviewed(false)) // do not clarify
       )
-    ),
+    ),/*
     processScenario("Bad Validation")(
       BadValidationP
         .start("Bad Validation", 500)
-    )
+    )*/
   )
-}
+

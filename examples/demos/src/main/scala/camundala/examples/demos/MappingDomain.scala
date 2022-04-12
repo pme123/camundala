@@ -34,6 +34,7 @@ object MappingDomain extends BpmnDsl:
   val GetAddressCAIdent = "GetAddressCA"
   lazy val GetAddressCA = callActivity(
     GetAddressCAIdent,
+    CamundalaAddressServiceIdent,
     in = AddressServiceIn(),
     out = AddressServiceOut(),
     descr = None
@@ -42,6 +43,7 @@ object MappingDomain extends BpmnDsl:
   val PrintDocumentCAIdent = "PrintDocumentCA"
   lazy val PrintDocumentCA = callActivity(
     PrintDocumentCAIdent,
+    CamundalaPrintServiceIdent,
     in = NoInput(),
     out = NoOutput(),
     descr = None

@@ -53,6 +53,10 @@ def toJson(json: String): Json =
 def toJsonString[T <: Product: Encoder](product: T): String =
   product.asJson.deepDropNullValues.toString
 
+def maybe[T](value: T | Option[T]): Option[T] = value match
+  case v: Option[?] => v.asInstanceOf[Option[T]]
+  case v => Some(v.asInstanceOf[T])
+
 // camundala.domain
 export camundala.domain.NoInput
 export camundala.domain.NoOutput

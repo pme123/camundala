@@ -133,6 +133,7 @@ object InvoiceApi extends BpmnDsl:
   lazy val `Review Invoice clarified`: CallActivity[InvoiceReceipt, InvoiceReviewed] =
     callActivity(
       id = "ReviewInvoiceCA",
+      `Review Invoice`.id,
       descr = "Calls the Review Invoice Process and clarifies the Invoice.",
       in = InvoiceReceipt(),
       out = InvoiceReviewed()
@@ -141,6 +142,7 @@ object InvoiceApi extends BpmnDsl:
   lazy val `Review Invoice not clarified`: CallActivity[InvoiceReceipt, InvoiceReviewed] =
       callActivity(
         id = "ReviewInvoiceCA",
+        `Review Invoice`.id,
         descr = "Calls the Review Invoice Process and does not clarify the Invoice.",
         in = InvoiceReceipt(),
         out = InvoiceReviewed(false)

@@ -54,6 +54,7 @@ object TestDomain extends BpmnDsl:
   lazy val CallProcessCA: CallActivity[CallProcessIn, CallProcessOut] =
     callActivity(
       CallProcessCAIdent,
+      "camundala-generate-subtest",
       in = CallProcessIn(),
       out = CallProcessOut(),
       descr = None

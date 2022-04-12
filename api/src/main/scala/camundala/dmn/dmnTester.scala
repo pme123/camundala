@@ -23,15 +23,15 @@ case class TesterInput(
     values: List[String]
 )
 
-implicit lazy val DmnConfigSchema: Schema[DmnConfig] = Schema.derived
-implicit lazy val DmnConfigEncoder: Encoder[DmnConfig] = deriveEncoder
-implicit lazy val DmnConfigDecoder: Decoder[DmnConfig] = deriveDecoder
+given Schema[DmnConfig] = Schema.derived
+given Encoder[DmnConfig] = deriveEncoder
+given Decoder[DmnConfig] = deriveDecoder
 
-implicit lazy val TesterDataSchema: Schema[TesterData] = Schema.derived
-implicit lazy val TesterDataEncoder: Encoder[TesterData] = deriveEncoder
-implicit lazy val TesterDataDecoder: Decoder[TesterData] = deriveDecoder
+given Schema[TesterData] = Schema.derived
+given Encoder[TesterData] = deriveEncoder
+given Decoder[TesterData] = deriveDecoder
 
-implicit lazy val TesterInputSchema: Schema[TesterInput] = Schema.derived
-implicit lazy val TesterInputEncoder: Encoder[TesterInput] = deriveEncoder
-implicit lazy val TesterInputDecoder: Decoder[TesterInput] = deriveDecoder
+given Schema[TesterInput] = Schema.derived
+given Encoder[TesterInput] = deriveEncoder
+given Decoder[TesterInput] = deriveDecoder
 

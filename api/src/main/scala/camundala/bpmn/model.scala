@@ -61,6 +61,9 @@ case class Process[
     elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty
 ) extends InOut[In, Out, Process[In, Out]]:
 
+  def asCallActivity: CallActivity[In, Out] =
+    CallActivity(id, inOutDescr)
+
   def inOuts: Seq[InOut[?, ?, ?]] = elements.collect {
     case io: InOut[?, ?, ?] => io
   }
@@ -95,6 +98,7 @@ case class CallActivity[
     In <: Product: Encoder: Decoder: Schema,
     Out <: Product: Encoder: Decoder: Schema
 ](
+    subProcessId: String,
     inOutDescr: InOutDescr[In, Out]
 ) extends ProcessNode,
       InOut[In, Out, CallActivity[In, Out]]:
@@ -103,17 +107,18 @@ case class CallActivity[
     copy(inOutDescr = descr)
 
   def asProcess: Process[In, Out] =
-    Process(inOutDescr)
+    Process(inOutDescr.copy(id = subProcessId))
 
 object CallActivity:
   def apply[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema
   ](process: Process[In, Out]): CallActivity[In, Out] =
-    CallActivity(process.inOutDescr)
+    CallActivity(process.id, process.inOutDescr)
 
   def init(id: String): CallActivity[NoInput, NoOutput] =
     CallActivity(
+      id,
       InOutDescr(id, NoInput(), NoOutput())
     )
 

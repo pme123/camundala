@@ -44,8 +44,7 @@ trait UserTaskExtensions:
         .auth()
         .check(checkMaxCount)
         .check(
-          jsonPath("$[*].id").optional
-            .saveAs("taskId")
+          extractJsonOptional("$[*].id","taskId")
         )
 
     private def checkForm(): WithConfig[HttpRequestBuilder] =

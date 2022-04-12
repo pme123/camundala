@@ -1,43 +1,16 @@
-package camundala.examples.twitter.rest
+package camundala.examples.twitter
+package rest
 
-import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
-import camundala.examples.twitter.api.TwitterApi.{ReviewedTweet, Tweet}
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.{HttpStatus, MediaType, ResponseEntity}
-import org.springframework.web.bind.annotation.{PutMapping, RestController}
-import org.springframework.web.server.ServerWebExchange
-import org.springframework.web.bind.annotation.RequestBody
+import api.TwitterApi.Tweet
+import camundala.examples.twitter.camunda.{RestEndpoint, Validator}
+import org.springframework.web.bind.annotation.{PutMapping, RequestBody, RestController}
 
 @RestController
-class ReviewTweetRestApi:
+class ReviewTweetRestApi extends RestEndpoint :
 
-  @Autowired
-  private var zeebeClient: ZeebeClient = _
-
-  @PutMapping(
-    value = Array("/tweet"),
-    consumes = Array(MediaType.APPLICATION_JSON_VALUE)
-  )
+  @PutMapping(value = Array("/tweet"))
   def startTweetReviewProcess(
       @RequestBody
       tweet: Tweet
-  ): ResponseEntity[String] = {
-    val reference = startTweetReview(tweet)
-    // And just return something for the sake of the example
-    ResponseEntity
-      .status(HttpStatus.OK)
-      .body("Started process instance " + reference)
-  }
-
-  def startTweetReview(
-      processVariables: Tweet
-  ): String = {
-    val processInstance = zeebeClient.newCreateInstanceCommand
-      .bpmnProcessId("TwitterDemoProcess")
-      .latestVersion
-      .variables(processVariables)
-      .send
-      .join // blocking call!
-    String.valueOf(processInstance.getProcessInstanceKey)
-  }
+  ): Response =
+    startProcess("TwitterDemoProcess", tweet)

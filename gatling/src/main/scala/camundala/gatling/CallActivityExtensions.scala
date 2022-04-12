@@ -13,23 +13,28 @@ import io.gatling.http.request.builder.HttpRequestBuilder
 
 trait CallActivityExtensions:
   extension [
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
   ](
-     callActivity: CallActivity[In, Out]
-   )
-    def switchToSubProcess(subProcessName: String): WithConfig[ChainBuilder] =
-      exec(session =>
-        session.set(
-          "processInstanceIdBackup",
-          session("processInstanceId").as[String]
+      callActivity: CallActivity[In, Out]
+  )
+    def switchToSubProcess(
+        subProcessName: String
+    ): WithConfig[Seq[ChainBuilder]] = {
+      Seq(
+        exec(session =>
+          session.set(
+            "processInstanceIdBackup",
+            session("processInstanceId").as[String]
+          )
+        ),
+        exec(_.set("processInstanceId", null)),
+        retryOrFail(
+          exec(processInstance(subProcessName)).exitHereIfFailed,
+          processInstanceCondition()
         )
-      ).exec(
-        http(s"Switch to '$subProcessName'")
-          .get(s"/process-instance?superProcessInstance=#{processInstanceId}")
-          .auth()
-          .check(extractJson("$[*].id", "processInstanceId"))
       )
+    }
 
     def switchToMainProcess(): ChainBuilder =
       exec(session =>
@@ -38,3 +43,16 @@ trait CallActivityExtensions:
           session("processInstanceIdBackup").as[String]
         )
       )
+
+    private def processInstance(
+        subProcessName: String
+    ): WithConfig[HttpRequestBuilder] =
+      http(s"Switch to '$subProcessName'")
+        .get(
+          s"/process-instance?superProcessInstance=#{processInstanceIdBackup}&active=true&processDefinitionKey=${callActivity.subProcessId}"
+        )
+        .auth()
+        .check(checkMaxCount)
+        .check(
+          extractJsonOptional("$[*].id", "processInstanceId")
+        )

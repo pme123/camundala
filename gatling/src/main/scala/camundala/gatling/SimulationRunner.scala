@@ -31,8 +31,8 @@ trait SimulationRunner
       .header("Content-Type", "application/json")
 
   inline def processScenario[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
   ](inline process: Process[In, Out]): ProcessScenario =
     processScenario(nameOfVariable(process))(
       process
@@ -70,11 +70,26 @@ trait SimulationRunner
   inline def subProcess[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema
+  ](inline process: Process[In, Out])(
+      requests: (ChainBuilder | Seq[ChainBuilder])*
+  ): Seq[ChainBuilder] =
+    subProcess(nameOfVariable(process), process.asCallActivity)(requests)
+
+  inline def subProcess[
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
   ](inline callActivity: CallActivity[In, Out])(
       requests: (ChainBuilder | Seq[ChainBuilder])*
+  ): Seq[ChainBuilder] =
+    subProcess(nameOfVariable(callActivity), callActivity)(requests)
+
+  private def subProcess[
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
+  ](name: String, callActivity: CallActivity[In, Out])(
+      requests: Seq[(ChainBuilder | Seq[ChainBuilder])]
   ): Seq[ChainBuilder] = {
-    val name = nameOfVariable(callActivity)
-    Seq(callActivity.switchToSubProcess(name)) ++
+    callActivity.switchToSubProcess(name) ++
       ProcessScenario.flatten(requests) ++
       callActivity.asProcess.check(name) :+
       callActivity.switchToMainProcess()

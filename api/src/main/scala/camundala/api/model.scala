@@ -34,28 +34,20 @@ case class CamundaAuthError(
     resourceId: String = "Mary"
 )
 
-implicit lazy val StatusCodeSchema: Schema[StatusCode] =
-  Schema(SchemaType.SInteger())
-implicit lazy val StatusCodeEncoder: Encoder[StatusCode] =
-  Encoder.instance(st => st.code.asJson)
-implicit lazy val StatusCodeDecoder: Decoder[StatusCode] =
-  (c: HCursor) => c.value.as[Int].map(StatusCode(_))
+given Schema[StatusCode] = Schema(SchemaType.SInteger())
+given Encoder[StatusCode] = Encoder.instance(st => st.code.asJson)
+given Decoder[StatusCode] = (c: HCursor) =>
+  c.value.as[Int].map(StatusCode(_))
 
-implicit lazy val RequestErrorOutputSchema: Schema[RequestErrorOutput] =
-  Schema.derived
-implicit lazy val RequestErrorOutputEncoder: Encoder[RequestErrorOutput] =
-  deriveEncoder
-implicit lazy val RequestErrorOutputDecoder: Decoder[RequestErrorOutput] =
-  deriveDecoder
-implicit lazy val CamundaErrorSchema: Schema[CamundaError] = Schema.derived
-implicit lazy val CamundaErrorEncoder: Encoder[CamundaError] = deriveEncoder
-implicit lazy val CamundaErrorDecoder: Decoder[CamundaError] = deriveDecoder
-implicit lazy val CamundaAuthErrorSchema: Schema[CamundaAuthError] =
-  Schema.derived
-implicit lazy val CamundaAuthErrorEncoder: Encoder[CamundaAuthError] =
-  deriveEncoder
-implicit lazy val CamundaAuthErrorDecoder: Decoder[CamundaAuthError] =
-  deriveDecoder
+given Schema[RequestErrorOutput] = Schema.derived
+given Encoder[RequestErrorOutput] = deriveEncoder
+given Decoder[RequestErrorOutput] = deriveDecoder
+given Schema[CamundaError] = Schema.derived
+given Encoder[CamundaError] = deriveEncoder
+given Decoder[CamundaError] = deriveDecoder
+given Schema[CamundaAuthError] = Schema.derived
+given Encoder[CamundaAuthError] = deriveEncoder
+given Decoder[CamundaAuthError] = deriveDecoder
 
 @description(
   """Output for /history/variable-instance?processInstanceIdIn=#{processInstanceId}
@@ -131,47 +123,47 @@ object CamundaVariable:
       case CNull => Json.Null
     }
 
-  implicit lazy val CamundaVariableSchema: Schema[CamundaVariable] =
+  given Schema[CamundaVariable] =
     Schema.derived
 
-  implicit lazy val CStringSchema: Schema[CString] = Schema.derived
-  implicit lazy val CStringEncoder: Encoder[CString] = deriveEncoder
-  implicit lazy val CStringDecoder: Decoder[CString] = deriveDecoder
+  given Schema[CString] = Schema.derived
+  given Encoder[CString] = deriveEncoder
+  given Decoder[CString] = deriveDecoder
 
-  implicit lazy val CIntegerSchema: Schema[CInteger] = Schema.derived
-  implicit lazy val CIntegerEncoder: Encoder[CInteger] = deriveEncoder
-  implicit lazy val CIntegerDecoder: Decoder[CInteger] = deriveDecoder
+  given Schema[CInteger] = Schema.derived
+  given Encoder[CInteger] = deriveEncoder
+  given Decoder[CInteger] = deriveDecoder
 
-  implicit lazy val CLongSchema: Schema[CLong] = Schema.derived
-  implicit lazy val CLongEncoder: Encoder[CLong] = deriveEncoder
-  implicit lazy val CLongDecoder: Decoder[CLong] = deriveDecoder
+  given Schema[CLong] = Schema.derived
+  given Encoder[CLong] = deriveEncoder
+  given Decoder[CLong] = deriveDecoder
 
-  implicit lazy val CDoubleSchema: Schema[CDouble] = Schema.derived
-  implicit lazy val CDoubleEncoder: Encoder[CDouble] = deriveEncoder
-  implicit lazy val CDoubleDecoder: Decoder[CDouble] = deriveDecoder
+  given Schema[CDouble] = Schema.derived
+  given Encoder[CDouble] = deriveEncoder
+  given Decoder[CDouble] = deriveDecoder
 
-  implicit lazy val CBooleanSchema: Schema[CBoolean] = Schema.derived
-  implicit lazy val CBooleanEncoder: Encoder[CBoolean] = deriveEncoder
-  implicit lazy val CBooleanDecoder: Decoder[CBoolean] = deriveDecoder
+  given Schema[CBoolean] = Schema.derived
+  given Encoder[CBoolean] = deriveEncoder
+  given Decoder[CBoolean] = deriveDecoder
 
-  implicit lazy val CFileSchema: Schema[CFile] = Schema.derived
-  implicit lazy val CFileEncoder: Encoder[CFile] = deriveEncoder
-  implicit lazy val CFileDecoder: Decoder[CFile] = deriveDecoder
+  given Schema[CFile] = Schema.derived
+  given Encoder[CFile] = deriveEncoder
+  given Decoder[CFile] = deriveDecoder
 
-  implicit lazy val CFileValueInfoSchema: Schema[CFileValueInfo] =
+  given Schema[CFileValueInfo] =
     Schema.derived
-  implicit lazy val CFileValueInfoEncoder: Encoder[CFileValueInfo] =
+  given Encoder[CFileValueInfo] =
     deriveEncoder
-  implicit lazy val CFileValueInfoDecoder: Decoder[CFileValueInfo] =
+  given Decoder[CFileValueInfo] =
     deriveDecoder
 
-  implicit lazy val CJsonSchema: Schema[CJson] = Schema.derived
-  implicit lazy val CJsonEncoder: Encoder[CJson] = deriveEncoder
-  implicit lazy val CJsonDecoder: Decoder[CJson] = deriveDecoder
+  given Schema[CJson] = Schema.derived
+  given Encoder[CJson] = deriveEncoder
+  given Decoder[CJson] = deriveDecoder
 
-  implicit lazy val CEnumSchema: Schema[CEnum] = Schema.derived
-  implicit lazy val CEnumEncoder: Encoder[CEnum] = deriveEncoder
-  implicit lazy val CEnumDecoder: Decoder[CEnum] = deriveDecoder
+  given Schema[CEnum] = Schema.derived
+  given Encoder[CEnum] = deriveEncoder
+  given Decoder[CEnum] = deriveDecoder
 
   import reflect.Selectable.reflectiveSelectable
 
@@ -528,6 +520,7 @@ case class GetActiveTaskOut(
 )
 type FormVariables = Map[String, CamundaVariable]
 
+//TODO given does not work in the combination with .asJson from circe.
 implicit lazy val StartProcessInSchema: Schema[StartProcessIn] = Schema.derived
 implicit lazy val StartProcessInEncoder: Encoder[StartProcessIn] = deriveEncoder
 implicit lazy val StartProcessInDecoder: Decoder[StartProcessIn] = deriveDecoder

@@ -51,9 +51,9 @@ object TwitterApi extends BpmnDsl:
     descr = "Process ended - Tweet was rejected."
   )
 
-  implicit lazy val TweetSchema: Schema[Tweet] = Schema.derived
-  implicit lazy val TweetEncoder: Encoder[Tweet] = deriveEncoder
-  implicit lazy val TweetDecoder: Decoder[Tweet] = deriveDecoder
-  implicit lazy val ReviewedTweetSchema: Schema[ReviewedTweet] = Schema.derived
-  implicit lazy val ReviewedTweetEncoder: Encoder[ReviewedTweet] = deriveEncoder
-  implicit lazy val ReviewedTweetDecoder: Decoder[ReviewedTweet] = deriveDecoder
+  given Schema[Tweet] = Schema.derived
+  given Encoder[Tweet] = deriveEncoder
+  given Decoder[Tweet] = deriveDecoder
+  given Schema[ReviewedTweet] = Schema.derived
+  given Encoder[ReviewedTweet] = deriveEncoder
+  given Decoder[ReviewedTweet] = deriveDecoder

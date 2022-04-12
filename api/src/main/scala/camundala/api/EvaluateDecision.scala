@@ -62,6 +62,6 @@ case class EvaluateDecision[
 
 end EvaluateDecision
 
-implicit lazy val EvaluateDecisionInSchema: Schema[EvaluateDecisionIn] = Schema.derived
-implicit lazy val EvaluateDecisionInEncoder: Encoder[EvaluateDecisionIn] = deriveEncoder
-implicit lazy val EvaluateDecisionInDecoder: Decoder[EvaluateDecisionIn] = deriveDecoder
+given Schema[EvaluateDecisionIn] = Schema.derived
+given Encoder[EvaluateDecisionIn] = deriveEncoder
+given Decoder[EvaluateDecisionIn] = deriveDecoder

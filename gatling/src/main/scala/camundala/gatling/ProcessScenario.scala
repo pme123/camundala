@@ -20,8 +20,8 @@ case class ProcessScenario(
 
   import gatling.*
 
-  implicit lazy val simulationConfig: SimulationConfig = config
-  implicit lazy val tenantId: Option[String] = config.tenantId
+  given SimulationConfig = config
+  given Option[String] = config.tenantId
 
   def start[
     In <: Product : Encoder : Decoder : Schema,

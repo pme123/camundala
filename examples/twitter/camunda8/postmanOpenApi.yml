@@ -5,7 +5,7 @@ info:
   description: |2+
 
 
-    Created at 03/04/2022, 15:46
+    Created at 11/04/2022, 20:31
 
     Generated Open API:
 
@@ -62,28 +62,8 @@ paths:
       tags:
       - TwitterDemoProcess
       summary: 'Process: TwitterDemoProcess'
-      description: |
-        This runs the Twitter Approvement Process.
-        <details>
-        <summary><b>Used in the 2 Process(es)</b></summary>
-        <p>
-
-
-        - _camundala_
-           - [TwitterDemoP](https://MYDOCHOST/camundala/OpenApi.html#tag/TwitterDemoP)
-           - [TwitterDemoP](https://MYDOCHOST/camundala/OpenApi.html#tag/TwitterDemoP)
-
-
-        - _camundala-dsl_
-           - [TwitterDemoP](https://MYDOCHOST/camundala-dsl/OpenApi.html#tag/TwitterDemoP)
-           - [TwitterDemoP](https://MYDOCHOST/camundala-dsl/OpenApi.html#tag/TwitterDemoP)
-           - [TwitterDemoP](https://MYDOCHOST/camundala-dsl/OpenApi.html#tag/TwitterDemoP)
-
-
-
-
-        </p>
-        </details>
+      description: "This runs the Twitter Approvement Process.\n<details>\n<summary><b>Used\
+        \ in the 0 Process(es)</b></summary>\n<p>\n\n\n- \n\n\n</p>\n</details>\n"
       operationId: 'Process: TwitterDemoProcess'
       requestBody:
         content:

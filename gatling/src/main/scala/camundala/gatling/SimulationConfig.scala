@@ -1,4 +1,5 @@
-package camundala.gatling
+package camundala
+package gatling
 
 import io.gatling.core.structure.ChainBuilder
 import io.gatling.http.request.builder.HttpRequestBuilder

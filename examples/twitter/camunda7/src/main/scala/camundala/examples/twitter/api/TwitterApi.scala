@@ -50,9 +50,9 @@ object TwitterApi extends BpmnDsl:
     descr = None
   )
 
-  implicit lazy val CreateTweetSchema: Schema[CreateTweet] = Schema.derived
-  implicit lazy val CreateTweetEncoder: Encoder[CreateTweet] = deriveEncoder
-  implicit lazy val CreateTweetDecoder: Decoder[CreateTweet] = deriveDecoder
-  implicit lazy val ReviewTweetSchema: Schema[ReviewTweet] = Schema.derived
-  implicit lazy val ReviewTweetEncoder: Encoder[ReviewTweet] = deriveEncoder
-  implicit lazy val ReviewTweetDecoder: Decoder[ReviewTweet] = deriveDecoder
+  given Schema[CreateTweet] = Schema.derived
+  given Encoder[CreateTweet] = deriveEncoder
+  given Decoder[CreateTweet] = deriveDecoder
+  given Schema[ReviewTweet] = Schema.derived
+  given Encoder[ReviewTweet] = deriveEncoder
+  given Decoder[ReviewTweet] = deriveDecoder

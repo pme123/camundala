@@ -4,7 +4,6 @@ package bpmn
 import camundala.domain.*
 import io.circe.HCursor
 import io.circe.syntax.*
-import org.joda.time.LocalTime
 import sttp.tapir.*
 import sttp.tapir.SchemaType.{SProduct, SProductField, SchemaWithValue}
 

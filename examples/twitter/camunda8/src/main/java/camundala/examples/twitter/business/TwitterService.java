@@ -1,4 +1,4 @@
-package org.camunda.community.examples.twitter.business;
+package camundala.examples.twitter.business;
 
 
 /**
