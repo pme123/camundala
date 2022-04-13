@@ -104,7 +104,7 @@ lazy val camundaTestDependencies = Seq(
   //"org.camunda.bpm.dmn" % "camunda-engine-dmn" % camundaVersion % Provided,
   // provide test helper
   "org.camunda.bpm.assert" % "camunda-bpm-assert" % "10.0.0",
-  "org.assertj" % "assertj-core" % "3.22.0",
+  "org.assertj" % "assertj-core" % "3.19.0",
   "org.camunda.bpm.extension" % "camunda-bpm-assert-scenario" % "1.1.1",
   "org.camunda.bpm.extension.mockito" % "camunda-bpm-mockito" % "5.16.0",
   // dmn testing
