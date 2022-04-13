@@ -276,13 +276,16 @@ extension (builder: HttpRequestBuilder)
   def auth():WithConfig[HttpRequestBuilder] =
     summon[SimulationConfig].authHeader(builder)
 
-given Schema[TestOverrides] = Schema.derived
-given Encoder[TestOverrides] = deriveEncoder
-given Decoder[TestOverrides] = deriveDecoder
+object TestOverrides:
+  given Schema[TestOverrides] = Schema.derived
+  given Encoder[TestOverrides] = deriveEncoder
+  given Decoder[TestOverrides] = deriveDecoder
 
-given Schema[TestOverride] = Schema.derived
-given Encoder[TestOverride] = deriveEncoder
-given Decoder[TestOverride] = deriveDecoder
+object TestOverride:
+
+  given Schema[TestOverride] = Schema.derived
+  given Encoder[TestOverride] = deriveEncoder
+  given Decoder[TestOverride] = deriveDecoder
 
 given Schema[TestOverrideType] =
   Schema.derived

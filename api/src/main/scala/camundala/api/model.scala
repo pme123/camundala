@@ -36,8 +36,7 @@ case class CamundaAuthError(
 
 given Schema[StatusCode] = Schema(SchemaType.SInteger())
 given Encoder[StatusCode] = Encoder.instance(st => st.code.asJson)
-given Decoder[StatusCode] = (c: HCursor) =>
-  c.value.as[Int].map(StatusCode(_))
+given Decoder[StatusCode] = (c: HCursor) => c.value.as[Int].map(StatusCode(_))
 
 given Schema[RequestErrorOutput] = Schema.derived
 given Encoder[RequestErrorOutput] = deriveEncoder
@@ -520,33 +519,31 @@ case class GetActiveTaskOut(
 )
 type FormVariables = Map[String, CamundaVariable]
 
-//TODO given does not work in the combination with .asJson from circe.
-implicit lazy val StartProcessInSchema: Schema[StartProcessIn] = Schema.derived
-implicit lazy val StartProcessInEncoder: Encoder[StartProcessIn] = deriveEncoder
-implicit lazy val StartProcessInDecoder: Decoder[StartProcessIn] = deriveDecoder
-implicit lazy val CorrelationMessageInSchema: Schema[CorrelateMessageIn] =
-  Schema.derived
-implicit lazy val CorrelationMessageInEncoder: Encoder[CorrelateMessageIn] =
-  deriveEncoder
-implicit lazy val CorrelationMessageInDecoder: Decoder[CorrelateMessageIn] =
-  deriveDecoder
-implicit lazy val SendSignalInSchema: Schema[SendSignalIn] = Schema.derived
-implicit lazy val SendSignalInEncoder: Encoder[SendSignalIn] = deriveEncoder
-implicit lazy val SendSignalInDecoder: Decoder[SendSignalIn] = deriveDecoder
+object StartProcessIn:
+  given Schema[StartProcessIn] = Schema.derived
+  given Encoder[StartProcessIn] = deriveEncoder
+  given Decoder[StartProcessIn] = deriveDecoder
 
-implicit lazy val CompleteTaskInSchema: Schema[CompleteTaskIn] = Schema.derived
-implicit lazy val CompleteTaskInEncoder: Encoder[CompleteTaskIn] = deriveEncoder
-implicit lazy val CompleteTaskInDecoder: Decoder[CompleteTaskIn] = deriveDecoder
-implicit lazy val GetActiveTaskInSchema: Schema[GetActiveTaskIn] =
-  Schema.derived
-implicit lazy val GetActiveTaskInEncoder: Encoder[GetActiveTaskIn] =
-  deriveEncoder
-implicit lazy val GetActiveTaskInDecoder: Decoder[GetActiveTaskIn] =
-  deriveDecoder
+object CorrelateMessageIn:
+  given Schema[CorrelateMessageIn] = Schema.derived
+  given Encoder[CorrelateMessageIn] = deriveEncoder
+  given Decoder[CorrelateMessageIn] = deriveDecoder
 
-implicit lazy val CompleteTaskOutSchema: Schema[CompleteTaskOut] =
-  Schema.derived
-implicit lazy val CompleteTaskOutEncoder: Encoder[CompleteTaskOut] =
-  deriveEncoder
-implicit lazy val CompleteTaskOutDecoder: Decoder[CompleteTaskOut] =
-  deriveDecoder
+object SendSignalIn:
+  given Schema[SendSignalIn] = Schema.derived
+  given Encoder[SendSignalIn] = deriveEncoder
+  given Decoder[SendSignalIn] = deriveDecoder
+
+object CompleteTaskIn:
+  given Schema[CompleteTaskIn] = Schema.derived
+  given Encoder[CompleteTaskIn] = deriveEncoder
+  given Decoder[CompleteTaskIn] = deriveDecoder
+object CompleteTaskOut:
+  given Schema[CompleteTaskOut] = Schema.derived
+  given Encoder[CompleteTaskOut] = deriveEncoder
+  given Decoder[CompleteTaskOut] = deriveDecoder
+
+object GetActiveTaskIn:
+  given Schema[GetActiveTaskIn] = Schema.derived
+  given Encoder[GetActiveTaskIn] = deriveEncoder
+  given Decoder[GetActiveTaskIn] = deriveDecoder
