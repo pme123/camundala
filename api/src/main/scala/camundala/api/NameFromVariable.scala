@@ -1,5 +1,4 @@
-package camundala
-package gatling
+package camundala.api
 
 import scala.quoted.{Expr, Quotes}
 

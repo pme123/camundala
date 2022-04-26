@@ -547,3 +547,5 @@ object GetActiveTaskIn:
   given Schema[GetActiveTaskIn] = Schema.derived
   given Encoder[GetActiveTaskIn] = deriveEncoder
   given Decoder[GetActiveTaskIn] = deriveDecoder
+
+inline def nameOfVariable(inline x: Any): String = ${ NameFromVariable.nameOfVariable('x) }

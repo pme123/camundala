@@ -128,6 +128,14 @@ trait APICreator extends ProcessReferenceCreator, App:
   ): ApiEndpoints =
     processes.endpoint
 
+  inline implicit def toEndpoint[
+      In <: Product: Encoder: Decoder: Schema: ClassTag,
+      Out <: Product: Encoder: Decoder: Schema: ClassTag
+    ](
+       inline processes: Seq[Process[In, Out]]
+     ): ApiEndpoints =
+      processes.map(p => nameOfVariable(p) -> p).toMap.endpoint
+
   extension [
       In <: Product: Encoder: Decoder: Schema: ClassTag,
       Out <: Product: Encoder: Decoder: Schema: ClassTag

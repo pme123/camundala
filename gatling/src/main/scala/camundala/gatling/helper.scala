@@ -212,7 +212,7 @@ private def checkP[T <: Product: Encoder](
             if (!matches)
               println(s"<<< cValue: ${cValue.getClass} / expectedValue ${expectedValue.getClass}")
               println(
-                s"!!! The exected value '$expectedValue' of $key does not match the result variable '${cValue}'.\n $result"
+                s"!!! The expected value '$expectedValue' of $key does not match the result variable '${cValue}'.\n $result"
               )
             matches
         }
@@ -270,7 +270,6 @@ def retryOrFail(
       )
   }.exitHereIfFailed
 }
-inline def nameOfVariable(inline x: Any): String = ${ NameFromVariable.nameOfVariable('x) }
 
 extension (builder: HttpRequestBuilder)
   def auth():WithConfig[HttpRequestBuilder] =
