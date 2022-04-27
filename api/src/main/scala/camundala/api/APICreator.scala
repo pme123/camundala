@@ -83,28 +83,28 @@ trait APICreator extends ProcessReferenceCreator, App:
   def servers = List(Server(s"http://localhost:$serverPort/engine-rest"))
 
   def info(title: String) = Info(title, version, description, contact = contact)
-
+/*
   def apiEndpoints[
       In <: Product: Encoder: Decoder: Schema: ClassTag,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](processes: Process[In, Out]*): Unit =
     val endpoints = processes.map(_.endpoints())
     apiEndpoints(endpoints: _*)
-
-  def apiEndpoints(apiEP: (Seq[ApiEndpoints] | ApiEndpoints)*): Unit =
-    val ep: Seq[ApiEndpoints] = apiEP.flatMap {
-      case s: Seq[?] => s.asInstanceOf[Seq[ApiEndpoints]]
-      case s: ApiEndpoints => Seq(s)
+*/
+  def apiEndpoints(apiEP: (Seq[ApiEndpoints[?, ?]] | ApiEndpoints[?, ?])*): Unit =
+    val ep: Seq[ApiEndpoints[?, ?]] = apiEP.flatMap {
+      case s: Seq[?] => s.asInstanceOf[Seq[ApiEndpoints[?, ?]]]
+      case s: ApiEndpoints[?, ?] => Seq(s)
     }
     writeOpenApi(openApiPath, openApi(ep))
     writeOpenApi(postmanOpenApiPath, postmanOpenApi(ep))
     println(s"Check Open API Docu: $openApiDocuPath")
 
-  def openApi(apiEP: Seq[ApiEndpoints]): OpenAPI =
+  def openApi(apiEP: Seq[ApiEndpoints[?, ?]]): OpenAPI =
     openAPIDocsInterpreter
       .toOpenAPI(apiEP.flatMap(_.create()), info(title))
 
-  def postmanOpenApi(apiEP: Seq[ApiEndpoints]): OpenAPI =
+  def postmanOpenApi(apiEP: Seq[ApiEndpoints[?, ?]]): OpenAPI =
     openAPIDocsInterpreter
       .toOpenAPI(apiEP.flatMap(_.createPostman()), info(title))
       .servers(servers)
@@ -125,16 +125,16 @@ trait APICreator extends ProcessReferenceCreator, App:
       Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](
       processes: Map[String, Process[In, Out]]
-  ): ApiEndpoints =
+  ): ApiEndpoints[In, Out] =
     processes.endpoint
 
   inline implicit def toEndpoint[
       In <: Product: Encoder: Decoder: Schema: ClassTag,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
-    ](
-       inline processes: Seq[Process[In, Out]]
-     ): ApiEndpoints =
-      processes.map(p => nameOfVariable(p) -> p).toMap.endpoint
+  ](
+      inline processes: Seq[Process[In, Out]]
+  ): ApiEndpoints[In, Out] =
+    processes.map(p => nameOfVariable(p) -> p).toMap.endpoint
 
   extension [
       In <: Product: Encoder: Decoder: Schema: ClassTag,
@@ -142,32 +142,32 @@ trait APICreator extends ProcessReferenceCreator, App:
   ](processes: Map[String, Process[In, Out]])
 
     // override the processName
-    def endpoint: ApiEndpoints =
+    def endpoint: ApiEndpoints[In, Out] =
       endpoints()
 
     // override the tag and processName with the same value
-    def endpoint(tag: String): ApiEndpoints =
+    def endpoint(tag: String): ApiEndpoints[In, Out] =
       endpoint(tag, tag)
 
     // override the processName / tag
-    def endpoint(tag: String, processName: String): ApiEndpoints =
+    def endpoint(tag: String, processName: String): ApiEndpoints[In, Out] =
       endpoints(Some(tag), Some(processName))
 
     //noinspection NoTailRecursionAnnotation
-    def endpoints(activities: ApiEndpoint[?, ?, ?, ?]*): ApiEndpoints =
+    def endpoints(activities: ApiEndpoint[?, ?, ?, ?]*): ApiEndpoints[In, Out] =
       endpoints(None, None, activities: _*)
 
     def endpoints(
         tag: String,
         processName: String
-    )(activities: ApiEndpoint[?, ?, ?, ?]*): ApiEndpoints =
+    )(activities: ApiEndpoint[?, ?, ?, ?]*): ApiEndpoints[In, Out] =
       endpoints(Some(tag), Some(processName), activities: _*)
 
     def endpoints(
         tag: Option[String] = None,
         processName: Option[String] = None,
         activities: ApiEndpoint[?, ?, ?, ?]*
-    ): ApiEndpoints =
+    ): ApiEndpoints[In, Out] =
       val (name, process) = processes.headOption.getOrElse(
         throwErr("processes must have at least one entry.")
       )
@@ -195,10 +195,12 @@ trait APICreator extends ProcessReferenceCreator, App:
           Some(
             docReference(
               processName
+                .filterNot(p => p.contains(" "))
                 .getOrElse(process.id)
             )
           )
-        ) +: activities
+        ),
+        activities
       )
 
   implicit def toEndpoint[
@@ -206,7 +208,7 @@ trait APICreator extends ProcessReferenceCreator, App:
       Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](
       process: Process[In, Out]
-  ): ApiEndpoints =
+  ): ApiEndpoints[In, Out] =
     process.endpoint
 
   extension [
@@ -215,30 +217,30 @@ trait APICreator extends ProcessReferenceCreator, App:
   ](process: Process[In, Out])
 
     // override the tag and processName with the same value
-    def endpoint(tag: String): ApiEndpoints =
+    def endpoint(tag: String): ApiEndpoints[In, Out] =
       endpoint(tag, tag)
 
     // override the processName / tag
-    def endpoint(tag: String, processName: String): ApiEndpoints =
+    def endpoint(tag: String, processName: String): ApiEndpoints[In, Out] =
       endpoints(Nil, tag, processName)
 
-    def endpoint: ApiEndpoints =
+    def endpoint: ApiEndpoints[In, Out] =
       endpoints()
 
-    def endpoints(activities: ApiEndpoint[?, ?, ?, ?]*): ApiEndpoints =
+    def endpoints(activities: ApiEndpoint[?, ?, ?, ?]*): ApiEndpoints[In, Out] =
       endpoints(activities, process.id, process.id)
 
     def endpoints(
         tag: String,
         processName: String
-    )(activities: ApiEndpoint[?, ?, ?, ?]*): ApiEndpoints =
+    )(activities: ApiEndpoint[?, ?, ?, ?]*): ApiEndpoints[In, Out] =
       endpoints(activities, tag, processName)
 
     def endpoints(
         activities: Seq[ApiEndpoint[?, ?, ?, ?]],
         tag: String,
         processName: String
-    ): ApiEndpoints =
+    ): ApiEndpoints[In, Out] =
       ApiEndpoints(
         tag,
         StartProcessInstance(
@@ -248,8 +250,15 @@ trait APICreator extends ProcessReferenceCreator, App:
             tag,
             requestErrorOutputs = startProcessInstanceErrors
           ),
-          Some(docReference(processName))
-        ) +: activities
+          Some(
+            docReference(
+              Some(processName)
+                .filterNot(p => p.contains(" "))
+                .getOrElse(tag)
+            )
+          )
+        ),
+        activities
       )
   end extension
 

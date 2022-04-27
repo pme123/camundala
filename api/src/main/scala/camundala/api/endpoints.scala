@@ -140,10 +140,17 @@ object CamundaRestApi:
     )
 end CamundaRestApi
 
-case class ApiEndpoints(
+case class ApiEndpoints[
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema: ClassTag
+](
     tag: String,
-    endpoints: Seq[ApiEndpoint[?, ?, ?, ?]]
+    processEndpoint: ApiEndpoint[In, ?, Out, ?],
+    activityEndpoints: Seq[ApiEndpoint[?, ?, ?, ?]]
 ):
+  lazy val endpoints: Seq[ApiEndpoint[?, ?, ?, ?]] =
+    processEndpoint +: activityEndpoints
+
   def create(): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     println(s"Start API: $tag - ${endpoints.size} Endpoints")
     endpoints.flatMap(_.withTag(tag).create())
@@ -152,6 +159,24 @@ case class ApiEndpoints(
       tenantId: Option[String]
   ): Seq[PublicEndpoint[?, Unit, Unit, Any]] =
     endpoints.flatMap(_.withTag(tag).createPostman())
+
+  def withInExample(label: String, example: In): ApiEndpoints[In, Out] =
+    copy(
+      processEndpoint = processEndpoint
+        .withInExample(label, example)
+    )
+
+  def withOutExample(label: String, example: Out): ApiEndpoints[In, Out] =
+    copy(
+      processEndpoint = processEndpoint
+        .withOutExample(label, example)
+    )
+
+  inline def withInExample(inline example: In): ApiEndpoints[In, Out] =
+    withInExample(nameOfVariable(example), example)
+
+  inline def withOutExample(inline example: Out): ApiEndpoints[In, Out] =
+    withOutExample(nameOfVariable(example), example)
 
 end ApiEndpoints
 
@@ -200,6 +225,12 @@ trait ApiEndpoint[
     withRestApi(
       restApi.copy(requestOutput = restApi.requestOutput :+ (label, example))
     )
+
+  inline def withInExample(inline example: In): T =
+    withInExample(nameOfVariable(example), example)
+
+  inline def withOutExample(inline example: Out): T =
+    withOutExample(nameOfVariable(example), example)
 
   def createPostman()(using
       tenantId: Option[String]
