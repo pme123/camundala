@@ -78,10 +78,9 @@ def processReadyCondition(key: String, value: Any): Session => Boolean =
   session =>
     val variable = session.attributes.get(key)
     println(
-      s"<<< processReadyCondition: ${variable.getClass} - ${value.getClass} - ${!variable
-        .contains(value.toString)}"
+      s"<<< processReadyCondition: ${variable.getClass} - ${value.getClass} - ${variable != null && !variable.contains(value)}"
     )
-    !variable.contains(value)
+    variable != null && !variable.contains(value)
 
 def extractJson(path: String, key: String) =
   jsonPath(path)
@@ -244,7 +243,7 @@ def loadVariable(variableName: String): WithConfig[ChainBuilder] =
       .auth()
       .check(checkMaxCount)
       .check(
-        extractJson("$[*].value", variableName)
+        extractJsonOptional("$[*].value", variableName)
       )
   ).exitHereIfFailed
 

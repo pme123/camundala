@@ -95,6 +95,10 @@ trait SimulationRunner
       callActivity.switchToMainProcess()
   }
 
+  def waitFor(seconds: Int = 5): ChainBuilder =
+    exec()
+      .pause(seconds)
+
   def simulate[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema

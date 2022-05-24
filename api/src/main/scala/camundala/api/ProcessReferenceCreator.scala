@@ -5,26 +5,27 @@ import os.{Path, read}
 
 import scala.annotation.tailrec
 
-/**
- * Checks all BPMNs if a process is used in another process.
- * As result a list is created that can be included in the Documentation.
- */
+/** Checks all BPMNs if a process is used in another process. As result a list
+  * is created that can be included in the Documentation.
+  */
 trait ProcessReferenceCreator:
 
   def docReference(processName: String): String =
     val refs = findBpmnFor(processName)
+    val refDoc = refs
+      .map { case k -> processes =>
+        s"""_${k}_
+           |${processes.map(_._2).mkString("   - ", "\n   - ", "\n")}
+           |""".stripMargin
+      }
+      .mkString("\n- ", "\n- ", "\n")
+    println(refDoc)
     s"""
        |<details>
        |<summary><b>${docTitle(refs.size)}</b></summary>
        |<p>
        |
-       |${refs
-      .map { case k -> processes =>
-        s"""_${k}_
-       |${processes.map(_._2).mkString("   - ", "\n   - ", "\n")}
-       |""".stripMargin
-      }
-      .mkString("\n- ", "\n- ", "\n")}
+       |$refDoc
        |
        |</p>
        |</details>
@@ -84,10 +85,10 @@ trait ProcessReferenceCreator:
         println(s"Get BPMNs in $p")
         p ->
           (if (os.exists(p)) os.walk(p)
-          else {
-            println(s"THIS PATH DOES NOT EXIST: $p")
-            Seq.empty
-          })
+           else {
+             println(s"THIS PATH DOES NOT EXIST: $p")
+             Seq.empty
+           })
       }
       .map { case projectPath -> path =>
         projectPath -> path
@@ -104,7 +105,8 @@ trait ProcessReferenceCreator:
       .flatMap { case (pp, paths) =>
         paths
           .filter { case p -> c =>
-            c.matches(s"""[\\s\\S]*(:|")$processName"[\\s\\S]*""") && !c.contains(s"id=\"$processName\"")
+            c.matches(s"""[\\s\\S]*(:|")$processName"[\\s\\S]*""") &&
+              !c.contains(s"id=\"$processName\"")
           }
           .map(pc => docuPath(pp, pc._1, pc._2))
       }
