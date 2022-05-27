@@ -64,7 +64,9 @@ def taskCondition(): Session => Boolean = session => {
 }
 
 def processInstanceCondition(): Session => Boolean = session => {
-  println("<<< retryCount processInstanceCondition: " + session("retryCount").as[Int])
+  println(
+    "<<< retryCount processInstanceCondition: " + session("retryCount").as[Int]
+  )
   session.attributes.get("processInstanceId").contains(null)
 }
 
@@ -72,15 +74,25 @@ def processInstanceCondition(): Session => Boolean = session => {
 def processFinishedCondition: Session => Boolean = session =>
   val status = session.attributes.get("processState")
   status.contains("ACTIVE")
-  
+
 // check if there is a variable in the process with a certain value
 def processReadyCondition(key: String, value: Any): Session => Boolean =
   session =>
     val variable = session.attributes.get(key)
     println(
-      s"<<< processReadyCondition: ${variable.getClass} - ${value.getClass} - ${variable != null && !variable.contains(value)}"
+      s"<<< processReadyCondition: ${variable.getClass} - ${value.getClass} - ${variable != null && !variable
+        .contains(value)}"
     )
     variable != null && !variable.contains(value)
+
+// check if there is an incident in the session that contains the expected Message
+def incidentReadyCondition(errorMsg: String): Session => Boolean =
+  session =>
+    val variable = session.attributes.get("errorMsg")
+    println(
+      s"<<< incidentReadyCondition: ${variable.exists(_.asInstanceOf[String].contains(errorMsg))} - $errorMsg in: $variable"
+    )
+    variable != null && !variable.contains(null) && !variable.exists(_.asInstanceOf[String].contains(errorMsg))
 
 def extractJson(path: String, key: String) =
   jsonPath(path)
@@ -209,7 +221,9 @@ private def checkP[T <: Product: Encoder](
           case CamundaProperty(_, cValue) =>
             val matches: Boolean = cValue.value == expectedValue.value
             if (!matches)
-              println(s"<<< cValue: ${cValue.getClass} / expectedValue ${expectedValue.getClass}")
+              println(
+                s"<<< cValue: ${cValue.getClass} / expectedValue ${expectedValue.getClass}"
+              )
               println(
                 s"!!! The expected value '$expectedValue' of $key does not match the result variable '${cValue}'.\n $result"
               )
@@ -247,9 +261,40 @@ def loadVariable(variableName: String): WithConfig[ChainBuilder] =
       )
   ).exitHereIfFailed
 
+def getIncident(errorMsg: String): WithConfig[ChainBuilder] =
+  exec(
+    http(s"Check Incident '$errorMsg'")
+      .get(
+        s"/incident?processInstanceId=#{processInstanceId}"
+      )
+      .auth()
+      .check(checkMaxCount)
+      .check(
+        extractJsonOptional("$[*].incidentMessage", "errorMsg")
+      )
+      .check(
+        extractJsonOptional("$[*].rootCauseIncidentId", "rootCauseIncidentId")
+      )
+  ).doIf(session => session.attributes.get("errorMsg").contains(null)) {
+    getRootIncident(errorMsg)
+  }.exitHereIfFailed
+
+def getRootIncident(errorMsg: String): WithConfig[ChainBuilder] =
+  exec(
+    http(s"Check Root Incident '$errorMsg'")
+      .get(
+        s"/incident?rootCauseIncidentId=#{rootCauseIncidentId}"
+      )
+      .auth()
+      .check(checkMaxCount)
+      .check(
+        extractJsonOptional("$[*].incidentMessage", "errorMsg")
+      )
+  ).exitHereIfFailed
+
 def retryOrFail(
     chainBuilder: ChainBuilder,
-    condition: Session => Boolean = statusCondition(200),
+    condition: Session => Boolean = statusCondition(200)
 ) = {
   exec {
     _.set("lastStatus", -1)
@@ -271,7 +316,7 @@ def retryOrFail(
 }
 
 extension (builder: HttpRequestBuilder)
-  def auth():WithConfig[HttpRequestBuilder] =
+  def auth(): WithConfig[HttpRequestBuilder] =
     summon[SimulationConfig].authHeader(builder)
 
 object TestOverrides:

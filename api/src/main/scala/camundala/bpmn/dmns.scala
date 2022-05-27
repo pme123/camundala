@@ -34,7 +34,7 @@ case class DecisionDmn[
 ](
     inOutDescr: InOutDescr[In, Out]
 ) extends ProcessNode,
-      InOut[In, Out, DecisionDmn[In, Out]]:
+      Activity[In, Out, DecisionDmn[In, Out]]:
 
   override val label =
     """// use singleEntry / collectEntries / singleResult / resultList
@@ -112,8 +112,8 @@ object ResultList:
     new ResultList[Out](result +: results)
 
 implicit def schemaForSingleEntry[A <: DmnValueType: Encoder: Decoder](implicit
-                                                                       sa: Schema[A]
-                                                                      ): Schema[SingleEntry[A]] =
+    sa: Schema[A]
+): Schema[SingleEntry[A]] =
   Schema[SingleEntry[A]](
     SchemaType.SCoproduct(List(sa), None) { case SingleEntry(x) =>
       Some(SchemaWithValue(sa, x))

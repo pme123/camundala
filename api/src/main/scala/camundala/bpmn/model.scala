@@ -13,6 +13,12 @@ case class InOutDescr[
     descr: Option[String] | String = None
 )
 
+trait Activity[
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema,
+    T <: InOut[In, Out, T]
+] extends InOut[In, Out, T]
+
 trait InOut[
     In <: Product: Encoder: Decoder: Schema,
     Out <: Product: Encoder: Decoder: Schema,
@@ -82,7 +88,7 @@ case class UserTask[
 ](
     inOutDescr: InOutDescr[In, Out]
 ) extends ProcessNode,
-      InOut[In, Out, UserTask[In, Out]]:
+      Activity[In, Out, UserTask[In, Out]]:
 
   def withInOutDescr(descr: InOutDescr[In, Out]): UserTask[In, Out] =
     copy(inOutDescr = descr)
@@ -101,7 +107,7 @@ case class CallActivity[
     subProcessId: String,
     inOutDescr: InOutDescr[In, Out]
 ) extends ProcessNode,
-      InOut[In, Out, CallActivity[In, Out]]:
+      Activity[In, Out, CallActivity[In, Out]]:
 
   def withInOutDescr(descr: InOutDescr[In, Out]): CallActivity[In, Out] =
     copy(inOutDescr = descr)
@@ -128,7 +134,7 @@ case class ServiceTask[
 ](
     inOutDescr: InOutDescr[In, Out]
 ) extends ProcessNode,
-      InOut[In, Out, ServiceTask[In, Out]]:
+      Activity[In, Out, ServiceTask[In, Out]]:
 
   def withInOutDescr(descr: InOutDescr[In, Out]): ServiceTask[In, Out] =
     copy(inOutDescr = descr)
@@ -159,7 +165,7 @@ case class ReceiveMessageEvent[
     messageName: String,
     inOutDescr: InOutDescr[In, NoOutput]
 ) extends ProcessNode,
-      InOut[In, NoOutput, ReceiveMessageEvent[In]]:
+      Activity[In, NoOutput, ReceiveMessageEvent[In]]:
 
   def withInOutDescr(descr: InOutDescr[In, NoOutput]): ReceiveMessageEvent[In] =
     copy(inOutDescr = descr)
@@ -178,7 +184,7 @@ case class ReceiveSignalEvent[
     messageName: String,
     inOutDescr: InOutDescr[In, NoOutput]
 ) extends ProcessNode,
-      InOut[In, NoOutput, ReceiveSignalEvent[In]]:
+      Activity[In, NoOutput, ReceiveSignalEvent[In]]:
 
   def withInOutDescr(descr: InOutDescr[In, NoOutput]): ReceiveSignalEvent[In] =
     copy(inOutDescr = descr)

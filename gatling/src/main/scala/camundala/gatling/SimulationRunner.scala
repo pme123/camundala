@@ -95,10 +95,6 @@ trait SimulationRunner
       callActivity.switchToMainProcess()
   }
 
-  def waitFor(seconds: Int = 5): ChainBuilder =
-    exec()
-      .pause(seconds)
-
   def simulate[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema
@@ -134,4 +130,19 @@ trait SimulationRunner
       .protocols(httpProtocol)
       .assertions(global.failedRequests.count.is(0))
 
+
+  def waitFor(seconds: Int = 5): ChainBuilder =
+    exec()
+      .pause(seconds)
+
+
+  def checkIncident(errorMsg: String): WithConfig[Seq[ChainBuilder]] = {
+    Seq(
+      exec(_.set("errorMsg", null)),
+      retryOrFail(
+        getIncident(errorMsg),
+        incidentReadyCondition(errorMsg)
+      )
+    )
+  }
 end SimulationRunner
