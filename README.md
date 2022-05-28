@@ -16,6 +16,9 @@ and the Type safety of _**Scala**_ to develop BPMN Processes with a nice DSL.
 * Automatic Testing included
 * 100% BPMN / Camunda compatible
 
+I gave a talk at Camunda Camunda Summit 2022, check it out:
+[Domain Driven Process Development](https://page.camunda.com/ccs2022-domaindrivenprocessdevelopment?hsLang=en)
+
 ## State of the Project
 This project is now divided in two Github Project:
 - https://github.com/pme123/camundala (this Repo)
