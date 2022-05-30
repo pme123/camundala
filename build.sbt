@@ -20,6 +20,7 @@ lazy val root = project
     camunda,
     test,
     gatling,
+//    simulation,
     exampleTwitterC7,
     exampleTwitterC8,
     exampleInvoice,
@@ -83,7 +84,21 @@ lazy val gatling = project
     )
   )
   .dependsOn(api)
-
+/*
+lazy val simulation = project
+  .in(file("./simulation"))
+  .configure(publicationSettings)
+  .settings(projectSettings("simulation"))
+  .settings(
+    libraryDependencies ++=
+      gatlingDependencies,
+    scalacOptions ++= Seq(
+      "-Xmax-inlines",
+      "50" // is declared as erased, but is in fact used
+    )
+  )
+  .dependsOn(api)
+*/
 val tapirVersion = "0.20.1"
 lazy val tapirDependencies = Seq(
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
@@ -91,7 +106,8 @@ lazy val tapirDependencies = Seq(
   "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % tapirVersion,
   //"com.softwaremill.quicklens" %% "quicklens" % "1.7.5", // simple modifying case classes
   "org.latestbit" %% "circe-tagged-adt-codec" % "0.10.0", // to encode enums
-  "com.lihaoyi" %% "os-lib" % "0.8.0"
+  "com.lihaoyi" %% "os-lib" % "0.8.0",
+  "com.novocode" % "junit-interface" % "0.11" % Test
 )
 val camundaVersion = "7.16.0"
 lazy val camundaTestDependencies = Seq(

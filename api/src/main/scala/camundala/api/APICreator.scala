@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
+import scala.util.matching.*
 
 trait APICreator extends ProcessReferenceCreator, App:
 
@@ -19,6 +20,7 @@ trait APICreator extends ProcessReferenceCreator, App:
   def openApiPath: Path = basePath / "openApi.yml"
   def openApiDocuPath: Path = basePath / "OpenApi.html"
   def postmanOpenApiPath: Path = basePath / "postmanOpenApi.yml"
+  def jiraUrls: Map[String, String] = Map.empty
   implicit def tenantId: Option[String] = None
 
   def title: String
@@ -40,6 +42,7 @@ trait APICreator extends ProcessReferenceCreator, App:
         .lines(changeLogFile)
         .tail
         .map(_.replace("##", "###"))
+        .map(replaceJira(_, jiraUrls))
         .mkString("\n")}
          |
          |</p>
@@ -47,6 +50,19 @@ trait APICreator extends ProcessReferenceCreator, App:
          |""".stripMargin
     else
       ""
+
+  private[api] def replaceJira(
+      line: String,
+      jiraUrls: Map[String, String]
+  ): String =
+    jiraUrls.toList match
+      case Nil => line
+      case (k -> url) :: tail =>
+        val regex = Regex(s"""$k-(\\d+)""")
+        val matches = regex.findAllIn(line).toSeq
+        val changed =
+          matches.foldLeft(line)((a, b) => a.replace(b, s"[$b]($url/$b)"))
+        replaceJira(changed, tail.toMap)
 
   def createReadme(): String =
     val readme = basePath / "README.md"
@@ -83,15 +99,17 @@ trait APICreator extends ProcessReferenceCreator, App:
   def servers = List(Server(s"http://localhost:$serverPort/engine-rest"))
 
   def info(title: String) = Info(title, version, description, contact = contact)
-/*
+  /*
   def apiEndpoints[
       In <: Product: Encoder: Decoder: Schema: ClassTag,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](processes: Process[In, Out]*): Unit =
     val endpoints = processes.map(_.endpoints())
     apiEndpoints(endpoints: _*)
-*/
-  def apiEndpoints(apiEP: (Seq[ApiEndpoints[?, ?]] | ApiEndpoints[?, ?])*): Unit =
+   */
+  def apiEndpoints(
+      apiEP: (Seq[ApiEndpoints[?, ?]] | ApiEndpoints[?, ?])*
+  ): Unit =
     val ep: Seq[ApiEndpoints[?, ?]] = apiEP.flatMap {
       case s: Seq[?] => s.asInstanceOf[Seq[ApiEndpoints[?, ?]]]
       case s: ApiEndpoints[?, ?] => Seq(s)
