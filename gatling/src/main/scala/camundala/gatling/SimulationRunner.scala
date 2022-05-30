@@ -138,7 +138,8 @@ trait SimulationRunner
 
   def checkIncident(errorMsg: String): WithConfig[Seq[ChainBuilder]] = {
     Seq(
-      exec(_.set("errorMsg", null)),
+      exec(_.remove("errorMsg")),
+      exec(_.remove("rootCauseIncidentId")),
       retryOrFail(
         getIncident(errorMsg),
         incidentReadyCondition(errorMsg)

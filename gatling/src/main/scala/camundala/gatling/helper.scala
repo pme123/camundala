@@ -90,9 +90,12 @@ def incidentReadyCondition(errorMsg: String): Session => Boolean =
   session =>
     val variable = session.attributes.get("errorMsg")
     println(
-      s"<<< incidentReadyCondition: ${variable.exists(_.asInstanceOf[String].contains(errorMsg))} - $errorMsg in: $variable"
+      s"<<< incidentReadyCondition: ${variable
+        .exists(_.asInstanceOf[String].contains(errorMsg))} - $errorMsg in: $variable"
     )
-    variable != null && !variable.contains(null) && !variable.exists(_.asInstanceOf[String].contains(errorMsg))
+    variable != null && !variable.contains(null) && !variable.exists(
+      _.asInstanceOf[String].contains(errorMsg)
+    )
 
 def extractJson(path: String, key: String) =
   jsonPath(path)
@@ -280,17 +283,23 @@ def getIncident(errorMsg: String): WithConfig[ChainBuilder] =
   }.exitHereIfFailed
 
 def getRootIncident(errorMsg: String): WithConfig[ChainBuilder] =
-  exec(
-    http(s"Check Root Incident '$errorMsg'")
-      .get(
-        s"/incident?rootCauseIncidentId=#{rootCauseIncidentId}"
-      )
-      .auth()
-      .check(checkMaxCount)
-      .check(
-        extractJsonOptional("$[*].incidentMessage", "errorMsg")
-      )
-  ).exitHereIfFailed
+  doIf("#{rootCauseIncidentId.exists()}")(
+    exec(session => {
+      println(s"We are in the loop: ${session.attributes.get("rootCauseIncidentId")}")
+      session
+    })
+    .exec(
+      http(s"Check Root Incident '$errorMsg'")
+        .get(
+          s"/incident?rootCauseIncidentId=#{rootCauseIncidentId}"
+        )
+        .auth()
+        .check(checkMaxCount)
+        .check(
+          extractJsonOptional("$[*].incidentMessage", "errorMsg")
+        )
+    ).exitHereIfFailed
+  )
 
 def retryOrFail(
     chainBuilder: ChainBuilder,
