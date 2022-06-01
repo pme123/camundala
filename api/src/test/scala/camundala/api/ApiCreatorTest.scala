@@ -5,6 +5,8 @@ import org.junit.Assert.*
 
 class ApiCreatorTest extends APICreator {
 
+  lazy val projectName = "ApiCreatorTest"
+
   override def jiraUrls: Map[String, String] = Map(
     "MAP" -> "https://myJira.ch/browse",
     "BPF" -> "https://finnovaJira.ch/browse",

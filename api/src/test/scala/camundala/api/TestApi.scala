@@ -11,6 +11,8 @@ import sttp.tapir.{Endpoint, Schema, SchemaType}
 
 object TestApi extends APICreator {
 
+  lazy val projectName = "TestApi"
+
   def title = "Test API"
 
   def version = "1.0"
