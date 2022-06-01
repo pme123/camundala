@@ -40,7 +40,9 @@ lazy val api = project
   .settings(projectSettings("api"))
   .settings(
     libraryDependencies ++=
-      tapirDependencies ,
+      tapirDependencies ++
+      Seq("org.scala-lang.modules" %% "scala-xml" % "2.1.0",
+        "com.novocode" % "junit-interface" % "0.11" % Test),
     scalacOptions ++= Seq(
       "-Xmax-inlines",
       "50" // is declared as erased, but is in fact used
@@ -107,7 +109,6 @@ lazy val tapirDependencies = Seq(
   //"com.softwaremill.quicklens" %% "quicklens" % "1.7.5", // simple modifying case classes
   "org.latestbit" %% "circe-tagged-adt-codec" % "0.10.0", // to encode enums
   "com.lihaoyi" %% "os-lib" % "0.8.0",
-  "com.novocode" % "junit-interface" % "0.11" % Test
 )
 val camundaVersion = "7.16.0"
 lazy val camundaTestDependencies = Seq(

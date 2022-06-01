@@ -211,7 +211,14 @@ trait APICreator extends ProcessReferenceCreator, App:
             startProcessInstanceErrors
           ),
           Some(
-            docReference(
+            docUsedByReference(
+              processName
+                .filterNot(p => p.contains(" "))
+                .getOrElse(process.id)
+            )
+          ),
+          Some(
+            docUsesReference(
               processName
                 .filterNot(p => p.contains(" "))
                 .getOrElse(process.id)
@@ -269,10 +276,17 @@ trait APICreator extends ProcessReferenceCreator, App:
             requestErrorOutputs = startProcessInstanceErrors
           ),
           Some(
-            docReference(
+            docUsedByReference(
               Some(processName)
                 .filterNot(p => p.contains(" "))
                 .getOrElse(tag)
+            )
+          ),
+          Some(
+            docUsesReference(
+              Some(processName)
+                .filterNot(p => p.contains(" "))
+                .getOrElse(process.id)
             )
           )
         ),
