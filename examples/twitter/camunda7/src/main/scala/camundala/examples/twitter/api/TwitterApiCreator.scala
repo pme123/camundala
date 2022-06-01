@@ -8,6 +8,8 @@ import sttp.tapir.generic.auto.*
 
 object TwitterApiCreator extends APICreator:
 
+  lazy val projectName = "TwitterDemo"
+
   def title = "Twitter Process API"
 
   def version = "1.0"

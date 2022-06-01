@@ -9,6 +9,8 @@ import InvoiceApi.*
 
 object InvoiceApiCreator extends APICreator {
 
+  lazy val projectName = "InvoiceDemo"
+
   def title = "Invoice Example Process API"
 
   def version = "1.0"
