@@ -24,16 +24,19 @@ trait ProcessReferenceCreator:
       }
       .mkString("\n- ", "\n- ", "\n")
     println(refDoc)
-    s"""
-       |<details>
-       |<summary><b>${usedByTitle(refs.size)}</b></summary>
-       |<p>
-       |
-       |$refDoc
-       |
-       |</p>
-       |</details>
-       |""".stripMargin
+    if(refDoc.trim.length == 1)
+      "\n**Used in no other Process.**\n"
+    else  
+      s"""
+        |<details>
+        |<summary><b>${usedByTitle(refs.size)}</b></summary>
+        |<p>
+        |
+        |$refDoc
+        |
+        |</p>
+        |</details>
+        |""".stripMargin
 
   class UsesRef(processRef: String, serviceName: Option[String]):
     lazy val (project: String, processId: String) =
@@ -85,24 +88,26 @@ trait ProcessReferenceCreator:
               |""".stripMargin
           }
           .mkString("\n- ", "\n- ", "\n")
-
-        s"""
-           |<details>
-           |<summary><b>${usesTitle(refs.size)}</b></summary>
-           |<p>
-           |
-           |$refDoc
-           |</p>
-           |</details>
-           |""".stripMargin
+        if(refDoc.trim.length == 1)
+          "\n**Uses no other Processes.**\n"
+        else  
+          s"""
+            |<details>
+            |<summary><b>${usesTitle(refs.size)}</b></summary>
+            |<p>
+            |
+            |$refDoc
+            |</p>
+            |</details>
+            |""".stripMargin
       }
       .getOrElse("\n**Uses no other Processes.**\n")
 
   protected def usedByTitle(processCount: Int): String =
-    s"Used in the $processCount Project(s)"
+    s"Used in $processCount Project(s) (EXPERIMENTAL)"
 
   protected def usesTitle(processCount: Int): String =
-    s"Uses $processCount Project(s)"
+    s"Uses $processCount Project(s) (EXPERIMENTAL)"
 
   protected def docProjectUrl(project: String): String
 
