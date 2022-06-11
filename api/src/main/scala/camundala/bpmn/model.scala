@@ -1,7 +1,9 @@
 package camundala
 package bpmn
 
+import camundala.api.CamundaVariable
 import domain.*
+import io.circe.syntax.*
 
 case class InOutDescr[
     In <: Product: Encoder: Decoder: Schema,
@@ -31,6 +33,10 @@ trait InOut[
   lazy val descr: Option[String] | String = inOutDescr.descr
   lazy val in: In = inOutDescr.in
   lazy val out: Out = inOutDescr.out
+  lazy val camundaInMap: Map[String, CamundaVariable] = CamundaVariable.toCamunda(in)
+  lazy val camundaOutMap: Map[String, CamundaVariable] = CamundaVariable.toCamunda(out)
+  def camundaToCheckMap: Map[String, CamundaVariable] = camundaOutMap
+
   def withInOutDescr(inOutDescr: InOutDescr[In, Out]): T
 
   def withId(i: String): T =
@@ -89,6 +95,8 @@ case class UserTask[
     inOutDescr: InOutDescr[In, Out]
 ) extends ProcessNode,
       Activity[In, Out, UserTask[In, Out]]:
+
+  override lazy val camundaToCheckMap: Map[String, CamundaVariable] = camundaInMap
 
   def withInOutDescr(descr: InOutDescr[In, Out]): UserTask[In, Out] =
     copy(inOutDescr = descr)

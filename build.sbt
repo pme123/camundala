@@ -20,7 +20,7 @@ lazy val root = project
     camunda,
     test,
     gatling,
-//    simulation,
+    simulation,
     exampleTwitterC7,
     exampleTwitterC8,
     exampleInvoice,
@@ -86,7 +86,7 @@ lazy val gatling = project
     )
   )
   .dependsOn(api)
-/*
+
 lazy val simulation = project
   .in(file("./simulation"))
   .configure(publicationSettings)
@@ -100,7 +100,7 @@ lazy val simulation = project
     )
   )
   .dependsOn(api)
-*/
+
 val tapirVersion = "0.20.1"
 lazy val tapirDependencies = Seq(
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
@@ -148,11 +148,12 @@ lazy val exampleInvoice = project
     Test / parallelExecution := false,
     // for invoice-example
     resolvers += "Sonatype OSS Camunda" at "https://app.camunda.com/nexus/content/repositories/camunda-bpm/",
-    libraryDependencies ++= camundaDependencies
+    libraryDependencies ++= camundaDependencies,
     // https://mvnrepository.com/artifact/org.camunda.bpm.example/camunda-example-invoice
     // libraryDependencies += "org.camunda.bpm.example" % "camunda-example-invoice" % camundaVersion % Test
+    //   libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.11" % IntegrationTest,
   )
-  .dependsOn(camunda, test, gatling)
+  .dependsOn(camunda, test, simulation)
   .enablePlugins(GatlingPlugin)
 
 lazy val exampleTwitterC7 = project
@@ -192,15 +193,14 @@ val h2Version = "1.4.200"
 // Twitter
 val twitter4jVersion = "4.0.7"
 val camundaDependencies = Seq(
-  "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion,
-  "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion,
+  "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude("org.slf4j", "slf4j-api"),
+  "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude("org.slf4j", "slf4j-api"),
   "io.netty" % "netty-all" % "4.1.73.Final", // needed for Spring Boot Version > 2.5.*
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
   "com.h2database" % "h2" % h2Version
-  //"org.slf4j" % "slf4j-simple" % "1.7.33" % IntegrationTest
+).map(_.exclude("org.slf4j", "slf4j-api"))
 
-)
 val zeebeVersion = "1.3.4"
 val zeebeDependencies = Seq(
   "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
@@ -208,7 +208,7 @@ val zeebeDependencies = Seq(
   "io.camunda" % "spring-zeebe-starter" % zeebeVersion,
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.2",
   //"io.camunda" % "spring-zeebe-test" % zeebeVersion % Test,
-)
+).map(_.exclude("org.slf4j", "slf4j-api"))
 
 lazy val developerList = List(
   Developer(

@@ -2,10 +2,10 @@ package camundala.api
 
 import os.read.lines
 import os.{Path, read}
-import scala.xml.*
 
+import scala.xml.*
 import scala.annotation.tailrec
-import java.io.StringBufferInputStream
+import java.io.{StringBufferInputStream, StringReader}
 
 /** Checks all BPMNs if a process is used in another process. As result a list
   * is created that can be included in the Documentation.
@@ -60,7 +60,7 @@ trait ProcessReferenceCreator:
   def docUsesReference(processName: String): String =
     findBpmn(processName)
       .map { xmlStr =>
-        val xml = XML.load(new StringBufferInputStream(xmlStr))
+        val xml = XML.load(new StringReader(xmlStr))
         val callActivities = xml \\ "callActivity"
 
         val refs = callActivities

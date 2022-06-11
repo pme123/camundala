@@ -29,22 +29,21 @@ import org.camunda.bpm.engine.variable.value.FileValue;
  */
 public class ArchiveInvoiceService implements JavaDelegate {
 
-  public static String className = new ArchiveInvoiceService().getClass().getName();
-  private final Logger LOGGER = Logger.getLogger(ArchiveInvoiceService.class.getName());
+    public static String className = new ArchiveInvoiceService().getClass().getName();
+    private final Logger LOGGER = Logger.getLogger(ArchiveInvoiceService.class.getName());
 
-  public void execute(DelegateExecution execution) throws Exception {
+    public void execute(DelegateExecution execution) throws Exception {
 
     Boolean shouldFail = (Boolean) execution.getVariable("shouldFail");
     FileValue invoiceDocumentVar  = execution.getVariableTyped("invoiceDocument");
 
-    if(shouldFail != null && shouldFail) {
-      throw new ProcessEngineException("Could not archive invoice...");
-    }
-    else {
-      LOGGER.info("\n\n  ... Now archiving invoice "+execution.getVariable("invoiceNumber")
-          +", filename: "+invoiceDocumentVar.getFilename()+" \n\n");
-    }
+        if (shouldFail != null && shouldFail) {
+            throw new ProcessEngineException("Could not archive invoice...");
+        } else {
+            LOGGER.info("\n\n  ... Now archiving invoice " + execution.getVariable("invoiceNumber")
+                    + ", filename: " + invoiceDocumentVar.getFilename() + " \n\n");
+        }
 
-  }
+    }
 
 }

@@ -147,6 +147,7 @@ object InvoiceApi extends BpmnDsl:
         in = InvoiceReceipt(),
         out = InvoiceReviewed(false)
       )
+
   lazy val `Review Invoice`: Process[InvoiceReceipt, InvoiceReviewed] =
     val processId = "ReviewInvoiceP"
     process(
