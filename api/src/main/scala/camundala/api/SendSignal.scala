@@ -1,7 +1,7 @@
 package camundala.api
 
 import camundala.bpmn.*
-import camundala.domain.*
+
 import io.circe.syntax.*
 import io.circe.{Decoder, Encoder}
 import sttp.model.StatusCode

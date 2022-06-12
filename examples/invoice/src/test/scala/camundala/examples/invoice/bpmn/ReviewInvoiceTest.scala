@@ -1,7 +1,7 @@
 package camundala.examples.invoice.bpmn
 
 import camundala.bpmn.*
-import camundala.domain.*
+
 import camundala.examples.invoice.bpmn.InvoiceApi.*
 import camundala.test.*
 import io.circe.generic.auto.*

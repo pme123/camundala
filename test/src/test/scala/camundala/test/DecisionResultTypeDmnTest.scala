@@ -2,9 +2,10 @@ package camundala
 package test
 
 import bpmn.*
+import dmn.*
 import org.junit.Test
 import test.*
-import os.{Path, ResourcePath}
+import os.*
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
 

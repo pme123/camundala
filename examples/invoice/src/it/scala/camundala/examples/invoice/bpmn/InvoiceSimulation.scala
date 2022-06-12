@@ -3,7 +3,7 @@ package examples.invoice.bpmn
 
 import camundala.examples.invoice.bpmn.InvoiceApi.*
 import bpmn.*
-import domain.*
+
 import simulation.*
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
@@ -26,7 +26,7 @@ class InvoiceSimulation extends SimulationDsl:
     .notExists("clarified")
     .isEquals("approved", true)
 
-  lazy val `ApproveInvoiceUT with Override` =
+  val `ApproveInvoiceUT with Override` =
     ApproveInvoiceUT
       .exists("amount")
       .notExists("amounts")

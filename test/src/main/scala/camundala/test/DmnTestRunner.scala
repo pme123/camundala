@@ -1,7 +1,6 @@
 package camundala
 package test
 
-import domain.*
 import bpmn.*
 import camundala.bpmn.{DecisionDmn, Process, ProcessNode}
 import org.camunda.bpm.dmn.engine.{DmnDecision, DmnDecisionResult, DmnEngine}

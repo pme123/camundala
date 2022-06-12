@@ -1,7 +1,6 @@
 package camundala
 package bpmn
 
-import camundala.domain.*
 import io.circe.HCursor
 import io.circe.syntax.*
 import sttp.tapir.*

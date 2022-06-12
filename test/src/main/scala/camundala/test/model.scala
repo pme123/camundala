@@ -5,7 +5,6 @@ import bpmn.*
 import io.circe.*
 import io.circe.generic.auto
 import io.circe.syntax.*
-import camundala.domain.FileInOut
 import org.camunda.bpm.engine.variable.Variables.fileValue
 import org.camunda.spin.Spin
 import org.camunda.spin.json.SpinJsonNode

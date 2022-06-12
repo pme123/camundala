@@ -1,8 +1,7 @@
 package camundala
 package test
 
-import camundala.bpmn.*
-import camundala.domain.*
+import bpmn.*
 import io.circe.{Decoder, Encoder}
 import org.assertj.core.api.{Condition, MapAssert}
 import org.assertj.core.data.MapEntry

@@ -2,10 +2,10 @@ package camundala
 package gatling
 
 import camundala.api.*
-import camundala.api.CamundaVariable.*
+import camundala.bpmn.CamundaVariable.*
 import camundala.bpmn
 import camundala.bpmn.*
-import camundala.domain.*
+
 import io.circe.parser.*
 import io.circe.syntax.*
 import io.gatling.core.Predef.*

@@ -5,7 +5,7 @@ import TwitterApi.*
 import camundala.examples.twitter.services
 import camundala.examples.twitter.services.*
 import camundala.bpmn.*
-import camundala.domain.*
+
 import camundala.test.*
 import org.junit.Test
 import org.mockito.Mockito.mock

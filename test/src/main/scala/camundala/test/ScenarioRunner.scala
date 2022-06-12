@@ -2,7 +2,6 @@ package camundala
 package test
 
 import camundala.bpmn.*
-import camundala.domain.*
 import org.camunda.bpm.engine.ProcessEngineConfiguration
 import org.camunda.bpm.engine.impl.test.TestHelper
 import org.camunda.bpm.engine.runtime.{Job, ProcessInstance}

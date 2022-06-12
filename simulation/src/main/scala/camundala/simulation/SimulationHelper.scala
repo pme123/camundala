@@ -1,15 +1,15 @@
 package camundala.simulation
 
-import camundala.api.{CamundaProperty, CamundaVariable}
-import camundala.api.CamundaVariable.{CFile, CFileValueInfo, CInteger, CJson}
+import camundala.api.CamundaProperty
+import camundala.bpmn.*
+import camundala.bpmn.CamundaVariable.{CFile, CFileValueInfo, CInteger, CJson}
 import io.gatling.core.Predef.*
 import io.gatling.core.check.CheckBuilder
 import io.gatling.core.check.string.BodyStringCheckType
 import io.gatling.core.structure.ChainBuilder
 import io.gatling.http.Predef.*
 import io.gatling.http.request.builder.HttpRequestBuilder
-import camundala.bpmn.*
-import camundala.domain.*
+
 import scala.concurrent.duration.*
 
 trait SimulationHelper:

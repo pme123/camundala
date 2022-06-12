@@ -3,7 +3,7 @@ package examples.invoice.bpmn
 
 import api.*
 import bpmn.*
-import domain.*
+
 import sttp.tapir.json.circe.*
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*

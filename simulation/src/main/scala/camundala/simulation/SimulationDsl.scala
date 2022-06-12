@@ -1,7 +1,6 @@
 package camundala
 package simulation
 
-import camundala.api.nameOfVariable
 import camundala.bpmn.*
 
 import scala.annotation.targetName

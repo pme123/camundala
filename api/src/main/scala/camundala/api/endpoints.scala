@@ -1,9 +1,8 @@
 package camundala
 package api
 
-import camundala.api.CamundaVariable.*
 import camundala.bpmn.*
-import camundala.domain.*
+import camundala.bpmn.CamundaVariable.*
 import io.circe.*
 import io.circe.Json.JNumber
 import io.circe.syntax.*

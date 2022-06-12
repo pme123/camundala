@@ -1,7 +1,7 @@
 package camundala
 package camunda
 
-import camundala.bpmn.{InOut, *}
+import camundala.bpmn.*
 
 import scala.language.implicitConversions
 
@@ -18,7 +18,7 @@ case class BpmnProcess(
                   ): BpmnProcess =
 
     this.copy(elements = elements.map{
-      case inOut: InOut[?,?,?] => BpmnInOut(inOut)
+      case inOut: InOut[?,?,?] => BpmnInOut(inOut.asInstanceOf[InOut[Product, Product, ?]])
       case bpmnInOut: BpmnInOut[?,?] => bpmnInOut
     })
 

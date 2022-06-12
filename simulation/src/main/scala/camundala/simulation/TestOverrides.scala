@@ -1,8 +1,8 @@
 package camundala.simulation
 
-import camundala.api.CamundaVariable.*
-import camundala.api.{CamundaProperty, CamundaVariable}
+import camundala.api.CamundaProperty
 import camundala.bpmn.*
+import camundala.bpmn.CamundaVariable.*
 
 case class TestOverride(
     key: String,

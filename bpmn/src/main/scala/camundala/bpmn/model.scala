@@ -1,9 +1,7 @@
 package camundala
 package bpmn
 
-import camundala.api.CamundaVariable
-import domain.*
-import io.circe.syntax.*
+import java.util.Base64
 
 case class InOutDescr[
     In <: Product: Encoder: Decoder: Schema,
@@ -204,3 +202,46 @@ object ReceiveSignalEvent:
       id,
       InOutDescr(id, NoInput(), NoOutput())
     )
+
+case class NoInput()
+object NoInput:
+  given Schema[NoInput] = Schema.derived
+  given Encoder[NoInput] = deriveEncoder
+  given Decoder[NoInput] = deriveDecoder
+
+case class NoOutput()
+object NoOutput :
+  given Schema[NoOutput] = Schema.derived
+  given Encoder[NoOutput] = deriveEncoder
+  given Decoder[NoOutput] = deriveDecoder
+
+
+case class FileInOut(
+                      fileName: String,
+                      @description("The content of the File as a Byte Array.")
+                      content: Array[Byte],
+                      mimeType: Option[String]
+                    ):
+  lazy val contentAsBase64: String = Base64.getEncoder.encodeToString(content)
+
+object FileInOut :
+  given Schema[FileInOut] = Schema.derived
+  given Encoder[FileInOut] = deriveEncoder
+  given Decoder[FileInOut] = deriveDecoder
+
+def valueToJson(value: Any): Json =
+  value match
+    case v: Int =>
+      Json.fromInt(v)
+    case v: Long =>
+      Json.fromLong(v)
+    case v: Boolean =>
+      Json.fromBoolean(v)
+    case v: Float =>
+      Json.fromFloat(v).getOrElse(Json.Null)
+    case v: Double =>
+      Json.fromDouble(v).getOrElse(Json.Null)
+    case null =>
+      Json.Null
+    case v =>
+      Json.fromString(v.toString)

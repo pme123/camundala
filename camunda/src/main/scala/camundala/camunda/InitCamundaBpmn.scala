@@ -154,7 +154,7 @@ trait InitCamundaBpmn extends BpmnDsl, ProjectPaths, App:
   ): Unit =
     println(s"""
 import camundala.bpmn.*
-import camundala.domain.*
+
 import camundala.camunda.GenerateCamundaBpmn
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*

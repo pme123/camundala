@@ -1,13 +1,9 @@
 package camundala
 package api
 
-import camundala.bpmn.DecisionDmn
-import io.circe.{Decoder, Encoder}
+import camundala.bpmn.*
 import sttp.model.StatusCode
 import sttp.tapir.*
-import sttp.tapir.Schema
-import io.circe.generic.semiauto.*
-import io.circe.syntax.*
 
 import scala.reflect.ClassTag
 

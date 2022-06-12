@@ -1,7 +1,7 @@
 package camundala.camunda
 
 import camundala.bpmn.*
-import camundala.domain.*
+
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 import org.camunda.bpm.engine.delegate.{BpmnError, DelegateExecution, ExecutionListener}

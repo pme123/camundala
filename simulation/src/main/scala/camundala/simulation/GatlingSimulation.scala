@@ -1,7 +1,7 @@
 package camundala.simulation
 
-import camundala.api.CamundaVariable.CInteger
-import camundala.api.{CamundaProperty, CamundaVariable, CompleteTaskOut, CorrelateMessageIn, FormVariables, StartProcessIn}
+import camundala.bpmn.CamundaVariable.CInteger
+import camundala.api.{CamundaProperty, CompleteTaskOut, CorrelateMessageIn, FormVariables, StartProcessIn}
 import io.gatling.http.Predef.*
 import io.gatling.http.protocol.HttpProtocolBuilder
 import io.gatling.core.Predef.*

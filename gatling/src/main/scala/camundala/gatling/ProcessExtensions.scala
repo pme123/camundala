@@ -2,7 +2,7 @@ package camundala
 package gatling
 
 import camundala.api.*
-import camundala.api.CamundaVariable.CInteger
+import camundala.bpmn.CamundaVariable.CInteger
 import camundala.bpmn.*
 import io.circe.parser.*
 import io.circe.syntax.*

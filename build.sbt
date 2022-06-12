@@ -4,7 +4,7 @@ import scala.util.Using
 
 lazy val projectVersion =
   Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
-val scala3Version = "3.1.1"
+val scala3Version = "3.1.2"
 val org = "io.github.pme123"
 
 ThisBuild / versionScheme := Some("early-semver")
@@ -16,7 +16,9 @@ lazy val root = project
     name := "camundala"
   )
   .aggregate(
+    bpmn,
     api,
+    dmn,
     camunda,
     test,
     gatling,
@@ -34,20 +36,34 @@ def projectSettings(projName: String): Seq[Def.Setting[_]] = Seq(
   version := projectVersion
 )
 
+lazy val bpmn = project
+  .in(file("./bpmn"))
+  .configure(publicationSettings)
+  .settings(projectSettings("bpmn"))
+  .settings(
+    libraryDependencies ++= tapirDependencies,
+    scalacOptions ++= Seq(
+      "-Xmax-inlines",
+      "50" // is declared as erased, but is in fact used
+    )
+  )
+
 lazy val api = project
   .in(file("./api"))
   .configure(publicationSettings)
   .settings(projectSettings("api"))
   .settings(
     libraryDependencies ++=
-      tapirDependencies ++
-      Seq("org.scala-lang.modules" %% "scala-xml" % "2.1.0",
-        "com.novocode" % "junit-interface" % "0.11" % Test),
+        Seq(
+          "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
+          "com.novocode" % "junit-interface" % "0.11" % Test
+        ),
     scalacOptions ++= Seq(
       "-Xmax-inlines",
       "50" // is declared as erased, but is in fact used
     )
   )
+  .dependsOn(bpmn)
 
 lazy val camunda = project
   .in(file("./camunda"))
@@ -61,7 +77,13 @@ lazy val camunda = project
       "50" // is declared as erased, but is in fact used
     )
   )
-  .dependsOn(api)
+  .dependsOn(bpmn)
+
+lazy val dmn = project
+  .in(file("./dmn"))
+  .configure(publicationSettings)
+  .settings(projectSettings("dmn"))
+  .dependsOn(bpmn)
 
 lazy val test = project
   .in(file("./test"))
@@ -71,7 +93,7 @@ lazy val test = project
     libraryDependencies ++=
       camundaTestDependencies
   )
-  .dependsOn(api)
+  .dependsOn(bpmn, dmn)
 
 lazy val gatling = project
   .in(file("./gatling"))
@@ -101,14 +123,14 @@ lazy val simulation = project
   )
   .dependsOn(api)
 
-val tapirVersion = "0.20.1"
+val tapirVersion = "0.20.2"
 lazy val tapirDependencies = Seq(
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-circe-yaml" % tapirVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % tapirVersion,
   //"com.softwaremill.quicklens" %% "quicklens" % "1.7.5", // simple modifying case classes
-  "org.latestbit" %% "circe-tagged-adt-codec" % "0.10.0", // to encode enums
-  "com.lihaoyi" %% "os-lib" % "0.8.0",
+  "org.latestbit" %% "circe-tagged-adt-codec" % "0.10.1", // to encode enums
+  "com.lihaoyi" %% "os-lib" % "0.8.1"
 )
 val camundaVersion = "7.16.0"
 lazy val camundaTestDependencies = Seq(
@@ -148,12 +170,12 @@ lazy val exampleInvoice = project
     Test / parallelExecution := false,
     // for invoice-example
     resolvers += "Sonatype OSS Camunda" at "https://app.camunda.com/nexus/content/repositories/camunda-bpm/",
-    libraryDependencies ++= camundaDependencies,
+    libraryDependencies ++= camundaDependencies
     // https://mvnrepository.com/artifact/org.camunda.bpm.example/camunda-example-invoice
     // libraryDependencies += "org.camunda.bpm.example" % "camunda-example-invoice" % camundaVersion % Test
     //   libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.11" % IntegrationTest,
   )
-  .dependsOn(camunda, test, simulation)
+  .dependsOn(dmn, camunda, test, simulation)
   .enablePlugins(GatlingPlugin)
 
 lazy val exampleTwitterC7 = project
@@ -164,7 +186,7 @@ lazy val exampleTwitterC7 = project
     libraryDependencies ++= camundaDependencies :+
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
-  .dependsOn(api, test, gatling)
+  .dependsOn(api, test, simulation)
   .enablePlugins(GatlingPlugin)
 
 lazy val exampleTwitterC8 = project
@@ -175,7 +197,7 @@ lazy val exampleTwitterC8 = project
     libraryDependencies ++= zeebeDependencies :+
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
-  .dependsOn(api, gatling)
+  .dependsOn(api, simulation)
   .enablePlugins(GatlingPlugin)
 
 lazy val exampleDemos = project
@@ -193,8 +215,8 @@ val h2Version = "1.4.200"
 // Twitter
 val twitter4jVersion = "4.0.7"
 val camundaDependencies = Seq(
-  "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude("org.slf4j", "slf4j-api"),
-  "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude("org.slf4j", "slf4j-api"),
+  "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
+  "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
   "io.netty" % "netty-all" % "4.1.73.Final", // needed for Spring Boot Version > 2.5.*
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
@@ -206,7 +228,7 @@ val zeebeDependencies = Seq(
   "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
   "org.springframework.boot" % "spring-boot-starter-webflux" % springBootVersion,
   "io.camunda" % "spring-zeebe-starter" % zeebeVersion,
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.2",
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.2"
   //"io.camunda" % "spring-zeebe-test" % zeebeVersion % Test,
 ).map(_.exclude("org.slf4j", "slf4j-api"))
 

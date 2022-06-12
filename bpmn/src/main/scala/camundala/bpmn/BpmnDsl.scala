@@ -1,8 +1,6 @@
 package camundala
 package bpmn
 
-import domain.*
-
 trait BpmnDsl:
 
   def process[

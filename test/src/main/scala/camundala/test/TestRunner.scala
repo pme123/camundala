@@ -1,7 +1,6 @@
 package camundala
 package test
 
-import domain.*
 import bpmn.*
 import io.circe.syntax.*
 import io.circe.*

@@ -57,7 +57,5 @@ def maybe[T](value: T | Option[T]): Option[T] = value match
   case v: Option[?] => v.asInstanceOf[Option[T]]
   case v => Some(v.asInstanceOf[T])
 
-// camundala.domain
-export camundala.domain.NoInput
-export camundala.domain.NoOutput
-export camundala.domain.FileInOut
+inline def nameOfVariable(inline x: Any): String = ${ NameFromVariable.nameOfVariable('x) }
+

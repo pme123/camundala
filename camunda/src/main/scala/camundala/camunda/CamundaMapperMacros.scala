@@ -1,6 +1,6 @@
 package camundala.camunda
 
-import camundala.api.CamundaVariable
+import camundala.bpmn.CamundaVariable
 import camundala.bpmn.throwErr
 import io.circe.Json
 import io.circe.Json.JBoolean

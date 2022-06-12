@@ -1,6 +1,6 @@
 package camundala.examples.demos
 
-import camundala.domain.*
+
 import camundala.test.*
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.{Ignore, Test}

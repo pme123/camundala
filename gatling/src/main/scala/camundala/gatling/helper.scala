@@ -1,14 +1,13 @@
 package camundala
 package gatling
 
-import camundala.api.{CamundaProperty, CamundaVariable}
-import camundala.api.CamundaVariable.*
+import camundala.api.*
+import camundala.bpmn.*
+import camundala.bpmn.CamundaVariable.*
 import io.gatling.core.Predef.*
 import io.gatling.core.structure.*
 import io.gatling.http.Predef.*
 import io.gatling.core.structure.ChainBuilder
-import camundala.bpmn.*
-import camundala.domain.*
 import io.circe.{Decoder, Encoder}
 import io.circe.Json.JArray
 import io.gatling.core.check.CheckBuilder
