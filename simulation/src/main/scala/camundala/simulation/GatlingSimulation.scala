@@ -15,7 +15,8 @@ trait GatlingSimulation
   extends Simulation,
     SScenarioExtensions,
     SSubProcessExtensions,
-    SUserTaskExtensions:
+    SUserTaskExtensions,
+    SEventExtensions:
 
   private def httpProtocol: HttpProtocolBuilder =
     http
@@ -34,6 +35,10 @@ trait GatlingSimulation
     def toGatling(step: SStep): Seq[ChainBuilder] = step match
       case ut: SUserTask =>
         ut.getAndComplete()
+      case e: SReceiveMessageEvent =>
+        e.correlate(config.tenantId)
+      case e: SReceiveSignalEvent =>
+        e.sendSignal()
       case sp: SSubProcess =>
         sp.switchToSubProcess() ++
           sp.steps.flatMap(toGatling) ++

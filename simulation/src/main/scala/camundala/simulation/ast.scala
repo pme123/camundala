@@ -72,3 +72,26 @@ case class SSubProcess(
 
   def add(testOverride: TestOverride): SSubProcess =
     copy(testOverrides = addOverride(testOverride))
+
+case class SReceiveMessageEvent(
+                                 name: String,
+                                 inOut: ReceiveMessageEvent[_],
+                                 readyVariable: Option[String] = None,
+                                 readyValue: Any = true,
+                                 processInstanceId: Boolean = true,
+                                 testOverrides: Option[TestOverrides] = None
+                               ) extends SStep:
+
+  def add(testOverride: TestOverride): SReceiveMessageEvent =
+    copy(testOverrides = addOverride(testOverride))
+
+case class SReceiveSignalEvent(
+                                 name: String,
+                                 inOut: ReceiveSignalEvent[_],
+                                 readyVariable: String = "waitForSignal",
+                                 readyValue: Any = true,
+                                 testOverrides: Option[TestOverrides] = None
+                               ) extends SStep:
+
+  def add(testOverride: TestOverride): SReceiveSignalEvent =
+    copy(testOverrides = addOverride(testOverride))

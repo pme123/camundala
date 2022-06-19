@@ -7,10 +7,7 @@ import scala.annotation.targetName
 import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
 
-trait SimulationDsl
-  extends GatlingSimulation,
-    TestOverrideExtensions,
-    BpmnDsl :
+trait SimulationDsl extends GatlingSimulation, TestOverrideExtensions, BpmnDsl:
 
   class SimulationBuilder:
     private val ib = ListBuffer.empty[SScenario]
@@ -21,9 +18,10 @@ trait SimulationDsl
 
   type SimulationConstr = SimulationBuilder ?=> Unit
 
-  extension (scen: SScenario) private[simulation] def stage: SimulationConstr =
-    (bldr: SimulationBuilder) ?=> bldr.pushScenario(scen)
-/*
+  extension (scen: SScenario)
+    private[simulation] def stage: SimulationConstr =
+      (bldr: SimulationBuilder) ?=> bldr.pushScenario(scen)
+  /*
   class ScenarioBuilder(name: String):
     private val ib = ListBuffer.empty[CStep]
 
@@ -53,31 +51,57 @@ trait SimulationDsl
       activity match
         case ut: UserTask[_,_] => CUserTask(nameOfVariable(activity), ut).stage
 
-*/
+   */
   def simulate(body: SimulationConstr): Unit =
     val sb = SimulationBuilder()
     body(using sb)
     val sim = sb.mkBlock
     run(sim) // runs Gatling Load Tests
 
-  def scenario(scenario: ProcessScenario)(body: SStep*): SimulationConstr =
-    scenario.copy(steps = body.toList).stage
+  def scenario(scen: ProcessScenario): SimulationConstr =
+    scenario(scen)()
 
-  inline def badScenario(inline process: Process[_, _], status: Int, errorMsg: Option[String] = None): SimulationConstr =
-      BadScenario(nameOfVariable(process), process, status, errorMsg).stage
+  def scenario(scen: ProcessScenario)(body: SStep*): SimulationConstr =
+    scen.copy(steps = body.toList).stage
 
-  inline def subProcess(inline process: Process[_, _])(body: SStep*): SSubProcess =
+  inline def badScenario(
+      inline process: Process[_, _],
+      status: Int,
+      errorMsg: Option[String] = None
+  ): SimulationConstr =
+    BadScenario(nameOfVariable(process), process, status, errorMsg).stage
+
+  inline def subProcess(inline process: Process[_, _])(
+      body: SStep*
+  ): SSubProcess =
     SSubProcess(nameOfVariable(process), process, body.toList)
 
-  inline def subProcess(inline ca: CallActivity[_, _])(body: SStep*): SSubProcess =
-      SSubProcess(nameOfVariable(ca), ca.asProcess, body.toList)
+  inline def subProcess(inline ca: CallActivity[_, _])(
+      body: SStep*
+  ): SSubProcess =
+    SSubProcess(nameOfVariable(ca), ca.asProcess, body.toList)
 
-  implicit inline def toScenario(inline process: Process[_,_]): ProcessScenario =
+  implicit inline def toScenario(
+      inline process: Process[_, _]
+  ): ProcessScenario =
     ProcessScenario(nameOfVariable(process), process)
 
-  implicit inline def toStep(inline inOut: Activity[_,_,_]): SStep =
-    val name = nameOfVariable(inOut)
-    inOut match
-        case ut: UserTask[_,_] =>  SUserTask(name, ut)
-        case other => throw new IllegalArgumentException(s"NOT SUPPORTED $other")
+  implicit inline def toStep(inline inOut: UserTask[_, _]): SStep =
+    SUserTask(nameOfVariable(inOut), inOut)
+  implicit inline def toStep(inline inOut: ReceiveMessageEvent[_]): SStep =
+    SReceiveMessageEvent(nameOfVariable(inOut), inOut)
+  implicit inline def toStep(inline inOut: ReceiveSignalEvent[_]): SStep =
+    SReceiveSignalEvent(nameOfVariable(inOut), inOut)
 
+  extension (s: ReceiveSignalEvent[_])
+    def waitFor(readyVariable: String, readyValue: Any = true) =
+      SReceiveSignalEvent(s.name, s, readyVariable, readyValue)
+
+  end extension
+
+  extension (s: ReceiveMessageEvent[_])
+    def waitFor(readyVariable: String, readyValue: Any) =
+      SReceiveMessageEvent(s.name, s, Some(readyVariable), readyValue)
+    def start =
+      SReceiveMessageEvent(s.name, s, processInstanceId = false)
+  end extension

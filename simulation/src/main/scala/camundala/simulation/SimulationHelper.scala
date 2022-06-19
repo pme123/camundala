@@ -37,10 +37,11 @@ trait SimulationHelper:
     val maxCount = config.maxCount
     bodyString
       .transformWithSession { (_: String, session: Session) =>
-        assert(
-          session("retryCount").as[Int] <= maxCount,
-          s"!!! The retryCount reached the maximum of $maxCount"
-        )
+        if (session.attributes.contains("retryCount"))
+          assert(
+            session("retryCount").as[Int] <= maxCount,
+            s"!!! The retryCount reached the maximum of $maxCount"
+          )
       }
 
   def statusCondition(status: Int*): Session => Boolean = session => {
@@ -198,10 +199,10 @@ trait SimulationHelper:
               val matches: Boolean = setCJson == setPJson
               if (!matches)
                 println(
-                  s"<<< cJson: ${cValue.getClass} / expectedJson: ${expectedValue.value.getClass}"
+                  s"<<< cJson: ${setCJson.getClass} / expectedJson: ${setPJson.getClass}"
                 )
                 println(
-                  s"!!! The expected Json value '${toJson(expectedValue.value.toString)}' of $key does not match the result variable cJson: '${toJson(cValue)}'."
+                  s"!!! The expected Json value '$setPJson' of $key does not match the result variable cJson: '$setCJson'."
                 )
               matches
             case CamundaProperty(_, cValue) =>
