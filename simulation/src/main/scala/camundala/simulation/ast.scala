@@ -96,6 +96,9 @@ case class SReceiveMessageEvent(
   def add(testOverride: TestOverride): SReceiveMessageEvent =
     copy(testOverrides = addOverride(testOverride))
 
+  def start: SReceiveMessageEvent =
+      copy(processInstanceId = false)
+
 case class SReceiveSignalEvent(
                                  name: String,
                                  inOut: ReceiveSignalEvent[_],

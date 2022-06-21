@@ -102,17 +102,17 @@ trait SimulationDsl extends GatlingSimulation, TestOverrideExtensions, BpmnDsl:
   implicit inline def toStep(inline inOut: ReceiveSignalEvent[_]): SStep =
     SReceiveSignalEvent(nameOfVariable(inOut), inOut)
 
-  extension (s: ReceiveSignalEvent[_])
+  extension (rse: ReceiveSignalEvent[_])
     def waitFor(readyVariable: String, readyValue: Any = true) =
-      SReceiveSignalEvent(s.name, s, readyVariable, readyValue)
+      SReceiveSignalEvent(rse.name, rse, readyVariable, readyValue)
 
   end extension
 
-  extension (s: ReceiveMessageEvent[_])
-    def waitFor(readyVariable: String, readyValue: Any) =
-      SReceiveMessageEvent(s.name, s, Some(readyVariable), readyValue)
-    def start =
-      SReceiveMessageEvent(s.name, s, processInstanceId = false)
+  extension (rme: ReceiveMessageEvent[_])
+    def waitFor(readyVariable: String, readyValue: Any): SReceiveMessageEvent =
+      SReceiveMessageEvent(rme.name, rme, Some(readyVariable), readyValue)
+    def start: SReceiveMessageEvent =
+      SReceiveMessageEvent(rme.name, rme).start
   end extension
 
   def waitFor(timeInSec: Int): SWaitTime = SWaitTime(timeInSec)
