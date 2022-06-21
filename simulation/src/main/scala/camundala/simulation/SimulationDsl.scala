@@ -3,7 +3,6 @@ package simulation
 
 import camundala.bpmn.*
 
-import scala.annotation.targetName
 import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
 
@@ -95,11 +94,11 @@ trait SimulationDsl extends GatlingSimulation, TestOverrideExtensions, BpmnDsl:
   ): ProcessScenario =
     ProcessScenario(nameOfVariable(process), process)
 
-  implicit inline def toStep(inline inOut: UserTask[_, _]): SStep =
+  implicit inline def toStep(inline inOut: UserTask[_, _]): SUserTask =
     SUserTask(nameOfVariable(inOut), inOut)
-  implicit inline def toStep(inline inOut: ReceiveMessageEvent[_]): SStep =
+  implicit inline def toStep(inline inOut: ReceiveMessageEvent[_]): SReceiveMessageEvent =
     SReceiveMessageEvent(nameOfVariable(inOut), inOut)
-  implicit inline def toStep(inline inOut: ReceiveSignalEvent[_]): SStep =
+  implicit inline def toStep(inline inOut: ReceiveSignalEvent[_]): SReceiveSignalEvent =
     SReceiveSignalEvent(nameOfVariable(inOut), inOut)
 
   extension (rse: ReceiveSignalEvent[_])

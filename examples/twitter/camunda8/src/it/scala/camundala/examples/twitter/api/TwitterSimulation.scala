@@ -18,17 +18,18 @@ class TwitterSimulation extends SimulationDsl:
   override implicit def config: SimulationConfig =
     super.config.withPort(8887)
 
+  private val `Twitter - Not Approved` =
+    twitterDemoProcess
+      .withOut(ReviewedTweet(approved = false))
+  private val reviewTweetNotApprovedUT =
+    reviewTweetApprovedUT
+      .withOut(ReviewedTweet(approved = false))
+
   simulate {
-    scenario("Twitter - Approved")(
-      twitterDemoProcess,
-      reviewTweetApprovedUT,
-      //  TweetHandledEE
-    )
-    scenario("Twitter - Not Approved")(
-      twitterDemoProcess
-        .withOut(ReviewedTweet(approved = false)),
+    scenario(twitterDemoProcess)(
       reviewTweetApprovedUT
-        .withOut(ReviewedTweet(approved = false)),
-      //   TweetRejectedEE
+    )
+    scenario(`Twitter - Not Approved`)(
+      reviewTweetNotApprovedUT
     )
   }

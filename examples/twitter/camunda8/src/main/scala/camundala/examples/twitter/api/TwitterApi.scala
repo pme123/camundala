@@ -21,7 +21,7 @@ object TwitterApi extends BpmnDsl:
   )
 
   val twitterDemoProcess =
-    val processId = "TwitterDemoProcess"
+    val processId = "TwitterDemoP"
     process(
       id = processId,
       descr = "This runs the Twitter Approvement Process.",
