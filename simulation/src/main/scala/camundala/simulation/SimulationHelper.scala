@@ -79,6 +79,18 @@ trait SimulationHelper:
       )
       !variable.contains(value)
 
+  // check if there is an incident in the session that contains the expected Message
+  def incidentReadyCondition(errorMsg: String): Session => Boolean =
+    session =>
+      val variable = session.attributes.get("errorMsg")
+      println(
+        s"<<< incidentReadyCondition: ${variable
+          .exists(_.asInstanceOf[String].contains(errorMsg))} - $errorMsg in: $variable"
+      )
+      variable != null && !variable.contains(null) && !variable.exists(
+        _.asInstanceOf[String].contains(errorMsg)
+      )
+
   def extractJson(path: String, key: String) =
     jsonPath(path)
       .ofType[Any]
@@ -247,3 +259,49 @@ trait SimulationHelper:
         )
     }.exitHereIfFailed
   }
+
+  protected def checkIncident(errorMsg: String): Seq[ChainBuilder] =
+    Seq(
+      exec(_.remove("errorMsg")),
+      exec(_.remove("rootCauseIncidentId")),
+      retryOrFail(
+        getIncident(errorMsg),
+        incidentReadyCondition(errorMsg)
+      )
+    )
+  private def getIncident(errorMsg: String): ChainBuilder =
+    exec(
+      http(s"Check Incident '$errorMsg'")
+        .get(
+          s"/incident?processInstanceId=#{processInstanceId}"
+        )
+        .auth()
+        .check(checkMaxCount)
+        .check(
+          extractJsonOptional("$[*].incidentMessage", "errorMsg")
+        )
+        .check(
+          extractJsonOptional("$[*].rootCauseIncidentId", "rootCauseIncidentId")
+        )
+    ).doIf(session => session.attributes.get("errorMsg").contains(null)) {
+      getRootIncident(errorMsg)
+    }.exitHereIfFailed
+
+  private def getRootIncident(errorMsg: String): ChainBuilder =
+    doIf("#{rootCauseIncidentId.exists()}")(
+      exec(session => {
+        println(s"We are in the loop: ${session.attributes.get("rootCauseIncidentId")}")
+        session
+      })
+        .exec(
+          http(s"Check Root Incident '$errorMsg'")
+            .get(
+              s"/incident?rootCauseIncidentId=#{rootCauseIncidentId}"
+            )
+            .auth()
+            .check(checkMaxCount)
+            .check(
+              extractJsonOptional("$[*].incidentMessage", "errorMsg")
+            )
+        ).exitHereIfFailed
+    )

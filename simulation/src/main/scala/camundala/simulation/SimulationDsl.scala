@@ -64,12 +64,21 @@ trait SimulationDsl extends GatlingSimulation, TestOverrideExtensions, BpmnDsl:
   def scenario(scen: ProcessScenario)(body: SStep*): SimulationConstr =
     scen.copy(steps = body.toList).stage
 
+  def ignore(scen: ProcessScenario)(body: SStep*): SimulationConstr =
+    scen.copy(steps = body.toList).ignored.stage
+
   inline def badScenario(
       inline process: Process[_, _],
       status: Int,
       errorMsg: Option[String] = None
   ): SimulationConstr =
     BadScenario(nameOfVariable(process), process, status, errorMsg).stage
+
+  inline def incidentScenario(
+                               inline process: Process[_, _],
+                               incidentMsg: String
+  ): SimulationConstr =
+    IncidentScenario(nameOfVariable(process), process, incidentMsg).stage
 
   inline def subProcess(inline process: Process[_, _])(
       body: SStep*
@@ -105,3 +114,5 @@ trait SimulationDsl extends GatlingSimulation, TestOverrideExtensions, BpmnDsl:
     def start =
       SReceiveMessageEvent(s.name, s, processInstanceId = false)
   end extension
+
+  def waitFor(timeInSec: Int): SWaitTime = SWaitTime(timeInSec)

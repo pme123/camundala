@@ -1,7 +1,13 @@
 package camundala.simulation
 
 import camundala.bpmn.CamundaVariable.CInteger
-import camundala.api.{CamundaProperty, CompleteTaskOut, CorrelateMessageIn, FormVariables, StartProcessIn}
+import camundala.api.{
+  CamundaProperty,
+  CompleteTaskOut,
+  CorrelateMessageIn,
+  FormVariables,
+  StartProcessIn
+}
 import io.gatling.http.Predef.*
 import io.gatling.http.protocol.HttpProtocolBuilder
 import io.gatling.core.Predef.*
@@ -12,11 +18,11 @@ import io.gatling.http.request.builder.HttpRequestBuilder
 import io.circe.syntax.*
 
 trait GatlingSimulation
-  extends Simulation,
-    SScenarioExtensions,
-    SSubProcessExtensions,
-    SUserTaskExtensions,
-    SEventExtensions:
+    extends Simulation,
+      SScenarioExtensions,
+      SSubProcessExtensions,
+      SUserTaskExtensions,
+      SEventExtensions:
 
   private def httpProtocol: HttpProtocolBuilder =
     http
@@ -44,6 +50,9 @@ trait GatlingSimulation
           sp.steps.flatMap(toGatling) ++
           sp.check() :+
           sp.switchToMainProcess()
+      case SWaitTime(seconds) =>
+        Seq(exec().pause(seconds))
+
     val testRequests = scen match
       case ps: ProcessScenario =>
         (scen.start() +:
@@ -51,6 +60,9 @@ trait GatlingSimulation
           scen.check()
       case bs: BadScenario =>
         Seq(scen.start(bs.status, bs.errorMsg))
+      case is: IncidentScenario =>
+        scen.start() +: checkIncident(is.incidentMsg)
+
     scenario(scen.name)
       .doIf(scen.isIgnored)(exec { session =>
         println(s">>> Scenario '${scen.name}' is ignored!")
@@ -65,4 +77,3 @@ trait GatlingSimulation
           }
       )
       .inject(atOnceUsers(config.userAtOnce))
-

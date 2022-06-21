@@ -38,6 +38,8 @@ case class ProcessScenario(
   def add(testOverride: TestOverride): ProcessScenario =
     copy(testOverrides = addOverride(testOverride))
 
+  def ignored: ProcessScenario = copy(isIgnored = true)
+
 case class BadScenario(
     name: String,
     process: Process[_, _],
@@ -46,8 +48,17 @@ case class BadScenario(
     isIgnored: Boolean = false
 ) extends SScenario
 
-sealed trait SStep extends WithTestOverrides[SStep]:
+case class IncidentScenario(
+                        name: String,
+                        process: Process[_, _],
+                        incidentMsg: String,
+                        isIgnored: Boolean = false
+                      ) extends SScenario
+
+sealed trait SStep:
   def name: String
+
+sealed trait SInOutStep extends SStep, WithTestOverrides[SInOutStep]:
   lazy val inOutDescr: InOutDescr[_, _] = inOut.inOutDescr
   lazy val id: String = inOutDescr.id
   lazy val descr: Option[String] | String = inOutDescr.descr
@@ -58,7 +69,7 @@ case class SUserTask(
     name: String,
     inOut: UserTask[_, _],
     testOverrides: Option[TestOverrides] = None
-) extends SStep:
+) extends SInOutStep:
 
   def add(testOverride: TestOverride): SUserTask =
     copy(testOverrides = addOverride(testOverride))
@@ -68,7 +79,7 @@ case class SSubProcess(
     inOut: Process[_, _],
     steps: List[SStep],
     testOverrides: Option[TestOverrides] = None
-) extends SStep:
+) extends SInOutStep:
 
   def add(testOverride: TestOverride): SSubProcess =
     copy(testOverrides = addOverride(testOverride))
@@ -80,7 +91,7 @@ case class SReceiveMessageEvent(
                                  readyValue: Any = true,
                                  processInstanceId: Boolean = true,
                                  testOverrides: Option[TestOverrides] = None
-                               ) extends SStep:
+                               ) extends SInOutStep:
 
   def add(testOverride: TestOverride): SReceiveMessageEvent =
     copy(testOverrides = addOverride(testOverride))
@@ -91,7 +102,10 @@ case class SReceiveSignalEvent(
                                  readyVariable: String = "waitForSignal",
                                  readyValue: Any = true,
                                  testOverrides: Option[TestOverrides] = None
-                               ) extends SStep:
+                               ) extends SInOutStep:
 
   def add(testOverride: TestOverride): SReceiveSignalEvent =
     copy(testOverrides = addOverride(testOverride))
+
+case class SWaitTime(seconds: Int = 5) extends SStep:
+  val name: String = s"Wait for $seconds seconds"
