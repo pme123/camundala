@@ -5,13 +5,7 @@ info:
   description: |2+
 
 
-    Generated Open API:
-
-    - **openApi.yml**: Documentation of the Processes (this Documentation😊).
-    - **postmanOpenApi.yml**: Open Api that you can import to Postman!
-      Be aware that this needs some adjustments.
-
-    >WARNING: This is an experimental way and not approved.
+    Created at 23/06/2022, 08:47
 
     **[Check Project on Cawemo](https://cawemo.com/folders/a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala)**
 
@@ -52,24 +46,24 @@ info:
     </details>
 
 paths:
-  /Process/InvoiceReceiptP:
+  /process/InvoiceReceipt/InvoiceReceiptP:
     head:
       tags:
-      - InvoiceReceiptP
-      summary: 'Process: InvoiceReceiptP'
+      - Invoice Receipt
+      summary: 'Process: Invoice Receipt'
       description: |2
 
         This starts the Invoice Receipt Process.
 
         <iframe src="https://cawemo.com/embed/e289c19a-8a57-4467-8583-de72a5e57488" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
-      operationId: 'Process: InvoiceReceiptP'
+      operationId: 'Process: Invoice Receipt'
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/InvoiceReceipt'
             examples:
-              standard:
+              Invoice Receipt:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
@@ -6193,34 +6187,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/InvoiceReceiptCheck'
               examples:
-                standard:
+                Invoice Receipt:
                   value:
                     approved: true
-  /DecisionDmn/invoice-assign-approver:
+  /decisiondmn/InvoiceReceipt/invoice-assign-approver:
     head:
       tags:
-      - InvoiceReceiptP
-      summary: 'DecisionDmn: invoice-assign-approver'
+      - Invoice Receipt
+      summary: 'DecisionDmn: InvoiceAssignApproverDMN'
       description: |2
 
         Decision Table on who must approve the Invoice.
 
         <iframe src="https://cawemo.com/embed/155ba236-d5d1-42f7-8b56-3e90e0bb98d4" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
-
-
-        Decision DMN:
-        - _decisionDefinitionKey_: `invoice-assign-approver`,
-      operationId: 'DecisionDmn: invoice-assign-approver'
+      operationId: 'DecisionDmn: InvoiceAssignApproverDMN'
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/SelectApproverGroup'
             examples:
-              standard:
+              InvoiceAssignApproverDMN:
                 value:
-                  amount: 1050.0
-                  invoiceCategory: Travel Expenses
+                  amount: 30.0
+                  invoiceCategory: Software License Costs
         required: true
       responses:
         '200':
@@ -6230,15 +6220,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/AssignApproverGroups'
               examples:
-                standard:
+                InvoiceAssignApproverDMN:
                   value:
                     approverGroups:
-                    - accounting
-                    - sales
-  /UserTask/ApproveInvoiceUT:
+                    - management
+  /usertask/InvoiceReceipt/ApproveInvoiceUT:
     head:
       tags:
-      - InvoiceReceiptP
+      - Invoice Receipt
       summary: 'UserTask: ApproveInvoiceUT'
       description: Approve the invoice (or not).
       operationId: 'UserTask: ApproveInvoiceUT'
@@ -6248,7 +6237,7 @@ paths:
             schema:
               $ref: '#/components/schemas/InvoiceReceipt'
             examples:
-              standard:
+              ApproveInvoiceUT:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
@@ -12372,19 +12361,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApproveInvoice'
               examples:
-                standard:
-                  value:
-                    approved: true
                 Invoice approved:
                   value:
                     approved: true
                 Invoice NOT approved:
                   value:
                     approved: false
-  /UserTask/PrepareBankTransferUT:
+  /usertask/InvoiceReceipt/PrepareBankTransferUT:
     head:
       tags:
-      - InvoiceReceiptP
+      - Invoice Receipt
       summary: 'UserTask: PrepareBankTransferUT'
       description: Prepare the bank transfer in the Financial Accounting System.
       operationId: 'UserTask: PrepareBankTransferUT'
@@ -12394,7 +12380,7 @@ paths:
             schema:
               $ref: '#/components/schemas/InvoiceReceipt'
             examples:
-              standard:
+              PrepareBankTransferUT:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
@@ -18518,26 +18504,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/PrepareBankTransfer'
               examples:
-                standard:
+                PrepareBankTransferUT:
                   value: {}
-  /Process/ReviewInvoiceP:
+  /process/ReviewInvoice/ReviewInvoiceP:
     head:
       tags:
-      - ReviewInvoiceP
-      summary: 'Process: ReviewInvoiceP'
+      - Review Invoice
+      summary: 'Process: Review Invoice'
       description: |2
 
         This starts the Review Invoice Process.
 
         <iframe src="https://cawemo.com/embed/cc9f978a-e98a-4b01-991d-36d682574cda" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
-      operationId: 'Process: ReviewInvoiceP'
+      operationId: 'Process: Review Invoice'
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/InvoiceReceipt'
             examples:
-              standard:
+              Review Invoice:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
@@ -24661,13 +24647,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/InvoiceReviewed'
               examples:
-                standard:
+                Review Invoice:
                   value:
                     clarified: true
-  /UserTask/AssignReviewerUT:
+  /usertask/ReviewInvoice/AssignReviewerUT:
     head:
       tags:
-      - ReviewInvoiceP
+      - Review Invoice
       summary: 'UserTask: AssignReviewerUT'
       description: Select the Reviewer.
       operationId: 'UserTask: AssignReviewerUT'
@@ -24677,7 +24663,7 @@ paths:
             schema:
               $ref: '#/components/schemas/InvoiceReceipt'
             examples:
-              standard:
+              AssignReviewerUT:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
@@ -30801,13 +30787,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/AssignedReviewer'
               examples:
-                standard:
+                AssignReviewerUT:
                   value:
                     reviewer: John
-  /UserTask/ReviewInvoiceUT:
+  /usertask/ReviewInvoice/ReviewInvoiceUT:
     head:
       tags:
-      - ReviewInvoiceP
+      - Review Invoice
       summary: 'UserTask: ReviewInvoiceUT'
       description: Review Invoice and approve.
       operationId: 'UserTask: ReviewInvoiceUT'
@@ -30817,7 +30803,7 @@ paths:
             schema:
               $ref: '#/components/schemas/InvoiceReceipt'
             examples:
-              standard:
+              ReviewInvoiceUT:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
@@ -36941,9 +36927,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/InvoiceReviewed'
               examples:
-                standard:
-                  value:
-                    clarified: true
                 Invoice clarified:
                   value:
                     clarified: true

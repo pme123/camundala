@@ -13,7 +13,7 @@ import scala.reflect.ClassTag
 import scala.util.matching.*
 
 trait APICreator extends ProcessReferenceCreator, App:
-
+  
   def basePath: Path = pwd
   def cawemoFolder: Option[String] = None
   def openApiPath: Path = basePath / "openApi.yml"

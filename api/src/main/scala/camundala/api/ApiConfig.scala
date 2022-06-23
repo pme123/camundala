@@ -1,0 +1,34 @@
+package camundala
+package api
+
+import bpmn.*
+import sttp.tapir.openapi.Contact
+
+case class ApiConfig(
+    // define tenant if you have one
+    tenantId: Option[String] = None,
+    contact: Option[Contact] = None,
+    // REST endpoint
+    endpoint: String = "http://localhost:8080/engine-rest",
+    basePath: Path = pwd,
+    cawemoFolder: Option[String] = None,
+    openApiPath: Path = pwd / "openApi.yml",
+    openApiDocuPath: Path = pwd / "OpenApi.html",
+    jiraUrls: Map[String, String] = Map.empty
+):
+
+  def withTenantId(tenantId: String): ApiConfig =
+    copy(tenantId = Some(tenantId))
+
+  def withCawemoFolder(folderName: String): ApiConfig =
+      copy(cawemoFolder = Some(folderName))
+
+  def withBasePath(path: Path): ApiConfig =
+    copy(
+      basePath = path,
+      openApiPath = path / "openApi.yml",
+      openApiDocuPath = path / "OpenApi.html",
+    )
+
+  def withPort(port: Int): ApiConfig =
+    copy(endpoint = s"http://localhost:$port/engine-rest")
