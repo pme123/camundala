@@ -4,6 +4,8 @@ package api
 import camundala.api.ast.CApiGroup
 import camundala.bpmn.*
 import sttp.model.StatusCode
+import sttp.tapir.*
+import sttp.tapir.EndpointIO.Example
 import sttp.tapir.json.circe.*
 
 import scala.annotation.targetName
@@ -29,6 +31,7 @@ object ast:
     lazy val inOutDescr: InOutDescr[In, Out] = inOut.inOutDescr
     lazy val id: String = inOutDescr.id
     lazy val descr: String = inOut.maybeDescr.getOrElse("-")
+    lazy val typeName: String = inOut.typeName
 
     def withExamples(
         examples: ApiExamples[In, Out]
@@ -49,52 +52,11 @@ object ast:
       )
 
     // this function needs to be here as circe does not find the Encoder in the extension method
-    lazy val inMapper: Option[EndpointInput[In]] =
-      inOut.in match
-        case _: NoInput =>
-          None
-        case _ =>
-          Some(
-            jsonBody[In]
-              .examples(apiExamples.inputExamples.fetchExamples.map {
-                case InOutExample(label, ex) =>
-                  Example(
-                    ex,
-                    Some(label),
-                    None
-                  )
-              }.toList)
-          )
+    lazy val inMapper: EndpointIO.Body[String, In] = jsonBody[In]
+
     // this function needs to be here as circe does not find the Encoder in the extension method
-    lazy val outMapper: Option[EndpointOutput[Out]] =
-      inOut.out match
-        case _: NoOutput =>
-          None
-        case _ =>
-          Some(
-            oneOf[Out](
-              oneOfVariant(
-                StatusCode.Ok,
-                jsonBody[Out]
-                  .examples(apiExamples.outputExamples.fetchExamples.map { case InOutExample(name, ex: Out) =>
-                    Example(
-                      ex,
-                      Some(name),
-                      None
-                    )
-                  }.toList)
-              )
-            )/*
-            jsonBody[Out]
-              .examples(apiExamples.outputExamples.fetchExamples.map {
-                case InOutExample(label, ex) =>
-                  Example(
-                    ex,
-                    Some(label),
-                    None
-                  )
-              }.toList)*/
-          )
+    lazy val outMapper: EndpointIO.Body[String, Out] = jsonBody[Out]
+
   end InOutApi
 
   case class ProcessApi[
@@ -197,4 +159,5 @@ object ast:
   case class InOutExample[T <: Product: Encoder: Decoder: Schema](
       name: String,
       example: T
-  )
+  ):
+    def toCamunda: FormVariables = CamundaVariable.toCamunda(example)

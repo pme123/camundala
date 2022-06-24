@@ -13,7 +13,9 @@ case class ApiConfig(
     basePath: Path = pwd,
     cawemoFolder: Option[String] = None,
     openApiPath: Path = pwd / "openApi.yml",
+    postmanOpenApiPath: Path = pwd / "postmanOpenApi.yml",
     openApiDocuPath: Path = pwd / "OpenApi.html",
+    postmanOpenApiDocuPath: Path = pwd / "PostmanOpenApi.html",
     jiraUrls: Map[String, String] = Map.empty
 ):
 
@@ -28,6 +30,8 @@ case class ApiConfig(
       basePath = path,
       openApiPath = path / "openApi.yml",
       openApiDocuPath = path / "OpenApi.html",
+      postmanOpenApiPath = path / "postmanOpenApi.yml",
+      postmanOpenApiDocuPath = path / "PostmanOpenApi.html",
     )
 
   def withPort(port: Int): ApiConfig =

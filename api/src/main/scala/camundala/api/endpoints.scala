@@ -6,8 +6,10 @@ import camundala.bpmn.CamundaVariable.*
 import io.circe.*
 import io.circe.Json.JNumber
 import io.circe.syntax.*
-import sttp.tapir.PublicEndpoint
+import sttp.tapir.*
 import sttp.tapir.json.circe.*
+import sttp.tapir.EndpointIO.Example
+import sttp.tapir.EndpointOutput.Void
 
 import java.util.Base64
 import scala.reflect.ClassTag
@@ -49,7 +51,7 @@ case class CamundaRestApi[
     )
 
   def inMapper[T <: Product: Encoder: Decoder: Schema](
-      createInput: (example: In) => T
+      createInput: In => T
   ): Option[EndpointInput[T]] =
     if (requestInput.noInput)
       None

@@ -14,7 +14,7 @@ import scala.language.implicitConversions
 import scala.reflect.ClassTag
 import scala.util.matching.*
 
-trait ApiDsl extends TapirApiCreator:
+trait ApiDsl extends ApiCreatorApp:
 
   class ApiBuilder:
     private val ib = ListBuffer.empty[GroupedApi]

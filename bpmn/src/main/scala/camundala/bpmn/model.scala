@@ -31,8 +31,10 @@ trait InOut[
   lazy val descr: Option[String] | String = inOutDescr.descr
   lazy val in: In = inOutDescr.in
   lazy val out: Out = inOutDescr.out
-  lazy val camundaInMap: Map[String, CamundaVariable] = CamundaVariable.toCamunda(in)
-  lazy val camundaOutMap: Map[String, CamundaVariable] = CamundaVariable.toCamunda(out)
+  lazy val camundaInMap: Map[String, CamundaVariable] =
+    CamundaVariable.toCamunda(in)
+  lazy val camundaOutMap: Map[String, CamundaVariable] =
+    CamundaVariable.toCamunda(out)
   def camundaToCheckMap: Map[String, CamundaVariable] = camundaOutMap
 
   def withInOutDescr(inOutDescr: InOutDescr[In, Out]): T
@@ -52,8 +54,8 @@ trait InOut[
     )
 trait ProcessElement extends Product:
   def id: String
-  def label: String =
-    getClass.getSimpleName.head.toString.toLowerCase + getClass.getSimpleName.tail
+  def typeName: String = getClass.getSimpleName
+  def label: String = typeName.head.toString.toLowerCase + typeName.tail
   def descr: Option[String] | String
   lazy val maybeDescr: Option[String] = descr match
     case d: Option[String] => d
@@ -94,7 +96,8 @@ case class UserTask[
 ) extends ProcessNode,
       Activity[In, Out, UserTask[In, Out]]:
 
-  override lazy val camundaToCheckMap: Map[String, CamundaVariable] = camundaInMap
+  override lazy val camundaToCheckMap: Map[String, CamundaVariable] =
+    camundaInMap
 
   def withInOutDescr(descr: InOutDescr[In, Out]): UserTask[In, Out] =
     copy(inOutDescr = descr)
@@ -210,21 +213,20 @@ object NoInput:
   given Decoder[NoInput] = deriveDecoder
 
 case class NoOutput()
-object NoOutput :
+object NoOutput:
   given Schema[NoOutput] = Schema.derived
   given Encoder[NoOutput] = deriveEncoder
   given Decoder[NoOutput] = deriveDecoder
 
-
 case class FileInOut(
-                      fileName: String,
-                      @description("The content of the File as a Byte Array.")
-                      content: Array[Byte],
-                      mimeType: Option[String]
-                    ):
+    fileName: String,
+    @description("The content of the File as a Byte Array.")
+    content: Array[Byte],
+    mimeType: Option[String]
+):
   lazy val contentAsBase64: String = Base64.getEncoder.encodeToString(content)
 
-object FileInOut :
+object FileInOut:
   given Schema[FileInOut] = Schema.derived
   given Encoder[FileInOut] = deriveEncoder
   given Decoder[FileInOut] = deriveDecoder
