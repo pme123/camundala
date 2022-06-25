@@ -14,7 +14,7 @@ import scala.language.implicitConversions
 import scala.reflect.ClassTag
 import scala.util.matching.*
 
-trait ApiDsl extends ApiCreatorApp:
+trait ApiDsl :
 
   class ApiBuilder:
     private val ib = ListBuffer.empty[GroupedApi]
@@ -28,13 +28,6 @@ trait ApiDsl extends ApiCreatorApp:
   extension (api: GroupedApi)
     private[api] def stage: ApiConstr =
       (bldr: ApiBuilder) ?=> bldr.pushApi(api)
-
-  def document(body: ApiConstr): Unit =
-    val sb = ApiBuilder()
-    body(using sb)
-    val apiDoc = sb.mkBlock
-    println(s"APIDOC: $apiDoc")
-    run(apiDoc) // runs Gatling Load Tests
 
   def group(name: String)(apis: GroupedApi*): ApiConstr =
     CApiGroup(name, apis.toList).stage

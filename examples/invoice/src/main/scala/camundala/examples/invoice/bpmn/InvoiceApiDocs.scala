@@ -7,7 +7,7 @@ import camundala.examples.invoice.bpmn.InvoiceApi.*
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
 
-object InvoiceApiDocs extends ApiDsl:
+object InvoiceApiDocs extends ApiCreatorApp:
 
   override protected val apiConfig: ApiConfig =
     super.apiConfig

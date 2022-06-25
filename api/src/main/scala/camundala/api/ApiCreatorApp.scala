@@ -14,12 +14,46 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import scala.util.matching.Regex
 
-trait ApiCreatorApp extends PostmanApiCreator, TapirApiCreator:
+trait ApiCreatorApp extends ApiDsl, PostmanApiCreator, TapirApiCreator, App:
+
+  def document(body: ApiConstr): Unit =
+    val sb = ApiBuilder()
+    body(using sb)
+    val apiDoc = sb.mkBlock
+    toOpenApi(apiDoc)
+
+  protected def toOpenApi(apiDoc: ApiDoc): Unit =
+    writeOpenApi(
+      apiConfig.openApiPath,
+      openApi(apiDoc),
+      apiConfig.openApiDocuPath
+    )
+    writeOpenApi(
+      apiConfig.postmanOpenApiPath,
+      postmanOpenApi(apiDoc),
+      apiConfig.postmanOpenApiDocuPath
+    )
+    println(s"Check Open API Docu: ${apiConfig.openApiDocuPath}")
+
+  protected lazy val openAPIDocsInterpreter =
+    OpenAPIDocsInterpreter(docsOptions =
+      OpenAPIDocsOptions.default.copy(defaultDecodeFailureOutput = _ => None)
+    )
+
+  protected def openApi(apiDoc: ApiDoc): OpenAPI =
+    val endpoints = create(apiDoc)
+    openAPIDocsInterpreter
+      .toOpenAPI(endpoints, info(title, description))
+
+  protected def postmanOpenApi(apiDoc: ApiDoc): OpenAPI =
+    val endpoints = createPostman(apiDoc)
+    openAPIDocsInterpreter
+      .toOpenAPI(endpoints, info(title, postmanDescription))
+      .servers(servers)
 
   protected def createChangeLog(): String =
     val changeLogFile = basePath / "CHANGELOG.md"
     if (changeLogFile.toIO.exists())
-      //  createChangeLog(read(changeLogFile))
       s"""
          |# Changelog
          |
@@ -41,9 +75,9 @@ trait ApiCreatorApp extends PostmanApiCreator, TapirApiCreator:
       ""
 
   protected def replaceJira(
-      line: String,
-      jiraUrls: Map[String, String]
-  ): String =
+                             line: String,
+                             jiraUrls: Map[String, String]
+                           ): String =
     jiraUrls.toList match
       case Nil => line
       case (k -> url) :: tail =>
@@ -66,9 +100,9 @@ trait ApiCreatorApp extends PostmanApiCreator, TapirApiCreator:
        |Created at ${SimpleDateFormat().format(new Date())}
        |
        |**${//
-    apiConfig.cawemoFolder
-      .map(f => s"[Check Project on Cawemo](https://cawemo.com/folders/$f)")
-      .mkString //
+      apiConfig.cawemoFolder
+        .map(f => s"[Check Project on Cawemo](https://cawemo.com/folders/$f)")
+        .mkString //
     }**
        |
        |${createReadme()}
@@ -77,35 +111,11 @@ trait ApiCreatorApp extends PostmanApiCreator, TapirApiCreator:
        |""".stripMargin
   )
   protected def postmanDescription: Option[String] =
-    description.map(descr =>
-      s"""
-        |**This is for Postman - to have example requests. Be aware the Output is not provided!**
-        |
-        |$descr
-        |""".stripMargin)
-
-  protected def run(apiDoc: ApiDoc): Unit =
-    writeOpenApi(apiConfig.openApiPath, openApi(apiDoc), apiConfig.openApiDocuPath)
-    writeOpenApi(apiConfig.postmanOpenApiPath, postmanOpenApi(apiDoc), apiConfig.postmanOpenApiDocuPath)
-    println(s"Check Open API Docu: ${apiConfig.openApiDocuPath}")
-
-  protected lazy val openAPIDocsInterpreter =
-    OpenAPIDocsInterpreter(docsOptions =
-      OpenAPIDocsOptions.default.copy(defaultDecodeFailureOutput = _ => None)
-    )
-
-  protected def openApi(apiDoc: ApiDoc): OpenAPI =
-    val endpoints = create(apiDoc)
-    println(s"ENDPOINTS: ${endpoints.size}")
-    openAPIDocsInterpreter
-      .toOpenAPI(endpoints, info(title, description))
-
-  protected def postmanOpenApi(apiDoc: ApiDoc): OpenAPI =
-    val endpoints = createPostman(apiDoc)
-    println(s"ENDPOINTS: ${endpoints.size}")
-    openAPIDocsInterpreter
-      .toOpenAPI(endpoints, info(title, postmanDescription))
-      .servers(servers)
+    description.map(descr => s"""
+                                |**This is for Postman - to have example requests. Be aware the Output is not provided!**
+                                |
+                                |$descr
+                                |""".stripMargin)
 
   private def writeOpenApi(path: Path, api: OpenAPI, docPath: Path): Unit =
     if (os.exists(path))
@@ -116,4 +126,3 @@ trait ApiCreatorApp extends PostmanApiCreator, TapirApiCreator:
     println(s"See Open API Html $docPath")
 
 end ApiCreatorApp
-

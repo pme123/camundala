@@ -52,6 +52,8 @@ trait PostmanApiCreator extends AbstractApiCreator:
           inOut match
             case _: UserTask[?, ?] =>
               createPostmanForUserTask(aa, tag)
+            case _: DecisionDmn[?, ?] =>
+              createPostmanForDecisionDmn(aa, tag)
             case other =>
               println(s"TODO: $other")
               Seq.empty
@@ -62,88 +64,188 @@ trait PostmanApiCreator extends AbstractApiCreator:
       api: ProcessApi[?, ?],
       tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
-    api.startProcess(tag)
+    Seq(
+      api.startProcess(tag)
+    )
 
   protected def createPostmanForUserTask(
       api: ActivityApi[?, ?],
       tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
-    api.getActiveTask(tag)
+    Seq(
+      api.getActiveTask(tag),
+      api.getTaskFormVariables(tag),
+      api.completeTask(tag)
+    )
+  protected def createPostmanForDecisionDmn(
+      api: ActivityApi[?, ?],
+      tag: String
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+    Seq(
+      api.evaluateDecision(tag)
+    )
 
   extension (api: InOutApi[?, ?])
     private def postmanBaseEndpoint(
-        tag: String
+        tag: String,
+        input: Option[EndpointInput[?]],
+        label: String
     ): PublicEndpoint[?, Unit, Unit, Any] =
-      endpoint
-        .name(s"${api.typeName}: ${api.name}")
-        .tag(tag)
-        .summary(s"${api.typeName}: ${api.name}")
-        .description(api.descr)
+      Some(
+        endpoint
+          .tag(tag)
+          .summary(s"${api.name}: $label")
+          .description(api.descr)
+      ).map(ep =>
+        input
+          .map(ep.in)
+          .getOrElse(ep)
+      ).get
 
   end extension
 
   extension (process: ProcessApi[?, ?])
-
-    def startProcess(tag: String): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+    def startProcess(tag: String): PublicEndpoint[?, Unit, ?, Any] =
       val path =
-        val basePath = "process-definition" / "key" / process.inOut.id
-        tenantId
-          .map(id => basePath / "tenant-id" / tenantIdPath(id) / "start")
-          .getOrElse(basePath / "start")
-
-      Seq(
+        tenantIdPath("process-definition" / "key" / process.inOut.id, "start")
+      val input =
         process
-          .postmanBaseEndpoint(tag)
-          .in(path)
-          .post
-      ).map(ep =>
-        process
-          .toPostmanInput(
-            jsonBody[StartProcessIn],
-            (example: FormVariables) =>
-              StartProcessIn(
-                example,
-                Some(process.name)
-              )
+          .toPostmanInput((example: FormVariables) =>
+            StartProcessIn(
+              example,
+              Some(process.name)
+            )
           )
-          .map(ep.in)
-          .getOrElse(ep)
-      )
+      process
+        .postmanBaseEndpoint(tag, input, "StartProcess")
+        .in(path)
+        .post
+
   end extension
 
   extension (api: ActivityApi[?, ?])
-    def getActiveTask(tag: String): Seq[PublicEndpoint[?, Unit, ?, Any]] =
-      println("TODO: getActiveTask") //TODO
-      Seq.empty
-  end extension
 
-  private def tenantIdPath(id: String): EndpointInput[String] =
-    path[String]("tenant-id")
-      .description("The tenant, the process is deployed for.")
-      .default(id)
+    def getActiveTask(tag: String): PublicEndpoint[?, Unit, ?, Any] =
+      val path = "task" / s"--REMOVE:${api.name}--"
+
+      val input =
+        api
+          .toPostmanInput(_ => GetActiveTaskIn())
+      api
+        .postmanBaseEndpoint(tag, input, "GetActiveTask")
+        .in(path)
+        .post
+
+    def getTaskFormVariables(tag: String): PublicEndpoint[?, Unit, ?, Any] =
+      val path =
+        "task" / taskIdPath() / "form-variables" / s"--REMOVE:${api.name}--"
+
+      api
+        .postmanBaseEndpoint(tag, None, "GetTaskFormVariables")
+        .in(path)
+        .in(
+          query[String]("variableNames")
+            .description(
+              """A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+                |It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+                |If the query parameter contains non-existent variable names, the variable names are ignored.""".stripMargin
+            )
+            .default(
+              api.apiExamples.inputExamples.defaultExample.example.productElementNames
+                .mkString(",")
+            )
+        )
+        .in(
+          query[Boolean]("deserializeValues")
+            .default(false)
+        )
+        .get
+
+    def completeTask(tag: String): PublicEndpoint[?, Unit, ?, Any] =
+      val path = "task" / taskIdPath() / "complete" / s"--REMOVE:${api.name}--"
+
+      val input = api
+        .toPostmanInput((example: FormVariables) => CompleteTaskIn(example),
+          api.apiExamples.outputExamples.fetchExamples)
+
+      api
+        .postmanBaseEndpoint(tag, input, "CompleteTask")
+        .in(path)
+        .post
+
+    def evaluateDecision(tag: String): PublicEndpoint[?, Unit, ?, Any] =
+      val decisionDmn = api.inOut.asInstanceOf[DecisionDmn[?, ?]]
+      val path = tenantIdPath(
+        "decision-definition" / "key" / definitionKeyPath(
+          decisionDmn.decisionDefinitionKey
+        ),
+        "evaluate"
+      )
+      val input = api
+        .toPostmanInput((example: FormVariables) => EvaluateDecisionIn(example))
+
+      api
+        .postmanBaseEndpoint(tag, input, "EvaluateDecision")
+        .in(path)
+        .post
+
+  end extension
 
   extension (inOutApi: InOutApi[?, ?])
     def toPostmanInput[
         T <: Product: Encoder: Decoder: Schema
     ](
-        inMapper: EndpointIO.Body[String, T],
-        wrapper: FormVariables => T
+        wrapper: FormVariables => T,
+        examples: Seq[InOutExample[?]] =
+        inOutApi.apiExamples.inputExamples.fetchExamples
     ): Option[EndpointInput[T]] =
       inOutApi.inOut.in match
         case _: NoInput =>
           None
         case _ =>
           Some(
-            inMapper
-              .examples(
-                inOutApi.apiExamples.inputExamples.fetchExamples.map {
-                case ex @ InOutExample(label, _) =>
-                  Example(
-                    wrapper(ex.toCamunda),
-                    Some(label),
-                    None
-                  )
+            jsonBody[T]
+              .examples(examples.map { case ex @ InOutExample(label, _) =>
+                Example(
+                  wrapper(ex.toCamunda),
+                  Some(label),
+                  None
+                )
               }.toList)
           )
   end extension
+
+  private def tenantIdPath(
+      basePath: EndpointInput[?],
+      pathElem: String
+  ): EndpointInput[?] =
+    tenantId
+      .map(id => basePath / "tenant-id" / tenantIdPath(id) / pathElem)
+      .getOrElse(basePath / pathElem)
+
+  private def tenantIdPath(id: String): EndpointInput[String] =
+    path[String]("tenant-id")
+      .description("The tenant, the process is deployed for.")
+      .default(id)
+
+  private def taskIdPath() =
+    path[String]("taskId")
+      .description("""The taskId of the Form.
+                     |> This is the result id of the `GetActiveTask`
+                     |
+                     |Add in the _Tests_ panel of _Postman_:
+                     |```
+                     |let result = pm.response.json()[0];
+                     |pm.collectionVariables.set("taskId", result.id)
+                     |```
+                     |""".stripMargin)
+      .default("{{taskId}}")
+
+  private def definitionKeyPath(key: String): EndpointInput[String] =
+    path[String]("key")
+      .description(
+        "The Process- or Decision-DefinitionKey of the Process or Decision"
+      )
+      .default(key)
+
 end PostmanApiCreator

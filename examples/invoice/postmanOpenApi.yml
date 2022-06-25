@@ -8,7 +8,7 @@ info:
 
 
 
-    Created at 24/06/2022, 13:31
+    Created at 25/06/2022, 17:37
 
     **[Check Project on Cawemo](https://cawemo.com/folders/a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala)**
 
@@ -57,13 +57,13 @@ paths:
     post:
       tags:
       - Invoice Receipt
-      summary: 'Process: Invoice Receipt'
+      summary: 'Invoice Receipt: StartProcess'
       description: |2
 
         This starts the Invoice Receipt Process.
 
         <iframe src="https://cawemo.com/embed/e289c19a-8a57-4467-8583-de72a5e57488" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
-      operationId: 'Process: Invoice Receipt'
+      operationId: postProcess-definitionKeyInvoicereceiptpStart
       requestBody:
         content:
           application/json:
@@ -97,17 +97,265 @@ paths:
       responses:
         '200':
           description: ''
+  /decision-definition/key/{key}/evaluate:
+    post:
+      tags:
+      - Invoice Receipt
+      summary: 'InvoiceAssignApproverDMN: EvaluateDecision'
+      description: |2
+
+        Decision Table on who must approve the Invoice.
+
+        <iframe src="https://cawemo.com/embed/155ba236-d5d1-42f7-8b56-3e90e0bb98d4" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
+      operationId: postDecision-definitionKeyKeyEvaluate
+      parameters:
+      - name: key
+        in: path
+        description: The Process- or Decision-DefinitionKey of the Process or Decision
+        required: true
+        schema:
+          type: string
+          default: invoice-assign-approver
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateDecisionIn'
+            examples:
+              InvoiceAssignApproverDMN:
+                value:
+                  variables:
+                    amount:
+                      value: 30.0
+                      type: Double
+                    invoiceCategory:
+                      value: Software License Costs
+                      type: String
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/--REMOVE:ApproveInvoiceUT--:
+    post:
+      tags:
+      - Invoice Receipt
+      summary: 'ApproveInvoiceUT: GetActiveTask'
+      description: Approve the invoice (or not).
+      operationId: postTask--remove:approveinvoiceut--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetActiveTaskIn'
+            examples:
+              ApproveInvoiceUT:
+                value:
+                  processInstanceId: '{{processInstanceId}}'
+                  active: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/form-variables/--REMOVE:ApproveInvoiceUT--:
+    get:
+      tags:
+      - Invoice Receipt
+      summary: 'ApproveInvoiceUT: GetTaskFormVariables'
+      description: Approve the invoice (or not).
+      operationId: getTaskTaskidForm-variables--remove:approveinvoiceut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      - name: variableNames
+        in: query
+        description: |-
+          A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+          It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+          If the query parameter contains non-existent variable names, the variable names are ignored.
+        required: false
+        schema:
+          type: string
+          default: creditor,amount,invoiceCategory,invoiceNumber,invoiceDocument
+      - name: deserializeValues
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/complete/--REMOVE:ApproveInvoiceUT--:
+    post:
+      tags:
+      - Invoice Receipt
+      summary: 'ApproveInvoiceUT: CompleteTask'
+      description: Approve the invoice (or not).
+      operationId: postTaskTaskidComplete--remove:approveinvoiceut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskIn'
+            examples:
+              Invoice approved:
+                value:
+                  variables:
+                    approved:
+                      value: true
+                      type: Boolean
+                  withVariablesInReturn: true
+              Invoice NOT approved:
+                value:
+                  variables:
+                    approved:
+                      value: false
+                      type: Boolean
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/--REMOVE:PrepareBankTransferUT--:
+    post:
+      tags:
+      - Invoice Receipt
+      summary: 'PrepareBankTransferUT: GetActiveTask'
+      description: Prepare the bank transfer in the Financial Accounting System.
+      operationId: postTask--remove:preparebanktransferut--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetActiveTaskIn'
+            examples:
+              PrepareBankTransferUT:
+                value:
+                  processInstanceId: '{{processInstanceId}}'
+                  active: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/form-variables/--REMOVE:PrepareBankTransferUT--:
+    get:
+      tags:
+      - Invoice Receipt
+      summary: 'PrepareBankTransferUT: GetTaskFormVariables'
+      description: Prepare the bank transfer in the Financial Accounting System.
+      operationId: getTaskTaskidForm-variables--remove:preparebanktransferut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      - name: variableNames
+        in: query
+        description: |-
+          A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+          It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+          If the query parameter contains non-existent variable names, the variable names are ignored.
+        required: false
+        schema:
+          type: string
+          default: creditor,amount,invoiceCategory,invoiceNumber,invoiceDocument
+      - name: deserializeValues
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/complete/--REMOVE:PrepareBankTransferUT--:
+    post:
+      tags:
+      - Invoice Receipt
+      summary: 'PrepareBankTransferUT: CompleteTask'
+      description: Prepare the bank transfer in the Financial Accounting System.
+      operationId: postTaskTaskidComplete--remove:preparebanktransferut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskIn'
+            examples:
+              PrepareBankTransferUT:
+                value:
+                  variables: {}
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
   /process-definition/key/ReviewInvoiceP/start:
     post:
       tags:
       - Review Invoice
-      summary: 'Process: Review Invoice'
+      summary: 'Review Invoice: StartProcess'
       description: |2
 
         This starts the Review Invoice Process.
 
         <iframe src="https://cawemo.com/embed/cc9f978a-e98a-4b01-991d-36d682574cda" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
-      operationId: 'Process: Review Invoice'
+      operationId: postProcess-definitionKeyReviewinvoicepStart
       requestBody:
         content:
           application/json:
@@ -136,6 +384,219 @@ paths:
                       value: Travel Expenses
                       type: String
                   businessKey: Review Invoice
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/--REMOVE:AssignReviewerUT--:
+    post:
+      tags:
+      - Review Invoice
+      summary: 'AssignReviewerUT: GetActiveTask'
+      description: Select the Reviewer.
+      operationId: postTask--remove:assignreviewerut--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetActiveTaskIn'
+            examples:
+              AssignReviewerUT:
+                value:
+                  processInstanceId: '{{processInstanceId}}'
+                  active: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/form-variables/--REMOVE:AssignReviewerUT--:
+    get:
+      tags:
+      - Review Invoice
+      summary: 'AssignReviewerUT: GetTaskFormVariables'
+      description: Select the Reviewer.
+      operationId: getTaskTaskidForm-variables--remove:assignreviewerut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      - name: variableNames
+        in: query
+        description: |-
+          A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+          It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+          If the query parameter contains non-existent variable names, the variable names are ignored.
+        required: false
+        schema:
+          type: string
+          default: creditor,amount,invoiceCategory,invoiceNumber,invoiceDocument
+      - name: deserializeValues
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/complete/--REMOVE:AssignReviewerUT--:
+    post:
+      tags:
+      - Review Invoice
+      summary: 'AssignReviewerUT: CompleteTask'
+      description: Select the Reviewer.
+      operationId: postTaskTaskidComplete--remove:assignreviewerut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskIn'
+            examples:
+              AssignReviewerUT:
+                value:
+                  variables:
+                    reviewer:
+                      value: John
+                      type: String
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/--REMOVE:ReviewInvoiceUT--:
+    post:
+      tags:
+      - Review Invoice
+      summary: 'ReviewInvoiceUT: GetActiveTask'
+      description: Review Invoice and approve.
+      operationId: postTask--remove:reviewinvoiceut--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetActiveTaskIn'
+            examples:
+              ReviewInvoiceUT:
+                value:
+                  processInstanceId: '{{processInstanceId}}'
+                  active: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/form-variables/--REMOVE:ReviewInvoiceUT--:
+    get:
+      tags:
+      - Review Invoice
+      summary: 'ReviewInvoiceUT: GetTaskFormVariables'
+      description: Review Invoice and approve.
+      operationId: getTaskTaskidForm-variables--remove:reviewinvoiceut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      - name: variableNames
+        in: query
+        description: |-
+          A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+          It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+          If the query parameter contains non-existent variable names, the variable names are ignored.
+        required: false
+        schema:
+          type: string
+          default: creditor,amount,invoiceCategory,invoiceNumber,invoiceDocument
+      - name: deserializeValues
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/complete/--REMOVE:ReviewInvoiceUT--:
+    post:
+      tags:
+      - Review Invoice
+      summary: 'ReviewInvoiceUT: CompleteTask'
+      description: Review Invoice and approve.
+      operationId: postTaskTaskidComplete--remove:reviewinvoiceut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskIn'
+            examples:
+              Invoice clarified:
+                value:
+                  variables:
+                    clarified:
+                      value: true
+                      type: Boolean
+                  withVariablesInReturn: true
+              Invoice NOT clarified:
+                value:
+                  variables:
+                    clarified:
+                      value: false
+                      type: Boolean
                   withVariablesInReturn: true
         required: true
       responses:
@@ -251,6 +712,50 @@ components:
       - $ref: '#/components/schemas/CLong'
       - $ref: '#/components/schemas/CNull'
       - $ref: '#/components/schemas/CString'
+    CompleteTaskIn:
+      required:
+      - variables
+      - withVariablesInReturn
+      type: object
+      properties:
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+        withVariablesInReturn:
+          type: boolean
+          description: Set to false will not return the Process Variables and the
+            Result Status is 204.
+      description: 'A JSON object with the following properties: (at least an empty
+        JSON object {} or an empty request body)'
+    EvaluateDecisionIn:
+      required:
+      - variables
+      type: object
+      properties:
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+      description: 'A JSON object with the following properties:'
+    GetActiveTaskIn:
+      required:
+      - processInstanceId
+      - active
+      type: object
+      properties:
+        processInstanceId:
+          type: string
+          description: |2
+
+            The id of the process - you want to get the active tasks.
+            > This is the result id of the `StartProcessOut`
+
+            Add in the _Tests_ panel of _Postman_:
+            ```
+            let result = pm.response.json();
+            pm.collectionVariables.set("processInstanceId", result.id)
+            ```
+        active:
+          type: boolean
+          description: We are only interested in the active Task(s)
+      description: A JSON object with the following properties
     Map_CamundaVariable:
       type: object
       additionalProperties:

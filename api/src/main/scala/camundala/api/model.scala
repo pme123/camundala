@@ -192,7 +192,13 @@ case class GetActiveTaskIn(
       """
         |The id of the process - you want to get the active tasks.
         |> This is the result id of the `StartProcessOut`
-        |"""
+        |
+        |Add in the _Tests_ panel of _Postman_:
+        |```
+        |let result = pm.response.json();
+        |pm.collectionVariables.set("processInstanceId", result.id)
+        |```
+        |""".stripMargin
     )
     processInstanceId: String = "{{processInstanceId}}",
     @description("We are only interested in the active Task(s)")

@@ -160,4 +160,5 @@ object ast:
       name: String,
       example: T
   ):
+    // this function needs to be here as circe does not find the Encoder in the extension method
     def toCamunda: FormVariables = CamundaVariable.toCamunda(example)

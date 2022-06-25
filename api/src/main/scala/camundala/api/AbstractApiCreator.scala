@@ -18,7 +18,7 @@ import java.util.Date
 import scala.reflect.ClassTag
 import scala.util.matching.Regex
 
-trait AbstractApiCreator extends App:
+trait AbstractApiCreator :
 
   protected def apiConfig: ApiConfig = ApiConfig()
 
