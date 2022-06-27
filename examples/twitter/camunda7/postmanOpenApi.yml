@@ -2,10 +2,8 @@ openapi: 3.0.3
 info:
   title: Twitter Process API
   version: '1.0'
-  description: "\n\nCreated at 03/04/2022, 16:06\n\nGenerated Open API:\n\n- **openApi.yml**:\
-    \ Documentation of the Processes (this Documentation\U0001f60a).\n- **postmanOpenApi.yml**:\
-    \ Open Api that you can import to Postman!\n  Be aware that this needs some adjustments.\n\
-    \n>WARNING: This is an experimental way and not approved.\n\n****\n\nI did the\
+  description: "\n**This is for Postman - to have example requests. Be aware the Output\
+    \ is not provided!**\n\n\n\nCreated at 27/06/2022, 07:13\n\n****\n\nI did the\
     \ following Adjustments:\n* Changed it to _Scala_ to simplify my example.\n* Added\
     \ extensions to the Camundala DSL.\n* Added the BPMN implementation in Camundala\
     \ DSL.\n\nThere are 2 application here:\n1. **TwitterProcessRunnerApp**\n   \n\
@@ -18,51 +16,25 @@ info:
     \ ```\nThis is the [original README](https://github.com/camunda/camunda-bpm-examples/tree/master/spring-boot-starter/example-twitter)\n\
     \nI bundled it here! Just run `InvoiceServletProcessApplication`.\n\nThis based\
     \ on this Project: https://github.com/pme123/spring-boot-datakurre-plugins\n\n\
-    \n\n"
+    \n\n\n"
 servers:
 - url: http://localhost:8887/engine-rest
+  description: Local Developer Server
 paths:
   /process-definition/key/TwitterDemoP/start:
     post:
       tags:
-      - TwitterDemoP
-      summary: 'Process: TwitterDemoP'
-      description: |
-        This runs the Twitter Approvement Process.
-        <details>
-        <summary><b>Used in the 4 Process(es)</b></summary>
-        <p>
-
-
-        - _camundala_
-           - [TwitterDemoProcess](https://MYDOCHOST/camundala/OpenApi.html#tag/TwitterDemoProcess)
-
-
-        - _camundala-dsl_
-           - [TwitterDemoProcess](https://MYDOCHOST/camundala-dsl/OpenApi.html#tag/TwitterDemoProcess)
-
-
-        - _spring-boot-datakurre-plugins_
-           - [TwitterDemoProcess](https://MYDOCHOST/spring-boot-datakurre-plugins/OpenApi.html#tag/TwitterDemoProcess)
-           - [TwitterDemoProcess](https://MYDOCHOST/spring-boot-datakurre-plugins/OpenApi.html#tag/TwitterDemoProcess)
-
-
-        - _zio-camunda-spring-boot_
-           - [TwitterDemoProcess](https://MYDOCHOST/zio-camunda-spring-boot/OpenApi.html#tag/TwitterDemoProcess)
-
-
-
-
-        </p>
-        </details>
-      operationId: 'Process: TwitterDemoP'
+      - twitterDemoProcess
+      summary: 'twitterDemoProcess: StartProcess'
+      description: This runs the Twitter Approvement Process.
+      operationId: postProcess-definitionKeyTwitterdemopStart
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/StartProcessIn'
             examples:
-              standard:
+              twitterDemoProcess:
                 value:
                   variables:
                     email:
@@ -71,39 +43,41 @@ paths:
                     content:
                       value: Test Tweet
                       type: String
-                  businessKey: example-businesskey
+                  businessKey: twitterDemoProcess
                   withVariablesInReturn: true
         required: true
       responses:
         '200':
           description: ''
-  /task/--REMOVE:ReviewTweetUT--:
+  /task/--REMOVE:reviewTweetApprovedUT--:
     post:
       tags:
-      - TwitterDemoP
-      summary: 'no Api!: no API!'
-      description: ''
-      operationId: 'no Api!: no API!'
+      - twitterDemoProcess
+      summary: 'reviewTweetApprovedUT: GetActiveTask'
+      description: '-'
+      operationId: postTask--remove:reviewtweetapprovedut--
       responses:
         '200':
           description: ''
-  /task/{taskId}/form-variables/--REMOVE:ReviewTweetUT--:
+  /task/{taskId}/form-variables/--REMOVE:reviewTweetApprovedUT--:
     get:
       tags:
-      - TwitterDemoP
-      summary: 'no API!: no API!'
-      description: |+
-        Retrieves the form variables for a task.
-        The form variables take form data specified on the task into account.
-        If form fields are defined, the variable types and default values of the form fields are taken into account.
-
-      operationId: 'no API!: no API!'
+      - twitterDemoProcess
+      summary: 'reviewTweetApprovedUT: GetTaskFormVariables'
+      description: '-'
+      operationId: getTaskTaskidForm-variables--remove:reviewtweetapprovedut--
       parameters:
       - name: taskId
         in: path
         description: |
           The taskId of the Form.
           > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
         required: true
         schema:
           type: string
@@ -127,51 +101,29 @@ paths:
       responses:
         '200':
           description: ''
-  /task/{taskId}/complete/--REMOVE:ReviewTweetUT--:
+  /task/{taskId}/complete/--REMOVE:reviewTweetApprovedUT--:
     post:
       tags:
-      - TwitterDemoP
-      summary: 'no API!: no API!'
-      description: ''
-      operationId: 'no API!: no API!'
+      - twitterDemoProcess
+      summary: 'reviewTweetApprovedUT: CompleteTask'
+      description: '-'
+      operationId: postTaskTaskidComplete--remove:reviewtweetapprovedut--
       parameters:
       - name: taskId
         in: path
         description: |
           The taskId of the Form.
           > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
         required: true
         schema:
           type: string
           default: '{{taskId}}'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CompleteTaskIn'
-            examples:
-              standard:
-                value:
-                  variables:
-                    approved:
-                      value: true
-                      type: Boolean
-                  withVariablesInReturn: true
-              Tweet accepted:
-                value:
-                  variables:
-                    approved:
-                      value: true
-                      type: Boolean
-                  withVariablesInReturn: true
-              Tweet rejected:
-                value:
-                  variables:
-                    approved:
-                      value: false
-                      type: Boolean
-                  withVariablesInReturn: true
-        required: true
       responses:
         '200':
           description: ''
@@ -285,20 +237,6 @@ components:
       - $ref: '#/components/schemas/CLong'
       - $ref: '#/components/schemas/CNull'
       - $ref: '#/components/schemas/CString'
-    CompleteTaskIn:
-      required:
-      - variables
-      - withVariablesInReturn
-      type: object
-      properties:
-        variables:
-          $ref: '#/components/schemas/Map_CamundaVariable'
-        withVariablesInReturn:
-          type: boolean
-          description: Set to false will not return the Process Variables and the
-            Result Status is 204.
-      description: 'A JSON object with the following properties: (at least an empty
-        JSON object {} or an empty request body)'
     Map_CamundaVariable:
       type: object
       additionalProperties:

@@ -1,7 +1,6 @@
 package camundala
 package api
 
-import camundala.api.ast.*
 import camundala.bpmn.*
 import io.circe.*
 import io.circe.syntax.*

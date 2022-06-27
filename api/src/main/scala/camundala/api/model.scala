@@ -128,10 +128,10 @@ case class CorrelateMessageIn(
     tenantId: Option[String] = None,
     withoutTenantId: Option[Boolean] = None,
     processInstanceId: Option[String] = None,
-    correlationKeys: Option[Map[String, CamundaVariable]] = None,
-    localCorrelationKeys: Option[Map[String, CamundaVariable]] = None,
-    processVariables: Option[Map[String, CamundaVariable]] = None,
-    processVariablesLocal: Option[Map[String, CamundaVariable]] = None,
+    correlationKeys: Option[FormVariables] = None,
+    localCorrelationKeys: Option[FormVariables] = None,
+    processVariables: Option[FormVariables] = None,
+    processVariablesLocal: Option[FormVariables] = None,
     all: Boolean = false,
     resultEnabled: Boolean = true,
     variablesInResultEnabled: Boolean = true
@@ -370,3 +370,8 @@ object GetActiveTaskIn:
   given Schema[GetActiveTaskIn] = Schema.derived
   given Encoder[GetActiveTaskIn] = deriveEncoder
   given Decoder[GetActiveTaskIn] = deriveDecoder
+
+object EvaluateDecisionIn:
+  given Schema[EvaluateDecisionIn] = Schema.derived
+  given Encoder[EvaluateDecisionIn] = deriveEncoder
+  given Decoder[EvaluateDecisionIn] = deriveDecoder

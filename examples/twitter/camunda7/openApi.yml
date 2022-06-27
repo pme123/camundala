@@ -2,65 +2,35 @@ openapi: 3.0.3
 info:
   title: Twitter Process API
   version: '1.0'
-  description: "\n\nCreated at 03/04/2022, 16:06\n\nGenerated Open API:\n\n- **openApi.yml**:\
-    \ Documentation of the Processes (this Documentation\U0001f60a).\n- **postmanOpenApi.yml**:\
-    \ Open Api that you can import to Postman!\n  Be aware that this needs some adjustments.\n\
-    \n>WARNING: This is an experimental way and not approved.\n\n****\n\nI did the\
-    \ following Adjustments:\n* Changed it to _Scala_ to simplify my example.\n* Added\
-    \ extensions to the Camundala DSL.\n* Added the BPMN implementation in Camundala\
-    \ DSL.\n\nThere are 2 application here:\n1. **TwitterProcessRunnerApp**\n   \n\
-    \   Runs the _Camundala_ Dev Process (from specification BPMN to implementation\
-    \ BPMN).\n\n2. **TwitterServletProcessApplication**\n\n   Runs the Camunda Engine\
-    \ (Spring Boot) with the generated BPMN. \n\n## How to run it\n> **this needs\
-    \ [sbt](https://www.scala-sbt.org)**\n\n`sbt exampleTwitter/run`\n\nNow you can\
-    \ select 1 or 2:\n```\nMultiple main classes detected. Select one to run:\n [1]\
-    \ camundala.examples.twitter.TwitterServletProcessApplication\n [2] camundala.examples.twitter.bpmn.TwitterProcessRunnerApp\n\
-    \ ```\nThis is the [original README](https://github.com/camunda/camunda-bpm-examples/tree/master/spring-boot-starter/example-twitter)\n\
+  description: "\n\nCreated at 27/06/2022, 07:13\n\n****\n\nI did the following Adjustments:\n\
+    * Changed it to _Scala_ to simplify my example.\n* Added extensions to the Camundala\
+    \ DSL.\n* Added the BPMN implementation in Camundala DSL.\n\nThere are 2 application\
+    \ here:\n1. **TwitterProcessRunnerApp**\n   \n   Runs the _Camundala_ Dev Process\
+    \ (from specification BPMN to implementation BPMN).\n\n2. **TwitterServletProcessApplication**\n\
+    \n   Runs the Camunda Engine (Spring Boot) with the generated BPMN. \n\n## How\
+    \ to run it\n> **this needs [sbt](https://www.scala-sbt.org)**\n\n`sbt exampleTwitter/run`\n\
+    \nNow you can select 1 or 2:\n```\nMultiple main classes detected. Select one\
+    \ to run:\n [1] camundala.examples.twitter.TwitterServletProcessApplication\n\
+    \ [2] camundala.examples.twitter.bpmn.TwitterProcessRunnerApp\n ```\nThis is the\
+    \ [original README](https://github.com/camunda/camunda-bpm-examples/tree/master/spring-boot-starter/example-twitter)\n\
     \nI bundled it here! Just run `InvoiceServletProcessApplication`.\n\nThis based\
     \ on this Project: https://github.com/pme123/spring-boot-datakurre-plugins\n\n\
     \n\n"
 paths:
-  /Process/TwitterDemoP:
+  /process/twitterDemoProcess/TwitterDemoP:
     head:
       tags:
-      - TwitterDemoP
-      summary: 'Process: TwitterDemoP'
-      description: |
-        This runs the Twitter Approvement Process.
-        <details>
-        <summary><b>Used in the 4 Process(es)</b></summary>
-        <p>
-
-
-        - _camundala_
-           - [TwitterDemoProcess](https://MYDOCHOST/camundala/OpenApi.html#tag/TwitterDemoProcess)
-
-
-        - _camundala-dsl_
-           - [TwitterDemoProcess](https://MYDOCHOST/camundala-dsl/OpenApi.html#tag/TwitterDemoProcess)
-
-
-        - _spring-boot-datakurre-plugins_
-           - [TwitterDemoProcess](https://MYDOCHOST/spring-boot-datakurre-plugins/OpenApi.html#tag/TwitterDemoProcess)
-           - [TwitterDemoProcess](https://MYDOCHOST/spring-boot-datakurre-plugins/OpenApi.html#tag/TwitterDemoProcess)
-
-
-        - _zio-camunda-spring-boot_
-           - [TwitterDemoProcess](https://MYDOCHOST/zio-camunda-spring-boot/OpenApi.html#tag/TwitterDemoProcess)
-
-
-
-
-        </p>
-        </details>
-      operationId: 'Process: TwitterDemoP'
+      - twitterDemoProcess
+      summary: 'Process: twitterDemoProcess'
+      description: This runs the Twitter Approvement Process.
+      operationId: 'Process: twitterDemoProcess'
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateTweet'
             examples:
-              standard:
+              twitterDemoProcess:
                 value:
                   email: me@myself.com
                   content: Test Tweet
@@ -71,38 +41,26 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReviewTweet'
+                $ref: '#/components/schemas/ReviewedTweet'
               examples:
-                standard:
+                twitterDemoProcess:
                   value:
                     approved: true
-  /UserTask/ReviewTweetUT:
+  /usertask/twitterDemoProcess/ReviewTweetUT:
     head:
       tags:
-      - TwitterDemoP
-      summary: 'UserTask: ReviewTweetUT'
-      description: ''
-      operationId: 'UserTask: ReviewTweetUT'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NoInput'
-            examples:
-              standard:
-                value: {}
-        required: true
+      - twitterDemoProcess
+      summary: 'UserTask: reviewTweetApprovedUT'
+      description: '-'
+      operationId: 'UserTask: reviewTweetApprovedUT'
       responses:
         '200':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReviewTweet'
+                $ref: '#/components/schemas/ReviewedTweet'
               examples:
-                standard:
-                  value:
-                    approved: true
                 Tweet accepted:
                   value:
                     approved: true
@@ -126,9 +84,7 @@ components:
 
         - email:   The email address of the creator.
         - content: The content of the Tweet.
-    NoInput:
-      type: object
-    ReviewTweet:
+    ReviewedTweet:
       required:
       - approved
       type: object

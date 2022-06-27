@@ -20,10 +20,10 @@ class TwitterSimulation extends SimulationDsl:
 
   private val `Twitter - Approved` = twitterDemoProcess
   private val `Twitter - Not Approved` = twitterDemoProcess
-    .withOut(ReviewTweet(false))
+    .withOut(ReviewedTweet(false))
 
   private val `reviewTweet Not ApprovedUT` = reviewTweetApprovedUT
-  .withOut(ReviewTweet(false))
+  .withOut(ReviewedTweet(false))
 
   simulate {
     scenario(`Twitter - Approved`)(

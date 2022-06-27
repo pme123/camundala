@@ -1,7 +1,6 @@
 package camundala
 package api
 
-import ast.*
 import bpmn.*
 import io.circe.*
 import io.circe.syntax.*
@@ -54,6 +53,10 @@ trait PostmanApiCreator extends AbstractApiCreator:
               createPostmanForUserTask(aa, tag)
             case _: DecisionDmn[?, ?] =>
               createPostmanForDecisionDmn(aa, tag)
+            case _: ReceiveMessageEvent[?] =>
+              createPostmanForReceiveMessageEvent(aa, tag)
+            case _: ReceiveSignalEvent[?] =>
+              createPostmanForReceiveSignalEvent(aa, tag)
             case other =>
               println(s"TODO: $other")
               Seq.empty
@@ -84,18 +87,33 @@ trait PostmanApiCreator extends AbstractApiCreator:
     Seq(
       api.evaluateDecision(tag)
     )
+  protected def createPostmanForReceiveMessageEvent(
+      api: ActivityApi[?, ?],
+      tag: String
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+    Seq(
+      api.evaluateDecision(tag)
+    )
+  protected def createPostmanForReceiveSignalEvent(
+      api: ActivityApi[?, ?],
+      tag: String
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+    Seq(
+      api.evaluateDecision(tag)
+    )
 
   extension (api: InOutApi[?, ?])
     private def postmanBaseEndpoint(
         tag: String,
         input: Option[EndpointInput[?]],
-        label: String
+        label: String,
+        descr: Option[String] = None
     ): PublicEndpoint[?, Unit, Unit, Any] =
       Some(
         endpoint
           .tag(tag)
           .summary(s"${api.name}: $label")
-          .description(api.descr)
+          .description(descr.getOrElse(api.descr))
       ).map(ep =>
         input
           .map(ep.in)
@@ -165,8 +183,10 @@ trait PostmanApiCreator extends AbstractApiCreator:
       val path = "task" / taskIdPath() / "complete" / s"--REMOVE:${api.name}--"
 
       val input = api
-        .toPostmanInput((example: FormVariables) => CompleteTaskIn(example),
-          api.apiExamples.outputExamples.fetchExamples)
+        .toPostmanInput(
+          (example: FormVariables) => CompleteTaskIn(example),
+          api.apiExamples.outputExamples.fetchExamples
+        )
 
       api
         .postmanBaseEndpoint(tag, input, "CompleteTask")
@@ -183,9 +203,59 @@ trait PostmanApiCreator extends AbstractApiCreator:
       )
       val input = api
         .toPostmanInput((example: FormVariables) => EvaluateDecisionIn(example))
-
+      val descr = s"""
+                     |${api.descr}
+                     |
+                     |Decision DMN:
+                     |- _decisionDefinitionKey_: `${decisionDmn.decisionDefinitionKey}`,
+                     |""".stripMargin
       api
-        .postmanBaseEndpoint(tag, input, "EvaluateDecision")
+        .postmanBaseEndpoint(tag, input, "EvaluateDecision", Some(descr))
+        .in(path)
+        .post
+
+    def correlateMessage(tag: String): PublicEndpoint[?, Unit, ?, Any] =
+      val event = api.inOut.asInstanceOf[ReceiveMessageEvent[?]]
+      val path = "message" / s"--REMOVE:${api.name}--"
+      val input = api
+        .toPostmanInput((example: FormVariables) =>
+          CorrelateMessageIn(
+            event.messageName,
+            Some(api.name),
+            tenantId = apiConfig.tenantId,
+            processVariables = Some(example)
+          )
+        )
+      val descr = s"""
+                     |${api.descr}
+                     |
+                     |Message:
+                     |- _messageName_: `${event.messageName}`,
+                     |""".stripMargin
+      api
+        .postmanBaseEndpoint(tag, input, "CorrelateMessage", Some(descr))
+        .in(path)
+        .post
+
+    def sendSignal(tag: String): PublicEndpoint[?, Unit, ?, Any] =
+      val event = api.inOut.asInstanceOf[ReceiveSignalEvent[?]]
+      val path = "signal" / s"--REMOVE:${api.name}--"
+      val input = api
+        .toPostmanInput((example: FormVariables) =>
+          SendSignalIn(
+            event.messageName,
+            tenantId = apiConfig.tenantId,
+            variables = Some(example)
+          )
+        )
+      val descr = s"""
+                     |${api.descr}
+                     |
+                     |Signal:
+                     |- _messageName_: `${event.messageName}`,
+                     |""".stripMargin
+      api
+        .postmanBaseEndpoint(tag, input, "SendSignal", Some(descr))
         .in(path)
         .post
 
@@ -197,7 +267,7 @@ trait PostmanApiCreator extends AbstractApiCreator:
     ](
         wrapper: FormVariables => T,
         examples: Seq[InOutExample[?]] =
-        inOutApi.apiExamples.inputExamples.fetchExamples
+          inOutApi.apiExamples.inputExamples.fetchExamples
     ): Option[EndpointInput[T]] =
       inOutApi.inOut.in match
         case _: NoInput =>

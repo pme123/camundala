@@ -4,16 +4,11 @@ info:
   version: '1.0'
   description: |2+
 
+    **This is for Postman - to have example requests. Be aware the Output is not provided!**
 
-    Created at 13/04/2022, 13:42
 
-    Generated Open API:
 
-    - **openApi.yml**: Documentation of the Processes (this Documentation😊).
-    - **postmanOpenApi.yml**: Open Api that you can import to Postman!
-      Be aware that this needs some adjustments.
-
-    >WARNING: This is an experimental way and not approved.
+    Created at 27/06/2022, 07:08
 
     ****
 
@@ -54,24 +49,25 @@ info:
     * You should see something like this:
 
 
+
 servers:
 - url: http://localhost:8887/engine-rest
+  description: Local Developer Server
 paths:
-  /process-definition/key/TwitterDemoProcess/start:
+  /process-definition/key/TwitterDemoP/start:
     post:
       tags:
-      - TwitterDemoProcess
-      summary: 'Process: TwitterDemoProcess'
-      description: "This runs the Twitter Approvement Process.\n<details>\n<summary><b>Used\
-        \ in the 0 Process(es)</b></summary>\n<p>\n\n\n- \n\n\n</p>\n</details>\n"
-      operationId: 'Process: TwitterDemoProcess'
+      - twitterDemoProcess
+      summary: 'twitterDemoProcess: StartProcess'
+      description: This runs the Twitter Approvement Process.
+      operationId: postProcess-definitionKeyTwitterdemopStart
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/StartProcessIn'
             examples:
-              standard:
+              twitterDemoProcess:
                 value:
                   variables:
                     tweet:
@@ -83,39 +79,52 @@ paths:
                     boss:
                       value: Great Master
                       type: String
-                  businessKey: example-businesskey
+                  businessKey: twitterDemoProcess
                   withVariablesInReturn: true
         required: true
       responses:
         '200':
           description: ''
-  /task/--REMOVE:user_task_review_tweet--:
+  /task/--REMOVE:reviewTweetApprovedUT--:
     post:
       tags:
-      - TwitterDemoProcess
-      summary: 'no Api!: no API!'
-      description: ''
-      operationId: 'no Api!: no API!'
+      - twitterDemoProcess
+      summary: 'reviewTweetApprovedUT: GetActiveTask'
+      description: '-'
+      operationId: postTask--remove:reviewtweetapprovedut--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetActiveTaskIn'
+            examples:
+              reviewTweetApprovedUT:
+                value:
+                  processInstanceId: '{{processInstanceId}}'
+                  active: true
+        required: true
       responses:
         '200':
           description: ''
-  /task/{taskId}/form-variables/--REMOVE:user_task_review_tweet--:
+  /task/{taskId}/form-variables/--REMOVE:reviewTweetApprovedUT--:
     get:
       tags:
-      - TwitterDemoProcess
-      summary: 'no API!: no API!'
-      description: |+
-        Retrieves the form variables for a task.
-        The form variables take form data specified on the task into account.
-        If form fields are defined, the variable types and default values of the form fields are taken into account.
-
-      operationId: 'no API!: no API!'
+      - twitterDemoProcess
+      summary: 'reviewTweetApprovedUT: GetTaskFormVariables'
+      description: '-'
+      operationId: getTaskTaskidForm-variables--remove:reviewtweetapprovedut--
       parameters:
       - name: taskId
         in: path
         description: |
           The taskId of the Form.
           > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
         required: true
         schema:
           type: string
@@ -139,19 +148,25 @@ paths:
       responses:
         '200':
           description: ''
-  /task/{taskId}/complete/--REMOVE:user_task_review_tweet--:
+  /task/{taskId}/complete/--REMOVE:reviewTweetApprovedUT--:
     post:
       tags:
-      - TwitterDemoProcess
-      summary: 'no API!: no API!'
-      description: ''
-      operationId: 'no API!: no API!'
+      - twitterDemoProcess
+      summary: 'reviewTweetApprovedUT: CompleteTask'
+      description: '-'
+      operationId: postTaskTaskidComplete--remove:reviewtweetapprovedut--
       parameters:
       - name: taskId
         in: path
         description: |
           The taskId of the Form.
           > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
         required: true
         schema:
           type: string
@@ -162,22 +177,6 @@ paths:
             schema:
               $ref: '#/components/schemas/CompleteTaskIn'
             examples:
-              standard:
-                value:
-                  variables:
-                    tweet:
-                      value: Hello Tweet
-                      type: String
-                    author:
-                      value: pme123
-                      type: String
-                    boss:
-                      value: Great Master
-                      type: String
-                    approved:
-                      value: false
-                      type: Boolean
-                  withVariablesInReturn: true
               Tweet accepted:
                 value:
                   variables:
@@ -338,6 +337,28 @@ components:
             Result Status is 204.
       description: 'A JSON object with the following properties: (at least an empty
         JSON object {} or an empty request body)'
+    GetActiveTaskIn:
+      required:
+      - processInstanceId
+      - active
+      type: object
+      properties:
+        processInstanceId:
+          type: string
+          description: |2
+
+            The id of the process - you want to get the active tasks.
+            > This is the result id of the `StartProcessOut`
+
+            Add in the _Tests_ panel of _Postman_:
+            ```
+            let result = pm.response.json();
+            pm.collectionVariables.set("processInstanceId", result.id)
+            ```
+        active:
+          type: boolean
+          description: We are only interested in the active Task(s)
+      description: A JSON object with the following properties
     Map_CamundaVariable:
       type: object
       additionalProperties:

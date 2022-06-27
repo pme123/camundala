@@ -5,15 +5,7 @@ info:
   description: |2+
 
 
-    Created at 13/04/2022, 13:42
-
-    Generated Open API:
-
-    - **openApi.yml**: Documentation of the Processes (this Documentation😊).
-    - **postmanOpenApi.yml**: Open Api that you can import to Postman!
-      Be aware that this needs some adjustments.
-
-    >WARNING: This is an experimental way and not approved.
+    Created at 27/06/2022, 07:08
 
     ****
 
@@ -55,21 +47,20 @@ info:
 
 
 paths:
-  /Process/TwitterDemoProcess:
+  /process/twitterDemoProcess/TwitterDemoP:
     head:
       tags:
-      - TwitterDemoProcess
-      summary: 'Process: TwitterDemoProcess'
-      description: "This runs the Twitter Approvement Process.\n<details>\n<summary><b>Used\
-        \ in the 0 Process(es)</b></summary>\n<p>\n\n\n- \n\n\n</p>\n</details>\n"
-      operationId: 'Process: TwitterDemoProcess'
+      - twitterDemoProcess
+      summary: 'Process: twitterDemoProcess'
+      description: This runs the Twitter Approvement Process.
+      operationId: 'Process: twitterDemoProcess'
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Tweet'
             examples:
-              standard:
+              twitterDemoProcess:
                 value:
                   tweet: Hello Tweet
                   author: pme123
@@ -83,26 +74,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReviewedTweet'
               examples:
-                standard:
+                twitterDemoProcess:
                   value:
                     tweet: Hello Tweet
                     author: pme123
                     boss: Great Master
                     approved: false
-  /UserTask/user_task_review_tweet:
+  /usertask/twitterDemoProcess/user_task_review_tweet:
     head:
       tags:
-      - TwitterDemoProcess
-      summary: 'UserTask: user_task_review_tweet'
-      description: ''
-      operationId: 'UserTask: user_task_review_tweet'
+      - twitterDemoProcess
+      summary: 'UserTask: reviewTweetApprovedUT'
+      description: '-'
+      operationId: 'UserTask: reviewTweetApprovedUT'
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Tweet'
             examples:
-              standard:
+              reviewTweetApprovedUT:
                 value:
                   tweet: Hello Tweet
                   author: pme123
@@ -116,12 +107,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReviewedTweet'
               examples:
-                standard:
-                  value:
-                    tweet: Hello Tweet
-                    author: pme123
-                    boss: Great Master
-                    approved: false
                 Tweet accepted:
                   value:
                     tweet: Hello Tweet

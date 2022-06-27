@@ -20,7 +20,7 @@ object TwitterApi extends BpmnDsl:
   )
 
   @description("""Every Tweet has to be accepted by the Boss.""")
-  case class ReviewTweet(
+  case class ReviewedTweet(
       @description("If true, the Boss accepted the Tweet")
       approved: Boolean = true
   )
@@ -31,17 +31,17 @@ object TwitterApi extends BpmnDsl:
       id = processId,
       descr = "This runs the Twitter Approvement Process.",
       in = CreateTweet(),
-      out = ReviewTweet() // just for Testing
+      out = ReviewedTweet() // just for Testing
     )
   val reviewTweetApprovedUT = userTask(
     id = "ReviewTweetUT",
     in = NoInput(),
-    out = ReviewTweet()
+    out = ReviewedTweet()
   )
   val reviewTweetNotApprovedUT = userTask(
     id = "ReviewTweetUT",
     in = NoInput(),
-    out = ReviewTweet(false)
+    out = ReviewedTweet(false)
   )
 
   val TweetHandledEEIdent ="TweetHandledEE"
@@ -53,6 +53,6 @@ object TwitterApi extends BpmnDsl:
   given Schema[CreateTweet] = Schema.derived
   given Encoder[CreateTweet] = deriveEncoder
   given Decoder[CreateTweet] = deriveDecoder
-  given Schema[ReviewTweet] = Schema.derived
-  given Encoder[ReviewTweet] = deriveEncoder
-  given Decoder[ReviewTweet] = deriveDecoder
+  given Schema[ReviewedTweet] = Schema.derived
+  given Encoder[ReviewedTweet] = deriveEncoder
+  given Decoder[ReviewedTweet] = deriveDecoder

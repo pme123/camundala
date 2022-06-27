@@ -40,7 +40,7 @@ trait TwitterUnitTests extends CommonTesting:
   def testRejectedPath(): Unit =
     test(
       twitterDemoProcess
-        .withOut(ReviewTweet(false))
+        .withOut(ReviewedTweet(false))
     )(
       reviewTweetNotApprovedUT,
       TweetHandledEE

@@ -1,6 +1,5 @@
 package camundala.api
 
-import camundala.api.ast.*
 import io.circe.*
 import io.circe.syntax.*
 import os.*
@@ -14,7 +13,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import scala.util.matching.Regex
 
-trait ApiCreatorApp extends ApiDsl, PostmanApiCreator, TapirApiCreator, App:
+trait ApiCreator extends ApiDsl, PostmanApiCreator, TapirApiCreator, App:
 
   def document(body: ApiConstr): Unit =
     val sb = ApiBuilder()
@@ -125,4 +124,4 @@ trait ApiCreatorApp extends ApiDsl, PostmanApiCreator, TapirApiCreator, App:
     println(s"Created Open API $path")
     println(s"See Open API Html $docPath")
 
-end ApiCreatorApp
+end ApiCreator

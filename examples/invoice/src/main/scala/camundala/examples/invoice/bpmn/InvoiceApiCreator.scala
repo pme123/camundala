@@ -1,44 +1,41 @@
-package camundala
-package examples.invoice.bpmn
+package camundala.examples.invoice.bpmn
 
-import api.*
-import bpmn.*
+import camundala.api.*
+import camundala.bpmn.*
+import camundala.examples.invoice.bpmn.InvoiceApi.*
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
-import InvoiceApi.*
 
-object InvoiceApiCreator extends APICreator {
+object InvoiceApiCreator extends ApiCreator:
 
-  lazy val projectName = "InvoiceDemo"
+  override protected val apiConfig: ApiConfig =
+    super.apiConfig
+      .withBasePath(pwd / "examples" / "invoice")
+      .withPort(8034)
+      .withCawemoFolder("a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala")
 
-  def title = "Invoice Example Process API"
+  protected val title = "Invoice Example Process API"
 
-  def version = "1.0"
+  protected val version = "1.0"
 
-  def docProjectUrl(project: String): String =
-    s"https://MYDOCHOST/$project"
-
-  override val cawemoFolder = Some("a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala")
-
-  override lazy val serverPort = 8034
-
-  override def basePath: Path = pwd / "examples" / "invoice"
-
-  apiEndpoints(
-    `Invoice Receipt`
-      .endpoints(
-        InvoiceAssignApproverDMN2,
-        ApproveInvoiceUT
-          .withOutExample("Invoice approved", ApproveInvoice())
-          .withOutExample("Invoice NOT approved", ApproveInvoice(false)),
-        PrepareBankTransferUT
-      ),
-    `Review Invoice`.endpoints(
+  document {
+    api(`Invoice Receipt`)(
+      InvoiceAssignApproverDMN,
+      ApproveInvoiceUT,
+      PrepareBankTransferUT
+    )
+    api(`Review Invoice`)(
       AssignReviewerUT,
       ReviewInvoiceUT
-        .withOutExample("Invoice clarified", InvoiceReviewed())
-        .withOutExample("Invoice NOT clarified", InvoiceReviewed(false))
     )
-  )
+  }
 
-}
+  private lazy val ApproveInvoiceUT =
+    InvoiceApi.ApproveInvoiceUT
+      .withOutExample("Invoice approved", ApproveInvoice())
+      .withOutExample("Invoice NOT approved", ApproveInvoice(false))
+
+  private lazy val ReviewInvoiceUT =
+    InvoiceApi.ReviewInvoiceUT
+      .withOutExample("Invoice clarified", InvoiceReviewed())
+      .withOutExample("Invoice NOT clarified", InvoiceReviewed(false))
