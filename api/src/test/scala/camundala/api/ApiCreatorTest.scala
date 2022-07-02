@@ -3,17 +3,16 @@ package camundala.api
 import org.junit.*
 import org.junit.Assert.*
 
-class ApiCreatorTest extends APICreator {
+class ApiCreatorTest extends ApiCreator {
 
   lazy val projectName = "ApiCreatorTest"
 
-  override def jiraUrls: Map[String, String] = Map(
+  def jiraUrls: Map[String, String] = Map(
     "MAP" -> "https://myJira.ch/browse",
     "BPF" -> "https://finnovaJira.ch/browse",
   )
   def title: String = ???
   def version: String = ???
-  protected def docProjectUrl(project: String): String = ???
 
   @Test
   def testReplaceJira(): Unit =

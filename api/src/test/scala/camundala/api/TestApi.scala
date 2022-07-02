@@ -9,19 +9,16 @@ import sttp.tapir.Schema.annotations.description
 import sttp.tapir.generic.auto.*
 import sttp.tapir.{Endpoint, Schema, SchemaType}
 
-object TestApi extends APICreator {
+object TestApi extends ApiCreator:
 
   lazy val projectName = "TestApi"
 
   def title = "Test API"
 
   def version = "1.0"
-
-  def docProjectUrl(project: String): String =
-    s"https://MYDOCHOST/$project"
-    
-
-}
+  override val apiConfig: ApiConfig =
+    super.apiConfig
+      .withDocProjectUrl(project => s"https://MYDOCHOST/$project")
 
 object Sample extends BpmnDsl:
   val name = "sample-process"
@@ -58,14 +55,9 @@ object Sample extends BpmnDsl:
        |""".stripMargin
 
   lazy val testProcess =
+    process(name, standardSample, SampleOut(), descr)
 
-    process(name,
-      standardSample,
-      SampleOut(),
-      descr,
-    )
-
-    /*  .startProcessInstance(
+/*  .startProcessInstance(
         name,
         name,
         descr,
