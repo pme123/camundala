@@ -13,7 +13,7 @@ import scala.language.implicitConversions
 import scala.reflect.ClassTag
 import scala.util.matching.*
 
-trait ApiDsl :
+trait ApiDsl:
 
   class ApiBuilder:
     private val ib = ListBuffer.empty[GroupedApi]
@@ -32,44 +32,52 @@ trait ApiDsl :
     CApiGroup(name, apis.toList).stage
 
   def api[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema: ClassTag
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](pApi: ProcessApi[In, Out]): ApiConstr =
     api(pApi)()
 
   def api[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema: ClassTag
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](pApi: ProcessApi[In, Out])(body: CApi*): ApiConstr =
     pApi.withApis(body.toList).stage
 
   implicit inline def toApi[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema: ClassTag
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](inline process: Process[In, Out]): ProcessApi[In, Out] =
     ProcessApi(nameOfVariable(process), process)
 
   implicit inline def toApi[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema: ClassTag
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](inline inOut: Activity[In, Out, ?]): ActivityApi[In, Out] =
     ActivityApi(nameOfVariable(inOut), inOut)
 
   extension [
       In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema: ClassTag
-    ] (inOutApi: InOutApi[In, Out])
+      Out <: Product: Encoder: Decoder: Schema: ClassTag,
+      T <: InOutApi[In, Out]
+  ](inOutApi: T)
 
-    inline def withInExample(inline example: In): InOutApi[In, Out] =
-      inOutApi.withInExample(nameOfVariable(example), example)
+    inline def withExample(inline example: InOut[In,Out,?]): T =
+      withExample(nameOfVariable(example), example)
 
-    inline def withOutExample(inline example: Out): InOutApi[In, Out] =
-      inOutApi.withOutExample(nameOfVariable(example), example)
+    inline def withInExample(inline example: In): T =
+      withInExample(nameOfVariable(example), example)
 
-    def withInExample(label: String, example: In): InOutApi[In, Out] =
-      inOutApi.addInExample(label, example)
+    inline def withOutExample(inline example: Out): T =
+      withOutExample(nameOfVariable(example), example)
 
-    def withOutExample(label: String, example: Out): InOutApi[In, Out] =
-      inOutApi.addOutExample(label, example)
+    def withExample(label: String, example: InOut[In,Out,?]): T =
+      withInExample(label, example.in)
+        .withOutExample(label, example.out)
+
+    def withInExample(label: String, example: In): T =
+      inOutApi.addInExample(label, example).asInstanceOf[T]
+
+    def withOutExample(label: String, example: Out): T =
+      inOutApi.addOutExample(label, example).asInstanceOf[T]
 
 end ApiDsl

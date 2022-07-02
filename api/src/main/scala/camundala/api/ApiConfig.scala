@@ -16,7 +16,9 @@ case class ApiConfig(
     postmanOpenApiPath: Path = pwd / "postmanOpenApi.yml",
     openApiDocuPath: Path = pwd / "OpenApi.html",
     postmanOpenApiDocuPath: Path = pwd / "PostmanOpenApi.html",
-    jiraUrls: Map[String, String] = Map.empty
+    jiraUrls: Map[String, String] = Map.empty,
+    localProjectPaths: Seq[Path] = Seq(os.pwd / os.up),
+    docProjectUrl: String => String = proj => s"No URL defined for $proj"
 ):
 
   def withTenantId(tenantId: String): ApiConfig =
@@ -36,3 +38,13 @@ case class ApiConfig(
 
   def withPort(port: Int): ApiConfig =
     copy(endpoint = s"http://localhost:$port/engine-rest")
+
+  def withDocProjectUrl(url: String => String): ApiConfig =
+    copy(docProjectUrl = url)
+
+  def withLocalProjectPaths(paths: Path*): ApiConfig =
+    copy(localProjectPaths = paths)
+
+  def withJiraUrls(urls: (String, String)*): ApiConfig =
+    copy(jiraUrls = urls.toMap)
+

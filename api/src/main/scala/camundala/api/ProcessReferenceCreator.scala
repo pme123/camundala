@@ -12,7 +12,8 @@ import java.io.{StringBufferInputStream, StringReader}
   */
 trait ProcessReferenceCreator:
 
-  def projectName: String
+  protected def projectName: String
+  protected def apiConfig: ApiConfig
 
   def docUsedByReference(processName: String): String =
     val refs = findBpmnFor(processName)
@@ -109,12 +110,10 @@ trait ProcessReferenceCreator:
   protected def usesTitle(processCount: Int): String =
     s"Uses $processCount Project(s) (EXPERIMENTAL)"
 
-  protected def docProjectUrl(project: String): String
+  private def docProjectUrl(project: String): String = apiConfig.docProjectUrl(project)
 
-  protected def projectPaths: Seq[Path] =
-    Seq(
-      os.pwd / os.up
-    )
+  private def projectPaths: Seq[Path] = apiConfig.localProjectPaths
+
 
   protected def docuPath(
       projectPath: Path,

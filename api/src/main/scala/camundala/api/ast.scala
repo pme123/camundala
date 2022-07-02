@@ -134,17 +134,16 @@ object ApiExamples:
 end ApiExamples
 
 case class InOutExamples[T <: Product: Encoder: Decoder: Schema](
-    defaultExample: InOutExample[T],
-    examples: Option[Seq[InOutExample[T]]] = None
+    examples: Seq[InOutExample[T]]
 ):
   @targetName("add")
   def :+(label: String, example: T): InOutExamples[T] =
     copy(examples =
-      Some(examples.getOrElse(Seq.empty) :+ InOutExample(label, example))
+      examples :+ InOutExample(label, example)
     )
 
   lazy val fetchExamples: Seq[InOutExample[T]] =
-    examples.getOrElse(Seq(defaultExample))
+    examples
 
 object InOutExamples:
 
@@ -152,7 +151,7 @@ object InOutExamples:
       name: String,
       inOut: T
   ): InOutExamples[T] =
-    InOutExamples(InOutExample(name, inOut))
+    InOutExamples(Seq(InOutExample(name, inOut)))
 
 case class InOutExample[T <: Product: Encoder: Decoder: Schema](
     name: String,

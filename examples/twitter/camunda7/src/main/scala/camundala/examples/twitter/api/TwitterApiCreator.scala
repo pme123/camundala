@@ -8,23 +8,26 @@ import sttp.tapir.generic.auto.*
 
 object TwitterApiCreator extends ApiCreator:
 
-  override protected val apiConfig: ApiConfig =
+  val projectName = "twitter-example-c7"
+
+  override val apiConfig: ApiConfig =
     super.apiConfig
-      .withBasePath(pwd / "examples"  / "twitter" / "camunda7")
+      .withBasePath(pwd / "examples" / "twitter" / "camunda7")
       .withPort(8887)
 
-  def title = "Twitter Process API"
+  def title = "Twitter Process API C7"
 
   def version = "1.0"
-
-  private val ReviewTweetApprovedUT =
-    reviewTweetApprovedUT
-      .withOutExample("Tweet accepted", ReviewedTweet())
-      .withOutExample("Tweet rejected", ReviewedTweet(approved = false))
 
   document {
     api(twitterDemoProcess)(
       ReviewTweetApprovedUT
     )
   }
+
+  private lazy val `Tweet accepted` = reviewTweetApprovedUT
+  private lazy val ReviewTweetApprovedUT =
+    `Tweet accepted`
+      .withOutExample("Tweet rejected", ReviewedTweet(approved = false))
+
 

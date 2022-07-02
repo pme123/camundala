@@ -13,7 +13,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import scala.util.matching.Regex
 
-trait ApiCreator extends ApiDsl, PostmanApiCreator, TapirApiCreator, App:
+trait ApiCreator
+    extends ApiDsl,
+      PostmanApiCreator,
+      TapirApiCreator,
+      App:
 
   def document(body: ApiConstr): Unit =
     val sb = ApiBuilder()
@@ -74,9 +78,9 @@ trait ApiCreator extends ApiDsl, PostmanApiCreator, TapirApiCreator, App:
       ""
 
   protected def replaceJira(
-                             line: String,
-                             jiraUrls: Map[String, String]
-                           ): String =
+      line: String,
+      jiraUrls: Map[String, String]
+  ): String =
     jiraUrls.toList match
       case Nil => line
       case (k -> url) :: tail =>
@@ -99,9 +103,9 @@ trait ApiCreator extends ApiDsl, PostmanApiCreator, TapirApiCreator, App:
        |Created at ${SimpleDateFormat().format(new Date())}
        |
        |**${//
-      apiConfig.cawemoFolder
-        .map(f => s"[Check Project on Cawemo](https://cawemo.com/folders/$f)")
-        .mkString //
+    apiConfig.cawemoFolder
+      .map(f => s"[Check Project on Cawemo](https://cawemo.com/folders/$f)")
+      .mkString //
     }**
        |
        |${createReadme()}

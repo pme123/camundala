@@ -92,14 +92,14 @@ trait PostmanApiCreator extends AbstractApiCreator:
       tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     Seq(
-      api.evaluateDecision(tag)
+      api.correlateMessage(tag)
     )
   protected def createPostmanForReceiveSignalEvent(
       api: ActivityApi[?, ?],
       tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     Seq(
-      api.evaluateDecision(tag)
+      api.sendSignal(tag)
     )
 
   extension (api: InOutApi[?, ?])
@@ -169,7 +169,7 @@ trait PostmanApiCreator extends AbstractApiCreator:
                 |If the query parameter contains non-existent variable names, the variable names are ignored.""".stripMargin
             )
             .default(
-              api.apiExamples.inputExamples.defaultExample.example.productElementNames
+              api.apiExamples.inputExamples.examples.head.productElementNames
                 .mkString(",")
             )
         )

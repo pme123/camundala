@@ -27,7 +27,8 @@ trait TapirApiCreator extends AbstractApiCreator:
       val apis = groupedApi.apis.flatMap(_.create(groupedApi.name))
       groupedApi match
         case pa: ProcessApi[?, ?] =>
-          pa.createEndpoint(pa.name) ++ apis
+
+          pa.createEndpoint(pa.name, pa.additionalDescr) ++ apis
         case _: CApiGroup => apis
 
   end extension
@@ -40,7 +41,7 @@ trait TapirApiCreator extends AbstractApiCreator:
           aa.createEndpoint(tag)
         case pa @ ProcessApi(name, _, _, apis) if apis.isEmpty =>
           println(s"ProcessApi: $tag - $name")
-          pa.createEndpoint(tag)
+          pa.createEndpoint(tag, pa.additionalDescr)
         case ga: GroupedApi =>
           throw IllegalArgumentException(
             "Sorry, only one level of GroupedApis are allowed!"
@@ -50,7 +51,10 @@ trait TapirApiCreator extends AbstractApiCreator:
 
   extension (inOutApi: InOutApi[?, ?])
 
-    def createEndpoint(tag: String): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+    def createEndpoint(
+        tag: String,
+        additionalDescr: Option[String] = None
+    ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       val endpointType = inOutApi.inOut.getClass.getSimpleName
       val tagPath = tag.replace(" ", "")
       val path =
@@ -64,7 +68,7 @@ trait TapirApiCreator extends AbstractApiCreator:
           .tag(tag)
           .in(path)
           .summary(s"$endpointType: ${inOutApi.name}")
-          .description(inOutApi.descr)
+          .description(inOutApi.descr + additionalDescr.getOrElse(""))
           .head
       ).map(ep => inOutApi.toInput.map(ep.in).getOrElse(ep))
         .map(ep => inOutApi.toOutput.map(ep.out).getOrElse(ep))
@@ -103,4 +107,20 @@ trait TapirApiCreator extends AbstractApiCreator:
               }.toList)
           )
   end extension
+
+  extension(pa: ProcessApi[?,?])
+    def additionalDescr =
+      val usedInDescr = docUsedByReference (
+        Some (pa.id)
+          .filterNot (p => p.contains ("generic") )
+          .getOrElse (pa.name)
+      )
+      val usesDescr = docUsesReference (
+        Some (pa.id)
+          .filterNot (p => p.contains ("generic") )
+          .getOrElse (pa.name)
+      )
+      Some(s"\n\n${usedInDescr.mkString}${usesDescr.mkString}")
+  end extension
+
 end TapirApiCreator

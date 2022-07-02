@@ -73,6 +73,8 @@ case class Process[
     elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty
 ) extends InOut[In, Out, Process[In, Out]]:
 
+  lazy val processName = inOutDescr.id
+
   def asCallActivity: CallActivity[In, Out] =
     CallActivity(id, inOutDescr)
 
