@@ -14,6 +14,9 @@ import scala.collection.immutable
 
 type ExampleName = String
 
+trait GenericServiceIn:
+  def serviceName: String
+  
 case class RequestErrorOutput(
     statusCode: StatusCode,
     examples: Map[ExampleName, CamundaError] = Map.empty

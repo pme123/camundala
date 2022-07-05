@@ -224,7 +224,7 @@ object XMLChecker extends App:
       s"_[$processIdent](${docProjectUrl(project)}/OpenApi.html$anchor)_ $serviceStr"
 
   val projectName = "valiant-bpmn"
-  val xml = XML.load(new StringBufferInputStream(xmlStr))
+  val xml = XML.load(new StringReader(xmlStr))
   val callActivities = xml \\ "callActivity"
 
   val refs = callActivities

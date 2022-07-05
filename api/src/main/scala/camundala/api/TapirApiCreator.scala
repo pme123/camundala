@@ -27,7 +27,6 @@ trait TapirApiCreator extends AbstractApiCreator:
       val apis = groupedApi.apis.flatMap(_.create(groupedApi.name))
       groupedApi match
         case pa: ProcessApi[?, ?] =>
-
           pa.createEndpoint(pa.name, pa.additionalDescr) ++ apis
         case _: CApiGroup => apis
 
@@ -108,18 +107,16 @@ trait TapirApiCreator extends AbstractApiCreator:
           )
   end extension
 
-  extension(pa: ProcessApi[?,?])
-    def additionalDescr =
-      val usedInDescr = docUsedByReference (
-        Some (pa.id)
-          .filterNot (p => p.contains ("generic") )
-          .getOrElse (pa.name)
-      )
-      val usesDescr = docUsesReference (
-        Some (pa.id)
-          .filterNot (p => p.contains ("generic") )
-          .getOrElse (pa.name)
-      )
+  extension (pa: ProcessApi[?, ?])
+    def processName: String =
+      pa.inOut.in match
+        case gs: GenericServiceIn =>
+          gs.serviceName
+        case _ => pa.id
+
+    def additionalDescr: Option[String] =
+      val usedInDescr = docUsedByReference(processName)
+      val usesDescr = docUsesReference(processName)
       Some(s"\n\n${usedInDescr.mkString}${usesDescr.mkString}")
   end extension
 
