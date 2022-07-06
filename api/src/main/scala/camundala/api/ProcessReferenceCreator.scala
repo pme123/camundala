@@ -3,9 +3,9 @@ package camundala.api
 import os.read.lines
 import os.{Path, read}
 
-import scala.xml.*
+import java.io.StringReader
 import scala.annotation.tailrec
-import java.io.{StringBufferInputStream, StringReader}
+import scala.xml.*
 
 /** Checks all BPMNs if a process is used in another process. As result a list
   * is created that can be included in the Documentation.
@@ -15,145 +15,11 @@ trait ProcessReferenceCreator:
   protected def projectName: String
   protected def apiConfig: ApiConfig
 
-  def docUsedByReference(processName: String): String =
-    val refs = findBpmnFor(processName)
-    val refDoc = refs
-      .map { case k -> processes =>
-        s"""_${k}_
-           |${processes.map(_._2).mkString("   - ", "\n   - ", "\n")}
-           |""".stripMargin
-      }
-      .mkString("\n- ", "\n- ", "\n")
-    println(refDoc)
-    if(refDoc.trim.length == 1)
-      "\n**Used in no other Process.**\n"
-    else  
-      s"""
-        |<details>
-        |<summary><b>${usedByTitle(refs.size)}</b></summary>
-        |<p>
-        |
-        |$refDoc
-        |
-        |</p>
-        |</details>
-        |""".stripMargin
-
-  class UsesRef(processRef: String, serviceName: Option[String]):
-    lazy val (project: String, processId: String) =
-      processRef.split(":").toList match
-        case proj :: proc :: _ => (proj, proc)
-        case proc :: _ => (projectName, proc)
-        case Nil =>
-          throw new IllegalArgumentException(
-            "There must be at least a processId defined."
-          )
-
-    lazy val processIdent = serviceName.getOrElse(processId)
-    lazy val anchor = serviceName
-      .map(_ => s"#operation/Process:%20$processIdent")
-      .getOrElse(s"#tag/$processIdent")
-    lazy val serviceStr = serviceName.map(_ => s" ($processId)").getOrElse("")
-
-    lazy val asString =
-      s"_[$processIdent](${docProjectUrl(project)}/OpenApi.html$anchor)_ $serviceStr"
-
-  def docUsesReference(processName: String): String =
-    findBpmn(processName)
-      .map { xmlStr =>
-        val xml = XML.load(new StringReader(xmlStr))
-        val callActivities = xml \\ "callActivity"
-
-        val refs = callActivities
-          .map { ca =>
-            val calledElement = ca \@ "calledElement"
-            val maybeServiceName = (ca \\ "in")
-              .filter(_ \@ "target" == "serviceName")
-              .map(_ \@ "sourceExpression")
-              .headOption
-            UsesRef(calledElement, maybeServiceName)
-          }
-          .groupBy(_.project)
-          .toSeq
-          .sortBy(_._1)
-
-        val refDoc = refs
-          .map { case k -> processes =>
-            s"""_${k}_
-              |${processes
-              .map(_.asString)
-              .toSeq
-              .distinct
-              .sorted
-              .mkString("   - ", "\n   - ", "\n")}
-              |""".stripMargin
-          }
-          .mkString("\n- ", "\n- ", "\n")
-        if(refDoc.trim.length == 1)
-          "\n**Uses no other Processes.**\n"
-        else  
-          s"""
-            |<details>
-            |<summary><b>${usesTitle(refs.size)}</b></summary>
-            |<p>
-            |
-            |$refDoc
-            |</p>
-            |</details>
-            |""".stripMargin
-      }
-      .getOrElse("\n**Uses no other Processes.**\n")
-
-  protected def usedByTitle(processCount: Int): String =
-    s"Used in $processCount Project(s) (EXPERIMENTAL)"
-
-  protected def usesTitle(processCount: Int): String =
-    s"Uses $processCount Project(s) (EXPERIMENTAL)"
-
   private def docProjectUrl(project: String): String = apiConfig.docProjectUrl(project)
 
   private def projectPaths: Seq[Path] = apiConfig.localProjectPaths
 
-
-  protected def docuPath(
-      projectPath: Path,
-      path: Path,
-      content: String
-  ): (String, String) =
-    val extractId =
-      val pattern =
-        """<(bpmn:process|process)([^\/>]+)isExecutable="true"([^\/>]*>)""".r
-      val idPattern = """[\s\S]*id="([^"]*)"[\s\S]*""".r
-      pattern
-        .findFirstIn(content)
-        .map { l =>
-          val idPattern(id) = l
-          id
-        }
-        .getOrElse(s"Id not found in $path")
-
-    val extractId2 =
-      val pattern = ".*id=\"([^\"]*)\".*".r
-      lines(path).toList
-        .dropWhile(!_.matches(".*<(bpmn:process|process).*"))
-        .find(_.contains("id="))
-        .map { l =>
-          val pattern(id) = l
-          id
-        }
-        .mkString
-
-    @tailrec
-    def projectName(segments: List[String]): (String, String) =
-      segments match
-        case projectName :: y :: _ if y == projectPath.last =>
-          projectName -> s"[$extractId](${docProjectUrl(projectName)}/OpenApi.html#tag/$extractId)"
-        case _ :: xs => projectName(xs)
-        case Nil => "NOT_DEFINED" -> "projectName could not be extracted"
-
-    projectName(path.segments.toList.reverse)
-
-  protected lazy val allBpmns =
+  private lazy val allBpmns =
     projectPaths
       .map { p =>
         println(s"Get BPMNs in $p")
@@ -171,34 +37,163 @@ trait ProcessReferenceCreator:
           .map(p => p -> read(p))
       }
 
-  protected def findBpmnFor(
-      processName: String
-  ): Seq[(String, Seq[(String, String)])] =
-    println(s"Find References for $processName")
-    allBpmns
-      .flatMap { case (pp, paths) =>
-        paths
-          .filter { case p -> c =>
-            c.matches(s"""[\\s\\S]*(:|")$processName"[\\s\\S]*""") &&
-              !c.contains(s"id=\"$processName\"")
-          }
-          .map(pc => docuPath(pp, pc._1, pc._2))
-      }
-      .groupBy(_._1)
-      .toSeq
-      .sortBy(_._1)
+  case class UsedByReferenceCreator(processName: String):
 
-  protected def findBpmn(
-      processName: String
-  ): Option[String] =
-    println(s"Find BPMN for $processName")
-    allBpmns.flatMap { case _ -> paths =>
-      paths
-        .filter { case _ -> content =>
-          content.contains(s"id=\"$processName\"")
+    def create(): String =
+      val refs = findBpmn()
+      val refDoc = refs
+        .map { case k -> processes =>
+          s"""_${k}_
+             |${processes.map(_._2).mkString("   - ", "\n   - ", "\n")}
+             |""".stripMargin
         }
-        .map(_._2)
-    }.headOption
+        .mkString("\n- ", "\n- ", "\n")
+      println(refDoc)
+      if(refDoc.trim.length == 1)
+        "\n**Used in no other Process.**\n"
+      else
+        s"""
+           |<details>
+           |<summary><b>${usedByTitle(refs.size)}</b></summary>
+           |<p>
+           |
+           |$refDoc
+           |
+           |</p>
+           |</details>
+           |""".stripMargin
+
+    private def findBpmn(): Seq[(String, Seq[(String, String)])] =
+      println(s"Find Used by References for $processName")
+      allBpmns
+        .flatMap { case (pp, paths) =>
+          paths
+            .filter { case _ -> c =>
+              c.matches(s"""[\\s\\S]*(:|")$processName"[\\s\\S]*""") &&
+                !c.contains(s"id=\"$processName\"")
+            }
+            .map(pc => docuPath(pp, pc._1, pc._2))
+        }
+        .groupBy(_._1)
+        .toSeq
+        .sortBy(_._1)
+
+    private def docuPath(
+                              projectPath: Path,
+                              path: Path,
+                              content: String
+                            ): (String, String) =
+      val extractId =
+        val pattern =
+          """<(bpmn:process|process)([^\/>]+)isExecutable="true"([^\/>]*>)""".r
+        val idPattern = """[\s\S]*id="([^"]*)"[\s\S]*""".r
+        pattern
+          .findFirstIn(content)
+          .map { l =>
+            val idPattern(id) = l
+            id
+          }
+          .getOrElse(s"Id not found in $path")
+
+
+      @tailrec
+      def projectName(segments: List[String]): (String, String) =
+        segments match
+          case projectName :: y :: _ if y == projectPath.last =>
+            lazy val anchor =  s"#operation/Process:%20$extractId"
+            projectName -> s"[$extractId](${docProjectUrl(projectName)}/OpenApi.html$anchor)"
+          case _ :: xs => projectName(xs)
+          case Nil => "NOT_DEFINED" -> "projectName could not be extracted"
+
+      projectName(path.segments.toList.reverse)
+
+    private def usedByTitle(processCount: Int): String =
+      s"Used in $processCount Project(s) (EXPERIMENTAL)"
+
+  end UsedByReferenceCreator
+
+  case class UsesReferenceCreator(processName: String):
+
+    def create(): String =
+      findBpmn(processName)
+        .map { xmlStr =>
+          val xml = XML.load(new StringReader(xmlStr))
+          val callActivities = xml \\ "callActivity"
+
+          val refs = callActivities
+            .map { ca =>
+              val calledElement = ca \@ "calledElement"
+              val maybeServiceName = (ca \\ "in")
+                .filter(_ \@ "target" == "serviceName")
+                .map(_ \@ "sourceExpression")
+                .headOption
+              UsesRef(calledElement, maybeServiceName)
+            }
+            .groupBy(_.project)
+            .toSeq
+            .sortBy(_._1)
+
+          val refDoc = refs
+            .map { case k -> processes =>
+              s"""_${k}_
+                 |${processes
+                .map(_.asString)
+                .distinct
+                .sorted
+                .mkString("   - ", "\n   - ", "\n")}
+                 |""".stripMargin
+            }
+            .mkString("\n- ", "\n- ", "\n")
+          if(refDoc.trim.length == 1)
+            "\n**Uses no other Processes.**\n"
+          else
+            s"""
+               |<details>
+               |<summary><b>${usesTitle(refs.size)}</b></summary>
+               |<p>
+               |
+               |$refDoc
+               |</p>
+               |</details>
+               |""".stripMargin
+        }
+        .getOrElse("\n**Uses no other Processes.**\n")
+
+    class UsesRef(processRef: String, serviceName: Option[String]):
+      lazy val (project: String, processId: String) =
+        processRef.split(":").toList match
+          case proj :: proc :: _ => (proj, proc)
+          case proc :: _ => (projectName, proc)
+          case Nil =>
+            throw new IllegalArgumentException(
+              "There must be at least a processId defined."
+            )
+
+      lazy val processIdent: String = serviceName.getOrElse(processId)
+      lazy val anchor =  s"#operation/Process:%20$processIdent"
+      lazy val serviceStr: String = serviceName.map(_ => s" ($processId)").getOrElse("")
+
+      lazy val asString: String =
+        s"_[$processIdent](${docProjectUrl(project)}/OpenApi.html$anchor)_ $serviceStr"
+
+    end UsesRef
+
+    private def findBpmn(
+                            processName: String
+                          ): Option[String] =
+      println(s"Find own BPMN for $processName")
+      allBpmns.flatMap { case _ -> paths =>
+        paths
+          .filter { case _ -> content =>
+            content.contains(s"id=\"$processName\"")
+          }
+          .map(_._2)
+      }.headOption
+
+    private def usesTitle(processCount: Int): String =
+      s"Uses $processCount Project(s) (EXPERIMENTAL)"
+
+  end UsesReferenceCreator
 
 object XMLChecker extends App:
   def docProjectUrl(project: String): String =
@@ -254,6 +249,7 @@ object XMLChecker extends App:
     .mkString("\n- ", "\n- ", "\n")
 
   os.write.over(os.pwd / "REFS.md", refDoc)
+
 
   lazy val xmlStr = """<?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_19vzwcd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.1" camunda:diagramRelationId="b9ddc512-7731-4480-9249-b4cb100fe129" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">

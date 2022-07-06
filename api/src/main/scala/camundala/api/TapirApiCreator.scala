@@ -55,6 +55,10 @@ trait TapirApiCreator extends AbstractApiCreator:
         additionalDescr: Option[String] = None
     ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       val endpointType = inOutApi.inOut.getClass.getSimpleName
+      val refId = inOutApi.inOut.in match
+        case gs: GenericServiceIn =>
+          gs.serviceName
+        case _ => inOutApi.id
       val tagPath = tag.replace(" ", "")
       val path =
         if (tagPath == inOutApi.id)
@@ -63,10 +67,10 @@ trait TapirApiCreator extends AbstractApiCreator:
           endpointType.toLowerCase() / tagPath / inOutApi.id
       Seq(
         endpoint
-          .name(s"$endpointType: ${inOutApi.name}")
+          .name(s"$endpointType: $refId")
           .tag(tag)
           .in(path)
-          .summary(s"$endpointType: ${inOutApi.name}")
+          .summary(s"$endpointType: $refId")
           .description(inOutApi.descr + additionalDescr.getOrElse(""))
           .head
       ).map(ep => inOutApi.toInput.map(ep.in).getOrElse(ep))
@@ -115,9 +119,9 @@ trait TapirApiCreator extends AbstractApiCreator:
         case _ => pa.id
 
     def additionalDescr: Option[String] =
-      val usedInDescr = docUsedByReference(processName)
-      val usesDescr = docUsesReference(processName)
-      Some(s"\n\n${usedInDescr.mkString}${usesDescr.mkString}")
+      val usedByDescr = UsedByReferenceCreator(processName).create()
+      val usesDescr = UsesReferenceCreator(processName).create()
+      Some(s"\n\n${usedByDescr.mkString}${usesDescr.mkString}")
   end extension
 
 end TapirApiCreator
