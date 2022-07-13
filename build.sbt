@@ -97,7 +97,7 @@ lazy val test = project
 
 lazy val gatling = project
   .in(file("./gatling"))
-  .configure(publicationSettings)
+  .configure(preventPublication)
   .settings(projectSettings("gatling"))
   .settings(
     libraryDependencies ++=
