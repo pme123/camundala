@@ -44,7 +44,7 @@ trait ProcessReferenceCreator:
       val refDoc = refs
         .map { case k -> processes =>
           s"""_${k}_
-             |${processes.map(_._2).mkString("   - ", "\n   - ", "\n")}
+             |${processes.map(_._2).distinct.mkString("   - ", "\n   - ", "\n")}
              |""".stripMargin
         }
         .mkString("\n- ", "\n- ", "\n")

@@ -60,11 +60,14 @@ trait TapirApiCreator extends AbstractApiCreator:
           gs.serviceName
         case _ => inOutApi.id
       val tagPath = tag.replace(" ", "")
-      val path =
-        if (tagPath == inOutApi.id)
-          endpointType.toLowerCase() / inOutApi.id
-        else
-          endpointType.toLowerCase() / tagPath / inOutApi.id
+      val path = inOutApi.inOut.in match
+        case gs: GenericServiceIn =>
+          endpointType.toLowerCase() / inOutApi.id / gs.serviceName
+        case _ =>
+          if (tagPath == inOutApi.id)
+            endpointType.toLowerCase() / inOutApi.id
+          else
+            endpointType.toLowerCase() / tagPath / inOutApi.id
       Seq(
         endpoint
           .name(s"$endpointType: $refId")
