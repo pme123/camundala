@@ -67,7 +67,7 @@ lazy val api = project
 
 lazy val camunda = project
   .in(file("./camunda"))
-  .configure(publicationSettings)
+  .configure(preventPublication)
   .settings(projectSettings("camunda"))
   .settings(
     libraryDependencies +=
@@ -81,13 +81,13 @@ lazy val camunda = project
 
 lazy val dmn = project
   .in(file("./dmn"))
-  .configure(publicationSettings)
+  .configure(preventPublication)
   .settings(projectSettings("dmn"))
   .dependsOn(bpmn)
 
 lazy val test = project
   .in(file("./test"))
-  .configure(publicationSettings)
+  .configure(preventPublication)
   .settings(projectSettings("test"))
   .settings(
     libraryDependencies ++=
@@ -97,7 +97,7 @@ lazy val test = project
 
 lazy val gatling = project
   .in(file("./gatling"))
-  .configure(preventPublication)
+  .configure(preventPublication) // problem with Nexus JavaDoc Validation
   .settings(projectSettings("gatling"))
   .settings(
     libraryDependencies ++=
