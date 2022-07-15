@@ -28,24 +28,20 @@ trait PostmanApiCreator extends AbstractApiCreator:
   extension (groupedApi: GroupedApi)
     def createPostman(): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       println(s"Start Grouped API: ${groupedApi.name}")
-      val apis = groupedApi.apis.flatMap(_.createPostman(groupedApi.name))
       groupedApi match
         case pa: ProcessApi[?, ?] =>
-          createPostmanForProcess(pa, pa.name) ++ apis
-        case _: CApiGroup => apis
+          createPostmanForProcess(pa, pa.name) ++ pa.apis.flatMap(_.createPostman(groupedApi.name))
+        case _: CApiGroup =>
+          groupedApi.apis.flatMap(_.createPostman(groupedApi.name, true))
 
   end extension
 
   extension (cApi: CApi)
-    def createPostman(tag: String): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+    def createPostman(tag: String, isGroup: Boolean = false): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       cApi match
         case pa @ ProcessApi(name, inOut, _, apis) if apis.isEmpty =>
           println(s"${inOut.getClass.getSimpleName}: $tag - $name")
-          createPostmanForProcess(pa, tag)
-        case ga: GroupedApi =>
-          throw IllegalArgumentException(
-            s"Sorry, only one level of GroupedApis are allowed!\n$ga"
-          )
+          createPostmanForProcess(pa, tag, isGroup)
         case aa @ ActivityApi(name, inOut, _) =>
           println(s"${inOut.getClass.getSimpleName}: $tag - $name")
           inOut match
@@ -60,15 +56,22 @@ trait PostmanApiCreator extends AbstractApiCreator:
             case other =>
               println(s"TODO: $other")
               Seq.empty
+        case pa @ ProcessApi(name, _, _, apis) if apis.forall(_.isInstanceOf[ActivityApi[?,?]]) =>
+          createPostmanForProcess(pa, tag) ++ apis.flatMap(_.createPostman(tag))
+        case ga =>
+          throw IllegalArgumentException(
+            s"Sorry, only one level of GroupedApi is allowed!\n - $ga"
+          )
 
   end extension
 
   protected def createPostmanForProcess(
       api: ProcessApi[?, ?],
-      tag: String
+      tag: String,
+      isGroup: Boolean = false
   ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     Seq(
-      api.startProcess(tag)
+      api.startProcess(tag, isGroup)
     )
 
   protected def createPostmanForUserTask(
@@ -123,9 +126,10 @@ trait PostmanApiCreator extends AbstractApiCreator:
   end extension
 
   extension (process: ProcessApi[?, ?])
-    def startProcess(tag: String): PublicEndpoint[?, Unit, ?, Any] =
+
+    def startProcess(tag: String, isGroup: Boolean): PublicEndpoint[?, Unit, ?, Any] =
       val path =
-        tenantIdPath("process-definition" / "key" / process.inOut.id, "start")
+        tenantIdPath("process-definition" / "key" / process.endpointPath(isGroup), "start")
       val input =
         process
           .toPostmanInput((example: FormVariables) =>
@@ -144,7 +148,7 @@ trait PostmanApiCreator extends AbstractApiCreator:
   extension (api: ActivityApi[?, ?])
 
     def getActiveTask(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val path = "task" / s"--REMOVE:${api.name}--"
+      val path = "task" / s"--REMOVE:${api.id}--"
 
       val input =
         api
@@ -156,7 +160,7 @@ trait PostmanApiCreator extends AbstractApiCreator:
 
     def getTaskFormVariables(tag: String): PublicEndpoint[?, Unit, ?, Any] =
       val path =
-        "task" / taskIdPath() / "form-variables" / s"--REMOVE:${api.name}--"
+        "task" / taskIdPath() / "form-variables" / s"--REMOVE:${api.id}--"
 
       api
         .postmanBaseEndpoint(tag, None, "GetTaskFormVariables")
@@ -180,7 +184,7 @@ trait PostmanApiCreator extends AbstractApiCreator:
         .get
 
     def completeTask(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val path = "task" / taskIdPath() / "complete" / s"--REMOVE:${api.name}--"
+      val path = "task" / taskIdPath() / "complete" / s"--REMOVE:${api.id}--"
 
       val input = api
         .toPostmanInput(
@@ -216,7 +220,7 @@ trait PostmanApiCreator extends AbstractApiCreator:
 
     def correlateMessage(tag: String): PublicEndpoint[?, Unit, ?, Any] =
       val event = api.inOut.asInstanceOf[ReceiveMessageEvent[?]]
-      val path = "message" / s"--REMOVE:${api.name}--"
+      val path = "message" / s"--REMOVE:${event.messageName}--"
       val input = api
         .toPostmanInput((example: FormVariables) =>
           CorrelateMessageIn(
@@ -239,7 +243,7 @@ trait PostmanApiCreator extends AbstractApiCreator:
 
     def sendSignal(tag: String): PublicEndpoint[?, Unit, ?, Any] =
       val event = api.inOut.asInstanceOf[ReceiveSignalEvent[?]]
-      val path = "signal" / s"--REMOVE:${api.name}--"
+      val path = "signal" / s"--REMOVE:${event.messageName}--"
       val input = api
         .toPostmanInput((example: FormVariables) =>
           SendSignalIn(
@@ -262,6 +266,16 @@ trait PostmanApiCreator extends AbstractApiCreator:
   end extension
 
   extension (inOutApi: InOutApi[?, ?])
+
+    protected def endpointPath(isGroup: Boolean): EndpointInput[Unit] =
+      inOutApi.inOut.in match
+        case gs: GenericServiceIn => inOutApi.id / s"--REMOVE${gs.serviceName}--"
+        case _ =>
+          if(isGroup)
+            inOutApi.id / s"--REMOVE${inOutApi.name.replace(" ", "")}--"
+          else
+            inOutApi.id
+
     def toPostmanInput[
         T <: Product: Encoder: Decoder: Schema
     ](

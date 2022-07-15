@@ -22,10 +22,12 @@ object TestApiCreator extends ApiCreator, App:
       .withDocProjectUrl(project => s"https://MYDOCHOST/$project")
       .withBasePath(os.pwd / "api")
   document {
-    group("myGroup")(
-      Sample.testProcess,
-      testProcess2
-    )
+    group("myGroup2") {
+      api(Sample.testProcess)(
+        Sample.testUT,
+      )
+      api(testProcess2)
+    }
   }
   private lazy val testProcess2 =
     process("sample-process2", standardSample, SampleOut())
@@ -69,6 +71,8 @@ object Sample extends BpmnDsl:
   lazy val testProcess =
     process(name, standardSample, SampleOut(), descr)
 
+  lazy val testUT =
+    userTask("myUserTask")
 /*  .startProcessInstance(
         name,
         name,

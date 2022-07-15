@@ -38,12 +38,11 @@ trait TapirApiCreator extends AbstractApiCreator:
         case aa @ ActivityApi(name, inOut, _) =>
           println(s"${inOut.getClass.getSimpleName}: $tag - $name")
           aa.createEndpoint(tag)
-        case pa @ ProcessApi(name, _, _, apis) if apis.isEmpty =>
-          println(s"ProcessApi: $tag - $name")
-          pa.createEndpoint(tag, pa.additionalDescr)
-        case ga: GroupedApi =>
+        case pa @ ProcessApi(name, _, _, apis) if apis.forall(_.isInstanceOf[ActivityApi[?,?]]) =>
+          pa.createEndpoint(tag, pa.additionalDescr) ++ apis.flatMap(_.create(tag))
+        case ga =>
           throw IllegalArgumentException(
-            "Sorry, only one level of GroupedApis are allowed!"
+            s"Sorry, only one level of GroupedApi is allowed!\n - $ga"
           )
 
   end extension

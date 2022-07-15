@@ -20,6 +20,7 @@ trait ApiDsl:
 
     def pushApi(x: GroupedApi): Unit = ib.append(x)
 
+    def mkApiLists: List[GroupedApi] = ib.toList
     def mkBlock: ApiDoc = ApiDoc(ib.toList)
 
   type ApiConstr = ApiBuilder ?=> Unit
@@ -28,8 +29,11 @@ trait ApiDsl:
     private[api] def stage: ApiConstr =
       (bldr: ApiBuilder) ?=> bldr.pushApi(api)
 
-  def group(name: String)(apis: GroupedApi*): ApiConstr =
-    CApiGroup(name, apis.toList).stage
+  def group(name: String)(body: ApiConstr): ApiConstr =
+      val sb = ApiBuilder()
+      body(using sb)
+      val apis = sb.mkApiLists
+      CApiGroup(name, apis).stage
 
   def api[
       In <: Product: Encoder: Decoder: Schema,
@@ -61,7 +65,7 @@ trait ApiDsl:
       T <: InOutApi[In, Out]
   ](inOutApi: T)
 
-    inline def withExample(inline example: InOut[In,Out,?]): T =
+    inline def withExample(inline example: InOut[In, Out, ?]): T =
       withExample(nameOfVariable(example), example)
 
     inline def withInExample(inline example: In): T =
@@ -70,7 +74,7 @@ trait ApiDsl:
     inline def withOutExample(inline example: Out): T =
       withOutExample(nameOfVariable(example), example)
 
-    def withExample(label: String, example: InOut[In,Out,?]): T =
+    def withExample(label: String, example: InOut[In, Out, ?]): T =
       withInExample(label, example.in)
         .withOutExample(label, example.out)
 
