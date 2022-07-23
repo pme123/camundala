@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 
 @SpringBootApplication
 @EnableZeebeClient
-@ZeebeDeployment(resources = Array("classpath*:twitter.bpmn"))
+@ZeebeDeployment(resources = Array("classpath*:twitter*.bpmn"))
 class TwitterExampleApplication
 
 object TwitterExampleApplication :

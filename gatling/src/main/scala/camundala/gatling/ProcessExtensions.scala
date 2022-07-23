@@ -36,7 +36,7 @@ trait ProcessExtensions:
                 messageName = msgName,
                 tenantId = implicitly[SimulationConfig].tenantId,
                 businessKey = businessKey,
-                processVariables = Some(CamundaVariable.toCamunda(process.in))
+                processVariables = Some(CamundaVariable.toCamunda(process.in).asJson)
               ).asJson.toString
             )
           ) // Camunda returns different results depending if the process is running!
@@ -71,7 +71,7 @@ trait ProcessExtensions:
           .body(
             StringBody(
               StartProcessIn(
-                CamundaVariable.toCamunda(process.in),
+                CamundaVariable.toCamunda(process.in).asJson,
                 businessKey = Some(scenario)
               ).asJson.deepDropNullValues.toString
             )

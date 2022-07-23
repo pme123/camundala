@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" targetNamespace="http://www.signavio.com/bpmn20" exporter="Camunda Modeler" exporterVersion="5.0.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <process id="TwitterDemoProcessAuto" name="TwitterDemoProcessAuto" isExecutable="true">
+    <startEvent id="start_event_new_tweet" name="New Tweet&#10;written">
+      <outgoing>Flow_06pd5qo</outgoing>
+    </startEvent>
+    <boundaryEvent id="boundary_event_tweet_duplicated" name="Tweet duplicated" attachedToRef="service_task_publish_on_twitter">
+      <extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:output source="= &#34;notPublished&#34;" target="endStatus" />
+        </zeebe:ioMapping>
+      </extensionElements>
+      <outgoing>Flow_1mp5g4j</outgoing>
+      <errorEventDefinition id="error_event_definition_tweet_duplicated" errorRef="error_tweet_duplicated" />
+    </boundaryEvent>
+    <serviceTask id="service_task_publish_on_twitter" name="Publish on Twitter" camunda:delegateExpression="#{tweetPublicationDelegate}">
+      <extensionElements>
+        <zeebe:taskDefinition type="publish-tweet" />
+        <zeebe:ioMapping>
+          <zeebe:output source="= &#34;published&#34;" target="endStatus" />
+        </zeebe:ioMapping>
+      </extensionElements>
+      <incoming>Flow_06pd5qo</incoming>
+      <outgoing>sequence_flow_tweet_published</outgoing>
+    </serviceTask>
+    <sequenceFlow id="sequence_flow_tweet_published" sourceRef="service_task_publish_on_twitter" targetRef="end_event_tweet_published" />
+    <endEvent id="end_event_tweet_published" name="Tweet published">
+      <extensionElements />
+      <incoming>sequence_flow_tweet_published</incoming>
+    </endEvent>
+    <sequenceFlow id="Flow_06pd5qo" sourceRef="start_event_new_tweet" targetRef="service_task_publish_on_twitter" />
+    <endEvent id="Event_118loo2" name="Tweet not Published">
+      <extensionElements />
+      <incoming>Flow_1mp5g4j</incoming>
+    </endEvent>
+    <sequenceFlow id="Flow_1mp5g4j" sourceRef="boundary_event_tweet_duplicated" targetRef="Event_118loo2" />
+  </process>
+  <error id="error_tweet_duplicated" name="Tweet duplicated" errorCode="duplicateMessage" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_TwitterDemoProcess">
+    <bpmndi:BPMNPlane id="BPMNPlane_TwitterDemoProcess" bpmnElement="TwitterDemoProcessAuto">
+      <bpmndi:BPMNEdge id="SequenceFlow_1lyq90k_di" bpmnElement="sequence_flow_tweet_published">
+        <omgdi:waypoint x="395" y="120" />
+        <omgdi:waypoint x="442" y="120" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="459" y="170" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06pd5qo_di" bpmnElement="Flow_06pd5qo">
+        <omgdi:waypoint x="198" y="120" />
+        <omgdi:waypoint x="295" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1mp5g4j_di" bpmnElement="Flow_1mp5g4j">
+        <omgdi:waypoint x="346" y="175" />
+        <omgdi:waypoint x="346" y="240" />
+        <omgdi:waypoint x="442" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BPMNShape_Publish_on_Twitter_3" bpmnElement="service_task_publish_on_twitter">
+        <omgdc:Bounds x="295" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1i5ha4d_di" bpmnElement="end_event_tweet_published">
+        <omgdc:Bounds x="442" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="420" y="138" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_118loo2_di" bpmnElement="Event_118loo2">
+        <omgdc:Bounds x="442" y="222" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="436" y="265" width="49" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_0iecbgv_di" bpmnElement="start_event_new_tweet">
+        <omgdc:Bounds x="162" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="152" y="146" width="55" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_BoundaryEvent_2" bpmnElement="boundary_event_tweet_duplicated">
+        <omgdc:Bounds x="331" y="145" width="30" height="30" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="362" y="170" width="83" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

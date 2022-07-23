@@ -5,21 +5,6 @@ import camundala.bpmn.*
 object TwitterApi extends BpmnDsl:
   implicit def tenantId: Option[String] = Some("{{tenantId}}")
 
-  @description("Every employee may create a Tweet.")
-  case class Tweet(
-      tweet: String = "Hello Tweet",
-      author: String = "pme123",
-      boss: String = "Great Master"
-  )
-
-  @description("Every Tweet has to be accepted by the Boss.")
-  case class ReviewedTweet(
-      tweet: String = "Hello Tweet",
-      author: String = "pme123",
-      boss: String = "Great Master",
-      approved: Boolean = false
-  )
-
   val twitterDemoProcess =
     val processId = "TwitterDemoP"
     process(
@@ -51,9 +36,44 @@ object TwitterApi extends BpmnDsl:
     descr = "Process ended - Tweet was rejected."
   )
 
+@description("Every employee may create a Tweet.")
+case class Tweet(
+                  tweet: String = "Hello Tweet",
+                  author: String = "pme123",
+                  boss: String = "Great Master"
+                )
+
+object Tweet:
   given Schema[Tweet] = Schema.derived
   given Encoder[Tweet] = deriveEncoder
   given Decoder[Tweet] = deriveDecoder
+
+@description("Every Tweet has to be accepted by the Boss.")
+case class ReviewedTweet(
+                          tweet: String = "Hello Tweet",
+                          author: String = "pme123",
+                          boss: String = "Great Master",
+                          approved: Boolean = false
+                        )
+
+object ReviewedTweet:
   given Schema[ReviewedTweet] = Schema.derived
   given Encoder[ReviewedTweet] = deriveEncoder
   given Decoder[ReviewedTweet] = deriveDecoder
+
+@description("Every Tweet has to be accepted by the Boss.")
+case class TweetOut(
+                          tweet: String = "Hello Tweet",
+                          author: String = "pme123",
+                          boss: String = "Great Master",
+                          endStatus: EndStatus = EndStatus.published
+                        )
+
+enum EndStatus derives Adt.PureEncoder, Adt.PureDecoder :
+  case published, notPublished
+
+object TweetOut:
+  given Schema[EndStatus] = Schema.derived
+  given Schema[TweetOut] = Schema.derived
+  given Encoder[TweetOut] = deriveEncoder
+  given Decoder[TweetOut] = deriveDecoder
