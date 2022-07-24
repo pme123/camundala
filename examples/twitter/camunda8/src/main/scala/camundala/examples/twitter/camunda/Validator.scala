@@ -2,6 +2,7 @@ package camundala.examples.twitter.camunda
 
 import camundala.bpmn.*
 import cats.syntax.show.*
+import io.circe
 import io.circe.DecodingFailure
 import io.circe.parser.*
 import org.springframework.http.{HttpStatus, ResponseEntity}
@@ -13,6 +14,8 @@ trait Validator:
   def validate[T: Decoder](json: String): Either[String, T] =
     decode[T](json) match
       case Left(error: DecodingFailure) =>
+        Left(error.show)
+      case Left(error: circe.Error) =>
         Left(error.show)
       case Right(p: T) =>
         Right(p)

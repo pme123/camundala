@@ -58,7 +58,7 @@ trait EventExtensions:
                 messageName = event.messageName,
                 tenantId = tenantId,
                 processInstanceId = processInstanceId,
-                processVariables = Some(CamundaVariable.toCamunda(event.in).asJson)
+                processVariables = Some(CamundaVariable.toCamunda(event.in))
               ).asJson.deepDropNullValues.toString
             )
           )
