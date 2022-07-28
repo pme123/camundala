@@ -6,7 +6,7 @@ import TwitterApi.*
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
 
-object TwitterApiCreator extends ApiCreator:
+object TwitterApiCreator extends DefaultApiCreator:
 
   val projectName = "twitter-example-c7"
 

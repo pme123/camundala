@@ -6,7 +6,7 @@ import camundala.examples.invoice.bpmn.InvoiceApi.*
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
 
-object InvoiceApiCreator extends ApiCreator:
+object InvoiceApiCreator extends DefaultApiCreator:
 
   val projectName = "invoice-example"
 

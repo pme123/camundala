@@ -6,8 +6,6 @@ import io.circe.*
 import io.circe.syntax.*
 import sttp.tapir.PublicEndpoint
 import sttp.tapir.docs.openapi.*
-import sttp.tapir.json.circe.*
-import sttp.tapir.openapi.*
 import sttp.tapir.*
 import sttp.tapir.openapi.circe.yaml.*
 import sttp.tapir.EndpointIO.Example
@@ -69,199 +67,54 @@ trait PostmanApiCreator extends AbstractApiCreator:
       api: ProcessApi[?, ?],
       tag: String,
       isGroup: Boolean = false
-  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
-    Seq(
-      api.startProcess(tag, isGroup)
-    )
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]]
 
   protected def createPostmanForUserTask(
       api: ActivityApi[?, ?],
       tag: String
-  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
-    Seq(
-      api.getActiveTask(tag),
-      api.getTaskFormVariables(tag),
-      api.completeTask(tag)
-    )
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]]
+
   protected def createPostmanForDecisionDmn(
       api: ActivityApi[?, ?],
       tag: String
-  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
-    Seq(
-      api.evaluateDecision(tag)
-    )
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]]
+
   protected def createPostmanForReceiveMessageEvent(
       api: ActivityApi[?, ?],
       tag: String
-  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
-    Seq(
-      api.correlateMessage(tag)
-    )
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]]
+
   protected def createPostmanForReceiveSignalEvent(
       api: ActivityApi[?, ?],
       tag: String
-  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
-    Seq(
-      api.sendSignal(tag)
-    )
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]]
 
   extension (api: InOutApi[?, ?])
-    private def postmanBaseEndpoint(
+
+    protected def postmanBaseEndpoint(
         tag: String,
         input: Option[EndpointInput[?]],
         label: String,
         descr: Option[String] = None
     ): PublicEndpoint[?, Unit, Unit, Any] =
+      val anchor =  s"#operation/${api.endpointName.replace(" ", "%20")}"
       Some(
         endpoint
           .tag(tag)
           .summary(s"${api.name}: $label")
-          .description(descr.getOrElse(api.descr))
+          .description(
+            s"""${descr.getOrElse(api.descr)}
+              |
+              |See API Doc: [${api.name}](${apiConfig.docProjectUrl(projectName)}/OpenApi.html$anchor)
+              |""".stripMargin
+            )
+          // .securityIn(auth.bearer()(sttp.tapir.Codec.cookies)) could not be imported to Postman:(
+
       ).map(ep =>
         input
           .map(ep.in)
           .getOrElse(ep)
       ).get
-
-  end extension
-
-  extension (process: ProcessApi[?, ?])
-
-    def startProcess(tag: String, isGroup: Boolean): PublicEndpoint[?, Unit, ?, Any] =
-      val path =
-        tenantIdPath("process-definition" / "key" / process.endpointPath(isGroup), "start")
-      val input =
-        process
-          .toPostmanInput((example: FormVariables) =>
-            StartProcessIn(
-              example,
-              Some(process.name)
-            )
-          )
-      process
-        .postmanBaseEndpoint(tag, input, "StartProcess")
-        .in(path)
-        .post
-
-  end extension
-
-  extension (api: ActivityApi[?, ?])
-
-    def getActiveTask(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val path = "task" / s"--REMOVE:${api.id}--"
-
-      val input =
-        api
-          .toPostmanInput(_ => GetActiveTaskIn())
-      api
-        .postmanBaseEndpoint(tag, input, "GetActiveTask")
-        .in(path)
-        .post
-
-    def getTaskFormVariables(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val path =
-        "task" / taskIdPath() / "form-variables" / s"--REMOVE:${api.id}--"
-
-      api
-        .postmanBaseEndpoint(tag, None, "GetTaskFormVariables")
-        .in(path)
-        .in(
-          query[String]("variableNames")
-            .description(
-              """A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
-                |It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
-                |If the query parameter contains non-existent variable names, the variable names are ignored.""".stripMargin
-            )
-            .default(
-              api.apiExamples.inputExamples.examples.head.productElementNames
-                .mkString(",")
-            )
-        )
-        .in(
-          query[Boolean]("deserializeValues")
-            .default(false)
-        )
-        .get
-
-    def completeTask(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val path = "task" / taskIdPath() / "complete" / s"--REMOVE:${api.id}--"
-
-      val input = api
-        .toPostmanInput(
-          (example: FormVariables) => CompleteTaskIn(example),
-          api.apiExamples.outputExamples.fetchExamples
-        )
-
-      api
-        .postmanBaseEndpoint(tag, input, "CompleteTask")
-        .in(path)
-        .post
-
-    def evaluateDecision(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val decisionDmn = api.inOut.asInstanceOf[DecisionDmn[?, ?]]
-      val path = tenantIdPath(
-        "decision-definition" / "key" / definitionKeyPath(
-          decisionDmn.decisionDefinitionKey
-        ),
-        "evaluate"
-      )
-      val input = api
-        .toPostmanInput((example: FormVariables) => EvaluateDecisionIn(example))
-      val descr = s"""
-                     |${api.descr}
-                     |
-                     |Decision DMN:
-                     |- _decisionDefinitionKey_: `${decisionDmn.decisionDefinitionKey}`,
-                     |""".stripMargin
-      api
-        .postmanBaseEndpoint(tag, input, "EvaluateDecision", Some(descr))
-        .in(path)
-        .post
-
-    def correlateMessage(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val event = api.inOut.asInstanceOf[ReceiveMessageEvent[?]]
-      val path = "message" / s"--REMOVE:${event.messageName}--"
-      val input = api
-        .toPostmanInput((example: FormVariables) =>
-          CorrelateMessageIn(
-            event.messageName,
-            Some(api.name),
-            tenantId = apiConfig.tenantId,
-            processVariables = Some(example)
-          )
-        )
-      val descr = s"""
-                     |${api.descr}
-                     |
-                     |Message:
-                     |- _messageName_: `${event.messageName}`,
-                     |""".stripMargin
-      api
-        .postmanBaseEndpoint(tag, input, "CorrelateMessage", Some(descr))
-        .in(path)
-        .post
-
-    def sendSignal(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val event = api.inOut.asInstanceOf[ReceiveSignalEvent[?]]
-      val path = "signal" / s"--REMOVE:${event.messageName}--"
-      val input = api
-        .toPostmanInput((example: FormVariables) =>
-          SendSignalIn(
-            event.messageName,
-            tenantId = apiConfig.tenantId,
-            variables = Some(example)
-          )
-        )
-      val descr = s"""
-                     |${api.descr}
-                     |
-                     |Signal:
-                     |- _messageName_: `${event.messageName}`,
-                     |""".stripMargin
-      api
-        .postmanBaseEndpoint(tag, input, "SendSignal", Some(descr))
-        .in(path)
-        .post
 
   end extension
 
@@ -276,43 +129,20 @@ trait PostmanApiCreator extends AbstractApiCreator:
           else
             inOutApi.id
 
-    def toPostmanInput[
-        T <: Product: Encoder: Decoder: Schema
-    ](
-        wrapper: FormVariables => T,
-        examples: Seq[InOutExample[?]] =
-          inOutApi.apiExamples.inputExamples.fetchExamples
-    ): Option[EndpointInput[T]] =
-      inOutApi.inOut.in match
-        case _: NoInput =>
-          None
-        case _ =>
-          Some(
-            jsonBody[T]
-              .examples(examples.map { case ex @ InOutExample(label, _) =>
-                Example(
-                  wrapper(ex.toCamunda),
-                  Some(label),
-                  None
-                )
-              }.toList)
-          )
-  end extension
+  protected def tenantIdPath(
+                              basePath: EndpointInput[?],
+                              pathElem: String
+                            ): EndpointInput[?] =
+      tenantId
+        .map(id => basePath / "tenant-id" / tenantIdPath(id) / pathElem)
+        .getOrElse(basePath / pathElem)
 
-  private def tenantIdPath(
-      basePath: EndpointInput[?],
-      pathElem: String
-  ): EndpointInput[?] =
-    tenantId
-      .map(id => basePath / "tenant-id" / tenantIdPath(id) / pathElem)
-      .getOrElse(basePath / pathElem)
-
-  private def tenantIdPath(id: String): EndpointInput[String] =
+  protected def tenantIdPath(id: String): EndpointInput[String] =
     path[String]("tenant-id")
       .description("The tenant, the process is deployed for.")
       .default(id)
 
-  private def taskIdPath() =
+  protected def taskIdPath() =
     path[String]("taskId")
       .description("""The taskId of the Form.
                      |> This is the result id of the `GetActiveTask`
@@ -325,11 +155,11 @@ trait PostmanApiCreator extends AbstractApiCreator:
                      |""".stripMargin)
       .default("{{taskId}}")
 
-  private def definitionKeyPath(key: String): EndpointInput[String] =
+  protected def definitionKeyPath(key: String): EndpointInput[String] =
     path[String]("key")
       .description(
         "The Process- or Decision-DefinitionKey of the Process or Decision"
       )
       .default(key)
-
+    
 end PostmanApiCreator

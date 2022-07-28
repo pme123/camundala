@@ -36,6 +36,9 @@ case class ApiConfig(
       postmanOpenApiDocuPath = path / "PostmanOpenApi.html",
     )
 
+  def withEndpoint(ep: String): ApiConfig =
+    copy(endpoint = ep)
+
   def withPort(port: Int): ApiConfig =
     copy(endpoint = s"http://localhost:$port/engine-rest")
 

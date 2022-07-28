@@ -6,6 +6,7 @@ import sttp.model.StatusCode
 import sttp.tapir.*
 import sttp.tapir.EndpointIO.Example
 import sttp.tapir.json.circe.*
+import io.circe.syntax.*
 
 import scala.annotation.targetName
 import scala.reflect.ClassTag
@@ -28,7 +29,7 @@ sealed trait InOutApi[
   def apiExamples: ApiExamples[In, Out]
   lazy val inOutDescr: InOutDescr[In, Out] = inOut.inOutDescr
   lazy val id: String = inOutDescr.id
-  lazy val descr: String = inOut.maybeDescr.getOrElse("-")
+  lazy val descr: String = inOut.maybeDescr.getOrElse("")
   lazy val typeName: String = inOut.typeName
 
   def withExamples(
@@ -55,6 +56,19 @@ sealed trait InOutApi[
   // this function needs to be here as circe does not find the Encoder in the extension method
   lazy val outMapper: EndpointIO.Body[String, Out] = jsonBody[Out]
 
+  lazy val inJson: Option[Json] = inOut.in match
+    case _:NoInput => None
+    case _ => Some (inOut.in.asJson)
+
+  lazy val outJson: Option[Json] = inOut.out match
+    case _:NoInput => None
+    case _ => Some (inOut.out.asJson)
+
+  lazy val variableNamesIn: List[String] =
+    inOut.in.productElementNames.toList
+
+  lazy val variableNamesOut: List[String] =
+      inOut.out.productElementNames.toList
 end InOutApi
 
 case class ProcessApi[

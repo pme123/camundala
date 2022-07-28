@@ -34,4 +34,10 @@ trait AbstractApiCreator extends ProcessReferenceCreator:
   protected def info(title: String, description: Option[String]) =
     Info(title, version, description, contact = apiConfig.contact)
 
+  extension (inOutApi: InOutApi[?, ?])
+    def endpointType: String = inOutApi.inOut.getClass.getSimpleName
+    def endpointName: String = inOutApi.inOut.in match
+      case gs: GenericServiceIn => gs.serviceName
+      case _ => s"$endpointType: ${inOutApi.name}"
+
 end AbstractApiCreator

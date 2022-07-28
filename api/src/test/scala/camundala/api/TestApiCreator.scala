@@ -10,7 +10,7 @@ import sttp.tapir.Schema.annotations.description
 import sttp.tapir.generic.auto.*
 import sttp.tapir.{Endpoint, Schema, SchemaType}
 
-object TestApiCreator extends ApiCreator, App:
+object TestApiCreator extends DefaultApiCreator, App:
 
   lazy val projectName = "TestApi"
 

@@ -36,7 +36,7 @@ trait InOut[
   lazy val camundaOutMap: Map[String, CamundaVariable] =
     CamundaVariable.toCamunda(out)
   def camundaToCheckMap: Map[String, CamundaVariable] = camundaOutMap
-
+  
   def withInOutDescr(inOutDescr: InOutDescr[In, Out]): T
 
   def withId(i: String): T =

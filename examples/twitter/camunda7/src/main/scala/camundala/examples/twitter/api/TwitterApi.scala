@@ -4,7 +4,6 @@ package examples.twitter.api
 import camundala.api.*
 import camundala.bpmn.*
 
-
 object TwitterApi extends BpmnDsl:
   implicit def tenantId: Option[String] = Some("{{tenantId}}")
 

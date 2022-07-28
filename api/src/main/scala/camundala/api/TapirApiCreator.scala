@@ -48,37 +48,32 @@ trait TapirApiCreator extends AbstractApiCreator:
   end extension
 
   extension (inOutApi: InOutApi[?, ?])
-
     def createEndpoint(
         tag: String,
         additionalDescr: Option[String] = None
     ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
-      val endpointType = inOutApi.inOut.getClass.getSimpleName
-      val endpointName = inOutApi.inOut.in match
-        case gs: GenericServiceIn => gs.serviceName
-        case _ => s"$endpointType: ${inOutApi.name}"
       val tagPath = tag.replace(" ", "")
       val path = inOutApi.inOut.in match
         case gs: GenericServiceIn =>
-          endpointType.toLowerCase() / inOutApi.id / gs.serviceName
+          inOutApi.endpointType.toLowerCase() / inOutApi.id / gs.serviceName
         case _ if tagPath == inOutApi.id =>
           if (inOutApi.name == inOutApi.id)
-            endpointType.toLowerCase() / inOutApi.id
+            inOutApi.endpointType.toLowerCase() / inOutApi.id
           else
-            endpointType.toLowerCase() / inOutApi.id / inOutApi.name.replace(" ", "")
+            inOutApi.endpointType.toLowerCase() / inOutApi.id / inOutApi.name.replace(" ", "")
         case _ =>
           println(s"${inOutApi.name} == ${inOutApi.id}")
           if (inOutApi.name == inOutApi.id)
-            endpointType.toLowerCase() / tagPath / inOutApi.id
+            inOutApi.endpointType.toLowerCase() / tagPath / inOutApi.id
           else
-            endpointType.toLowerCase() / tagPath / inOutApi.id / inOutApi.name.replace(" ", "")
+            inOutApi.endpointType.toLowerCase() / tagPath / inOutApi.id / inOutApi.name.replace(" ", "")
 
       Seq(
         endpoint
-          .name(endpointName)
+          .name(inOutApi.endpointName)
           .tag(tag)
           .in(path)
-          .summary(endpointName)
+          .summary(inOutApi.endpointName)
           .description(inOutApi.descr + additionalDescr.getOrElse(""))
           .head
       ).map(ep => inOutApi.toInput.map(ep.in).getOrElse(ep))

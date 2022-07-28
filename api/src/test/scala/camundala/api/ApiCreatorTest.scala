@@ -3,7 +3,7 @@ package camundala.api
 import org.junit.*
 import org.junit.Assert.*
 
-class ApiCreatorTest extends ApiCreator {
+class ApiCreatorTest extends DefaultApiCreator {
 
   lazy val projectName = "ApiCreatorTest"
 
