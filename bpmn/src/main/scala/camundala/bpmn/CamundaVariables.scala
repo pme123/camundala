@@ -19,7 +19,6 @@ object CamundaVariable:
       case v: CBoolean => v.asJson
       case v: CFile => v.asJson
       case v: CJson => v.asJson
-      case v: CEnum => v.asJson
       case CNull => Json.Null
     }
 
@@ -61,15 +60,16 @@ object CamundaVariable:
   given Encoder[CJson] = deriveEncoder
   given Decoder[CJson] = deriveDecoder
 
-  given Schema[CEnum] = Schema.derived
-  given Encoder[CEnum] = deriveEncoder
-  given Decoder[CEnum] = deriveDecoder
-
   import reflect.Selectable.reflectiveSelectable
 
   def toCamunda[T <: Product: Encoder](
-                                        product: T
-                                      ): Map[String, CamundaVariable] =
+                                        products: Seq[T]
+                                      ): Seq[Map[String, CamundaVariable]] =
+    products.map(toCamunda)
+
+  def toCamunda[T <: Product : Encoder](
+                                         product: T
+                                       ): Map[String, CamundaVariable] =
     product.productElementNames
       .zip(product.productIterator)
       .filterNot { case k -> v => v.isInstanceOf[None.type] } // don't send null
@@ -121,7 +121,7 @@ object CamundaVariable:
       case v: Double =>
         CDouble(v)
       case v: scala.reflect.Enum =>
-        CEnum(v.toString)
+        CString(v.toString)
       case other if other == null =>
         CNull
       case other =>
@@ -154,9 +154,6 @@ object CamundaVariable:
                              filename: String,
                              mimetype: Option[String]
                            )
-
-  case class CEnum(value: String, private val `type`: String = "String")
-    extends CamundaVariable
 
   case class CJson(value: String, private val `type`: String = "Json")
     extends CamundaVariable

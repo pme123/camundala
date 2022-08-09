@@ -47,11 +47,10 @@ trait DmnTestRunner:
       dmnEngine.parseDecision(decisionDmn.decisionDefinitionKey, dmnInputStream)
     val result = dmnEngine.evaluateDecisionTable(cDecision, variables)
 
-    decisionDmn.decisionResultType match
-      case DecisionResultType.singleEntry => // SingleEntry
+    decisionDmn.out match
+      case o: SingleEntry[?] => // SingleEntry
         val resultEntry: Any = result.getSingleEntry
-        val expKey = decisionDmn.out.productElementNames.next()
-        val expResult = decisionDmn.out.productIterator.next() match
+        val expResult = o.result match
           case e: scala.reflect.Enum => e.toString
           case ldt : LocalDateTime =>
             import java.time.ZoneId
@@ -59,43 +58,30 @@ trait DmnTestRunner:
           case zdt: ZonedDateTime =>
             Date.from(zdt.toInstant)
           case o => o
-        println(s"assert $expKey: $resultEntry == $expResult")
-        assert(resultEntry == expResult)
-      case DecisionResultType.singleResult => // SingleResult
+        assert(resultEntry == expResult, s"SingleEntry: $resultEntry == $expResult")
+      case o: SingleResult[?] => // SingleResult
         val resultEntryMap = result.getSingleResult.getEntryMap.asScala
 
         val expResult: Seq[(String, Any)] =
-          decisionDmn.out.productIterator.next() match
-            case p: Product =>
-              (p.productElementNames
-                .zip(p.productIterator.toSeq map {
+          o.result.productElementNames
+                .zip(o.result.productIterator.toSeq map {
                   case e: scala.reflect.Enum => e.toString
                   case o => o
-                }))
+                })
                 .toSeq
-            case o => Seq.empty
-
         assert(expResult.size == resultEntryMap.size)
         for (key, value) <- expResult
         yield
-          println(s"assert $key: ${resultEntryMap(key)} == $value")
-          assert(resultEntryMap(key) == value)
-      case DecisionResultType.collectEntries => // CollectEntries
+          if(!resultEntryMap.contains(key))
+            throw IllegalArgumentException(s"Your output Object ($expResult) has a key ($key) that does not exist in the actual Decision Output ($resultEntryMap).")
+          assert(resultEntryMap(key) == value, s"SingleResult $key: ${resultEntryMap(key)} == $value")
+      case o: CollectEntries[?] => // CollectEntries
         val resultList = result.getResultList.asScala
-        val expKey = decisionDmn.out.productElementNames.next()
-        val expResults = decisionDmn.out.productIterator.next()
-        assert(
-          expResults.isInstanceOf[Iterable[?]],
-          "For DecisionResultType.collectEntries you need to have Iterable[?] object."
-        )
         val expResultDmn =
-          expResults match
-            case seq: Iterable[?] =>
-              seq.map {
+          o.result.map {
                 case e: scala.reflect.Enum => e.toString
                 case v => v
-              }.toSeq
-            case e => Seq("bad input" -> s"Expected Seq[?], but got $e")
+              }
 
         assert(expResultDmn.size == resultList.size)
         val sortedResult = resultList.flatMap(_.values.asScala.toSeq).sortBy(_.toString)
@@ -104,17 +90,12 @@ trait DmnTestRunner:
         yield
           val result = sortedResult(i)
           val expected = sortedExpected(i)
-          println(s"assert: $result == $expected (expected)")
-          assert(result == expected)
+          assert(result == expected, s"$result == $expected (expected)")
 
-      case DecisionResultType.resultList => // ResultList
+      case o: ResultList[?] => // ResultList
         val resultList = result.getResultList.asScala
-        val expKey = decisionDmn.out.productElementNames.next()
-        val expResults = decisionDmn.out.productIterator.next()
 
-        val expResultDmn = expResults match
-          case iterable: Iterable[?] =>
-            iterable.map {
+        val expResultDmn = o.result.map {
               case prod: Product =>
                 prod.productElementNames
                   .zip(prod.productIterator)
@@ -123,17 +104,8 @@ trait DmnTestRunner:
                     case k -> o => k -> o
                   }
                   .toMap
-              case e => fail(s"Expected Product, but got $e")
-
-            }.toSeq
-          case other =>
-            fail(
-              s"For DecisionResultType.collectEntries you need to have Iterable[?] object. But it was $other"
-            )
-            Seq.empty
-
-        assert(expResultDmn.size == resultList.size)
+            }
+        assert(expResultDmn.size == resultList.size, s"${expResultDmn.size} == ${resultList.size} \n$resultList == $expResultDmn (expected)")
         for (expMap, resMap) <- expResultDmn.zip(resultList)
         yield
-          println(s"assert $expMap == ${resMap}")
-          assert(expMap == resMap.asScala)
+          assert(expMap == resMap.asScala, s"$expMap == $resMap")

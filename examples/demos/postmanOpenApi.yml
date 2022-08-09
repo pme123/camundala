@@ -1,0 +1,329 @@
+openapi: 3.0.3
+info:
+  title: Demos Example Process API
+  version: '1.0'
+  description: |2+
+
+    **This is for Postman - to have example requests. Be aware the Output is not provided!**
+
+
+
+    Created at 09/08/2022, 10:14
+
+    ****
+
+
+
+
+    # Changelog
+
+    <details>
+    <summary>CHANGELOG.md</summary>
+    <p>
+
+
+    All notable changes to this project will be documented in this file.
+
+    * Types of Changes (L3):
+      * Added: new features
+      * Changed: changes in existing functionality
+      * Deprecated: soon-to-be-removed features
+      * Removed: now removed features
+      * Fixed: any bug fixes
+      * Security: in case of vulnerabilities
+
+
+    The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+    and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+    ### Unreleased
+    Initial Version
+
+    </p>
+    </details>
+
+
+servers:
+- url: http://localhost:8034/engine-rest
+  description: Local Developer Server
+paths:
+  /process-definition/key/just-for-demo/start:
+    post:
+      tags:
+      - demoProcess
+      summary: 'demoProcess: StartProcess'
+      description: |2
+
+
+        See API Doc: [demoProcess](No URL defined for demos-example/OpenApi.html#operation/Process:%20demoProcess)
+      operationId: postProcess-definitionKeyJust-for-demoStart
+      responses:
+        '200':
+          description: ''
+  /decision-definition/key/{key}/--REMOVE:singleEntry--/evaluate:
+    post:
+      tags:
+      - demoProcess
+      summary: 'singleEntryDMN: EvaluateDecision'
+      description: |2
+
+
+
+        Decision DMN:
+        - _decisionDefinitionKey_: `singleEntry`,
+
+
+        See API Doc: [singleEntryDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20singleEntryDMN)
+      operationId: postDecision-definitionKeyKey--remove:singleentry--Evaluate
+      parameters:
+      - name: key
+        in: path
+        description: The Process- or Decision-DefinitionKey of the Process or Decision
+        required: true
+        schema:
+          type: string
+          default: singleEntry
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateDecisionIn'
+            examples:
+              singleEntryDMN:
+                value:
+                  variables:
+                    letter:
+                      value: A
+                      type: String
+        required: true
+      responses:
+        '200':
+          description: ''
+  /decision-definition/key/{key}/--REMOVE:collectEntries--/evaluate:
+    post:
+      tags:
+      - demoProcess
+      summary: 'collectEntriesDMN: EvaluateDecision'
+      description: |2
+
+
+
+        Decision DMN:
+        - _decisionDefinitionKey_: `collectEntries`,
+
+
+        See API Doc: [collectEntriesDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20collectEntriesDMN)
+      operationId: postDecision-definitionKeyKey--remove:collectentries--Evaluate
+      parameters:
+      - name: key
+        in: path
+        description: The Process- or Decision-DefinitionKey of the Process or Decision
+        required: true
+        schema:
+          type: string
+          default: collectEntries
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateDecisionIn'
+            examples:
+              collectEntriesDMN:
+                value:
+                  variables:
+                    letter:
+                      value: A
+                      type: String
+        required: true
+      responses:
+        '200':
+          description: ''
+  /decision-definition/key/{key}/--REMOVE:singleResult--/evaluate:
+    post:
+      tags:
+      - demoProcess
+      summary: 'singleResultDMN: EvaluateDecision'
+      description: |2
+
+
+
+        Decision DMN:
+        - _decisionDefinitionKey_: `singleResult`,
+
+
+        See API Doc: [singleResultDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20singleResultDMN)
+      operationId: postDecision-definitionKeyKey--remove:singleresult--Evaluate
+      parameters:
+      - name: key
+        in: path
+        description: The Process- or Decision-DefinitionKey of the Process or Decision
+        required: true
+        schema:
+          type: string
+          default: singleResult
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateDecisionIn'
+            examples:
+              singleResultDMN:
+                value:
+                  variables:
+                    letter:
+                      value: A
+                      type: String
+        required: true
+      responses:
+        '200':
+          description: ''
+  /decision-definition/key/{key}/--REMOVE:resultList--/evaluate:
+    post:
+      tags:
+      - demoProcess
+      summary: 'resultListDMN: EvaluateDecision'
+      description: |2
+
+
+
+        Decision DMN:
+        - _decisionDefinitionKey_: `resultList`,
+
+
+        See API Doc: [resultListDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20resultListDMN)
+      operationId: postDecision-definitionKeyKey--remove:resultlist--Evaluate
+      parameters:
+      - name: key
+        in: path
+        description: The Process- or Decision-DefinitionKey of the Process or Decision
+        required: true
+        schema:
+          type: string
+          default: resultList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateDecisionIn'
+            examples:
+              resultListDMN:
+                value:
+                  variables:
+                    letter:
+                      value: A
+                      type: String
+        required: true
+      responses:
+        '200':
+          description: ''
+components:
+  schemas:
+    CBoolean:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: boolean
+        type:
+          type: string
+    CDouble:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: number
+          format: double
+        type:
+          type: string
+    CFile:
+      required:
+      - value
+      - valueInfo
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+          description: The File's content as Base64 encoded String.
+        valueInfo:
+          $ref: '#/components/schemas/CFileValueInfo'
+        type:
+          type: string
+    CFileValueInfo:
+      required:
+      - filename
+      type: object
+      properties:
+        filename:
+          type: string
+        mimetype:
+          type: string
+    CInteger:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: integer
+        type:
+          type: string
+    CJson:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+        type:
+          type: string
+    CLong:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int64
+        type:
+          type: string
+    CNull:
+      type: object
+    CString:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+        type:
+          type: string
+    CamundaVariable:
+      oneOf:
+      - $ref: '#/components/schemas/CBoolean'
+      - $ref: '#/components/schemas/CDouble'
+      - $ref: '#/components/schemas/CFile'
+      - $ref: '#/components/schemas/CInteger'
+      - $ref: '#/components/schemas/CJson'
+      - $ref: '#/components/schemas/CLong'
+      - $ref: '#/components/schemas/CNull'
+      - $ref: '#/components/schemas/CString'
+    EvaluateDecisionIn:
+      required:
+      - variables
+      type: object
+      properties:
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+      description: 'A JSON object with the following properties:'
+    Map_CamundaVariable:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/CamundaVariable'

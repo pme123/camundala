@@ -16,7 +16,7 @@ import scala.concurrent.duration.*
 trait SScenarioExtensions extends SimulationHelper:
 
   extension (scenario: SScenario)
-    def process = scenario.process
+    def process = scenario.inOut
 
     def correlate(
         msgName: String,
@@ -94,9 +94,98 @@ trait SScenarioExtensions extends SimulationHelper:
       case ss: SScenario => ss.name
       case ss: SSubProcess => ss.name
 
-    def process = scenario match
-      case ss: SScenario => ss.process
+    def inOut = scenario match
+      case ss: SScenario => ss.inOut
       case ss: SSubProcess => ss.inOut
+
+    inline def description(
+        prefix: String,
+        scenarioName: String
+    ): String =
+      val inOut = scenario.inOut
+      val d =
+        if (scenarioName == inOut.id) scenarioName
+        else s"'$scenarioName' (${inOut.id})"
+      s"$prefix $d"
+
+  extension (scenario: DmnScenario)
+    def dmn = scenario.inOut
+
+    def evaluate(): ChainBuilder =
+      val tenantId = config.tenantId
+      exec(
+        http(scenario.description("Evaluate Decision DMN", dmn.id))
+          .post(
+            s"/decision-definition/key/${dmn.decisionDefinitionKey}${tenantId
+              .map(id => s"/tenant-id/$id")
+              .getOrElse("")}/evaluate"
+          )
+          .auth()
+          .body(
+            StringBody(
+              EvaluateDecisionIn(
+                dmn.camundaInMap
+              ).asJson.toString
+            )
+          )
+          .check(status.is(200))
+          .check(
+            bodyString
+              .transform { body =>
+                parse(body)
+                  .flatMap(_.as[Seq[Map[String, CamundaVariable]]]) match {
+                  case Right(values) =>
+                    evaluateDmn(values)
+                  case Left(exc) =>
+                    s"\n!!! Problem parsing Result Body to a Seq of String -> CamundaVariable.\n$exc\n$body"
+                }
+              }
+              .is(true)
+          )
+      ).exitHereIfFailed
+
+    private def evaluateDmn(result: Seq[Map[String, CamundaVariable]]) =
+      val decisionDmn: DecisionDmn[_, _] = scenario.inOut
+      val check = decisionDmn.out match
+        case expected: SingleEntry[_] =>
+          val checkResult = result.size == 1 &&
+            result.head.size == 1 &&
+            result.head.head._2 == expected.toCamunda
+          (checkResult, s"${expected.decisionResultType}): ${expected.toCamunda}")
+        case expected: SingleResult[_] =>
+          val checkResult = result.size == 1 &&
+            result.head.size > 1 &&
+            result.head == expected.toCamunda
+          (checkResult, s"${expected.decisionResultType}): ${expected.toCamunda}")
+        case expected: CollectEntries[_] =>
+          println(s"RESULT EXPECTED: ${expected.toCamunda}")
+          println(s"EVALUATION RESULT: $result")
+          println(s"EVALUATION RESULT SET: ${result.map(_.values.head).toSet}")
+
+          val checkResult = (result.isEmpty && expected.toCamunda.isEmpty) ||
+            (result.nonEmpty &&
+              result.head.size == 1 &&
+              result.map(_.values.head).toSet == expected.toCamunda.toSet)
+          (checkResult, s"${expected.decisionResultType}): ${expected.toCamunda}")
+        case expected: ResultList[_] =>
+          val checkResult = (result.isEmpty && expected.toCamunda.isEmpty) ||
+            (result.nonEmpty &&
+              result.head.size > 1 &&
+              result.toSet == expected.toCamunda.toSet)
+          (checkResult, s"${expected.decisionResultType}): ${expected.toCamunda}")
+        case _ =>
+          (
+            false,
+            s"Unknown Type ${decisionDmn.out.getClass}: ${decisionDmn.out}"
+          )
+
+      if (check._1) check._1
+      else
+        s"\n!!! Dmn Evaluation failed:\n- Expected (${check._2}\n- Result: $result"
+
+  extension (
+      scenario: (ProcessScenario | SSubProcess)
+  )
 
     def check(
     ): Seq[ChainBuilder] = {
@@ -126,7 +215,7 @@ trait SScenarioExtensions extends SimulationHelper:
     }
 
     def checkVars(): HttpRequestBuilder =
-      http(description("Check", scenario.name))
+      http(scenario.description("Check", scenario.name))
         .get(
           "/history/variable-instance?processInstanceIdIn=#{processInstanceId}&deserializeValues=false"
         )
@@ -146,19 +235,10 @@ trait SScenarioExtensions extends SimulationHelper:
         )
 
     def checkFinished(): HttpRequestBuilder =
-      http(description("Check finished", scenario.name))
+      http(scenario.description("Check finished", scenario.name))
         .get(s"/history/process-instance/#{processInstanceId}")
         .auth()
         .check(checkMaxCount)
         .check(extractJson("$.state", "processState"))
-
-    private inline def description(
-        prefix: String,
-        scenarioName: String
-    ): String =
-      val d =
-        if (scenarioName == process.id) scenarioName
-        else s"'$scenarioName' (${process.id})"
-      s"$prefix $d"
 
   end extension

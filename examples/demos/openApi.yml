@@ -1,0 +1,201 @@
+openapi: 3.0.3
+info:
+  title: Demos Example Process API
+  version: '1.0'
+  description: |2+
+
+
+    Created at 09/08/2022, 10:14
+
+    ****
+
+
+
+
+    # Changelog
+
+    <details>
+    <summary>CHANGELOG.md</summary>
+    <p>
+
+
+    All notable changes to this project will be documented in this file.
+
+    * Types of Changes (L3):
+      * Added: new features
+      * Changed: changes in existing functionality
+      * Deprecated: soon-to-be-removed features
+      * Removed: now removed features
+      * Fixed: any bug fixes
+      * Security: in case of vulnerabilities
+
+
+    The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+    and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+    ### Unreleased
+    Initial Version
+
+    </p>
+    </details>
+
+paths:
+  /process/demoProcess/just-for-demo/demoProcess:
+    head:
+      tags:
+      - demoProcess
+      summary: 'Process: demoProcess'
+      description: |2
+
+
+
+        **Used in no other Process.**
+
+        **Uses no other Processes.**
+      operationId: 'Process: demoProcess'
+      responses:
+        '200':
+          description: ''
+  /decisiondmn/demoProcess/singleEntry/singleEntryDMN:
+    head:
+      tags:
+      - demoProcess
+      summary: 'DecisionDmn: singleEntryDMN'
+      description: ''
+      operationId: 'DecisionDmn: singleEntryDMN'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Input'
+            examples:
+              singleEntryDMN:
+                value:
+                  letter: A
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: integer
+              examples:
+                singleEntryDMN:
+                  value: 1
+  /decisiondmn/demoProcess/collectEntries/collectEntriesDMN:
+    head:
+      tags:
+      - demoProcess
+      summary: 'DecisionDmn: collectEntriesDMN'
+      description: ''
+      operationId: 'DecisionDmn: collectEntriesDMN'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Input'
+            examples:
+              collectEntriesDMN:
+                value:
+                  letter: A
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: integer
+              examples:
+                collectEntriesDMN:
+                  value:
+                  - 1
+                  - 2
+  /decisiondmn/demoProcess/singleResult/singleResultDMN:
+    head:
+      tags:
+      - demoProcess
+      summary: 'DecisionDmn: singleResultDMN'
+      description: ''
+      operationId: 'DecisionDmn: singleResultDMN'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Input'
+            examples:
+              singleResultDMN:
+                value:
+                  letter: A
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleResult_camundala.examples.demos.DecisionResultTypes.ManyOutResult[]'
+              examples:
+                singleResultDMN:
+                  value:
+                    index: 1
+                    emoji: 🤩
+  /decisiondmn/demoProcess/resultList/resultListDMN:
+    head:
+      tags:
+      - demoProcess
+      summary: 'DecisionDmn: resultListDMN'
+      description: ''
+      operationId: 'DecisionDmn: resultListDMN'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Input'
+            examples:
+              resultListDMN:
+                value:
+                  letter: A
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultList_camundala.examples.demos.DecisionResultTypes.ManyOutResult[]'
+              examples:
+                resultListDMN:
+                  value:
+                  - index: 1
+                    emoji: 🤩
+                  - index: 2
+                    emoji: 😂
+components:
+  schemas:
+    Input:
+      required:
+      - letter
+      type: object
+      properties:
+        letter:
+          type: string
+    ManyOutResult:
+      required:
+      - index
+      - emoji
+      type: object
+      properties:
+        index:
+          type: integer
+        emoji:
+          type: string
+    ResultList_camundala.examples.demos.DecisionResultTypes.ManyOutResult[]:
+      oneOf:
+      - $ref: '#/components/schemas/ManyOutResult'
+    SingleResult_camundala.examples.demos.DecisionResultTypes.ManyOutResult[]:
+      oneOf:
+      - $ref: '#/components/schemas/ManyOutResult'

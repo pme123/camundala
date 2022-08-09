@@ -49,8 +49,8 @@ trait BpmnDsl:
       Out <: Product: Encoder: Decoder: Schema
   ](
       decisionDefinitionKey: String,
-      in: In = NoInput(),
-      out: Out = NoOutput(),
+      in: In,
+      out: Out,
       descr: Option[String] | String = None
   ): DecisionDmn[In, Out] =
     DecisionDmn[In, Out](
@@ -59,33 +59,33 @@ trait BpmnDsl:
 
   def singleEntry[
       In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema
+      Out <: DmnValueType: Encoder: Decoder: Schema
   ](
       decisionDefinitionKey: String,
       in: In,
       out: Out,
       descr: Option[String] | String = None
-  ): DecisionDmn[In, Out] =
-    require(
+  ): DecisionDmn[In, SingleEntry[Out]] =
+   /* require(
       out.isSingleEntry,
       "A singleEntry must look like `case class SingleEntry(result: DmnValueType)`"
-    )
-    dmn(decisionDefinitionKey, in, out, descr)
+    ) */
+    dmn(decisionDefinitionKey, in, SingleEntry(out), descr)
 
   def collectEntries[
       In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema
+      Out <: DmnValueType: Encoder: Decoder: Schema
   ](
       decisionDefinitionKey: String,
       in: In,
-      out: Out,
+      out: Seq[Out],
       descr: Option[String] | String = None
-  ): DecisionDmn[In, Out] =
-    require(
+  ): DecisionDmn[In, CollectEntries[Out]] =
+   /* require(
       out.isCollectEntries,
       "A collectEntries must look like `case class CollectEntries(result: Int*)`"
-    )
-    dmn(decisionDefinitionKey, in, out, descr)
+    )*/
+    dmn(decisionDefinitionKey, in, CollectEntries(out), descr)
 
   def singleResult[
       In <: Product: Encoder: Decoder: Schema,
@@ -95,15 +95,15 @@ trait BpmnDsl:
       in: In,
       out: Out,
       descr: Option[String] | String = None
-  ): DecisionDmn[In, Out] =
-    require(
+  ): DecisionDmn[In, SingleResult[Out]] =
+  /*  require(
       out.isSingleResult,
       """A singleResult must look like `case class SingleResult(result: ManyOutResult)`
         | with `case class ManyOutResult(index: Int, emoji: String)`
         |> a case class with more than one `DmnValueType`s.
         |""".stripMargin
-    )
-    dmn(decisionDefinitionKey, in, out, descr)
+    ) */
+    dmn(decisionDefinitionKey, in, SingleResult(out), descr)
 
   def resultList[
       In <: Product: Encoder: Decoder: Schema,
@@ -111,17 +111,17 @@ trait BpmnDsl:
   ](
       decisionDefinitionKey: String,
       in: In,
-      out: Out,
+      out: Seq[Out],
       descr: Option[String] | String = None
-  ): DecisionDmn[In, Out] =
-    require(
+  ): DecisionDmn[In, ResultList[Out]] =
+  /*  require(
       out.isResultList,
       """A resultList must look like `case class ResultList(results: ManyOutResult*)`
         | with `case class ManyOutResult(index: Int, emoji: String)`
         | > a case class with more than one `DmnValueType`s.
         |""".stripMargin
-    )
-    dmn(decisionDefinitionKey, in, out, descr)
+    )*/
+    dmn(decisionDefinitionKey, in, ResultList(out), descr)
 
   def serviceTask[
       In <: Product: Encoder: Decoder: Schema,

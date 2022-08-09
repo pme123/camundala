@@ -35,7 +35,7 @@ case class DecisionDmn[
 ) extends ProcessNode,
       Activity[In, Out, DecisionDmn[In, Out]]:
 
-  override val label =
+  override val label: String =
     """// use singleEntry / collectEntries / singleResult / resultList
       |  dmn""".stripMargin
   lazy val decisionDefinitionKey: String = inOutDescr.id
@@ -43,17 +43,7 @@ case class DecisionDmn[
   def withInOutDescr(descr: InOutDescr[In, Out]): DecisionDmn[In, Out] =
     copy(inOutDescr = descr)
 
-  def decisionResultType: DecisionResultType = {
-    (inOutDescr.out) match
-      case o: Product if o.isSingleEntry =>
-        DecisionResultType.singleEntry
-      case o: Product if o.isCollectEntries =>
-        DecisionResultType.collectEntries
-      case o: Product if o.isSingleResult =>
-        DecisionResultType.singleResult
-      case o: Product if o.isResultList =>
-        DecisionResultType.resultList
-  }
+end DecisionDmn
 
 // String | Boolean | Int | Long | Double | Date |
 //  LocalDateTime | ZonedDateTime | scala.reflect.Enum
@@ -73,16 +63,22 @@ implicit def DmnValueTypeDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
 /** Example for a SingleEntry Output of a DMN Table. This returns one
   * `DmnValueType` in the variable `result`.
   */
-case class SingleEntry[Out <: DmnValueType: Encoder: Decoder: Schema](
+case class SingleEntry[Out <: DmnValueType](
     result: Out
-)
+):
+  lazy val toCamunda: CamundaVariable = CamundaVariable.valueToCamunda(result)
+  val decisionResultType: DecisionResultType = DecisionResultType.singleEntry
 
 /** Example for a CollectEntries Output of a DMN Table. This returns a Sequence
   * of `DmnValueType`s in the variable `result`.
   */
-case class CollectEntries[Out <: DmnValueType: Encoder: Decoder: Schema](
+case class CollectEntries[Out <: DmnValueType](
     result: Seq[Out]
-)
+):
+  lazy val toCamunda: Seq[CamundaVariable] =
+    result.map(CamundaVariable.valueToCamunda)
+  val decisionResultType: DecisionResultType = DecisionResultType.collectEntries
+
 object CollectEntries:
   def apply[Out <: DmnValueType: Encoder: Decoder: Schema](
       result: Out,
@@ -94,7 +90,11 @@ object CollectEntries:
   * (case class) with more than one fields of `DmnValueType`s in the variable
   * `result`.
   */
-case class SingleResult[Out <: Product: Encoder: Decoder: Schema](result: Out)
+case class SingleResult[Out <: Product: Encoder: Decoder: Schema](result: Out):
+
+  lazy val toCamunda: Map[String, CamundaVariable] =
+    CamundaVariable.toCamunda(result)
+  val decisionResultType: DecisionResultType = DecisionResultType.singleResult
 
 /** Example for a ResultList Output of a DMN Table. This returns a Sequence of
   * `Product`s (case classes) with more than one fields of `DmnValueType`s in
@@ -102,7 +102,12 @@ case class SingleResult[Out <: Product: Encoder: Decoder: Schema](result: Out)
   */
 case class ResultList[Out <: Product: Encoder: Decoder: Schema](
     result: Seq[Out]
-)
+):
+
+  lazy val toCamunda: Seq[Map[String, CamundaVariable]] =
+    result.map(CamundaVariable.toCamunda)
+  val decisionResultType: DecisionResultType = DecisionResultType.resultList
+
 object ResultList:
   def apply[Out <: Product: Encoder: Decoder: Schema](
       result: Out,
@@ -122,13 +127,11 @@ implicit def schemaForSingleEntry[A <: DmnValueType: Encoder: Decoder](implicit
     } yield Schema.SName("SingleEntry", List(na.show))
   )
 
-implicit def SingleEntryEncoder[T <: DmnValueType: Encoder: Decoder: Schema]
+implicit def SingleEntryEncoder[T <: DmnValueType: Encoder]
     : Encoder[SingleEntry[T]] = new Encoder[SingleEntry[T]] {
-  final def apply(sr: SingleEntry[T]): Json = Json.obj(
-    ("result", sr.asJson)
-  )
+  final def apply(sr: SingleEntry[T]): Json = sr.result.asJson
 }
-implicit def SingleEntryDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
+implicit def SingleEntryDecoder[T <: DmnValueType: Decoder]
     : Decoder[SingleEntry[T]] = new Decoder[SingleEntry[T]] {
   final def apply(c: HCursor): Decoder.Result[SingleEntry[T]] =
     for result <- c.downField("result").as[T]
@@ -150,9 +153,7 @@ implicit def schemaForCollectEntries[A <: DmnValueType: Encoder: Decoder](
 
 implicit def CollectEntriesEncoder[T <: DmnValueType: Encoder: Decoder: Schema]
     : Encoder[CollectEntries[T]] = new Encoder[CollectEntries[T]] {
-  final def apply(sr: CollectEntries[T]): Json = Json.obj(
-    ("result", sr.asJson)
-  )
+  final def apply(sr: CollectEntries[T]): Json = sr.result.asJson
 }
 implicit def CollectEntriesDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
     : Decoder[CollectEntries[T]] = new Decoder[CollectEntries[T]] {
@@ -176,9 +177,7 @@ implicit def schemaForSingleResult[A <: Product: Encoder: Decoder](implicit
 
 implicit def SingleResultEncoder[T <: Product: Encoder: Decoder: Schema]
     : Encoder[SingleResult[T]] = new Encoder[SingleResult[T]] {
-  final def apply(sr: SingleResult[T]): Json = Json.obj(
-    ("result", sr.asJson)
-  )
+  final def apply(sr: SingleResult[T]): Json = sr.result.asJson
 }
 implicit def SingleResultDecoder[T <: Product: Encoder: Decoder: Schema]
     : Decoder[SingleResult[T]] = new Decoder[SingleResult[T]] {
@@ -202,9 +201,7 @@ implicit def schemaForResultList[A <: Product: Encoder: Decoder](implicit
 
 implicit def ResultListEncoder[T <: Product: Encoder: Decoder: Schema]
     : Encoder[ResultList[T]] = new Encoder[ResultList[T]] {
-  final def apply(sr: ResultList[T]): Json = Json.obj(
-    ("result", sr.asJson)
-  )
+  final def apply(sr: ResultList[T]): Json =  sr.result.asJson
 }
 implicit def ResultListDecoder[T <: Product: Encoder: Decoder: Schema]
     : Decoder[ResultList[T]] = new Decoder[ResultList[T]] {
@@ -216,9 +213,9 @@ implicit def ResultListDecoder[T <: Product: Encoder: Decoder: Schema]
 
 object DecisionDmn:
 
-  def init(id: String): DecisionDmn[NoInput, NoOutput] =
+  def init(id: String): DecisionDmn[NoInput, SingleEntry[String]] =
     DecisionDmn(
-      InOutDescr(id, NoInput(), NoOutput())
+      InOutDescr(id, NoInput(), SingleEntry("INIT ONLY"))
     )
 
 extension (output: Product)

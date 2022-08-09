@@ -22,7 +22,7 @@ class DecisionTypesTest extends DmnTestRunner, BpmnDsl:
   private lazy val localDateTimeDMN = singleEntry(
     decisionDefinitionKey = "DecisionTypes",
     in = Input(ldtIn),
-    out = SingleEntry(ldtOut)
+    out = ldtOut
   )
 
   case class ZInput(dateTest: ZonedDateTime)
@@ -30,7 +30,7 @@ class DecisionTypesTest extends DmnTestRunner, BpmnDsl:
   private lazy val zonedDateTimeDMN = singleEntry(
     decisionDefinitionKey = "DecisionTypes",
     in = ZInput(ZonedDateTime.of(ldtIn, ZoneId.systemDefault)),
-    out = SingleEntry(ZonedDateTime.of(ldtOut, ZoneId.systemDefault))
+    out = ZonedDateTime.of(ldtOut, ZoneId.systemDefault)
   )
 
   @Test

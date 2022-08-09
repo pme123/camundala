@@ -18,11 +18,12 @@ sealed trait WithTestOverrides[T <: WithTestOverrides[T]]:
         .map(_ :+ testOverride)
         .getOrElse(TestOverrides(Seq(testOverride)))
     )
-  lazy val camundaToCheckMap: Map[String, CamundaVariable] = inOut.camundaToCheckMap
+  lazy val camundaToCheckMap: Map[String, CamundaVariable] =
+    inOut.camundaToCheckMap
 
 sealed trait SScenario:
   def name: String
-  def process: Process[_, _]
+  def inOut: InOut[_, _, _]
   def isIgnored: Boolean
 
 case class ProcessScenario(
@@ -40,20 +41,32 @@ case class ProcessScenario(
 
   def ignored: ProcessScenario = copy(isIgnored = true)
 
+case class DmnScenario(
+    name: String,
+    inOut: DecisionDmn[_, _],
+    isIgnored: Boolean = false,
+    testOverrides: Option[TestOverrides] = None
+) extends SScenario,
+      WithTestOverrides[DmnScenario]:
+  def add(testOverride: TestOverride): DmnScenario =
+    copy(testOverrides = addOverride(testOverride))
+
+  def ignored: DmnScenario = copy(isIgnored = true)
+
 case class BadScenario(
     name: String,
-    process: Process[_, _],
+    inOut: Process[_, _],
     status: Int,
     errorMsg: Option[String],
     isIgnored: Boolean = false
 ) extends SScenario
 
 case class IncidentScenario(
-                        name: String,
-                        process: Process[_, _],
-                        incidentMsg: String,
-                        isIgnored: Boolean = false
-                      ) extends SScenario
+    name: String,
+    inOut: Process[_, _],
+    incidentMsg: String,
+    isIgnored: Boolean = false
+) extends SScenario
 
 sealed trait SStep:
   def name: String
@@ -85,27 +98,28 @@ case class SSubProcess(
     copy(testOverrides = addOverride(testOverride))
 
 case class SReceiveMessageEvent(
-                                 name: String,
-                                 inOut: ReceiveMessageEvent[_],
-                                 readyVariable: Option[String] = None,
-                                 readyValue: Any = true,
-                                 processInstanceId: Boolean = true,
-                                 testOverrides: Option[TestOverrides] = None
-                               ) extends SInOutStep:
+    name: String,
+    inOut: ReceiveMessageEvent[_],
+    readyVariable: Option[String] = None,
+    readyValue: Any = true,
+    processInstanceId: Boolean = true,
+    testOverrides: Option[TestOverrides] = None
+) extends SInOutStep:
 
   def add(testOverride: TestOverride): SReceiveMessageEvent =
     copy(testOverrides = addOverride(testOverride))
 
+  // If you send a Message to start a process, there is no processInstanceId
   def start: SReceiveMessageEvent =
-      copy(processInstanceId = false)
+    copy(processInstanceId = false)
 
 case class SReceiveSignalEvent(
-                                 name: String,
-                                 inOut: ReceiveSignalEvent[_],
-                                 readyVariable: String = "waitForSignal",
-                                 readyValue: Any = true,
-                                 testOverrides: Option[TestOverrides] = None
-                               ) extends SInOutStep:
+    name: String,
+    inOut: ReceiveSignalEvent[_],
+    readyVariable: String = "waitForSignal",
+    readyValue: Any = true,
+    testOverrides: Option[TestOverrides] = None
+) extends SInOutStep:
 
   def add(testOverride: TestOverride): SReceiveSignalEvent =
     copy(testOverrides = addOverride(testOverride))

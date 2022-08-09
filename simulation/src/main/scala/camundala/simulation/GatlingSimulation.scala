@@ -55,13 +55,15 @@ trait GatlingSimulation
 
     val testRequests = scen match
       case ps: ProcessScenario =>
-        (scen.start() +:
+        (ps.start() +:
           ps.steps.flatMap(toGatling)) ++
-          scen.check()
+          ps.check()
+      case ds: DmnScenario =>
+        Seq(ds.evaluate())
       case bs: BadScenario =>
-        Seq(scen.start(bs.status, bs.errorMsg))
+        Seq(bs.start(bs.status, bs.errorMsg))
       case is: IncidentScenario =>
-        scen.start() +: checkIncident(is.incidentMsg)
+        is.start() +: checkIncident(is.incidentMsg)
 
     scenario(scen.name)
       .doIf(scen.isIgnored)(exec { session =>

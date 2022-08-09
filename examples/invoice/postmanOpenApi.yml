@@ -8,7 +8,7 @@ info:
 
 
 
-    Created at 27/06/2022, 09:59
+    Created at 09/08/2022, 10:18
 
     **[Check Project on Cawemo](https://cawemo.com/folders/a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala)**
 
@@ -63,6 +63,9 @@ paths:
         This starts the Invoice Receipt Process.
 
         <iframe src="https://cawemo.com/embed/e289c19a-8a57-4467-8583-de72a5e57488" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
+
+
+        See API Doc: [Invoice Receipt](No URL defined for invoice-example/OpenApi.html#operation/Process:%20Invoice%20Receipt)
       operationId: postProcess-definitionKeyInvoicereceiptpStart
       requestBody:
         content:
@@ -97,7 +100,7 @@ paths:
       responses:
         '200':
           description: ''
-  /decision-definition/key/{key}/evaluate:
+  /decision-definition/key/{key}/--REMOVE:invoice-assign-approver--/evaluate:
     post:
       tags:
       - Invoice Receipt
@@ -112,7 +115,10 @@ paths:
 
         Decision DMN:
         - _decisionDefinitionKey_: `invoice-assign-approver`,
-      operationId: postDecision-definitionKeyKeyEvaluate
+
+
+        See API Doc: [InvoiceAssignApproverDMN](No URL defined for invoice-example/OpenApi.html#operation/DecisionDmn:%20InvoiceAssignApproverDMN)
+      operationId: postDecision-definitionKeyKey--remove:invoice-assign-approver--Evaluate
       parameters:
       - name: key
         in: path
@@ -145,7 +151,10 @@ paths:
       tags:
       - Invoice Receipt
       summary: 'ApproveInvoiceUT: GetActiveTask'
-      description: Approve the invoice (or not).
+      description: |
+        Approve the invoice (or not).
+
+        See API Doc: [ApproveInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
       operationId: postTask--remove:approveinvoiceut--
       requestBody:
         content:
@@ -166,7 +175,10 @@ paths:
       tags:
       - Invoice Receipt
       summary: 'ApproveInvoiceUT: GetTaskFormVariables'
-      description: Approve the invoice (or not).
+      description: |
+        Approve the invoice (or not).
+
+        See API Doc: [ApproveInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
       operationId: getTaskTaskidForm-variables--remove:approveinvoiceut--
       parameters:
       - name: taskId
@@ -193,7 +205,7 @@ paths:
         required: false
         schema:
           type: string
-          default: creditor,amount,invoiceCategory,invoiceNumber,invoiceDocument
+          default: name,example
       - name: deserializeValues
         in: query
         required: false
@@ -208,7 +220,10 @@ paths:
       tags:
       - Invoice Receipt
       summary: 'ApproveInvoiceUT: CompleteTask'
-      description: Approve the invoice (or not).
+      description: |
+        Approve the invoice (or not).
+
+        See API Doc: [ApproveInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
       operationId: postTaskTaskidComplete--remove:approveinvoiceut--
       parameters:
       - name: taskId
@@ -232,6 +247,13 @@ paths:
             schema:
               $ref: '#/components/schemas/CompleteTaskIn'
             examples:
+              ApproveInvoiceUT:
+                value:
+                  variables:
+                    approved:
+                      value: true
+                      type: Boolean
+                  withVariablesInReturn: true
               Invoice approved:
                 value:
                   variables:
@@ -255,7 +277,10 @@ paths:
       tags:
       - Invoice Receipt
       summary: 'PrepareBankTransferUT: GetActiveTask'
-      description: Prepare the bank transfer in the Financial Accounting System.
+      description: |
+        Prepare the bank transfer in the Financial Accounting System.
+
+        See API Doc: [PrepareBankTransferUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
       operationId: postTask--remove:preparebanktransferut--
       requestBody:
         content:
@@ -276,7 +301,10 @@ paths:
       tags:
       - Invoice Receipt
       summary: 'PrepareBankTransferUT: GetTaskFormVariables'
-      description: Prepare the bank transfer in the Financial Accounting System.
+      description: |
+        Prepare the bank transfer in the Financial Accounting System.
+
+        See API Doc: [PrepareBankTransferUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
       operationId: getTaskTaskidForm-variables--remove:preparebanktransferut--
       parameters:
       - name: taskId
@@ -303,7 +331,7 @@ paths:
         required: false
         schema:
           type: string
-          default: creditor,amount,invoiceCategory,invoiceNumber,invoiceDocument
+          default: name,example
       - name: deserializeValues
         in: query
         required: false
@@ -318,7 +346,10 @@ paths:
       tags:
       - Invoice Receipt
       summary: 'PrepareBankTransferUT: CompleteTask'
-      description: Prepare the bank transfer in the Financial Accounting System.
+      description: |
+        Prepare the bank transfer in the Financial Accounting System.
+
+        See API Doc: [PrepareBankTransferUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
       operationId: postTaskTaskidComplete--remove:preparebanktransferut--
       parameters:
       - name: taskId
@@ -360,6 +391,9 @@ paths:
         This starts the Review Invoice Process.
 
         <iframe src="https://cawemo.com/embed/cc9f978a-e98a-4b01-991d-36d682574cda" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
+
+
+        See API Doc: [Review Invoice](No URL defined for invoice-example/OpenApi.html#operation/Process:%20Review%20Invoice)
       operationId: postProcess-definitionKeyReviewinvoicepStart
       requestBody:
         content:
@@ -399,7 +433,10 @@ paths:
       tags:
       - Review Invoice
       summary: 'AssignReviewerUT: GetActiveTask'
-      description: Select the Reviewer.
+      description: |
+        Select the Reviewer.
+
+        See API Doc: [AssignReviewerUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
       operationId: postTask--remove:assignreviewerut--
       requestBody:
         content:
@@ -420,7 +457,10 @@ paths:
       tags:
       - Review Invoice
       summary: 'AssignReviewerUT: GetTaskFormVariables'
-      description: Select the Reviewer.
+      description: |
+        Select the Reviewer.
+
+        See API Doc: [AssignReviewerUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
       operationId: getTaskTaskidForm-variables--remove:assignreviewerut--
       parameters:
       - name: taskId
@@ -447,7 +487,7 @@ paths:
         required: false
         schema:
           type: string
-          default: creditor,amount,invoiceCategory,invoiceNumber,invoiceDocument
+          default: name,example
       - name: deserializeValues
         in: query
         required: false
@@ -462,7 +502,10 @@ paths:
       tags:
       - Review Invoice
       summary: 'AssignReviewerUT: CompleteTask'
-      description: Select the Reviewer.
+      description: |
+        Select the Reviewer.
+
+        See API Doc: [AssignReviewerUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
       operationId: postTaskTaskidComplete--remove:assignreviewerut--
       parameters:
       - name: taskId
@@ -502,7 +545,10 @@ paths:
       tags:
       - Review Invoice
       summary: 'ReviewInvoiceUT: GetActiveTask'
-      description: Review Invoice and approve.
+      description: |
+        Review Invoice and approve.
+
+        See API Doc: [ReviewInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
       operationId: postTask--remove:reviewinvoiceut--
       requestBody:
         content:
@@ -523,7 +569,10 @@ paths:
       tags:
       - Review Invoice
       summary: 'ReviewInvoiceUT: GetTaskFormVariables'
-      description: Review Invoice and approve.
+      description: |
+        Review Invoice and approve.
+
+        See API Doc: [ReviewInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
       operationId: getTaskTaskidForm-variables--remove:reviewinvoiceut--
       parameters:
       - name: taskId
@@ -550,7 +599,7 @@ paths:
         required: false
         schema:
           type: string
-          default: creditor,amount,invoiceCategory,invoiceNumber,invoiceDocument
+          default: name,example
       - name: deserializeValues
         in: query
         required: false
@@ -565,7 +614,10 @@ paths:
       tags:
       - Review Invoice
       summary: 'ReviewInvoiceUT: CompleteTask'
-      description: Review Invoice and approve.
+      description: |
+        Review Invoice and approve.
+
+        See API Doc: [ReviewInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
       operationId: postTaskTaskidComplete--remove:reviewinvoiceut--
       parameters:
       - name: taskId
@@ -589,6 +641,13 @@ paths:
             schema:
               $ref: '#/components/schemas/CompleteTaskIn'
             examples:
+              ReviewInvoiceUT:
+                value:
+                  variables:
+                    clarified:
+                      value: true
+                      type: Boolean
+                  withVariablesInReturn: true
               Invoice clarified:
                 value:
                   variables:
@@ -628,16 +687,6 @@ components:
         value:
           type: number
           format: double
-        type:
-          type: string
-    CEnum:
-      required:
-      - value
-      - type
-      type: object
-      properties:
-        value:
-          type: string
         type:
           type: string
     CFile:
@@ -710,7 +759,6 @@ components:
       oneOf:
       - $ref: '#/components/schemas/CBoolean'
       - $ref: '#/components/schemas/CDouble'
-      - $ref: '#/components/schemas/CEnum'
       - $ref: '#/components/schemas/CFile'
       - $ref: '#/components/schemas/CInteger'
       - $ref: '#/components/schemas/CJson'

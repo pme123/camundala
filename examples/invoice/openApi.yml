@@ -5,7 +5,7 @@ info:
   description: |2+
 
 
-    Created at 27/06/2022, 09:59
+    Created at 09/08/2022, 10:18
 
     **[Check Project on Cawemo](https://cawemo.com/folders/a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala)**
 
@@ -46,7 +46,7 @@ info:
     </details>
 
 paths:
-  /process/InvoiceReceipt/InvoiceReceiptP:
+  /process/InvoiceReceipt/InvoiceReceiptP/InvoiceReceipt:
     head:
       tags:
       - Invoice Receipt
@@ -55,8 +55,8 @@ paths:
         \ style=\"width:100%;height:500px;border:1px solid #ccc\" allowfullscreen></iframe>\n\
         \n\n\n**Used in no other Process.**\n\n<details>\n<summary><b>Uses 1 Project(s)\
         \ (EXPERIMENTAL)</b></summary>\n<p>\n\n\n- _invoice-example_\n   - _[ReviewInvoiceP](No\
-        \ URL defined for invoice-example/OpenApi.html#tag/ReviewInvoiceP)_ \n\n\n\
-        \n</p>\n</details>\n"
+        \ URL defined for invoice-example/OpenApi.html#operation/Process:%20ReviewInvoiceP)_\
+        \ \n\n\n\n</p>\n</details>\n"
       operationId: 'Process: Invoice Receipt'
       requestBody:
         content:
@@ -6191,7 +6191,7 @@ paths:
                 Invoice Receipt:
                   value:
                     approved: true
-  /decisiondmn/InvoiceReceipt/invoice-assign-approver:
+  /decisiondmn/InvoiceReceipt/invoice-assign-approver/InvoiceAssignApproverDMN:
     head:
       tags:
       - Invoice Receipt
@@ -6219,12 +6219,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AssignApproverGroups'
+                $ref: '#/components/schemas/CollectEntries_camundala.examples.invoice.bpmn.InvoiceApi.ApproverGroup[]'
               examples:
                 InvoiceAssignApproverDMN:
                   value:
-                    approverGroups:
-                    - management
+                  - management
   /usertask/InvoiceReceipt/ApproveInvoiceUT:
     head:
       tags:
@@ -12362,6 +12361,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApproveInvoice'
               examples:
+                ApproveInvoiceUT:
+                  value:
+                    approved: true
                 Invoice approved:
                   value:
                     approved: true
@@ -18507,7 +18509,7 @@ paths:
               examples:
                 PrepareBankTransferUT:
                   value: {}
-  /process/ReviewInvoice/ReviewInvoiceP:
+  /process/ReviewInvoice/ReviewInvoiceP/ReviewInvoice:
     head:
       tags:
       - Review Invoice
@@ -18526,15 +18528,11 @@ paths:
 
 
         - _camundala_
-           - [InvoiceReceiptP](No URL defined for camundala/OpenApi.html#tag/InvoiceReceiptP)
-           - [InvoiceReceiptP](No URL defined for camundala/OpenApi.html#tag/InvoiceReceiptP)
-           - [InvoiceReceiptP](No URL defined for camundala/OpenApi.html#tag/InvoiceReceiptP)
+           - [InvoiceReceiptP](No URL defined for camundala/OpenApi.html#operation/Process:%20InvoiceReceiptP)
 
 
         - _camundala-dsl_
-           - [InvoiceReceiptP](No URL defined for camundala-dsl/OpenApi.html#tag/InvoiceReceiptP)
-           - [InvoiceReceiptP](No URL defined for camundala-dsl/OpenApi.html#tag/InvoiceReceiptP)
-           - [InvoiceReceiptP](No URL defined for camundala-dsl/OpenApi.html#tag/InvoiceReceiptP)
+           - [InvoiceReceiptP](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20InvoiceReceiptP)
 
 
 
@@ -36954,6 +36952,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/InvoiceReviewed'
               examples:
+                ReviewInvoiceUT:
+                  value:
+                    clarified: true
                 Invoice clarified:
                   value:
                     clarified: true
@@ -36976,13 +36977,6 @@ components:
       - $ref: '#/components/schemas/accounting'
       - $ref: '#/components/schemas/management'
       - $ref: '#/components/schemas/sales'
-    AssignApproverGroups:
-      type: object
-      properties:
-        approverGroups:
-          type: array
-          items:
-            $ref: '#/components/schemas/ApproverGroup'
     AssignedReviewer:
       required:
       - reviewer
@@ -36990,6 +36984,9 @@ components:
       properties:
         reviewer:
           type: string
+    CollectEntries_camundala.examples.invoice.bpmn.InvoiceApi.ApproverGroup[]:
+      oneOf:
+      - $ref: '#/components/schemas/ApproverGroup'
     FileInOut:
       required:
       - fileName

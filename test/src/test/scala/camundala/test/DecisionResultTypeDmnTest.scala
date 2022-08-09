@@ -21,25 +21,25 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
   private lazy val singleEntryDMN = singleEntry(
     decisionDefinitionKey = "singleEntry",
     in = Input("A"),
-    out = SingleEntry(1)
+    out = 1
   )
 
   private lazy val singleResultDMN = singleResult(
     decisionDefinitionKey = "singleResult",
     in = Input("A"),
-    out = SingleResult(ManyOutResult(1, "🤩"))
+    out = ManyOutResult(1, "🤩")
   )
 
   private lazy val collectEntriesDMN = collectEntries(
     decisionDefinitionKey = "collectEntries",
     in = Input("A"),
-    out = CollectEntries(1, 2)
+    out = Seq(1, 2)
   )
 
   private lazy val resultListDMN = resultList(
     decisionDefinitionKey = "resultList",
     in = Input("A"),
-    out = ResultList(List(ManyOutResult(1, "🤩"), ManyOutResult(2, "😂")))
+    out = List(ManyOutResult(1, "🤩"), ManyOutResult(2, "😂"))
   )
 
   @Test
@@ -62,15 +62,15 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
   def testSingleResultBadOutput(): Unit =
     test(singleResultDMNBadOutput)
 
-  @Test(expected = classOf[IllegalArgumentException])
+  @Test
   def testCollectEntriesEmptySeq(): Unit =
     test(collectEntriesDMNEmptySeq)
 
-  @Test(expected = classOf[IllegalArgumentException])
+  @Test(expected = classOf[AssertionError])
   def testResultListBadOutput(): Unit =
     test(resultListDMNBadOutput)
 
-  @Test(expected = classOf[IllegalArgumentException])
+  @Test
   def testResultListEmptySeq(): Unit =
     test(resultListDMNEmptySeq)
 
@@ -83,17 +83,17 @@ class DecisionResultTypeDmnTest extends DmnTestRunner, BpmnDsl:
 
   private def collectEntriesDMNEmptySeq = collectEntries(
     decisionDefinitionKey = "collectEntries",
-    in = Input("A"),
-    out = CollectEntries(Seq.empty[Int])
+    in = Input("Z"),
+    out = Seq.empty[Int]
   )
 
   private def resultListDMNBadOutput = resultList(
     decisionDefinitionKey = "resultList",
     in = Input("A"),
-    out = ResultList(BadManyOutResult(1, ManyOutResult(1, "🤩")))
+    out = Seq(BadManyOutResult(1, ManyOutResult(1, "🤩")),BadManyOutResult(1, ManyOutResult(2, "😂")))
   )
   private def resultListDMNEmptySeq = resultList(
     decisionDefinitionKey = "resultList",
-    in = Input("A"),
-    out = ResultList(Seq.empty[ManyOutResult])
+    in = Input("Z"),
+    out = Seq.empty[ManyOutResult]
   )

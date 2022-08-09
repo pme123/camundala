@@ -35,9 +35,6 @@ object InvoiceApi extends BpmnDsl:
         InvoiceCategory.`Software License Costs`
   )
 
-  case class AssignApproverGroups(
-      approverGroups: Seq[ApproverGroup] = Seq(ApproverGroup.management)
-  )
 
   @description("These Groups can approve the invoice.")
   enum ApproverGroup derives Adt.PureEncoder, Adt.PureDecoder:
@@ -91,19 +88,17 @@ object InvoiceApi extends BpmnDsl:
     `Invoice Receipt`
       .withIn(InvoiceReceipt(null))
 
-  lazy val InvoiceAssignApproverDMN
-      : DecisionDmn[SelectApproverGroup, AssignApproverGroups] = collectEntries(
+  lazy val InvoiceAssignApproverDMN = collectEntries(
     decisionDefinitionKey = "invoice-assign-approver",
     in = SelectApproverGroup(),
-    out = AssignApproverGroups(),
+    out = Seq(ApproverGroup.management),
   ).withDescr(cawemoDescr("Decision Table on who must approve the Invoice.", "155ba236-d5d1-42f7-8b56-3e90e0bb98d4"))
 
-  lazy val InvoiceAssignApproverDMN2
-      : DecisionDmn[SelectApproverGroup, AssignApproverGroups] =
+  lazy val InvoiceAssignApproverDMN2 =
     InvoiceAssignApproverDMN
       .withIn(SelectApproverGroup(1050, InvoiceCategory.`Travel Expenses`))
       .withOut(
-        AssignApproverGroups(Seq(ApproverGroup.accounting, ApproverGroup.sales))
+        CollectEntries(Seq(ApproverGroup.accounting, ApproverGroup.sales))
       )
 
   lazy val AssignApproverGroupBRT = // for unit testing you need the BusinessRuleTask

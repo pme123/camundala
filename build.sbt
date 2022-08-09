@@ -21,7 +21,6 @@ lazy val root = project
     dmn,
     camunda,
     test,
-    gatling,
     simulation,
     exampleTwitterC7,
     exampleTwitterC8,
@@ -94,20 +93,6 @@ lazy val test = project
       camundaTestDependencies
   )
   .dependsOn(bpmn, dmn)
-
-lazy val gatling = project
-  .in(file("./gatling"))
-  .configure(preventPublication) // problem with Nexus JavaDoc Validation
-  .settings(projectSettings("gatling"))
-  .settings(
-    libraryDependencies ++=
-      gatlingDependencies,
-    scalacOptions ++= Seq(
-      "-Xmax-inlines",
-      "50" // is declared as erased, but is in fact used
-    )
-  )
-  .dependsOn(api)
 
 lazy val simulation = project
   .in(file("./simulation"))
@@ -207,7 +192,7 @@ lazy val exampleDemos = project
   .settings(
     libraryDependencies ++= camundaDependencies
   )
-  .dependsOn(camunda, test, gatling)
+  .dependsOn(camunda, test, simulation)
   .enablePlugins(GatlingPlugin)
 
 val springBootVersion = "2.6.1"

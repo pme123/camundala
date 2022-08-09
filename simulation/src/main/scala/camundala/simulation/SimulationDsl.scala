@@ -60,6 +60,9 @@ trait SimulationDsl extends GatlingSimulation, TestOverrideExtensions, BpmnDsl:
   def scenario(scen: ProcessScenario): SimulationConstr =
     scenario(scen)()
 
+  def scenario(scen: DmnScenario): SimulationConstr =
+    scen.stage
+
   def scenario(scen: ProcessScenario)(body: SStep*): SimulationConstr =
     scen.copy(steps = body.toList).stage
 
@@ -93,6 +96,11 @@ trait SimulationDsl extends GatlingSimulation, TestOverrideExtensions, BpmnDsl:
       inline process: Process[_, _]
   ): ProcessScenario =
     ProcessScenario(nameOfVariable(process), process)
+
+  implicit inline def toScenario(
+                                  inline decisionDmn: DecisionDmn[_, _]
+                                ): DmnScenario =
+    DmnScenario(nameOfVariable(decisionDmn), decisionDmn)
 
   implicit inline def toStep(inline inOut: UserTask[_, _]): SUserTask =
     SUserTask(nameOfVariable(inOut), inOut)
