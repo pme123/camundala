@@ -2,6 +2,7 @@ package camundala
 package bpmn
 
 import java.util.Base64
+import scala.language.implicitConversions
 
 case class InOutDescr[
     In <: Product: Encoder: Decoder: Schema,
@@ -10,7 +11,7 @@ case class InOutDescr[
     id: String,
     in: In = NoInput(),
     out: Out = NoOutput(),
-    descr: Option[String] | String = None
+    descr: Option[String] = None
 )
 
 trait Activity[
@@ -28,7 +29,7 @@ trait InOut[
   //def constructor: InOutDescr[In, Out] => T
   lazy val inOutClass: String = this.getClass.getName
   lazy val id: String = inOutDescr.id
-  lazy val descr: Option[String] | String = inOutDescr.descr
+  lazy val descr: Option[String] = inOutDescr.descr
   lazy val in: In = inOutDescr.in
   lazy val out: Out = inOutDescr.out
   lazy val camundaInMap: Map[String, CamundaVariable] =
@@ -56,10 +57,7 @@ trait ProcessElement extends Product:
   def id: String
   def typeName: String = getClass.getSimpleName
   def label: String = typeName.head.toString.toLowerCase + typeName.tail
-  def descr: Option[String] | String
-  lazy val maybeDescr: Option[String] = descr match
-    case d: Option[String] => d
-    case d: String => Some(d)
+  def descr: Option[String]
 
 trait ProcessNode extends ProcessElement
 
@@ -159,11 +157,11 @@ object ServiceTask:
 
 case class EndEvent(
     id: String,
-    descr: Option[String] | String = None
+    descr: Option[String] = None
 ) extends ProcessNode:
 
   def withDescr(descr: String): EndEvent =
-    copy(descr = descr)
+    copy(descr = Some(descr))
 
 object EndEvent:
 
@@ -249,3 +247,4 @@ def valueToJson(value: Any): Json =
       Json.Null
     case v =>
       Json.fromString(v.toString)
+

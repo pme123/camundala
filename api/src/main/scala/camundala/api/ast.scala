@@ -29,7 +29,7 @@ sealed trait InOutApi[
   def apiExamples: ApiExamples[In, Out]
   lazy val inOutDescr: InOutDescr[In, Out] = inOut.inOutDescr
   lazy val id: String = inOutDescr.id
-  lazy val descr: String = inOut.maybeDescr.getOrElse("")
+  lazy val descr: String = inOut.descr.getOrElse("")
   lazy val typeName: String = inOut.typeName
 
   def withExamples(
