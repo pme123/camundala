@@ -134,7 +134,7 @@ implicit def SingleEntryEncoder[T <: DmnValueType: Encoder]
 implicit def SingleEntryDecoder[T <: DmnValueType: Decoder]
     : Decoder[SingleEntry[T]] = new Decoder[SingleEntry[T]] {
   final def apply(c: HCursor): Decoder.Result[SingleEntry[T]] =
-    for result <- c.downField("result").as[T]
+    for result <- c.as[T]
     yield SingleEntry[T](result)
 
 }
@@ -151,14 +151,14 @@ implicit def schemaForCollectEntries[A <: DmnValueType: Encoder: Decoder](
     } yield Schema.SName("CollectEntries", List(na.show))
   )
 
-implicit def CollectEntriesEncoder[T <: DmnValueType: Encoder: Decoder: Schema]
+implicit def CollectEntriesEncoder[T <: DmnValueType: Encoder]
     : Encoder[CollectEntries[T]] = new Encoder[CollectEntries[T]] {
   final def apply(sr: CollectEntries[T]): Json = sr.result.asJson
 }
-implicit def CollectEntriesDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
+implicit def CollectEntriesDecoder[T <: DmnValueType: Decoder]
     : Decoder[CollectEntries[T]] = new Decoder[CollectEntries[T]] {
   final def apply(c: HCursor): Decoder.Result[CollectEntries[T]] =
-    for result <- c.downField("result").as[Seq[T]]
+    for result <- c.as[Seq[T]]
     yield CollectEntries[T](result)
 
 }
@@ -182,7 +182,7 @@ implicit def SingleResultEncoder[T <: Product: Encoder: Decoder: Schema]
 implicit def SingleResultDecoder[T <: Product: Encoder: Decoder: Schema]
     : Decoder[SingleResult[T]] = new Decoder[SingleResult[T]] {
   final def apply(c: HCursor): Decoder.Result[SingleResult[T]] =
-    for result <- c.downField("result").as[T]
+    for result <- c.as[T]
     yield SingleResult[T](result)
 
 }
@@ -206,7 +206,7 @@ implicit def ResultListEncoder[T <: Product: Encoder: Decoder: Schema]
 implicit def ResultListDecoder[T <: Product: Encoder: Decoder: Schema]
     : Decoder[ResultList[T]] = new Decoder[ResultList[T]] {
   final def apply(c: HCursor): Decoder.Result[ResultList[T]] =
-    for result <- c.downField("result").as[Seq[T]]
+    for result <- c.as[Seq[T]]
     yield ResultList[T](result)
 
 }

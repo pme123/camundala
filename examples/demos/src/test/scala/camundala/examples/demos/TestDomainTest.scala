@@ -16,8 +16,6 @@ class TestDomainTest extends TestRunner:
 
   import org.camunda.spin.Spin.*
 
-  val json = JSON("{\"customer\": \"Kermit\"}")
-  println(json.prop("customer").stringValue())
   lazy val config: TestConfig =
     testConfig
       .deployments(

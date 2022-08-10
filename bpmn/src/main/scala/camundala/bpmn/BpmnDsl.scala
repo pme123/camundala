@@ -44,7 +44,8 @@ trait BpmnDsl:
       InOutDescr(id, in, out, descr.value)
     )
 
-  def dmn[
+  // Use result strategy, like _singleEntry_, _collectEntries_, _singleResult_, _resultList_
+  private def dmn[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema
   ](
