@@ -60,18 +60,14 @@ implicit def DmnValueTypeDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
 
 }
 
-/** Example for a SingleEntry Output of a DMN Table. This returns one
-  * `DmnValueType` in the variable `result`.
-  */
+@description("SingleEntry: Output of a DMN Table. This returns one `DmnValueType`.")
 case class SingleEntry[Out <: DmnValueType](
     result: Out
 ):
   lazy val toCamunda: CamundaVariable = CamundaVariable.valueToCamunda(result)
   val decisionResultType: DecisionResultType = DecisionResultType.singleEntry
 
-/** Example for a CollectEntries Output of a DMN Table. This returns a Sequence
-  * of `DmnValueType`s in the variable `result`.
-  */
+@description("CollectEntry: Output of a DMN Table. This returns a Sequence of `DmnValueType`s.")
 case class CollectEntries[Out <: DmnValueType](
     result: Seq[Out]
 ):
@@ -86,20 +82,14 @@ object CollectEntries:
   ): CollectEntries[Out] =
     new CollectEntries[Out](result +: results)
 
-/** Example for a SingleResult Output of a DMN Table. This returns one `Product`
-  * (case class) with more than one fields of `DmnValueType`s in the variable
-  * `result`.
-  */
+@description("SingleResult: Output of a DMN Table. This returns one `Product` (case class) with more than one fields of `DmnValueType`s.")
 case class SingleResult[Out <: Product: Encoder: Decoder: Schema](result: Out):
 
   lazy val toCamunda: Map[String, CamundaVariable] =
     CamundaVariable.toCamunda(result)
   val decisionResultType: DecisionResultType = DecisionResultType.singleResult
 
-/** Example for a ResultList Output of a DMN Table. This returns a Sequence of
-  * `Product`s (case classes) with more than one fields of `DmnValueType`s in
-  * the variable `result`.
-  */
+@description("ResultList: Output of a DMN Table. This returns a Sequence of `Product`s (case classes) with more than one fields of `DmnValueType`s")
 case class ResultList[Out <: Product: Encoder: Decoder: Schema](
     result: Seq[Out]
 ):

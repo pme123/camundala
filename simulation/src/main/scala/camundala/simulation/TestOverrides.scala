@@ -3,19 +3,22 @@ package camundala.simulation
 import camundala.api.CamundaProperty
 import camundala.bpmn.*
 import camundala.bpmn.CamundaVariable.*
+import io.circe.syntax.*
 
 case class TestOverride(
-    key: String,
+    key: Option[String],
     overrideType: TestOverrideType, // problem with encoding?! derives JsonTaggedAdt.PureEncoder
     value: Option[CamundaVariable] = None
 )
 
 case class TestOverrides(overrides: Seq[TestOverride]): //Seq[TestOverride])
 
-  def :+(testOverride: TestOverride): TestOverrides = TestOverrides(overrides :+ testOverride)
+  def :+(testOverride: TestOverride): TestOverrides = TestOverrides(
+    overrides :+ testOverride
+  )
 
 enum TestOverrideType derives Adt.PureEncoder:
-  case Exists, NotExists, IsEquals, HasSize
+  case Exists, NotExists, IsEquals, HasSize, Contains
 
 object TestOverrideType:
   given Schema[TestOverrideType] = Schema.derived
@@ -24,7 +27,7 @@ def addOverride[
     T <: Product
 ](
     model: T,
-    key: String,
+    key: Option[String],
     overrideType: TestOverrideType,
     value: Option[CamundaVariable] = None
 ): TestOverrides =
@@ -52,41 +55,61 @@ object TestOverride:
 
 trait TestOverrideExtensions:
 
-  extension [T <: WithTestOverrides[T]] (withOverride: T)
+  extension [T <: WithTestOverrides[T]](withOverride: T)
 
     def exists(
-                key: String
-              ): T =
-      add(key, TestOverrideType.Exists)
+        key: String
+    ): T =
+      add(Some(key), TestOverrideType.Exists)
 
     def notExists(
-                   key: String
-                 ): T =
-      add(key, TestOverrideType.NotExists)
+        key: String
+    ): T =
+      add(Some(key), TestOverrideType.NotExists)
 
-    def isEquals(
-                  key: String,
-                  value: Any
-                ): T =
+    def isEquals[V: Encoder](
+        key: String,
+        value: V
+    ): T =
       add(
-        key,
+        Some(key),
         TestOverrideType.IsEquals,
         Some(CamundaVariable.valueToCamunda(value))
       )
 
     def hasSize(
-                 key: String,
-                 size: Int
-               ): T =
+        key: String,
+        size: Int
+    ): T =
       add(
-        key,
+        Some(key),
         TestOverrideType.HasSize,
         Some(CInteger(size))
       )
 
+    // used for DMNs ResultList and CollectEntries
+    def hasSize(
+        size: Int
+    ): T =
+      add(
+        None,
+        TestOverrideType.HasSize,
+        Some(CInteger(size))
+      )
+
+    // used for DMNs ResultList and CollectEntries
+    def contains[V: Encoder](
+        expected: V
+    ): T =
+      add(
+        None,
+        TestOverrideType.Contains,
+        Some(CamundaVariable.valueToCamunda(expected.asJson))
+      )
+
     private def add(
-                         key: String,
-                         overrideType: TestOverrideType,
-                         value: Option[CamundaVariable] = None
-                       ): T =
+        key: Option[String],
+        overrideType: TestOverrideType,
+        value: Option[CamundaVariable] = None
+    ): T =
       withOverride.add(TestOverride(key, overrideType, value))

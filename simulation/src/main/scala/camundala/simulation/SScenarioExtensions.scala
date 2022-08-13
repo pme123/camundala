@@ -144,35 +144,62 @@ trait SScenarioExtensions extends SimulationHelper:
           )
       ).exitHereIfFailed
 
-    private def evaluateDmn(result: Seq[Map[String, CamundaVariable]]) =
+    private def evaluateDmn(resultSeq: Seq[Map[String, CamundaVariable]]) =
+      val result = resultSeq.map(
+        _.filter(_._2 != CamundaVariable.CNull)
+      )
       val decisionDmn: DecisionDmn[_, _] = scenario.inOut
       val check = decisionDmn.out match
         case expected: SingleEntry[_] =>
           val checkResult = result.size == 1 &&
             result.head.size == 1 &&
             result.head.head._2 == expected.toCamunda
-          (checkResult, s"${expected.decisionResultType}): ${expected.toCamunda}")
+          (
+            checkResult,
+            s"${expected.decisionResultType}): ${expected.toCamunda}"
+          )
         case expected: SingleResult[_] =>
           val checkResult = result.size == 1 &&
             result.head.size > 1 &&
             result.head == expected.toCamunda
-          (checkResult, s"${expected.decisionResultType}): ${expected.toCamunda}")
+          (
+            checkResult,
+            s"${expected.decisionResultType}): ${expected.toCamunda}"
+          )
         case expected: CollectEntries[_] =>
-          println(s"RESULT EXPECTED: ${expected.toCamunda}")
-          println(s"EVALUATION RESULT: $result")
-          println(s"EVALUATION RESULT SET: ${result.map(_.values.head).toSet}")
+          scenario.testOverrides match
+            case None =>
+              val checkResult = (result.isEmpty && expected.toCamunda.isEmpty) ||
+                (result.nonEmpty &&
+                  result.head.size == 1 &&
+                  result.map(_.values.head).toSet == expected.toCamunda.toSet)
+              (
+                checkResult,
+                s"${expected.decisionResultType}): ${expected.toCamunda}"
+              )
+            case Some(testOverrides)  =>
+              (
+                checkOForCollection(testOverrides.overrides, result.map(_.values.head)),
+                s"${expected.decisionResultType}): $testOverrides"
+              )
 
-          val checkResult = (result.isEmpty && expected.toCamunda.isEmpty) ||
-            (result.nonEmpty &&
-              result.head.size == 1 &&
-              result.map(_.values.head).toSet == expected.toCamunda.toSet)
-          (checkResult, s"${expected.decisionResultType}): ${expected.toCamunda}")
         case expected: ResultList[_] =>
-          val checkResult = (result.isEmpty && expected.toCamunda.isEmpty) ||
-            (result.nonEmpty &&
-              result.head.size > 1 &&
-              result.toSet == expected.toCamunda.toSet)
-          (checkResult, s"${expected.decisionResultType}): ${expected.toCamunda}")
+          scenario.testOverrides match
+            case None =>
+              val checkResult = (result.isEmpty && expected.toCamunda.isEmpty) ||
+                (result.nonEmpty &&
+                  result.head.size > 1 &&
+                  result.toSet == expected.toCamunda.toSet)
+              (
+                checkResult,
+                s"${expected.decisionResultType}): ${expected.toCamunda}"
+              )
+            case Some(testOverrides) =>
+              (
+                checkOForCollection(testOverrides.overrides, result),
+                s"${expected.decisionResultType}): $testOverrides"
+              )
+
         case _ =>
           (
             false,

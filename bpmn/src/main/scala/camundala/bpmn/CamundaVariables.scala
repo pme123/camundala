@@ -1,6 +1,7 @@
 package camundala.bpmn
 
 import io.circe.*
+import io.circe.Json.*
 import io.circe.syntax.*
 
 import scala.annotation.tailrec
@@ -72,7 +73,7 @@ object CamundaVariable:
                                        ): Map[String, CamundaVariable] =
     product.productElementNames
       .zip(product.productIterator)
-      .filterNot { case k -> v => v.isInstanceOf[None.type] } // don't send null
+      .filterNot { case _ -> v => v.isInstanceOf[None.type] } // don't send null
       .map { case (k, v) => k -> objectToCamunda(product, k, v) }
       .toMap
 
@@ -124,6 +125,8 @@ object CamundaVariable:
         CString(v.toString)
       case other if other == null =>
         CNull
+      case v: Json =>
+        CJson(v.toString)
       case other =>
         throwErr(s"Unexpected Value to map to CamundaVariable: $other")
 
@@ -181,6 +184,42 @@ object CamundaVariable:
       case "File" =>
         valueInfo.as[CFileValueInfo].map(vi => CFile("not_set", vi))
       case _ => anyValue.as[String].map(CString(_))
+
+
+  type JsonToCamundaValue = CamundaVariable | Map[String, CamundaVariable] | Seq[Any]
+  
+  def jsonToCamundaValue(json: Json): JsonToCamundaValue =
+
+    val folder: Json.Folder[JsonToCamundaValue] = new Json.Folder[JsonToCamundaValue] {
+      def onNull: CamundaVariable = CNull
+
+      def onBoolean(value: Boolean): CamundaVariable = CBoolean(value)
+
+      def onNumber(value: JsonNumber): CamundaVariable =
+        value.toBigDecimal.map {
+          case v if v.isValidInt => CInteger(v.intValue)
+          case v if v.isValidLong => CLong(v.longValue)
+          case v => CDouble(v.doubleValue)
+        }.getOrElse(CDouble(value.toDouble))
+
+      def onString(value: String): CamundaVariable = CString(value)
+
+      def onArray(value: Vector[Json]): JsonToCamundaValue =
+        value.collect {
+          case v if !v.isNull => v.foldWith(this)
+        }
+
+      def onObject(value: JsonObject): JsonToCamundaValue =
+        value
+          .filter { case (_, v) => !v.isNull }.toMap
+          .map((k, v) => k -> (jsonToCamundaValue(v) match
+            case cv: CamundaVariable => cv
+            case _: (Map[?, ?] | Seq[?]) => CJson(v.toString)
+            ))
+    }
+    json.foldWith(folder)
+
+  end jsonToCamundaValue
 
 end CamundaVariable
 

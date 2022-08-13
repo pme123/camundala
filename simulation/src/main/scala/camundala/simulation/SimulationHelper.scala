@@ -11,6 +11,7 @@ import io.gatling.http.Predef.*
 import io.gatling.http.request.builder.HttpRequestBuilder
 
 import scala.concurrent.duration.*
+import io.circe.parser.*
 
 trait SimulationHelper:
 
@@ -134,23 +135,23 @@ trait SimulationHelper:
     import TestOverrideType.*
     overrides
       .map {
-        case TestOverride(k, Exists, _) =>
+        case TestOverride(Some(k), Exists, _) =>
           val matches = result.exists(_.key == k)
           if (!matches)
             println(s"!!! $k did NOT exist in $result")
           matches
-        case TestOverride(k, NotExists, _) =>
+        case TestOverride(Some(k), NotExists, _) =>
           val matches = !result.exists(_.key == k)
           if (!matches)
             println(s"!!! $k did EXIST in $result")
           matches
-        case TestOverride(k, IsEquals, Some(v)) =>
+        case TestOverride(Some(k), IsEquals, Some(v)) =>
           val r = result.find(_.key == k)
           val matches = r.nonEmpty && r.exists(_.value == v)
           if (!matches)
             println(s"!!! $v ($k) is NOT equal in $r")
           matches
-        case TestOverride(k, HasSize, Some(value)) =>
+        case TestOverride(Some(k), HasSize, Some(value)) =>
           val r = result.find(_.key == k)
           val matches = r.exists {
             _.value match
@@ -167,7 +168,41 @@ trait SimulationHelper:
           matches
         case _ =>
           println(
-            s"!!! Only ${TestOverrideType.values.mkString(", ")} for TestOverrides supported"
+            s"!!! Only ${TestOverrideType.values.mkString(", ")} for TestOverrides supported."
+          )
+          false
+      }
+      .forall(_ == true)
+
+  def checkOForCollection(
+                      overrides: Seq[TestOverride],
+                      result: Seq[CamundaVariable | Map[String, CamundaVariable]]
+                    ) =
+    import TestOverrideType.*
+    overrides
+      .map {
+        case TestOverride(None, HasSize, Some(CInteger(size, _))) =>
+          val matches = result.size == size
+          if (!matches)
+            println(s"!!! Size '${result.size}' of collection is NOT equal to $size in $result")
+          matches
+        case TestOverride(None, Contains, Some(expected)) =>
+          val exp = expected match
+            case CJson(jsonStr, _) =>
+              parse(jsonStr) match
+                case Right(json) =>
+                  CamundaVariable.jsonToCamundaValue(json)
+                case Left(ex) =>
+                  throwErr(s"Problem parsing Json: $jsonStr\n$ex")
+            case other => other
+          println(s"EXPECTED: $exp")
+          val matches = result.contains(exp)
+          if (!matches)
+            println(s"!!! Result '$result' of collection does NOT contain to $expected")
+          matches
+        case _ =>
+          println(
+            s"!!! Only ${TestOverrideType.values.mkString(", ")} for TestOverrides supported."
           )
           false
       }
