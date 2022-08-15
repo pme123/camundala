@@ -1,5 +1,5 @@
 package camundala
-package examples.twitter.camunda
+package camunda8
 
 import bpmn.*
 import io.circe.HCursor

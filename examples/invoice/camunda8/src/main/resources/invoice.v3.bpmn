@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0jg7lxf" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.0.0">
+  <bpmn:collaboration id="Collaboration_0m1fmdk">
+    <bpmn:participant id="Participant_086kdlh" name="Invoice Receipt" processRef="Process_0itp6pf" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_0itp6pf" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_142cncb">
+      <bpmn:lane id="Lane_1nb4a6j" name="Approver" />
+      <bpmn:lane id="Lane_0zjdwl1" name="Accountant">
+        <bpmn:flowNodeRef>Event_0dn52dp</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_0h39sud" name="Team Assistant">
+        <bpmn:flowNodeRef>Event_07t4d62</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1bh831p</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Event_07t4d62" name="Invoice&#10;received">
+      <bpmn:outgoing>Flow_079f9k9</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:businessRuleTask id="Activity_1bh831p" name="Assign Approver Group">
+      <bpmn:extensionElements>
+        <zeebe:calledDecision decisionId="invoice-assign-approver" resultVariable="approverGroups" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_079f9k9</bpmn:incoming>
+      <bpmn:outgoing>Flow_1tf38dz</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:endEvent id="Event_0dn52dp" name="Invoice&#10;processed">
+      <bpmn:incoming>Flow_1tf38dz</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_079f9k9" sourceRef="Event_07t4d62" targetRef="Activity_1bh831p" />
+    <bpmn:sequenceFlow id="Flow_1tf38dz" sourceRef="Activity_1bh831p" targetRef="Event_0dn52dp" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0m1fmdk">
+      <bpmndi:BPMNShape id="Participant_086kdlh_di" bpmnElement="Participant_086kdlh" isHorizontal="true">
+        <dc:Bounds x="140" y="80" width="600" height="410" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1nb4a6j_di" bpmnElement="Lane_1nb4a6j" isHorizontal="true">
+        <dc:Bounds x="170" y="220" width="570" height="140" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0zjdwl1_di" bpmnElement="Lane_0zjdwl1" isHorizontal="true">
+        <dc:Bounds x="170" y="360" width="570" height="130" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0h39sud_di" bpmnElement="Lane_0h39sud" isHorizontal="true">
+        <dc:Bounds x="170" y="80" width="570" height="140" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_079f9k9_di" bpmnElement="Flow_079f9k9">
+        <di:waypoint x="258" y="150" />
+        <di:waypoint x="310" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1tf38dz_di" bpmnElement="Flow_1tf38dz">
+        <di:waypoint x="410" y="150" />
+        <di:waypoint x="531" y="150" />
+        <di:waypoint x="531" y="430" />
+        <di:waypoint x="652" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_07t4d62_di" bpmnElement="Event_07t4d62">
+        <dc:Bounds x="222" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="219" y="175" width="42" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1rvonsv_di" bpmnElement="Activity_1bh831p">
+        <dc:Bounds x="310" y="110" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0dn52dp_di" bpmnElement="Event_0dn52dp">
+        <dc:Bounds x="652" y="412" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="645" y="455" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

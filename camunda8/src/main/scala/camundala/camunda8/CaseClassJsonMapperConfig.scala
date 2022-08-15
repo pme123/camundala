@@ -1,4 +1,4 @@
-package camundala.examples.twitter.camunda
+package camundala.camunda8
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, json}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule

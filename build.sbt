@@ -20,11 +20,13 @@ lazy val root = project
     api,
     dmn,
     camunda,
+    camunda8,
     test,
     simulation,
     exampleTwitterC7,
     exampleTwitterC8,
-    exampleInvoice,
+    exampleInvoiceC7,
+    exampleInvoiceC8,
     exampleDemos
   )
 
@@ -71,6 +73,19 @@ lazy val camunda = project
   .settings(
     libraryDependencies +=
       "org.camunda.bpm" % "camunda-engine" % camundaVersion,
+    scalacOptions ++= Seq(
+      "-Xmax-inlines",
+      "50" // is declared as erased, but is in fact used
+    )
+  )
+  .dependsOn(bpmn)
+
+lazy val camunda8 = project
+  .in(file("./camunda8"))
+  .configure(preventPublication)
+  .settings(projectSettings("camunda8"))
+  .settings(
+    libraryDependencies ++= zeebeDependencies,
     scalacOptions ++= Seq(
       "-Xmax-inlines",
       "50" // is declared as erased, but is in fact used
@@ -147,20 +162,26 @@ lazy val gatlingDependencies = Seq(
 )
 
 // EXAMPLES
-lazy val exampleInvoice = project
-  .in(file("./examples/invoice"))
-  .settings(projectSettings("example-invoice"))
+lazy val exampleInvoiceC7 = project
+  .in(file("./examples/invoice/camunda7"))
+  .settings(projectSettings("example-invoice-c7"))
   .configure(preventPublication)
   .settings(
     Test / parallelExecution := false,
-    // for invoice-example
-    resolvers += "Sonatype OSS Camunda" at "https://app.camunda.com/nexus/content/repositories/camunda-bpm/",
     libraryDependencies ++= camundaDependencies
-    // https://mvnrepository.com/artifact/org.camunda.bpm.example/camunda-example-invoice
-    // libraryDependencies += "org.camunda.bpm.example" % "camunda-example-invoice" % camundaVersion % Test
-    //   libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.11" % IntegrationTest,
   )
   .dependsOn(dmn, camunda, test, simulation)
+  .enablePlugins(GatlingPlugin)
+
+lazy val exampleInvoiceC8 = project
+  .in(file("./examples/invoice/camunda8"))
+  .settings(projectSettings("example-invoice-c8"))
+  .configure(preventPublication)
+  .settings(
+    Test / parallelExecution := false,
+    libraryDependencies ++= zeebeDependencies
+  )
+  .dependsOn(api, simulation)
   .enablePlugins(GatlingPlugin)
 
 lazy val exampleTwitterC7 = project
@@ -179,10 +200,10 @@ lazy val exampleTwitterC8 = project
   .settings(projectSettings("example-twitter-c8"))
   .configure(preventPublication)
   .settings(
-    libraryDependencies ++= zeebeDependencies :+
+    libraryDependencies +=
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
-  .dependsOn(api, simulation)
+  .dependsOn(camunda8, api, simulation)
   .enablePlugins(GatlingPlugin)
 
 lazy val exampleDemos = project

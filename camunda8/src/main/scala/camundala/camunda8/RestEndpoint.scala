@@ -1,27 +1,26 @@
-package camundala.examples.twitter.camunda
+package camundala
+package camunda8
 
-import camundala.bpmn.*
-import camundala.examples.twitter.api.Tweet
-import cats.Show
+import bpmn.*
+
 import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.api.command.CreateProcessInstanceCommandStep1.CreateProcessInstanceCommandStep3
-import io.camunda.zeebe.client.api.command.FinalCommandStep
-import io.camunda.zeebe.client.api.response.{ProcessInstanceEvent, ProcessInstanceResult}
-import io.circe.{DecodingFailure, HCursor}
-import io.circe.syntax.EncoderOps
+import io.camunda.zeebe.client.api.response.{
+  ProcessInstanceEvent,
+  ProcessInstanceResult
+}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.{HttpStatus, ResponseEntity}
-import org.springframework.web.bind.annotation.{PutMapping, RequestBody}
 import scala.jdk.CollectionConverters.*
 
 trait RestEndpoint extends Validator:
 
-  type Response = ResponseEntity[ProcessInstanceEvent | ProcessInstanceResult | String]
+  type Response =
+    ResponseEntity[ProcessInstanceEvent | ProcessInstanceResult | String]
 
   @Autowired
   protected var zeebeClient: ZeebeClient = _
 
-  def createInstance[In : Decoder, Out <: Product: Decoder](
+  def createInstance[In: Decoder, Out <: Product: Decoder](
       processId: String,
       startVars: Either[String, CreateProcessInstanceIn[In, Out]]
   ): Response =
@@ -42,7 +41,7 @@ trait RestEndpoint extends Validator:
           .status(HttpStatus.BAD_REQUEST)
           .body(errorMsg.toString)
 
-  private def start[In : Decoder, Out <: Product: Decoder](
+  private def start[In: Decoder, Out <: Product: Decoder](
       processId: String,
       startObj: CreateProcessInstanceIn[In, Out]
   ): Either[String, ProcessInstanceEvent | ProcessInstanceResult] =
@@ -53,10 +52,12 @@ trait RestEndpoint extends Validator:
           .latestVersion
           .variables(startObj.variables)
       val endCommand =
-        if (startObj.fetchVariables.isEmpty)
-          command
+        if (startObj.fetchVariables.isEmpty) command
         else {
-          val fetchedVariables = startObj.fetchVariables.get.getDeclaredFields.map(_.getName).toList.asJava
+          val fetchedVariables = startObj.fetchVariables.get.getDeclaredFields
+            .map(_.getName)
+            .toList
+            .asJava
           println(s"fetchedVariables: $fetchedVariables")
           command
             .withResult()
@@ -68,4 +69,3 @@ trait RestEndpoint extends Validator:
         ex.printStackTrace()
         Left(s"Problem starting the Process: ${ex.getMessage}")
     }
-

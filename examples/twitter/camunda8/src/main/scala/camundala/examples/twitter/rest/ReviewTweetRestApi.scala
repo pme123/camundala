@@ -3,8 +3,8 @@ package examples.twitter
 package rest
 
 import camundala.bpmn.*
+import camundala.camunda8.*
 import camundala.examples.twitter.api.*
-import camundala.examples.twitter.camunda.*
 import io.circe
 import io.circe.parser.*
 import org.springframework.http.{HttpStatus, ResponseEntity}

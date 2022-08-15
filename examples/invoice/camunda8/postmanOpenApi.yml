@@ -1,0 +1,831 @@
+openapi: 3.0.3
+info:
+  title: Invoice Example Process API
+  version: '1.0'
+  description: |2+
+
+    **This is for Postman - to have example requests. Be aware the Output is not provided!**
+
+
+
+    Created at 09/08/2022, 11:16
+
+    **[Check Project on Cawemo](https://cawemo.com/folders/a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala)**
+
+    > This is the invoice demo application which is shipped with the full distributions.
+
+    See the original [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).
+
+    I bundled it here! Just run `InvoiceServletProcessApplication`.
+
+    This based on this Project: https://github.com/pme123/spring-boot-datakurre-plugins
+
+
+    # Changelog
+
+    <details>
+    <summary>CHANGELOG.md</summary>
+    <p>
+
+
+    All notable changes to this project will be documented in this file.
+
+    * Types of Changes (L3):
+      * Added: new features
+      * Changed: changes in existing functionality
+      * Deprecated: soon-to-be-removed features
+      * Removed: now removed features
+      * Fixed: any bug fixes
+      * Security: in case of vulnerabilities
+
+
+    The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+    and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+    ### Unreleased
+    Initial Version
+
+    </p>
+    </details>
+
+
+servers:
+- url: http://localhost:8034/engine-rest
+  description: Local Developer Server
+paths:
+  /process-definition/key/InvoiceReceiptP/start:
+    post:
+      tags:
+      - Invoice Receipt
+      summary: 'Invoice Receipt: StartProcess'
+      description: |2
+
+        This starts the Invoice Receipt Process.
+
+        <iframe src="https://cawemo.com/embed/e289c19a-8a57-4467-8583-de72a5e57488" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
+
+
+        See API Doc: [Invoice Receipt](No URL defined for invoice-example/OpenApi.html#operation/Process:%20Invoice%20Receipt)
+      operationId: postProcess-definitionKeyInvoicereceiptpStart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              Invoice Receipt:
+                value:
+                  variables:
+                    creditor:
+                      value: Great Pizza for Everyone Inc.
+                      type: String
+                    invoiceNumber:
+                      value: I-12345
+                      type: String
+                    amount:
+                      value: 300.0
+                      type: Double
+                    invoiceDocument:
+                      value: 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NCAwIDU5MiAwIDY3OCAwIDAgNzExIDM0MiAwIDAgMCAwIDcxMSA2ODcgMCAwIDAgNTk1IDAgMCA2NTEgXQogICAgL1RvVW5pY29kZSA5IDAgUgo+PgplbmRvYmoKMSAwIG9iago8PCAvVHlwZSAvUGFnZXMKICAgL0tpZHMgWyA2IDAgUiBdCiAgIC9Db3VudCAxCj4+CmVuZG9iagoxMiAwIG9iago8PCAvQ3JlYXRvciAoY2Fpcm8gMS4xMy4xIChodHRwOi8vY2Fpcm9ncmFwaGljcy5vcmcpKQogICAvUHJvZHVjZXIgKGNhaXJvIDEuMTMuMSAoaHR0cDovL2NhaXJvZ3JhcGhpY3Mub3JnKSkKPj4KZW5kb2JqCjEzIDAgb2JqCjw8IC9UeXBlIC9DYXRhbG9nCiAgIC9QYWdlcyAxIDAgUgo+PgplbmRvYmoKeHJlZgowIDE0CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwNTQ5MyAwMDAwMCBuIAowMDAwMDAwMjEyIDAwMDAwIG4gCjAwMDAwMDAwMTUgMDAwMDAgbiAKMDAwMDAwMDE5MSAwMDAwMCBuIAowMDAwMDA1MDc3IDAwMDAwIG4gCjAwMDAwMDAzMjEgMDAwMDAgbiAKMDAwMDAwMDU0OSAwMDAwMCBuIAowMDAwMDA0Mzk0IDAwMDAwIG4gCjAwMDAwMDQ0MTcgMDAwMDAgbiAKMDAwMDAwNDc3OCAwMDAwMCBuIAowMDAwMDA0ODAxIDAwMDAwIG4gCjAwMDAwMDU1NTggMDAwMDAgbiAKMDAwMDAwNTY4NiAwMDAwMCBuIAp0cmFpbGVyCjw8IC9TaXplIDE0CiAgIC9Sb290IDEzIDAgUgogICAvSW5mbyAxMiAwIFIKPj4Kc3RhcnR4cmVmCjU3MzkKJSVFT0YK
+                      valueInfo:
+                        filename: invoice.pdf
+                        mimetype: application/pdf
+                      type: File
+                    invoiceCategory:
+                      value: Travel Expenses
+                      type: String
+                  businessKey: Invoice Receipt
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /decision-definition/key/{key}/--REMOVE:invoice-assign-approver--/evaluate:
+    post:
+      tags:
+      - Invoice Receipt
+      summary: 'InvoiceAssignApproverDMN: EvaluateDecision'
+      description: |2
+
+
+        Decision Table on who must approve the Invoice.
+
+        <iframe src="https://cawemo.com/embed/155ba236-d5d1-42f7-8b56-3e90e0bb98d4" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
+
+
+        Decision DMN:
+        - _decisionDefinitionKey_: `invoice-assign-approver`,
+
+
+        See API Doc: [InvoiceAssignApproverDMN](No URL defined for invoice-example/OpenApi.html#operation/DecisionDmn:%20InvoiceAssignApproverDMN)
+      operationId: postDecision-definitionKeyKey--remove:invoice-assign-approver--Evaluate
+      parameters:
+      - name: key
+        in: path
+        description: The Process- or Decision-DefinitionKey of the Process or Decision
+        required: true
+        schema:
+          type: string
+          default: invoice-assign-approver
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateDecisionIn'
+            examples:
+              InvoiceAssignApproverDMN:
+                value:
+                  variables:
+                    amount:
+                      value: 30.0
+                      type: Double
+                    invoiceCategory:
+                      value: Software License Costs
+                      type: String
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/--REMOVE:ApproveInvoiceUT--:
+    post:
+      tags:
+      - Invoice Receipt
+      summary: 'ApproveInvoiceUT: GetActiveTask'
+      description: |
+        Approve the invoice (or not).
+
+        See API Doc: [ApproveInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
+      operationId: postTask--remove:approveinvoiceut--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetActiveTaskIn'
+            examples:
+              ApproveInvoiceUT:
+                value:
+                  processInstanceId: '{{processInstanceId}}'
+                  active: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/form-variables/--REMOVE:ApproveInvoiceUT--:
+    get:
+      tags:
+      - Invoice Receipt
+      summary: 'ApproveInvoiceUT: GetTaskFormVariables'
+      description: |
+        Approve the invoice (or not).
+
+        See API Doc: [ApproveInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
+      operationId: getTaskTaskidForm-variables--remove:approveinvoiceut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      - name: variableNames
+        in: query
+        description: |-
+          A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+          It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+          If the query parameter contains non-existent variable names, the variable names are ignored.
+        required: false
+        schema:
+          type: string
+          default: name,example
+      - name: deserializeValues
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/complete/--REMOVE:ApproveInvoiceUT--:
+    post:
+      tags:
+      - Invoice Receipt
+      summary: 'ApproveInvoiceUT: CompleteTask'
+      description: |
+        Approve the invoice (or not).
+
+        See API Doc: [ApproveInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
+      operationId: postTaskTaskidComplete--remove:approveinvoiceut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskIn'
+            examples:
+              ApproveInvoiceUT:
+                value:
+                  variables:
+                    approved:
+                      value: true
+                      type: Boolean
+                  withVariablesInReturn: true
+              Invoice approved:
+                value:
+                  variables:
+                    approved:
+                      value: true
+                      type: Boolean
+                  withVariablesInReturn: true
+              Invoice NOT approved:
+                value:
+                  variables:
+                    approved:
+                      value: false
+                      type: Boolean
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/--REMOVE:PrepareBankTransferUT--:
+    post:
+      tags:
+      - Invoice Receipt
+      summary: 'PrepareBankTransferUT: GetActiveTask'
+      description: |
+        Prepare the bank transfer in the Financial Accounting System.
+
+        See API Doc: [PrepareBankTransferUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
+      operationId: postTask--remove:preparebanktransferut--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetActiveTaskIn'
+            examples:
+              PrepareBankTransferUT:
+                value:
+                  processInstanceId: '{{processInstanceId}}'
+                  active: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/form-variables/--REMOVE:PrepareBankTransferUT--:
+    get:
+      tags:
+      - Invoice Receipt
+      summary: 'PrepareBankTransferUT: GetTaskFormVariables'
+      description: |
+        Prepare the bank transfer in the Financial Accounting System.
+
+        See API Doc: [PrepareBankTransferUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
+      operationId: getTaskTaskidForm-variables--remove:preparebanktransferut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      - name: variableNames
+        in: query
+        description: |-
+          A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+          It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+          If the query parameter contains non-existent variable names, the variable names are ignored.
+        required: false
+        schema:
+          type: string
+          default: name,example
+      - name: deserializeValues
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/complete/--REMOVE:PrepareBankTransferUT--:
+    post:
+      tags:
+      - Invoice Receipt
+      summary: 'PrepareBankTransferUT: CompleteTask'
+      description: |
+        Prepare the bank transfer in the Financial Accounting System.
+
+        See API Doc: [PrepareBankTransferUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
+      operationId: postTaskTaskidComplete--remove:preparebanktransferut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskIn'
+            examples:
+              PrepareBankTransferUT:
+                value:
+                  variables: {}
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /process-definition/key/ReviewInvoiceP/start:
+    post:
+      tags:
+      - Review Invoice
+      summary: 'Review Invoice: StartProcess'
+      description: |2
+
+        This starts the Review Invoice Process.
+
+        <iframe src="https://cawemo.com/embed/cc9f978a-e98a-4b01-991d-36d682574cda" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
+
+
+        See API Doc: [Review Invoice](No URL defined for invoice-example/OpenApi.html#operation/Process:%20Review%20Invoice)
+      operationId: postProcess-definitionKeyReviewinvoicepStart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              Review Invoice:
+                value:
+                  variables:
+                    creditor:
+                      value: Great Pizza for Everyone Inc.
+                      type: String
+                    invoiceNumber:
+                      value: I-12345
+                      type: String
+                    amount:
+                      value: 300.0
+                      type: Double
+                    invoiceDocument:
+                      value: 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NCAwIDU5MiAwIDY3OCAwIDAgNzExIDM0MiAwIDAgMCAwIDcxMSA2ODcgMCAwIDAgNTk1IDAgMCA2NTEgXQogICAgL1RvVW5pY29kZSA5IDAgUgo+PgplbmRvYmoKMSAwIG9iago8PCAvVHlwZSAvUGFnZXMKICAgL0tpZHMgWyA2IDAgUiBdCiAgIC9Db3VudCAxCj4+CmVuZG9iagoxMiAwIG9iago8PCAvQ3JlYXRvciAoY2Fpcm8gMS4xMy4xIChodHRwOi8vY2Fpcm9ncmFwaGljcy5vcmcpKQogICAvUHJvZHVjZXIgKGNhaXJvIDEuMTMuMSAoaHR0cDovL2NhaXJvZ3JhcGhpY3Mub3JnKSkKPj4KZW5kb2JqCjEzIDAgb2JqCjw8IC9UeXBlIC9DYXRhbG9nCiAgIC9QYWdlcyAxIDAgUgo+PgplbmRvYmoKeHJlZgowIDE0CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwNTQ5MyAwMDAwMCBuIAowMDAwMDAwMjEyIDAwMDAwIG4gCjAwMDAwMDAwMTUgMDAwMDAgbiAKMDAwMDAwMDE5MSAwMDAwMCBuIAowMDAwMDA1MDc3IDAwMDAwIG4gCjAwMDAwMDAzMjEgMDAwMDAgbiAKMDAwMDAwMDU0OSAwMDAwMCBuIAowMDAwMDA0Mzk0IDAwMDAwIG4gCjAwMDAwMDQ0MTcgMDAwMDAgbiAKMDAwMDAwNDc3OCAwMDAwMCBuIAowMDAwMDA0ODAxIDAwMDAwIG4gCjAwMDAwMDU1NTggMDAwMDAgbiAKMDAwMDAwNTY4NiAwMDAwMCBuIAp0cmFpbGVyCjw8IC9TaXplIDE0CiAgIC9Sb290IDEzIDAgUgogICAvSW5mbyAxMiAwIFIKPj4Kc3RhcnR4cmVmCjU3MzkKJSVFT0YK
+                      valueInfo:
+                        filename: invoice.pdf
+                        mimetype: application/pdf
+                      type: File
+                    invoiceCategory:
+                      value: Travel Expenses
+                      type: String
+                  businessKey: Review Invoice
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/--REMOVE:AssignReviewerUT--:
+    post:
+      tags:
+      - Review Invoice
+      summary: 'AssignReviewerUT: GetActiveTask'
+      description: |
+        Select the Reviewer.
+
+        See API Doc: [AssignReviewerUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
+      operationId: postTask--remove:assignreviewerut--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetActiveTaskIn'
+            examples:
+              AssignReviewerUT:
+                value:
+                  processInstanceId: '{{processInstanceId}}'
+                  active: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/form-variables/--REMOVE:AssignReviewerUT--:
+    get:
+      tags:
+      - Review Invoice
+      summary: 'AssignReviewerUT: GetTaskFormVariables'
+      description: |
+        Select the Reviewer.
+
+        See API Doc: [AssignReviewerUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
+      operationId: getTaskTaskidForm-variables--remove:assignreviewerut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      - name: variableNames
+        in: query
+        description: |-
+          A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+          It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+          If the query parameter contains non-existent variable names, the variable names are ignored.
+        required: false
+        schema:
+          type: string
+          default: name,example
+      - name: deserializeValues
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/complete/--REMOVE:AssignReviewerUT--:
+    post:
+      tags:
+      - Review Invoice
+      summary: 'AssignReviewerUT: CompleteTask'
+      description: |
+        Select the Reviewer.
+
+        See API Doc: [AssignReviewerUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
+      operationId: postTaskTaskidComplete--remove:assignreviewerut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskIn'
+            examples:
+              AssignReviewerUT:
+                value:
+                  variables:
+                    reviewer:
+                      value: John
+                      type: String
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/--REMOVE:ReviewInvoiceUT--:
+    post:
+      tags:
+      - Review Invoice
+      summary: 'ReviewInvoiceUT: GetActiveTask'
+      description: |
+        Review Invoice and approve.
+
+        See API Doc: [ReviewInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
+      operationId: postTask--remove:reviewinvoiceut--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetActiveTaskIn'
+            examples:
+              ReviewInvoiceUT:
+                value:
+                  processInstanceId: '{{processInstanceId}}'
+                  active: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/form-variables/--REMOVE:ReviewInvoiceUT--:
+    get:
+      tags:
+      - Review Invoice
+      summary: 'ReviewInvoiceUT: GetTaskFormVariables'
+      description: |
+        Review Invoice and approve.
+
+        See API Doc: [ReviewInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
+      operationId: getTaskTaskidForm-variables--remove:reviewinvoiceut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      - name: variableNames
+        in: query
+        description: |-
+          A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+          It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+          If the query parameter contains non-existent variable names, the variable names are ignored.
+        required: false
+        schema:
+          type: string
+          default: name,example
+      - name: deserializeValues
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/complete/--REMOVE:ReviewInvoiceUT--:
+    post:
+      tags:
+      - Review Invoice
+      summary: 'ReviewInvoiceUT: CompleteTask'
+      description: |
+        Review Invoice and approve.
+
+        See API Doc: [ReviewInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
+      operationId: postTaskTaskidComplete--remove:reviewinvoiceut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskIn'
+            examples:
+              ReviewInvoiceUT:
+                value:
+                  variables:
+                    clarified:
+                      value: true
+                      type: Boolean
+                  withVariablesInReturn: true
+              Invoice clarified:
+                value:
+                  variables:
+                    clarified:
+                      value: true
+                      type: Boolean
+                  withVariablesInReturn: true
+              Invoice NOT clarified:
+                value:
+                  variables:
+                    clarified:
+                      value: false
+                      type: Boolean
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+components:
+  schemas:
+    CBoolean:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: boolean
+        type:
+          type: string
+    CDouble:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: number
+          format: double
+        type:
+          type: string
+    CFile:
+      required:
+      - value
+      - valueInfo
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+          description: The File's content as Base64 encoded String.
+        valueInfo:
+          $ref: '#/components/schemas/CFileValueInfo'
+        type:
+          type: string
+    CFileValueInfo:
+      required:
+      - filename
+      type: object
+      properties:
+        filename:
+          type: string
+        mimetype:
+          type: string
+    CInteger:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: integer
+        type:
+          type: string
+    CJson:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+        type:
+          type: string
+    CLong:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int64
+        type:
+          type: string
+    CNull:
+      type: object
+    CString:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+        type:
+          type: string
+    CamundaVariable:
+      oneOf:
+      - $ref: '#/components/schemas/CBoolean'
+      - $ref: '#/components/schemas/CDouble'
+      - $ref: '#/components/schemas/CFile'
+      - $ref: '#/components/schemas/CInteger'
+      - $ref: '#/components/schemas/CJson'
+      - $ref: '#/components/schemas/CLong'
+      - $ref: '#/components/schemas/CNull'
+      - $ref: '#/components/schemas/CString'
+    CompleteTaskIn:
+      required:
+      - variables
+      - withVariablesInReturn
+      type: object
+      properties:
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+        withVariablesInReturn:
+          type: boolean
+          description: Set to false will not return the Process Variables and the
+            Result Status is 204.
+      description: 'A JSON object with the following properties: (at least an empty
+        JSON object {} or an empty request body)'
+    EvaluateDecisionIn:
+      required:
+      - variables
+      type: object
+      properties:
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+      description: 'A JSON object with the following properties:'
+    GetActiveTaskIn:
+      required:
+      - processInstanceId
+      - active
+      type: object
+      properties:
+        processInstanceId:
+          type: string
+          description: |2
+
+            The id of the process - you want to get the active tasks.
+            > This is the result id of the `StartProcessOut`
+
+            Add in the _Tests_ panel of _Postman_:
+            ```
+            let result = pm.response.json();
+            pm.collectionVariables.set("processInstanceId", result.id)
+            ```
+        active:
+          type: boolean
+          description: We are only interested in the active Task(s)
+      description: A JSON object with the following properties
+    Map_CamundaVariable:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/CamundaVariable'
+    StartProcessIn:
+      required:
+      - variables
+      - withVariablesInReturn
+      type: object
+      properties:
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+        businessKey:
+          type: string
+          description: The business key of the process instance.
+        withVariablesInReturn:
+          type: boolean
+          description: Set to false will not return the Process Variables.
+      description: 'A JSON object with the following properties: (at least an empty
+        JSON object {} or an empty request body)'
