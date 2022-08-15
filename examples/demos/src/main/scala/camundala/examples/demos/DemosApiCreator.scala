@@ -20,6 +20,10 @@ object DemosApiCreator extends DefaultApiCreator:
       .withPort(8034)
 
   document {
+    api(singleEntryDMN)
+    api(collectEntriesDMN)
+    api(singleResultDMN)
+    api(resultListDMN)
     api(demoProcess)(
       singleEntryDMN,
       collectEntriesDMN,

@@ -28,6 +28,8 @@ trait TapirApiCreator extends AbstractApiCreator:
       groupedApi match
         case pa: ProcessApi[?, ?] =>
           pa.createEndpoint(pa.name, pa.additionalDescr) ++ apis
+        case da: DecisionDmnApi[?, ?] =>
+          da.createEndpoint(da.name)
         case _: CApiGroup => apis
 
   end extension
@@ -35,8 +37,9 @@ trait TapirApiCreator extends AbstractApiCreator:
   extension (cApi: CApi)
     def create(tag: String): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       cApi match
+        case aa @ DecisionDmnApi(name, inOut, _) =>
+          aa.createEndpoint(tag)
         case aa @ ActivityApi(name, inOut, _) =>
-          println(s"${inOut.getClass.getSimpleName}: $tag - $name")
           aa.createEndpoint(tag)
         case pa @ ProcessApi(name, _, _, apis) if apis.forall(_.isInstanceOf[ActivityApi[?,?]]) =>
           pa.createEndpoint(tag, pa.additionalDescr) ++ apis.flatMap(_.create(tag))

@@ -5,7 +5,7 @@ info:
   description: |2+
 
 
-    Created at 11/08/2022, 09:52
+    Created at 15/08/2022, 08:48
 
     ****
 
@@ -40,6 +40,124 @@ info:
     </details>
 
 paths:
+  /decisiondmn/singleEntryDMN/singleEntry/singleEntryDMN:
+    head:
+      tags:
+      - singleEntryDMN
+      summary: 'DecisionDmn: singleEntryDMN'
+      description: ''
+      operationId: 'DecisionDmn: singleEntryDMN'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Input'
+            examples:
+              singleEntryDMN:
+                value:
+                  letter: A
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: integer
+              examples:
+                singleEntryDMN:
+                  value: 1
+  /decisiondmn/collectEntriesDMN/collectEntries/collectEntriesDMN:
+    head:
+      tags:
+      - collectEntriesDMN
+      summary: 'DecisionDmn: collectEntriesDMN'
+      description: ''
+      operationId: 'DecisionDmn: collectEntriesDMN'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Input'
+            examples:
+              collectEntriesDMN:
+                value:
+                  letter: A
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: integer
+              examples:
+                collectEntriesDMN:
+                  value:
+                  - 1
+                  - 2
+  /decisiondmn/singleResultDMN/singleResult/singleResultDMN:
+    head:
+      tags:
+      - singleResultDMN
+      summary: 'DecisionDmn: singleResultDMN'
+      description: ''
+      operationId: 'DecisionDmn: singleResultDMN'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Input'
+            examples:
+              singleResultDMN:
+                value:
+                  letter: A
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleResult_camundala.examples.demos.DecisionResultTypes.ManyOutResult[]'
+              examples:
+                singleResultDMN:
+                  value:
+                    index: 1
+                    emoji: 🤩
+  /decisiondmn/resultListDMN/resultList/resultListDMN:
+    head:
+      tags:
+      - resultListDMN
+      summary: 'DecisionDmn: resultListDMN'
+      description: ''
+      operationId: 'DecisionDmn: resultListDMN'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Input'
+            examples:
+              resultListDMN:
+                value:
+                  letter: A
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultList_camundala.examples.demos.DecisionResultTypes.ManyOutResult[]'
+              examples:
+                resultListDMN:
+                  value:
+                  - index: 1
+                    emoji: 🤩
+                  - index: 2
+                    emoji: 😂
   /process/demoProcess/just-for-demo/demoProcess:
     head:
       tags:

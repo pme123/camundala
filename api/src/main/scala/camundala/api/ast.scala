@@ -11,7 +11,6 @@ import io.circe.syntax.*
 import scala.annotation.targetName
 import scala.reflect.ClassTag
 
-
 case class ApiDoc(apis: List[GroupedApi])
 
 sealed trait CApi:
@@ -57,18 +56,18 @@ sealed trait InOutApi[
   lazy val outMapper: EndpointIO.Body[String, Out] = jsonBody[Out]
 
   lazy val inJson: Option[Json] = inOut.in match
-    case _:NoInput => None
-    case _ => Some (inOut.in.asJson)
+    case _: NoInput => None
+    case _ => Some(inOut.in.asJson)
 
   lazy val outJson: Option[Json] = inOut.out match
-    case _:NoInput => None
-    case _ => Some (inOut.out.asJson)
+    case _: NoInput => None
+    case _ => Some(inOut.out.asJson)
 
   lazy val variableNamesIn: List[String] =
     inOut.in.productElementNames.toList
 
   lazy val variableNamesOut: List[String] =
-      inOut.out.productElementNames.toList
+    inOut.out.productElementNames.toList
 end InOutApi
 
 case class ProcessApi[
@@ -96,6 +95,32 @@ object ProcessApi:
     ProcessApi(name, inOut, ApiExamples(name, inOut))
 
 end ProcessApi
+
+case class DecisionDmnApi[
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema: ClassTag
+](
+    name: String,
+    inOut: DecisionDmn[In, Out],
+    apiExamples: ApiExamples[In, Out]
+) extends InOutApi[In, Out],
+      GroupedApi:
+  // has no children
+  val apis: List[CApi] = List.empty
+  def withExamples(
+      examples: ApiExamples[In, Out]
+  ): InOutApi[In, Out] =
+    copy(apiExamples = examples)
+  def toActivityApi: ActivityApi[In, Out] =
+    ActivityApi(name, inOut)
+object DecisionDmnApi:
+  def apply[
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema: ClassTag
+  ](name: String, inOut: DecisionDmn[In, Out]): DecisionDmnApi[In, Out] =
+    DecisionDmnApi(name, inOut, ApiExamples(name, inOut))
+  
+end DecisionDmnApi
 
 case class CApiGroup(
     name: String,
@@ -152,9 +177,7 @@ case class InOutExamples[T <: Product: Encoder: Decoder: Schema](
 ):
   @targetName("add")
   def :+(label: String, example: T): InOutExamples[T] =
-    copy(examples =
-      examples :+ InOutExample(label, example)
-    )
+    copy(examples = examples :+ InOutExample(label, example))
 
   lazy val fetchExamples: Seq[InOutExample[T]] =
     examples

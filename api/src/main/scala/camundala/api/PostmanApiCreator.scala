@@ -28,14 +28,21 @@ trait PostmanApiCreator extends AbstractApiCreator:
       println(s"Start Grouped API: ${groupedApi.name}")
       groupedApi match
         case pa: ProcessApi[?, ?] =>
-          createPostmanForProcess(pa, pa.name) ++ pa.apis.flatMap(_.createPostman(groupedApi.name))
+          createPostmanForProcess(pa, pa.name) ++ pa.apis.flatMap(
+            _.createPostman(groupedApi.name)
+          )
+        case da: DecisionDmnApi[?, ?] =>
+          createPostmanForDecisionDmn(da.toActivityApi, da.name)
         case _: CApiGroup =>
           groupedApi.apis.flatMap(_.createPostman(groupedApi.name, true))
 
   end extension
 
   extension (cApi: CApi)
-    def createPostman(tag: String, isGroup: Boolean = false): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+    def createPostman(
+        tag: String,
+        isGroup: Boolean = false
+    ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       cApi match
         case pa @ ProcessApi(name, inOut, _, apis) if apis.isEmpty =>
           println(s"${inOut.getClass.getSimpleName}: $tag - $name")
@@ -54,8 +61,11 @@ trait PostmanApiCreator extends AbstractApiCreator:
             case other =>
               println(s"TODO: $other")
               Seq.empty
-        case pa @ ProcessApi(name, _, _, apis) if apis.forall(_.isInstanceOf[ActivityApi[?,?]]) =>
+        case pa @ ProcessApi(name, _, _, apis)
+            if apis.forall(_.isInstanceOf[ActivityApi[?, ?]]) =>
           createPostmanForProcess(pa, tag) ++ apis.flatMap(_.createPostman(tag))
+        case da: DecisionDmnApi[?,?] =>
+          createPostmanForDecisionDmn(da.toActivityApi, tag)
         case ga =>
           throw IllegalArgumentException(
             s"Sorry, only one level of GroupedApi is allowed!\n - $ga"
@@ -90,25 +100,25 @@ trait PostmanApiCreator extends AbstractApiCreator:
   ): Seq[PublicEndpoint[?, Unit, ?, Any]]
 
   extension (api: InOutApi[?, ?])
-
     protected def postmanBaseEndpoint(
         tag: String,
         input: Option[EndpointInput[?]],
         label: String,
         descr: Option[String] = None
     ): PublicEndpoint[?, Unit, Unit, Any] =
-      val anchor =  s"#operation/${api.endpointName.replace(" ", "%20")}"
+      val anchor = s"#operation/${api.endpointName.replace(" ", "%20")}"
       Some(
         endpoint
           .tag(tag)
           .summary(s"${api.name}: $label")
           .description(
             s"""${descr.getOrElse(api.descr)}
-              |
-              |See API Doc: [${api.name}](${apiConfig.docProjectUrl(projectName)}/OpenApi.html$anchor)
-              |""".stripMargin
-            )
-          // .securityIn(auth.bearer()(sttp.tapir.Codec.cookies)) could not be imported to Postman:(
+               |
+               |See API Doc: [${api.name}](${apiConfig
+              .docProjectUrl(projectName)}/OpenApi.html$anchor)
+               |""".stripMargin
+          )
+        // .securityIn(auth.bearer()(sttp.tapir.Codec.cookies)) could not be imported to Postman:(
 
       ).map(ep =>
         input
@@ -119,23 +129,23 @@ trait PostmanApiCreator extends AbstractApiCreator:
   end extension
 
   extension (inOutApi: InOutApi[?, ?])
-
     protected def endpointPath(isGroup: Boolean): EndpointInput[Unit] =
       inOutApi.inOut.in match
-        case gs: GenericServiceIn => inOutApi.id / s"--REMOVE${gs.serviceName}--"
+        case gs: GenericServiceIn =>
+          inOutApi.id / s"--REMOVE${gs.serviceName}--"
         case _ =>
-          if(isGroup)
+          if (isGroup)
             inOutApi.id / s"--REMOVE${inOutApi.name.replace(" ", "")}--"
           else
             inOutApi.id
 
   protected def tenantIdPath(
-                              basePath: EndpointInput[?],
-                              pathElem: String
-                            ): EndpointInput[?] =
-      tenantId
-        .map(id => basePath / "tenant-id" / tenantIdPath(id) / pathElem)
-        .getOrElse(basePath / pathElem)
+      basePath: EndpointInput[?],
+      pathElem: String
+  ): EndpointInput[?] =
+    tenantId
+      .map(id => basePath / "tenant-id" / tenantIdPath(id) / pathElem)
+      .getOrElse(basePath / pathElem)
 
   protected def tenantIdPath(id: String): EndpointInput[String] =
     path[String]("tenant-id")
@@ -161,5 +171,5 @@ trait PostmanApiCreator extends AbstractApiCreator:
         "The Process- or Decision-DefinitionKey of the Process or Decision"
       )
       .default(key)
-    
+
 end PostmanApiCreator

@@ -20,23 +20,25 @@ class DecisionResultTypesSimulation extends SimulationDsl:
     scenario(resultListDMN)
     scenario(collectEntriesDMNEmptySeq)
     scenario(resultListDMNEmptySeq)
-    /*   TestOverrides Example */
-    scenario(collectEntriesOverrideDMN)
-    scenario(resultListOverrideDMN)
-    /* bad cases */
+    /*  TestOverrides Example*/
+    scenario(collectEntriesOverride)
+    scenario(resultListOverride)
+    /* bad cases
     scenario(singleResultDMNBadOutput)
-    scenario(resultListDMNBadOutput)
+    scenario(resultListDMNBadOutput)*/
 
   }
 
-  private lazy val collectEntriesOverrideDMN =
-    collectEntriesDMN
+  private lazy val collectEntriesOverrideDMN = collectEntriesDMN
+  private lazy val collectEntriesOverride =
+    collectEntriesOverrideDMN
       .hasSize(2)
       .contains(1)
       .contains(2)
 
-  private lazy val resultListOverrideDMN =
-    resultListDMN
+  private lazy val resultListOverrideDMN = resultListDMN
+  private lazy val resultListOverride =
+    resultListOverrideDMN
       .hasSize(2)
       .contains(ManyOutResult(1, "🤩"))
       .contains(ManyOutResult(2, "😂"))

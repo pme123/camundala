@@ -42,6 +42,12 @@ trait ApiDsl:
     api(pApi)()
 
   def api[
+    In <: Product : Encoder : Decoder : Schema,
+    Out <: Product : Encoder : Decoder : Schema : ClassTag
+  ](pApi: DecisionDmnApi[In, Out]): ApiConstr =
+    pApi.stage
+
+  def api[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](pApi: ProcessApi[In, Out])(body: CApi*): ApiConstr =
@@ -52,6 +58,12 @@ trait ApiDsl:
       Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](inline process: Process[In, Out]): ProcessApi[In, Out] =
     ProcessApi(nameOfVariable(process), process)
+
+  implicit inline def toApi[
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema: ClassTag
+  ](inline dmn: DecisionDmn[In, Out]): DecisionDmnApi[In, Out] =
+    DecisionDmnApi(nameOfVariable(dmn), dmn)
 
   implicit inline def toApi[
       In <: Product: Encoder: Decoder: Schema,

@@ -13,9 +13,9 @@ import javax.annotation.PostConstruct
 
 @SpringBootApplication
 @EnableProcessApplication
-class DemosServletProcessApplication
+class DemosExamplesApplication
 
-object DemosServletProcessApplication:
+object DemosExamplesApplication:
 
   def main(args: Array[String]): Unit =
-    SpringApplication.run(classOf[DemosServletProcessApplication], args: _*)
+    SpringApplication.run(classOf[DemosExamplesApplication], args: _*)
