@@ -74,7 +74,7 @@ sealed trait SStep:
 sealed trait SInOutStep extends SStep, WithTestOverrides[SInOutStep]:
   lazy val inOutDescr: InOutDescr[_, _] = inOut.inOutDescr
   lazy val id: String = inOutDescr.id
-  lazy val descr: Option[String] | String = inOutDescr.descr
+  lazy val descr: Option[String] = inOutDescr.descr
   lazy val camundaInMap: Map[String, CamundaVariable] = inOut.camundaInMap
   lazy val camundaOutMap: Map[String, CamundaVariable] = inOut.camundaOutMap
 
