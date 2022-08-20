@@ -3,6 +3,7 @@ package camundala.examples.invoice.bpmn
 import camundala.bpmn.*
 
 import camundala.test.*
+import camundala.examples.invoice.bpmn.InvoiceApi.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.*

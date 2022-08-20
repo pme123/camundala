@@ -2,6 +2,7 @@ package camundala.examples.invoice.bpmn
 
 import camundala.bpmn.*
 import camundala.test.*
+import camundala.examples.invoice.bpmn.InvoiceApi.*
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.{Ignore, Test}
 import io.circe.generic.auto.*
