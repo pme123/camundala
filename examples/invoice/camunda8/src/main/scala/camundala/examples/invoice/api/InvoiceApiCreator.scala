@@ -1,8 +1,8 @@
-package camundala.examples.invoice.bpmn
+package camundala.examples.invoice.api
 
 import camundala.api.*
 import camundala.bpmn.*
-import camundala.examples.invoice.bpmn.InvoiceApi.*
+import InvoiceApi.*
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
 
@@ -16,7 +16,7 @@ object InvoiceApiCreator extends DefaultApiCreator:
 
   override protected val apiConfig: ApiConfig =
     super.apiConfig
-      .withBasePath(pwd / "examples" / "invoice")
+      .withBasePath(pwd / "examples" / "invoice" / "camunda8")
       .withPort(8034)
       .withCawemoFolder("a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala")
 

@@ -1,7 +1,6 @@
 package camundala
 package examples.invoice.bpmn
 
-import camundala.examples.invoice.bpmn.InvoiceApi.*
 import camundala.bpmn.*
 
 import simulation.*

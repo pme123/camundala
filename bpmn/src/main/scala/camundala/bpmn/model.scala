@@ -231,6 +231,21 @@ object FileInOut:
   given Encoder[FileInOut] = deriveEncoder
   given Decoder[FileInOut] = deriveDecoder
 
+/**
+ * In Camunda 8 only json is allowed!
+ */
+case class FileRefInOut(
+                      fileName: String,
+                      @description("A reference to retrieve the file in your application.")
+                      ref: String,
+                      mimeType: Option[String]
+                    )
+
+object FileRefInOut:
+  given Schema[FileRefInOut] = Schema.derived
+  given Encoder[FileRefInOut] = deriveEncoder
+  given Decoder[FileRefInOut] = deriveDecoder
+
 def valueToJson(value: Any): Json =
   value match
     case v: Int =>

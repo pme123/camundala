@@ -1,7 +1,6 @@
 package camundala.examples.invoice.bpmn
 
 import camundala.bpmn.*
-import camundala.examples.invoice.bpmn.InvoiceApi.*
 import camundala.test.*
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.{Ignore, Test}

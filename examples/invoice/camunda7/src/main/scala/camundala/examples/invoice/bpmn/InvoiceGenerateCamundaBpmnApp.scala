@@ -2,7 +2,6 @@ package camundala.examples.invoice.bpmn
 
 import camundala.bpmn.*
 import camundala.camunda.*
-import camundala.examples.invoice.bpmn
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
 

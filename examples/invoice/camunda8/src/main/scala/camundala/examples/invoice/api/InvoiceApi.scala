@@ -1,5 +1,5 @@
 package camundala
-package examples.invoice.bpmn
+package examples.invoice.api
 
 import api.*
 import bpmn.*
@@ -16,11 +16,9 @@ object InvoiceApi extends BpmnDsl:
       amount: Double = 300.0,
       invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`,
       invoiceNumber: String = "I-12345",
-      invoiceDocument: FileInOut = FileInOut(
+      invoiceDocument: FileRefInOut = FileRefInOut(
         "invoice.pdf",
-        read.bytes(
-          os.resource / "invoice.pdf"
-        ),
+        "processes/invoice.pdf",
         Some("application/pdf")
       )
   )

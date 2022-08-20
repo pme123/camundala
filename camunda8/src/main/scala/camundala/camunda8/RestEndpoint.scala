@@ -2,14 +2,14 @@ package camundala
 package camunda8
 
 import bpmn.*
-
+import camundala.bpmn.CamundaVariable.CJson
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.circe.syntax.*
 import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.api.response.{
-  ProcessInstanceEvent,
-  ProcessInstanceResult
-}
+import io.camunda.zeebe.client.api.response.{ProcessInstanceEvent, ProcessInstanceResult}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.{HttpStatus, ResponseEntity}
+
 import scala.jdk.CollectionConverters.*
 
 trait RestEndpoint extends Validator:
@@ -20,7 +20,7 @@ trait RestEndpoint extends Validator:
   @Autowired
   protected var zeebeClient: ZeebeClient = _
 
-  def createInstance[In: Decoder, Out <: Product: Decoder](
+  def createInstance[In <: Product: Decoder: Encoder, Out <: Product: Decoder](
       processId: String,
       startVars: Either[String, CreateProcessInstanceIn[In, Out]]
   ): Response =
@@ -41,7 +41,7 @@ trait RestEndpoint extends Validator:
           .status(HttpStatus.BAD_REQUEST)
           .body(errorMsg.toString)
 
-  private def start[In: Decoder, Out <: Product: Decoder](
+  private def start[In <: Product: Decoder: Encoder, Out <: Product: Decoder](
       processId: String,
       startObj: CreateProcessInstanceIn[In, Out]
   ): Either[String, ProcessInstanceEvent | ProcessInstanceResult] =
@@ -50,7 +50,7 @@ trait RestEndpoint extends Validator:
         zeebeClient.newCreateInstanceCommand
           .bpmnProcessId(processId)
           .latestVersion
-          .variables(startObj.variables)
+          .variables(CamundaVariable.toCamunda(startObj.variables).map{case k -> v => k -> toJackson(v)}.asJava)
       val endCommand =
         if (startObj.fetchVariables.isEmpty) command
         else {
@@ -69,3 +69,12 @@ trait RestEndpoint extends Validator:
         ex.printStackTrace()
         Left(s"Problem starting the Process: ${ex.getMessage}")
     }
+
+
+  private def toJackson(camundaVariable: CamundaVariable): Any =
+    camundaVariable match
+      case CJson(value, _) =>
+        val jacksonMapper = new ObjectMapper()
+        jacksonMapper.readTree(value)
+      case _ =>
+        camundaVariable.value

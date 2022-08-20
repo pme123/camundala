@@ -181,7 +181,7 @@ lazy val exampleInvoiceC8 = project
     Test / parallelExecution := false,
     libraryDependencies ++= zeebeDependencies
   )
-  .dependsOn(api, simulation)
+  .dependsOn(camunda8, api, simulation)
   .enablePlugins(GatlingPlugin)
 
 lazy val exampleTwitterC7 = project
@@ -234,7 +234,7 @@ val zeebeDependencies = Seq(
   "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
   "org.springframework.boot" % "spring-boot-starter-webflux" % springBootVersion,
   "io.camunda" % "spring-zeebe-starter" % zeebeVersion,
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.2"
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.3"
   //"io.camunda" % "spring-zeebe-test" % zeebeVersion % Test,
 ).map(_.exclude("org.slf4j", "slf4j-api"))
 

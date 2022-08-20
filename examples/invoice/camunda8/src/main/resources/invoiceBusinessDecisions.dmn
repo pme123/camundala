@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="invoiceBusinessDecisions" name="Invoice Business Decisions" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.11.1" camunda:diagramRelationId="773d86b9-dadb-456f-9cc7-98ac6b355a79">
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" id="Definitions_0lw9anw" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.0.0">
   <decision id="invoiceClassification" name="Invoice Classification">
     <decisionTable id="decisionTable">
-      <input id="clause1" label="Invoice Amount" camunda:inputVariable="">
+      <input id="clause1" label="Invoice Amount">
         <inputExpression id="inputExpression1" typeRef="double">
           <text>amount</text>
         </inputExpression>
       </input>
-      <input id="InputClause_15qmk0v" label="Invoice Category" camunda:inputVariable="">
+      <input id="InputClause_15qmk0v" label="Invoice Category">
         <inputExpression id="LiteralExpression_1oi86cw" typeRef="string">
           <text>invoiceCategory</text>
         </inputExpression>
@@ -78,11 +78,11 @@
     </decisionTable>
   </decision>
   <decision id="invoice-assign-approver" name="Assign Approver Group">
-    <informationRequirement id="InformationRequirement_1kkeocv">
+    <informationRequirement id="InformationRequirement_05h4umi">
       <requiredDecision href="#invoiceClassification" />
     </informationRequirement>
     <decisionTable id="DecisionTable_16o85h8" hitPolicy="COLLECT">
-      <input id="InputClause_0og2hn3" label="Invoice Classification" camunda:inputVariable="">
+      <input id="InputClause_0og2hn3" label="Invoice Classification">
         <inputExpression id="LiteralExpression_1vywt5q" typeRef="string">
           <text>invoiceClassification</text>
         </inputExpression>
@@ -122,17 +122,17 @@
     </decisionTable>
   </decision>
   <dmndi:DMNDI>
-    <dmndi:DMNDiagram id="DMNDiagram_1cuuevk">
+    <dmndi:DMNDiagram>
       <dmndi:DMNShape id="DMNShape_1abvt5s" dmnElementRef="invoiceClassification">
         <dc:Bounds height="55" width="100" x="153" y="215" />
       </dmndi:DMNShape>
       <dmndi:DMNShape id="DMNShape_1ay7af5" dmnElementRef="invoice-assign-approver">
-        <dc:Bounds height="55" width="100" x="240" y="84" />
+        <dc:Bounds height="55" width="100" x="160" y="82" />
       </dmndi:DMNShape>
-      <dmndi:DMNEdge id="DMNEdge_1wn1950" dmnElementRef="InformationRequirement_1kkeocv">
+      <dmndi:DMNEdge id="DMNEdge_0sfypmg" dmnElementRef="InformationRequirement_05h4umi">
         <di:waypoint x="203" y="215" />
-        <di:waypoint x="290" y="159" />
-        <di:waypoint x="290" y="139" />
+        <di:waypoint x="210" y="157" />
+        <di:waypoint x="210" y="137" />
       </dmndi:DMNEdge>
     </dmndi:DMNDiagram>
   </dmndi:DMNDI>
