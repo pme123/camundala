@@ -6,10 +6,14 @@ import camundala.bpmn.CamundaVariable.CJson
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.circe.syntax.*
 import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.api.response.{ProcessInstanceEvent, ProcessInstanceResult}
+import io.camunda.zeebe.client.api.response.{
+  ProcessInstanceEvent,
+  ProcessInstanceResult
+}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.{HttpStatus, ResponseEntity}
-
+import io.circe.parser
+import io.circe.syntax.*
 import scala.jdk.CollectionConverters.*
 
 trait RestEndpoint extends Validator:
@@ -20,7 +24,10 @@ trait RestEndpoint extends Validator:
   @Autowired
   protected var zeebeClient: ZeebeClient = _
 
-  def createInstance[In <: Product: Decoder: Encoder, Out <: Product: Decoder](
+  def createInstance[
+      In <: Product: Decoder: Encoder,
+      Out <: Product: Decoder: Encoder
+  ](
       processId: String,
       startVars: Either[String, CreateProcessInstanceIn[In, Out]]
   ): Response =
@@ -33,13 +40,11 @@ trait RestEndpoint extends Validator:
           .status(HttpStatus.OK)
           .body(process)
       case Right(process: ProcessInstanceResult) =>
-        ResponseEntity
-          .status(HttpStatus.OK)
-          .body(process)
+        extractBody[Out](process)
       case Left(errorMsg) =>
         ResponseEntity
           .status(HttpStatus.BAD_REQUEST)
-          .body(errorMsg.toString)
+          .body(errorMsg)
 
   private def start[In <: Product: Decoder: Encoder, Out <: Product: Decoder](
       processId: String,
@@ -50,7 +55,12 @@ trait RestEndpoint extends Validator:
         zeebeClient.newCreateInstanceCommand
           .bpmnProcessId(processId)
           .latestVersion
-          .variables(CamundaVariable.toCamunda(startObj.variables).map{case k -> v => k -> toJackson(v)}.asJava)
+          .variables(
+            CamundaVariable
+              .toCamunda(startObj.variables)
+              .map { case k -> v => k -> toJackson(v) }
+              .asJava
+          )
       val endCommand =
         if (startObj.fetchVariables.isEmpty) command
         else {
@@ -70,6 +80,7 @@ trait RestEndpoint extends Validator:
         Left(s"Problem starting the Process: ${ex.getMessage}")
     }
 
+  end start
 
   private def toJackson(camundaVariable: CamundaVariable): Any =
     camundaVariable match
@@ -78,3 +89,26 @@ trait RestEndpoint extends Validator:
         jacksonMapper.readTree(value)
       case _ =>
         camundaVariable.value
+
+  private def extractBody[Out <: Product: Decoder: Encoder](
+      process: ProcessInstanceResult
+  ): Response =
+    // parsing will validate output
+    parser.parse(process.getVariables).flatMap(_.as[Out]) match
+      case Right(out) =>
+        val result = CreateProcessInstanceOut(
+          process.getProcessDefinitionKey,
+          process.getBpmnProcessId,
+          process.getVersion,
+          process.getProcessDefinitionKey,
+          out
+        )
+        ResponseEntity
+          .status(HttpStatus.OK)
+          .body(result.asJson.toString)
+      case Left(errorMsg) =>
+        ResponseEntity
+          .status(HttpStatus.BAD_REQUEST)
+          .body(s"${errorMsg.getMessage} in body:\n${process.getVariables}")
+
+  end extractBody

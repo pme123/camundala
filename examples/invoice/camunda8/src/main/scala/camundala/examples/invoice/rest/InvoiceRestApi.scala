@@ -24,6 +24,6 @@ class InvoiceRestApi extends RestEndpoint:
       InvoiceReceiptPIdent,
       validate[CreateProcessInstanceIn[InvoiceReceipt, InvoiceReceiptCheck]](
         json
-      )
+      ).map(_.syncProcess(classOf[InvoiceReceiptCheck]))
     )
 

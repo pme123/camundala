@@ -142,6 +142,7 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Buchhaltung_119_gui" bpmnElement="Accountant" isHorizontal="true">
         <omgdc:Bounds x="190" y="422" width="979" height="144" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Nein_182_gui" bpmnElement="NoSF__InvoiceApprovedEG__ReviewInvoiceCA" sourceElement="Freigabe_erfolgt__131_gui" targetElement="Rechnung_kl_ren_148_gui">
         <omgdi:waypoint x="668" y="324" />
@@ -237,6 +238,7 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Freigebenden_zuordnen_143_gui" bpmnElement="AssignApproverGroupBRT" isHorizontal="true">
         <omgdc:Bounds x="340" y="132" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_3" bpmnElement="InvoiceReceivedSE">
         <omgdc:Bounds x="256" y="158" width="28" height="28" />

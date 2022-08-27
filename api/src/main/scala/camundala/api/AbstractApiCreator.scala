@@ -14,7 +14,6 @@ import sttp.tapir.*
 
 import java.text.SimpleDateFormat
 import java.util.Date
-import scala.reflect.ClassTag
 import scala.util.matching.Regex
 
 trait AbstractApiCreator extends ProcessReferenceCreator:

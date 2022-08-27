@@ -5,8 +5,6 @@ import api.*
 import bpmn.*
 
 import sttp.tapir.json.circe.*
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
 
 object InvoiceApi extends BpmnDsl:
 
@@ -58,9 +56,11 @@ object InvoiceApi extends BpmnDsl:
 
   case class InvoiceReceiptCheck(
       @description("If true, the Boss accepted the Invoice")
-      approved: Boolean = true,
+      approved: Option[Boolean] = Some(true),
       @description("Flag that is set by the Reviewer (only set if there was a review).")
-      clarified: Option[Boolean] = None
+      clarified: Option[Boolean] = None,
+      @description("The groups selected from the DMN")
+      approverGroups: Seq[String] = Seq("accounting","sales")
   )
 
   val InvoiceReceiptPIdent = "InvoiceReceiptP"
@@ -80,7 +80,7 @@ object InvoiceApi extends BpmnDsl:
   lazy val `Invoice Receipt with Review failed` =
     `Invoice Receipt`
       .withOut(
-        InvoiceReceiptCheck(approved = false, clarified = Some(false))
+        InvoiceReceiptCheck(approved = Some(false), clarified = Some(false))
       )
   lazy val BadValidationP =
     `Invoice Receipt`
@@ -170,4 +170,50 @@ object InvoiceApi extends BpmnDsl:
   lazy val InvoiceProcessedEE = endEvent(
     InvoiceProcessedIdent,
   )
+
+  given Schema[InvoiceReceipt] = Schema.derived
+
+  given Encoder[InvoiceReceipt] = deriveEncoder
+
+  given Decoder[InvoiceReceipt] = deriveDecoder
+
+  given Schema[InvoiceCategory] = Schema.derived
+
+  given Schema[SelectApproverGroup] = Schema.derived
+
+  given Encoder[SelectApproverGroup] = deriveEncoder
+
+  given Decoder[SelectApproverGroup] = deriveDecoder
+
+  given Schema[ApproverGroup] = Schema.derived
+
+  given Schema[ApproveInvoice] = Schema.derived
+
+  given Encoder[ApproveInvoice] = deriveEncoder
+
+  given Decoder[ApproveInvoice] = deriveDecoder
+
+  given Schema[PrepareBankTransfer] = Schema.derived
+
+  given Encoder[PrepareBankTransfer] = deriveEncoder
+
+  given Decoder[PrepareBankTransfer] = deriveDecoder
+
+  given Schema[AssignedReviewer] = Schema.derived
+
+  given Encoder[AssignedReviewer] = deriveEncoder
+
+  given Decoder[AssignedReviewer] = deriveDecoder
+
+  given Schema[InvoiceReviewed] = Schema.derived
+
+  given Encoder[InvoiceReviewed] = deriveEncoder
+
+  given Decoder[InvoiceReviewed] = deriveDecoder
+
+  given Schema[InvoiceReceiptCheck] = Schema.derived
+
+  given Encoder[InvoiceReceiptCheck] = deriveEncoder
+
+  given Decoder[InvoiceReceiptCheck] = deriveDecoder
 
