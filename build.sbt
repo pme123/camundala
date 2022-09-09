@@ -1,4 +1,6 @@
 import sbt.url
+import laika.markdown.github.GitHubFlavor
+import laika.parse.code.SyntaxHighlighting
 
 import scala.util.Using
 
@@ -23,6 +25,7 @@ lazy val root = project
     camunda8,
     test,
     simulation,
+    docs,
     exampleTwitterC7,
     exampleTwitterC8,
     exampleInvoiceC7,
@@ -122,6 +125,23 @@ lazy val simulation = project
     )
   )
   .dependsOn(api)
+
+lazy val docs = (project in file("./docs"))
+  .configure(preventPublication)
+  .settings(projectSettings("docs"))
+  .settings(
+    laikaConfig := LaikaConfig.defaults
+    //  .withConfigValue(LinkConfig(excludeFromValidation = Seq(Root)))
+      .withRawContent
+    //  .failOnMessages(MessageFilter.None)
+    //  .renderMessages(MessageFilter.None)
+    ,
+    laikaSite / target := baseDirectory.value / "dist",
+    laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting),
+
+  )
+  .enablePlugins(LaikaPlugin)
+
 
 val tapirVersion = "0.20.2"
 lazy val tapirDependencies = Seq(
