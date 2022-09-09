@@ -25,7 +25,7 @@ lazy val root = project
     camunda8,
     test,
     simulation,
-    docs,
+    documentation,
     exampleTwitterC7,
     exampleTwitterC8,
     exampleInvoiceC7,
@@ -126,9 +126,9 @@ lazy val simulation = project
   )
   .dependsOn(api)
 
-lazy val docs = (project in file("./docs"))
+lazy val documentation = (project in file("./documentation"))
   .configure(preventPublication)
-  .settings(projectSettings("docs"))
+  .settings(projectSettings("documentation"))
   .settings(
     laikaConfig := LaikaConfig.defaults
     //  .withConfigValue(LinkConfig(excludeFromValidation = Seq(Root)))
@@ -136,7 +136,7 @@ lazy val docs = (project in file("./docs"))
     //  .failOnMessages(MessageFilter.None)
     //  .renderMessages(MessageFilter.None)
     ,
-    laikaSite / target := baseDirectory.value / "dist",
+    laikaSite / target := baseDirectory.value / ".." / "docs",
     laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting),
 
   )
