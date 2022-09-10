@@ -1,0 +1,66 @@
+{
+  "components": [
+    {
+      "text": "# Please clarify\nThis invoice needs clarification and could not be approved due to missing data.",
+      "type": "text",
+      "id": "Field_05lxclg"
+    },
+    {
+      "label": "Invoice Document Creditor",
+      "type": "textfield",
+      "id": "Field_05aoacy",
+      "key": "creditor",
+      "disabled": true
+    },
+    {
+      "label": "Amount",
+      "type": "textfield",
+      "id": "Field_1lynnkg",
+      "key": "amount",
+      "disabled": true
+    },
+    {
+      "values": [
+        {
+          "label": "Travel Expenses",
+          "value": "Travel Expenses"
+        },
+        {
+          "label": "Software License Costs",
+          "value": "Software License Costs"
+        },
+        {
+          "label": "Misc",
+          "value": "Misc"
+        }
+      ],
+      "label": "Invoice Category",
+      "type": "select",
+      "id": "Field_0feflul",
+      "key": "invoiceCategory",
+      "disabled": false
+    },
+    {
+      "label": "Invoice Number",
+      "type": "textfield",
+      "id": "Field_09olxc6",
+      "key": "invoiceNumber",
+      "disabled": true
+    },
+    {
+      "label": "Could you clarify the invoice?",
+      "type": "checkbox",
+      "id": "Field_06yew4h",
+      "key": "clarified"
+    }
+  ],
+  "type": "default",
+  "id": "Form_0jc1o9x",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.0.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.2.0"
+  },
+  "schemaVersion": 4
+}

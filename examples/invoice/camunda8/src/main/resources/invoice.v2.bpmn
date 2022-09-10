@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:signavio="http://www.signavio.com" id="sid-0b0aaa25-3baf-4875-9d7a-0907d599a9ef" targetNamespace="http://www.omg.org/spec/BPMN/20100524/MODEL" exporter="Camunda Modeler" exporterVersion="5.0.0" camunda:diagramRelationId="10e196fc-baec-47ff-853b-751cf6b9e99f" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:signavio="http://www.signavio.com" id="sid-0b0aaa25-3baf-4875-9d7a-0907d599a9ef" targetNamespace="http://www.omg.org/spec/BPMN/20100524/MODEL" exporter="Camunda Modeler" exporterVersion="5.2.0" camunda:diagramRelationId="10e196fc-baec-47ff-853b-751cf6b9e99f" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
   <dataStore id="FinancialAccountingSystem" name="Financial Accounting System" isUnlimited="false">
     <dataState id="DataState_1" />
   </dataStore>
@@ -27,7 +27,7 @@
       </lane>
     </laneSet>
     <dataStoreReference id="DataStoreReference_1" name="Financial Accounting System" dataStoreRef="FinancialAccountingSystem" />
-    <userTask id="ApproveInvoiceUT" name="Approve Invoice" camunda:exclusive="false" implementation="##unspecified" camunda:formKey="embedded:app:forms/approve-invoice.html" camunda:candidateUsers="" camunda:dueDate="${dateTime().plusWeeks(1).toDate()}">
+    <userTask id="ApproveInvoiceUT" name="Approve Invoice" implementation="##unspecified" camunda:exclusive="false" camunda:formKey="embedded:app:forms/approve-invoice.html" camunda:candidateUsers="" camunda:dueDate="${dateTime().plusWeeks(1).toDate()}">
       <documentation>Approve the invoice (or not).</documentation>
       <extensionElements>
         <camunda:taskListener event="create">
@@ -54,7 +54,7 @@
       <outgoing>NoSF__ReviewSuccessfulEG__InvoiceNotProcessedEE</outgoing>
       <outgoing>YesSF__ReviewSuccessfulEG__ApproveInvoiceUT</outgoing>
     </exclusiveGateway>
-    <userTask id="PrepareBankTransferUT" name="Prepare&#10;Bank&#10;Transfer" camunda:exclusive="false" implementation="##unspecified" camunda:formKey="embedded:app:forms/prepare-bank-transfer.html" camunda:candidateUsers="" camunda:candidateGroups="" camunda:dueDate="${dateTime().plusWeeks(1).toDate()}">
+    <userTask id="PrepareBankTransferUT" name="Prepare&#10;Bank&#10;Transfer" implementation="##unspecified" camunda:exclusive="false" camunda:formKey="embedded:app:forms/prepare-bank-transfer.html" camunda:candidateUsers="" camunda:candidateGroups="" camunda:dueDate="${dateTime().plusWeeks(1).toDate()}">
       <documentation>Prepare the bank transfer.</documentation>
       <incoming>YesSF__InvoiceApprovedEG__PrepareBankTransferUT</incoming>
       <outgoing>SequenceFlow_2__PrepareBankTransferUT__ArchiveInvoiceST</outgoing>
@@ -64,9 +64,9 @@
         <targetRef>Property_0bzbsgl</targetRef>
       </dataInputAssociation>
     </userTask>
-    <businessRuleTask id="AssignApproverGroupBRT" name="Assign Approver Group" camunda:exclusive="false" implementation="##unspecified" camunda:decisionRef="invoice-assign-approver" camunda:mapDecisionResult="collectEntries" camunda:decisionRefTenantId="">
+    <businessRuleTask id="AssignApproverGroupBRT" name="Assign Approver Group" implementation="##unspecified" camunda:exclusive="false" camunda:decisionRef="invoice-assign-approver" camunda:mapDecisionResult="collectEntries" camunda:decisionRefTenantId="">
       <extensionElements>
-        <zeebe:calledDecision decisionId="invoice-assign-approver" resultVariable="approverGroups" />
+        <zeebe:calledDecision />
       </extensionElements>
       <incoming>SequenceFlow_1__InvoiceReceivedSE__AssignApproverGroupBRT</incoming>
       <outgoing>sequenceFlow_178__AssignApproverGroupBRT__ApproveInvoiceUT</outgoing>
@@ -83,7 +83,7 @@
     <endEvent id="InvoiceProcessedEE" name="Invoice&#10;processed" camunda:exclusive="false">
       <incoming>SequenceFlow_3__ArchiveInvoiceST__InvoiceProcessedEE</incoming>
     </endEvent>
-    <serviceTask id="ArchiveInvoiceST" name="Archive Invoice" camunda:asyncBefore="true" implementation="##WebService">
+    <serviceTask id="ArchiveInvoiceST" name="Archive Invoice" implementation="##WebService" camunda:asyncBefore="true">
       <extensionElements>
         <zeebe:taskDefinition type="camunda-7-adapter" />
         <zeebe:taskHeaders>
@@ -93,7 +93,7 @@
       <incoming>SequenceFlow_2__PrepareBankTransferUT__ArchiveInvoiceST</incoming>
       <outgoing>SequenceFlow_3__ArchiveInvoiceST__InvoiceProcessedEE</outgoing>
     </serviceTask>
-    <callActivity id="ReviewInvoiceCA" name="Review Invoice" camunda:exclusive="false" calledElement="ReviewInvoiceP">
+    <callActivity id="ReviewInvoiceCA" name="Review Invoice" calledElement="ReviewInvoiceP" camunda:exclusive="false">
       <extensionElements>
         <camunda:inputOutput />
         <camunda:in source="creditor" target="creditor" />
@@ -103,7 +103,11 @@
         <camunda:in source="invoiceDocument" target="invoiceDocument" />
         <zeebe:calledElement processId="ReviewInvoiceP" />
         <zeebe:ioMapping>
-          <zeebe:input />
+          <zeebe:input source="=amount" target="amount" />
+          <zeebe:input source="=creditor" target="creditor" />
+          <zeebe:input source="=invoiceCategory" target="invoiceCategory" />
+          <zeebe:input source="=invoiceDocument" target="invoiceDocument" />
+          <zeebe:input source="=invoiceNumber" target="invoiceNumber" />
           <zeebe:output source="= clarified" target="clarified" />
         </zeebe:ioMapping>
       </extensionElements>

@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0jg7lxf" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.2.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.0.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0jg7lxf" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.2.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.0.0">
   <bpmn:collaboration id="Collaboration_0m1fmdk">
     <bpmn:participant id="InvoiceReceiptParticipant" name="Invoice Receipt" processRef="InvoiceReceiptP" />
+    <bpmn:textAnnotation id="TextAnnotation_1oocmr5">
+      <bpmn:text>Datastore / Data object reference have no graphic anymore</bpmn:text>
+    </bpmn:textAnnotation>
   </bpmn:collaboration>
   <bpmn:process id="InvoiceReceiptP" name="Invoice Receipt" isExecutable="true">
     <bpmn:extensionElements>
@@ -152,18 +155,97 @@
   },
   "schemaVersion": 4
 }</zeebe:userTaskForm>
+      <zeebe:userTaskForm id="UserTaskForm_1s2903c">{
+  "components": [
+    {
+      "text": "# Please prepare the bank transfer for the following invoice\n\n",
+      "type": "text",
+      "id": "Field_05lxclg"
+    },
+    {
+      "label": "Invoice Document Creditor",
+      "type": "textfield",
+      "id": "Field_05aoacy",
+      "key": "creditor",
+      "disabled": false,
+      "validate": {
+        "required": true
+      },
+      "description": "(e.g. \"Great Pizza for Everyone Inc.\")",
+      "defaultValue": "Great Pizza for Everyone."
+    },
+    {
+      "label": "Amount",
+      "type": "textfield",
+      "id": "Field_1lynnkg",
+      "key": "amount",
+      "disabled": false,
+      "validate": {
+        "required": true
+      },
+      "description": "(Must be a Double e.g. \"30.0\")",
+      "defaultValue": "30.50"
+    },
+    {
+      "values": [
+        {
+          "label": "Travel Expenses",
+          "value": "Travel Expenses"
+        },
+        {
+          "label": "Software License Costs",
+          "value": "Software License Costs"
+        },
+        {
+          "label": "Misc",
+          "value": "Misc"
+        }
+      ],
+      "label": "Invoice Category",
+      "type": "select",
+      "id": "Field_0feflul",
+      "key": "invoiceCategory",
+      "disabled": false,
+      "defaultValue": "Travel Expenses"
+    },
+    {
+      "label": "Invoice Number",
+      "type": "textfield",
+      "id": "Field_09olxc6",
+      "key": "invoiceNumber",
+      "disabled": false,
+      "defaultValue": "I-12345",
+      "description": "(e.g. \"I-12345\")"
+    }
+  ],
+  "type": "default",
+  "id": "Form_0jc1o9x",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.0.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.2.0"
+  },
+  "schemaVersion": 4
+}</zeebe:userTaskForm>
     </bpmn:extensionElements>
     <bpmn:laneSet id="LaneSet_142cncb">
       <bpmn:lane id="TeamAssistantLane" name="Team Assistant">
         <bpmn:flowNodeRef>InvoiceReceivedStartEvent</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>AssignApproverGroupTask</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CreateInvoiceTask</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ReviewInvoiceCA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ReviewSuccessfulEG</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>InvoiceNotProcessedEE</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_1cfsmi7</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="AccountantLane" name="Accountant">
         <bpmn:flowNodeRef>InvoiceProcessedEndEvent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>PrepareBankTransferTask</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="ApproverLane" name="Approver">
         <bpmn:flowNodeRef>ApproveInvoiceTask</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>InvoiceApprovedEG</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:startEvent id="InvoiceReceivedStartEvent" name="Invoice&#10;received">
@@ -176,9 +258,6 @@
       <bpmn:incoming>Flow_0xokbpc</bpmn:incoming>
       <bpmn:outgoing>Flow_1tf38dz</bpmn:outgoing>
     </bpmn:businessRuleTask>
-    <bpmn:endEvent id="InvoiceProcessedEndEvent" name="Invoice&#10;processed">
-      <bpmn:incoming>Flow_09in72l</bpmn:incoming>
-    </bpmn:endEvent>
     <bpmn:userTask id="ApproveInvoiceTask" name="Approve Invoice" implementation="##unspecified">
       <bpmn:documentation>Approve the invoice (or not).
 The form is the JSON of approve-invoice.form</bpmn:documentation>
@@ -186,7 +265,7 @@ The form is the JSON of approve-invoice.form</bpmn:documentation>
         <zeebe:assignmentDefinition candidateGroups="${approverGroups}" />
         <zeebe:formDefinition formKey="camunda-forms:bpmn:userTaskForm_3ce8sgj" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_1tf38dz</bpmn:incoming>
+      <bpmn:incoming>Flow_0hreah5</bpmn:incoming>
       <bpmn:outgoing>Flow_09in72l</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:userTask id="CreateInvoiceTask" name="Create Invoice" implementation="##unspecified">
@@ -203,55 +282,152 @@ The form is the JSON of approve-invoice.form</bpmn:documentation>
       <bpmn:incoming>Flow_079f9k9</bpmn:incoming>
       <bpmn:outgoing>Flow_0xokbpc</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:sequenceFlow id="Flow_09in72l" sourceRef="ApproveInvoiceTask" targetRef="InvoiceProcessedEndEvent" />
-    <bpmn:sequenceFlow id="Flow_1tf38dz" sourceRef="AssignApproverGroupTask" targetRef="ApproveInvoiceTask" />
+    <bpmn:sequenceFlow id="Flow_09in72l" sourceRef="ApproveInvoiceTask" targetRef="InvoiceApprovedEG" />
+    <bpmn:sequenceFlow id="Flow_1tf38dz" sourceRef="AssignApproverGroupTask" targetRef="Gateway_1cfsmi7" />
     <bpmn:sequenceFlow id="Flow_079f9k9" sourceRef="InvoiceReceivedStartEvent" targetRef="CreateInvoiceTask" />
     <bpmn:sequenceFlow id="Flow_0xokbpc" sourceRef="CreateInvoiceTask" targetRef="AssignApproverGroupTask" />
+    <bpmn:endEvent id="InvoiceProcessedEndEvent" name="Invoice&#10;processed">
+      <bpmn:incoming>Flow_0j8c9vj</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="PrepareBankTransferTask" name="Prepare&#10; Bank&#10; Transfer" implementation="##unspecified">
+      <bpmn:documentation>Prepare the bank transfer.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:assignmentDefinition candidateGroups="${approverGroups}" />
+        <zeebe:formDefinition formKey="camunda-forms:bpmn:UserTaskForm_1s2903c" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ceab5s</bpmn:incoming>
+      <bpmn:outgoing>Flow_0j8c9vj</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0j8c9vj" sourceRef="PrepareBankTransferTask" targetRef="InvoiceProcessedEndEvent" />
+    <bpmn:callActivity id="ReviewInvoiceCA" name="Review Invoice" calledElement="ReviewInvoiceP">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="ReviewInvoiceP" propagateAllChildVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=amount" target="amount" />
+          <zeebe:output source="= clarified" target="clarified" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>NoSF__InvoiceApprovedEG__ReviewInvoiceCA</bpmn:incoming>
+      <bpmn:outgoing>sequenceFlow_183__ReviewInvoiceCA__ReviewSuccessfulEG</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:exclusiveGateway id="ReviewSuccessfulEG" name="Review&#10;successful?" gatewayDirection="Diverging">
+      <bpmn:incoming>sequenceFlow_183__ReviewInvoiceCA__ReviewSuccessfulEG</bpmn:incoming>
+      <bpmn:outgoing>YesSF__ReviewSuccessfulEG__ApproveInvoiceUT</bpmn:outgoing>
+      <bpmn:outgoing>NoSF__ReviewSuccessfulEG__InvoiceNotProcessedEE</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="InvoiceNotProcessedEE" name="Invoice not&#10;processed">
+      <bpmn:incoming>NoSF__ReviewSuccessfulEG__InvoiceNotProcessedEE</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="NoSF__InvoiceApprovedEG__ReviewInvoiceCA" name="no" isImmediate="true" sourceRef="InvoiceApprovedEG" targetRef="ReviewInvoiceCA">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=approved = false</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="sequenceFlow_183__ReviewInvoiceCA__ReviewSuccessfulEG" isImmediate="true" sourceRef="ReviewInvoiceCA" targetRef="ReviewSuccessfulEG" />
+    <bpmn:sequenceFlow id="YesSF__ReviewSuccessfulEG__ApproveInvoiceUT" name="yes" isImmediate="true" sourceRef="ReviewSuccessfulEG" targetRef="Gateway_1cfsmi7">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=clarified</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="NoSF__ReviewSuccessfulEG__InvoiceNotProcessedEE" name="no" isImmediate="true" sourceRef="ReviewSuccessfulEG" targetRef="InvoiceNotProcessedEE">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=clarified = false</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="Gateway_1cfsmi7">
+      <bpmn:incoming>Flow_1tf38dz</bpmn:incoming>
+      <bpmn:incoming>YesSF__ReviewSuccessfulEG__ApproveInvoiceUT</bpmn:incoming>
+      <bpmn:outgoing>Flow_0hreah5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0hreah5" sourceRef="Gateway_1cfsmi7" targetRef="ApproveInvoiceTask" />
+    <bpmn:exclusiveGateway id="InvoiceApprovedEG" name="Invoice&#10;approved?" gatewayDirection="Diverging">
+      <bpmn:incoming>Flow_09in72l</bpmn:incoming>
+      <bpmn:outgoing>NoSF__InvoiceApprovedEG__ReviewInvoiceCA</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1ceab5s</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1ceab5s" name="yes" sourceRef="InvoiceApprovedEG" targetRef="PrepareBankTransferTask">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=approved</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
     <bpmn:textAnnotation id="TextAnnotation_0m78vd6">
       <bpmn:text>form in start event not possible</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Association_054oppq" sourceRef="CreateInvoiceTask" targetRef="TextAnnotation_0m78vd6" />
+    <bpmn:association id="Association_1e6nsno" sourceRef="PrepareBankTransferTask" targetRef="TextAnnotation_1oocmr5" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0m1fmdk">
       <bpmndi:BPMNShape id="Participant_086kdlh_di" bpmnElement="InvoiceReceiptParticipant" isHorizontal="true">
-        <dc:Bounds x="140" y="120" width="750" height="480" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_0h39sud_di" bpmnElement="TeamAssistantLane" isHorizontal="true">
-        <dc:Bounds x="170" y="120" width="720" height="210" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_0zjdwl1_di" bpmnElement="AccountantLane" isHorizontal="true">
-        <dc:Bounds x="170" y="470" width="720" height="130" />
+        <dc:Bounds x="140" y="120" width="1132" height="480" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_1nb4a6j_di" bpmnElement="ApproverLane" isHorizontal="true">
-        <dc:Bounds x="170" y="330" width="720" height="140" />
+        <dc:Bounds x="170" y="330" width="1102" height="140" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0m78vd6_di" bpmnElement="TextAnnotation_0m78vd6">
-        <dc:Bounds x="400" y="140" width="100" height="55" />
+      <bpmndi:BPMNShape id="Lane_0zjdwl1_di" bpmnElement="AccountantLane" isHorizontal="true">
+        <dc:Bounds x="170" y="470" width="1102" height="130" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_09in72l_di" bpmnElement="Flow_09in72l">
-        <di:waypoint x="680" y="400" />
-        <di:waypoint x="741" y="400" />
-        <di:waypoint x="741" y="540" />
-        <di:waypoint x="802" y="540" />
+      <bpmndi:BPMNShape id="Lane_0h39sud_di" bpmnElement="TeamAssistantLane" isHorizontal="true">
+        <dc:Bounds x="170" y="120" width="1102" height="210" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0j8c9vj_di" bpmnElement="Flow_0j8c9vj">
+        <di:waypoint x="910" y="540" />
+        <di:waypoint x="1022" y="540" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1tf38dz_di" bpmnElement="Flow_1tf38dz">
-        <di:waypoint x="560" y="260" />
-        <di:waypoint x="630" y="260" />
-        <di:waypoint x="630" y="360" />
+      <bpmndi:BPMNEdge id="Flow_0xokbpc_di" bpmnElement="Flow_0xokbpc">
+        <di:waypoint x="400" y="260" />
+        <di:waypoint x="460" y="260" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_079f9k9_di" bpmnElement="Flow_079f9k9">
         <di:waypoint x="258" y="260" />
         <di:waypoint x="300" y="260" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0xokbpc_di" bpmnElement="Flow_0xokbpc">
-        <di:waypoint x="400" y="260" />
-        <di:waypoint x="460" y="260" />
+      <bpmndi:BPMNEdge id="Flow_1tf38dz_di" bpmnElement="Flow_1tf38dz">
+        <di:waypoint x="560" y="260" />
+        <di:waypoint x="605" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09in72l_di" bpmnElement="Flow_09in72l">
+        <di:waypoint x="680" y="400" />
+        <di:waypoint x="720" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Nein_182_gui" bpmnElement="NoSF__InvoiceApprovedEG__ReviewInvoiceCA">
+        <di:waypoint x="740" y="380" />
+        <di:waypoint x="740" y="240" />
+        <di:waypoint x="780" y="240" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="718" y="354" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sequenceFlow_183_gui" bpmnElement="sequenceFlow_183__ReviewInvoiceCA__ReviewSuccessfulEG">
+        <di:waypoint x="880" y="240" />
+        <di:waypoint x="925" y="240" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="625.5" y="77" width="90" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ja_186_gui" bpmnElement="YesSF__ReviewSuccessfulEG__ApproveInvoiceUT">
+        <di:waypoint x="945" y="220" />
+        <di:waypoint x="945" y="160" />
+        <di:waypoint x="630" y="160" />
+        <di:waypoint x="630" y="235" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="960" y="166" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="nein_185_gui" bpmnElement="NoSF__ReviewSuccessfulEG__InvoiceNotProcessedEE">
+        <di:waypoint x="965" y="240" />
+        <di:waypoint x="1144" y="240" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="982" y="239" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0hreah5_di" bpmnElement="Flow_0hreah5">
+        <di:waypoint x="630" y="285" />
+        <di:waypoint x="630" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ceab5s_di" bpmnElement="Flow_1ceab5s">
+        <di:waypoint x="760" y="400" />
+        <di:waypoint x="860" y="400" />
+        <di:waypoint x="860" y="500" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="801" y="382" width="18" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_07t4d62_di" bpmnElement="InvoiceReceivedStartEvent">
         <dc:Bounds x="222" y="242" width="36" height="36" />
@@ -262,12 +438,6 @@ The form is the JSON of approve-invoice.form</bpmn:documentation>
       <bpmndi:BPMNShape id="Activity_1rvonsv_di" bpmnElement="AssignApproverGroupTask">
         <dc:Bounds x="460" y="220" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0dn52dp_di" bpmnElement="InvoiceProcessedEndEvent">
-        <dc:Bounds x="802" y="522" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="795" y="565" width="51" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Rechnung_freigeben_125_gui" bpmnElement="ApproveInvoiceTask" isHorizontal="true">
         <dc:Bounds x="580" y="360" width="100" height="80" />
       </bpmndi:BPMNShape>
@@ -275,10 +445,56 @@ The form is the JSON of approve-invoice.form</bpmn:documentation>
         <dc:Bounds x="300" y="220" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0dn52dp_di" bpmnElement="InvoiceProcessedEndEvent">
+        <dc:Bounds x="1022" y="522" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1015" y="565" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0f0e7qn" bpmnElement="PrepareBankTransferTask" isHorizontal="true">
+        <dc:Bounds x="810" y="500" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0m78vd6_di" bpmnElement="TextAnnotation_0m78vd6">
+        <dc:Bounds x="400" y="140" width="100" height="55" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Rechnung_kl_ren_148_gui" bpmnElement="ReviewInvoiceCA">
+        <dc:Bounds x="780" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Kl_rung_erfolgreich__153_gui" bpmnElement="ReviewSuccessfulEG" isHorizontal="true" isMarkerVisible="true">
+        <dc:Bounds x="925" y="220" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="916" y="265" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="endEvent_165_gui" bpmnElement="InvoiceNotProcessedEE" isHorizontal="true">
+        <dc:Bounds x="1144" y="226" width="28" height="28" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1132" y="259" width="54" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1cfsmi7_di" bpmnElement="Gateway_1cfsmi7" isMarkerVisible="true">
+        <dc:Bounds x="605" y="235" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Freigabe_erfolgt__131_gui" bpmnElement="InvoiceApprovedEG" isHorizontal="true" isMarkerVisible="true">
+        <dc:Bounds x="720" y="380" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="714" y="429.5" width="52" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Association_054oppq_di" bpmnElement="Association_054oppq">
         <di:waypoint x="388" y="220" />
         <di:waypoint x="412" y="195" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1e6nsno_di" bpmnElement="Association_1e6nsno">
+        <di:waypoint x="831" y="580" />
+        <di:waypoint x="801" y="620" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_1oocmr5_di" bpmnElement="TextAnnotation_1oocmr5">
+        <dc:Bounds x="740" y="620" width="171" height="58" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

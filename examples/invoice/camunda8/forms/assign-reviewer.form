@@ -1,0 +1,99 @@
+{
+  "components": [
+    {
+      "text": "# Who should review this invoice?\n\n",
+      "type": "text",
+      "id": "Field_05lxclg"
+    },
+    {
+      "label": "Invoice Document Creditor",
+      "type": "textfield",
+      "id": "Field_05aoacy",
+      "key": "creditor",
+      "disabled": false,
+      "validate": {
+        "required": true
+      },
+      "description": "(e.g. \"Great Pizza for Everyone Inc.\")",
+      "defaultValue": "Great Pizza for Everyone."
+    },
+    {
+      "label": "Amount",
+      "type": "textfield",
+      "id": "Field_1lynnkg",
+      "key": "amount",
+      "disabled": false,
+      "validate": {
+        "required": true
+      },
+      "description": "(Must be a Double e.g. \"30.0\")",
+      "defaultValue": "30.50"
+    },
+    {
+      "values": [
+        {
+          "label": "Travel Expenses",
+          "value": "Travel Expenses"
+        },
+        {
+          "label": "Software License Costs",
+          "value": "Software License Costs"
+        },
+        {
+          "label": "Misc",
+          "value": "Misc"
+        }
+      ],
+      "label": "Invoice Category",
+      "type": "select",
+      "id": "Field_0feflul",
+      "key": "invoiceCategory",
+      "disabled": false,
+      "defaultValue": "Travel Expenses"
+    },
+    {
+      "label": "Invoice Number",
+      "type": "textfield",
+      "id": "Field_09olxc6",
+      "key": "invoiceNumber",
+      "disabled": false,
+      "defaultValue": "I-12345",
+      "description": "(e.g. \"I-12345\")"
+    },
+    {
+      "values": [
+        {
+          "label": "Demo",
+          "value": "demo"
+        },
+        {
+          "label": "John",
+          "value": "john"
+        },
+        {
+          "label": "Peter",
+          "value": "peter"
+        },
+        {
+          "label": "Mary",
+          "value": "mary"
+        }
+      ],
+      "label": "Reviewer",
+      "type": "select",
+      "id": "Field_0ekcqq6",
+      "key": "reviewer",
+      "disabled": false,
+      "defaultValue": "demo"
+    }
+  ],
+  "type": "default",
+  "id": "Form_0jc1o9x",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.0.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.2.0"
+  },
+  "schemaVersion": 4
+}
