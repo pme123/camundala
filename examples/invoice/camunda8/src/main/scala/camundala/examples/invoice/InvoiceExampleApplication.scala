@@ -16,7 +16,7 @@ class AppConfig extends CaseClassJsonMapperConfig
 
 @SpringBootApplication
 @EnableZeebeClient
-@ZeebeDeployment(resources = Array("classpath*:invoice.v3.bpmn","classpath*:invoice*.dmn"))
+@ZeebeDeployment(resources = Array("classpath*:invoice.v3.bpmn","classpath*:reviewInvoice.v2.bpmn","classpath*:invoice*.dmn"))
 class InvoiceExampleApplication
 
 object InvoiceExampleApplication:

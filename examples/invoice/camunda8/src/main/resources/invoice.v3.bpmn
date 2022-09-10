@@ -240,8 +240,9 @@
         <bpmn:flowNodeRef>Gateway_1cfsmi7</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="AccountantLane" name="Accountant">
-        <bpmn:flowNodeRef>InvoiceProcessedEndEvent</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>PrepareBankTransferTask</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>InvoiceProcessedEndEvent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ArchiveInvoiceST</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="ApproverLane" name="Approver">
         <bpmn:flowNodeRef>ApproveInvoiceTask</bpmn:flowNodeRef>
@@ -262,7 +263,7 @@
       <bpmn:documentation>Approve the invoice (or not).
 The form is the JSON of approve-invoice.form</bpmn:documentation>
       <bpmn:extensionElements>
-        <zeebe:assignmentDefinition candidateGroups="${approverGroups}" />
+        <zeebe:assignmentDefinition candidateGroups="=approverGroups" />
         <zeebe:formDefinition formKey="camunda-forms:bpmn:userTaskForm_3ce8sgj" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0hreah5</bpmn:incoming>
@@ -272,7 +273,6 @@ The form is the JSON of approve-invoice.form</bpmn:documentation>
       <bpmn:documentation>Approve the invoice (or not).
 The form is the JSON of approve-invoice.form</bpmn:documentation>
       <bpmn:extensionElements>
-        <zeebe:assignmentDefinition candidateGroups="${approverGroups}" />
         <zeebe:formDefinition formKey="camunda-forms:bpmn:UserTaskForm_3dmb8mt" />
         <zeebe:ioMapping>
           <zeebe:input source="=invoiceDocument.ref" target="invoiceDocumentPath" />
@@ -286,24 +286,25 @@ The form is the JSON of approve-invoice.form</bpmn:documentation>
     <bpmn:sequenceFlow id="Flow_1tf38dz" sourceRef="AssignApproverGroupTask" targetRef="Gateway_1cfsmi7" />
     <bpmn:sequenceFlow id="Flow_079f9k9" sourceRef="InvoiceReceivedStartEvent" targetRef="CreateInvoiceTask" />
     <bpmn:sequenceFlow id="Flow_0xokbpc" sourceRef="CreateInvoiceTask" targetRef="AssignApproverGroupTask" />
-    <bpmn:endEvent id="InvoiceProcessedEndEvent" name="Invoice&#10;processed">
-      <bpmn:incoming>Flow_0j8c9vj</bpmn:incoming>
-    </bpmn:endEvent>
     <bpmn:userTask id="PrepareBankTransferTask" name="Prepare&#10; Bank&#10; Transfer" implementation="##unspecified">
       <bpmn:documentation>Prepare the bank transfer.</bpmn:documentation>
       <bpmn:extensionElements>
-        <zeebe:assignmentDefinition candidateGroups="${approverGroups}" />
+        <zeebe:assignmentDefinition candidateGroups="=approverGroups" />
         <zeebe:formDefinition formKey="camunda-forms:bpmn:UserTaskForm_1s2903c" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1ceab5s</bpmn:incoming>
       <bpmn:outgoing>Flow_0j8c9vj</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:sequenceFlow id="Flow_0j8c9vj" sourceRef="PrepareBankTransferTask" targetRef="InvoiceProcessedEndEvent" />
+    <bpmn:sequenceFlow id="Flow_0j8c9vj" sourceRef="PrepareBankTransferTask" targetRef="ArchiveInvoiceST" />
     <bpmn:callActivity id="ReviewInvoiceCA" name="Review Invoice" calledElement="ReviewInvoiceP">
       <bpmn:extensionElements>
         <zeebe:calledElement processId="ReviewInvoiceP" propagateAllChildVariables="false" />
         <zeebe:ioMapping>
           <zeebe:input source="=amount" target="amount" />
+          <zeebe:input source="=creditor" target="creditor" />
+          <zeebe:input source="=invoiceCategory" target="invoiceCategory" />
+          <zeebe:input source="=invoiceDocument" target="invoiceDocument" />
+          <zeebe:input source="=invoiceNumber" target="invoiceNumber" />
           <zeebe:output source="= clarified" target="clarified" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
@@ -342,6 +343,17 @@ The form is the JSON of approve-invoice.form</bpmn:documentation>
     <bpmn:sequenceFlow id="Flow_1ceab5s" name="yes" sourceRef="InvoiceApprovedEG" targetRef="PrepareBankTransferTask">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=approved</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
+    <bpmn:endEvent id="InvoiceProcessedEndEvent" name="Invoice&#10;processed">
+      <bpmn:incoming>Flow_1ke0xbf</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="ArchiveInvoiceST" name="Archive Invoice" implementation="##WebService">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="invoice-archive" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0j8c9vj</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ke0xbf</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1ke0xbf" sourceRef="ArchiveInvoiceST" targetRef="InvoiceProcessedEndEvent" />
     <bpmn:textAnnotation id="TextAnnotation_0m78vd6">
       <bpmn:text>form in start event not possible</bpmn:text>
     </bpmn:textAnnotation>
@@ -368,7 +380,7 @@ The form is the JSON of approve-invoice.form</bpmn:documentation>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0j8c9vj_di" bpmnElement="Flow_0j8c9vj">
         <di:waypoint x="910" y="540" />
-        <di:waypoint x="1022" y="540" />
+        <di:waypoint x="970" y="540" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0xokbpc_di" bpmnElement="Flow_0xokbpc">
         <di:waypoint x="400" y="260" />
@@ -429,6 +441,10 @@ The form is the JSON of approve-invoice.form</bpmn:documentation>
           <dc:Bounds x="801" y="382" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ke0xbf_di" bpmnElement="Flow_1ke0xbf">
+        <di:waypoint x="1070" y="540" />
+        <di:waypoint x="1140" y="540" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_07t4d62_di" bpmnElement="InvoiceReceivedStartEvent">
         <dc:Bounds x="222" y="242" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -444,12 +460,6 @@ The form is the JSON of approve-invoice.form</bpmn:documentation>
       <bpmndi:BPMNShape id="BPMNShape_1vax95e" bpmnElement="CreateInvoiceTask" isHorizontal="true">
         <dc:Bounds x="300" y="220" width="100" height="80" />
         <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0dn52dp_di" bpmnElement="InvoiceProcessedEndEvent">
-        <dc:Bounds x="1022" y="522" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1015" y="565" width="51" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0f0e7qn" bpmnElement="PrepareBankTransferTask" isHorizontal="true">
         <dc:Bounds x="810" y="500" width="100" height="80" />
@@ -482,6 +492,15 @@ The form is the JSON of approve-invoice.form</bpmn:documentation>
         <bpmndi:BPMNLabel>
           <dc:Bounds x="714" y="429.5" width="52" height="27" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0dn52dp_di" bpmnElement="InvoiceProcessedEndEvent">
+        <dc:Bounds x="1140" y="522" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1133" y="565" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_2" bpmnElement="ArchiveInvoiceST">
+        <dc:Bounds x="970" y="500" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Association_054oppq_di" bpmnElement="Association_054oppq">
         <di:waypoint x="388" y="220" />

@@ -188,7 +188,7 @@
     </bpmn:userTask>
     <bpmn:userTask id="ReviewInvoiceUT" name="Review Invoice" implementation="##unspecified" camunda:formKey="embedded:app:forms/review-invoice.html" camunda:dueDate="${dateTime().plusDays(2).toDate()}">
       <bpmn:extensionElements>
-        <zeebe:assignmentDefinition assignee="${reviewer}" />
+        <zeebe:assignmentDefinition assignee="=reviewer" />
         <zeebe:formDefinition formKey="camunda-forms:bpmn:userTaskForm_2h5satr" />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_144f11w</bpmn:incoming>
