@@ -9,7 +9,7 @@ I bundled it here! Just run `InvoiceProcessApplication`.
 
 This based on this Project: https://github.com/pme123/spring-boot-datakurre-plugins
 
-## Migration to Camunda 8
+## Migration BPMN/DMN to Camunda 8
 ### Pain Points
 - The Migration Plugin did not work for DMNs - I had to adjust the XML manually.
 - Forms can not be linked (copy-paste Json of form) (Standalone version).
@@ -29,3 +29,14 @@ This based on this Project: https://github.com/pme123/spring-boot-datakurre-plug
 ### Cool stuff
 - Some code completion in FEEL expressions
 - Links in the Modeller to the documentation
+
+## Migrating Camundala to Camunda 8
+The work to migrate the Example concerning:
+- API Documentation
+- Test Simulation
+- Validation
+
+### API Documentation
+Nothing to do here - the API stays the same! 🎉🎉🎉
+### Test Simulation
+

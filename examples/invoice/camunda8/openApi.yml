@@ -2,49 +2,31 @@ openapi: 3.0.3
 info:
   title: Invoice Example Process API
   version: '1.0'
-  description: |2+
-
-
-    Created at 20/08/2022, 09:48
-
-    **[Check Project on Cawemo](https://cawemo.com/folders/a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala)**
-
-    > This is the invoice demo application which is shipped with the full distributions.
-
-    See the original [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).
-
-    I bundled it here! Just run `InvoiceServletProcessApplication`.
-
-    This based on this Project: https://github.com/pme123/spring-boot-datakurre-plugins
-
-
-    # Changelog
-
-    <details>
-    <summary>CHANGELOG.md</summary>
-    <p>
-
-
-    All notable changes to this project will be documented in this file.
-
-    * Types of Changes (L3):
-      * Added: new features
-      * Changed: changes in existing functionality
-      * Deprecated: soon-to-be-removed features
-      * Removed: now removed features
-      * Fixed: any bug fixes
-      * Security: in case of vulnerabilities
-
-
-    The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-    and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-    ### Unreleased
-    Initial Version
-
-    </p>
-    </details>
-
+  description: "\n\nCreated at 10/09/2022, 11:18\n\n**[Check Project on Cawemo](https://cawemo.com/folders/a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala)**\n\
+    \n> This is the invoice demo application which is shipped with the full distributions\
+    \ in Camunda 7.\n\nSee the original [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).\n\
+    \nI bundled it here! Just run `InvoiceProcessApplication`.\n\n> This requires\
+    \ that **Camunda 8 Standalone** is running -> _https://github.com/camunda/camunda-platform.git_\n\
+    \nThis based on this Project: https://github.com/pme123/spring-boot-datakurre-plugins\n\
+    \n## Migration to Camunda 8\n### Pain Points\n- The Migration Plugin did not work\
+    \ for DMNs - I had to adjust the XML manually.\n- Forms can not be linked (copy-paste\
+    \ Json of form) (Standalone version).\n- Camunda Property Infos Plugin does not\
+    \ work.\n- FEEL is missing _**not** myProperty_ - you need to do it _myProperty\
+    \ = false_.\n- CallActivities Input-Mapping were not migrated.\n\n### What did\
+    \ not work\n- Forms in the Start Event\n  - Workaround: Added another UserTask\
+    \ \n  - but with this, it is impossible to have Camunda Processes running by itself\
+    \ (no other application must be deployed)\n- No files\n  - Workaround: only the\
+    \ reference to the file is in the process.\n- Dynamic content in Form Texts (FEEL)\n\
+    - Datastore / Data object reference have no graphic anymore\n\n### Cool stuff\n\
+    - Some code completion in FEEL expressions\n- Links in the Modeller to the documentation\n\
+    \n\n# Changelog\n\n<details>\n<summary>CHANGELOG.md</summary>\n<p>\n\n\nAll notable\
+    \ changes to this project will be documented in this file.\n\n* Types of Changes\
+    \ (L3):\n  * Added: new features\n  * Changed: changes in existing functionality\n\
+    \  * Deprecated: soon-to-be-removed features\n  * Removed: now removed features\n\
+    \  * Fixed: any bug fixes\n  * Security: in case of vulnerabilities\n\n\nThe format\
+    \ is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),\nand this\
+    \ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).\n\
+    \n### Unreleased\nInitial Version\n\n</p>\n</details>\n\n"
 paths:
   /process/InvoiceReceipt/InvoiceReceiptP/InvoiceReceipt:
     head:
@@ -86,6 +68,9 @@ paths:
                 Invoice Receipt:
                   value:
                     approved: true
+                    approverGroups:
+                    - accounting
+                    - sales
   /decisiondmn/InvoiceReceipt/invoice-assign-approver/InvoiceAssignApproverDMN:
     head:
       tags:
@@ -397,8 +382,6 @@ components:
           $ref: '#/components/schemas/FileRefInOut'
       description: Received Invoice that need approval.
     InvoiceReceiptCheck:
-      required:
-      - approved
       type: object
       properties:
         approved:
@@ -407,6 +390,11 @@ components:
         clarified:
           type: boolean
           description: Flag that is set by the Reviewer (only set if there was a review).
+        approverGroups:
+          type: array
+          items:
+            type: string
+          description: The groups selected from the DMN
     InvoiceReviewed:
       required:
       - clarified

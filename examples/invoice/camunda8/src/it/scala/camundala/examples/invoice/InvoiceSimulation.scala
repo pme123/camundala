@@ -1,6 +1,8 @@
 package camundala
-package examples.invoice.bpmn
+package examples.invoice
 
+import api.*
+import api.InvoiceApi.*
 import camundala.bpmn.*
 
 import simulation.*
@@ -9,7 +11,7 @@ import sttp.tapir.generic.auto.*
 
 import scala.concurrent.duration.*
 
-// exampleInvoice/GatlingIt/testOnly *InvoiceSimulation
+// exampleInvoiceC8/GatlingIt/testOnly *InvoiceSimulation
 class InvoiceSimulation extends SimulationDsl:
 
   override implicit def config: SimulationConfig =
