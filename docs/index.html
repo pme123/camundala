@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Laika 0.18.2 + Helium Theme" />
-    <title>Test Laika Pages</title>
+    <title>Intro</title>
     
     
       <meta name="description" content="camundala-documentation"/>
@@ -48,7 +48,7 @@
       </div>
       
       <ul class="nav-list">
-        <li class="level1 active"><a href="#">Test Laika Pages</a></li>
+        <li class="level1 active"><a href="#">Intro</a></li>
       </ul>
       
     </nav>
@@ -56,9 +56,16 @@
     <div id="container">
 
       <nav id="page-nav">
-        <p class="header"><a href="#">Test Laika Pages</a></p>
+        <p class="header"><a href="#">Intro</a></p>
         
         <ul class="nav-list">
+          <li class="level1"><a href="#why-the-focus-on-the-domain">Why the Focus on the Domain?</a></li>
+          <li class="level2"><a href="#common-language">Common Language</a></li>
+          <li class="level2"><a href="#vendor-independent">Vendor Independent</a></li>
+          <li class="level2"><a href="#specifies-the-process">Specifies the Process</a></li>
+          <li class="level2"><a href="#reusable">Reusable</a></li>
+          <li class="level1"><a href="#design">Design</a></li>
+          <li class="level1"><a href="#technology">Technology</a></li>
         </ul>
         
         <p class="footer"></p>
@@ -66,8 +73,99 @@
 
       <main class="content">
 
-        <h1 id="test-laika-pages" class="title">Test Laika Pages</h1>
-        <p>hello</p>
+        <h1 id="intro" class="title">Intro</h1>
+        <div class="callout ">
+          <p><em>The main goal of <strong>Camundala</strong> is to use your <strong>Domain</strong> as much as possible in your <strong>Process Automation</strong>.</em></p>
+          <p><em>Define the <strong>Domain</strong> and let <strong>Camundala</strong> do most of the rest.</em> </p>
+        </div>
+        <div class="callout info">
+          <i class="icofont-laika">&#xef4e;</i>
+          <p>I gave a talk at the <em>Camunda Community Summit 2022</em> that covers the basics - well, the DSLs got a bit nicer since then😉. 
+          Check out here <a href="https://page.camunda.com/ccs2022-domaindrivenprocessdevelopment?hsLang=en">Domain Driven Process Development</a></p>
+        </div>
+        
+        <h2 id="why-the-focus-on-the-domain" class="section"><a class="anchor-link left" href="#why-the-focus-on-the-domain"><i class="icofont-laika">&#xef71;</i></a>Why the Focus on the Domain?</h2>
+        
+        <h3 id="common-language" class="section"><a class="anchor-link left" href="#common-language"><i class="icofont-laika">&#xef71;</i></a>Common Language</h3>
+        <p><em>What have Users, Business Analysts and Developers in common?</em></p>
+        <p>Right, they should know the Domain that they are using or providing.</p>
+        <p>To have a common domain prevents that each team has its own domain model and speaks a (slightly) different language.</p>
+        
+        <h3 id="vendor-independent" class="section"><a class="anchor-link left" href="#vendor-independent"><i class="icofont-laika">&#xef71;</i></a>Vendor Independent</h3>
+        <p>The Domain Model is specific to a Company and should not be coupled to a Software vendor 
+        or a BPMN-Provider in this case.</p>
+        
+        <h3 id="specifies-the-process" class="section"><a class="anchor-link left" href="#specifies-the-process"><i class="icofont-laika">&#xef71;</i></a>Specifies the Process</h3>
+        <p>A <em>Process</em>, but also for example a <em>User Task</em>, can be described via its inputs and outputs, 
+        which must of course reflect your <em>Domain</em>.</p>
+        <p>So from the outside all you need to know, is <strong><em>how</em></strong> to interact with your process. 
+        And this <em><strong>how</strong></em> can we describe perfectly with domain objects. </p>
+        
+        <h3 id="reusable" class="section"><a class="anchor-link left" href="#reusable"><i class="icofont-laika">&#xef71;</i></a>Reusable</h3>
+        <p>If for example you provide the domain objects for your processes, everyone can reuse them, 
+        when interacting with your processes or developing processes in the same domain.</p>
+        
+        <h2 id="design" class="section"><a class="anchor-link left" href="#design"><i class="icofont-laika">&#xef71;</i></a>Design</h2>
+        <p><img src="images/design.png" alt="Design"></p>
+        <p>The design consists of <strong>three Layers</strong>:</p>
+        <ol class="arabic">
+          <li>
+            <p><strong>Domain Specification</strong></p>
+            <p>Defines your Domain that is needed to run the Process and interact with it. </p>
+          </li>
+          <li>
+            <p><strong>BPMN DSL</strong></p>
+            <p>Adds your Domain Model to concrete BPMN elements, like <em>Process</em> or <em>User Task</em>.</p>
+            <div class="callout info">
+              <i class="icofont-laika">&#xef4e;</i>
+              <p>DSL stays for Domain Specific Language.</p>
+            </div>
+          </li>
+          <li>
+            <p><strong>Function DSLs</strong></p>
+            <p>Different DSLs that add the functionality.
+            We have the following DSLs at the moment:</p>
+            <ul>
+              <li><strong><em>api</em></strong>: Create a documentation from your Domain Models.</li>
+              <li><strong><em>simulation</em></strong>: Run integration- and/ or load Tests with your Domain Models.</li>
+            </ul>
+            <p>There are more, but only in an experimental state:</p>
+            <ul>
+              <li><em>dmn</em>: Create the configurations for the DMN Tester.</li>
+              <li><em>camunda</em>: Generate some of your Process Specification.</li>
+            </ul>
+          </li>
+        </ol>
+        
+        <h2 id="technology" class="section"><a class="anchor-link left" href="#technology"><i class="icofont-laika">&#xef71;</i></a>Technology</h2>
+        <div class="callout info">
+          <i class="icofont-laika">&#xef4e;</i>
+          <p>We use <em><strong>Scala 3</strong></em> for everything, but the Process Specification.</p>
+        </div>
+        <p><img src="images/technology.png" alt="Technology"></p>
+        <ul>
+          <li>
+            <p><strong>Process Specification</strong></p>
+            <p>This is standard <em>Camunda BPMN XML</em>.</p>
+          </li>
+          <li>
+            <p><strong>Domain Specification</strong></p>
+            <p>We describe the Domain with <em>Scala 3</em>. Here we use mainly:</p>
+            <ul>
+              <li>Case Classes</li>
+              <li>Enums</li>
+            </ul>
+            <p>See <a href="https://docs.scala-lang.org/scala3/book/taste-modeling.html#fp-domain-modeling">FP Domain Modeling</a></p>
+          </li>
+          <li>
+            <p><strong>BPMN- and Function DSLs</strong></p>
+            <p>You can use a simple language to describe your BPMNs and Functionalities.
+            Under the hood we use:</p>
+            <p><em>Scala’s features for DSL design: <a href="https://alvinalexander.com/scala/fp-book/partially-applied-functions-currying-in-scala/">curried functions</a>, <a href="https://docs.scala-lang.org/scala3/book/ca-extension-methods.html">extension methods</a>, symbolic method names and <a href="https://scala-cli.virtuslab.org/">scripting capability</a>. 
+            Another great such feature new to Scala 3 is the <a href="https://docs.scala-lang.org/scala3/reference/contextual/context-functions.html#inner-main">Context Function</a> type.</em> <br></p>
+            <p>(from <a href="https://akmetiuk.com/posts/2022-04-02-context-functions.html">Context Function for DSL Design in Scala</a>)</p>
+          </li>
+        </ul>
 
       </main>
 
