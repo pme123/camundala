@@ -1,7 +1,11 @@
-package camundala.examples.invoice.api
+package camundala
+package examples.invoice.api
+
+import examples.invoice.domain.*
 
 import camundala.api.*
 import camundala.bpmn.*
+import camundala.domain.*
 import InvoiceApi.*
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*

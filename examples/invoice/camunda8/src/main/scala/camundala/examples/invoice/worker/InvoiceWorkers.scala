@@ -1,6 +1,6 @@
 package camundala.examples.invoice.worker
 
-import camundala.examples.invoice.api.InvoiceApi.InvoiceReceipt
+import camundala.examples.invoice.domain.InvoiceReceipt
 import io.camunda.zeebe.spring.client.annotation.{ZeebeVariablesAsType, ZeebeWorker}
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError
 import org.springframework.beans.factory.annotation.Autowired

@@ -1,6 +1,8 @@
 import sbt.url
 import laika.markdown.github.GitHubFlavor
 import laika.parse.code.SyntaxHighlighting
+import laika.rewrite.link._
+import laika.ast.ExternalTarget
 
 import scala.util.Using
 
@@ -18,6 +20,7 @@ lazy val root = project
     name := "camundala"
   )
   .aggregate(
+    domain,
     bpmn,
     api,
     dmn,
@@ -40,10 +43,10 @@ def projectSettings(projName: String): Seq[Def.Setting[_]] = Seq(
   version := projectVersion
 )
 
-lazy val bpmn = project
-  .in(file("./bpmn"))
+lazy val domain = project
+  .in(file("./domain"))
   .configure(publicationSettings)
-  .settings(projectSettings("bpmn"))
+  .settings(projectSettings("domain"))
   .settings(
     libraryDependencies ++= tapirDependencies,
     scalacOptions ++= Seq(
@@ -51,6 +54,17 @@ lazy val bpmn = project
       "50" // is declared as erased, but is in fact used
     )
   )
+
+lazy val bpmn = project
+  .in(file("./bpmn"))
+  .configure(publicationSettings)
+  .settings(projectSettings("bpmn"))
+  .settings(
+    scalacOptions ++= Seq(
+      "-Xmax-inlines",
+      "50" // is declared as erased, but is in fact used
+    )
+  ).dependsOn(domain)
 
 lazy val api = project
   .in(file("./api"))
@@ -131,6 +145,11 @@ lazy val documentation = (project in file("./documentation"))
   .settings(projectSettings("documentation"))
   .settings(
     laikaConfig := LaikaConfig.defaults
+      .withConfigValue(LinkConfig(
+        targets = Seq(
+        TargetDefinition("bpmn specification", ExternalTarget("https://www.bpmn.org")),
+        TargetDefinition("camunda", ExternalTarget("https://camunda.com"))
+      )))
     //  .withConfigValue(LinkConfig(excludeFromValidation = Seq(Root)))
       .withRawContent
     //  .failOnMessages(MessageFilter.None)

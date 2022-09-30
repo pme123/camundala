@@ -1,6 +1,7 @@
 package camundala
 package camunda8
 
+import domain.*
 import bpmn.*
 import io.circe.HCursor
 

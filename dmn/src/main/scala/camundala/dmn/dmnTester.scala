@@ -2,6 +2,7 @@ package camundala
 package dmn
 
 import bpmn.*
+import domain.*
 
 case class DmnConfig(
     decisionId: String,

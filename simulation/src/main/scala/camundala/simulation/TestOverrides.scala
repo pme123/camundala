@@ -1,8 +1,11 @@
-package camundala.simulation
+package camundala
+package simulation
 
-import camundala.api.CamundaProperty
-import camundala.bpmn.*
-import camundala.bpmn.CamundaVariable.*
+import api.CamundaProperty
+import bpmn.*
+import bpmn.CamundaVariable.*
+import domain.*
+
 import io.circe.syntax.*
 
 case class TestOverride(

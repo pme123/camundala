@@ -1,7 +1,8 @@
 package camundala
 package test
 
-import camundala.bpmn.*
+import bpmn.*
+import io.circe.{Decoder, Encoder}
 
 import scala.annotation.tailrec
 import scala.language.implicitConversions

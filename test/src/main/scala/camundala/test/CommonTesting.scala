@@ -2,7 +2,7 @@ package camundala
 package test
 
 import bpmn.*
-import io.circe.{Decoder, Encoder}
+import io.circe.Json
 import org.assertj.core.api.{Condition, MapAssert}
 import org.assertj.core.data.MapEntry
 import org.camunda.bpm.engine.ProcessEngineConfiguration

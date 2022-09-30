@@ -2,6 +2,7 @@ package camundala
 package camunda
 
 import bpmn.*
+import domain.*
 import org.camunda.bpm.model.bpmn.{BpmnModelInstance, Bpmn as CBpmn}
 import os.RelPath
 import io.circe.generic.auto.*

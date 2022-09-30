@@ -2,8 +2,8 @@ package camundala
 package test
 
 import bpmn.*
+import io.circe.{Decoder, Encoder}
 import io.circe.syntax.*
-import io.circe.*
 import org.camunda.bpm.engine.ProcessEngineConfiguration
 import org.camunda.bpm.engine.impl.test.TestHelper
 import org.camunda.bpm.engine.runtime.{Job, ProcessInstance}

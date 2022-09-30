@@ -1,8 +1,10 @@
-package camundala.simulation
+package camundala
+package simulation
 
-import camundala.api.CamundaProperty
-import camundala.bpmn.*
-import camundala.bpmn.CamundaVariable.{CFile, CFileValueInfo, CInteger, CJson}
+import api.CamundaProperty
+import bpmn.*
+import bpmn.CamundaVariable.{CFile, CFileValueInfo, CInteger, CJson}
+import domain.*
 import io.gatling.core.Predef.*
 import io.gatling.core.check.CheckBuilder
 import io.gatling.core.check.string.BodyStringCheckType

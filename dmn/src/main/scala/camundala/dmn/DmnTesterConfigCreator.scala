@@ -1,7 +1,8 @@
 package camundala
 package dmn
 
-import camundala.bpmn.*
+import bpmn.*
+import domain.*
 
 import io.circe.syntax.*
 import org.latestbit.circe.adt.codec.JsonTaggedAdt

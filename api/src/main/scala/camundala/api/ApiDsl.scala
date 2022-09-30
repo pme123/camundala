@@ -1,7 +1,8 @@
 package camundala
 package api
 
-import camundala.bpmn.*
+import bpmn.*
+import domain.*
 import sttp.tapir.docs.openapi.{OpenAPIDocsInterpreter, OpenAPIDocsOptions}
 import sttp.tapir.openapi.circe.yaml.*
 import sttp.tapir.openapi.{Contact, Info, OpenAPI, Server}

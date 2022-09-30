@@ -1,7 +1,7 @@
 package camundala
 package bpmn
 
-import java.util.Base64
+import domain.*
 import scala.language.implicitConversions
 
 case class InOutDescr[
@@ -217,34 +217,6 @@ object NoOutput:
   given Schema[NoOutput] = Schema.derived
   given Encoder[NoOutput] = deriveEncoder
   given Decoder[NoOutput] = deriveDecoder
-
-case class FileInOut(
-    fileName: String,
-    @description("The content of the File as a Byte Array.")
-    content: Array[Byte],
-    mimeType: Option[String]
-):
-  lazy val contentAsBase64: String = Base64.getEncoder.encodeToString(content)
-
-object FileInOut:
-  given Schema[FileInOut] = Schema.derived
-  given Encoder[FileInOut] = deriveEncoder
-  given Decoder[FileInOut] = deriveDecoder
-
-/**
- * In Camunda 8 only json is allowed!
- */
-case class FileRefInOut(
-                      fileName: String,
-                      @description("A reference to retrieve the file in your application.")
-                      ref: String,
-                      mimeType: Option[String]
-                    )
-
-object FileRefInOut:
-  given Schema[FileRefInOut] = Schema.derived
-  given Encoder[FileRefInOut] = deriveEncoder
-  given Decoder[FileRefInOut] = deriveDecoder
 
 def valueToJson(value: Any): Json =
   value match

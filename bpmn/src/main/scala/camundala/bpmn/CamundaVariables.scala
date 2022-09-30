@@ -1,4 +1,7 @@
-package camundala.bpmn
+package camundala
+package bpmn
+
+import domain.*
 
 import io.circe.*
 import io.circe.Json.*

@@ -3,6 +3,7 @@ package examples.twitter
 package rest
 
 import camundala.bpmn.*
+import camundala.domain.*
 import camundala.camunda8.*
 import camundala.examples.twitter.api.*
 import io.circe

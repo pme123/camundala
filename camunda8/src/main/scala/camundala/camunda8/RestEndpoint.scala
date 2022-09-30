@@ -2,6 +2,7 @@ package camundala
 package camunda8
 
 import bpmn.*
+import domain.*
 import camundala.bpmn.CamundaVariable.CJson
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.circe.syntax.*

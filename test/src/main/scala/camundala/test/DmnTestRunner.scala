@@ -3,6 +3,7 @@ package test
 
 import bpmn.*
 import camundala.bpmn.{DecisionDmn, Process, ProcessNode}
+import io.circe.{Decoder, Encoder}
 import org.camunda.bpm.dmn.engine.{DmnDecision, DmnDecisionResult, DmnEngine}
 import org.camunda.bpm.dmn.engine.test.DmnEngineRule
 import org.camunda.bpm.engine.runtime.ProcessInstance

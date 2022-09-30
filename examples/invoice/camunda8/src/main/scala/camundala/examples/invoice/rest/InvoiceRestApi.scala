@@ -3,6 +3,9 @@ package rest
 
 import api.*
 import api.InvoiceApi.*
+import domain.*
+import camundala.domain.*
+import camundala.api.*
 import camundala.bpmn.*
 import camundala.camunda8.*
 import io.circe

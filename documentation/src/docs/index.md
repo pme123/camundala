@@ -64,7 +64,7 @@ The design consists of **three Layers**:
 
 ## Technology
 @:callout(info)
-We use _**Scala 3**_ for everything, but the Process Specification.
+We use _**Scala 3**_ for everything, except the Process Specification (BPMN).
 @:@
 
 ![Technology](images/technology.png)
@@ -89,3 +89,10 @@ We use _**Scala 3**_ for everything, but the Process Specification.
   Another great such feature new to Scala 3 is the [Context Function](https://docs.scala-lang.org/scala3/reference/contextual/context-functions.html#inner-main) type._   
 
   (from [Context Function for DSL Design in Scala](https://akmetiuk.com/posts/2022-04-02-context-functions.html))
+
+## Getting Started
+Just go throw the pages:
+
+1. [Process & Domain Specification](specification.md)
+2. [BPMN DSL](bpmnDsl.md)
+3. [Functionality DSLs](functionalityDsls.md)

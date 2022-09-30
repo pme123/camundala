@@ -1,6 +1,8 @@
 package camundala
 package bpmn
 
+import domain.*
+
 import io.circe.{Json, parser}
 import io.circe.syntax.*
 import org.latestbit.circe.adt.codec.impl
@@ -16,18 +18,6 @@ export os.{pwd, Path, ResourcePath, read}
 // sttp
 export sttp.model.StatusCode
 
-// circe
-export io.circe.{Decoder, Encoder, Json}
-export io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-
-// One import for this ADT/JSON codec
-export org.latestbit.circe.adt.codec.JsonTaggedAdt
-export org.latestbit.circe.adt.codec.{JsonTaggedAdt => Adt}
-
-// tapir
-export sttp.tapir.Schema
-export sttp.tapir.Schema.annotations.description
-
 def throwErr(err: String) =
   println(s"ERROR: $err")
   throw new IllegalArgumentException(err)
@@ -41,6 +31,7 @@ def toJson(json: String): Json =
 def toJsonString[T <: Product: Encoder](product: T): String =
   product.asJson.deepDropNullValues.toString
 
+@deprecated("Use `Optable`.")
 def maybe[T](value: T | Option[T]): Option[T] = value match
   case v: Option[?] => v.asInstanceOf[Option[T]]
   case v => Some(v.asInstanceOf[T])

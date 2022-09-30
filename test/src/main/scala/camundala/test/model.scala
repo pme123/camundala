@@ -2,6 +2,7 @@ package camundala
 package test
 
 import bpmn.*
+import camundala.domain.FileInOut
 import io.circe.*
 import io.circe.generic.auto
 import io.circe.syntax.*

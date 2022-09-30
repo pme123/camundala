@@ -1,6 +1,8 @@
 package camundala
 package bpmn
 
+import domain.*
+
 trait BpmnDsl:
 
   def process[
@@ -152,7 +154,7 @@ trait BpmnDsl:
   ): ReceiveMessageEvent[Msg] =
     ReceiveMessageEvent(
       messageName,
-      InOutDescr(id.getOrElse(messageName), in, NoOutput(), descr.value)
+      InOutDescr(id.getOrElse(messageName), in, NoOutput(), msgNameDescr(messageName, descr))
     )
 
   def receiveSignalEvent[
@@ -165,8 +167,12 @@ trait BpmnDsl:
   ): ReceiveSignalEvent[Msg] =
     ReceiveSignalEvent(
       messageName,
-      InOutDescr(id.getOrElse(messageName), in, NoOutput(), descr.value)
+      InOutDescr(id.getOrElse(messageName), in, NoOutput(), msgNameDescr(messageName, descr))
     )
+
+  private def msgNameDescr(messageName: String, descr: Optable[String]) =
+    val msgNameDescr = s"- _messageName_: `$messageName`"
+    Some(descr.value.map(_ + s"\n$msgNameDescr").getOrElse(msgNameDescr))
 
 // Use this in the DSL to avoid Option[?]
 // see https://stackoverflow.com/a/69925310/2750966
