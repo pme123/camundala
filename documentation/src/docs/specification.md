@@ -78,9 +78,16 @@ You see here the following elements:
 * `enum InvoiceCategory..` this is how you define an enumeration. `..derives Adt.PureEncoder, Adt.PureDecoder..` is for JSON marshalling.
 * `` `Travel Expenses`, `` if you have names with spaces you need to use Back-Ticks.
 
-Checkout the whole Domain Description on [**Github**]().
+Checkout the whole Domain Description on [**Github**](https://github.com/pme123/camundala/blob/develop/examples/invoice/camunda8/src/main/scala/camundala/examples/invoice/domain.scala).
 
-### JSON marshalling
+There are 2 things you have to care for that is not purely your domain.
+
+### 1. Documentation
+The closer the documentation is to your code, that you work with, the higher is the chance that you will spot mistakes.
+So we use `@description("my descr")` from _[Tapir](https://tapir.softwaremill.com/en/latest/index.html)_. 
+These descriptions will then automatically taken into account when the API documentation is generated.
+
+### 2. JSON marshalling
 
 @:callout(info)
 We need this to get to and from JSON.
