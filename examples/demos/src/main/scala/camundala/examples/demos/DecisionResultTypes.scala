@@ -1,17 +1,15 @@
 package camundala.examples.demos
 
 import camundala.bpmn.*
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
+import camundala.domain.*
 
-object DecisionResultTypes extends  BpmnDsl:
-  
+object DecisionResultTypes extends BpmnDsl:
+
   case class Input(letter: String)
 
   // Many Output Parameter
   case class ManyOutResult(index: Int, emoji: String)
 
-  
   lazy val singleEntryDMN = singleEntry(
     decisionDefinitionKey = "singleEntry",
     in = Input("A"),
@@ -41,7 +39,7 @@ object DecisionResultTypes extends  BpmnDsl:
     in = Input("Z"),
     out = Seq.empty[Int]
   )
-  
+
   lazy val resultListDMNEmptySeq = resultList(
     decisionDefinitionKey = "resultList",
     in = Input("Z"),
@@ -60,12 +58,28 @@ object DecisionResultTypes extends  BpmnDsl:
   lazy val resultListDMNBadOutput = resultList(
     decisionDefinitionKey = "resultList",
     in = Input("A"),
-    out = Seq(BadManyOutResult(1, ManyOutResult(1, "🤩")), BadManyOutResult(1, ManyOutResult(2, "😂")))
+    out = Seq(
+      BadManyOutResult(1, ManyOutResult(1, "🤩")),
+      BadManyOutResult(1, ManyOutResult(2, "😂"))
+    )
   )
-
 
   lazy val demoProcess = process(
     "just-for-demo"
   )
+
+  given Schema[Input] = Schema.derived
+
+  given Encoder[Input] = deriveEncoder
+
+  given Decoder[Input] = deriveDecoder
+
+  given Schema[ManyOutResult] = Schema.derived
+  given Encoder[ManyOutResult] = deriveEncoder
+  given Decoder[ManyOutResult] = deriveDecoder
+
+  given Schema[BadManyOutResult] = Schema.derived
+  given Encoder[BadManyOutResult] = deriveEncoder
+  given Decoder[BadManyOutResult] = deriveDecoder
 
 end DecisionResultTypes

@@ -2,6 +2,7 @@ package camundala.examples.demos
 
 import camundala.bpmn.*
 import camundala.api.*
+import camundala.domain.*
 import sttp.tapir.json.circe.*
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
