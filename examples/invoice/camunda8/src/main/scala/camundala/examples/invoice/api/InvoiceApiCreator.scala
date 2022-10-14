@@ -34,6 +34,9 @@ object InvoiceApiCreator extends DefaultApiCreator:
       AssignReviewerUT,
       ReviewInvoiceUT
     )
+    group("DMNs")(
+      InvoiceAssignApproverDMN
+    )
   }
 
   private lazy val ApproveInvoiceUT =

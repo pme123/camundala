@@ -29,7 +29,7 @@ trait TapirApiCreator extends AbstractApiCreator:
         case pa: ProcessApi[?, ?] =>
           pa.createEndpoint(pa.name, pa.additionalDescr) ++ apis
         case da: DecisionDmnApi[?, ?] =>
-          da.createEndpoint(da.name)
+          da.createEndpoint(da.name, da.additionalDescr)
         case _: CApiGroup => apis
 
   end extension
@@ -37,9 +37,9 @@ trait TapirApiCreator extends AbstractApiCreator:
   extension (cApi: CApi)
     def create(tag: String): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       cApi match
-        case aa @ DecisionDmnApi(name, inOut, _) =>
-          aa.createEndpoint(tag)
-        case aa @ ActivityApi(name, inOut, _) =>
+        case da @ DecisionDmnApi(_, _, _) =>
+          da.createEndpoint(tag, da.additionalDescr)
+        case aa @ ActivityApi(_, _, _) =>
           aa.createEndpoint(tag)
         case pa @ ProcessApi(name, _, _, apis) if apis.forall(_.isInstanceOf[ActivityApi[?,?]]) =>
           pa.createEndpoint(tag, pa.additionalDescr) ++ apis.flatMap(_.create(tag))
@@ -128,6 +128,12 @@ trait TapirApiCreator extends AbstractApiCreator:
       val usedByDescr = UsedByReferenceCreator(processName).create()
       val usesDescr = UsesReferenceCreator(processName).create()
       Some(s"\n\n${usedByDescr.mkString}${usesDescr.mkString}")
+  end extension
+
+  extension (dmn: DecisionDmnApi[?, ?])
+    def additionalDescr: Option[String] =
+      val usedByDescr = UsedByReferenceCreator(dmn.id).create()
+      Some(s"\n\n${usedByDescr.mkString}")
   end extension
 
 end TapirApiCreator

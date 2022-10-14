@@ -37,10 +37,10 @@ trait ProcessReferenceCreator:
           .map(p => p -> read(p))
       }
 
-  case class UsedByReferenceCreator(processName: String):
+  case class UsedByReferenceCreator(refId: String):
 
     def create(): String =
-      val refs = findBpmn()
+      val refs = findUsagesInBpmn()
       val refDoc = refs
         .map { case k -> processes =>
           s"""_${k}_
@@ -63,14 +63,14 @@ trait ProcessReferenceCreator:
            |</details>
            |""".stripMargin
 
-    private def findBpmn(): Seq[(String, Seq[(String, String)])] =
-      println(s"Find Used by References for $processName")
+    private def findUsagesInBpmn(): Seq[(String, Seq[(String, String)])] =
+      println(s"Find Used by References for $refId")
       allBpmns
         .flatMap { case (pp, paths) =>
           paths
             .filter { case _ -> c =>
-              c.matches(s"""[\\s\\S]*(:|")$processName"[\\s\\S]*""") &&
-                !c.contains(s"id=\"$processName\"")
+              c.matches(s"""[\\s\\S]*(:|")$refId"[\\s\\S]*""") &&
+                !c.contains(s"id=\"$refId\"")
             }
             .map(pc => docuPath(pp, pc._1, pc._2))
         }

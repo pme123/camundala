@@ -37,6 +37,6 @@ trait AbstractApiCreator extends ProcessReferenceCreator:
     def endpointType: String = inOutApi.inOut.getClass.getSimpleName
     def endpointName: String = inOutApi.inOut.in match
       case gs: GenericServiceIn => gs.serviceName
-      case _ => s"$endpointType: ${inOutApi.name}"
+      case _ => s"$endpointType: ${inOutApi.id}"
 
 end AbstractApiCreator
