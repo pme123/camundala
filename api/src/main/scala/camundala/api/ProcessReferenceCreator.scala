@@ -118,9 +118,7 @@ trait ProcessReferenceCreator:
       findBpmn(processName)
         .map { xmlStr =>
           val xml = XML.load(new StringReader(xmlStr))
-          val callActivities = xml \\ "callActivity"
-
-          val refs = callActivities
+          val callActivities = (xml \\ "callActivity")
             .map { ca =>
               val calledElement = ca \@ "calledElement"
               val maybeServiceName = (ca \\ "in")
@@ -129,6 +127,13 @@ trait ProcessReferenceCreator:
                 .headOption
               UsesRef(calledElement, maybeServiceName)
             }
+          val businessRuleTasks = (xml \\ "businessRuleTask")
+            .map { br =>
+              val decisionRef = br.attribute("http://camunda.org/schema/1.0/bpmn", "decisionRef").get
+              UsesRef(decisionRef.toString, isDmn = true)
+            }
+
+          val refs = (callActivities ++ businessRuleTasks)
             .groupBy(_.project)
             .toSeq
             .sortBy(_._1)
@@ -159,7 +164,7 @@ trait ProcessReferenceCreator:
         }
         .getOrElse("\n**Uses no other Processes.**\n")
 
-    class UsesRef(processRef: String, serviceName: Option[String]):
+    class UsesRef(processRef: String, serviceName: Option[String] = None, isDmn: Boolean = false):
       lazy val (project: String, processId: String) =
         processRef.split(":").toList match
           case proj :: proc :: _ => (proj, proc)
@@ -170,11 +175,14 @@ trait ProcessReferenceCreator:
             )
 
       lazy val processIdent: String = serviceName.getOrElse(processId)
-      lazy val anchor =  s"#operation/Process:%20$processIdent"
+      lazy val anchor =  s"#operation/${if(isDmn) "DecisionDmn" else "Process"}:%20$processIdent"
+      lazy val dmnTag =  if(isDmn)
+        println(s"processRef:: $processRef")
+        "(DMN)" else ""
       lazy val serviceStr: String = serviceName.map(_ => s" ($processId)").getOrElse("")
 
       lazy val asString: String =
-        s"_[$processIdent](${docProjectUrl(project)}/OpenApi.html$anchor)_ $serviceStr"
+        s"_[$processIdent](${docProjectUrl(project)}/OpenApi.html$anchor)_ $serviceStr$dmnTag"
 
     end UsesRef
 
