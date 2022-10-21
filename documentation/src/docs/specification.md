@@ -111,3 +111,6 @@ Sorry for this technical noise 😥.
 
   given Schema[InvoiceCategory] = Schema.derived
   ```
+## Example
+
+Here you find the Domain Specification of the Invoice example: [Invoice domain](https://github.com/pme123/camundala/blob/master/examples/invoice/camunda8/src/main/scala/camundala/examples/invoice/domain.scala)

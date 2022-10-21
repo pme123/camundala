@@ -1,16 +1,12 @@
-package camundala
-package examples.invoice.api
+package camundala.examples.invoice
 
-import examples.invoice.domain.*
+import domain.*
+import bpmn.*
 
 import camundala.api.*
 import camundala.bpmn.*
-import camundala.domain.*
-import InvoiceApi.*
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
 
-object InvoiceApiCreator extends DefaultApiCreator:
+object api extends DefaultApiCreator:
 
   val projectName = "invoice-example"
 
@@ -40,11 +36,11 @@ object InvoiceApiCreator extends DefaultApiCreator:
   }
 
   private lazy val ApproveInvoiceUT =
-    InvoiceApi.ApproveInvoiceUT
+    bpmn.ApproveInvoiceUT
       .withOutExample("Invoice approved", ApproveInvoice())
       .withOutExample("Invoice NOT approved", ApproveInvoice(false))
 
   private lazy val ReviewInvoiceUT =
-    InvoiceApi.ReviewInvoiceUT
+    bpmn.ReviewInvoiceUT
       .withOutExample("Invoice clarified", InvoiceReviewed())
       .withOutExample("Invoice NOT clarified", InvoiceReviewed(false))

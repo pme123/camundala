@@ -378,6 +378,53 @@ The form is the JSON of approve-invoice.form</bpmn:documentation>
         <dc:Bounds x="170" y="120" width="1102" height="210" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1ke0xbf_di" bpmnElement="Flow_1ke0xbf">
+        <di:waypoint x="1070" y="540" />
+        <di:waypoint x="1140" y="540" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ceab5s_di" bpmnElement="Flow_1ceab5s">
+        <di:waypoint x="760" y="400" />
+        <di:waypoint x="860" y="400" />
+        <di:waypoint x="860" y="500" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="801" y="382" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0hreah5_di" bpmnElement="Flow_0hreah5">
+        <di:waypoint x="630" y="285" />
+        <di:waypoint x="630" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="nein_185_gui" bpmnElement="NoSF__ReviewSuccessfulEG__InvoiceNotProcessedEE">
+        <di:waypoint x="965" y="240" />
+        <di:waypoint x="1144" y="240" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="982" y="239" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="ja_186_gui" bpmnElement="YesSF__ReviewSuccessfulEG__ApproveInvoiceUT">
+        <di:waypoint x="945" y="220" />
+        <di:waypoint x="945" y="160" />
+        <di:waypoint x="630" y="160" />
+        <di:waypoint x="630" y="235" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="960" y="166" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sequenceFlow_183_gui" bpmnElement="sequenceFlow_183__ReviewInvoiceCA__ReviewSuccessfulEG">
+        <di:waypoint x="880" y="240" />
+        <di:waypoint x="925" y="240" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="625.5" y="77" width="90" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Nein_182_gui" bpmnElement="NoSF__InvoiceApprovedEG__ReviewInvoiceCA">
+        <di:waypoint x="740" y="380" />
+        <di:waypoint x="740" y="240" />
+        <di:waypoint x="780" y="240" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="718" y="354" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0j8c9vj_di" bpmnElement="Flow_0j8c9vj">
         <di:waypoint x="910" y="540" />
         <di:waypoint x="970" y="540" />
@@ -398,53 +445,6 @@ The form is the JSON of approve-invoice.form</bpmn:documentation>
         <di:waypoint x="680" y="400" />
         <di:waypoint x="720" y="400" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Nein_182_gui" bpmnElement="NoSF__InvoiceApprovedEG__ReviewInvoiceCA">
-        <di:waypoint x="740" y="380" />
-        <di:waypoint x="740" y="240" />
-        <di:waypoint x="780" y="240" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="718" y="354" width="13" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="sequenceFlow_183_gui" bpmnElement="sequenceFlow_183__ReviewInvoiceCA__ReviewSuccessfulEG">
-        <di:waypoint x="880" y="240" />
-        <di:waypoint x="925" y="240" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="625.5" y="77" width="90" height="0" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="ja_186_gui" bpmnElement="YesSF__ReviewSuccessfulEG__ApproveInvoiceUT">
-        <di:waypoint x="945" y="220" />
-        <di:waypoint x="945" y="160" />
-        <di:waypoint x="630" y="160" />
-        <di:waypoint x="630" y="235" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="960" y="166" width="18" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="nein_185_gui" bpmnElement="NoSF__ReviewSuccessfulEG__InvoiceNotProcessedEE">
-        <di:waypoint x="965" y="240" />
-        <di:waypoint x="1144" y="240" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="982" y="239" width="13" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0hreah5_di" bpmnElement="Flow_0hreah5">
-        <di:waypoint x="630" y="285" />
-        <di:waypoint x="630" y="360" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1ceab5s_di" bpmnElement="Flow_1ceab5s">
-        <di:waypoint x="760" y="400" />
-        <di:waypoint x="860" y="400" />
-        <di:waypoint x="860" y="500" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="801" y="382" width="18" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1ke0xbf_di" bpmnElement="Flow_1ke0xbf">
-        <di:waypoint x="1070" y="540" />
-        <di:waypoint x="1140" y="540" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_07t4d62_di" bpmnElement="InvoiceReceivedStartEvent">
         <dc:Bounds x="222" y="242" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -463,10 +463,6 @@ The form is the JSON of approve-invoice.form</bpmn:documentation>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0f0e7qn" bpmnElement="PrepareBankTransferTask" isHorizontal="true">
         <dc:Bounds x="810" y="500" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0m78vd6_di" bpmnElement="TextAnnotation_0m78vd6">
-        <dc:Bounds x="400" y="140" width="100" height="55" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Rechnung_kl_ren_148_gui" bpmnElement="ReviewInvoiceCA">
@@ -501,6 +497,10 @@ The form is the JSON of approve-invoice.form</bpmn:documentation>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_2" bpmnElement="ArchiveInvoiceST">
         <dc:Bounds x="970" y="500" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0m78vd6_di" bpmnElement="TextAnnotation_0m78vd6">
+        <dc:Bounds x="400" y="140" width="100" height="55" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Association_054oppq_di" bpmnElement="Association_054oppq">
         <di:waypoint x="388" y="220" />

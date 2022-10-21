@@ -1,21 +1,20 @@
-package camundala
-package examples.invoice.api
+package camundala.examples.invoice
 
-import api.*
-import bpmn.*
+import domain.*
+import camundala.domain.*
+import camundala.bpmn.*
 
-import examples.invoice.domain.*
-import sttp.tapir.json.circe.*
-
-
-object InvoiceApi extends BpmnDsl:
+object bpmn extends BpmnDsl:
 
   val InvoiceReceiptPIdent = "InvoiceReceiptP"
 
   lazy val `Invoice Receipt` =
     process(
       id = InvoiceReceiptPIdent,
-      descr = cawemoDescr("This starts the Invoice Receipt Process.", "e289c19a-8a57-4467-8583-de72a5e57488" ),
+      descr = cawemoDescr(
+        "This starts the Invoice Receipt Process.",
+        "e289c19a-8a57-4467-8583-de72a5e57488"
+      ),
       in = InvoiceReceipt(),
       out = InvoiceReceiptCheck() // just for testing
     )
@@ -37,7 +36,11 @@ object InvoiceApi extends BpmnDsl:
     decisionDefinitionKey = "invoice-assign-approver",
     in = SelectApproverGroup(),
     out = Seq(ApproverGroup.management),
-  ).withDescr(cawemoDescr("Decision Table on who must approve the Invoice.", "155ba236-d5d1-42f7-8b56-3e90e0bb98d4"))
+    descr = cawemoDescr(
+      "Decision Table on who must approve the Invoice.",
+      "155ba236-d5d1-42f7-8b56-3e90e0bb98d4"
+    )
+  )
 
   lazy val InvoiceAssignApproverDMN2 =
     InvoiceAssignApproverDMN
@@ -70,7 +73,8 @@ object InvoiceApi extends BpmnDsl:
     descr = "Archive the Invoice."
   )
 
-  lazy val `Review Invoice clarified`: CallActivity[InvoiceReceipt, InvoiceReviewed] =
+  lazy val `Review Invoice clarified`
+      : CallActivity[InvoiceReceipt, InvoiceReviewed] =
     callActivity(
       id = "ReviewInvoiceCA",
       `Review Invoice`.id,
@@ -79,20 +83,25 @@ object InvoiceApi extends BpmnDsl:
       out = InvoiceReviewed()
     )
 
-  lazy val `Review Invoice not clarified`: CallActivity[InvoiceReceipt, InvoiceReviewed] =
-      callActivity(
-        id = "ReviewInvoiceCA",
-        `Review Invoice`.id,
-        descr = "Calls the Review Invoice Process and does not clarify the Invoice.",
-        in = InvoiceReceipt(),
-        out = InvoiceReviewed(false)
-      )
+  lazy val `Review Invoice not clarified`
+      : CallActivity[InvoiceReceipt, InvoiceReviewed] =
+    callActivity(
+      id = "ReviewInvoiceCA",
+      `Review Invoice`.id,
+      descr =
+        "Calls the Review Invoice Process and does not clarify the Invoice.",
+      in = InvoiceReceipt(),
+      out = InvoiceReviewed(false)
+    )
 
   lazy val `Review Invoice`: Process[InvoiceReceipt, InvoiceReviewed] =
     val processId = "ReviewInvoiceP"
     process(
       id = processId,
-      descr = cawemoDescr("This starts the Review Invoice Process.", "cc9f978a-e98a-4b01-991d-36d682574cda"),
+      descr = cawemoDescr(
+        "This starts the Review Invoice Process.",
+        "cc9f978a-e98a-4b01-991d-36d682574cda"
+      ),
       in = InvoiceReceipt(),
       out = InvoiceReviewed()
     )
@@ -111,9 +120,11 @@ object InvoiceApi extends BpmnDsl:
 
   val InvoiceNotprocessedIdent = "InvoiceNotProcessedEE"
   lazy val InvoiceNotProcessedEE = endEvent(
-    InvoiceNotprocessedIdent,
+    InvoiceNotprocessedIdent
   )
   val InvoiceProcessedIdent = "InvoiceProcessedEE"
   lazy val InvoiceProcessedEE = endEvent(
-    InvoiceProcessedIdent,
+    InvoiceProcessedIdent
   )
+
+end bpmn
