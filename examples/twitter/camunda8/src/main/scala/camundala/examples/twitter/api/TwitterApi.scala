@@ -26,17 +26,6 @@ object TwitterApi extends BpmnDsl:
     out = ReviewedTweet(approved = false)
   )
 
-  val TweetHandledEEIdent = "end_event_tweet_published"
-  lazy val TweetHandledEE = endEvent(
-    TweetHandledEEIdent,
-    descr = "Process ended - Tweet was published."
-  )
-  val TweetRejectedEEIdent = "end_event_tweet_rejected"
-  lazy val TweetRejectedEE = endEvent(
-    TweetRejectedEEIdent,
-    descr = "Process ended - Tweet was rejected."
-  )
-
 @description("Every employee may create a Tweet.")
 case class Tweet(
                   tweet: String = "Hello Tweet",

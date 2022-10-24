@@ -68,32 +68,6 @@ object bpmn extends BpmnDsl:
     out = PrepareBankTransfer()
   )
 
-  lazy val ArchiveInvoiceST = serviceTask(
-    id = "ArchiveInvoiceST",
-    descr = "Archive the Invoice."
-  )
-
-  lazy val `Review Invoice clarified`
-      : CallActivity[InvoiceReceipt, InvoiceReviewed] =
-    callActivity(
-      id = "ReviewInvoiceCA",
-      `Review Invoice`.id,
-      descr = "Calls the Review Invoice Process and clarifies the Invoice.",
-      in = InvoiceReceipt(),
-      out = InvoiceReviewed()
-    )
-
-  lazy val `Review Invoice not clarified`
-      : CallActivity[InvoiceReceipt, InvoiceReviewed] =
-    callActivity(
-      id = "ReviewInvoiceCA",
-      `Review Invoice`.id,
-      descr =
-        "Calls the Review Invoice Process and does not clarify the Invoice.",
-      in = InvoiceReceipt(),
-      out = InvoiceReviewed(false)
-    )
-
   lazy val `Review Invoice`: Process[InvoiceReceipt, InvoiceReviewed] =
     val processId = "ReviewInvoiceP"
     process(
@@ -116,15 +90,6 @@ object bpmn extends BpmnDsl:
     descr = "Review Invoice and approve.",
     in = InvoiceReceipt(),
     out = InvoiceReviewed()
-  )
-
-  val InvoiceNotprocessedIdent = "InvoiceNotProcessedEE"
-  lazy val InvoiceNotProcessedEE = endEvent(
-    InvoiceNotprocessedIdent
-  )
-  val InvoiceProcessedIdent = "InvoiceProcessedEE"
-  lazy val InvoiceProcessedEE = endEvent(
-    InvoiceProcessedIdent
   )
 
 end bpmn

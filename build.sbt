@@ -26,7 +26,6 @@ lazy val root = project
     dmn,
     camunda,
     camunda8,
-    test,
     simulation,
     documentation,
     exampleTwitterC7,
@@ -117,16 +116,6 @@ lazy val dmn = project
   .settings(projectSettings("dmn"))
   .dependsOn(bpmn)
 
-lazy val test = project
-  .in(file("./test"))
-  .configure(preventPublication)
-  .settings(projectSettings("test"))
-  .settings(
-    libraryDependencies ++=
-      camundaTestDependencies
-  )
-  .dependsOn(bpmn, dmn)
-
 lazy val simulation = project
   .in(file("./simulation"))
   .configure(publicationSettings)
@@ -209,7 +198,7 @@ lazy val exampleInvoiceC7 = project
     Test / parallelExecution := false,
     libraryDependencies ++= camundaDependencies
   )
-  .dependsOn(dmn, camunda, test, simulation)
+  .dependsOn(dmn, camunda, simulation)
   .enablePlugins(GatlingPlugin)
 
 lazy val exampleInvoiceC8 = project
@@ -231,7 +220,7 @@ lazy val exampleTwitterC7 = project
     libraryDependencies ++= camundaDependencies :+
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
-  .dependsOn(api, test, simulation)
+  .dependsOn(api, simulation)
   .enablePlugins(GatlingPlugin)
 
 lazy val exampleTwitterC8 = project
@@ -250,9 +239,10 @@ lazy val exampleDemos = project
   .settings(projectSettings("example-demos"))
   .configure(preventPublication)
   .settings(
-    libraryDependencies ++= camundaDependencies
+    libraryDependencies ++= camundaDependencies ++
+      camundaTestDependencies
   )
-  .dependsOn(camunda, test, simulation)
+  .dependsOn(camunda, simulation)
   .enablePlugins(GatlingPlugin)
 
 val springBootVersion = "2.6.1"

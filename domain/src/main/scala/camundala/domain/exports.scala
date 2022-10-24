@@ -44,3 +44,12 @@ object FileRefInOut:
   given Encoder[FileRefInOut] = deriveEncoder
   given Decoder[FileRefInOut] = deriveDecoder
 
+
+// Use this in the DSL to avoid Option[?]
+// see https://stackoverflow.com/a/69925310/2750966
+case class Optable[Out](value: Option[Out])
+
+object Optable {
+  implicit def fromOpt[T](o: Option[T]): Optable[T] = Optable(o)
+  implicit def fromValue[T](v: T): Optable[T] = Optable(Some(v))
+}

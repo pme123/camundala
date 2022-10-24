@@ -130,4 +130,18 @@ resultList(
 ```
 
 ## User Tasks
+
+A _User Task_ describes its form values that it offers and the values it must be completed with.
+
+```scala
+userTask(
+    id = "ApproveInvoiceUT",
+    descr = "Approve the invoice (or not).",
+    in = InvoiceReceipt(),
+    out = ApproveInvoice()
+  )
+```
+
+### Receive Message Event
+### Receive Send Event
 .. TODO

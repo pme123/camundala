@@ -73,9 +73,6 @@ case class Process[
 
   lazy val processName = inOutDescr.id
 
-  def asCallActivity: CallActivity[In, Out] =
-    CallActivity(id, inOutDescr)
-
   def inOuts: Seq[InOut[?, ?, ?]] = elements.collect {
     case io: InOut[?, ?, ?] => io
   }
@@ -108,65 +105,6 @@ object UserTask:
     UserTask(
       InOutDescr(id, NoInput(), NoOutput())
     )
-
-case class CallActivity[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema
-](
-    subProcessId: String,
-    inOutDescr: InOutDescr[In, Out]
-) extends ProcessNode,
-      Activity[In, Out, CallActivity[In, Out]]:
-
-  def withInOutDescr(descr: InOutDescr[In, Out]): CallActivity[In, Out] =
-    copy(inOutDescr = descr)
-
-  def asProcess: Process[In, Out] =
-    Process(inOutDescr.copy(id = subProcessId))
-
-object CallActivity:
-  def apply[
-      In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema
-  ](process: Process[In, Out]): CallActivity[In, Out] =
-    CallActivity(process.id, process.inOutDescr)
-
-  def init(id: String): CallActivity[NoInput, NoOutput] =
-    CallActivity(
-      id,
-      InOutDescr(id, NoInput(), NoOutput())
-    )
-
-case class ServiceTask[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema
-](
-    inOutDescr: InOutDescr[In, Out]
-) extends ProcessNode,
-      Activity[In, Out, ServiceTask[In, Out]]:
-
-  def withInOutDescr(descr: InOutDescr[In, Out]): ServiceTask[In, Out] =
-    copy(inOutDescr = descr)
-
-object ServiceTask:
-
-  def init(id: String): ServiceTask[NoInput, NoOutput] =
-    ServiceTask(
-      InOutDescr(id, NoInput(), NoOutput())
-    )
-
-case class EndEvent(
-    id: String,
-    descr: Option[String] = None
-) extends ProcessNode:
-
-  def withDescr(descr: String): EndEvent =
-    copy(descr = Some(descr))
-
-object EndEvent:
-
-  def init(id: String): EndEvent =
-    EndEvent(id)
 
 case class ReceiveMessageEvent[
     In <: Product: Encoder: Decoder: Schema

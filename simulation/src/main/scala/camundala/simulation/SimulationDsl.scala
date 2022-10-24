@@ -87,11 +87,6 @@ trait SimulationDsl extends GatlingSimulation, TestOverrideExtensions, BpmnDsl:
   ): SSubProcess =
     SSubProcess(nameOfVariable(process), process, body.toList)
 
-  inline def subProcess(inline ca: CallActivity[_, _])(
-      body: SStep*
-  ): SSubProcess =
-    SSubProcess(nameOfVariable(ca), ca.asProcess, body.toList)
-
   implicit inline def toScenario(
       inline process: Process[_, _]
   ): ProcessScenario =

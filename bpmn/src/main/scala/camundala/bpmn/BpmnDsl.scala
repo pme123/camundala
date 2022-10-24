@@ -18,34 +18,6 @@ trait BpmnDsl:
       InOutDescr(id, in, out, descr.value)
     )
 
-  def userTask[
-      In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema
-  ](
-      id: String,
-      in: In = NoInput(),
-      out: Out = NoOutput(),
-      descr: Optable[String] = None
-  ): UserTask[In, Out] =
-    UserTask(
-      InOutDescr(id, in, out, descr.value)
-    )
-
-  def callActivity[
-      In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema
-  ](
-      id: String,
-      subProcessId: String,
-      in: In = NoInput(),
-      out: Out = NoOutput(),
-      descr: Optable[String] = None
-  ): CallActivity[In, Out] =
-    CallActivity(
-      subProcessId,
-      InOutDescr(id, in, out, descr.value)
-    )
-
   // Use result strategy, like _singleEntry_, _collectEntries_, _singleResult_, _resultList_
   private def dmn[
       In <: Product: Encoder: Decoder: Schema,
@@ -126,23 +98,18 @@ trait BpmnDsl:
     )*/
     dmn(decisionDefinitionKey, in, ResultList(out), descr.value)
 
-  def serviceTask[
-      In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema
+  def userTask[
+    In <: Product : Encoder : Decoder : Schema,
+    Out <: Product : Encoder : Decoder : Schema
   ](
-      id: String,
-      in: In = NoInput(),
-      out: Out = NoOutput(),
-      descr: Optable[String] = None
-  ): ServiceTask[In, Out] =
-    ServiceTask(
+     id: String,
+     in: In = NoInput(),
+     out: Out = NoOutput(),
+     descr: Optable[String] = None
+   ): UserTask[In, Out] =
+    UserTask(
       InOutDescr(id, in, out, descr.value)
     )
-  def endEvent(
-      id: String,
-      descr: Optable[String] = None
-  ): EndEvent =
-    EndEvent(id, descr.value)
 
   def receiveMessageEvent[
       Msg <: Product: Encoder: Decoder: Schema
@@ -174,11 +141,3 @@ trait BpmnDsl:
     val msgNameDescr = s"- _messageName_: `$messageName`"
     Some(descr.value.map(_ + s"\n$msgNameDescr").getOrElse(msgNameDescr))
 
-// Use this in the DSL to avoid Option[?]
-// see https://stackoverflow.com/a/69925310/2750966
-case class Optable[Out](value: Option[Out])
-
-object Optable {
-  implicit def fromOpt[T](o: Option[T]): Optable[T] = Optable(o)
-  implicit def fromValue[T](v: T): Optable[T] = Optable(Some(v))
-}

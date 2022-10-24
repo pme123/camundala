@@ -44,12 +44,6 @@ object TwitterApi extends BpmnDsl:
     out = ReviewedTweet(false)
   )
 
-  val TweetHandledEEIdent ="TweetHandledEE"
-  lazy val TweetHandledEE = endEvent(
-    TweetHandledEEIdent,
-    descr = None
-  )
-
   given Schema[CreateTweet] = Schema.derived
   given Encoder[CreateTweet] = deriveEncoder
   given Decoder[CreateTweet] = deriveDecoder

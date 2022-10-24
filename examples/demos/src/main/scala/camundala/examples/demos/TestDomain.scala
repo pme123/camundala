@@ -1,7 +1,6 @@
 package camundala.examples.demos
 
 import camundala.bpmn.*
-import camundala.camunda.GenerateCamundaBpmn
 
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
@@ -28,20 +27,6 @@ object TestDomain extends BpmnDsl:
       listResult: Seq[String] = List("a", "b"),
   )
 
-  // call Activity In
-  case class CallProcessIn(
-      putTag: String = "voila",
-      success: ValueWrapper = ValueWrapper(),
-      someOption: Option[String] = Some("optionValue"),
-      someList: Seq[String] = List("listValue")
-  )
-  case class CallProcessOut(
-      result: String = "What a CallActivity!",
-      success: ValueWrapper = ValueWrapper(),
-      someOption: Option[String] = Some("optionValue"),
-      someList: List[String] = List("optionValue"),
-  )
-
   // generate-test.bpmn
   val CamundalaGenerateTestPIdent = "camundala-generate-test"
   lazy val CamundalaGenerateTestP = process(
@@ -49,15 +34,5 @@ object TestDomain extends BpmnDsl:
     in = ProcessIn(),
     out = ProcessOut()
   )
-
-  val CallProcessCAIdent = "CallProcessCA"
-  lazy val CallProcessCA: CallActivity[CallProcessIn, CallProcessOut] =
-    callActivity(
-      CallProcessCAIdent,
-      "camundala-generate-subtest",
-      in = CallProcessIn(),
-      out = CallProcessOut(),
-      descr = None
-    )
 
 end TestDomain
