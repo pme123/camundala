@@ -62,6 +62,15 @@
         <p class="header"><a href="#">BPMN DSL</a></p>
         
         <ul class="nav-list">
+          <li class="level1"><a href="#process">Process</a></li>
+          <li class="level1"><a href="#business-rule-tasks-decision-dmns">Business Rule Tasks (Decision DMNs)</a></li>
+          <li class="level2"><a href="#singleentry">singleEntry</a></li>
+          <li class="level2"><a href="#singleresult">singleResult</a></li>
+          <li class="level2"><a href="#collectentries">collectEntries</a></li>
+          <li class="level2"><a href="#resultlist">resultList</a></li>
+          <li class="level1"><a href="#user-tasks">User Tasks</a></li>
+          <li class="level2"><a href="#receive-message-event">Receive Message Event</a></li>
+          <li class="level2"><a href="#receive-send-event">Receive Send Event</a></li>
         </ul>
         
         <p class="footer"></p>
@@ -70,6 +79,113 @@
       <main class="content">
 
         <h1 id="bpmn-dsl" class="title">BPMN DSL</h1>
+        <p>This <em>DSL</em> will bring your domain into your <em>BPMN-Process</em>.</p>
+        <p>Its elements are more or less constructors with the same structure:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">BPMN_ELEMENT</span><span>(
+  </span><span class="identifier">id</span><span>: </span><span class="type-name">String</span><span>,
+  </span><span class="identifier">in</span><span>: </span><span class="type-name">Input</span><span>,
+  </span><span class="identifier">out</span><span>: </span><span class="type-name">Output</span><span>,
+  </span><span class="identifier">descr</span><span>: </span><span class="type-name">Optable</span><span>[</span><span class="type-name">String</span><span>]
+)</span></code></pre>
+        <p>So each BPMN Element has:</p>
+        <ul>
+          <li><em>id</em>: a unique identifier, depending on the element it must be unique within its process, or within a Camunda Instance (<em>process, dmn</em>).</li>
+          <li><em>in</em>: an input object that we descibed in the <a href="specification.html"><em>Domain Specification</em></a>.</li>
+          <li><em>out</em>: an output object that we descibed in the <a href="specification.html"><em>Domain Specification</em></a>.</li>
+          <li><em>descr</em>: an optional description of this element.</li>
+        </ul>
+        <p>Here is an example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">process</span><span>(
+  </span><span class="identifier">id</span><span> = </span><span class="type-name">InvoiceReceiptPIdent</span><span>,
+  </span><span class="identifier">descr</span><span> = </span><span class="string-literal">&quot;This starts the Invoice Receipt Process.&quot;</span><span>,
+  </span><span class="identifier">in</span><span> = </span><span class="type-name">InvoiceReceipt</span><span>(),
+  </span><span class="identifier">out</span><span> = </span><span class="type-name">InvoiceReceiptCheck</span><span>() </span><span class="comment">// just for testing
+</span><span>)</span></code></pre>
+        <p>The element is a <em>process</em> with its inputs and outputs. As we also want to test its execution, 
+        we defined also an output, also the process does not have one.</p>
+        <div class="callout info">
+          <i class="icofont-laika">&#xef4e;</i>
+          <p>If your element has no Input and/or Output, just leave it empty, as this is the default case.</p>
+          <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">process</span><span>(
+  </span><span class="identifier">id</span><span> = </span><span class="type-name">MyDoItItselfProcess</span><span>
+)</span></code></pre>
+        </div>
+        <p>We only support elements you can interact with. The next subchapters describe them with an example.</p>
+        
+        <h2 id="process" class="section"><a class="anchor-link left" href="#process"><i class="icofont-laika">&#xef71;</i></a>Process</h2>
+        <p>We already showed a process example above. Here the sub process <em>Review Invoice</em>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">process</span><span>(
+  </span><span class="identifier">id</span><span> = </span><span class="string-literal">&quot;ReviewInvoiceP&quot;</span><span>,
+  </span><span class="identifier">descr</span><span> = </span><span class="string-literal">&quot;This starts the Review Invoice Process.&quot;</span><span>,
+  </span><span class="identifier">in</span><span> = </span><span class="type-name">InvoiceReceipt</span><span>(),
+  </span><span class="identifier">out</span><span> = </span><span class="type-name">InvoiceReviewed</span><span>()
+)</span></code></pre>
+        
+        <h2 id="business-rule-tasks-decision-dmns" class="section"><a class="anchor-link left" href="#business-rule-tasks-decision-dmns"><i class="icofont-laika">&#xef71;</i></a>Business Rule Tasks (Decision DMNs)</h2>
+        <p>We support only Decision DMNs.
+        The input is always a domain object (each field must be a simple value that matches a column of the dmn).
+        As <strong>simple values</strong> we support:</p>
+        <ul>
+          <li><em>String</em></li>
+          <li><em>Boolean</em></li>
+          <li><em>Int</em></li>
+          <li><em>Long</em></li>
+          <li><em>Double</em></li>
+          <li><em>java.util.Date</em></li>
+          <li><em>java.time.LocalDateTime</em></li>
+          <li><em>java.time.ZonedDateTime</em></li>
+          <li><em>scala.reflect.Enum</em></li>
+        </ul>
+        <p>A <strong>domain object</strong> is a case class as described in the <a href="specification.html">Specification</a>, 
+        with the exception, that each field must be a <em>simple value</em> that matches a column of the dmn.</p>
+        <p>Inputs are always <em>domain objects</em>.</p>
+        <p>In the DSL we have an element for each of the four different return types - so you don&#39;t mix up the types 😊.</p>
+        
+        <h3 id="singleentry" class="section"><a class="anchor-link left" href="#singleentry"><i class="icofont-laika">&#xef71;</i></a>singleEntry</h3>
+        <p>This is a single result with one <em>simple value</em>. </p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">singleEntry</span><span>(
+    </span><span class="identifier">decisionDefinitionKey</span><span> = </span><span class="string-literal">&quot;singleEntry&quot;</span><span>,
+    </span><span class="identifier">in</span><span> = </span><span class="type-name">Input</span><span>(</span><span class="string-literal">&quot;A&quot;</span><span>),
+    </span><span class="identifier">out</span><span> = </span><span class="number-literal">1</span><span>
+  )</span></code></pre>
+        
+        <h3 id="singleresult" class="section"><a class="anchor-link left" href="#singleresult"><i class="icofont-laika">&#xef71;</i></a>singleResult</h3>
+        <p>This is a single result with more than one value (<em>domain object</em>).</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">singleResult</span><span>(
+    </span><span class="identifier">decisionDefinitionKey</span><span> = </span><span class="string-literal">&quot;singleResult&quot;</span><span>,
+    </span><span class="identifier">in</span><span> = </span><span class="type-name">Input</span><span>(</span><span class="string-literal">&quot;A&quot;</span><span>),
+    </span><span class="identifier">out</span><span> = </span><span class="type-name">ManyOutResult</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="string-literal">&quot;🤩&quot;</span><span>)
+)</span></code></pre>
+        
+        <h3 id="collectentries" class="section"><a class="anchor-link left" href="#collectentries"><i class="icofont-laika">&#xef71;</i></a>collectEntries</h3>
+        <p>This is a list of <em>simple values</em>.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">collectEntries</span><span>(
+    </span><span class="identifier">decisionDefinitionKey</span><span> = </span><span class="string-literal">&quot;collectEntries&quot;</span><span>,
+    </span><span class="identifier">in</span><span> = </span><span class="type-name">Input</span><span>(</span><span class="string-literal">&quot;A&quot;</span><span>),
+    </span><span class="identifier">out</span><span> = </span><span class="type-name">Seq</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>)
+  )</span></code></pre>
+        
+        <h3 id="resultlist" class="section"><a class="anchor-link left" href="#resultlist"><i class="icofont-laika">&#xef71;</i></a>resultList</h3>
+        <p>This is a list of <em>domain objects</em>.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">resultList</span><span>(
+    </span><span class="identifier">decisionDefinitionKey</span><span> = </span><span class="string-literal">&quot;resultList&quot;</span><span>,
+    </span><span class="identifier">in</span><span> = </span><span class="type-name">Input</span><span>(</span><span class="string-literal">&quot;A&quot;</span><span>),
+    </span><span class="identifier">out</span><span> = </span><span class="type-name">List</span><span>(</span><span class="type-name">ManyOutResult</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="string-literal">&quot;🤩&quot;</span><span>), </span><span class="type-name">ManyOutResult</span><span>(</span><span class="number-literal">2</span><span>, </span><span class="string-literal">&quot;😂&quot;</span><span>))
+  )</span></code></pre>
+        
+        <h2 id="user-tasks" class="section"><a class="anchor-link left" href="#user-tasks"><i class="icofont-laika">&#xef71;</i></a>User Tasks</h2>
+        <p>A <em>User Task</em> describes its form values that it offers and the values it must be completed with.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">userTask</span><span>(
+    </span><span class="identifier">id</span><span> = </span><span class="string-literal">&quot;ApproveInvoiceUT&quot;</span><span>,
+    </span><span class="identifier">descr</span><span> = </span><span class="string-literal">&quot;Approve the invoice (or not).&quot;</span><span>,
+    </span><span class="identifier">in</span><span> = </span><span class="type-name">InvoiceReceipt</span><span>(),
+    </span><span class="identifier">out</span><span> = </span><span class="type-name">ApproveInvoice</span><span>()
+  )</span></code></pre>
+        
+        <h3 id="receive-message-event" class="section"><a class="anchor-link left" href="#receive-message-event"><i class="icofont-laika">&#xef71;</i></a>Receive Message Event</h3>
+        
+        <h3 id="receive-send-event" class="section"><a class="anchor-link left" href="#receive-send-event"><i class="icofont-laika">&#xef71;</i></a>Receive Send Event</h3>
+        <p>.. TODO</p>
 
       </main>
 

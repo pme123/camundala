@@ -63,6 +63,9 @@
         
         <ul class="nav-list">
           <li class="level1"><a href="#process">Process</a></li>
+          <li class="level1"><a href="#domain">Domain</a></li>
+          <li class="level2"><a href="#_1-documentation">1. Documentation</a></li>
+          <li class="level2"><a href="#_2-json-marshalling">2. JSON marshalling</a></li>
         </ul>
         
         <p class="footer"></p>
@@ -78,6 +81,107 @@
         You can use <a href="https://camunda.com">Camunda</a>&#39;s tools to create them, see <a href="https://camunda.com/de/platform/modeler/">Camunda Modeler</a>.</p>
         <p>To get started we will take the Invoice Example. 
         You find a version for a version for <em>Camunda 7</em> and one for <em>Camunda 8</em> on Github - see <a href="https://github.com/pme123/camundala/tree/master/examples/invoice">Invoice Example</a></p>
+        <p><a href="https://github.com/pme123/camundala/blob/master/examples/invoice/camunda7/src/main/resources/invoice.v2.bpmn">Camunda 7 BPMN</a>
+        <img src="images/invoiceProcess.png" alt=""></p>
+        <p>Nothing interesting here, just a standard Camunda/ BPMN Model. 
+        Let&#39;s define the Domain for this process.</p>
+        
+        <h2 id="domain" class="section"><a class="anchor-link left" href="#domain"><i class="icofont-laika">&#xef71;</i></a>Domain</h2>
+        <p>Whenever we interact with the <em>Process</em>, der are <em>Business Objects</em> involved.
+        But also a Service that we integrate defines its <em>Domain</em>.</p>
+        <p>So implementing a Process is more or less working with Domain Objects, 
+        mostly mapping them to similar Domain Object, defined by Services.</p>
+        <p>To describe the <em>Domain Model</em>, we use basic <em>Scala</em> constructs, like <em>Case Classes</em> and <em>Enumerations</em>.</p>
+        <p>The following <em>BPMN Inputs / -Outputs</em> do we describe:</p>
+        <ul>
+          <li>Process</li>
+          <li>UserTask</li>
+          <li>ReceiveSignal / ReceiveMessage (no Outputs)</li>
+          <li>DMN</li>
+        </ul>
+        <p>Here is the <em>UserTask</em> &#39;Approve Invoice&#39; from our <em>Invoice Process</em>.</p>
+        <ul>
+          <li>
+            Import:
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">domain</span><span>.*</span></code></pre>
+          </li>
+          <li>
+            Input:
+            <pre><code class="nohighlight"><span class="annotation">@description</span><span>(</span><span class="string-literal">&quot;Received Invoice that need approval.&quot;</span><span>)
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InvoiceReceipt</span><span>(
+  </span><span class="identifier">creditor</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Great Pizza for Everyone Inc.&quot;</span><span>,
+  </span><span class="identifier">amount</span><span>: </span><span class="type-name">Double</span><span> = </span><span class="number-literal">300.0</span><span>,
+  </span><span class="identifier">invoiceCategory</span><span>: </span><span class="type-name">InvoiceCategory</span><span> = </span><span class="type-name">InvoiceCategory</span><span>.</span><span class="identifier">`Travel Expenses`</span><span>,
+  </span><span class="identifier">invoiceNumber</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;I-12345&quot;</span><span>,
+  </span><span class="identifier">invoiceDocument</span><span>: </span><span class="type-name">FileRefInOut</span><span> = </span><span class="type-name">FileRefInOut</span><span>(
+    </span><span class="string-literal">&quot;invoice.pdf&quot;</span><span>,
+    </span><span class="string-literal">&quot;processes/invoice.pdf&quot;</span><span>,
+    </span><span class="type-name">Some</span><span>(</span><span class="string-literal">&quot;application/pdf&quot;</span><span>)
+  )
+)
+
+</span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">Adt</span><span>.</span><span class="type-name">PureEncoder</span><span>, </span><span class="type-name">Adt</span><span>.</span><span class="type-name">PureDecoder</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="identifier">`Travel Expenses`</span><span>, </span><span class="type-name">Misc</span><span>, </span><span class="identifier">`Software License Costs`</span></code></pre>
+          </li>
+          <li>
+            Output:
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span class="annotation">@description</span><span>(</span><span class="string-literal">&quot;&quot;&quot;Every Invoice has to be accepted by the Boss.&quot;&quot;&quot;</span><span>)
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">ApproveInvoice</span><span>(
+   </span><span class="annotation">@description</span><span>(</span><span class="string-literal">&quot;If true, the Boss accepted the Invoice&quot;</span><span>)
+   </span><span class="identifier">approved</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">true</span><span>
+)</span></code></pre>
+          </li>
+        </ul>
+        <p>You see here the following elements:</p>
+        <ul>
+          <li><code>@description(&quot;my descr&quot;)</code> Description of a class or a field &gt; used then in the API Documentation.</li>
+          <li>
+            <p><code>creditor: String = &quot;Great Pizza for Everyone Inc.&quot;</code> Define each field with a name, a type and an example.
+            You can use:</p>
+            <ul>
+              <li>simple types, like <em>String</em>, <em>Boolean</em> etc.</li>
+              <li>enumerations - like <code>InvoiceCategory</code></li>
+              <li>objects - just other <em>Case Classes</em></li>
+            </ul>
+          </li>
+          <li><code>invoiceDocument: FileRefInOut</code> in <em>Camunda 8</em> only JSONs are allowed - so you need a File representation.</li>
+          <li><code>enum InvoiceCategory..</code> this is how you define an enumeration. <code>..derives Adt.PureEncoder, Adt.PureDecoder..</code> is for JSON marshalling.</li>
+          <li><code>`Travel Expenses`,</code> if you have names with spaces you need to use Back-Ticks.</li>
+        </ul>
+        <p>Checkout the whole Domain Description on <a href="https://github.com/pme123/camundala/blob/develop/examples/invoice/camunda8/src/main/scala/camundala/examples/invoice/domain.scala"><strong>Github</strong></a>.</p>
+        <p>There are 2 things you have to care for that is not purely your domain.</p>
+        
+        <h3 id="_1-documentation" class="section"><a class="anchor-link left" href="#_1-documentation"><i class="icofont-laika">&#xef71;</i></a>1. Documentation</h3>
+        <p>The closer the documentation is to your code, that you work with, the higher is the chance that you will spot mistakes.
+        So we use <code>@description(&quot;my descr&quot;)</code> from <em><a href="https://tapir.softwaremill.com/en/latest/index.html">Tapir</a></em>. 
+        These descriptions will then automatically taken into account when the API documentation is generated.</p>
+        
+        <h3 id="_2-json-marshalling" class="section"><a class="anchor-link left" href="#_2-json-marshalling"><i class="icofont-laika">&#xef71;</i></a>2. JSON marshalling</h3>
+        <div class="callout info">
+          <i class="icofont-laika">&#xef4e;</i>
+          <p>We need this to get to and from JSON.
+          There is an automatic way, but it turned out that it made compiling slow.</p>
+          <p>Sorry for this technical noise 😥.</p>
+        </div>
+        <ul>
+          <li>
+            <p>Case Classes:</p>
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">given</span><span> </span><span class="type-name">Schema</span><span>[</span><span class="type-name">InvoiceReceipt</span><span>] = </span><span class="type-name">Schema</span><span>.</span><span class="identifier">derived</span><span>
+</span><span class="identifier">given</span><span> </span><span class="type-name">Encoder</span><span>[</span><span class="type-name">InvoiceReceipt</span><span>] = </span><span class="identifier">deriveEncoder</span><span>
+</span><span class="identifier">given</span><span> </span><span class="type-name">Decoder</span><span>[</span><span class="type-name">InvoiceReceipt</span><span>] = </span><span class="identifier">deriveDecoder</span></code></pre>
+          </li>
+          <li>
+            <p>Enumeration:</p>
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// ..derives Adt.PureEncoder, Adt.PureDecoder is needed for JSON marshalling
+</span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">Adt</span><span>.</span><span class="type-name">PureEncoder</span><span>, </span><span class="type-name">Adt</span><span>.</span><span class="type-name">PureDecoder</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="identifier">`Travel Expenses`</span><span>, </span><span class="type-name">Misc</span><span>, </span><span class="identifier">`Software License Costs`</span><span>
+
+</span><span class="identifier">given</span><span> </span><span class="type-name">Schema</span><span>[</span><span class="type-name">InvoiceCategory</span><span>] = </span><span class="type-name">Schema</span><span>.</span><span class="identifier">derived</span></code></pre>
+            
+            <h2 id="example"><a class="anchor-link left" href="#example"><i class="icofont-laika">&#xef71;</i></a>Example</h2>
+          </li>
+        </ul>
+        <p>Here you find the Domain Specification of the Invoice example: <a href="https://github.com/pme123/camundala/blob/master/examples/invoice/camunda8/src/main/scala/camundala/examples/invoice/domain.scala">Invoice domain</a></p>
 
       </main>
 
