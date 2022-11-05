@@ -46,20 +46,24 @@ case class DecisionDmn[
 
 end DecisionDmn
 
-// String | Boolean | Int | Long | Double | Date |
-//  LocalDateTime | ZonedDateTime | scala.reflect.Enum
-implicit def DmnValueTypeEncoder[T <: DmnValueType]: Encoder[T] =
-  new Encoder[T] {
-    final def apply(dv: T): Json = valueToJson(dv)
+object DmnValueType {
+  // String | Boolean | Int | Long | Double | Date |
+  //  LocalDateTime | ZonedDateTime | scala.reflect.Enum
+  implicit def DmnValueTypeEncoder[T <: DmnValueType]: Encoder[T] =
+    new Encoder[T] {
+      final def apply(dv: T): Json = valueToJson(dv)
+    }
+
+  implicit def DmnValueTypeDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
+      : Decoder[T] = new Decoder[T] {
+    final def apply(c: HCursor): Decoder.Result[T] =
+      for result <- c.as[T]
+      yield result
+
   }
-
-implicit def DmnValueTypeDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
-    : Decoder[T] = new Decoder[T] {
-  final def apply(c: HCursor): Decoder.Result[T] =
-    for result <- c.as[T]
-    yield result
-
 }
+
+
 
 @description("SingleEntry: Output of a DMN Table. This returns one `DmnValueType`.")
 case class SingleEntry[Out <: DmnValueType](
