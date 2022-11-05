@@ -19,8 +19,10 @@ object Dmns:
 
 case class Dmn(path: Path, decisions: DecisionDmn[?, ?]*)
 
-type DmnValueType = String | Boolean | Int | Long | Double | Date |
-  LocalDateTime | ZonedDateTime | scala.reflect.Enum
+type DmnValueSimple = String | Boolean | Int | Long | Double | Date |
+  LocalDateTime | ZonedDateTime
+
+type DmnValueType = DmnValueSimple | scala.reflect.Enum
 
 enum DecisionResultType:
   case singleEntry // TypedValue
@@ -46,33 +48,33 @@ case class DecisionDmn[
 
 end DecisionDmn
 
-object DmnValueType {
-  // String | Boolean | Int | Long | Double | Date |
-  //  LocalDateTime | ZonedDateTime | scala.reflect.Enum
-  implicit def DmnValueTypeEncoder[T <: DmnValueType]: Encoder[T] =
-    new Encoder[T] {
-      final def apply(dv: T): Json = valueToJson(dv)
-    }
-
-  implicit def DmnValueTypeDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
-      : Decoder[T] = new Decoder[T] {
-    final def apply(c: HCursor): Decoder.Result[T] =
-      for result <- c.as[T]
-      yield result
-
+// String | Boolean | Int | Long | Double | Date |
+//  LocalDateTime | ZonedDateTime | scala.reflect.Enum
+implicit def DmnValueTypeEncoder[T <: DmnValueSimple]: Encoder[T] =
+  new Encoder[T] {
+    final def apply(dv: T): Json = valueToJson(dv)
   }
+
+implicit def DmnValueTypeDecoder[T <: DmnValueSimple]
+    : Decoder[T] = new Decoder[T] {
+  final def apply(c: HCursor): Decoder.Result[T] =
+    for result <- c.as[T]
+    yield result
+
 }
 
-
-
-@description("SingleEntry: Output of a DMN Table. This returns one `DmnValueType`.")
+@description(
+  "SingleEntry: Output of a DMN Table. This returns one `DmnValueType`."
+)
 case class SingleEntry[Out <: DmnValueType](
     result: Out
 ):
   lazy val toCamunda: CamundaVariable = CamundaVariable.valueToCamunda(result)
   val decisionResultType: DecisionResultType = DecisionResultType.singleEntry
 
-@description("CollectEntry: Output of a DMN Table. This returns a Sequence of `DmnValueType`s.")
+@description(
+  "CollectEntry: Output of a DMN Table. This returns a Sequence of `DmnValueType`s."
+)
 case class CollectEntries[Out <: DmnValueType](
     result: Seq[Out]
 ):
@@ -87,14 +89,18 @@ object CollectEntries:
   ): CollectEntries[Out] =
     new CollectEntries[Out](result +: results)
 
-@description("SingleResult: Output of a DMN Table. This returns one `Product` (case class) with more than one fields of `DmnValueType`s.")
+@description(
+  "SingleResult: Output of a DMN Table. This returns one `Product` (case class) with more than one fields of `DmnValueType`s."
+)
 case class SingleResult[Out <: Product: Encoder: Decoder: Schema](result: Out):
 
   lazy val toCamunda: Map[String, CamundaVariable] =
     CamundaVariable.toCamunda(result)
   val decisionResultType: DecisionResultType = DecisionResultType.singleResult
 
-@description("ResultList: Output of a DMN Table. This returns a Sequence of `Product`s (case classes) with more than one fields of `DmnValueType`s")
+@description(
+  "ResultList: Output of a DMN Table. This returns a Sequence of `Product`s (case classes) with more than one fields of `DmnValueType`s"
+)
 case class ResultList[Out <: Product: Encoder: Decoder: Schema](
     result: Seq[Out]
 ):
@@ -196,7 +202,7 @@ implicit def schemaForResultList[A <: Product: Encoder: Decoder](implicit
 
 implicit def ResultListEncoder[T <: Product: Encoder: Decoder: Schema]
     : Encoder[ResultList[T]] = new Encoder[ResultList[T]] {
-  final def apply(sr: ResultList[T]): Json =  sr.result.asJson
+  final def apply(sr: ResultList[T]): Json = sr.result.asJson
 }
 implicit def ResultListDecoder[T <: Product: Encoder: Decoder: Schema]
     : Decoder[ResultList[T]] = new Decoder[ResultList[T]] {

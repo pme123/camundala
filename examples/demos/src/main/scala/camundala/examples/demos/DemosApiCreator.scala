@@ -3,8 +3,6 @@ package camundala.examples.demos
 import camundala.api.*
 import camundala.bpmn.*
 import DecisionResultTypes.*
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
 
 object DemosApiCreator extends DefaultApiCreator:
 

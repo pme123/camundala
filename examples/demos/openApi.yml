@@ -5,7 +5,7 @@ info:
   description: |2+
 
 
-    Created at 15/08/2022, 08:48
+    Created at 05/11/2022, 13:34
 
     ****
 
@@ -44,9 +44,25 @@ paths:
     head:
       tags:
       - singleEntryDMN
-      summary: 'DecisionDmn: singleEntryDMN'
-      description: ''
-      operationId: 'DecisionDmn: singleEntryDMN'
+      summary: 'DecisionDmn: singleEntry'
+      description: |2
+
+
+
+        <details>
+        <summary><b>Used in 1 Project(s) (EXPERIMENTAL)</b></summary>
+        <p>
+
+
+        - _dmn-scala_
+           - [process](No URL defined for dmn-scala/OpenApi.html#operation/Process:%20process)
+
+
+
+
+        </p>
+        </details>
+      operationId: 'DecisionDmn: singleEntry'
       requestBody:
         content:
           application/json:
@@ -72,9 +88,31 @@ paths:
     head:
       tags:
       - collectEntriesDMN
-      summary: 'DecisionDmn: collectEntriesDMN'
-      description: ''
-      operationId: 'DecisionDmn: collectEntriesDMN'
+      summary: 'DecisionDmn: collectEntries'
+      description: |2
+
+
+
+        <details>
+        <summary><b>Used in 2 Project(s) (EXPERIMENTAL)</b></summary>
+        <p>
+
+
+        - _camundala_
+           - [InvoiceReceiptP](No URL defined for camundala/OpenApi.html#operation/Process:%20InvoiceReceiptP)
+           - [invoice](No URL defined for camundala/OpenApi.html#operation/Process:%20invoice)
+
+
+        - _camundala-dsl_
+           - [InvoiceReceiptP](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20InvoiceReceiptP)
+           - [invoice](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20invoice)
+
+
+
+
+        </p>
+        </details>
+      operationId: 'DecisionDmn: collectEntries'
       requestBody:
         content:
           application/json:
@@ -102,9 +140,13 @@ paths:
     head:
       tags:
       - singleResultDMN
-      summary: 'DecisionDmn: singleResultDMN'
-      description: ''
-      operationId: 'DecisionDmn: singleResultDMN'
+      summary: 'DecisionDmn: singleResult'
+      description: |2
+
+
+
+        **Used in no other Process.**
+      operationId: 'DecisionDmn: singleResult'
       requestBody:
         content:
           application/json:
@@ -131,9 +173,13 @@ paths:
     head:
       tags:
       - resultListDMN
-      summary: 'DecisionDmn: resultListDMN'
-      description: ''
-      operationId: 'DecisionDmn: resultListDMN'
+      summary: 'DecisionDmn: resultList'
+      description: |2
+
+
+
+        **Used in no other Process.**
+      operationId: 'DecisionDmn: resultList'
       requestBody:
         content:
           application/json:
@@ -162,7 +208,7 @@ paths:
     head:
       tags:
       - demoProcess
-      summary: 'Process: demoProcess'
+      summary: 'Process: just-for-demo'
       description: |2
 
 
@@ -170,7 +216,7 @@ paths:
         **Used in no other Process.**
 
         **Uses no other Processes.**
-      operationId: 'Process: demoProcess'
+      operationId: 'Process: just-for-demo'
       responses:
         '200':
           description: ''
@@ -178,9 +224,25 @@ paths:
     head:
       tags:
       - demoProcess
-      summary: 'DecisionDmn: singleEntryDMN'
-      description: ''
-      operationId: 'DecisionDmn: singleEntryDMN'
+      summary: 'DecisionDmn: singleEntry'
+      description: |2
+
+
+
+        <details>
+        <summary><b>Used in 1 Project(s) (EXPERIMENTAL)</b></summary>
+        <p>
+
+
+        - _dmn-scala_
+           - [process](No URL defined for dmn-scala/OpenApi.html#operation/Process:%20process)
+
+
+
+
+        </p>
+        </details>
+      operationId: 'DecisionDmn: singleEntry'
       requestBody:
         content:
           application/json:
@@ -206,9 +268,31 @@ paths:
     head:
       tags:
       - demoProcess
-      summary: 'DecisionDmn: collectEntriesDMN'
-      description: ''
-      operationId: 'DecisionDmn: collectEntriesDMN'
+      summary: 'DecisionDmn: collectEntries'
+      description: |2
+
+
+
+        <details>
+        <summary><b>Used in 2 Project(s) (EXPERIMENTAL)</b></summary>
+        <p>
+
+
+        - _camundala_
+           - [InvoiceReceiptP](No URL defined for camundala/OpenApi.html#operation/Process:%20InvoiceReceiptP)
+           - [invoice](No URL defined for camundala/OpenApi.html#operation/Process:%20invoice)
+
+
+        - _camundala-dsl_
+           - [InvoiceReceiptP](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20InvoiceReceiptP)
+           - [invoice](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20invoice)
+
+
+
+
+        </p>
+        </details>
+      operationId: 'DecisionDmn: collectEntries'
       requestBody:
         content:
           application/json:
@@ -236,9 +320,13 @@ paths:
     head:
       tags:
       - demoProcess
-      summary: 'DecisionDmn: singleResultDMN'
-      description: ''
-      operationId: 'DecisionDmn: singleResultDMN'
+      summary: 'DecisionDmn: singleResult'
+      description: |2
+
+
+
+        **Used in no other Process.**
+      operationId: 'DecisionDmn: singleResult'
       requestBody:
         content:
           application/json:
@@ -265,9 +353,13 @@ paths:
     head:
       tags:
       - demoProcess
-      summary: 'DecisionDmn: resultListDMN'
-      description: ''
-      operationId: 'DecisionDmn: resultListDMN'
+      summary: 'DecisionDmn: resultList'
+      description: |2
+
+
+
+        **Used in no other Process.**
+      operationId: 'DecisionDmn: resultList'
       requestBody:
         content:
           application/json:

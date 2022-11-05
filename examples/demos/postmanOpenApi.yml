@@ -8,7 +8,7 @@ info:
 
 
 
-    Created at 15/08/2022, 08:48
+    Created at 05/11/2022, 13:34
 
     ****
 
@@ -60,7 +60,7 @@ paths:
         - _decisionDefinitionKey_: `singleEntry`,
 
 
-        See API Doc: [singleEntryDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20singleEntryDMN)
+        See API Doc: [singleEntryDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20singleEntry)
       operationId: postDecision-definitionKeyKey--remove:singleentry--Evaluate
       parameters:
       - name: key
@@ -99,7 +99,7 @@ paths:
         - _decisionDefinitionKey_: `collectEntries`,
 
 
-        See API Doc: [collectEntriesDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20collectEntriesDMN)
+        See API Doc: [collectEntriesDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20collectEntries)
       operationId: postDecision-definitionKeyKey--remove:collectentries--Evaluate
       parameters:
       - name: key
@@ -138,7 +138,7 @@ paths:
         - _decisionDefinitionKey_: `singleResult`,
 
 
-        See API Doc: [singleResultDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20singleResultDMN)
+        See API Doc: [singleResultDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20singleResult)
       operationId: postDecision-definitionKeyKey--remove:singleresult--Evaluate
       parameters:
       - name: key
@@ -177,7 +177,7 @@ paths:
         - _decisionDefinitionKey_: `resultList`,
 
 
-        See API Doc: [resultListDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20resultListDMN)
+        See API Doc: [resultListDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20resultList)
       operationId: postDecision-definitionKeyKey--remove:resultlist--Evaluate
       parameters:
       - name: key
@@ -211,7 +211,7 @@ paths:
       description: |2
 
 
-        See API Doc: [demoProcess](No URL defined for demos-example/OpenApi.html#operation/Process:%20demoProcess)
+        See API Doc: [demoProcess](No URL defined for demos-example/OpenApi.html#operation/Process:%20just-for-demo)
       operationId: postProcess-definitionKeyJust-for-demoStart
       responses:
         '200':

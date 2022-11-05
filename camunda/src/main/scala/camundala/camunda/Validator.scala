@@ -44,8 +44,10 @@ abstract class Validator[T <: Product : Encoder : Decoder]
     typedValue.getType match
       case _: PrimitiveValueType =>
         typedValue.getValue match
-          case vt: DmnValueType =>
+          case vt: DmnValueSimple =>
             vt.asJson
+          case en: scala.reflect.Enum =>
+            en.toString()
           case other =>
             println(s"UneXPECTED: $other")
             other

@@ -1,7 +1,9 @@
-package camundala
-package examples.invoice.bpmn
+package camundala.examples.invoice
+package simulation
 
+import bpmn.InvoiceApi.*
 import camundala.bpmn.*
+import camundala.simulation.*
 
 import simulation.*
 import io.circe.generic.auto.*

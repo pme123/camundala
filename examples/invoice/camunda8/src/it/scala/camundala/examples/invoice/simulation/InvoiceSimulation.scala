@@ -1,9 +1,11 @@
 package camundala
 package examples.invoice
+package simulation
 
-import api.*
-import api.InvoiceApi.*
+import bpmn.*
+import domain.*
 import camundala.bpmn.*
+import camundala.simulation.*
 
 import simulation.*
 import io.circe.generic.auto.*

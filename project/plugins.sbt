@@ -8,4 +8,4 @@ addSbtPlugin("io.gatling" % "gatling-sbt" % "4.0.0")
 
 addSbtPlugin("org.planet42" % "laika-sbt" % "0.18.2")
 
-addDependencyTreePlugin
+addDependencyTreePlugin // sbt dependencyBrowseTreeHTML -> target/tree.html

@@ -153,6 +153,7 @@ lazy val documentation = (project in file("./documentation"))
 
 
 val tapirVersion = "0.20.2"
+val circeVersion = "0.14.3"
 lazy val tapirDependencies = Seq(
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-circe-yaml" % tapirVersion,
@@ -161,6 +162,7 @@ lazy val tapirDependencies = Seq(
   "org.latestbit" %% "circe-tagged-adt-codec" % "0.10.1", // to encode enums
 )
 val camundaVersion = "7.16.0"
+/* NOT IN USE
 lazy val camundaTestDependencies = Seq(
   // provide Camunda interaction
   "org.camunda.bpm" % "camunda-engine" % camundaVersion,
@@ -183,6 +185,7 @@ lazy val camundaTestDependencies = Seq(
   "org.mockito" % "mockito-core" % "3.1.0",
   "com.novocode" % "junit-interface" % "0.11"
 )
+*/
 
 lazy val gatlingDependencies = Seq(
   "io.gatling.highcharts" % "gatling-charts-highcharts" % "3.7.5",
@@ -239,8 +242,7 @@ lazy val exampleDemos = project
   .settings(projectSettings("example-demos"))
   .configure(preventPublication)
   .settings(
-    libraryDependencies ++= camundaDependencies ++
-      camundaTestDependencies
+    libraryDependencies ++= camundaDependencies
   )
   .dependsOn(camunda, simulation)
   .enablePlugins(GatlingPlugin)
