@@ -1,4 +1,3 @@
-import $ivy.`com.lihaoyi::ammonite-ops:2.4.1 compat`, ammonite.ops._
 import mainargs._
 
 /**
@@ -15,12 +14,6 @@ import mainargs._
  *
  */
 
-private implicit val workDir: Path = {
-  val wd = pwd
-  println(s"Working Directory: $wd")
-  wd
-}
-
 @arg(doc = "> Creates a new Release and publishes to Maven Central")
 @main
 def release(version: String): Unit = {
@@ -33,46 +26,46 @@ def release(version: String): Unit = {
   replaceVersion(version)
 
   val isSnapshot = version.contains("-")
-  %.sbt(
+  os.proc("sbt", 
     "-J-Xmx3G",
     "publishSigned"
-  )
+  ).call()
 
   if (!isSnapshot) {
 
-    %.git(
+    os.proc("git", 
       "fetch",
       "--all"
-    )
-    %.git(
+    ).call()
+    os.proc("git", 
       "commit",
       "-a",
       "-m",
       s"Released Version $version"
-    )
-    %.git(
+    ).call()
+    os.proc("git", 
       "tag",
       "-a",
       version,
       "-m",
       s"Version $version"
-    )
-    %.git(
+    ).call()
+    os.proc("git", 
       "checkout",
       "master"
-    )
-    %.git(
+    ).call()
+    os.proc("git", 
       "merge",
       "develop"
-    )
-    %.git(
+    ).call()
+    os.proc("git", 
       "push",
       "--tags"
-    )
-    %.git(
+    ).call()
+    os.proc("git", 
       "checkout",
       "develop"
-    )
+    ).call()
     val pattern = """^(\d+)\.(\d+)\.(\d+)$""".r
 
     val newVersion = version match {
@@ -80,16 +73,16 @@ def release(version: String): Unit = {
         s"$major.${minor.toInt + 1}.0-SNAPSHOT"
     }
     replaceVersion(newVersion)
-    %.git(
+    os.proc("git", 
       "commit",
       "-a",
       "-m",
       s"Init new Version $newVersion"
-    )
-    %.git(
+    ).call()
+    os.proc("git", 
       "push",
       "--all",
-    )
+    ).call()
     println("""Due to problems with the `"org.xerial.sbt" % "sbt-sonatype"` Plugin you have to release manually:
               |- https://s01.oss.sonatype.org/#stagingRepositories
               |  - login
@@ -100,6 +93,6 @@ def release(version: String): Unit = {
   }
 }
 private def replaceVersion(newVersion: String) = {
-  val versionsPath = pwd / "version"
-  write.over(versionsPath, newVersion)
+  val versionsPath = os.pwd / "version"
+  os.write.over(versionsPath, newVersion)
 }
