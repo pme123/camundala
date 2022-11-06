@@ -31,6 +31,7 @@ def release(version: String): Unit = {
     "-J-Xmx3G",
     "publishSigned"
   ).call()
+  
 
   if (!isSnapshot) {
 
