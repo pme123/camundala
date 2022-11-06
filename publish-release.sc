@@ -26,7 +26,8 @@ def release(version: String): Unit = {
   replaceVersion(version)
 
   val isSnapshot = version.contains("-")
-  os.proc("sbt", 
+  println(
+    os.proc("sbt", 
     "-J-Xmx3G",
     "publishSigned"
   ).call()
