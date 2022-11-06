@@ -1,4 +1,4 @@
-import ammonite.ops._
+import $ivy.`com.lihaoyi::ammonite-ops:2.4.1 compat`, ammonite.ops._
 import mainargs._
 
 /**
