@@ -19,8 +19,8 @@ object Dmns:
 
 case class Dmn(path: Path, decisions: DecisionDmn[?, ?]*)
 
-type DmnValueSimple = String | Boolean | Int | Long | Double | Date |
-  LocalDateTime | ZonedDateTime
+type DmnValueSimple = String | Boolean | Int | Long | Double |
+  LocalDate | LocalDateTime | ZonedDateTime
 
 type DmnValueType = DmnValueSimple | scala.reflect.Enum
 
@@ -48,18 +48,31 @@ case class DecisionDmn[
 
 end DecisionDmn
 
-// String | Boolean | Int | Long | Double | Date |
-//  LocalDateTime | ZonedDateTime | scala.reflect.Enum
+// String | Boolean | Int | Long | Double |
+//  LocalDate | LocalDateTime | ZonedDateTime | scala.reflect.Enum
 implicit def DmnValueTypeEncoder[T <: DmnValueSimple]: Encoder[T] =
   new Encoder[T] {
     final def apply(dv: T): Json = valueToJson(dv)
   }
 
-implicit def DmnValueTypeDecoder[T <: DmnValueSimple]
-    : Decoder[T] = new Decoder[T] {
-  final def apply(c: HCursor): Decoder.Result[T] =
-    for result <- c.as[T]
-    yield result
+implicit def LocalDateDecoder : Decoder[LocalDate] = new Decoder[LocalDate] {
+  final def apply(c: HCursor): Decoder.Result[LocalDate] =
+    for result <- c.as[String]
+    yield LocalDate.parse(result)
+
+}
+
+implicit def LocalDateTimeDecoder : Decoder[LocalDateTime] = new Decoder[LocalDateTime] {
+  final def apply(c: HCursor): Decoder.Result[LocalDateTime] =
+    for result <- c.as[String]
+    yield LocalDateTime.parse(result)
+
+}
+
+implicit def ZonedDateTimeDecoder : Decoder[ZonedDateTime] = new Decoder[ZonedDateTime] {
+  final def apply(c: HCursor): Decoder.Result[ZonedDateTime] =
+    for result <- c.as[String]
+    yield ZonedDateTime.parse(result)
 
 }
 

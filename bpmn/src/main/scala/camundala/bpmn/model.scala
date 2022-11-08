@@ -3,6 +3,9 @@ package bpmn
 
 import domain.*
 import scala.language.implicitConversions
+import java.time.LocalDate
+import java.time.ZonedDateTime
+import java.time.LocalDateTime
 
 case class InOutDescr[
     In <: Product: Encoder: Decoder: Schema,
@@ -170,6 +173,12 @@ def valueToJson(value: Any): Json =
       Json.fromDouble(v).getOrElse(Json.Null)
     case null =>
       Json.Null
+    case ld: LocalDate =>
+      Json.fromString(ld.toString())
+    case ldt: LocalDateTime =>
+      Json.fromString(ldt.toString())
+    case zdt: ZonedDateTime =>
+      Json.fromString(zdt.toString())
     case v =>
       Json.fromString(v.toString)
 
