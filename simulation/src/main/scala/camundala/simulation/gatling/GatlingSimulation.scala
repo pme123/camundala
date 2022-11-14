@@ -1,13 +1,9 @@
-package camundala.simulation
+package camundala
+package simulation
+package gatling
 
 import camundala.bpmn.CamundaVariable.CInteger
-import camundala.api.{
-  CamundaProperty,
-  CompleteTaskOut,
-  CorrelateMessageIn,
-  FormVariables,
-  StartProcessIn
-}
+import camundala.api.{CamundaProperty, CompleteTaskOut, CorrelateMessageIn, FormVariables, StartProcessIn}
 import io.gatling.http.Predef.*
 import io.gatling.http.protocol.HttpProtocolBuilder
 import io.gatling.core.Predef.*
@@ -71,7 +67,7 @@ trait GatlingSimulation
         session
       })
       .doIf(!scen.isIgnored)(
-        exec(config.preRequests.map(r => r()))
+        exec(config.preRequests.map(r  => exec(r())))
           .repeat(config.executionCount) {
             exec(
               testRequests

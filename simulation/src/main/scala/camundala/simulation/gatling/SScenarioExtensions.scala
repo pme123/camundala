@@ -1,4 +1,6 @@
-package camundala.simulation
+package camundala
+package simulation
+package gatling
 
 import camundala.api.*
 import camundala.bpmn.CamundaVariable.CInteger
@@ -10,8 +12,6 @@ import io.gatling.core.structure.*
 import io.gatling.http.Predef.*
 import io.gatling.http.protocol.HttpProtocolBuilder
 import io.gatling.http.request.builder.HttpRequestBuilder
-
-import scala.concurrent.duration.*
 
 trait SScenarioExtensions extends SimulationHelper:
 
@@ -30,7 +30,7 @@ trait SScenarioExtensions extends SimulationHelper:
             StringBody(
               CorrelateMessageIn(
                 messageName = msgName,
-                tenantId = implicitly[SimulationConfig].tenantId,
+                tenantId = implicitly[SimulationConfig[?]].tenantId,
                 businessKey = businessKey,
                 processVariables = Some(process.camundaInMap)
               ).asJson.toString
@@ -169,27 +169,32 @@ trait SScenarioExtensions extends SimulationHelper:
         case expected: CollectEntries[_] =>
           scenario.testOverrides match
             case None =>
-              val checkResult = (result.isEmpty && expected.toCamunda.isEmpty) ||
-                (result.nonEmpty &&
-                  result.head.size == 1 &&
-                  result.map(_.values.head).toSet == expected.toCamunda.toSet)
+              val checkResult =
+                (result.isEmpty && expected.toCamunda.isEmpty) ||
+                  (result.nonEmpty &&
+                    result.head.size == 1 &&
+                    result.map(_.values.head).toSet == expected.toCamunda.toSet)
               (
                 checkResult,
                 s"${expected.decisionResultType}): ${expected.toCamunda}"
               )
-            case Some(testOverrides)  =>
+            case Some(testOverrides) =>
               (
-                checkOForCollection(testOverrides.overrides, result.map(_.values.head)),
+                checkOForCollection(
+                  testOverrides.overrides,
+                  result.map(_.values.head)
+                ),
                 s"${expected.decisionResultType}): $testOverrides"
               )
 
         case expected: ResultList[_] =>
           scenario.testOverrides match
             case None =>
-              val checkResult = (result.isEmpty && expected.toCamunda.isEmpty) ||
-                (result.nonEmpty &&
-                  result.head.size > 1 &&
-                  result.toSet == expected.toCamunda.toSet)
+              val checkResult =
+                (result.isEmpty && expected.toCamunda.isEmpty) ||
+                  (result.nonEmpty &&
+                    result.head.size > 1 &&
+                    result.toSet == expected.toCamunda.toSet)
               (
                 checkResult,
                 s"${expected.decisionResultType}): ${expected.toCamunda}"

@@ -6,7 +6,9 @@ import camundala.bpmn.*
 import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
 
-trait SimulationDsl extends GatlingSimulation, TestOverrideExtensions:
+trait SimulationDsl extends TestOverrideExtensions:
+
+  def run(sim: SSimulation): Unit
 
   class SimulationBuilder:
     private val ib = ListBuffer.empty[SScenario]
@@ -20,37 +22,7 @@ trait SimulationDsl extends GatlingSimulation, TestOverrideExtensions:
   extension (scen: SScenario)
     private[simulation] def stage: SimulationConstr =
       (bldr: SimulationBuilder) ?=> bldr.pushScenario(scen)
-  /*
-  class ScenarioBuilder(name: String):
-    private val ib = ListBuffer.empty[CStep]
 
-    def pushStep(x: CStep) =
-      ib.append(x)
-
-    def mkBlock(process: Process[_, _]) = CScenario(name, process, ib.toList)
-
-  type ScenarioConstr = ScenarioBuilder ?=> Unit
-
-  extension (ut: UserTask[_, _]) private[simulation] def stage: ScenarioConstr =
-    (bldr: ScenarioBuilder) ?=> bldr.pushStep(CUserTask(ut.id, ut))
-  extension (ut: CUserTask) private[simulation] def stage: ScenarioConstr =
-    (bldr: ScenarioBuilder) ?=> bldr.pushStep(ut)
-
-  inline def scenario(inline process: Process[_, _])(body: ScenarioConstr): SimulationConstr =
-    val sb = ScenarioBuilder(nameOfVariable(process))
-    body(using sb)
-    val scen = sb.mkBlock(process).stage
-    println(s"SCENARIO: $scen")
-    scen
-
-  extension(activity: Activity[_,_,_])
-
-    @targetName("step")
-    def unary_+ : ScenarioConstr =
-      activity match
-        case ut: UserTask[_,_] => CUserTask(nameOfVariable(activity), ut).stage
-
-   */
   def simulate(body: SimulationConstr): Unit =
     val sb = SimulationBuilder()
     body(using sb)

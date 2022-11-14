@@ -1,9 +1,10 @@
 package camundala.simulation
 
-import io.gatling.core.structure.ChainBuilder
-import io.gatling.http.request.builder.HttpRequestBuilder
-
-case class SimulationConfig(
+/**
+ *
+ * @tparam B Builder for Authentication and preRequest
+ */
+case class SimulationConfig[B](
                              // define tenant if you have one
                              tenantId: Option[String] = None,
                              // the Camunda Port
@@ -19,34 +20,35 @@ case class SimulationConfig(
                              // add requests that needed to be executed before the test requests.
                              // example get the token for OAuth2
                              // they must be lazy - otherwise they are blocking!?
-                             preRequests: Seq[() => ChainBuilder] = Nil,
+                             preRequests: Seq[() => B] = Nil,
                              // REST endpoint of Camunda
                              endpoint: String = "http://localhost:8080/engine-rest",
                              // you can add authentication with this - default there is none.
-                             // see BasicSimulationRunner / OAuthSimulationRunner for examples
-                             authHeader: HttpRequestBuilder => HttpRequestBuilder = b => b
+                             // see BasicSimulationDsl / OAuthSimulationDsl for examples
+                             authHeader: B => B = (b: B) => b
                            ):
 
-  def withTenantId(tenantId: String): SimulationConfig =
+  def withTenantId(tenantId: String): SimulationConfig[B] =
     copy(tenantId = Some(tenantId))
 
-  def withMaxCount(maxCount: Int): SimulationConfig =
+  def withMaxCount(maxCount: Int): SimulationConfig[B] =
     copy(maxCount = maxCount)
 
-  def withTenantId(userAtOnce: Int = 1): SimulationConfig =
+  def withTenantId(userAtOnce: Int = 1): SimulationConfig[B] =
     copy(userAtOnce = userAtOnce)
 
-  def withPreRequest(preRequest: () => ChainBuilder): SimulationConfig =
+
+  def withPreRequest(preRequest: () => B): SimulationConfig[B] =
     copy(preRequests = preRequests :+ preRequest)
 
-  def withAuthHeader(authHeader: HttpRequestBuilder => HttpRequestBuilder = b => b): SimulationConfig =
+  def withAuthHeader(authHeader: B => B = b => b): SimulationConfig[B] =
     copy(authHeader = authHeader)
 
-  def withPort(port: Int): SimulationConfig =
+  def withPort(port: Int): SimulationConfig[B] =
     copy(endpoint = s"http://localhost:$port/engine-rest")
 
-  def withUserAtOnce(userAtOnce: Int): SimulationConfig =
+  def withUserAtOnce(userAtOnce: Int): SimulationConfig[B] =
     copy(userAtOnce = userAtOnce)
 
-  def withExecutionCount(executionCount: Int): SimulationConfig =
+  def withExecutionCount(executionCount: Int): SimulationConfig[B] =
     copy(executionCount = executionCount)

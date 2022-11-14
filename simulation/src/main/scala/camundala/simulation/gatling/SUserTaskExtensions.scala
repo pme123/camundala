@@ -1,4 +1,6 @@
-package camundala.simulation
+package camundala
+package simulation
+package gatling
 
 import camundala.api.*
 import camundala.bpmn.*
@@ -71,4 +73,3 @@ trait SUserTaskExtensions extends SimulationHelper:
           )
         )
   end extension
-

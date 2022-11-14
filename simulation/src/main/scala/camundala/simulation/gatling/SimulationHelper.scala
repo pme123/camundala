@@ -1,5 +1,6 @@
 package camundala
 package simulation
+package gatling
 
 import api.CamundaProperty
 import bpmn.*
@@ -17,7 +18,7 @@ import io.circe.parser.*
 
 trait SimulationHelper:
 
-  implicit def config: SimulationConfig = SimulationConfig()
+  implicit def config: SimulationConfig[HttpRequestBuilder] = SimulationConfig[HttpRequestBuilder]()
 
   extension (builder: HttpRequestBuilder)
     def auth(): HttpRequestBuilder =
@@ -177,16 +178,18 @@ trait SimulationHelper:
       .forall(_ == true)
 
   def checkOForCollection(
-                      overrides: Seq[TestOverride],
-                      result: Seq[CamundaVariable | Map[String, CamundaVariable]]
-                    ) =
+      overrides: Seq[TestOverride],
+      result: Seq[CamundaVariable | Map[String, CamundaVariable]]
+  ) =
     import TestOverrideType.*
     overrides
       .map {
         case TestOverride(None, HasSize, Some(CInteger(size, _))) =>
           val matches = result.size == size
           if (!matches)
-            println(s"!!! Size '${result.size}' of collection is NOT equal to $size in $result")
+            println(
+              s"!!! Size '${result.size}' of collection is NOT equal to $size in $result"
+            )
           matches
         case TestOverride(None, Contains, Some(expected)) =>
           val exp = expected match
@@ -200,7 +203,9 @@ trait SimulationHelper:
           println(s"EXPECTED: $exp")
           val matches = result.contains(exp)
           if (!matches)
-            println(s"!!! Result '$result' of collection does NOT contain to $expected")
+            println(
+              s"!!! Result '$result' of collection does NOT contain to $expected"
+            )
           matches
         case _ =>
           println(
@@ -327,7 +332,9 @@ trait SimulationHelper:
   private def getRootIncident(errorMsg: String): ChainBuilder =
     doIf("#{rootCauseIncidentId.exists()}")(
       exec(session => {
-        println(s"We are in the loop: ${session.attributes.get("rootCauseIncidentId")}")
+        println(
+          s"We are in the loop: ${session.attributes.get("rootCauseIncidentId")}"
+        )
         session
       })
         .exec(
@@ -340,5 +347,6 @@ trait SimulationHelper:
             .check(
               extractJsonOptional("$[*].incidentMessage", "errorMsg")
             )
-        ).exitHereIfFailed
+        )
+        .exitHereIfFailed
     )

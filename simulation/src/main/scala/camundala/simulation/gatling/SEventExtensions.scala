@@ -1,5 +1,6 @@
 package camundala
 package simulation
+package gatling
 
 import api.*
 import bpmn.*
