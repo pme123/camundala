@@ -6,7 +6,6 @@ import camundala.bpmn.*
 import camundala.simulation.*
 import camundala.simulation.gatling.GatlingSimulation
 import io.circe.generic.auto.*
-import io.gatling.http.request.builder.HttpRequestBuilder
 import sttp.tapir.generic.auto.*
 
 import scala.concurrent.duration.*
@@ -14,7 +13,7 @@ import scala.concurrent.duration.*
 // exampleInvoiceC7/GatlingIt/testOnly *InvoiceSimulation
 class InvoiceSimulation extends GatlingSimulation, SimulationDsl:
 
-  override implicit def config: SimulationConfig[HttpRequestBuilder] =
+  override implicit def config =
     super.config
       .withPort(8034)
   //.withUserAtOnce(100) // do load testing
