@@ -43,7 +43,7 @@ class InvoiceSimulation extends SimulationDsl:
       .notExists("amounts")
       .isEquals("amount", 300.0)
 
-  simulate { /*
+  simulate { 
     scenario(`Review Invoice`)(
       AssignReviewerUT,
       ReviewInvoiceUT
@@ -71,8 +71,8 @@ class InvoiceSimulation extends SimulationDsl:
         AssignReviewerUT,
         ReviewInvoiceNotClarifiedUT // do not clarify
       )
-    ) */
-    scenario(InvoiceAssignApproverDMN)
+    ) 
+  /*  scenario(InvoiceAssignApproverDMN)
     scenario(InvoiceAssignApproverDMN2)
     badScenario(
       BadValidationP,
@@ -80,5 +80,5 @@ class InvoiceSimulation extends SimulationDsl:
       Some(
         "Validation Error: Input is not valid: DecodingFailure(Attempt to decode value on failed cursor, List(DownField(creditor)))"
       )
-    )
+    )*/
   }

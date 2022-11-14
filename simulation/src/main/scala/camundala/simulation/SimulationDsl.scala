@@ -6,7 +6,7 @@ import camundala.bpmn.*
 import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
 
-trait SimulationDsl extends GatlingSimulation, TestOverrideExtensions, BpmnDsl:
+trait SimulationDsl extends GatlingSimulation, TestOverrideExtensions:
 
   class SimulationBuilder:
     private val ib = ListBuffer.empty[SScenario]

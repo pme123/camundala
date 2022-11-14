@@ -79,6 +79,10 @@ object bpmn extends BpmnDsl:
       in = InvoiceReceipt(),
       out = InvoiceReviewed()
     )
+  lazy val `Review Invoice not clarified`: Process[InvoiceReceipt, InvoiceReviewed] =
+    `Review Invoice`
+    .withOut(InvoiceReviewed(false))
+    
   lazy val AssignReviewerUT = userTask(
     id = "AssignReviewerUT",
     descr = "Select the Reviewer.",

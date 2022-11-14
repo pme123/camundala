@@ -11,7 +11,7 @@ import sttp.tapir.generic.auto.*
 
 import scala.concurrent.duration.*
 
-// exampleInvoice/GatlingIt/testOnly *InvoiceSimulation
+// exampleInvoiceC7/GatlingIt/testOnly *InvoiceSimulation
 class InvoiceSimulation extends SimulationDsl:
 
   override implicit def config: SimulationConfig =
@@ -41,7 +41,7 @@ class InvoiceSimulation extends SimulationDsl:
       .notExists("amounts")
       .isEquals("amount", 300.0)
 
-  simulate { /*
+  simulate {
     scenario(`Review Invoice`)(
       AssignReviewerUT,
       ReviewInvoiceUT
@@ -69,7 +69,7 @@ class InvoiceSimulation extends SimulationDsl:
         AssignReviewerUT,
         ReviewInvoiceNotClarifiedUT // do not clarify
       )
-    ) */
+    )
     scenario(InvoiceAssignApproverDMN)
     scenario(InvoiceAssignApproverDMN2)
     badScenario(
