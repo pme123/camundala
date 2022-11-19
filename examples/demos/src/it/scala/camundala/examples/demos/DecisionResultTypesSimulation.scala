@@ -4,12 +4,14 @@ import camundala.simulation.*
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
 import DecisionResultTypes.*
+import camundala.simulation.gatling.GatlingSimulation
+
 import scala.concurrent.duration.*
 
 // exampleDemos/GatlingIt/testOnly *DecisionResultTypesSimulation
-class DecisionResultTypesSimulation extends SimulationDsl:
+class DecisionResultTypesSimulation extends SimulationDsl, GatlingSimulation:
 
-  override implicit def config: SimulationConfig =
+  override implicit def config =
     super.config.withPort(8033)
 
   import TestDomain.*

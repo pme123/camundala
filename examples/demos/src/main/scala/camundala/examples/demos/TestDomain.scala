@@ -1,7 +1,7 @@
 package camundala.examples.demos
 
 import camundala.bpmn.*
-
+import camundala.domain.*
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
 

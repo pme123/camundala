@@ -2,6 +2,7 @@ package camundala
 package domain
 
 import java.util.Base64
+import scala.language.implicitConversions
 
 // circe
 export io.circe.{Decoder, Encoder, Json}
