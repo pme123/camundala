@@ -4,6 +4,7 @@ package simulation
 import bpmn.InvoiceApi.*
 import camundala.bpmn.*
 import camundala.simulation.*
+import camundala.simulation.custom.CustomSimulation
 import camundala.simulation.gatling.GatlingSimulation
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
@@ -11,7 +12,7 @@ import sttp.tapir.generic.auto.*
 import scala.concurrent.duration.*
 
 // exampleInvoiceC7/GatlingIt/testOnly *InvoiceSimulation
-class InvoiceSimulation extends GatlingSimulation, SimulationDsl:
+object InvoiceSimulation extends CustomSimulation, SimulationDsl:
 
   override implicit def config =
     super.config
@@ -45,7 +46,7 @@ class InvoiceSimulation extends GatlingSimulation, SimulationDsl:
       AssignReviewerUT,
       ReviewInvoiceUT
     )
-    scenario(`Invoice Receipt`)(
+ /*   scenario(`Invoice Receipt`)(
       ApproveInvoiceUT,
       PrepareBankTransferUT
     )
@@ -77,5 +78,5 @@ class InvoiceSimulation extends GatlingSimulation, SimulationDsl:
       Some(
         "Validation Error: Input is not valid: DecodingFailure(Attempt to decode value on failed cursor, List(DownField(creditor)))"
       )
-    )
+    )*/
   }

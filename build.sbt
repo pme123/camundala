@@ -8,7 +8,7 @@ import scala.util.Using
 
 lazy val projectVersion =
   Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
-val scala3Version = "3.1.2"
+val scala3Version = "3.2.1"
 val org = "io.github.pme123"
 
 ThisBuild / versionScheme := Some("early-semver")
@@ -122,7 +122,8 @@ lazy val simulation = project
   .settings(projectSettings("simulation"))
   .settings(
     libraryDependencies ++=
-      gatlingDependencies,
+      gatlingDependencies :+
+    "com.softwaremill.sttp.client3" %% "core" % "3.8.3",
     scalacOptions ++= Seq(
       "-Xmax-inlines",
       "50" // is declared as erased, but is in fact used

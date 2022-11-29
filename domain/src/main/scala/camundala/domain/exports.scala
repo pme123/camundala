@@ -52,5 +52,5 @@ case class Optable[Out](value: Option[Out])
 
 object Optable {
   implicit def fromOpt[T](o: Option[T]): Optable[T] = Optable(o)
-  implicit def fromValue[T](v: T): Optable[T] = Optable(Some(v))
+  implicit def fromValue[T](v: T): Optable[T] = Optable(Option(v))
 }

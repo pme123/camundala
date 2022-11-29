@@ -31,7 +31,7 @@ abstract class Validator[T <: Product : Encoder : Decoder]
           s""""$k": $value"""
       }.filterNot(_ == "NOT_SET")
       .mkString("{", ",", "}")
-    println(s"VALIDATOR JSON: ${toJson(ir)}")
+   
     toJson(ir).as[T] match
       case Right(_) =>
         println(s"Validation Succeeded (${product.getClass.getSimpleName})")
@@ -47,7 +47,7 @@ abstract class Validator[T <: Product : Encoder : Decoder]
           case vt: DmnValueSimple =>
             vt.asJson
           case en: scala.reflect.Enum =>
-            en.toString()
+            en.toString
           case other =>
             println(s"UneXPECTED: $other")
             other

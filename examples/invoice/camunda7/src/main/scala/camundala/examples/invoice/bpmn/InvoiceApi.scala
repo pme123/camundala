@@ -17,13 +17,14 @@ object InvoiceApi extends BpmnDsl:
       amount: Double = 300.0,
       invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`,
       invoiceNumber: String = "I-12345",
-      invoiceDocument: FileInOut = FileInOut(
+      // removed due to problems with sttp client
+   /*   invoiceDocument: FileInOut = FileInOut(
         "invoice.pdf",
         read.bytes(
           os.resource / "invoice.pdf"
         ),
         Some("application/pdf")
-      )
+      )*/
   )
 
   @description("There are three possible Categories")

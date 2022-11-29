@@ -8,4 +8,4 @@ import sttp.tapir.generic.auto.*
 
 class InvoiceValidator extends Validator[InvoiceReceipt] :
 
-  val product: InvoiceReceipt = InvoiceReceipt()
+  lazy val product: InvoiceReceipt = InvoiceReceipt()

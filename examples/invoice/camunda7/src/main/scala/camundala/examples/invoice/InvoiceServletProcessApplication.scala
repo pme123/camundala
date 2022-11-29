@@ -25,5 +25,4 @@ object InvoiceServletProcessApplication:
 
   @EventListener
   def onPostDeploy(event: PostDeployEvent): Unit =
-    println("event.getProcessEngine: " + event.getProcessEngine)
     invoicePa.startFirstProcess(event.getProcessEngine)

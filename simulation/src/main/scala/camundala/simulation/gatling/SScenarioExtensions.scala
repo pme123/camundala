@@ -60,12 +60,9 @@ trait SScenarioExtensions extends SimulationHelper:
         expectedStatus: Int = 200,
         expectedMsg: Option[String] = None
     ): ChainBuilder =
-      val tenantId = config.tenantId
       exec(
         http(scenario.description("Start", scenario.name))
-          .post(s"/process-definition/key/${process.id}${tenantId
-            .map(id => s"/tenant-id/$id")
-            .getOrElse("")}/start")
+          .post(s"/process-definition/key/${process.id}${config.tenantPath}/start")
           .auth()
           .body(
             StringBody(

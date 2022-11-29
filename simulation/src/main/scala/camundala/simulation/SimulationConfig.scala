@@ -25,7 +25,8 @@ case class SimulationConfig[B](
                              endpoint: String = "http://localhost:8080/engine-rest",
                              // you can add authentication with this - default there is none.
                              // see BasicSimulationDsl / OAuthSimulationDsl for examples
-                             authHeader: B => B = (b: B) => b
+                             authHeader: B => B = (b: B) => b,
+                             logLevel: LogLevel = LogLevel.INFO
                            ):
 
   def withTenantId(tenantId: String): SimulationConfig[B] =
@@ -52,3 +53,7 @@ case class SimulationConfig[B](
 
   def withExecutionCount(executionCount: Int): SimulationConfig[B] =
     copy(executionCount = executionCount)
+
+  lazy val tenantPath: String = tenantId
+    .map(id => s"/tenant-id/$id")
+    .getOrElse("")
