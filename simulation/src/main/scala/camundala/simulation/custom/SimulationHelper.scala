@@ -7,6 +7,7 @@ import sttp.model.StatusCode
 
 import scala.concurrent.duration.*
 import scala.language.dynamics
+import scala.util.Try
 
 trait SimulationHelper extends ResultChecker, Logging:
 
@@ -24,3 +25,26 @@ trait SimulationHelper extends ResultChecker, Logging:
           s"Non-2xx response to GET with code $httpStatus:\n$body"
         )
         .info(curl)
+
+  protected def tryOrFail(funct: ScenarioData => ResultType, step: SStep)(using data: ScenarioData) = {
+    val count = summon[ScenarioData].context.requestCount
+    if (count < config.maxCount) {
+      Try(Thread.sleep(1000)).toEither.left
+        .map(_ =>
+          summon[ScenarioData]
+            .error(s"Interrupted Exception when waiting for ${step.name} (${step.typeName}).")
+        )
+        .flatMap { _ =>
+          funct(
+            summon[ScenarioData]
+              .withRequestCount(count + 1)
+              .info(s"Waiting for ${step.name} (${step.typeName} - count: $count)")
+          )
+        }
+    } else {
+      Left(
+        summon[ScenarioData]
+          .error(s"Expected ${step.name} (${step.typeName}) was not found! Tried $count times.")
+      )
+    }
+  }

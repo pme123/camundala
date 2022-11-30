@@ -8,8 +8,6 @@ import io.circe.parser.*
 import io.circe.syntax.*
 import sttp.client3.*
 
-import scala.util.Try
-
 trait SUserTaskExtensions extends SimulationHelper:
 
   extension (userTask: SUserTask)
@@ -18,6 +16,7 @@ trait SUserTaskExtensions extends SimulationHelper:
       given ScenarioData = data.withTaskId(notSet)
       for {
         given ScenarioData <- task()
+        given ScenarioData <- completeTask()
       } yield summon[ScenarioData]
     /*
         Seq(
@@ -62,44 +61,22 @@ trait SUserTaskExtensions extends SimulationHelper:
                 summon[ScenarioData]
                   .withTaskId(taskId)
                   .info(
-                    s"Task '${userTask.name}' ready"
+                    s"UserTask '${userTask.name}' ready"
                   )
                   .info(s"- taskId: $taskId")
                   .debug(s"- body: $body")
               }
               .left
-              .flatMap { ex =>
-                  tryOrFail(getTask(processInstanceId))
+              .flatMap { _ =>
+                  tryOrFail(getTask(processInstanceId), userTask)
               }
           )
       }
 
       val processInstanceId = data.context.processInstanceId
       getTask(processInstanceId)(data.withRequestCount(0))
-        .left.map(msg => data.error(msg.toString))
     }
-    private def tryOrFail(funct: ScenarioData => ResultType)(using data: ScenarioData)= {
-      val count = summon[ScenarioData].context.requestCount
-      if (count < config.maxCount) {
-        Try(Thread.sleep(1000)).toEither.left
-          .map(_ =>
-            summon[ScenarioData]
-              .error("Interrupted Exception when waiting.")
-          )
-          .flatMap { _ =>
-            funct(
-              summon[ScenarioData]
-                .withRequestCount(count + 1)
-                .debug(s"Waiting for UserTask (count: $count)")
-            )
-          }
-      } else {
-        Left(
-          summon[ScenarioData]
-            .error(s"Expected Task was not found! Tried $count times.")
-        )
-      }
-    }
+
   /*
            http(s"Get Tasks ${userTask.name}")
                 .get("/task?processInstanceId=#{processInstanceId}")
@@ -133,17 +110,37 @@ trait SUserTaskExtensions extends SimulationHelper:
                     }
                     .is(true)
                 )
+*/
+    private def completeTask()(using data: ScenarioData): ResultType =
+      val taskId = data.context.taskId
+      val backend = HttpClientSyncBackend()
+      val uri =
+        uri"${config.endpoint}/task/$taskId/complete?deserializeValues=false"
+      val body = CompleteTaskOut(
+        userTask.camundaOutMap
+      ).asJson.deepDropNullValues.toString
+      val request = basicRequest
+        .auth()
+        .contentType("application/json")
+        .body(body)
+        .post(uri)
+      given ScenarioData = data
+        .info(
+          s"UserTask '${userTask.name}' complete"
+        )
+        .info(s"- URI: $uri")
 
-            private def completeTask(): HttpRequestBuilder =
-              http(s"Complete Task ${userTask.name}")
-                .post(s"/task/#{taskId}/complete")
-                .auth()
-                .queryParam("deserializeValues", false)
-                .body(
-                  StringBody(
-                    CompleteTaskOut(
-                      userTask.camundaOutMap
-                    ).asJson.deepDropNullValues.toString
-                  )
-                ) */
+      val response = request.send(backend)
+      response.body
+        .left
+        .map(body =>
+          handleNon2xxResponse(response.code, body, request.toCurl)
+        )
+        .map( _ =>
+          summon[ScenarioData]
+            .info(s"Successful completed UserTask ${userTask.name}.")
+        )
+
+    end completeTask
+
   end extension

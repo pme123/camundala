@@ -70,6 +70,7 @@ case class IncidentScenario(
 
 sealed trait SStep:
   def name: String
+  def typeName: String = getClass.getSimpleName
 
 sealed trait SInOutStep extends SStep, WithTestOverrides[SInOutStep]:
   lazy val inOutDescr: InOutDescr[_, _] = inOut.inOutDescr
