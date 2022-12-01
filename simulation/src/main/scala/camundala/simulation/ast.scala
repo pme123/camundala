@@ -21,8 +21,11 @@ sealed trait WithTestOverrides[T <: WithTestOverrides[T]]:
   lazy val camundaToCheckMap: Map[String, CamundaVariable] =
     inOut.camundaToCheckMap
 
-sealed trait SScenario:
+sealed trait ScenarioOrStep:
   def name: String
+  def typeName: String = getClass.getSimpleName
+  
+sealed trait SScenario extends ScenarioOrStep:
   def inOut: InOut[_, _, _]
   def isIgnored: Boolean
 
@@ -68,9 +71,7 @@ case class IncidentScenario(
     isIgnored: Boolean = false
 ) extends SScenario
 
-sealed trait SStep:
-  def name: String
-  def typeName: String = getClass.getSimpleName
+sealed trait SStep extends ScenarioOrStep
 
 sealed trait SInOutStep extends SStep, WithTestOverrides[SInOutStep]:
   lazy val inOutDescr: InOutDescr[_, _] = inOut.inOutDescr

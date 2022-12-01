@@ -8,7 +8,7 @@ import io.circe.parser.*
 import io.circe.syntax.*
 import sttp.client3.*
 
-trait CustomSimulation extends App, ProcessScenarioExtensions {
+trait CustomSimulation extends App, SScenarioExtensions {
 
   def run(sim: SSimulation): Unit =
     sim.scenarios
@@ -30,14 +30,18 @@ trait CustomSimulation extends App, ProcessScenarioExtensions {
       .reverse
       .foreach {
         case LogLevel.ERROR -> scenarios =>
-          println("*" * 20)
-          println("Simulation FAILED! The following Scenarios failed:")
+          println("*" * 60)
+          println(s"${Console.RED}Scenarios that FAILED:${Console.RESET}")
           scenarios.foreach { case scen -> _ => println(s"- $scen") }
           println("Check the logs above.")
+          println("*" * 60)
         case LogLevel.WARN -> scenarios =>
-          println("-" * 20)
-          println("Simulation has WARNINGS! Check the following Scenarios:")
+          println("-" * 60)
+          println(s"${Console.MAGENTA}Scenarios with WARNINGS:${Console.RESET}")
           scenarios.foreach { case scen -> _ => println(s"- $scen") }
-        case _ => // nothing to do
+        case _ -> scenarios =>
+          println("." * 60)
+          println(s"${Console.GREEN}Successful Scenarios:${Console.RESET}")
+          scenarios.foreach { case scen -> _ => println(s"- $scen") }
       }
 }

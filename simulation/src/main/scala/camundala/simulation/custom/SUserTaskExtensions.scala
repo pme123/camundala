@@ -16,21 +16,11 @@ trait SUserTaskExtensions extends SimulationHelper:
       given ScenarioData = data.withTaskId(notSet)
       for {
         given ScenarioData <- task()
+        given ScenarioData <- checkForm()
         given ScenarioData <- completeTask()
       } yield summon[ScenarioData]
-    /*
-        Seq(
-          exec(_.set("taskId", null)),
-          retryOrFail(
-            exec(task()).exitHereIfFailed,
-            taskCondition()
-          ),
-          exec(checkForm()).exitHereIfFailed,
-          exec(completeTask()).exitHereIfFailed
-        )
-     */
-    private def task()(using data: ScenarioData): ResultType = {
 
+    private def task()(using data: ScenarioData): ResultType = {
       def getTask(
           processInstanceId: Any
       )(data: ScenarioData): ResultType = {
@@ -44,7 +34,7 @@ trait SUserTaskExtensions extends SimulationHelper:
           .info(
             s"UserTask '${userTask.name}' get"
           )
-          .info(s"- URI: $uri")
+          .debug(s"- URI: $uri")
 
         val response = request.send(backend)
         response.body
@@ -68,7 +58,7 @@ trait SUserTaskExtensions extends SimulationHelper:
               }
               .left
               .flatMap { _ =>
-                  tryOrFail(getTask(processInstanceId), userTask)
+                tryOrFail(getTask(processInstanceId), userTask)
               }
           )
       }
@@ -77,40 +67,40 @@ trait SUserTaskExtensions extends SimulationHelper:
       getTask(processInstanceId)(data.withRequestCount(0))
     }
 
-  /*
-           http(s"Get Tasks ${userTask.name}")
-                .get("/task?processInstanceId=#{processInstanceId}")
-                .auth()
-                .check(checkMaxCount)
-                .check(
-                  extractJsonOptional("$[*].id", "taskId")
-                )
+    def checkForm()(using data: ScenarioData): ResultType = {
+      val processInstanceId = data.context.processInstanceId
+      val uri =
+        uri"${config.endpoint}/process-instance/$processInstanceId/variables?deserializeValues=false"
+      val request = basicRequest
+        .auth()
+        .get(uri)
 
-            private def checkForm(): HttpRequestBuilder =
-              http(s"Check Form ${userTask.name}")
-                .get(
-                  "/process-instance/#{processInstanceId}/variables?deserializeValues=false"
-                )
-                // Removed as Jsons were returned with type String?! Check History 8.1.22 19:00h
-                // .get("/task/#{taskId}/form-variables?deserializeValues=false")
-                .auth()
-                .check(
-                  bodyString
-                    .transform { body =>
-                      parse(body)
-                        .flatMap(_.as[FormVariables]) match {
-                        case Right(value) =>
-                          checkProps(
-                            userTask,
-                            CamundaProperty.from(value)
-                          )
-                        case Left(exc) =>
-                          s"\n!!! Problem parsing Result Body to a List of FormVariables.\n$exc\n$body"
-                      }
-                    }
-                    .is(true)
-                )
-*/
+      given ScenarioData = data
+        .info(
+          s"UserTask '${userTask.name}' checkForm"
+        )
+        .debug(s"- URI: $uri")
+
+      val response = request.send(backend)
+      response.body.left
+        .map(body => handleNon2xxResponse(response.code, body, request.toCurl))
+        .flatMap(parse)
+        .flatMap(_.as[FormVariables])
+        .left
+        .map(err => summon[ScenarioData].error(s"Problem creating FormVariables from response.\n$err"))
+        .flatMap(formVariables =>
+          if (
+            checkProps(
+              userTask,
+              CamundaProperty.from(formVariables)
+            )
+          )
+            Right(summon[ScenarioData].info(s"UserTask Form is correct for ${userTask.name}"))
+          else
+            Left(summon[ScenarioData].error(s"Tests for UserTask Form ${userTask.name} failed - check log above (look for !!!)"))
+        )
+    }
+
     private def completeTask()(using data: ScenarioData): ResultType =
       val taskId = data.context.taskId
       val backend = HttpClientSyncBackend()
@@ -128,15 +118,12 @@ trait SUserTaskExtensions extends SimulationHelper:
         .info(
           s"UserTask '${userTask.name}' complete"
         )
-        .info(s"- URI: $uri")
+        .debug(s"- URI: $uri")
 
       val response = request.send(backend)
-      response.body
-        .left
-        .map(body =>
-          handleNon2xxResponse(response.code, body, request.toCurl)
-        )
-        .map( _ =>
+      response.body.left
+        .map(body => handleNon2xxResponse(response.code, body, request.toCurl))
+        .map(_ =>
           summon[ScenarioData]
             .info(s"Successful completed UserTask ${userTask.name}.")
         )

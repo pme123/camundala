@@ -35,13 +35,13 @@ public class ArchiveInvoiceService implements JavaDelegate {
     public void execute(DelegateExecution execution) throws Exception {
 
     Boolean shouldFail = (Boolean) execution.getVariable("shouldFail");
-    FileValue invoiceDocumentVar  = execution.getVariableTyped("invoiceDocument");
+   // FileValue invoiceDocumentVar  = execution.getVariableTyped("invoiceDocument");
 
         if (shouldFail != null && shouldFail) {
             throw new ProcessEngineException("Could not archive invoice...");
         } else {
             LOGGER.info("\n\n  ... Now archiving invoice " + execution.getVariable("invoiceNumber")
-                    + ", filename: " + invoiceDocumentVar.getFilename() + " \n\n");
+            );// + ", filename: " + invoiceDocumentVar.getFilename() + " \n\n");
         }
 
     }
