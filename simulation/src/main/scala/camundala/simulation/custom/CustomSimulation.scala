@@ -14,6 +14,7 @@ trait CustomSimulation extends App, SScenarioExtensions {
     sim.scenarios
       .map {
         case scen: ProcessScenario => scen -> scen.run()
+        case scen: IncidentScenario => scen -> scen.run()
         case other => other -> Right(Seq(ScenarioData().warn(s"UNSUPPORTED: ${other.name}"))).asInstanceOf[ResultType]
       }
       .map {(scen: SScenario , resultData: ResultType) =>

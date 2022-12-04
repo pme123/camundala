@@ -25,6 +25,8 @@ object InvoiceApi extends BpmnDsl:
         ),
         Some("application/pdf")
       )*/
+      @description("You can let the Archive Service fail for testing.")
+      shouldFail: Option[Boolean] = None
   )
 
   @description("There are three possible Categories")

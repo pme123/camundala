@@ -51,8 +51,15 @@ trait SimulationDsl extends TestOverrideExtensions:
   inline def incidentScenario(
                                inline process: Process[_, _],
                                incidentMsg: String
-  ): SimulationConstr =
-    IncidentScenario(nameOfVariable(process), process, incidentMsg).stage
+  )(body: SStep*): SimulationConstr =
+    IncidentScenario(
+      nameOfVariable(process), process, body.toList, incidentMsg).stage
+
+  inline def incidentScenario(
+                               inline process: Process[_, _],
+                               incidentMsg: String
+                             ): SimulationConstr =
+    incidentScenario(process, incidentMsg)()
 
   inline def subProcess(inline process: Process[_, _])(
       body: SStep*

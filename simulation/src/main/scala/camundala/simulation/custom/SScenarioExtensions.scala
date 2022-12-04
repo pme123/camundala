@@ -1,7 +1,7 @@
-package camundala.simulation.custom
+package camundala.simulation
+package custom
 
 import camundala.api.*
-import camundala.simulation.*
 import io.circe.*
 import io.circe.parser.parse
 import io.circe.syntax.*
@@ -9,36 +9,7 @@ import sttp.client3.*
 
 trait SScenarioExtensions extends SStepExtensions:
 
-  extension (scen: ProcessScenario)
-
-    def run(): ResultType =
-      given ScenarioData = ScenarioData(logEntries =
-        Seq(info(s"${"#" * 7} Scenario ${scen.name} ${"#" * 7}"))
-      )
-      (for
-        given ScenarioData <- startProcess()
-        given ScenarioData <- runSteps()
-        given ScenarioData <- scen.check()
-      yield summon[ScenarioData]
-        .info(
-          s"${Console.GREEN}${"*" * 4} Scenario ${scen.name} SUCCEEDED ${"*" * 4}${Console.RESET}"
-        )).left.map(
-        _.error(
-          s"${Console.RED}${"*" * 3} Scenario ${scen.name} FAILED ${"*" * 3}${Console.RESET}"
-        )
-      )
-
-    def runSteps()(using
-        data: ScenarioData
-    ): ResultType =
-      scen.steps.foldLeft[ResultType](Right(data)) {
-        case (Right(data), step) =>
-          given ScenarioData = data
-
-          step.run()
-        case (leftData, _) => leftData
-
-      }
+  extension (scen: IsProcessScenario)
 
     def startProcess()(using
         data: ScenarioData
@@ -91,6 +62,60 @@ trait SScenarioExtensions extends SStepExtensions:
             }
         }
     }
+    def runSteps()(using
+        data: ScenarioData
+    ): ResultType =
+      scen.steps.foldLeft[ResultType](Right(data)) {
+        case (Right(data), step) =>
+          given ScenarioData = data
+
+          step.run()
+        case (leftData, _) => leftData
+      }
+
+    def logScenario(body: ScenarioData => ResultType): ResultType =
+      val data = ScenarioData(logEntries =
+        Seq(info(s"${"#" * 7} Scenario ${scen.name} ${"#" * 7}"))
+      )
+      body(data)
+        .map(
+          _.info(
+            s"${Console.GREEN}${"*" * 4} Scenario ${scen.name} SUCCEEDED ${"*" * 4}${Console.RESET}"
+          )
+        )
+        .left
+        .map(
+          _.error(
+            s"${Console.RED}${"*" * 3} Scenario ${scen.name} FAILED ${"*" * 3}${Console.RESET}"
+          )
+        )
+    end logScenario
+
+  end extension
+
+  extension (scen: ProcessScenario)
+    def run(): ResultType =
+      scen.logScenario { (data: ScenarioData) =>
+        given ScenarioData = data
+        for
+          given ScenarioData <- scen.startProcess()
+          given ScenarioData <- scen.runSteps()
+          given ScenarioData <- scen.check()
+        yield summon[ScenarioData]
+      }
+  end extension
+
+  extension (scen: IncidentScenario)
+    def run(): ResultType =
+      scen.logScenario { (data: ScenarioData) =>
+        given ScenarioData = data
+
+        for
+          given ScenarioData <- scen.startProcess()
+          given ScenarioData <- scen.runSteps()
+        // given ScenarioData <- scen.check()
+        yield summon[ScenarioData]
+      }
   end extension
 
   extension (
@@ -100,7 +125,10 @@ trait SScenarioExtensions extends SStepExtensions:
     def check()(using
         data: ScenarioData
     ): ResultType = {
-      checkFinished()(data)
+      for
+        given ScenarioData <- checkFinished()(data)
+        given ScenarioData <- checkVars()
+      yield summon[ScenarioData]
       /*   Seq(
         exec(_.set("processState", null)),
         retryOrFail(
@@ -146,7 +174,44 @@ trait SScenarioExtensions extends SStepExtensions:
             .is(true)
         )
      */
-    def checkFinished()(data: ScenarioData): ResultType = {
+
+    def checkVars()(using data: ScenarioData): ResultType =
+      val processInstanceId = data.context.processInstanceId
+      val uri =
+        uri"${config.endpoint}/history/variable-instance?processInstanceIdIn=$processInstanceId&deserializeValues=false"
+      val request = basicRequest
+        .auth()
+        .get(uri)
+      runRequest(request, s"Process '${scenario.name}' checkVars")(
+        (body, data) =>
+          body
+            .as[Seq[CamundaProperty]]
+            .flatMap { value =>
+              if (
+                checkProps(scenario.asInstanceOf[WithTestOverrides[_]], value)
+              )
+                Right(data.info("Variables successful checked"))
+              else
+                (
+                  Left(
+                    data.error(
+                      "Variables do not match - see above in the Log (look for !!!)"
+                    )
+                  )
+                )
+            }
+            .left
+            .map(exc =>
+              data
+                .error(
+                  s"!!! Problem parsing Result Body to a List of CamundaProperty.\n$exc"
+                )
+                .debug(s"Responce Body: $body")
+            )
+      )
+    end checkVars
+
+    def checkFinished()(data: ScenarioData): ResultType =
       val processInstanceId = data.context.processInstanceId
       val uri =
         uri"${config.endpoint}/history/process-instance/$processInstanceId"
@@ -175,7 +240,7 @@ trait SScenarioExtensions extends SStepExtensions:
                 tryOrFail(checkFinished(), scenario)
             }
       )
-    }
+    end checkFinished
 
   end extension
 end SScenarioExtensions

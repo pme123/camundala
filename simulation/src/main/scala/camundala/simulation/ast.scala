@@ -29,13 +29,17 @@ sealed trait SScenario extends ScenarioOrStep:
   def inOut: InOut[_, _, _]
   def isIgnored: Boolean
 
+sealed trait IsProcessScenario extends SScenario:
+  def process: Process[_,_]
+  def steps: List[SStep]
+
 case class ProcessScenario(
     name: String,
     process: Process[_, _],
     steps: List[SStep] = List.empty,
     isIgnored: Boolean = false,
     testOverrides: Option[TestOverrides] = None
-) extends SScenario,
+) extends IsProcessScenario,
       WithTestOverrides[ProcessScenario]:
   def inOut: InOut[_, _, _] = process
 
@@ -58,18 +62,23 @@ case class DmnScenario(
 
 case class BadScenario(
     name: String,
-    inOut: Process[_, _],
+    process: Process[_, _],
     status: Int,
     errorMsg: Option[String],
     isIgnored: Boolean = false
-) extends SScenario
+) extends IsProcessScenario:
+  lazy val inOut: Process[_, _] = process
+  lazy val steps: List[SStep] = List.empty
+
 
 case class IncidentScenario(
     name: String,
-    inOut: Process[_, _],
+    process: Process[_, _],
+    steps: List[SStep] = List.empty,
     incidentMsg: String,
     isIgnored: Boolean = false
-) extends SScenario
+) extends IsProcessScenario:
+  lazy val inOut: Process[_, _] = process
 
 sealed trait SStep extends ScenarioOrStep
 
@@ -91,10 +100,12 @@ case class SUserTask(
 
 case class SSubProcess(
     name: String,
-    inOut: Process[_, _],
+    process: Process[_, _],
     steps: List[SStep],
     testOverrides: Option[TestOverrides] = None
 ) extends SInOutStep:
+
+  lazy val inOut: Process[_, _] = process
 
   def add(testOverride: TestOverride): SSubProcess =
     copy(testOverrides = addOverride(testOverride))

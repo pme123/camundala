@@ -2,7 +2,7 @@ package camundala.examples.invoice
 package simulation
 
 import camundala.bpmn.*
-import camundala.examples.invoice.bpmn.InvoiceApi.*
+import camundala.examples.invoice.bpmn.InvoiceApi.{`Invoice Receipt`, *}
 import camundala.simulation.*
 import camundala.simulation.custom.CustomSimulation
 import camundala.simulation.gatling.GatlingSimulation
@@ -19,6 +19,10 @@ object InvoiceSimulation extends CustomSimulation, SimulationDsl:
           AssignReviewerUT,
           ReviewInvoiceUT
         )*/
+    incidentScenario(`Invoice Receipt that fails`, "Could not archive invoice...")(
+      ApproveInvoiceUT,
+      PrepareBankTransferUT
+    )
     scenario(`Invoice Receipt`)(
       ApproveInvoiceUT,
       PrepareBankTransferUT
@@ -81,3 +85,6 @@ object InvoiceSimulation extends CustomSimulation, SimulationDsl:
       .exists("amount")
       .notExists("amounts")
       .isEquals("amount", 300.0)
+  private lazy val `Invoice Receipt that fails` =
+    `Invoice Receipt`
+      .withIn(InvoiceReceipt(shouldFail = Some(true)))
