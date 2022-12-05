@@ -2,7 +2,7 @@ package camundala.examples.invoice
 package simulation
 
 import camundala.bpmn.*
-import camundala.examples.invoice.bpmn.InvoiceApi.{`Invoice Receipt`, *}
+import camundala.examples.invoice.bpmn.InvoiceApi.*
 import camundala.simulation.*
 import camundala.simulation.custom.CustomSimulation
 import camundala.simulation.gatling.GatlingSimulation
@@ -19,14 +19,17 @@ object InvoiceSimulation extends CustomSimulation, SimulationDsl:
           AssignReviewerUT,
           ReviewInvoiceUT
         )*/
-    incidentScenario(`Invoice Receipt that fails`, "Could not archive invoice...")(
+    incidentScenario(
+      `Invoice Receipt that fails`,
+      "Could not archive invoice..."
+    )(
       ApproveInvoiceUT,
       PrepareBankTransferUT
-    )
+    ) /*
     scenario(`Invoice Receipt`)(
       ApproveInvoiceUT,
       PrepareBankTransferUT
-    )/*
+    )
     scenario(WithOverrideScenario)(
       `ApproveInvoiceUT with Override`,
       PrepareBankTransferUT

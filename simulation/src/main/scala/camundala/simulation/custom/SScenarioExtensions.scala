@@ -75,18 +75,18 @@ trait SScenarioExtensions extends SStepExtensions:
 
     def logScenario(body: ScenarioData => ResultType): ResultType =
       val data = ScenarioData(logEntries =
-        Seq(info(s"${"#" * 7} Scenario ${scen.name} ${"#" * 7}"))
+        Seq(info(s"${"#" * 7} Scenario '${scen.name}' ${"#" * 7}"))
       )
       body(data)
         .map(
           _.info(
-            s"${Console.GREEN}${"*" * 4} Scenario ${scen.name} SUCCEEDED ${"*" * 4}${Console.RESET}"
+            s"${Console.GREEN}${"*" * 4} Scenario '${scen.name}' SUCCEEDED ${"*" * 4}${Console.RESET}"
           )
         )
         .left
         .map(
           _.error(
-            s"${Console.RED}${"*" * 3} Scenario ${scen.name} FAILED ${"*" * 3}${Console.RESET}"
+            s"${Console.RED}${"*" * 3} Scenario '${scen.name}' FAILED ${"*" * 3}${Console.RESET}"
           )
         )
     end logScenario
@@ -113,9 +113,64 @@ trait SScenarioExtensions extends SStepExtensions:
         for
           given ScenarioData <- scen.startProcess()
           given ScenarioData <- scen.runSteps()
-        // given ScenarioData <- scen.check()
+          given ScenarioData <- scen.checkIncident()(summon[ScenarioData])
         yield summon[ScenarioData]
       }
+
+    def checkIncident()(data: ScenarioData): ResultType = {
+      val processInstanceId = data.context.processInstanceId
+      val uri =
+        uri"${config.endpoint}/incident?processInstanceId=$processInstanceId&deserializeValues=false"
+      val request = basicRequest
+        .auth()
+        .get(uri)
+      given ScenarioData = data
+      runRequest(request, s"Process '${scen.name}' checkIncident") {
+        (body, data) =>
+          body.hcursor.values
+            .map {
+              case (values: Iterable[Json]) if values.toSeq.nonEmpty =>
+                body.hcursor
+                  .downArray
+                  .downField("incidentMessage")
+                  .as[String]
+                  .left
+                  .map { ex =>
+                    data
+                      .error(s"Problem extracting incidentMessage from $body\n $ex")
+                  }
+                  .flatMap {
+                    case incidentMessage if incidentMessage.contains(scen.incidentMsg) =>
+                      Right(
+                        data
+                          .info(s"Process ${scen.name} has finished with incident (as expected).")
+                      )
+                    case incidentMessage =>
+                      Left(
+                        data.error("The Incident contains not the expected message." +
+                          s"\nExpected: ${scen.incidentMsg}\nActual Message: $incidentMessage")
+                      )
+                  }
+              case _ =>
+                given ScenarioData = data
+                tryOrFail(checkIncident(), scen)
+            }
+            .getOrElse(
+              Left(data.error("An Array is expected (should not happen)."))
+            )
+        /*  (for
+
+            errorMsg <- body.hcursor.downField("incidentMessage").as[String]
+          //  if scen.incidentMsg.contains(errorMsg)
+          yield data.info(s"There is the expected Incident with msg: $errorMsg"))
+            .left.map(ex =>
+            data.error(s"Expected Incident was not correct! " +
+              s"\nExpected: ${scen.incidentMsg}\nProcess Msg: $ex")
+          )*/
+      }
+    }
+    end checkIncident
+
   end extension
 
   extension (
@@ -129,14 +184,6 @@ trait SScenarioExtensions extends SStepExtensions:
         given ScenarioData <- checkFinished()(data)
         given ScenarioData <- checkVars()
       yield summon[ScenarioData]
-      /*   Seq(
-        exec(_.set("processState", null)),
-        retryOrFail(
-          exec(checkFinished()).exitHereIfFailed,
-          processFinishedCondition
-        ),
-        exec(checkVars()).exitHereIfFailed
-      )*/
     }
     /*
     // checks if a variable has this value.
@@ -153,26 +200,6 @@ trait SScenarioExtensions extends SStepExtensions:
         )
       )
     }
-
-    def checkVars(): HttpRequestBuilder =
-      http(scenario.description("Check", scenario.name))
-        .get(
-          "/history/variable-instance?processInstanceIdIn=#{processInstanceId}&deserializeValues=false"
-        )
-        .auth()
-        .check(
-          bodyString
-            .transform { body =>
-              parse(body)
-                .flatMap(_.as[Seq[CamundaProperty]]) match {
-                case Right(value) =>
-                  checkProps(scenario.asInstanceOf[WithTestOverrides[_]], value)
-                case Left(exc) =>
-                  s"\n!!! Problem parsing Result Body to a List of CamundaProperty.\n$exc\n$body"
-              }
-            }
-            .is(true)
-        )
      */
 
     def checkVars()(using data: ScenarioData): ResultType =
