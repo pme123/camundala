@@ -34,11 +34,15 @@ sealed trait IsProcessScenario extends SScenario:
   def steps: List[SStep]
 
 case class ProcessScenario(
+    // this is name of process in case of START
+    // this is message name in case of MESSAGE
+    // this is signal name in case of SIGNAL
     name: String,
     process: Process[_, _],
     steps: List[SStep] = List.empty,
     isIgnored: Boolean = false,
-    testOverrides: Option[TestOverrides] = None
+    testOverrides: Option[TestOverrides] = None,
+    startType:ProcessStartType = ProcessStartType.START
 ) extends IsProcessScenario,
       WithTestOverrides[ProcessScenario]:
   def inOut: InOut[_, _, _] = process
@@ -47,6 +51,9 @@ case class ProcessScenario(
     copy(testOverrides = addOverride(testOverride))
 
   def ignored: ProcessScenario = copy(isIgnored = true)
+
+enum ProcessStartType :
+  case START, MESSAGE, SIGNAL
 
 case class DmnScenario(
     name: String,

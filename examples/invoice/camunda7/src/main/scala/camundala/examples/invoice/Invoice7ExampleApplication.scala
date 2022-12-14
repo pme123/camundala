@@ -14,12 +14,12 @@ import javax.annotation.PostConstruct
 
 @SpringBootApplication
 @EnableProcessApplication
-class InvoiceServletProcessApplication
+class Invoice7ExampleApplication
 
-object InvoiceServletProcessApplication:
+object Invoice7ExampleApplication:
 
   def main(args: Array[String]): Unit =
-    SpringApplication.run(classOf[InvoiceServletProcessApplication], args: _*)
+    SpringApplication.run(classOf[Invoice7ExampleApplication], args: _*)
 
   lazy val invoicePa = new InvoiceProcessApplication()
 

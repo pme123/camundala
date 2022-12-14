@@ -97,3 +97,12 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
   end extension
 
   def waitFor(timeInSec: Int): SWaitTime = SWaitTime(timeInSec)
+
+  extension (scen: ProcessScenario)
+    def startWithMsg: ProcessScenario =
+      scen.copy(startType = ProcessStartType.MESSAGE)
+
+    def startWithSignal: ProcessScenario =
+      scen.copy(startType = ProcessStartType.SIGNAL)
+
+  end extension

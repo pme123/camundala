@@ -11,9 +11,9 @@ import org.scalatest.funsuite.AnyFunSuite
 import sttp.client3.*
 
 abstract class CustomSimulation
-    extends //AnyFunSuite,
+    extends
     SimulationDsl[LogLevel],
-      SScenarioExtensions {
+      DmnScenarioExtensions {
 
   def simulation: LogLevel
 
@@ -54,13 +54,14 @@ abstract class CustomSimulation
   ): LogLevel =
     val name = getClass.getSimpleName
     val line = "~" * ((80 - name.length) / 2)
+    val maxLine = 85
     println(
-      s"""${level.color}$line START $name $line${Console.RESET}
+      s"""${level.color}${s"$line START $name $line".takeRight(maxLine)}${Console.RESET}
          |${scenarioResults.map(_.log).mkString("\n")}
-         |${level.delimiter * 60}
+         |${"-" * maxLine}
          |${level.color}Scenarios with Level $level:${Console.RESET}
          |${scenarioResults.map { scenRes => s"- ${scenRes.name}" }.mkString("\n")}
-         |${level.color}$line END $name ~$line${Console.RESET}
+         |${level.color}${s"$line END $name $line".takeRight(maxLine)}${Console.RESET}
          |""".stripMargin
     )
     level

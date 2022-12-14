@@ -23,7 +23,7 @@ trait SimulationHelper extends ResultChecker, Logging:
     SimulationConfig[RequestT[Empty, Either[String, String], Any]]()
 
   lazy val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
-
+  lazy val cockpitUrl = config.endpoint.replace("/engine-rest", "/camunda/app/cockpit/default")
   extension (request: RequestT[Empty, Either[String, String], Any])
     def auth(): RequestT[Empty, Either[String, String], Any] =
       config.authHeader(request)

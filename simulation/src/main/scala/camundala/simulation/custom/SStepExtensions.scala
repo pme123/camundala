@@ -12,19 +12,19 @@ trait SStepExtensions extends SUserTaskExtensions :
         case ut: SUserTask =>
           ut.getAndComplete()
         case e: SReceiveMessageEvent =>
-          Right(data.info(s"e ${e.name}"))
+          Left(data.error(s"SReceiveMessageEvent is not implemented"))
         // e.correlate(config.tenantId)
         case e: SReceiveSignalEvent =>
-          Right(data.info(s"e ${e.name}"))
+          Left(data.error(s"SReceiveSignalEvent is not implemented"))
         // e.sendSignal()
         case sp: SSubProcess =>
-          Right(data.error(s"sp ${sp.name}"))
+          Left(data.error(s"SSubProcess is not implemented"))
         /*  sp.switchToSubProcess() ++
              sp.steps.flatMap(toGatling) ++
              sp.check() :+
              sp.switchToMainProcess() */
         case SWaitTime(seconds) =>
-          Right(data.info(s"wait time $seconds"))
+          Left(data.error(s"SWaitTime is not implemented"))
         //  Seq(exec().pause(seconds))
 
       }

@@ -15,45 +15,45 @@ class InvoiceSimulation extends CustomSimulation:
 
   lazy val simulation = simulate {
 
-    scenario(`Review Invoice`)(
-      AssignReviewerUT,
-      ReviewInvoiceUT
-    )/*
-    incidentScenario(
-      `Invoice Receipt that fails`,
-      "Could not archive invoice..."
-    )(
-      ApproveInvoiceUT,
-      PrepareBankTransferUT
-    )
-    scenario(`Invoice Receipt`)(
-      ApproveInvoiceUT,
-      PrepareBankTransferUT
-    )
-    scenario(WithOverrideScenario)(
-      `ApproveInvoiceUT with Override`,
-      PrepareBankTransferUT
-    )*//*
-    scenario(`Invoice Receipt with Review`)(
-      NotApproveInvoiceUT,
-      subProcess(`Review Invoice`)(
-        AssignReviewerUT,
-        ReviewInvoiceUT // do clarify
-      ),
-      ApproveInvoiceUT, // now approve
-      PrepareBankTransferUT
-    )
-    scenario(`Invoice Receipt with Review failed`)(
-      NotApproveInvoiceUT, // do not approve
-      subProcess(`Review Invoice not clarified`)(
-        AssignReviewerUT,
-        ReviewInvoiceNotClarifiedUT // do not clarify
-      )
-    )
+    /* scenario(`Review Invoice`)(
+       AssignReviewerUT,
+       ReviewInvoiceUT
+     )
+     incidentScenario(
+       `Invoice Receipt that fails`,
+       "Could not archive invoice..."
+     )(
+       ApproveInvoiceUT,
+       PrepareBankTransferUT
+     )
+     scenario(`Invoice Receipt`)(
+       ApproveInvoiceUT,
+       PrepareBankTransferUT
+     )
+     scenario(WithOverrideScenario)(
+       `ApproveInvoiceUT with Override`,
+       PrepareBankTransferUT
+     )*/
+     scenario(`Invoice Receipt with Review`)(
+       NotApproveInvoiceUT,
+       subProcess(`Review Invoice`)(
+         AssignReviewerUT,
+         ReviewInvoiceUT // do clarify
+       ),
+       ApproveInvoiceUT, // now approve
+       PrepareBankTransferUT
+     )/*
+     scenario(`Invoice Receipt with Review failed`)(
+       NotApproveInvoiceUT, // do not approve
+       subProcess(`Review Invoice not clarified`)(
+         AssignReviewerUT,
+         ReviewInvoiceNotClarifiedUT // do not clarify
+       )
+     )
+*/
+     scenario(InvoiceAssignApproverDMN)
+     scenario(InvoiceAssignApproverDMN2)
 
-    scenario(InvoiceAssignApproverDMN)
-    scenario(InvoiceAssignApproverDMN2)
-    */
     /*    badScenario(
          BadValidationP,
          500,
