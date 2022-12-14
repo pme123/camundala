@@ -31,9 +31,12 @@ case class LogEntry(logLevel: LogLevel, msg: String, timestamp: LocalDateTime = 
   override def toString: String =
     s"${dtf.format(timestamp)} $logLevel: $msg"
 
-enum LogLevel extends Ordered[LogLevel] :
+enum LogLevel(val color: String, val delimiter: Char) extends Ordered[LogLevel] :
   override def compare(that: LogLevel): Int = that.ordinal - ordinal
 
-  case DEBUG, INFO, WARN, ERROR
+  case DEBUG extends LogLevel(Console.GREEN, '.')
+  case INFO extends LogLevel(Console.GREEN, '.')
+  case WARN extends LogLevel(Console.MAGENTA, '*')
+  case ERROR extends LogLevel(Console.RED, '#')
 
 

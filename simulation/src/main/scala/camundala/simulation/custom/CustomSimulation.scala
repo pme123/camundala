@@ -38,35 +38,8 @@ abstract class CustomSimulation
       .groupBy(_.maxLevel)
       .toSeq
       .sortBy(_._1)
-      .map {
-        case LogLevel.ERROR -> scenarioResults =>
-          println(s"""${Console.RED}~~~~~~~~~~ ${getClass.getSimpleName} ~~~~~~~~~~${Console.RESET}
-                     |${scenarioResults.map(_.log).mkString("\n")}
-                     |${"*" * 60}
-                     |${Console.RED}Scenarios that FAILED:${Console.RESET}
-                     |${scenarioResults.map { case scenRes => s"- ${scenRes.name}" }.mkString("\n")}
-                     |Check the logs above.
-                     |${Console.RED}~~~~~~~~~ END ${getClass.getSimpleName} ~~~~~~~~~${Console.RESET}
-                     |""".stripMargin)
-          LogLevel.ERROR
-        case LogLevel.WARN -> scenarioResults =>
-          println(s"""${Console.MAGENTA}~~~~~~~~~~ ${getClass.getSimpleName} ~~~~~~~~~~${Console.RESET}
-                     |${scenarioResults.map(_.log).mkString("\n")}
-                     |${"-" * 60}
-                     |${Console.MAGENTA}Scenarios with WARNINGS:${Console.RESET}
-                     |${scenarioResults.map { scenRes => s"- ${scenRes.name}" }.mkString("\n")}
-                     |${Console.MAGENTA}~~~~~~~~~~ END ${getClass.getSimpleName} ~~~~~~~~~~${Console.RESET}
-                     |""".stripMargin)
-          LogLevel.WARN
-        case l -> scenarioResults =>
-          println(s"""${Console.GREEN}~~~~~~~~~~ ${getClass.getSimpleName} ~~~~~~~~~~${Console.RESET}
-                     |${scenarioResults.map(_.log).mkString("\n")}
-                     |${"." * 60}
-                     |${Console.GREEN}Successful Scenarios:${Console.RESET}
-                     |${scenarioResults.map { scenRes => s"- ${scenRes.name}" }.mkString("\n")}
-                     |${Console.GREEN}~~~~~~~~~~ END ${getClass.getSimpleName} ~~~~~~~~~~${Console.RESET}
-                     |""".stripMargin)
-          l
+      .map { case level -> scenarioResults =>
+        printResult(level, scenarioResults)
       }
       .head /*
       .foreach {
@@ -75,4 +48,20 @@ abstract class CustomSimulation
         case _ => succeeded
       }*/
 
+  private def printResult(
+      level: LogLevel,
+      scenarioResults: Seq[ScenarioResult]
+  ): LogLevel =
+    val name = getClass.getSimpleName
+    val line = "~" * ((80 - name.length) / 2)
+    println(
+      s"""${level.color}$line START $name $line${Console.RESET}
+         |${scenarioResults.map(_.log).mkString("\n")}
+         |${level.delimiter * 60}
+         |${level.color}Scenarios with Level $level:${Console.RESET}
+         |${scenarioResults.map { scenRes => s"- ${scenRes.name}" }.mkString("\n")}
+         |${level.color}$line END $name ~$line${Console.RESET}
+         |""".stripMargin
+    )
+    level
 }

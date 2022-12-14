@@ -15,7 +15,7 @@ case class SimulationConfig[B](
                              // the number of parallel execution of a simulation.
                              // for example run the process 3 times (userAtOnce = 3)
                              userAtOnce: Int = 1,
-                             // you can run the requess of a scenario multiple times. (the preRequests will be run only once - e.g. get a token)
+                             // you can run the request of a scenario multiple times. (the preRequests will be run only once - e.g. get a token)
                              executionCount: Int = 1,
                              // add requests that needed to be executed before the test requests.
                              // example get the token for OAuth2
