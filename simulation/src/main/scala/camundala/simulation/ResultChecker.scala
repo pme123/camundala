@@ -1,11 +1,11 @@
 package camundala
 package simulation
 
-import bpmn.*
-import bpmn.CamundaVariable.*
 import camundala.api.CamundaProperty
+import camundala.bpmn.*
+import camundala.bpmn.CamundaVariable.*
+import camundala.domain.*
 import camundala.simulation.TestOverrideType.*
-import domain.*
 import io.circe.parser.*
 
 trait ResultChecker {
@@ -87,7 +87,6 @@ trait ResultChecker {
                 case Left(ex) =>
                   throwErr(s"Problem parsing Json: $jsonStr\n$ex")
             case other => other
-          println(s"EXPECTED: $exp")
           val matches = result.contains(exp)
           if (!matches)
             println(

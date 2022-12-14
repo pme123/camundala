@@ -1,21 +1,19 @@
 package camundala.examples.demos
 
+import camundala.examples.demos.DateExample.*
 import camundala.simulation.*
+import camundala.simulation.custom.CustomSimulation
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
-import DateExample.*
-import camundala.simulation.gatling.GatlingSimulation
-
-import scala.concurrent.duration.*
 
 // exampleDemos/GatlingIt/testOnly *DateExampleSimulation
-class DateExampleSimulation extends SimulationDsl, GatlingSimulation:
+// exampleDemos/It/run *DateExampleSimulation
+class DateExampleSimulation extends CustomSimulation:
 
-  override implicit def config =
-    super.config.withPort(8033)
-
-  simulate {
+  lazy val simulation = simulate {
     scenario(DateExampleDMN)
 
   }
 
+  override implicit def config =
+    super.config.withPort(8033)

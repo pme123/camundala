@@ -1,20 +1,21 @@
-package camundala
-package simulation
-package gatling
+package camundala.simulation.gatling
 
 import camundala.bpmn.CamundaVariable.CInteger
 import camundala.api.{CamundaProperty, CompleteTaskOut, CorrelateMessageIn, FormVariables, StartProcessIn}
 import io.gatling.http.Predef.*
 import io.gatling.http.protocol.HttpProtocolBuilder
 import io.gatling.core.Predef.*
+import io.gatling.core.{Predef => gatling}
 import io.gatling.core.structure.*
 import camundala.bpmn.*
+import camundala.simulation.*
 import io.circe.parser.parse
 import io.gatling.http.request.builder.HttpRequestBuilder
 import io.circe.syntax.*
 
 trait GatlingSimulation
     extends Simulation,
+      SimulationDsl[Unit],
       SScenarioExtensions,
       SSubProcessExtensions,
       SUserTaskExtensions,
@@ -61,7 +62,7 @@ trait GatlingSimulation
       case is: IncidentScenario =>
         is.start() +: checkIncident(is.incidentMsg)
 
-    scenario(scen.name)
+    gatling.scenario(scen.name)
       .doIf(scen.isIgnored)(exec { session =>
         println(s">>> Scenario '${scen.name}' is ignored!")
         session

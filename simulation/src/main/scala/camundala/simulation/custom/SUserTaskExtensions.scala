@@ -4,7 +4,6 @@ import camundala.api.*
 import camundala.bpmn.*
 import camundala.simulation.*
 import io.circe.*
-import io.circe.parser.*
 import io.circe.syntax.*
 import sttp.client3.*
 
@@ -24,7 +23,6 @@ trait SUserTaskExtensions extends SimulationHelper:
       def getTask(
           processInstanceId: Any
       )(data: ScenarioData): ResultType = {
-        val backend = HttpClientSyncBackend()
         val uri =
           uri"${config.endpoint}/task?processInstanceId=$processInstanceId"
         val request = basicRequest
@@ -36,13 +34,8 @@ trait SUserTaskExtensions extends SimulationHelper:
           )
           .debug(s"- URI: $uri")
 
-        val response = request.send(backend)
-        response.body
-          .flatMap(parse)
-          .left
-          .map(body =>
-            handleNon2xxResponse(response.code, body, request.toCurl)
-          )
+        request
+          .extractBody()
           .flatMap(body =>
             body.hcursor.downArray
               .downField("id")
@@ -81,13 +74,15 @@ trait SUserTaskExtensions extends SimulationHelper:
         )
         .debug(s"- URI: $uri")
 
-      val response = request.send(backend)
-      response.body.left
-        .map(body => handleNon2xxResponse(response.code, body, request.toCurl))
-        .flatMap(parse)
-        .flatMap(_.as[FormVariables])
-        .left
-        .map(err => summon[ScenarioData].error(s"Problem creating FormVariables from response.\n$err"))
+      request
+        .extractBody()
+        .flatMap(
+          _.as[FormVariables].left
+            .map(err =>
+              summon[ScenarioData]
+                .error(s"Problem creating FormVariables from response.\n$err")
+            )
+        )
         .flatMap(formVariables =>
           if (
             checkProps(
@@ -95,9 +90,16 @@ trait SUserTaskExtensions extends SimulationHelper:
               CamundaProperty.from(formVariables)
             )
           )
-            Right(summon[ScenarioData].info(s"UserTask Form is correct for ${userTask.name}"))
+            Right(
+              summon[ScenarioData]
+                .info(s"UserTask Form is correct for ${userTask.name}")
+            )
           else
-            Left(summon[ScenarioData].error(s"Tests for UserTask Form ${userTask.name} failed - check log above (look for !!!)"))
+            Left(
+              summon[ScenarioData].error(
+                s"Tests for UserTask Form ${userTask.name} failed - check log above (look for !!!)"
+              )
+            )
         )
     }
 

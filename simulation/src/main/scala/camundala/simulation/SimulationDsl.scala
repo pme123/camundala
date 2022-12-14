@@ -6,9 +6,9 @@ import camundala.bpmn.*
 import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
 
-trait SimulationDsl extends TestOverrideExtensions:
+trait SimulationDsl[T] extends TestOverrideExtensions:
 
-  def run(sim: SSimulation): Unit
+  def run(sim: SSimulation): T
 
   class SimulationBuilder:
     private val ib = ListBuffer.empty[SScenario]
@@ -23,7 +23,7 @@ trait SimulationDsl extends TestOverrideExtensions:
     private[simulation] def stage: SimulationConstr =
       (bldr: SimulationBuilder) ?=> bldr.pushScenario(scen)
 
-  def simulate(body: SimulationConstr): Unit =
+  def simulate(body: SimulationConstr): T =
     val sb = SimulationBuilder()
     body(using sb)
     val sim = sb.mkBlock

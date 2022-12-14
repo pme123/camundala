@@ -5,27 +5,27 @@ import camundala.bpmn.*
 import camundala.examples.invoice.bpmn.InvoiceApi.*
 import camundala.simulation.*
 import camundala.simulation.custom.CustomSimulation
-import camundala.simulation.gatling.GatlingSimulation
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
 
 import scala.concurrent.duration.*
 
 // exampleInvoiceC7/GatlingIt/testOnly *InvoiceSimulation
-object InvoiceSimulation extends CustomSimulation, SimulationDsl:
+class InvoiceSimulation extends CustomSimulation:
 
-  simulate {
-    /*    scenario(`Review Invoice`)(
-          AssignReviewerUT,
-          ReviewInvoiceUT
-        )*/
+  lazy val simulation = simulate {
+
+    scenario(`Review Invoice`)(
+      AssignReviewerUT,
+      ReviewInvoiceUT
+    )/*
     incidentScenario(
       `Invoice Receipt that fails`,
       "Could not archive invoice..."
     )(
       ApproveInvoiceUT,
       PrepareBankTransferUT
-    ) /*
+    )
     scenario(`Invoice Receipt`)(
       ApproveInvoiceUT,
       PrepareBankTransferUT
@@ -33,7 +33,7 @@ object InvoiceSimulation extends CustomSimulation, SimulationDsl:
     scenario(WithOverrideScenario)(
       `ApproveInvoiceUT with Override`,
       PrepareBankTransferUT
-    )
+    )*//*
     scenario(`Invoice Receipt with Review`)(
       NotApproveInvoiceUT,
       subProcess(`Review Invoice`)(
@@ -49,17 +49,18 @@ object InvoiceSimulation extends CustomSimulation, SimulationDsl:
         AssignReviewerUT,
         ReviewInvoiceNotClarifiedUT // do not clarify
       )
-    )*/
-    /*
+    )
+
     scenario(InvoiceAssignApproverDMN)
     scenario(InvoiceAssignApproverDMN2)
-      badScenario(
-        BadValidationP,
-        500,
-        Some(
-          "Validation Error: Input is not valid: DecodingFailure(Attempt to decode value on failed cursor, List(DownField(creditor)))"
-        )
-      )*/
+    */
+    /*    badScenario(
+         BadValidationP,
+         500,
+         Some(
+           "Validation Error: Input is not valid: DecodingFailure(Attempt to decode value on failed cursor, List(DownField(creditor)))"
+         )
+       )*/
   }
 
   override implicit def config =

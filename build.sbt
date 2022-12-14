@@ -39,7 +39,7 @@ def projectSettings(projName: String): Seq[Def.Setting[_]] = Seq(
   name := s"camundala-$projName",
   organization := org,
   scalaVersion := scala3Version,
-  version := projectVersion
+  version := projectVersion,
 )
 
 lazy val domain = project
@@ -123,8 +123,9 @@ lazy val simulation = project
   .settings(
     libraryDependencies ++=
       gatlingDependencies :+
-    "com.softwaremill.sttp.client3" %% "core" % "3.8.3",
-    scalacOptions ++= Seq(
+    "com.softwaremill.sttp.client3" %% "core" % "3.8.3" :+
+      "org.scalatest" %% "scalatest" % "3.2.12",
+      scalacOptions ++= Seq(
       "-Xmax-inlines",
       "50" // is declared as erased, but is in fact used
     )
@@ -196,10 +197,14 @@ lazy val gatlingDependencies = Seq(
 // EXAMPLES
 lazy val exampleInvoiceC7 = project
   .in(file("./examples/invoice/camunda7"))
+  .configs(IntegrationTest)
+  .settings(Defaults.itSettings,
+    testFrameworks += new TestFramework("camundala.simulation.custom.SimulationTestFramework")
+  )
   .settings(projectSettings("example-invoice-c7"))
   .configure(preventPublication)
   .settings(
-    Test / parallelExecution := false,
+    //Test / parallelExecution := false,
     libraryDependencies ++= camundaDependencies
   )
   .dependsOn(dmn, camunda, simulation)
@@ -240,13 +245,19 @@ lazy val exampleTwitterC8 = project
 
 lazy val exampleDemos = project
   .in(file("./examples/demos"))
+  .configs(IntegrationTest)
+  .settings(Defaults.itSettings,
+    testFrameworks += new TestFramework("camundala.simulation.custom.SimulationTestFramework")
+  )
   .settings(projectSettings("example-demos"))
   .configure(preventPublication)
   .settings(
-    libraryDependencies ++= camundaDependencies
+    libraryDependencies ++= camundaDependencies,
+ //   libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % "it",
+
   )
   .dependsOn(camunda, simulation)
-  .enablePlugins(GatlingPlugin)
+  //.enablePlugins(GatlingPlugin)
 
 val springBootVersion = "2.6.1"
 val h2Version = "1.4.200"

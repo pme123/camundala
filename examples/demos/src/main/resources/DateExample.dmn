@@ -10,7 +10,7 @@
       <output id="Output_1" name="outDate" typeRef="date" />
       <rule id="DecisionRule_0j6aice">
         <inputEntry id="UnaryTests_1rb14pi">
-          <text>&gt; "2012-12-12T12:12:12"</text>
+          <text>&gt; date and time("2012-12-12T12:12:12")</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1ivr84q">
           <text>"2012-12-12T12:12:12"</text>
@@ -18,10 +18,10 @@
       </rule>
       <rule id="DecisionRule_0ce6p88">
         <inputEntry id="UnaryTests_05eef5w">
-          <text>&lt;= "2012-12-12T12:12:12</text>
+          <text>&lt;=  date and time("2012-12-12T12:12:12")</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1p6bybl">
-          <text>"2010-12-12T12:12:12"</text>
+          <text>"2010-12-22T12:12:12"</text>
         </outputEntry>
       </rule>
     </decisionTable>

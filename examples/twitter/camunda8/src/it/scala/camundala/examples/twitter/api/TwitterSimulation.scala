@@ -13,7 +13,7 @@ import sttp.tapir.generic.auto.*
 import scala.concurrent.duration.*
 
 // exampleTwitterC8/GatlingIt/testOnly *TwitterSimulation
-class TwitterSimulation extends SimulationDsl, GatlingSimulation:
+class TwitterSimulation extends GatlingSimulation:
 
   override implicit def config =
     super.config.withPort(8887)
