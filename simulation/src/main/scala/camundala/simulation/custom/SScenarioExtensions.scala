@@ -3,6 +3,7 @@ package custom
 
 import camundala.api.*
 import camundala.bpmn.*
+import camundala.domain.*
 import io.circe.*
 import io.circe.syntax.*
 import sttp.client3.*
@@ -10,6 +11,24 @@ import sttp.client3.*
 import scala.collection.immutable.Seq
 
 trait SScenarioExtensions extends SStepExtensions:
+
+  case class ProcessInstanceOrExecution(execution: Option[Execution], processInstance: Option[ProcessInstance])
+  object ProcessInstanceOrExecution:
+    given Schema[ProcessInstanceOrExecution] = Schema.derived
+    given Encoder[ProcessInstanceOrExecution] = deriveEncoder
+    given Decoder[ProcessInstanceOrExecution] = deriveDecoder
+
+  case class Execution(processInstanceId: String)
+  object Execution:
+    given Schema[Execution] = Schema.derived
+    given Encoder[Execution] = deriveEncoder
+    given Decoder[Execution] = deriveDecoder
+
+  case class ProcessInstance(id: String)
+  object ProcessInstance:
+    given Schema[ProcessInstance] = Schema.derived
+    given Encoder[ProcessInstance] = deriveEncoder
+    given Decoder[ProcessInstance] = deriveDecoder
 
   extension (scenario: IsProcessScenario)
 
@@ -52,6 +71,74 @@ trait SScenarioExtensions extends SStepExtensions:
       )
     }
 
+    def sendMessage()(using
+        data: ScenarioData
+    ): ResultType = {
+      val process = scenario.process
+      val body = CorrelateMessageIn(
+        messageName = process.processName,
+        tenantId = summon[SimulationConfig[?]].tenantId,
+        businessKey = Some(scenario.name),
+        processVariables = Some(process.camundaInMap)
+      ).asJson.deepDropNullValues.toString
+      val uri = uri"${config.endpoint}/message"
+
+      val request = basicRequest
+        .auth()
+        .contentType("application/json")
+        .body(body)
+        .post(uri)
+
+      runRequest(request, s"Process '${scenario.name}' start with message")(
+        (body, data) =>
+          body
+            .as[List[ProcessInstanceOrExecution]]
+            .map { pioe =>
+              val processInstanceId = pioe match
+                case ProcessInstanceOrExecution(Some(exec), None) :: _ => exec.processInstanceId
+                case ProcessInstanceOrExecution(None, Some(procInst)):: _ => procInst.id
+                case other => s"PROCESS ID not found in $other"
+              data
+                .withProcessInstanceId(processInstanceId)
+                .info(
+                  s"Process '${process.processName}' started (check $cockpitUrl/#/process-instance/$processInstanceId)"
+                )
+                .debug(s"- processInstanceId: $processInstanceId")
+                .debug(s"- body: $body")
+            }
+            .left
+            .map { ex =>
+              data
+                .error(s"Problem extracting processInstanceId from $body\n $ex")
+            }
+      )
+    }
+
+    def sendSignal()(using
+        data: ScenarioData
+    ): ResultType = {
+      val process = scenario.process
+      val body = SendSignalIn(
+        name = process.processName,
+        variables = Some(process.camundaInMap)
+      ).asJson.deepDropNullValues.toString
+      val uri = uri"${config.endpoint}/signal"
+
+      val request = basicRequest
+        .auth()
+        .contentType("application/json")
+        .body(body)
+        .post(uri)
+
+      runRequest(request, s"Process '${scenario.name}' start with signal")(
+        (_, data) =>
+         Right(data
+           .info(
+             s"Process '${process.processName}' started (check $cockpitUrl/#/process-instance/)"
+           ))
+      )
+    }
+
     def runSteps()(using
         data: ScenarioData
     ): ResultType =
@@ -69,7 +156,9 @@ trait SScenarioExtensions extends SStepExtensions:
       scenario.logScenario { (data: ScenarioData) =>
         given ScenarioData = data
         for
-          given ScenarioData <- scenario.startProcess()
+          given ScenarioData <- scenario.startType match
+            case ProcessStartType.START => scenario.startProcess()
+            case ProcessStartType.MESSAGE => scenario.sendMessage()
           given ScenarioData <- scenario.runSteps()
           given ScenarioData <- scenario.check()
         yield summon[ScenarioData]

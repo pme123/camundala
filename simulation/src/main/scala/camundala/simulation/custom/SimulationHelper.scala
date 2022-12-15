@@ -66,15 +66,18 @@ trait SimulationHelper extends ResultChecker, Logging:
       .debug(s"- URI: ${request.uri}")
 
     val response = request.send(backend)
-    response.body.left
-      .map(body => handleNon2xxResponse(response.code, body, request.toCurl))
-      .flatMap(parser.parse)
-      .left
-      .map(err =>
-        summon[ScenarioData]
-          .error(s"Problem creating body from response.\n$err")
-      )
-      .flatMap(handleBody(_, summon[ScenarioData]))
+    if(StatusCode.NoContent == response.code)
+      handleBody(Json.Null, summon[ScenarioData])
+    else
+      response.body.left
+        .map(body => handleNon2xxResponse(response.code, body, request.toCurl))
+        .flatMap(parser.parse)
+        .left
+        .map(err =>
+          summon[ScenarioData]
+            .error(s"Problem creating body from response.\n$err")
+        )
+        .flatMap(handleBody(_, summon[ScenarioData]))
 
   protected def tryOrFail(
       funct: ScenarioData => ResultType,

@@ -12,7 +12,7 @@ object SignalMessageExample extends BpmnDsl:
     out = SignalMessageExampleOut()
   )
   lazy val signalExample = process(
-    "signal-for-example",
+    "signal-example",
     out = SignalMessageExampleOut(endStatus = EndStatus.signalReceived)
   )
 

@@ -12,8 +12,10 @@ class SignalMessageExampleSimulation extends CustomSimulation:
 
   lazy val simulation: LogLevel = simulate {
     scenario(messageExample.startWithMsg)
-
-   // scenario(signalExample.startWithSignal)
+    //TODO in doc:
+    // .startWithSignal not supported as it is fire and forget 
+    // - but we need the processInstanceId as reference
+    scenario(signalExample) 
 
 
   }

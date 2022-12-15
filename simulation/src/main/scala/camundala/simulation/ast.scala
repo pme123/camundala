@@ -53,7 +53,7 @@ case class ProcessScenario(
   def ignored: ProcessScenario = copy(isIgnored = true)
 
 enum ProcessStartType :
-  case START, MESSAGE, SIGNAL
+  case START, MESSAGE
 
 case class DmnScenario(
     name: String,

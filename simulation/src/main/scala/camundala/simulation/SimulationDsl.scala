@@ -102,7 +102,4 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     def startWithMsg: ProcessScenario =
       scen.copy(startType = ProcessStartType.MESSAGE)
 
-    def startWithSignal: ProcessScenario =
-      scen.copy(startType = ProcessStartType.SIGNAL)
-
   end extension
