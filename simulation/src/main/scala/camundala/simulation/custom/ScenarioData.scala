@@ -37,7 +37,7 @@ case class ScenarioResult(name: String, maxLevel: LogLevel, log: String)
 object ScenarioData:
   def apply(logEntry: LogEntry): ScenarioData =
     ScenarioData(logEntries = Seq(logEntry))
-val notSet = "NotSet"
+
 case class ContextData(
                         requestCount: Int = 0,
                         processInstanceId: String = notSet,

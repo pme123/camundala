@@ -17,13 +17,13 @@ trait SEventExtensions extends SimulationHelper:
     def event = sEvent.inOut
 
     def correlate(tenantId: Option[String]): Seq[ChainBuilder] =
-      if (sEvent.readyVariable.nonEmpty) {
-        val readyVariable = sEvent.readyVariable.get
+      if (sEvent.optReadyVariable.nonEmpty) {
+        val readyVariable = sEvent.readyVariable
         Seq(
           exec(_.set(readyVariable, null)),
           retryOrFail(
-            loadVariable(sEvent.readyVariable.get),
-            processReadyCondition(sEvent.readyVariable.get, sEvent.readyValue)
+            loadVariable(sEvent.readyVariable),
+            processReadyCondition(sEvent.readyVariable, sEvent.readyValue)
           ),
           correlateMsg(tenantId)
         )

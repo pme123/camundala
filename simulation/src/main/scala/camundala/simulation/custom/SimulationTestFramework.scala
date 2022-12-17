@@ -34,6 +34,7 @@ final class SimulationRunner(
     val remoteArgs: Array[String],
     testClassLoader: ClassLoader
 ) extends sbt.testing.Runner:
+  private val maxLine = 85
 
   override def tasks(
       taskDefs: Array[sbt.testing.TaskDef]
@@ -44,13 +45,26 @@ final class SimulationRunner(
         (loggers, eventHandler) =>
           Future {
             val startTime = System.currentTimeMillis()
-            val logLevel = Class
+            val simResults = Class
               .forName(td.fullyQualifiedName())
               .getDeclaredConstructor()
               .newInstance()
               .asInstanceOf[CustomSimulation]
               .simulation
             val time = System.currentTimeMillis() - startTime
+            val name = td.fullyQualifiedName().split('.').last
+            val line = "~" * (((maxLine - 5) - name.length) / 2)
+            val logLevel = simResults.head._1
+            println(
+              s"""${logLevel.color}${s"$line START $name $line"
+                .takeRight(maxLine)}${Console.RESET}
+                 |${simResults.flatMap((sr: (LogLevel, Seq[ScenarioResult])) => sr._2.map(_.log)).mkString("\n")}
+                 |${simResults.map(sr => printResult(sr._1, sr._2)).mkString("\n")}
+                 |${logLevel.color}${s"$line END $name $line"
+                .takeRight(maxLine)}${Console.RESET}
+                 |""".stripMargin
+            )
+
             eventHandler.synchronized {
               eventHandler.handle(new sbt.testing.Event {
                 def fullyQualifiedName(): String = td.fullyQualifiedName()
@@ -84,6 +98,16 @@ final class SimulationRunner(
 
   override def done(): String =
     "All Simulations done - see the console above for more information"
+
+  private def printResult(
+      level: LogLevel,
+      scenarioResults: Seq[ScenarioResult]
+  ): String =
+    s"""${"-" * maxLine}
+       |${level.color}Scenarios with Level $level:${Console.RESET}
+       |${scenarioResults
+      .map { scenRes => s"- ${scenRes.name}" }
+      .mkString("\n")}""".stripMargin
 
 end SimulationRunner
 

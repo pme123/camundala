@@ -1,8 +1,8 @@
-package camundala.simulation.custom
+package camundala.simulation
+package custom
 
 import camundala.api.*
 import camundala.bpmn.*
-import camundala.simulation.*
 import io.circe.*
 import io.circe.syntax.*
 import sttp.client3.*

@@ -114,31 +114,6 @@ trait SScenarioExtensions extends SStepExtensions:
       )
     }
 
-    def sendSignal()(using
-        data: ScenarioData
-    ): ResultType = {
-      val process = scenario.process
-      val body = SendSignalIn(
-        name = process.processName,
-        variables = Some(process.camundaInMap)
-      ).asJson.deepDropNullValues.toString
-      val uri = uri"${config.endpoint}/signal"
-
-      val request = basicRequest
-        .auth()
-        .contentType("application/json")
-        .body(body)
-        .post(uri)
-
-      runRequest(request, s"Process '${scenario.name}' start with signal")(
-        (_, data) =>
-         Right(data
-           .info(
-             s"Process '${process.processName}' started (check $cockpitUrl/#/process-instance/)"
-           ))
-      )
-    }
-
     def runSteps()(using
         data: ScenarioData
     ): ResultType =

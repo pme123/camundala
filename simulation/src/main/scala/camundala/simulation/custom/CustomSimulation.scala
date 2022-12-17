@@ -13,12 +13,12 @@ import sttp.client3.*
 import scala.util.Try
 
 abstract class CustomSimulation
-    extends SimulationDsl[LogLevel],
+    extends SimulationDsl[Seq[(LogLevel, Seq[ScenarioResult])]],
       DmnScenarioExtensions {
 
-  def simulation: LogLevel
+  def simulation: Seq[(LogLevel, Seq[ScenarioResult])]
 
-  def run(sim: SSimulation): LogLevel =
+  def run(sim: SSimulation): Seq[(LogLevel, Seq[ScenarioResult])] =
     try {
       sim.scenarios
         .map {
@@ -43,41 +43,20 @@ abstract class CustomSimulation
         .groupBy(_.maxLevel)
         .toSeq
         .sortBy(_._1)
-        .map { case level -> scenarioResults =>
+      /*  .map { case level -> scenarioResults =>
           printResult(level, scenarioResults)
         }
-        .head /*
-      .foreach {
-        case LogLevel.ERROR => //fail("There are Errors in the Simulation.")
-        case LogLevel.WARN => //fail("There are Warnings in the Simulation.")
-        case _ => succeeded
-      }*/
+      .head
+    .foreach {
+      case LogLevel.ERROR => //fail("There are Errors in the Simulation.")
+      case LogLevel.WARN => //fail("There are Warnings in the Simulation.")
+      case _ => succeeded
+    }*/
     } catch {
       ex => {
         ex.printStackTrace()
-        LogLevel.ERROR
+        throw ex
       }
     }
 
-  private def printResult(
-      level: LogLevel,
-      scenarioResults: Seq[ScenarioResult]
-  ): LogLevel =
-    val name = getClass.getSimpleName
-    val line = "~" * ((80 - name.length) / 2)
-    val maxLine = 85
-    println(
-      s"""${level.color}${s"$line START $name $line"
-        .takeRight(maxLine)}${Console.RESET}
-         |${scenarioResults.map(_.log).mkString("\n")}
-         |${"-" * maxLine}
-         |${level.color}Scenarios with Level $level:${Console.RESET}
-         |${scenarioResults
-        .map { scenRes => s"- ${scenRes.name}" }
-        .mkString("\n")}
-         |${level.color}${s"$line END $name $line"
-        .takeRight(maxLine)}${Console.RESET}
-         |""".stripMargin
-    )
-    level
 }

@@ -1,77 +1,133 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0cfd5f9" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.2.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
   <bpmn:collaboration id="Collaboration_1vw3of4">
-    <bpmn:participant id="Participant_signal-example" name="signal-example" processRef="signal-example" />
-    <bpmn:participant id="Participant_message-example" name="message-example" processRef="message-example" />
+    <bpmn:participant id="SignalexampleParticipant" name="signal-example" processRef="signal-example" />
+    <bpmn:participant id="MessageexampleParticipant" name="message-example" processRef="message-example" />
   </bpmn:collaboration>
   <bpmn:process id="signal-example" name="signal-example" isExecutable="true">
-    <bpmn:startEvent id="StartEvent_1" name="receive signal">
+    <bpmn:startEvent id="ReceiveSignalStartEvent" name="receive signal">
       <bpmn:outgoing>Flow_1dwcege</bpmn:outgoing>
       <bpmn:signalEventDefinition id="SignalEventDefinition_0iq0vdt" signalRef="Signal_21hb9t2" />
     </bpmn:startEvent>
-    <bpmn:endEvent id="Event_1cy8xef" name="signal received">
+    <bpmn:endEvent id="SignalReceivedEndEvent" name="signal received">
       <bpmn:extensionElements>
         <camunda:executionListener expression="${execution.setVariable(&#34;endStatus&#34;, &#34;signalReceived&#34;)}" event="start" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_1dwcege</bpmn:incoming>
+      <bpmn:incoming>Flow_0p8qr4i</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1dwcege" sourceRef="StartEvent_1" targetRef="Event_1cy8xef" />
+    <bpmn:sequenceFlow id="Flow_1dwcege" sourceRef="ReceiveSignalStartEvent" targetRef="Event_094w8lf" />
+    <bpmn:sequenceFlow id="Flow_0p8qr4i" sourceRef="Event_094w8lf" targetRef="SignalReceivedEndEvent" />
+    <bpmn:intermediateCatchEvent id="Event_094w8lf" name="intermediate-signal-for-example">
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable(&#34;signalReady&#34;, true)}" event="start" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1dwcege</bpmn:incoming>
+      <bpmn:outgoing>Flow_0p8qr4i</bpmn:outgoing>
+      <bpmn:signalEventDefinition id="SignalEventDefinition_1afcvlu" signalRef="Signal_17lgr5k" />
+    </bpmn:intermediateCatchEvent>
   </bpmn:process>
   <bpmn:signal id="Signal_21hb9t2" name="signal-for-example" />
   <bpmn:message id="Message_11pf4hl" name="message-for-example" />
-  <bpmn:process id="message-example" name="message-example" isExecutable="false">
-    <bpmn:startEvent id="Event_1aoen22" name="reveive message">
+  <bpmn:process id="message-example" name="message-example" isExecutable="true">
+    <bpmn:startEvent id="ReveiveMessageStartEvent" name="reveive message">
       <bpmn:outgoing>Flow_0l6dwbg</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_1un8mkc" messageRef="Message_11pf4hl" />
     </bpmn:startEvent>
-    <bpmn:endEvent id="Event_023knry" name="message received">
+    <bpmn:endEvent id="MessageReceivedEndEvent" name="message received">
       <bpmn:extensionElements>
         <camunda:executionListener expression="${execution.setVariable(&#34;endStatus&#34;, &#34;messageReceived&#34;)}" event="start" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_0l6dwbg</bpmn:incoming>
+      <bpmn:incoming>Flow_1o0rn3f</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_0l6dwbg" sourceRef="Event_1aoen22" targetRef="Event_023knry" />
+    <bpmn:sequenceFlow id="Flow_0l6dwbg" sourceRef="ReveiveMessageStartEvent" targetRef="IntermediatemessageforexampleEvent" />
+    <bpmn:sequenceFlow id="Flow_054rb4e" sourceRef="IntermediatemessageforexampleEvent" targetRef="Event_1te9g6y" />
+    <bpmn:intermediateCatchEvent id="Event_1te9g6y" name="intermediate-message-for-example">
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable(&#34;messageReady&#34;, true)}" event="start" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_054rb4e</bpmn:incoming>
+      <bpmn:outgoing>Flow_1o0rn3f</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_18mg109" messageRef="Message_1pf6p5c" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:intermediateCatchEvent id="IntermediatemessageforexampleEvent" name="intermediate-message-for-example">
+      <bpmn:incoming>Flow_0l6dwbg</bpmn:incoming>
+      <bpmn:outgoing>Flow_054rb4e</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1eq90aw" messageRef="Message_1pf6p5c" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_1o0rn3f" sourceRef="Event_1te9g6y" targetRef="MessageReceivedEndEvent" />
   </bpmn:process>
+  <bpmn:signal id="Signal_17lgr5k" name="intermediate-signal-for-example" />
+  <bpmn:message id="Message_1pf6p5c" name="intermediate-message-for-example" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1vw3of4">
-      <bpmndi:BPMNShape id="Participant_1e9if79_di" bpmnElement="Participant_message-example" isHorizontal="true">
+      <bpmndi:BPMNShape id="Participant_1e9if79_di" bpmnElement="MessageexampleParticipant" isHorizontal="true">
         <dc:Bounds x="160" y="310" width="510" height="170" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0l6dwbg_di" bpmnElement="Flow_0l6dwbg">
         <di:waypoint x="295" y="400" />
+        <di:waypoint x="372" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_054rb4e_di" bpmnElement="Flow_054rb4e">
+        <di:waypoint x="408" y="400" />
+        <di:waypoint x="462" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1o0rn3f_di" bpmnElement="Flow_1o0rn3f">
+        <di:waypoint x="498" y="400" />
         <di:waypoint x="572" y="400" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Event_1rghlcq_di" bpmnElement="Event_1aoen22">
+      <bpmndi:BPMNShape id="Event_1rghlcq_di" bpmnElement="ReveiveMessageStartEvent">
         <dc:Bounds x="259" y="382" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="235" y="425" width="84" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_023knry_di" bpmnElement="Event_023knry">
+      <bpmndi:BPMNShape id="Event_023knry_di" bpmnElement="MessageReceivedEndEvent">
         <dc:Bounds x="572" y="382" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="545" y="425" width="90" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Participant_0d1ljrd_di" bpmnElement="Participant_signal-example" isHorizontal="true">
+      <bpmndi:BPMNShape id="BPMNShape_0cqu9x0" bpmnElement="Event_1te9g6y">
+        <dc:Bounds x="462" y="382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="448" y="425" width="65" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0qyt7s4_di" bpmnElement="IntermediatemessageforexampleEvent">
+        <dc:Bounds x="372" y="382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="358" y="425" width="65" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_0d1ljrd_di" bpmnElement="SignalexampleParticipant" isHorizontal="true">
         <dc:Bounds x="160" y="80" width="510" height="178" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1dwcege_di" bpmnElement="Flow_1dwcege">
         <di:waypoint x="265" y="165" />
+        <di:waypoint x="372" y="165" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0p8qr4i_di" bpmnElement="Flow_0p8qr4i">
+        <di:waypoint x="408" y="165" />
         <di:waypoint x="542" y="165" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Event_0ixaahh_di" bpmnElement="StartEvent_1">
+      <bpmndi:BPMNShape id="Event_0ixaahh_di" bpmnElement="ReceiveSignalStartEvent">
         <dc:Bounds x="229" y="147" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="213" y="190" width="68" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1cy8xef_di" bpmnElement="Event_1cy8xef">
+      <bpmndi:BPMNShape id="Event_1cy8xef_di" bpmnElement="SignalReceivedEndEvent">
         <dc:Bounds x="542" y="147" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="523" y="190" width="74" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_18yvq36" bpmnElement="Event_094w8lf">
+        <dc:Bounds x="372" y="147" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="358" y="190" width="65" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>

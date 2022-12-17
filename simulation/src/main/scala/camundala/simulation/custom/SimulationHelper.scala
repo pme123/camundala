@@ -23,7 +23,8 @@ trait SimulationHelper extends ResultChecker, Logging:
     SimulationConfig[RequestT[Empty, Either[String, String], Any]]()
 
   lazy val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
-  lazy val cockpitUrl = config.endpoint.replace("/engine-rest", "/camunda/app/cockpit/default")
+  lazy val cockpitUrl =
+    config.endpoint.replace("/engine-rest", "/camunda/app/cockpit/default")
   extension (request: RequestT[Empty, Either[String, String], Any])
     def auth(): RequestT[Empty, Either[String, String], Any] =
       config.authHeader(request)
@@ -66,16 +67,17 @@ trait SimulationHelper extends ResultChecker, Logging:
       .debug(s"- URI: ${request.uri}")
 
     val response = request.send(backend)
-    if(StatusCode.NoContent == response.code)
+    if (StatusCode.NoContent == response.code)
       handleBody(Json.Null, summon[ScenarioData])
     else
       response.body.left
         .map(body => handleNon2xxResponse(response.code, body, request.toCurl))
-        .flatMap(parser.parse)
-        .left
-        .map(err =>
-          summon[ScenarioData]
-            .error(s"Problem creating body from response.\n$err")
+        .flatMap(
+          parser.parse(_).left
+            .map(err =>
+              summon[ScenarioData]
+                .error(s"Problem creating body from response.\n$err")
+            )
         )
         .flatMap(handleBody(_, summon[ScenarioData]))
 

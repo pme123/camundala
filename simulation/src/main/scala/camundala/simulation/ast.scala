@@ -117,14 +117,19 @@ case class SSubProcess(
   def add(testOverride: TestOverride): SSubProcess =
     copy(testOverrides = addOverride(testOverride))
 
+sealed trait SEvent extends SInOutStep:
+  def readyVariable: String
+  def readyValue: Any
+
 case class SReceiveMessageEvent(
     name: String,
     inOut: ReceiveMessageEvent[_],
-    readyVariable: Option[String] = None,
+    optReadyVariable: Option[String] = None,
     readyValue: Any = true,
     processInstanceId: Boolean = true,
     testOverrides: Option[TestOverrides] = None
-) extends SInOutStep:
+) extends SEvent:
+  lazy val readyVariable: String = optReadyVariable.getOrElse(notSet)
 
   def add(testOverride: TestOverride): SReceiveMessageEvent =
     copy(testOverrides = addOverride(testOverride))
@@ -139,10 +144,12 @@ case class SReceiveSignalEvent(
     readyVariable: String = "waitForSignal",
     readyValue: Any = true,
     testOverrides: Option[TestOverrides] = None
-) extends SInOutStep:
+) extends SEvent:
 
   def add(testOverride: TestOverride): SReceiveSignalEvent =
     copy(testOverrides = addOverride(testOverride))
 
 case class SWaitTime(seconds: Int = 5) extends SStep:
   val name: String = s"Wait for $seconds seconds"
+
+lazy val notSet = "NotSet"
