@@ -8,7 +8,7 @@ import sttp.tapir.generic.auto.*
 
 import scala.concurrent.duration.*
 
-// exampleDemos/GatlingIt/testOnly *TestSimulation
+// exampleDemos/It/testOnly *TestSimulation
 class TestSimulation extends DemosSimulation:
 
   import TestDomain.*

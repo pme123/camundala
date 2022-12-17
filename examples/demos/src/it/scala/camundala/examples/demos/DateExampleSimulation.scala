@@ -6,8 +6,7 @@ import camundala.simulation.custom.CustomSimulation
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
 
-// exampleDemos/GatlingIt/testOnly *DateExampleSimulation
-// exampleDemos/It/run *DateExampleSimulation
+// exampleDemos/It/testOnly *DateExampleSimulation
 class DateExampleSimulation extends DemosSimulation:
 
   simulate {

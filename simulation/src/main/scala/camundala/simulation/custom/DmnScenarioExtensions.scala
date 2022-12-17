@@ -24,8 +24,11 @@ trait DmnScenarioExtensions extends SScenarioExtensions:
       val body = EvaluateDecisionIn(
         dmn.camundaInMap
       ).asJson.toString
-      val uri =
-        uri"${config.endpoint}/decision-definition/key/${dmn.decisionDefinitionKey}${config.tenantPath}/evaluate"
+      val uri = config.tenantId match
+        case Some(tenantId) =>
+          uri"${config.endpoint}/decision-definition/key/${dmn.decisionDefinitionKey}/tenant-id/$tenantId/evaluate"
+        case None =>
+          uri"${config.endpoint}/decision-definition/key/${dmn.decisionDefinitionKey}/evaluate"
 
       val request = basicRequest
         .auth()

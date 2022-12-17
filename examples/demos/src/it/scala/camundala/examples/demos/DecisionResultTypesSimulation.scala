@@ -8,7 +8,7 @@ import camundala.simulation.custom.CustomSimulation
 
 import scala.concurrent.duration.*
 
-// exampleDemos/GatlingIt/testOnly *DecisionResultTypesSimulation
+// exampleDemos/It/testOnly *DecisionResultTypesSimulation
 
 class DecisionResultTypesSimulation extends DemosSimulation:
   import TestDomain.*

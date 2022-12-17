@@ -115,8 +115,11 @@ trait SScenarioExtensions extends SStepExtensions:
         process.camundaInMap,
         businessKey = Some(scenario.name)
       ).asJson.deepDropNullValues.toString
-      val uri =
-        uri"${config.endpoint}/process-definition/key/${process.id}${config.tenantPath}/start"
+      val uri = config.tenantId match
+        case Some(tenantId) =>
+          uri"${config.endpoint}/process-definition/key/${process.id}/tenant-id/$tenantId/start"
+        case None =>
+          uri"${config.endpoint}/process-definition/key/${process.id}/start"
 
       val request = basicRequest
         .auth()
@@ -153,10 +156,13 @@ trait SScenarioExtensions extends SStepExtensions:
         yield summon[ScenarioData]
       }
 
-    def checkIncident()(data: ScenarioData): ResultType = {
+    def checkIncident(rootIncidentId: Option[String] = None)(data: ScenarioData): ResultType = {
       val processInstanceId = data.context.processInstanceId
-      val uri =
-        uri"${config.endpoint}/incident?processInstanceId=$processInstanceId&deserializeValues=false"
+      val uri = rootIncidentId match
+        case Some(incId) =>
+            uri"${config.endpoint}/incident?incidentId=$incId&deserializeValues=false"
+        case None =>
+            uri"${config.endpoint}/incident?processInstanceId=$processInstanceId&deserializeValues=false"
       val request = basicRequest
         .auth()
         .get(uri)
@@ -166,18 +172,25 @@ trait SScenarioExtensions extends SStepExtensions:
           body.hcursor.values
             .map {
               case (values: Iterable[Json]) if values.toSeq.nonEmpty =>
-                body.hcursor.downArray
-                  .downField("incidentMessage")
-                  .as[String]
-                  .left
+                val arr = body.hcursor.downArray
+                (for
+                  maybeIncMessage <- arr
+                    .downField("incidentMessage")
+                    .as[Option[String]]
+                  id <- arr.downField("id").as[String]
+                  rootCauseIncidentId <- arr
+                    .downField("rootCauseIncidentId")
+                    .as[String]
+                yield (maybeIncMessage, id, rootCauseIncidentId)).left
                   .map { ex =>
                     data
                       .error(
                         s"Problem extracting incidentMessage from $body\n $ex"
                       )
+                      .info(request.toCurl)
                   }
                   .flatMap {
-                    case incidentMessage
+                    case (Some(incidentMessage), _, _)
                         if incidentMessage.contains(scenario.incidentMsg) =>
                       Right(
                         data
@@ -185,12 +198,22 @@ trait SScenarioExtensions extends SStepExtensions:
                             s"Process ${scenario.name} has finished with incident (as expected)."
                           )
                       )
-                    case incidentMessage =>
+                    case (Some(incidentMessage), _, _) =>
                       Left(
                         data.error(
                           "The Incident contains not the expected message." +
                             s"\nExpected: ${scenario.incidentMsg}\nActual Message: $incidentMessage"
                         )
+                      )
+                    case (None, id, rootCauseIncidentId) if id != rootCauseIncidentId =>
+                      checkIncident(Some(rootCauseIncidentId))(
+                        data.info(s"Incident Message only in Root incident $rootCauseIncidentId")
+                      )
+                    case  _ =>
+                      Left(
+                        data.error(
+                          "The Incident does not contain any incidentMessage."
+                        ).info(request.toCurl)
                       )
                   }
               case _ =>
@@ -214,7 +237,7 @@ trait SScenarioExtensions extends SStepExtensions:
       }
 
     def startProcess()(using
-                       data: ScenarioData
+        data: ScenarioData
     ): ResultType = {
       val request = scenario.prepareStartProcess()
 
@@ -225,24 +248,34 @@ trait SScenarioExtensions extends SStepExtensions:
 
       (response.code.code match
         case scenario.status =>
-          Right(data.info(s"Status matched for BadScenario (${scenario.status})"))
+          Right(
+            data.info(s"Status matched for BadScenario (${scenario.status})")
+          )
         case other =>
-           Left(data.error(s"Status NOT matched for BadScenario (expected: ${scenario.status}, actual: $other)"))
-        ).flatMap{ data =>
-        scenario.errorMsg.map(errMsg =>
-          response.body match
-            case Left(body) if body.contains(errMsg) =>
-              Right(data.info(s"Body contains correct errorMsg: '$errMsg'"))
-            case msg =>
-              Left(data.error(s"Error Message not found in Body.")
-              .info(s"- expected msg: $errMsg")
-              .info(s"- body: ${msg}")
-              )
-        ).getOrElse(
-          Right(data) // no message to compare!
-        )
+          Left(
+            data.error(
+              s"Status NOT matched for BadScenario (expected: ${scenario.status}, actual: $other)"
+            )
+          )
+      ).flatMap { data =>
+        scenario.errorMsg
+          .map(errMsg =>
+            response.body match
+              case Left(body) if body.contains(errMsg) =>
+                Right(data.info(s"Body contains correct errorMsg: '$errMsg'"))
+              case msg =>
+                Left(
+                  data
+                    .error(s"Error Message not found in Body.")
+                    .info(s"- expected msg: $errMsg")
+                    .info(s"- body: ${msg}")
+                )
+          )
+          .getOrElse(
+            Right(data) // no message to compare!
+          )
 
-        }
+      }
     }
   end extension
 

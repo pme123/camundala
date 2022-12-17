@@ -6,7 +6,6 @@ import camundala.simulation.custom.CustomSimulation
 import io.circe.generic.auto.*
 import sttp.tapir.generic.auto.*
 
-// exampleDemos/GatlingIt/testOnly *SignalMessageExampleSimulation
 // exampleDemos/It/testOnly *SignalMessageExampleSimulation
 class SignalMessageExampleSimulation extends DemosSimulation:
 

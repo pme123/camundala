@@ -2,6 +2,7 @@ package camundala
 package simulation
 
 import camundala.bpmn.*
+import camundala.domain.Optable
 
 import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
@@ -44,9 +45,9 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
   inline def badScenario(
       inline process: Process[_, _],
       status: Int,
-      errorMsg: Option[String] = None
+      errorMsg: Optable[String] = None
   ): SimulationConstr =
-    BadScenario(nameOfVariable(process), process, status, errorMsg).stage
+    BadScenario(nameOfVariable(process), process, status, errorMsg.value).stage
 
   inline def incidentScenario(
                                inline process: Process[_, _],

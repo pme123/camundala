@@ -15,52 +15,49 @@ class InvoiceSimulation extends CustomSimulation:
 
   simulate {
 
-    /* scenario(`Review Invoice`)(
-       AssignReviewerUT,
-       ReviewInvoiceUT
-     )
-     incidentScenario(
-       `Invoice Receipt that fails`,
-       "Could not archive invoice..."
-     )(
-       ApproveInvoiceUT,
-       PrepareBankTransferUT
-     )
-     scenario(`Invoice Receipt`)(
-       ApproveInvoiceUT,
-       PrepareBankTransferUT
-     )
-     scenario(WithOverrideScenario)(
-       `ApproveInvoiceUT with Override`,
-       PrepareBankTransferUT
-     )*/
-     scenario(`Invoice Receipt with Review`)(
-       NotApproveInvoiceUT,
-       subProcess(`Review Invoice`)(
-         AssignReviewerUT,
-         ReviewInvoiceUT // do clarify
-       ),
-       ApproveInvoiceUT, // now approve
-       PrepareBankTransferUT
-     )/*
-     scenario(`Invoice Receipt with Review failed`)(
-       NotApproveInvoiceUT, // do not approve
-       subProcess(`Review Invoice not clarified`)(
-         AssignReviewerUT,
-         ReviewInvoiceNotClarifiedUT // do not clarify
-       )
-     )
-*/
-     scenario(InvoiceAssignApproverDMN)
-     scenario(InvoiceAssignApproverDMN2)
+    scenario(`Review Invoice`)(
+      AssignReviewerUT,
+      ReviewInvoiceUT
+    )
+    incidentScenario(
+      `Invoice Receipt that fails`,
+      "Could not archive invoice..."
+    )(
+      ApproveInvoiceUT,
+      PrepareBankTransferUT
+    )
+    scenario(`Invoice Receipt`)(
+      ApproveInvoiceUT,
+      PrepareBankTransferUT
+    )
+    scenario(WithOverrideScenario)(
+      `ApproveInvoiceUT with Override`,
+      PrepareBankTransferUT
+    )
+    scenario(`Invoice Receipt with Review`)(
+      NotApproveInvoiceUT,
+      subProcess(`Review Invoice`)(
+        AssignReviewerUT,
+        ReviewInvoiceUT // do clarify
+      ),
+      ApproveInvoiceUT, // now approve
+      PrepareBankTransferUT
+    )
+    scenario(`Invoice Receipt with Review failed`)(
+      NotApproveInvoiceUT, // do not approve
+      subProcess(`Review Invoice not clarified`)(
+        AssignReviewerUT,
+        ReviewInvoiceNotClarifiedUT // do not clarify
+      )
+    )
+    scenario(InvoiceAssignApproverDMN)
+    scenario(InvoiceAssignApproverDMN2)
 
-    /*    badScenario(
-         BadValidationP,
-         500,
-         Some(
-           "Validation Error: Input is not valid: DecodingFailure(Attempt to decode value on failed cursor, List(DownField(creditor)))"
-         )
-       )*/
+    badScenario(
+      BadValidationP,
+      500,
+        "Validation Error: Input is not valid: DecodingFailure(Attempt to decode value on failed cursor, List(DownField(creditor)))"
+    )
   }
 
   override implicit def config =
