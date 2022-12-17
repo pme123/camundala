@@ -10,7 +10,7 @@ import sttp.tapir.generic.auto.*
 
 import scala.concurrent.duration.*
 
-// exampleInvoiceC7/GatlingIt/testOnly *InvoiceSimulation
+// exampleInvoiceC7/It/testOnly *InvoiceSimulation
 class InvoiceSimulation extends CustomSimulation:
 
   lazy val simulation = simulate {

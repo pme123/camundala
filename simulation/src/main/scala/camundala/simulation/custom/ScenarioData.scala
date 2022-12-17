@@ -25,6 +25,10 @@ case class ScenarioData(
 
   def withProcessInstanceId(processInstanceId: String): ScenarioData =
     copy(context = context.copy(processInstanceId = processInstanceId))
+  def switchToSubProcess(): ScenarioData =
+    copy(context = context.copy(rootProcessInstanceId = context.processInstanceId, processInstanceId = notSet))
+  def switchToMainProcess(): ScenarioData =
+    copy(context = context.copy(rootProcessInstanceId = notSet, processInstanceId = context.rootProcessInstanceId))
   def withTaskId(taskId: String): ScenarioData =
     copy(context = context.copy(taskId = taskId))
   def withRequestCount(requestCount: Int): ScenarioData =
@@ -41,5 +45,6 @@ object ScenarioData:
 case class ContextData(
                         requestCount: Int = 0,
                         processInstanceId: String = notSet,
+                        rootProcessInstanceId: String = notSet,
                         taskId: String = notSet,
                       )

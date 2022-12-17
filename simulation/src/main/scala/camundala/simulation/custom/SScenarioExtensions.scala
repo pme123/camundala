@@ -12,7 +12,10 @@ import scala.collection.immutable.Seq
 
 trait SScenarioExtensions extends SStepExtensions:
 
-  case class ProcessInstanceOrExecution(execution: Option[Execution], processInstance: Option[ProcessInstance])
+  case class ProcessInstanceOrExecution(
+      execution: Option[Execution],
+      processInstance: Option[ProcessInstance]
+  )
   object ProcessInstanceOrExecution:
     given Schema[ProcessInstanceOrExecution] = Schema.derived
     given Encoder[ProcessInstanceOrExecution] = deriveEncoder
@@ -95,8 +98,10 @@ trait SScenarioExtensions extends SStepExtensions:
             .as[List[ProcessInstanceOrExecution]]
             .map { pioe =>
               val processInstanceId = pioe match
-                case ProcessInstanceOrExecution(Some(exec), None) :: _ => exec.processInstanceId
-                case ProcessInstanceOrExecution(None, Some(procInst)):: _ => procInst.id
+                case ProcessInstanceOrExecution(Some(exec), None) :: _ =>
+                  exec.processInstanceId
+                case ProcessInstanceOrExecution(None, Some(procInst)) :: _ =>
+                  procInst.id
                 case other => s"PROCESS ID not found in $other"
               data
                 .withProcessInstanceId(processInstanceId)
@@ -114,16 +119,6 @@ trait SScenarioExtensions extends SStepExtensions:
       )
     }
 
-    def runSteps()(using
-        data: ScenarioData
-    ): ResultType =
-      scenario.steps.foldLeft[ResultType](Right(data)) {
-        case (Right(data), step) =>
-          given ScenarioData = data
-
-          step.run()
-        case (leftData, _) => leftData
-      }
   end extension
 
   extension (scenario: ProcessScenario)
@@ -202,104 +197,6 @@ trait SScenarioExtensions extends SStepExtensions:
       }
     }
     end checkIncident
-
-  end extension
-
-  extension (
-      scenario: (ProcessScenario) // | SSubProcess)
-  )
-
-    def check()(using
-        data: ScenarioData
-    ): ResultType = {
-      for
-        given ScenarioData <- checkFinished()(data)
-        given ScenarioData <- checkVars()
-      yield summon[ScenarioData]
-    }
-    /*
-    // checks if a variable has this value.
-    // it tries up to the time defined.
-    def checkRunningVars(
-        variable: String,
-        value: Any
-    ): Seq[ChainBuilder] = {
-      Seq(
-        exec(_.set(variable, null)),
-        retryOrFail(
-          loadVariable(variable),
-          processReadyCondition(variable, value)
-        )
-      )
-    }
-     */
-
-    def checkVars()(using data: ScenarioData): ResultType =
-      val processInstanceId = data.context.processInstanceId
-      val uri =
-        uri"${config.endpoint}/history/variable-instance?processInstanceIdIn=$processInstanceId&deserializeValues=false"
-      val request = basicRequest
-        .auth()
-        .get(uri)
-      runRequest(request, s"Process '${scenario.name}' checkVars")(
-        (body, data) =>
-          body
-            .as[Seq[CamundaProperty]]
-            .flatMap { value =>
-              if (
-                checkProps(scenario.asInstanceOf[WithTestOverrides[_]], value)
-              )
-                Right(data.info("Variables successful checked"))
-              else
-                (
-                  Left(
-                    data.error(
-                      "Variables do not match - see above in the Log (look for !!!)"
-                    )
-                  )
-                )
-            }
-            .left
-            .map(exc =>
-              data
-                .error(
-                  s"!!! Problem parsing Result Body to a List of CamundaProperty.\n$exc"
-                )
-                .debug(s"Responce Body: $body")
-            )
-      )
-    end checkVars
-
-    def checkFinished()(data: ScenarioData): ResultType =
-      val processInstanceId = data.context.processInstanceId
-      val uri =
-        uri"${config.endpoint}/history/process-instance/$processInstanceId"
-      val request = basicRequest
-        .auth()
-        .get(uri)
-      given ScenarioData = data
-      runRequest(request, s"Process '${scenario.name}' checkProcess")(
-        (body, data) =>
-          body.hcursor
-            .downField("state")
-            .as[String]
-            .left
-            .map { ex =>
-              data
-                .error(s"Problem extracting state from $body\n $ex")
-            }
-            .flatMap {
-              case state if state == "COMPLETED" =>
-                Right(
-                  data
-                    .info(s"Process ${scenario.name} has finished.")
-                )
-              case _ =>
-                given ScenarioData = data
-                tryOrFail(checkFinished(), scenario)
-            }
-      )
-    end checkFinished
 
   end extension
 

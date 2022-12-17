@@ -41,7 +41,6 @@ trait SEventExtensions extends SimulationHelper:
               }
               .left
               .flatMap { _ =>
-                println("LOADVARIABLE")
                 tryOrFail(loadVariable(processInstanceId), sEvent)
               }
           )

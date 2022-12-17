@@ -112,3 +112,5 @@ trait SimulationHelper extends ResultChecker, Logging:
       )
     }
   }
+  
+end SimulationHelper

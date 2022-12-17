@@ -52,6 +52,7 @@ final class SimulationRunner(
               .asInstanceOf[CustomSimulation]
               .simulation
             val time = System.currentTimeMillis() - startTime
+            val timeInSec = time / 1000
             val name = td.fullyQualifiedName().split('.').last
             val line = "~" * (((maxLine - 5) - name.length) / 2)
             val logLevel = simResults.head._1
@@ -60,7 +61,7 @@ final class SimulationRunner(
                 .takeRight(maxLine)}${Console.RESET}
                  |${simResults.flatMap((sr: (LogLevel, Seq[ScenarioResult])) => sr._2.map(_.log)).mkString("\n")}
                  |${simResults.map(sr => printResult(sr._1, sr._2)).mkString("\n")}
-                 |${logLevel.color}${s"$line END $name $line"
+                 |${logLevel.color}${s"$line END $name in $timeInSec sec $line"
                 .takeRight(maxLine)}${Console.RESET}
                  |""".stripMargin
             )

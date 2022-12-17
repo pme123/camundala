@@ -29,9 +29,11 @@ sealed trait SScenario extends ScenarioOrStep:
   def inOut: InOut[_, _, _]
   def isIgnored: Boolean
 
-sealed trait IsProcessScenario extends SScenario:
+sealed trait HasProcessSteps extends ScenarioOrStep:
   def process: Process[_,_]
-  def steps: List[SStep]
+  def steps: List[SStep] 
+
+sealed trait IsProcessScenario extends HasProcessSteps, SScenario
 
 case class ProcessScenario(
     // this is name of process in case of START
@@ -110,7 +112,7 @@ case class SSubProcess(
     process: Process[_, _],
     steps: List[SStep],
     testOverrides: Option[TestOverrides] = None
-) extends SInOutStep:
+) extends SInOutStep, HasProcessSteps:
 
   lazy val inOut: Process[_, _] = process
 
