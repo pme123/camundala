@@ -202,19 +202,20 @@ trait SScenarioExtensions extends SStepExtensions:
 
   extension (scenario: SScenario)
     def logScenario(body: ScenarioData => ResultType): ResultType =
+      val startTime = System.currentTimeMillis()
       val data = ScenarioData(logEntries =
         Seq(info(s"${"#" * 7} Scenario '${scenario.name}' ${"#" * 7}"))
       )
       body(data)
         .map(
           _.info(
-            s"${Console.GREEN}${"*" * 4} Scenario '${scenario.name}' SUCCEEDED ${"*" * 4}${Console.RESET}"
+            s"${Console.GREEN}${"*" * 4} Scenario '${scenario.name}' SUCCEEDED in ${System.currentTimeMillis() - startTime} ms ${"*" * 4}${Console.RESET}"
           )
         )
         .left
         .map(
           _.error(
-            s"${Console.RED}${"*" * 3} Scenario '${scenario.name}' FAILED ${"*" * 3}${Console.RESET}"
+            s"${Console.RED}${"*" * 4} Scenario '${scenario.name}' FAILED in ${System.currentTimeMillis() - startTime} ms ${"*" * 6}${Console.RESET}"
           )
         )
     end logScenario

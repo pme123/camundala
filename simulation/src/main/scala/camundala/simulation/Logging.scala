@@ -22,7 +22,7 @@ trait Logging {
 
 }
 
-lazy val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+lazy val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 
 case class LogEntry(logLevel: LogLevel, msg: String, timestamp: LocalDateTime = LocalDateTime.now()):
   self =>
