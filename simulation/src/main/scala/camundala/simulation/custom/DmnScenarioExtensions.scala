@@ -7,9 +7,12 @@ import io.circe.*
 import io.circe.syntax.*
 import sttp.client3.*
 
-trait DmnScenarioExtensions extends SScenarioExtensions :
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
+trait DmnScenarioExtensions extends SScenarioExtensions:
   extension (scenario: DmnScenario)
-    def run(): ResultType =
+    def run(): Future[ResultType] =
       scenario.logScenario { (data: ScenarioData) =>
         given ScenarioData = data
 
@@ -47,7 +50,7 @@ trait DmnScenarioExtensions extends SScenarioExtensions :
       )
     }
     private def evaluateDmn(resultSeq: Seq[Map[String, CamundaVariable]])(using
-                                                                          data: ScenarioData
+        data: ScenarioData
     ): ResultType =
       val result = resultSeq.map(
         _.filter(_._2 != CamundaVariable.CNull)
@@ -80,7 +83,7 @@ trait DmnScenarioExtensions extends SScenarioExtensions :
             given ScenarioData <-
               if (
                 result.size == 1 &&
-                  result.head.size > 1
+                result.head.size > 1
               )
                 Right(summon[ScenarioData])
               else
@@ -104,9 +107,9 @@ trait DmnScenarioExtensions extends SScenarioExtensions :
             case None =>
               if (
                 (result.isEmpty && expected.toCamunda.isEmpty) ||
-                  (result.nonEmpty &&
-                    result.head.size == 1 &&
-                    resultValues.toSet == expected.toCamunda.toSet)
+                (result.nonEmpty &&
+                  result.head.size == 1 &&
+                  resultValues.toSet == expected.toCamunda.toSet)
               )
                 Right(summon[ScenarioData])
               else
@@ -131,9 +134,9 @@ trait DmnScenarioExtensions extends SScenarioExtensions :
             case None =>
               if (
                 (result.isEmpty && expected.toCamunda.isEmpty) ||
-                  (result.nonEmpty &&
-                    result.head.size > 1 &&
-                    result.toSet == expected.toCamunda.toSet)
+                (result.nonEmpty &&
+                  result.head.size > 1 &&
+                  result.toSet == expected.toCamunda.toSet)
               )
                 Right(summon[ScenarioData])
               else

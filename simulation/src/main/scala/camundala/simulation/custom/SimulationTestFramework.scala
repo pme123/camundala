@@ -5,6 +5,8 @@ import java.util.concurrent.atomic.AtomicReference
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
+import scala.concurrent.duration.*
+import scala.concurrent.{Await, Future}
 
 final class SimulationTestFramework extends sbt.testing.Framework:
 
@@ -45,12 +47,13 @@ final class SimulationRunner(
         (loggers, eventHandler) =>
           Future {
             val startTime = System.currentTimeMillis()
-            val simResults = Class
+            val futSimResults = Class
               .forName(td.fullyQualifiedName())
               .getDeclaredConstructor()
               .newInstance()
               .asInstanceOf[CustomSimulation]
               .simulation
+            val simResults = Await.result(futSimResults, 5.minutes)
             val time = System.currentTimeMillis() - startTime
             val timeInSec = time / 1000
             val name = td.fullyQualifiedName().split('.').last
@@ -112,9 +115,6 @@ final class SimulationRunner(
 
 end SimulationRunner
 
-import scala.concurrent.duration.*
-import scala.concurrent.{Await, Future}
-
 class Task(
     val taskDef: sbt.testing.TaskDef,
     runUTestTask: (
@@ -131,7 +131,7 @@ class Task(
   ): Array[sbt.testing.Task] = {
     Await.ready(
       runUTestTask(loggers, eventHandler),
-      100.seconds
+      5.minutes
     )
     Array()
   }

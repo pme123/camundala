@@ -9,6 +9,8 @@ import io.circe.syntax.*
 import sttp.client3.*
 
 import scala.collection.immutable.Seq
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait SScenarioExtensions extends SStepExtensions:
 
@@ -38,19 +40,7 @@ trait SScenarioExtensions extends SStepExtensions:
     def startProcess()(using
         data: ScenarioData
     ): ResultType = {
-      val process = scenario.process
-      val body = StartProcessIn(
-        process.camundaInMap,
-        businessKey = Some(scenario.name)
-      ).asJson.deepDropNullValues.toString
-      val uri =
-        uri"${config.endpoint}/process-definition/key/${process.id}${config.tenantPath}/start"
-
-      val request = basicRequest
-        .auth()
-        .contentType("application/json")
-        .body(body)
-        .post(uri)
+      val request = prepareStartProcess()
 
       runRequest(request, s"Process '${scenario.name}' startProcess")(
         (body, data) =>
@@ -61,7 +51,7 @@ trait SScenarioExtensions extends SStepExtensions:
               data
                 .withProcessInstanceId(processInstanceId)
                 .info(
-                  s"Process '${process.processName}' started (check $cockpitUrl/#/process-instance/$processInstanceId)"
+                  s"Process '${scenario.process.processName}' started (check $cockpitUrl/#/process-instance/$processInstanceId)"
                 )
                 .debug(s"- processInstanceId: $processInstanceId")
                 .debug(s"- body: $body")
@@ -119,10 +109,26 @@ trait SScenarioExtensions extends SStepExtensions:
       )
     }
 
+    def prepareStartProcess() =
+      val process = scenario.process
+      val body = StartProcessIn(
+        process.camundaInMap,
+        businessKey = Some(scenario.name)
+      ).asJson.deepDropNullValues.toString
+      val uri =
+        uri"${config.endpoint}/process-definition/key/${process.id}${config.tenantPath}/start"
+
+      val request = basicRequest
+        .auth()
+        .contentType("application/json")
+        .body(body)
+        .post(uri)
+      request
+    end prepareStartProcess
   end extension
 
   extension (scenario: ProcessScenario)
-    def run(): ResultType =
+    def run(): Future[ResultType] =
       scenario.logScenario { (data: ScenarioData) =>
         given ScenarioData = data
         for
@@ -136,7 +142,7 @@ trait SScenarioExtensions extends SStepExtensions:
   end extension
 
   extension (scenario: IncidentScenario)
-    def run(): ResultType =
+    def run(): Future[ResultType] =
       scenario.logScenario { (data: ScenarioData) =>
         given ScenarioData = data
 
@@ -200,24 +206,67 @@ trait SScenarioExtensions extends SStepExtensions:
 
   end extension
 
+  extension (scenario: BadScenario)
+    def run(): Future[ResultType] =
+      scenario.logScenario { (data: ScenarioData) =>
+        given ScenarioData = data
+        startProcess()
+      }
+
+    def startProcess()(using
+                       data: ScenarioData
+    ): ResultType = {
+      val request = scenario.prepareStartProcess()
+
+      given ScenarioData = data
+        .info(s"Process '${scenario.name}' startProcess")
+        .debug(s"- URI: ${request.uri}")
+      val response = request.send(backend)
+
+      (response.code.code match
+        case scenario.status =>
+          Right(data.info(s"Status matched for BadScenario (${scenario.status})"))
+        case other =>
+           Left(data.error(s"Status NOT matched for BadScenario (expected: ${scenario.status}, actual: $other)"))
+        ).flatMap{ data =>
+        scenario.errorMsg.map(errMsg =>
+          response.body match
+            case Left(body) if body.contains(errMsg) =>
+              Right(data.info(s"Body contains correct errorMsg: '$errMsg'"))
+            case msg =>
+              Left(data.error(s"Error Message not found in Body.")
+              .info(s"- expected msg: $errMsg")
+              .info(s"- body: ${msg}")
+              )
+        ).getOrElse(
+          Right(data) // no message to compare!
+        )
+
+        }
+    }
+  end extension
+
   extension (scenario: SScenario)
-    def logScenario(body: ScenarioData => ResultType): ResultType =
-      val startTime = System.currentTimeMillis()
-      val data = ScenarioData(logEntries =
-        Seq(info(s"${"#" * 7} Scenario '${scenario.name}' ${"#" * 7}"))
-      )
-      body(data)
-        .map(
-          _.info(
-            s"${Console.GREEN}${"*" * 4} Scenario '${scenario.name}' SUCCEEDED in ${System.currentTimeMillis() - startTime} ms ${"*" * 4}${Console.RESET}"
+    def logScenario(body: ScenarioData => ResultType): Future[ResultType] =
+      Future {
+        val startTime = System.currentTimeMillis()
+        val data = ScenarioData(scenario.name)
+          .info(s"${"#" * 7} Scenario '${scenario.name}' ${"#" * 7}")
+        body(data)
+          .map(
+            _.info(
+              s"${Console.GREEN}${"*" * 4} Scenario '${scenario.name}' SUCCEEDED in ${System
+                .currentTimeMillis() - startTime} ms ${"*" * 4}${Console.RESET}"
+            )
           )
-        )
-        .left
-        .map(
-          _.error(
-            s"${Console.RED}${"*" * 4} Scenario '${scenario.name}' FAILED in ${System.currentTimeMillis() - startTime} ms ${"*" * 6}${Console.RESET}"
+          .left
+          .map(
+            _.error(
+              s"${Console.RED}${"*" * 4} Scenario '${scenario.name}' FAILED in ${System
+                .currentTimeMillis() - startTime} ms ${"*" * 6}${Console.RESET}"
+            )
           )
-        )
+      }
     end logScenario
   end extension
 

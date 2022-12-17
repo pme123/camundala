@@ -10,25 +10,29 @@ import org.scalatest.FutureOutcome.succeeded
 import org.scalatest.funsuite.AnyFunSuite
 import sttp.client3.*
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.util.Try
 
 abstract class CustomSimulation
-    extends SimulationDsl[Seq[(LogLevel, Seq[ScenarioResult])]],
+    extends SimulationDsl[Future[Seq[(LogLevel, Seq[ScenarioResult])]]],
       DmnScenarioExtensions {
 
-  def simulation: Seq[(LogLevel, Seq[ScenarioResult])]
+  def simulation: Future[Seq[(LogLevel, Seq[ScenarioResult])]]
 
-  def run(sim: SSimulation): Seq[(LogLevel, Seq[ScenarioResult])] =
-    try {
-      sim.scenarios
-        .map {
-          case scen: ProcessScenario => scen -> scen.run()
-          case scen: IncidentScenario => scen -> scen.run()
-          case scen: DmnScenario => scen -> scen.run()
-          case other =>
-            other -> Right(ScenarioData().warn(s"UNSUPPORTED: ${other.name}"))
-        }
-        .map { (scen: SScenario, resultData: ResultType) =>
+  def run(sim: SSimulation): Future[Seq[(LogLevel, Seq[ScenarioResult])]] =
+    Future
+      .sequence(
+        sim.scenarios
+          .map {
+            case scen: ProcessScenario => scen.run()
+            case scen: IncidentScenario => scen.run()
+            case scen: DmnScenario => scen.run()
+            case scen: BadScenario => scen.run()
+          }
+      )
+      .map(
+        _.map { (resultData: ResultType) =>
           val data: ScenarioData = resultData.fold(
             d => d,
             d => d
@@ -38,25 +42,17 @@ abstract class CustomSimulation
               .filter(config.logLevel)
               .map(_.toString)
               .mkString("\n")
-          ScenarioResult(scen.name, data.logEntries.maxLevel, log)
+          ScenarioResult(data.scenarioName, data.logEntries.maxLevel, log)
         }
-        .groupBy(_.maxLevel)
-        .toSeq
-        .sortBy(_._1)
-      /*  .map { case level -> scenarioResults =>
-          printResult(level, scenarioResults)
+          .groupBy(_.maxLevel)
+          .toSeq
+          .sortBy(_._1)
+      )
+      .recover { ex =>
+        {
+          ex.printStackTrace()
+          throw ex
         }
-      .head
-    .foreach {
-      case LogLevel.ERROR => //fail("There are Errors in the Simulation.")
-      case LogLevel.WARN => //fail("There are Warnings in the Simulation.")
-      case _ => succeeded
-    }*/
-    } catch {
-      ex => {
-        ex.printStackTrace()
-        throw ex
       }
-    }
 
 }

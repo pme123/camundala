@@ -10,7 +10,7 @@ import scala.concurrent.duration.*
 
 // exampleDemos/GatlingIt/testOnly *DecisionResultTypesSimulation
 
-class DecisionResultTypesSimulation extends CustomSimulation:
+class DecisionResultTypesSimulation extends DemosSimulation:
   import TestDomain.*
 
   lazy val simulation = simulate {
@@ -28,9 +28,6 @@ class DecisionResultTypesSimulation extends CustomSimulation:
     scenario(resultListDMNBadOutput)*/
 
   }
-
-  override implicit def config =
-    super.config.withPort(8033)
 
   private lazy val collectEntriesOverrideDMN = collectEntriesDMN
   private lazy val collectEntriesOverride =

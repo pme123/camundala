@@ -8,7 +8,7 @@ import sttp.tapir.generic.auto.*
 
 // exampleDemos/GatlingIt/testOnly *SignalMessageExampleSimulation
 // exampleDemos/It/testOnly *SignalMessageExampleSimulation
-class SignalMessageExampleSimulation extends CustomSimulation:
+class SignalMessageExampleSimulation extends DemosSimulation:
 
   lazy val simulation = simulate {
     scenario(messageExample.startWithMsg)(
@@ -31,7 +31,5 @@ class SignalMessageExampleSimulation extends CustomSimulation:
     "intermediate-message-for-example",
     in = SignalMessageExampleIn(),
   )
-  override implicit def config =
-    super.config.withPort(8033)
 
 end SignalMessageExampleSimulation

@@ -9,6 +9,7 @@ import reflect.runtime.universe.TypeTag
 type ResultType = Either[ScenarioData, ScenarioData]
 
 case class ScenarioData(
+    scenarioName: String, 
     context: ContextData = ContextData(),
     logEntries: Seq[LogEntry] = Seq.empty
 ) :
@@ -37,10 +38,6 @@ case class ScenarioData(
 end ScenarioData
 
 case class ScenarioResult(name: String, maxLevel: LogLevel, log: String)
-
-object ScenarioData:
-  def apply(logEntry: LogEntry): ScenarioData =
-    ScenarioData(logEntries = Seq(logEntry))
 
 case class ContextData(
                         requestCount: Int = 0,

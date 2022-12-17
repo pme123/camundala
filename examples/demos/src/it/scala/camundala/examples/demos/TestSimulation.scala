@@ -9,12 +9,9 @@ import sttp.tapir.generic.auto.*
 import scala.concurrent.duration.*
 
 // exampleDemos/GatlingIt/testOnly *TestSimulation
-class TestSimulation extends CustomSimulation:
+class TestSimulation extends DemosSimulation:
 
   import TestDomain.*
   lazy val simulation = simulate {
     scenario(CamundalaGenerateTestP)
   }
-
-  override implicit def config =
-    super.config.withPort(8033)

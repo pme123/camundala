@@ -8,12 +8,9 @@ import sttp.tapir.generic.auto.*
 
 // exampleDemos/GatlingIt/testOnly *DateExampleSimulation
 // exampleDemos/It/run *DateExampleSimulation
-class DateExampleSimulation extends CustomSimulation:
+class DateExampleSimulation extends DemosSimulation:
 
   lazy val simulation = simulate {
     scenario(DateExampleDMN)
 
   }
-
-  override implicit def config =
-    super.config.withPort(8033)
