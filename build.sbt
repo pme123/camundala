@@ -208,7 +208,6 @@ lazy val exampleInvoiceC7 = project
     libraryDependencies ++= camundaDependencies
   )
   .dependsOn(dmn, camunda, simulation)
-  .enablePlugins(GatlingPlugin)
 
 lazy val exampleInvoiceC8 = project
   .in(file("./examples/invoice/camunda8"))
@@ -257,7 +256,6 @@ lazy val exampleDemos = project
 
   )
   .dependsOn(camunda, simulation)
-  //.enablePlugins(GatlingPlugin)
 
 val springBootVersion = "2.6.1"
 val h2Version = "1.4.200"
@@ -269,6 +267,11 @@ val camundaDependencies = Seq(
   "io.netty" % "netty-all" % "4.1.73.Final", // needed for Spring Boot Version > 2.5.*
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
+  // json support
+  "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
+  "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.13.1",
+  // groovy support
+  "org.codehaus.groovy" % "groovy-jsr223" % "3.0.10",
   "com.h2database" % "h2" % h2Version
 ).map(_.exclude("org.slf4j", "slf4j-api"))
 

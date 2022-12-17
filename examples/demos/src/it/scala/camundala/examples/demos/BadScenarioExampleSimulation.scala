@@ -1,5 +1,6 @@
 package camundala.examples.demos
 
+import BadScenarioExample.*
 import camundala.examples.demos.SignalMessageExample.*
 import camundala.simulation.*
 import camundala.simulation.custom.CustomSimulation
@@ -20,11 +21,5 @@ class BadScenarioExampleSimulation extends DemosSimulation:
       500
     )
   }
-  private lazy val `Bad Scenario with Message` =
-    process(
-      "badScenario-example"
-    )
-  private lazy val `Bad Scenario without Message` =
-    `Bad Scenario with Message`
 
 end BadScenarioExampleSimulation
