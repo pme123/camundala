@@ -7,7 +7,7 @@ import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
 
 trait SimulationDsl[T] extends TestOverrideExtensions:
-
+  
   def run(sim: SSimulation): T
 
   class SimulationBuilder:

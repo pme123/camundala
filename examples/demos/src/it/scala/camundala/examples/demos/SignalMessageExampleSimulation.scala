@@ -10,7 +10,7 @@ import sttp.tapir.generic.auto.*
 // exampleDemos/It/testOnly *SignalMessageExampleSimulation
 class SignalMessageExampleSimulation extends DemosSimulation:
 
-  lazy val simulation = simulate {
+  simulate {
     scenario(messageExample.startWithMsg)(
       messageIntermediateExample,
       messageIntermediateExample

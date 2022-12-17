@@ -18,10 +18,11 @@ abstract class CustomSimulation
     extends SimulationDsl[Future[Seq[(LogLevel, Seq[ScenarioResult])]]],
       DmnScenarioExtensions {
 
-  def simulation: Future[Seq[(LogLevel, Seq[ScenarioResult])]]
+  // needed that it can be called from the Test Framework and check the result
+  var simulation: Future[Seq[(LogLevel, Seq[ScenarioResult])]] = _
 
   def run(sim: SSimulation): Future[Seq[(LogLevel, Seq[ScenarioResult])]] =
-    Future
+    simulation = Future
       .sequence(
         sim.scenarios
           .map {
@@ -54,5 +55,6 @@ abstract class CustomSimulation
           throw ex
         }
       }
-
+    simulation
+  end run
 }

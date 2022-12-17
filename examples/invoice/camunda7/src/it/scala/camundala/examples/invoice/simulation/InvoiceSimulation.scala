@@ -13,7 +13,7 @@ import scala.concurrent.duration.*
 // exampleInvoiceC7/It/testOnly *InvoiceSimulation
 class InvoiceSimulation extends CustomSimulation:
 
-  lazy val simulation = simulate {
+  simulate {
 
     /* scenario(`Review Invoice`)(
        AssignReviewerUT,

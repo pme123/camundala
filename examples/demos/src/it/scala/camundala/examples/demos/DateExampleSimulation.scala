@@ -10,7 +10,7 @@ import sttp.tapir.generic.auto.*
 // exampleDemos/It/run *DateExampleSimulation
 class DateExampleSimulation extends DemosSimulation:
 
-  lazy val simulation = simulate {
+  simulate {
     scenario(DateExampleDMN)
 
   }

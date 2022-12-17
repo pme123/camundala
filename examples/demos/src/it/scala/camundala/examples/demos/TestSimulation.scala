@@ -12,6 +12,6 @@ import scala.concurrent.duration.*
 class TestSimulation extends DemosSimulation:
 
   import TestDomain.*
-  lazy val simulation = simulate {
+  simulate {
     scenario(CamundalaGenerateTestP)
   }

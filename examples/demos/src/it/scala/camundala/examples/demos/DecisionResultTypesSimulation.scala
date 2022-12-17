@@ -13,7 +13,7 @@ import scala.concurrent.duration.*
 class DecisionResultTypesSimulation extends DemosSimulation:
   import TestDomain.*
 
-  lazy val simulation = simulate {
+  simulate {
     scenario(singleEntryDMN)
     scenario(singleResultDMN)
     scenario(collectEntriesDMN)

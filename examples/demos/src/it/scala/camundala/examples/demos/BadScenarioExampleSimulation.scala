@@ -9,7 +9,7 @@ import sttp.tapir.generic.auto.*
 // exampleDemos/It/testOnly *BadScenarioExampleSimulation
 class BadScenarioExampleSimulation extends DemosSimulation:
 
-  lazy val simulation = simulate {
+  simulate {
     badScenario(
       `Bad Scenario with Message`,
       500,
