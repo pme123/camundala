@@ -163,7 +163,7 @@ lazy val tapirDependencies = Seq(
   //"com.softwaremill.quicklens" %% "quicklens" % "1.7.5", // simple modifying case classes
   "org.latestbit" %% "circe-tagged-adt-codec" % "0.10.1", // to encode enums
 )
-val camundaVersion = "7.16.0"
+val camundaVersion = "7.18.0"
 /* NOT IN USE
 lazy val camundaTestDependencies = Seq(
   // provide Camunda interaction
@@ -257,21 +257,21 @@ lazy val exampleDemos = project
   )
   .dependsOn(camunda, simulation)
 
-val springBootVersion = "2.6.1"
-val h2Version = "1.4.200"
+val springBootVersion = "2.7.6"
+val h2Version = "2.1.214"
 // Twitter
-val twitter4jVersion = "4.0.7"
+val twitter4jVersion = "4.1.2"
 val camundaDependencies = Seq(
-  "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
-  "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
+  "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion,
+  "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion,
   "io.netty" % "netty-all" % "4.1.73.Final", // needed for Spring Boot Version > 2.5.*
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
   // json support
   "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
-  "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.13.1",
+  "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.17.0",
   // groovy support
-  "org.codehaus.groovy" % "groovy-jsr223" % "3.0.10",
+  "org.codehaus.groovy" % "groovy-jsr223" % "3.0.13",
   "com.h2database" % "h2" % h2Version
 ).map(_.exclude("org.slf4j", "slf4j-api"))
 
@@ -313,7 +313,7 @@ lazy val publicationSettings: Project => Project = _.settings(
       "scm:git:github.com:/pme123/camundala"
     )
   ),
-  developers := developerList
+  developers := developerList,
 )
 
 lazy val preventPublication: Project => Project =
