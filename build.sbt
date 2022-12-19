@@ -39,7 +39,7 @@ def projectSettings(projName: String): Seq[Def.Setting[_]] = Seq(
   name := s"camundala-$projName",
   organization := org,
   scalaVersion := scala3Version,
-  version := projectVersion,
+  version := projectVersion
 )
 
 lazy val domain = project
@@ -64,7 +64,8 @@ lazy val bpmn = project
       "-Xmax-inlines",
       "50" // is declared as erased, but is in fact used
     )
-  ).dependsOn(domain)
+  )
+  .dependsOn(domain)
 
 lazy val api = project
   .in(file("./api"))
@@ -72,10 +73,10 @@ lazy val api = project
   .settings(projectSettings("api"))
   .settings(
     libraryDependencies ++=
-        Seq(
-          "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
-          "com.novocode" % "junit-interface" % "0.11" % Test
-        ),
+      Seq(
+        "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
+        "com.novocode" % "junit-interface" % "0.11" % Test
+      ),
     scalacOptions ++= Seq(
       "-Xmax-inlines",
       "50" // is declared as erased, but is in fact used
@@ -121,11 +122,11 @@ lazy val simulation = project
   .configure(publicationSettings)
   .settings(projectSettings("simulation"))
   .settings(
-    libraryDependencies ++=
-      gatlingDependencies :+
-    "com.softwaremill.sttp.client3" %% "core" % "3.8.3" :+
-      "org.scalatest" %% "scalatest" % "3.2.12",
-      scalacOptions ++= Seq(
+    libraryDependencies ++= Seq(
+      "com.softwaremill.sttp.client3" %% "core" % "3.8.3",
+      "org.scala-sbt" % "test-interface" % "1.0"
+    ),
+    scalacOptions ++= Seq(
       "-Xmax-inlines",
       "50" // is declared as erased, but is in fact used
     )
@@ -137,22 +138,26 @@ lazy val documentation = (project in file("./documentation"))
   .settings(projectSettings("documentation"))
   .settings(
     laikaConfig := LaikaConfig.defaults
-      .withConfigValue(LinkConfig(
-        targets = Seq(
-        TargetDefinition("bpmn specification", ExternalTarget("https://www.bpmn.org")),
-        TargetDefinition("camunda", ExternalTarget("https://camunda.com"))
-      )))
-    //  .withConfigValue(LinkConfig(excludeFromValidation = Seq(Root)))
+      .withConfigValue(
+        LinkConfig(
+          targets = Seq(
+            TargetDefinition(
+              "bpmn specification",
+              ExternalTarget("https://www.bpmn.org")
+            ),
+            TargetDefinition("camunda", ExternalTarget("https://camunda.com"))
+          )
+        )
+      )
+      //  .withConfigValue(LinkConfig(excludeFromValidation = Seq(Root)))
       .withRawContent
     //  .failOnMessages(MessageFilter.None)
     //  .renderMessages(MessageFilter.None)
     ,
     laikaSite / target := baseDirectory.value / ".." / "docs",
-    laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting),
-
+    laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting)
   )
   .enablePlugins(LaikaPlugin)
-
 
 val tapirVersion = "0.20.2"
 val circeVersion = "0.14.3"
@@ -161,7 +166,7 @@ lazy val tapirDependencies = Seq(
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-circe-yaml" % tapirVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % tapirVersion,
   //"com.softwaremill.quicklens" %% "quicklens" % "1.7.5", // simple modifying case classes
-  "org.latestbit" %% "circe-tagged-adt-codec" % "0.10.1", // to encode enums
+  "org.latestbit" %% "circe-tagged-adt-codec" % "0.10.1" // to encode enums
 )
 val camundaVersion = "7.18.0"
 /* NOT IN USE
@@ -187,22 +192,14 @@ lazy val camundaTestDependencies = Seq(
   "org.mockito" % "mockito-core" % "3.1.0",
   "com.novocode" % "junit-interface" % "0.11"
 )
-*/
-
-lazy val gatlingDependencies = Seq(
-  "io.gatling.highcharts" % "gatling-charts-highcharts" % "3.7.5",
-  "io.gatling" % "gatling-test-framework" % "3.7.5"
-)
+ */
 
 // EXAMPLES
 lazy val exampleInvoiceC7 = project
   .in(file("./examples/invoice/camunda7"))
-  .configs(IntegrationTest)
-  .settings(Defaults.itSettings,
-    testFrameworks += new TestFramework("camundala.simulation.custom.SimulationTestFramework")
-  )
   .settings(projectSettings("example-invoice-c7"))
   .configure(preventPublication)
+  .configure(integrationTests)
   .settings(
     //Test / parallelExecution := false,
     libraryDependencies ++= camundaDependencies
@@ -213,46 +210,43 @@ lazy val exampleInvoiceC8 = project
   .in(file("./examples/invoice/camunda8"))
   .settings(projectSettings("example-invoice-c8"))
   .configure(preventPublication)
+  .configure(integrationTests)
   .settings(
     Test / parallelExecution := false,
     libraryDependencies ++= zeebeDependencies
   )
   .dependsOn(camunda8, api, simulation)
-  .enablePlugins(GatlingPlugin)
 
 lazy val exampleTwitterC7 = project
   .in(file("./examples/twitter/camunda7"))
   .settings(projectSettings("example-twitter-c7"))
   .configure(preventPublication)
+  .configure(integrationTests)
   .settings(
     libraryDependencies ++= camundaDependencies :+
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
   .dependsOn(api, simulation)
-  .enablePlugins(GatlingPlugin)
 
 lazy val exampleTwitterC8 = project
   .in(file("./examples/twitter/camunda8"))
   .settings(projectSettings("example-twitter-c8"))
   .configure(preventPublication)
+  .configure(integrationTests)
   .settings(
     libraryDependencies +=
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
   .dependsOn(camunda8, api, simulation)
-  .enablePlugins(GatlingPlugin)
 
 lazy val exampleDemos = project
   .in(file("./examples/demos"))
-  .configs(IntegrationTest)
-  .settings(Defaults.itSettings,
-    testFrameworks += new TestFramework("camundala.simulation.custom.SimulationTestFramework")
-  )
   .settings(projectSettings("example-demos"))
   .configure(preventPublication)
+  .configure(integrationTests)
   .settings(
-    libraryDependencies ++= camundaDependencies,
- //   libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % "it",
+    libraryDependencies ++= camundaDependencies
+    //   libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % "it",
 
   )
   .dependsOn(camunda, simulation)
@@ -262,8 +256,8 @@ val h2Version = "2.1.214"
 // Twitter
 val twitter4jVersion = "4.1.2"
 val camundaDependencies = Seq(
-  "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion,
-  "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion,
+  "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
+  "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
   "io.netty" % "netty-all" % "4.1.73.Final", // needed for Spring Boot Version > 2.5.*
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
@@ -273,7 +267,7 @@ val camundaDependencies = Seq(
   // groovy support
   "org.codehaus.groovy" % "groovy-jsr223" % "3.0.13",
   "com.h2database" % "h2" % h2Version
-).map(_.exclude("org.slf4j", "slf4j-api"))
+) //.map(_.exclude("org.slf4j", "slf4j-api"))
 
 val zeebeVersion = "1.3.4"
 val zeebeDependencies = Seq(
@@ -313,7 +307,7 @@ lazy val publicationSettings: Project => Project = _.settings(
       "scm:git:github.com:/pme123/camundala"
     )
   ),
-  developers := developerList,
+  developers := developerList
 )
 
 lazy val preventPublication: Project => Project =
@@ -327,3 +321,12 @@ lazy val preventPublication: Project => Project =
     publishLocal := {},
     packagedArtifacts := Map.empty
   ) // doesn't work - https://github.com/sbt/sbt-pgp/issues/42
+
+lazy val integrationTests: Project => Project =
+  _.configs(IntegrationTest)
+    .settings(
+      Defaults.itSettings,
+      testFrameworks += new TestFramework(
+        "camundala.simulation.custom.SimulationTestFramework"
+      )
+    )

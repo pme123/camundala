@@ -4,19 +4,18 @@ package examples.twitter.api
 import api.*
 import bpmn.*
 import simulation.*
+import simulation.custom.CustomSimulation
 import camundala.examples.twitter.api.TwitterApi.*
-import camundala.simulation.gatling.GatlingSimulation
 import io.circe.generic.auto.*
-import io.gatling.http.request.builder.HttpRequestBuilder
 import sttp.tapir.generic.auto.*
 
 import scala.concurrent.duration.*
 
-// exampleTwitterC7/GatlingIt/testOnly *TwitterSimulation
-class TwitterSimulation extends SimulationDsl, GatlingSimulation:
+// exampleTwitterC7/It/testOnly *TwitterSimulation
+class TwitterSimulation extends CustomSimulation:
 
   override implicit def config =
-    super.config.withPort(8887)
+    super.config.withPort(8034)
 
   private val `Twitter - Approved` = twitterDemoProcess
   private val `Twitter - Not Approved` = twitterDemoProcess

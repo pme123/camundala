@@ -3,8 +3,6 @@ package custom
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import scala.reflect.ClassTag
-import reflect.runtime.universe.TypeTag
 
 type ResultType = Either[ScenarioData, ScenarioData]
 

@@ -6,8 +6,6 @@ import camundala.simulation.*
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.*
-import org.scalatest.FutureOutcome.succeeded
-import org.scalatest.funsuite.AnyFunSuite
 import sttp.client3.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
