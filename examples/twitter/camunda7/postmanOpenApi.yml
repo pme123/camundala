@@ -2,8 +2,8 @@ openapi: 3.0.3
 info:
   title: Twitter Process API C7
   version: '1.0'
-  description: "\n**This is for Postman - to have example requests. Be aware the Output\
-    \ is not provided!**\n\n\n\nCreated at 02/07/2022, 10:35\n\n****\n\nI did the\
+  summary: "\n**This is for Postman - to have example requests. Be aware the Output\
+    \ is not provided!**\n\n\n\nCreated at 21/12/2022, 10:20\n\n****\n\nI did the\
     \ following Adjustments:\n* Changed it to _Scala_ to simplify my example.\n* Added\
     \ extensions to the Camundala DSL.\n* Added the BPMN implementation in Camundala\
     \ DSL.\n\nThere are 2 application here:\n1. **TwitterProcessRunnerApp**\n   \n\
@@ -26,7 +26,10 @@ paths:
       tags:
       - twitterDemoProcess
       summary: 'twitterDemoProcess: StartProcess'
-      description: This runs the Twitter Approvement Process.
+      description: |
+        This runs the Twitter Approvement Process.
+
+        See API Doc: [twitterDemoProcess](No URL defined for twitter-example-c7/OpenApi.html#operation/Process:%20TwitterDemoP)
       operationId: postProcess-definitionKeyTwitterdemopStart
       requestBody:
         content:
@@ -49,23 +52,29 @@ paths:
       responses:
         '200':
           description: ''
-  /task/--REMOVE:Tweet%20accepted--:
+  /task/--REMOVE:ReviewTweetUT--:
     post:
       tags:
       - twitterDemoProcess
       summary: 'Tweet accepted: GetActiveTask'
-      description: '-'
-      operationId: postTask--remove:tweet accepted--
+      description: |2
+
+
+        See API Doc: [Tweet accepted](No URL defined for twitter-example-c7/OpenApi.html#operation/UserTask:%20ReviewTweetUT)
+      operationId: postTask--remove:reviewtweetut--
       responses:
         '200':
           description: ''
-  /task/{taskId}/form-variables/--REMOVE:Tweet%20accepted--:
+  /task/{taskId}/form-variables/--REMOVE:ReviewTweetUT--:
     get:
       tags:
       - twitterDemoProcess
       summary: 'Tweet accepted: GetTaskFormVariables'
-      description: '-'
-      operationId: getTaskTaskidForm-variables--remove:tweet accepted--
+      description: |2
+
+
+        See API Doc: [Tweet accepted](No URL defined for twitter-example-c7/OpenApi.html#operation/UserTask:%20ReviewTweetUT)
+      operationId: getTaskTaskidForm-variables--remove:reviewtweetut--
       parameters:
       - name: taskId
         in: path
@@ -101,13 +110,16 @@ paths:
       responses:
         '200':
           description: ''
-  /task/{taskId}/complete/--REMOVE:Tweet%20accepted--:
+  /task/{taskId}/complete/--REMOVE:ReviewTweetUT--:
     post:
       tags:
       - twitterDemoProcess
       summary: 'Tweet accepted: CompleteTask'
-      description: '-'
-      operationId: postTaskTaskidComplete--remove:tweet accepted--
+      description: |2
+
+
+        See API Doc: [Tweet accepted](No URL defined for twitter-example-c7/OpenApi.html#operation/UserTask:%20ReviewTweetUT)
+      operationId: postTaskTaskidComplete--remove:reviewtweetut--
       parameters:
       - name: taskId
         in: path
@@ -150,16 +162,6 @@ components:
           format: double
         type:
           type: string
-    CEnum:
-      required:
-      - value
-      - type
-      type: object
-      properties:
-        value:
-          type: string
-        type:
-          type: string
     CFile:
       required:
       - value
@@ -191,6 +193,7 @@ components:
       properties:
         value:
           type: integer
+          format: int32
         type:
           type: string
     CJson:
@@ -230,7 +233,6 @@ components:
       oneOf:
       - $ref: '#/components/schemas/CBoolean'
       - $ref: '#/components/schemas/CDouble'
-      - $ref: '#/components/schemas/CEnum'
       - $ref: '#/components/schemas/CFile'
       - $ref: '#/components/schemas/CInteger'
       - $ref: '#/components/schemas/CJson'

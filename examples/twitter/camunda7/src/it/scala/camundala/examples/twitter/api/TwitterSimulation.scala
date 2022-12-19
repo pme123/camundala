@@ -14,16 +14,6 @@ import scala.concurrent.duration.*
 // exampleTwitterC7/It/testOnly *TwitterSimulation
 class TwitterSimulation extends CustomSimulation:
 
-  override implicit def config =
-    super.config.withPort(8034)
-
-  private val `Twitter - Approved` = twitterDemoProcess
-  private val `Twitter - Not Approved` = twitterDemoProcess
-    .withOut(ReviewedTweet(false))
-
-  private val `reviewTweet Not ApprovedUT` = reviewTweetApprovedUT
-  .withOut(ReviewedTweet(false))
-
   simulate {
     scenario(`Twitter - Approved`)(
       reviewTweetApprovedUT
@@ -32,3 +22,13 @@ class TwitterSimulation extends CustomSimulation:
       `reviewTweet Not ApprovedUT`
     )
   }
+
+  override implicit def config =
+    super.config.withPort(8034)
+
+  private lazy val `Twitter - Approved` = twitterDemoProcess
+  private lazy val `Twitter - Not Approved` = twitterDemoProcess
+    .withOut(ReviewedTweet(false))
+
+  private lazy val `reviewTweet Not ApprovedUT` = reviewTweetApprovedUT
+  .withOut(ReviewedTweet(false))

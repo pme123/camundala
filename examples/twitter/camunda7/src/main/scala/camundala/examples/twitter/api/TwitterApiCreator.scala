@@ -10,20 +10,20 @@ object TwitterApiCreator extends DefaultApiCreator:
 
   val projectName = "twitter-example-c7"
 
-  override val apiConfig: ApiConfig =
-    super.apiConfig
-      .withBasePath(pwd / "examples" / "twitter" / "camunda7")
-      .withPort(8887)
+  val title = "Twitter Process API C7"
 
-  def title = "Twitter Process API C7"
-
-  def version = "1.0"
+  val version = "1.0"
 
   document {
     api(twitterDemoProcess)(
       ReviewTweetApprovedUT
     )
   }
+
+  override lazy val apiConfig: ApiConfig =
+    super.apiConfig
+      .withBasePath(pwd / "examples" / "twitter" / "camunda7")
+      .withPort(8887)
 
   private lazy val `Tweet accepted` = reviewTweetApprovedUT
   private lazy val ReviewTweetApprovedUT =

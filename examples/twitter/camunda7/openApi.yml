@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Twitter Process API C7
   version: '1.0'
-  description: "\n\nCreated at 02/07/2022, 10:35\n\n****\n\nI did the following Adjustments:\n\
+  summary: "\n\nCreated at 21/12/2022, 10:20\n\n****\n\nI did the following Adjustments:\n\
     * Changed it to _Scala_ to simplify my example.\n* Added extensions to the Camundala\
     \ DSL.\n* Added the BPMN implementation in Camundala DSL.\n\nThere are 2 application\
     \ here:\n1. **TwitterProcessRunnerApp**\n   \n   Runs the _Camundala_ Dev Process\
@@ -17,11 +17,11 @@ info:
     \ on this Project: https://github.com/pme123/spring-boot-datakurre-plugins\n\n\
     \n\n"
 paths:
-  /process/twitterDemoProcess/TwitterDemoP:
+  /process/twitterDemoProcess/TwitterDemoP/twitterDemoProcess:
     head:
       tags:
       - twitterDemoProcess
-      summary: 'Process: twitterDemoProcess'
+      summary: 'Process: TwitterDemoP'
       description: |
         This runs the Twitter Approvement Process.
 
@@ -29,7 +29,7 @@ paths:
         **Used in no other Process.**
 
         **Uses no other Processes.**
-      operationId: 'Process: twitterDemoProcess'
+      operationId: 'Process: TwitterDemoP'
       requestBody:
         content:
           application/json:
@@ -52,13 +52,13 @@ paths:
                 twitterDemoProcess:
                   value:
                     approved: true
-  /usertask/twitterDemoProcess/ReviewTweetUT:
+  /usertask/twitterDemoProcess/ReviewTweetUT/Tweetaccepted:
     head:
       tags:
       - twitterDemoProcess
-      summary: 'UserTask: Tweet accepted'
-      description: '-'
-      operationId: 'UserTask: Tweet accepted'
+      summary: 'UserTask: ReviewTweetUT'
+      description: ''
+      operationId: 'UserTask: ReviewTweetUT'
       responses:
         '200':
           description: ''
@@ -73,9 +73,6 @@ paths:
                 Tweet rejected:
                   value:
                     approved: false
-                Tweet NOT accepted:
-                  value:
-                    approved: true
 components:
   schemas:
     CreateTweet:
