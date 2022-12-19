@@ -15,7 +15,8 @@ trait ProcessReferenceCreator:
   protected def projectName: String
   protected def apiConfig: ApiConfig
 
-  private def docProjectUrl(project: String): String = apiConfig.docProjectUrl(project)
+  private def docProjectUrl(project: String): String =
+    apiConfig.docProjectUrl(project)
 
   private def projectPaths: Seq[Path] = apiConfig.localProjectPaths
 
@@ -49,7 +50,7 @@ trait ProcessReferenceCreator:
         }
         .mkString("\n- ", "\n- ", "\n")
       println(refDoc)
-      if(refDoc.trim.length == 1)
+      if (refDoc.trim.length == 1)
         "\n**Used in no other Process.**\n"
       else
         s"""
@@ -79,10 +80,10 @@ trait ProcessReferenceCreator:
         .sortBy(_._1)
 
     private def docuPath(
-                              projectPath: Path,
-                              path: Path,
-                              content: String
-                            ): (String, String) =
+        projectPath: Path,
+        path: Path,
+        content: String
+    ): (String, String) =
       val extractId =
         val pattern =
           """<(bpmn:process|process)([^\/>]+)isExecutable="true"([^\/>]*>)""".r
@@ -90,17 +91,16 @@ trait ProcessReferenceCreator:
         pattern
           .findFirstIn(content)
           .map { l =>
-            val idPattern(id) = l
+            val idPattern(id) = l: @unchecked
             id
           }
           .getOrElse(s"Id not found in $path")
-
 
       @tailrec
       def projectName(segments: List[String]): (String, String) =
         segments match
           case projectName :: y :: _ if y == projectPath.last =>
-            lazy val anchor =  s"#operation/Process:%20$extractId"
+            lazy val anchor = s"#operation/Process:%20$extractId"
             projectName -> s"[$extractId](${docProjectUrl(projectName)}/OpenApi.html$anchor)"
           case _ :: xs => projectName(xs)
           case Nil => "NOT_DEFINED" -> "projectName could not be extracted"
@@ -129,7 +129,9 @@ trait ProcessReferenceCreator:
             }
           val businessRuleTasks = (xml \\ "businessRuleTask")
             .map { br =>
-              val decisionRef = br.attribute("http://camunda.org/schema/1.0/bpmn", "decisionRef").get
+              val decisionRef = br
+                .attribute("http://camunda.org/schema/1.0/bpmn", "decisionRef")
+                .get
               UsesRef(decisionRef.toString, isDmn = true)
             }
 
@@ -149,7 +151,7 @@ trait ProcessReferenceCreator:
                  |""".stripMargin
             }
             .mkString("\n- ", "\n- ", "\n")
-          if(refDoc.trim.length == 1)
+          if (refDoc.trim.length == 1)
             "\n**Uses no other Processes.**\n"
           else
             s"""
@@ -164,7 +166,11 @@ trait ProcessReferenceCreator:
         }
         .getOrElse("\n**Uses no other Processes.**\n")
 
-    class UsesRef(processRef: String, serviceName: Option[String] = None, isDmn: Boolean = false):
+    class UsesRef(
+        processRef: String,
+        serviceName: Option[String] = None,
+        isDmn: Boolean = false
+    ):
       lazy val (project: String, processId: String) =
         processRef.split(":").toList match
           case proj :: proc :: _ => (proj, proc)
@@ -175,11 +181,14 @@ trait ProcessReferenceCreator:
             )
 
       lazy val processIdent: String = serviceName.getOrElse(processId)
-      lazy val anchor =  s"#operation/${if(isDmn) "DecisionDmn" else "Process"}:%20$processIdent"
-      lazy val dmnTag =  if(isDmn)
+      lazy val anchor =
+        s"#operation/${if (isDmn) "DecisionDmn" else "Process"}:%20$processIdent"
+      lazy val dmnTag = if (isDmn)
         println(s"processRef:: $processRef")
-        "(DMN)" else ""
-      lazy val serviceStr: String = serviceName.map(_ => s" ($processId)").getOrElse("")
+        "(DMN)"
+      else ""
+      lazy val serviceStr: String =
+        serviceName.map(_ => s" ($processId)").getOrElse("")
 
       lazy val asString: String =
         s"_[$processIdent](${docProjectUrl(project)}/OpenApi.html$anchor)_ $serviceStr$dmnTag"
@@ -187,8 +196,8 @@ trait ProcessReferenceCreator:
     end UsesRef
 
     private def findBpmn(
-                            processName: String
-                          ): Option[String] =
+        processName: String
+    ): Option[String] =
       println(s"Find own BPMN for $processName")
       allBpmns.flatMap { case _ -> paths =>
         paths
@@ -257,7 +266,6 @@ object XMLChecker extends App:
     .mkString("\n- ", "\n- ", "\n")
 
   os.write.over(os.pwd / "REFS.md", refDoc)
-
 
   lazy val xmlStr = """<?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_19vzwcd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.1" camunda:diagramRelationId="b9ddc512-7731-4480-9249-b4cb100fe129" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
