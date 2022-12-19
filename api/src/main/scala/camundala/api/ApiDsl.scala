@@ -3,9 +3,8 @@ package api
 
 import bpmn.*
 import domain.*
-import sttp.tapir.docs.openapi.{OpenAPIDocsInterpreter, OpenAPIDocsOptions}
-import sttp.tapir.openapi.circe.yaml.*
-import sttp.tapir.openapi.{Contact, Info, OpenAPI, Server}
+import sttp.apispec.openapi.circe.yaml.*
+import sttp.apispec.openapi.*
 
 import java.text.SimpleDateFormat
 import java.util.Date

@@ -2,7 +2,7 @@ package camundala
 package api
 
 import bpmn.*
-import sttp.tapir.openapi.Contact
+import sttp.apispec.openapi.Contact
 
 case class ApiConfig(
     // define tenant if you have one

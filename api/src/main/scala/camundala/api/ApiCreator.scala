@@ -3,10 +3,10 @@ package camundala.api
 import io.circe.*
 import io.circe.syntax.*
 import os.*
+import sttp.apispec.openapi.*
+import sttp.apispec.openapi.circe.yaml.*
 import sttp.tapir.docs.openapi.{OpenAPIDocsInterpreter, OpenAPIDocsOptions}
 import sttp.tapir.json.circe.*
-import sttp.tapir.openapi.*
-import sttp.tapir.openapi.circe.yaml.*
 import sttp.tapir.{EndpointInput, PublicEndpoint}
 
 import java.text.SimpleDateFormat

@@ -4,8 +4,8 @@ package api
 import bpmn.*
 import sttp.tapir.*
 import sttp.tapir.docs.openapi.*
-import sttp.tapir.openapi.*
-import sttp.tapir.openapi.circe.yaml.*
+import sttp.apispec.openapi.*
+import sttp.apispec.openapi.circe.yaml.*
 import io.circe.*
 import io.circe.syntax.*
 import sttp.tapir.json.circe.*

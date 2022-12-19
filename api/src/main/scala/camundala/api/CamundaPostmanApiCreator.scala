@@ -5,10 +5,9 @@ import io.circe.*
 import io.circe.syntax.*
 import sttp.tapir.EndpointIO.Example
 import sttp.tapir.*
-import sttp.tapir.docs.openapi.*
+import sttp.apispec.openapi.*
 import sttp.tapir.json.circe.*
-import sttp.tapir.openapi.*
-import sttp.tapir.openapi.circe.yaml.*
+import sttp.apispec.openapi.circe.yaml.*
 
 import java.text.SimpleDateFormat
 import java.util.Date

@@ -159,12 +159,13 @@ lazy val documentation = (project in file("./documentation"))
   )
   .enablePlugins(LaikaPlugin)
 
-val tapirVersion = "0.20.2"
-val circeVersion = "0.14.3"
+val tapirVersion = "1.2.4"
 lazy val tapirDependencies = Seq(
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
-  "com.softwaremill.sttp.tapir" %% "tapir-openapi-circe-yaml" % tapirVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % tapirVersion,
+  "com.softwaremill.sttp.tapir" %% "tapir-redoc-bundle" % tapirVersion,
+  "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
+  "com.softwaremill.sttp.apispec" %% "openapi-circe-yaml" % "0.3.1",
   //"com.softwaremill.quicklens" %% "quicklens" % "1.7.5", // simple modifying case classes
   "org.latestbit" %% "circe-tagged-adt-codec" % "0.10.1" // to encode enums
 )

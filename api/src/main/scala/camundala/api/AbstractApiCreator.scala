@@ -6,10 +6,9 @@ import io.circe.*
 import io.circe.syntax.*
 import os.*
 import sttp.tapir.EndpointIO.Example
-import sttp.tapir.docs.openapi.{OpenAPIDocsInterpreter, OpenAPIDocsOptions}
 import sttp.tapir.json.circe.*
-import sttp.tapir.openapi.*
-import sttp.tapir.openapi.circe.yaml.*
+import sttp.apispec.openapi.*
+import sttp.apispec.openapi.circe.yaml.*
 import sttp.tapir.*
 
 import java.text.SimpleDateFormat
