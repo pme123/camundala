@@ -1,13 +1,15 @@
 package camundala
-package examples.invoice.bpmn
+package examples.invoice
+package dmn
 
 import bpmn.*
-import dmn.DmnTesterConfigCreator
+import domain.*
+import camundala.bpmn.*
+import camundala.dmn.DmnTesterConfigCreator
 import org.latestbit.circe.adt.codec.JsonTaggedAdt
 
 object InvoiceDmnTesterConfigCreator extends DmnTesterConfigCreator:
 
-  import InvoiceApi.*
   override def dmnBasePath: Path =
     pwd / "examples" / "invoice" / "src" / "main" / "resources"
 

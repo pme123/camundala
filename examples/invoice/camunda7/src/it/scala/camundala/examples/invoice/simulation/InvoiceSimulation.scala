@@ -1,14 +1,9 @@
 package camundala.examples.invoice
 package simulation
 
-import camundala.bpmn.*
-import camundala.examples.invoice.bpmn.InvoiceApi.*
-import camundala.simulation.*
+import bpmn.*
+import domain.*
 import camundala.simulation.custom.CustomSimulation
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
-
-import scala.concurrent.duration.*
 
 // exampleInvoiceC7/It/testOnly *InvoiceSimulation
 class InvoiceSimulation extends CustomSimulation:
@@ -56,7 +51,7 @@ class InvoiceSimulation extends CustomSimulation:
     badScenario(
       BadValidationP,
       500,
-        "Validation Error: Input is not valid: DecodingFailure(Attempt to decode value on failed cursor, List(DownField(creditor)))"
+        "Validation Error: Input is not valid: DecodingFailure(Missing required field, List(DownField(creditor)))"
     )
   }
 

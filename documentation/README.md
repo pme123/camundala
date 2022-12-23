@@ -1,3 +1,9 @@
-Markups for Github Pages.
+## Markups for Github Pages.
 
-this generates HTML to _/docs_ (standard in Github)
+This generates HTML to _/docs_ (standard in Github)
+
+### Development
+`sbt>laikaPreview`
+
+### Releasing
+Should be taken care by the normal release process.

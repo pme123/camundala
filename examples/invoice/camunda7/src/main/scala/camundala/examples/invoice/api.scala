@@ -1,12 +1,11 @@
-package camundala.examples.invoice.bpmn
+package camundala.examples.invoice
 
 import camundala.api.*
 import camundala.bpmn.*
-import camundala.examples.invoice.bpmn.InvoiceApi.*
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
+import camundala.examples.invoice.bpmn.*
+import camundala.examples.invoice.domain.*
 
-object InvoiceApiCreator extends DefaultApiCreator:
+object api extends DefaultApiCreator:
 
   val projectName = "invoice-example"
 
@@ -16,7 +15,7 @@ object InvoiceApiCreator extends DefaultApiCreator:
 
   override protected val apiConfig: ApiConfig =
     super.apiConfig
-      .withBasePath(pwd / "examples" / "invoice" / "camunda7")
+      .withBasePath(pwd / "examples" / "invoice" / "camunda8")
       .withPort(8034)
       .withCawemoFolder("a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala")
 
@@ -30,14 +29,17 @@ object InvoiceApiCreator extends DefaultApiCreator:
       AssignReviewerUT,
       ReviewInvoiceUT
     )
+    group("DMNs")(
+      InvoiceAssignApproverDMN
+    )
   }
 
   private lazy val ApproveInvoiceUT =
-    InvoiceApi.ApproveInvoiceUT
+    bpmn.ApproveInvoiceUT
       .withOutExample("Invoice approved", ApproveInvoice())
       .withOutExample("Invoice NOT approved", ApproveInvoice(false))
 
   private lazy val ReviewInvoiceUT =
-    InvoiceApi.ReviewInvoiceUT
+    bpmn.ReviewInvoiceUT
       .withOutExample("Invoice clarified", InvoiceReviewed())
       .withOutExample("Invoice NOT clarified", InvoiceReviewed(false))

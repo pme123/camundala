@@ -268,7 +268,7 @@ trait SScenarioExtensions extends SStepExtensions:
                   data
                     .error(s"Error Message not found in Body.")
                     .info(s"- expected msg: $errMsg")
-                    .info(s"- body: ${msg}")
+                    .info(s"- body: $msg")
                 )
           )
           .getOrElse(
