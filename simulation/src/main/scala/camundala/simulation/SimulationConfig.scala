@@ -27,9 +27,6 @@ case class SimulationConfig[B](
   def withMaxCount(maxCount: Int): SimulationConfig[B] =
     copy(maxCount = maxCount)
 
-  def withTenantId(userAtOnce: Int = 1): SimulationConfig[B] =
-    copy(userAtOnce = userAtOnce)
-
   def withAuthHeader(authHeader: B => B = b => b): SimulationConfig[B] =
     copy(authHeader = authHeader)
 
