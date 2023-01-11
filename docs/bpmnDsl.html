@@ -51,7 +51,10 @@
         <li class="level1"><a href="index.html">Intro</a></li>
         <li class="level1"><a href="specification.html">Process &amp; Domain Specification</a></li>
         <li class="level1 active"><a href="#">BPMN DSL</a></li>
-        <li class="level1"><a href="functionalityDsls.html">Functionality DSLs</a></li>
+        <li class="level1"><a href="projectSetup.html">Project Setup</a></li>
+        <li class="level1 nav-header">Functional DSLs</li>
+        <li class="level2"><a href="functionalityDsls/apiDoc.html">API Documentation</a></li>
+        <li class="level2"><a href="functionalityDsls/simulation.html">Simulation</a></li>
       </ul>
       
     </nav>
@@ -68,9 +71,9 @@
           <li class="level2"><a href="#singleresult">singleResult</a></li>
           <li class="level2"><a href="#collectentries">collectEntries</a></li>
           <li class="level2"><a href="#resultlist">resultList</a></li>
-          <li class="level1"><a href="#user-tasks">User Tasks</a></li>
-          <li class="level2"><a href="#receive-message-event">Receive Message Event</a></li>
-          <li class="level2"><a href="#receive-send-event">Receive Send Event</a></li>
+          <li class="level1"><a href="#user-task">User Task</a></li>
+          <li class="level1"><a href="#receive-message-event">Receive Message Event</a></li>
+          <li class="level1"><a href="#receive-signal-event">Receive Signal Event</a></li>
         </ul>
         
         <p class="footer"></p>
@@ -173,7 +176,7 @@
     </span><span class="identifier">out</span><span> = </span><span class="type-name">List</span><span>(</span><span class="type-name">ManyOutResult</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="string-literal">&quot;🤩&quot;</span><span>), </span><span class="type-name">ManyOutResult</span><span>(</span><span class="number-literal">2</span><span>, </span><span class="string-literal">&quot;😂&quot;</span><span>))
   )</span></code></pre>
         
-        <h2 id="user-tasks" class="section"><a class="anchor-link left" href="#user-tasks"><i class="icofont-laika">&#xef71;</i></a>User Tasks</h2>
+        <h2 id="user-task" class="section"><a class="anchor-link left" href="#user-task"><i class="icofont-laika">&#xef71;</i></a>User Task</h2>
         <p>A <em>User Task</em> describes its form values that it offers and the values it must be completed with.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">userTask</span><span>(
     </span><span class="identifier">id</span><span> = </span><span class="string-literal">&quot;ApproveInvoiceUT&quot;</span><span>,
@@ -182,10 +185,23 @@
     </span><span class="identifier">out</span><span> = </span><span class="type-name">ApproveInvoice</span><span>()
   )</span></code></pre>
         
-        <h3 id="receive-message-event" class="section"><a class="anchor-link left" href="#receive-message-event"><i class="icofont-laika">&#xef71;</i></a>Receive Message Event</h3>
+        <h2 id="receive-message-event" class="section"><a class="anchor-link left" href="#receive-message-event"><i class="icofont-laika">&#xef71;</i></a>Receive Message Event</h2>
+        <p>A <em>Receive Message Event</em> represents a catching message event. 
+        The input defines the message you expect.
+        This works only as intermediate event.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">messageExample</span><span> = </span><span class="identifier">receiveMessageEvent</span><span>(
+  </span><span class="string-literal">&quot;message-for-example&quot;</span><span>,
+  </span><span class="identifier">in</span><span> = </span><span class="type-name">MessageExampleIn</span><span>(),
+)</span></code></pre>
         
-        <h3 id="receive-send-event" class="section"><a class="anchor-link left" href="#receive-send-event"><i class="icofont-laika">&#xef71;</i></a>Receive Send Event</h3>
-        <p>.. TODO</p>
+        <h2 id="receive-signal-event" class="section"><a class="anchor-link left" href="#receive-signal-event"><i class="icofont-laika">&#xef71;</i></a>Receive Signal Event</h2>
+        <p>A <em>Receive Signal Event</em> represents a catching signal event. 
+        The input defines the signal you expect.
+        This works only as intermediate event.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">signalExample</span><span> = </span><span class="identifier">receiveSignalEvent</span><span>(
+  </span><span class="string-literal">&quot;signal-for-example&quot;</span><span>,
+  </span><span class="identifier">in</span><span> = </span><span class="type-name">SignalExampleIn</span><span>(),
+)</span></code></pre>
 
       </main>
 
