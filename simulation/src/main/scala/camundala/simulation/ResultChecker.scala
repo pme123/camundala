@@ -57,6 +57,22 @@ trait ResultChecker {
           if (!matches)
             println(s"!!! $k has NOT Size $value in $r")
           matches
+        case TestOverride(Some(k), Contains, Some(value)) =>
+          val r = result.find(_.key == k)
+          val matches = r.exists {
+            _.value match
+              case CJson(j, _) =>
+                toJson(j).asArray match
+                  case Some(vector) =>
+                    println(s"VECTOR: $vector - ${value.value.getClass}")
+                    vector.map(x => {println(s"hello: ${x.getClass}"); x.toString}).contains(value.value.toString)
+                  case _ =>
+                    false
+              case _ => false
+          }
+          if (!matches)
+            println(s"!!! $k does NOT contains $value in $r")
+          matches
         case _ =>
           println(
             s"!!! Only ${TestOverrideType.values.mkString(", ")} for TestOverrides supported."
@@ -65,6 +81,7 @@ trait ResultChecker {
       }
       .forall(_ == true)
 
+  // DMN
   def checkOForCollection(
       overrides: Seq[TestOverride],
       result: Seq[CamundaVariable | Map[String, CamundaVariable]]

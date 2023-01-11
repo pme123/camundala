@@ -83,6 +83,15 @@ trait SStepExtensions
         (body, data) =>
           body
             .as[Seq[CamundaProperty]]
+            .left
+            .map(exc =>
+              data
+                .error(
+                  s"!!! Problem parsing Result Body to a List of CamundaProperty."
+                )
+                .debug(s"Error: $exc")
+                .debug(s"Response Body: $body")
+            )
             .flatMap { value =>
               if (
                 checkProps(
@@ -100,14 +109,6 @@ trait SStepExtensions
                   )
                 )
             }
-            .left
-            .map(exc =>
-              data
-                .error(
-                  s"!!! Problem parsing Result Body to a List of CamundaProperty.\n$exc"
-                )
-                .debug(s"Responce Body: $body")
-            )
       )
     end checkVars
 

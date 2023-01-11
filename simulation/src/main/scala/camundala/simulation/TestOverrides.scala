@@ -74,12 +74,15 @@ trait TestOverrideExtensions:
         key: String,
         value: V
     ): T =
+      val v = value match
+        case _: (Seq[_] | Product) => value.asJson
+        case _ => value
       add(
         Some(key),
         TestOverrideType.IsEquals,
-        Some(CamundaVariable.valueToCamunda(value))
+        Some(CamundaVariable.valueToCamunda(v))
       )
-
+    // used for collections
     def hasSize(
         key: String,
         size: Int
@@ -98,6 +101,20 @@ trait TestOverrideExtensions:
         None,
         TestOverrideType.HasSize,
         Some(CInteger(size))
+      )
+
+    // used for collections
+    def contains[V: Encoder](
+                              key: String,
+                              value: V
+                            ): T =
+      val v = value match
+        case _: (Seq[_] | Product) => value.asJson
+        case _ => value
+      add(
+        Some(key),
+        TestOverrideType.Contains,
+        Some(CamundaVariable.valueToCamunda(value.asJson))
       )
 
     // used for DMNs ResultList and CollectEntries

@@ -129,7 +129,7 @@ resultList(
   )
 ```
 
-## User Tasks
+## User Task
 
 A _User Task_ describes its form values that it offers and the values it must be completed with.
 
@@ -142,7 +142,26 @@ userTask(
   )
 ```
 
-### Receive Message Event
-.. TODO
-### Receive Signal Event
-.. TODO
+## Receive Message Event
+A _Receive Message Event_ represents a catching message event. 
+The input defines the message you expect.
+This works only as intermediate event.
+
+```scala
+lazy val messageExample = receiveMessageEvent(
+  "message-for-example",
+  in = MessageExampleIn(),
+)
+```
+
+## Receive Signal Event
+A _Receive Signal Event_ represents a catching signal event. 
+The input defines the signal you expect.
+This works only as intermediate event.
+
+```scala
+lazy val signalExample = receiveSignalEvent(
+  "signal-for-example",
+  in = SignalExampleIn(),
+)
+```

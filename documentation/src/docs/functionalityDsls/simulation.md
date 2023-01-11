@@ -1,6 +1,8 @@
 # Simulation
 
 @:callout(warning)
+This expects that your variables are simple values or JSON-objects/ -arrays.
+
 For now this only works for **_Camunda 7_**.
 @:@
 
@@ -186,15 +188,103 @@ The following chapters explain the different scenario types:
 
 ### Process Scenarios
 #### scenario
-TODO
+An end to end simulation of one process path.
+```scala
+...
+scenario(PROCESS)
+scenario(PROCESS)(
+  INTERACTIONS
+)
+...
+```
+- PROCESS: The Process you defined with the [BPMN DSL].
+- INTERACTIONS: Whenever the Path of the Process comes to an Activity that interacts
+  with the outside world ([User Task], [Receive Message Event] or [Receive Signal Event]),
+  you add an according Process Step - see [Steps].
+  This is **optional**, you can skip it if your process has no interactions.
+
+Example:
+
+```scala
+...
+scenario(`Invoice Receipt with Review`)(
+  NotApproveInvoiceUT,
+  subProcess(`Review Invoice`)(
+    AssignReviewerUT,
+    ReviewInvoiceUT // do clarify
+  ),
+  ApproveInvoiceUT, // now approve
+  PrepareBankTransferUT
+)
+...
+```
 
 #### incidentScenario
-TODO
+To simulate a process that stops due an incident needs a special treatment
+as it never finishes.
 
+```scala
+...
+incidentScenario(
+  PROCESS,
+  INCIDENT_MESSAGE
+)
+incidentScenario(
+  PROCESS,
+  INCIDENT_MESSAGE
+)(
+  INTERACTIONS
+)
+...
+```
+Additional to the scenario we need to define:
+
+- INCIDENT_MESSAGE: This is the incident message or a part of it.
+
+Example:
+
+```scala
+...
+incidentScenario(
+  `Invoice Receipt that fails`,
+  "Could not archive invoice..."
+)(
+  ApproveInvoiceUT,
+  PrepareBankTransferUT
+)
+...
+```
 
 #### badScenario
-TODO
+Yet another case is if the process never gets started. 
+For example you validate the input variables and they fail.
+In this case Camunda throws an Error. 
+To handle this we need to do the following:
 
+```scala
+...
+badScenario(
+  PROCESS,
+  HTTP_STATUS,
+  ERROR_MESSAGE
+)
+...
+```
+
+- HTTP_STATUS: The status of the REST response.
+- ERROR_MESSAGE: Optional you can define the message or part of it, that the body must contain.
+
+Example:
+
+```scala
+...
+badScenario(
+  BadValidationP,
+  500,
+  "Validation Error: Input is not valid: DecodingFailure(Missing required field, List(DownField(creditor)))"
+)
+...
+```
 
 ### DMN Scenario
 _Camundala_ uses the [Evaluate Decision REST API](https://docs.camunda.org/manual/7.18/reference/rest/decision-definition/post-evaluate/)
@@ -245,6 +335,19 @@ enum ApproverGroup derives Adt.PureEncoder, Adt.PureDecoder :
 At time of writing, there is no replacement in **_Camunda 8_** for this.
 @:@
 
+### Start Scenario with message
+It is also possible to send a message to a process with a _Start Message Event_.
+
+```scala
+...
+scenario(PROCESS.startWithMsg)
+scenario(PROCESS.startWithMsg)(
+  INTERACTIONS
+)
+...
+```
+All that is needed is to postfix the process with `.startWithMsg`.
+
 ### Ignore a Scenario
 You can ignore a scenario by just prefix your Scenario with `ignore.`.
 
@@ -276,4 +379,227 @@ An ignored Scenario will create a Warning in the output Log, like this:
 
 @:callout(info)
 It is not possible to ignore the whole simulation at once.
+@:@
+
+## Steps
+This is a List with Process Interactions like [User Task], [Receive Message Event] or [Receive Signal Event].
+Each Interaction is simply the Activity you define with the [BPMN DSL].
+
+```scala
+...
+scenario(PROCESS)(
+  STEP1,
+  STEP2,
+  ...
+)
+...
+```
+See example in [Process Scenarios].
+
+### Sub Process (Call Activity)
+A special case are sub processes. If your process contains sub processes, there are
+the following possibilities:
+
+- The sub process has no interactions:
+  - Nothing to do.
+- The sub process contains interactions, but is mocked (returns a defined result, skipping the interactions):
+  - Nothing to do.
+- The sub process contains interactions:
+  - You can add a subProcess to your simulation, like:
+  ```scala
+   ...
+  subProcess(`Review Invoice`)(
+    AssignReviewerUT,
+    ReviewInvoiceUT // do clarify
+  ),
+  ... 
+  ```
+  This will change the context to the sub process and in the end switch it back to
+  the main process.
+
+@:callout(info)
+  This only works for one hierarchy of sub processes. 
+  When you have more complex sub processes, you must mock them.
+@:@
+
+## Validation
+The simulation uses your BPMN DSL objects not just to run the process and its interactions.
+It also uses the the input- and output domain objects to validate variables of the process.
+
+```scala
+// domain classes
+case class InvoiceReceipt(
+  creditor: String = "Great Pizza for Everyone Inc.",
+  amount: Double = 300.0,
+  ...
+)
+case class ApproveInvoice(
+   approved: Boolean = true
+)
+...
+// bpmn object
+process(
+  id = "ReviewInvoiceP",
+  descr = "This starts the Review Invoice Process.",
+  in = InvoiceReceipt(),
+  out = InvoiceReviewed()
+)
+```
+
+- in: The input of a BPMN object. 
+- out: The output of a BPMN object.
+
+Each attribute of the in/out-objects represents a variable on the process.
+
+The exact usage of the BPMN DSL objects differ slightly:
+
+**Process**
+
+- in: Each attribute is an input variable to start the process.
+- out: When process is finished it **validates** if these attributes match the according
+  variables in the process.
+
+**User Task**
+
+- in: When the process is at the User Task, it **validates** if these attributes match the according
+  variables in the process.
+- out: Each attribute is a variable to complete the User Task.
+
+**Receive Message Event**
+
+- in: Each attribute is a variable to send a message to start or proceed the process.
+
+**Receive Signal Event**
+
+- in: Each attribute is a variable to send a signal to start or proceed the process.
+
+### Test Overrides
+There may be lots of variables to test or you first just want to develop the process.
+In this case you can override the validation with the domain objects.
+
+```scala
+...
+scenario(WithOverrideScenario)(
+  `ApproveInvoiceUT with Override`,
+  PrepareBankTransferUT
+)
+...
+private lazy val WithOverrideScenario =
+  `Invoice Receipt with Override`
+        .exists("approved")
+        .notExists("clarified")
+        .isEquals("approved", true)
+
+private lazy val `ApproveInvoiceUT with Override` =
+  ApproveInvoiceUT
+          .exists("amount")
+          .notExists("amounts")
+          .isEquals("amount", 300.0)
+```
+
+As you see in this example, you can simply add checks. 
+Now only these checks are run by the validation.
+
+The following overrides are provided (for now):
+
+#### exists
+```scala
+  .exists(VARIABLE_NAME)
+```
+A variable with this `VARIABLE_NAME` must exists.
+
+#### notExists
+```scala
+  .notExists(VARIABLE_NAME)
+```
+A variable with this `VARIABLE_NAME` must not exists.
+
+#### isEquals
+```scala
+  .isEquals(VARIABLE_NAME, VARIABLE_VALUE)
+```
+A variable with this `VARIABLE_NAME` must have the value `VARIABLE_VALUE`.
+
+#### hasSize
+For collections:
+```scala
+  .hasSize(VARIABLE_NAME, VARIABLE_VALUE_SIZE)
+```
+A variable with this `VARIABLE_NAME` must be a collection with the size `VARIABLE_VALUE_SIZE`.
+
+For DMN ResultList and CollectEntries:
+```scala
+  .hasSize(VARIABLE_VALUE_SIZE)
+```
+A DMNs result must be a collection with the size `VARIABLE_VALUE_SIZE`.
+
+#### contains
+For collections:
+```scala
+  .contains(VARIABLE_NAME, VARIABLE_VALUE)
+```
+A variable with this `VARIABLE_NAME` must be a collection and one of its values must have the `VARIABLE_VALUE`.
+
+For DMN ResultList and CollectEntries:
+```scala
+  .contains(VARIABLE_VALUE)
+```
+A DMNs result must be a collection and one of its values must have the `VARIABLE_VALUE`.
+
+## Timing
+The interactions with a process are time relevant. 
+For example you only can interact with a User Task if the process is actually at that User Task.
+
+For this we check every second if the process is ready. 
+The time on how long it should check can be configured. See `maxCount` in [Configuration].
+Whenever this timeout is reached, it throws an exception and the scenario has failed.
+
+Here an example output:
+
+![simulation_timeout](images/simulation_timeout.png)
+
+Depending on the interaction, we have the following strategies:
+
+**Process**
+
+To check the variables of a process, the process must be finished.
+It checks if the state of the process is `COMPLETED`.
+
+**User Task**
+
+It simple tries until there is a User Task in the process available.
+If there are more than one, it just takes the first one.
+
+**Receive Message Event**
+
+We try to correlate the message until it is successful.
+This works as Camunda tries to correlate a message to exactly one
+_Receive Message Event_ (we use the `processInstanceId`).
+
+**Receive Signal Event**
+
+The way of Correlate Messages does not work for Signals, as they are 
+_fire and forget_.
+So you need to add an attribute with a certain value, we can check.
+
+```scala
+scenario(signalExampleProcess) (
+  signalExample
+  .waitFor("signalReady", true),
+)
+```
+
+Just add the postfix `.waitFor(WAITFOR_VARIABLE_NAME, WAITFOR_VARIABLE_VALUE)` to the BPMN Signal definition.
+In your process you must now set this variable with the according value, when the process is at this event.
+
+@:callout(info)
+This is also possible for _Receive Message Event_.
+If you do not define it for _Receive Signal Event_ it takes the default
+value `waitForSignal` and checks if it is `true`.
+@:@
+
+
+## Load Testing
+@:callout(info)
+At the moment this is not supported.
 @:@
