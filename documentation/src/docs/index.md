@@ -95,4 +95,4 @@ Just go throw the pages:
 
 1. [Process & Domain Specification](specification.md)
 2. [BPMN DSL](bpmnDsl.md)
-3. [Functionality DSLs](functionalityDsls.md)
+3. [Functionality DSLs](functionalityDsls/apiDoc.md)
