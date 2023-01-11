@@ -28,6 +28,8 @@ sealed trait ScenarioOrStep:
 sealed trait SScenario extends ScenarioOrStep:
   def inOut: InOut[_, _, _]
   def isIgnored: Boolean
+  def ignored: SScenario
+  def withSteps(steps: List[SStep]): SScenario
 
 sealed trait HasProcessSteps extends ScenarioOrStep:
   def process: Process[_,_]
@@ -53,6 +55,8 @@ case class ProcessScenario(
     copy(testOverrides = addOverride(testOverride))
 
   def ignored: ProcessScenario = copy(isIgnored = true)
+  def withSteps(steps: List[SStep]): SScenario =
+    copy(steps = steps)
 
 enum ProcessStartType :
   case START, MESSAGE
@@ -69,6 +73,9 @@ case class DmnScenario(
 
   def ignored: DmnScenario = copy(isIgnored = true)
 
+  def withSteps(steps: List[SStep]): SScenario =
+    this
+
 case class BadScenario(
     name: String,
     process: Process[_, _],
@@ -78,7 +85,10 @@ case class BadScenario(
 ) extends IsProcessScenario:
   lazy val inOut: Process[_, _] = process
   lazy val steps: List[SStep] = List.empty
+  def ignored: BadScenario = copy(isIgnored = true)
 
+  def withSteps(steps: List[SStep]): SScenario =
+    this
 
 case class IncidentScenario(
     name: String,
@@ -88,6 +98,11 @@ case class IncidentScenario(
     isIgnored: Boolean = false
 ) extends IsProcessScenario:
   lazy val inOut: Process[_, _] = process
+
+  def ignored: IncidentScenario = copy(isIgnored = true)
+
+  def withSteps(steps: List[SStep]): SScenario =
+    copy(steps = steps)
 
 sealed trait SStep extends ScenarioOrStep
 

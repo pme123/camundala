@@ -3,6 +3,7 @@ package simulation
 
 import bpmn.*
 import domain.*
+import camundala.simulation.*
 import camundala.simulation.custom.CustomSimulation
 
 // exampleInvoiceC7/It/testOnly *InvoiceSimulation

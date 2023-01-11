@@ -64,12 +64,12 @@ class InvoiceSimulation extends CustomSimulation:
 end InvoiceSimulation
 ```
 
-### simulate
+#### simulate
 This is the entry point for your Simulation. 
 There is one Simulation per Simulation class (file). 
 A Simulation contains one or more Scenarios.
 
-### scenario
+#### scenario
 A scenario consists of a BPMN process or a DMN decision.
 Then in optional second brackets you can add steps that interact
 with the process. For DMNs there won't be any.
@@ -111,7 +111,49 @@ Each Process Scenario will print a link to the according Process-Instance:
 
 This is not available for a DMN Scenario.
 
-#### Configuration
+## Simulation
+
+### Naming
+The DSL is using the names of your BPMN objects like Processes and UserTasks.
+As these objects can be reused in different Scenarios and Steps, we take the name 
+of the variable. 
+
+```scala
+  lazy val `Invoice Receipt with Review` =
+    `Invoice Receipt`
+      .withOut(InvoiceReceiptCheck(clarified = Some(true)))
+  lazy val NotApproveInvoiceUT =
+    ApproveInvoiceUT
+            .withOut(ApproveInvoice(false))  
+    ...
+    scenario(`Invoice Receipt with Review`)(
+      NotApproveInvoiceUT,
+      subProcess(`Review Invoice`)(
+        AssignReviewerUT,
+        ReviewInvoiceUT // do clarify
+      ),
+      ApproveInvoiceUT, // now approve
+      PrepareBankTransferUT
+    )
+    ...
+```
+In this example we have a ProcessScenario with the name _Invoice Receipt with Review_.
+The first Step has the name _NotApproveInvoiceUT_.
+
+@:callout(info)
+Use descriptive variable names. 
+If you use special characters, you need to use backticks, like:
+
+```scala
+lazy val `Invoice Receipt with Review` = ...
+```
+@:@
+
+These names are then used in the output Log:
+
+![simulation_outputNaming](images/simulation_outputNaming.png)
+
+### Configuration
 The following is the default configuration:
 ```scala
 case class SimulationConfig[B](
@@ -139,11 +181,22 @@ You can easily override it in your Simulation:
       .withLogLevel(LogLevel.DEBUG)
 ```
 
-## Process Scenarios
-You can choose from the following scenario types.
-### scenario
+## Scenarios
+The following chapters explain the different scenario types:
 
-## DMN Scenarios
+### Process Scenarios
+#### scenario
+TODO
+
+#### incidentScenario
+TODO
+
+
+#### badScenario
+TODO
+
+
+### DMN Scenario
 _Camundala_ uses the [Evaluate Decision REST API](https://docs.camunda.org/manual/7.18/reference/rest/decision-definition/post-evaluate/)
 from _Camunda_.
 
@@ -190,4 +243,37 @@ enum ApproverGroup derives Adt.PureEncoder, Adt.PureDecoder :
 
 @:callout(info)
 At time of writing, there is no replacement in **_Camunda 8_** for this.
+@:@
+
+### Ignore a Scenario
+You can ignore a scenario by just prefix your Scenario with `ignore.`.
+
+#### Examples:
+```scala
+  simulate {
+    ignore.scenario(`Review Invoice`)(
+      AssignReviewerUT,
+      ReviewInvoiceUT
+    )
+    ignore.incidentScenario(
+      `Invoice Receipt that fails`,
+      "Could not archive invoice..."
+    )(
+      ApproveInvoiceUT,
+      PrepareBankTransferUT
+    )
+    ignore.scenario(InvoiceAssignApproverDMN)
+    ignore.badScenario(
+      BadValidationP,
+      500,
+        "Validation Error: Input is not valid: DecodingFailure(Missing required field, List(DownField(creditor)))"
+    )
+  }
+```
+An ignored Scenario will create a Warning in the output Log, like this:
+
+![simulation_outputIgnore](images/simulation_outputIgnore.png)
+
+@:callout(info)
+It is not possible to ignore the whole simulation at once.
 @:@

@@ -28,7 +28,7 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     val sb = SimulationBuilder()
     body(using sb)
     val sim = sb.mkBlock
-    run(sim) // runs Gatling Load Tests
+    run(sim) // runs Scenarios
 
   def scenario(scen: ProcessScenario): SimulationConstr =
     scenario(scen)()
@@ -37,10 +37,7 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     scen.stage
 
   def scenario(scen: ProcessScenario)(body: SStep*): SimulationConstr =
-    scen.copy(steps = body.toList).stage
-
-  def ignore(scen: ProcessScenario)(body: SStep*): SimulationConstr =
-    scen.copy(steps = body.toList).ignored.stage
+    scen.withSteps(body.toList).stage
 
   inline def badScenario(
       inline process: Process[_, _],
@@ -104,3 +101,27 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
       scen.copy(startType = ProcessStartType.MESSAGE)
 
   end extension
+
+  object ignore:
+
+    def scenario(scen: SScenario): SimulationConstr =
+      scenario(scen)()
+
+    def scenario(scen: SScenario)(body: SStep*): SimulationConstr =
+      scen.ignored.stage
+
+    def badScenario(scen: SScenario,
+                    status: Int,
+                    errorMsg: Optable[String] = None): SimulationConstr =
+      scenario(scen)()
+
+    def incidentScenario(scen: SScenario,
+                         incidentMsg: String): SimulationConstr =
+      scenario(scen)()
+
+    def incidentScenario(scen: SScenario,
+                         incidentMsg: String)(body: SStep*): SimulationConstr =
+      scenario(scen)()
+  end ignore
+
+end SimulationDsl

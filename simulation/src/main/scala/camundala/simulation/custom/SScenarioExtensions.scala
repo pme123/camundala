@@ -156,13 +156,15 @@ trait SScenarioExtensions extends SStepExtensions:
         yield summon[ScenarioData]
       }
 
-    def checkIncident(rootIncidentId: Option[String] = None)(data: ScenarioData): ResultType = {
+    def checkIncident(
+        rootIncidentId: Option[String] = None
+    )(data: ScenarioData): ResultType = {
       val processInstanceId = data.context.processInstanceId
       val uri = rootIncidentId match
         case Some(incId) =>
-            uri"${config.endpoint}/incident?incidentId=$incId&deserializeValues=false"
+          uri"${config.endpoint}/incident?incidentId=$incId&deserializeValues=false"
         case None =>
-            uri"${config.endpoint}/incident?processInstanceId=$processInstanceId&deserializeValues=false"
+          uri"${config.endpoint}/incident?processInstanceId=$processInstanceId&deserializeValues=false"
       val request = basicRequest
         .auth()
         .get(uri)
@@ -205,15 +207,20 @@ trait SScenarioExtensions extends SStepExtensions:
                             s"\nExpected: ${scenario.incidentMsg}\nActual Message: $incidentMessage"
                         )
                       )
-                    case (None, id, rootCauseIncidentId) if id != rootCauseIncidentId =>
+                    case (None, id, rootCauseIncidentId)
+                        if id != rootCauseIncidentId =>
                       checkIncident(Some(rootCauseIncidentId))(
-                        data.info(s"Incident Message only in Root incident $rootCauseIncidentId")
+                        data.info(
+                          s"Incident Message only in Root incident $rootCauseIncidentId"
+                        )
                       )
-                    case  _ =>
+                    case _ =>
                       Left(
-                        data.error(
-                          "The Incident does not contain any incidentMessage."
-                        ).info(request.toCurl)
+                        data
+                          .error(
+                            "The Incident does not contain any incidentMessage."
+                          )
+                          .info(request.toCurl)
                       )
                   }
               case _ =>
@@ -283,22 +290,27 @@ trait SScenarioExtensions extends SStepExtensions:
     def logScenario(body: ScenarioData => ResultType): Future[ResultType] =
       Future {
         val startTime = System.currentTimeMillis()
-        val data = ScenarioData(scenario.name)
-          .info(s"${"#" * 7} Scenario '${scenario.name}' ${"#" * 7}")
-        body(data)
-          .map(
-            _.info(
-              s"${Console.GREEN}${"*" * 4} Scenario '${scenario.name}' SUCCEEDED in ${System
-                .currentTimeMillis() - startTime} ms ${"*" * 4}${Console.RESET}"
+        if (scenario.isIgnored)
+          Right(ScenarioData(scenario.name)
+            .warn(s"${Console.MAGENTA}${"#" * 7} Scenario '${scenario.name}'  IGNORED ${"#" * 7}${Console.RESET}"))
+        else {
+          val data = ScenarioData(scenario.name)
+            .info(s"${"#" * 7} Scenario '${scenario.name}' ${"#" * 7}")
+          body(data)
+            .map(
+              _.info(
+                s"${Console.GREEN}${"*" * 4} Scenario '${scenario.name}' SUCCEEDED in ${System
+                  .currentTimeMillis() - startTime} ms ${"*" * 4}${Console.RESET}"
+              )
             )
-          )
-          .left
-          .map(
-            _.error(
-              s"${Console.RED}${"*" * 4} Scenario '${scenario.name}' FAILED in ${System
-                .currentTimeMillis() - startTime} ms ${"*" * 6}${Console.RESET}"
+            .left
+            .map(
+              _.error(
+                s"${Console.RED}${"*" * 4} Scenario '${scenario.name}' FAILED in ${System
+                  .currentTimeMillis() - startTime} ms ${"*" * 6}${Console.RESET}"
+              )
             )
-          )
+        }
       }
     end logScenario
   end extension
