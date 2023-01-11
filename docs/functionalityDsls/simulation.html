@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en-CH">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Laika 0.18.2 + Helium Theme" />
+    <title>Simulation</title>
+    
+    
+      <meta name="description" content="camundala-documentation"/>
+    
+    
+    
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+    
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
+    
+    <link rel="stylesheet" type="text/css" href="../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/laika-helium.css" />
+    <script src="../helium/laika-helium.js"></script>
+    
+    
+    <script> /* for avoiding page load transitions */ </script>
+  </head>
+
+  <body>
+
+    <header id="top-bar">
+
+      <div class="row">
+        <a id="nav-icon">
+          <i class="icofont-laika" title="Navigation">&#xefa2;</i>
+        </a>
+        
+      </div>
+  
+      <a class="icon-link" href="../index.html"><i class="icofont-laika" title="Home">&#xef47;</i></a>
+      
+      <span class="row links"></span>
+      
+    </header>
+
+    <nav id="sidebar">
+
+      <div class="row">
+        
+      </div>
+      
+      <ul class="nav-list">
+        <li class="level1"><a href="../index.html">Intro</a></li>
+        <li class="level1"><a href="../specification.html">Process &amp; Domain Specification</a></li>
+        <li class="level1"><a href="../bpmnDsl.html">BPMN DSL</a></li>
+        <li class="level1"><a href="../projectSetup.html">Project Setup</a></li>
+        <li class="level1 nav-header">Functional DSLs</li>
+        <li class="level2"><a href="apiDoc.html">API Documentation</a></li>
+        <li class="level2 active"><a href="#">Simulation</a></li>
+      </ul>
+      
+    </nav>
+
+    <div id="container">
+
+      <nav id="page-nav">
+        <p class="header"><a href="#">Simulation</a></p>
+        
+        <ul class="nav-list">
+          <li class="level1"><a href="#why">Why</a></li>
+          <li class="level1"><a href="#get-started">Get Started</a></li>
+          <li class="level2"><a href="#simulate">simulate</a></li>
+          <li class="level2"><a href="#scenario-1">scenario</a></li>
+          <li class="level2"><a href="#run-the-simulation">Run the Simulation</a></li>
+          <li class="level1"><a href="#simulation-2">Simulation</a></li>
+          <li class="level2"><a href="#naming">Naming</a></li>
+          <li class="level2"><a href="#configuration">Configuration</a></li>
+          <li class="level1"><a href="#scenarios">Scenarios</a></li>
+          <li class="level2"><a href="#process-scenarios">Process Scenarios</a></li>
+          <li class="level2"><a href="#dmn-scenario">DMN Scenario</a></li>
+          <li class="level2"><a href="#start-scenario-with-message">Start Scenario with message</a></li>
+          <li class="level2"><a href="#ignore-a-scenario">Ignore a Scenario</a></li>
+          <li class="level1"><a href="#steps">Steps</a></li>
+          <li class="level2"><a href="#sub-process-call-activity">Sub Process (Call Activity)</a></li>
+          <li class="level1"><a href="#validation">Validation</a></li>
+          <li class="level2"><a href="#test-overrides">Test Overrides</a></li>
+          <li class="level1"><a href="#timing">Timing</a></li>
+          <li class="level1"><a href="#load-testing">Load Testing</a></li>
+        </ul>
+        
+        <p class="footer"></p>
+      </nav>
+
+      <main class="content">
+
+        <h1 id="simulation-1" class="title">Simulation</h1>
+        <div class="callout warning">
+          <i class="icofont-laika">&#xf026;</i>
+          <p>This expects that your variables are simple values or JSON-objects/ -arrays.</p>
+          <p>For now this only works for <strong><em>Camunda 7</em></strong>.</p>
+        </div>
+        <p>Simulations let you run BPMNs and DMNs automatically on an installed Camunda 7 Platform. 
+        The diagrams must be deployed.</p>
+        <div class="callout info">
+          <i class="icofont-laika">&#xef4e;</i>
+          <p>For the deployment I created a script that also starts the Simulation.</p>
+        </div>
+        
+        <h2 id="why" class="section"><a class="anchor-link left" href="#why"><i class="icofont-laika">&#xef71;</i></a>Why</h2>
+        <p>I like Simulations because:</p>
+        <ul>
+          <li>If there are problems, you easily can check the Camunda Cockpit.</li>
+          <li>I think they are easy to maintain.</li>
+          <li>The in- and outputs are exactly the API of the BPMNs.</li>
+          <li>You can move to every part of your BPMN automatically, 
+          for example to check a <em>UserTask</em>.</li>
+          <li>It is great to develop test driven.</li>
+          <li>With the heat map, you can check, if you tested already all paths.</li>
+        </ul>
+        <p>Of course most of these points are also true for Unit- and/or Scenario tests.</p>
+        <div class="callout info">
+          <i class="icofont-laika">&#xef4e;</i>
+          <p>I also experimented with Unit- and Scenario Tests, and it would also be possible. But for now I concentrate 
+          my time on Simulations. I also think you should only do one of them, due to the work involved.</p>
+        </div>
+        
+        <h2 id="get-started" class="section"><a class="anchor-link left" href="#get-started"><i class="icofont-laika">&#xef71;</i></a>Get Started</h2>
+        <p>Simulations use the BPMNs you created - in this context I refer 
+        to the <a href="../bpmnDsl.html">Bpmn DSL</a></p>
+        <p>Let&#39;s start with a basic example:</p>
+        <pre><code class="nohighlight"><span class="comment">// put your simulations in the simulation package of your project
+</span><span class="keyword">package</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">examples</span><span>.</span><span class="identifier">invoice</span><span>.</span><span class="identifier">simulation</span><span>
+</span><span class="comment">// import the projects bpmns (Processes, UserTasks etc.)
+</span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">examples</span><span>.</span><span class="identifier">invoice</span><span>.</span><span class="identifier">bpmn</span><span>.*
+</span><span class="comment">// import Camundala simulation DSL - for now this is the one and only
+</span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">simulation</span><span>.</span><span class="identifier">custom</span><span>.</span><span class="type-name">CustomSimulation</span><span>
+</span><span class="comment">// define a class that extends from a simulation DSL   
+</span><span class="keyword">class</span><span> </span><span class="type-name">InvoiceSimulation</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CustomSimulation</span><span>:
+
+  </span><span class="comment">// the is one simulate - use curly brackets {}
+</span><span>  </span><span class="identifier">simulate</span><span> {
+    </span><span class="comment">// add scenarios - no comma needed
+</span><span>    </span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
+      </span><span class="type-name">AssignReviewerUT</span><span>,
+      </span><span class="type-name">ReviewInvoiceUT</span><span>
+    )
+    </span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>)
+    </span><span class="identifier">incidentScenario</span><span>(
+      </span><span class="identifier">`Invoice Receipt that fails`</span><span>,
+      </span><span class="string-literal">&quot;Could not archive invoice...&quot;</span><span>
+    )(
+      </span><span class="type-name">ApproveInvoiceUT</span><span>,
+      </span><span class="type-name">PrepareBankTransferUT</span><span>
+    )
+    </span><span class="comment">// more scenarios  ..
+</span><span>  }
+</span><span class="identifier">end</span><span> </span><span class="type-name">InvoiceSimulation</span></code></pre>
+        
+        <h4 id="simulate" class="section"><a class="anchor-link left" href="#simulate"><i class="icofont-laika">&#xef71;</i></a>simulate</h4>
+        <p>This is the entry point for your Simulation. 
+        There is one Simulation per Simulation class (file). 
+        A Simulation contains one or more Scenarios.</p>
+        
+        <h4 id="scenario-1" class="section"><a class="anchor-link left" href="#scenario-1"><i class="icofont-laika">&#xef71;</i></a>scenario</h4>
+        <p>A scenario consists of a BPMN process or a DMN decision.
+        Then in optional second brackets you can add steps that interact
+        with the process. For DMNs there won&#39;t be any.</p>
+        
+        <h3 id="run-the-simulation" class="section"><a class="anchor-link left" href="#run-the-simulation"><i class="icofont-laika">&#xef71;</i></a>Run the Simulation</h3>
+        <p>In your <em>sbt-console</em>:</p>
+        <ul>
+          <li>
+            <p>run all simulations: </p>
+            <p><code>It/test</code></p>
+          </li>
+          <li>
+            <p>run some simulations:</p>
+            <p><code>It/testOnly *MySimulation</code></p>
+            <p>You can use any pattern, where <code>*</code> is wildcard for any characters.</p>
+          </li>
+        </ul>
+        <p>This creates the following output:
+        <img src="images/simulation_log1.png" alt="simulation_log1.png">
+        ...
+        <img src="images/simulation_log2.png" alt="simulation_log2.png"></p>
+        
+        <h4 id="log-levels-colors" class="section"><a class="anchor-link left" href="#log-levels-colors"><i class="icofont-laika">&#xef71;</i></a>Log Levels Colors</h4>
+        <p>Depending on the log level, the most important delimiters are in color:</p>
+        <ul>
+          <li><strong>Error: Red</strong></li>
+          <li><strong>Warning: Magenta</strong> </li>
+          <li><strong>Info: Green</strong></li>
+        </ul>
+        
+        <h4 id="simulation-succeed-failure" class="section"><a class="anchor-link left" href="#simulation-succeed-failure"><i class="icofont-laika">&#xef71;</i></a>Simulation succeed / failure</h4>
+        <p>As soon as there is a log entry with the level ERROR, the Simulations fail and the failing
+        Simulations are listed.</p>
+        
+        <h4 id="reference-to-camunda-cockpit" class="section"><a class="anchor-link left" href="#reference-to-camunda-cockpit"><i class="icofont-laika">&#xef71;</i></a>Reference to Camunda Cockpit</h4>
+        <p>Each Process Scenario will print a link to the according Process-Instance:</p>
+        <p><code>15:15:32.926 INFO: Process &#39;ReviewInvoiceP&#39; started (check http://localhost:8034/camunda/app/cockpit/default/#/process-instance/42f84722-82cc-11ed-b5c6-9e5abd655523)</code></p>
+        <p>This is not available for a DMN Scenario.</p>
+        
+        <h2 id="simulation-2" class="section"><a class="anchor-link left" href="#simulation-2"><i class="icofont-laika">&#xef71;</i></a>Simulation</h2>
+        
+        <h3 id="naming" class="section"><a class="anchor-link left" href="#naming"><i class="icofont-laika">&#xef71;</i></a>Naming</h3>
+        <p>The DSL is using the names of your BPMN objects like Processes and UserTasks.
+        As these objects can be reused in different Scenarios and Steps, we take the name 
+        of the variable. </p>
+        <pre><code class="nohighlight"><span>  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">`Invoice Receipt with Review`</span><span> =
+    </span><span class="identifier">`Invoice Receipt`</span><span>
+      .</span><span class="identifier">withOut</span><span>(</span><span class="type-name">InvoiceReceiptCheck</span><span>(</span><span class="identifier">clarified</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="boolean-literal">true</span><span>)))
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">NotApproveInvoiceUT</span><span> =
+    </span><span class="type-name">ApproveInvoiceUT</span><span>
+            .</span><span class="identifier">withOut</span><span>(</span><span class="type-name">ApproveInvoice</span><span>(</span><span class="boolean-literal">false</span><span>))  
+    ...
+    </span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Invoice Receipt with Review`</span><span>)(
+      </span><span class="type-name">NotApproveInvoiceUT</span><span>,
+      </span><span class="identifier">subProcess</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
+        </span><span class="type-name">AssignReviewerUT</span><span>,
+        </span><span class="type-name">ReviewInvoiceUT</span><span> </span><span class="comment">// do clarify
+</span><span>      ),
+      </span><span class="type-name">ApproveInvoiceUT</span><span>, </span><span class="comment">// now approve
+</span><span>      </span><span class="type-name">PrepareBankTransferUT</span><span>
+    )
+    ...</span></code></pre>
+        <p>In this example we have a ProcessScenario with the name <em>Invoice Receipt with Review</em>.
+        The first Step has the name <em>NotApproveInvoiceUT</em>.</p>
+        <div class="callout info">
+          <i class="icofont-laika">&#xef4e;</i>
+          <p>Use descriptive variable names. 
+          If you use special characters, you need to use backticks, like:</p>
+          <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">`Invoice Receipt with Review`</span><span> = ...</span></code></pre>
+        </div>
+        <p>These names are then used in the output Log:</p>
+        <p><img src="images/simulation_outputNaming.png" alt="simulation_outputNaming"></p>
+        
+        <h3 id="configuration" class="section"><a class="anchor-link left" href="#configuration"><i class="icofont-laika">&#xef71;</i></a>Configuration</h3>
+        <p>The following is the default configuration:</p>
+        <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">SimulationConfig</span><span>[</span><span class="type-name">B</span><span>](
+       </span><span class="comment">// define tenant if you have one
+</span><span>       </span><span class="identifier">tenantId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">None</span><span>,
+       </span><span class="comment">// the Camunda Port
+</span><span>       </span><span class="comment">// there are Requests that wait until the process is ready - like getTask.
+</span><span>       </span><span class="comment">// the Simulation waits 1 second between the Requests.
+</span><span>       </span><span class="comment">// so with a timeout of 10 sec it will try 10 times (retryDuration = 1.second)
+</span><span>       </span><span class="identifier">maxCount</span><span>: </span><span class="type-name">Int</span><span> = </span><span class="number-literal">10</span><span>,
+       </span><span class="comment">// REST endpoint of Camunda
+</span><span>       </span><span class="identifier">endpoint</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;http://localhost:8080/engine-rest&quot;</span><span>,
+       </span><span class="comment">// you can add authentication with this - default there is none.
+</span><span>       </span><span class="comment">// see BasicSimulationDsl / OAuthSimulationDsl for examples
+</span><span>       </span><span class="identifier">authHeader</span><span>: </span><span class="type-name">B</span><span> =&gt; </span><span class="type-name">B</span><span> = (</span><span class="identifier">b</span><span>: </span><span class="type-name">B</span><span>) =&gt; </span><span class="identifier">b</span><span>,
+       </span><span class="comment">// the maximum LogLevel you want to print the LogEntries.
+</span><span>       </span><span class="identifier">logLevel</span><span>: </span><span class="type-name">LogLevel</span><span> = </span><span class="type-name">LogLevel</span><span>.</span><span class="type-name">INFO</span><span>
+   )</span></code></pre>
+        <p>You can easily override it in your Simulation:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">config</span><span> =
+    </span><span class="keyword">super</span><span>.</span><span class="identifier">config</span><span>
+      .</span><span class="identifier">withPort</span><span>(</span><span class="number-literal">8034</span><span>)
+      .</span><span class="identifier">withLogLevel</span><span>(</span><span class="type-name">LogLevel</span><span>.</span><span class="type-name">DEBUG</span><span>)</span></code></pre>
+        
+        <h2 id="scenarios" class="section"><a class="anchor-link left" href="#scenarios"><i class="icofont-laika">&#xef71;</i></a>Scenarios</h2>
+        <p>The following chapters explain the different scenario types:</p>
+        
+        <h3 id="process-scenarios" class="section"><a class="anchor-link left" href="#process-scenarios"><i class="icofont-laika">&#xef71;</i></a>Process Scenarios</h3>
+        
+        <h4 id="scenario-2" class="section"><a class="anchor-link left" href="#scenario-2"><i class="icofont-laika">&#xef71;</i></a>scenario</h4>
+        <p>An end to end simulation of one process path.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
+</span><span class="identifier">scenario</span><span>(</span><span class="type-name">PROCESS</span><span>)
+</span><span class="identifier">scenario</span><span>(</span><span class="type-name">PROCESS</span><span>)(
+  </span><span class="type-name">INTERACTIONS</span><span>
+)
+...</span></code></pre>
+        <ul>
+          <li>PROCESS: The Process you defined with the <a href="../bpmnDsl.html#bpmn-dsl">BPMN DSL</a>.</li>
+          <li>INTERACTIONS: Whenever the Path of the Process comes to an Activity that interacts
+          with the outside world (<a href="../bpmnDsl.html#user-task">User Task</a>, <a href="../bpmnDsl.html#receive-message-event">Receive Message Event</a> or <a href="../bpmnDsl.html#receive-signal-event">Receive Signal Event</a>),
+          you add an according Process Step - see <a href="#steps">Steps</a>.
+          This is <strong>optional</strong>, you can skip it if your process has no interactions.</li>
+        </ul>
+        <p>Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
+</span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Invoice Receipt with Review`</span><span>)(
+  </span><span class="type-name">NotApproveInvoiceUT</span><span>,
+  </span><span class="identifier">subProcess</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
+    </span><span class="type-name">AssignReviewerUT</span><span>,
+    </span><span class="type-name">ReviewInvoiceUT</span><span> </span><span class="comment">// do clarify
+</span><span>  ),
+  </span><span class="type-name">ApproveInvoiceUT</span><span>, </span><span class="comment">// now approve
+</span><span>  </span><span class="type-name">PrepareBankTransferUT</span><span>
+)
+...</span></code></pre>
+        
+        <h4 id="incidentscenario" class="section"><a class="anchor-link left" href="#incidentscenario"><i class="icofont-laika">&#xef71;</i></a>incidentScenario</h4>
+        <p>To simulate a process that stops due an incident needs a special treatment
+        as it never finishes.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
+</span><span class="identifier">incidentScenario</span><span>(
+  </span><span class="type-name">PROCESS</span><span>,
+  </span><span class="type-name">INCIDENT_MESSAGE</span><span>
+)
+</span><span class="identifier">incidentScenario</span><span>(
+  </span><span class="type-name">PROCESS</span><span>,
+  </span><span class="type-name">INCIDENT_MESSAGE</span><span>
+)(
+  </span><span class="type-name">INTERACTIONS</span><span>
+)
+...</span></code></pre>
+        <p>Additional to the scenario we need to define:</p>
+        <ul>
+          <li>INCIDENT_MESSAGE: This is the incident message or a part of it.</li>
+        </ul>
+        <p>Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
+</span><span class="identifier">incidentScenario</span><span>(
+  </span><span class="identifier">`Invoice Receipt that fails`</span><span>,
+  </span><span class="string-literal">&quot;Could not archive invoice...&quot;</span><span>
+)(
+  </span><span class="type-name">ApproveInvoiceUT</span><span>,
+  </span><span class="type-name">PrepareBankTransferUT</span><span>
+)
+...</span></code></pre>
+        
+        <h4 id="badscenario" class="section"><a class="anchor-link left" href="#badscenario"><i class="icofont-laika">&#xef71;</i></a>badScenario</h4>
+        <p>Yet another case is if the process never gets started. 
+        For example you validate the input variables and they fail.
+        In this case Camunda throws an Error. 
+        To handle this we need to do the following:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
+</span><span class="identifier">badScenario</span><span>(
+  </span><span class="type-name">PROCESS</span><span>,
+  </span><span class="type-name">HTTP_STATUS</span><span>,
+  </span><span class="type-name">ERROR_MESSAGE</span><span>
+)
+...</span></code></pre>
+        <ul>
+          <li>HTTP_STATUS: The status of the REST response.</li>
+          <li>ERROR_MESSAGE: Optional you can define the message or part of it, that the body must contain.</li>
+        </ul>
+        <p>Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
+</span><span class="identifier">badScenario</span><span>(
+  </span><span class="type-name">BadValidationP</span><span>,
+  </span><span class="number-literal">500</span><span>,
+  </span><span class="string-literal">&quot;Validation Error: Input is not valid: DecodingFailure(Missing required field, List(DownField(creditor)))&quot;</span><span>
+)
+...</span></code></pre>
+        
+        <h3 id="dmn-scenario" class="section"><a class="anchor-link left" href="#dmn-scenario"><i class="icofont-laika">&#xef71;</i></a>DMN Scenario</h3>
+        <p><em>Camundala</em> uses the <a href="https://docs.camunda.org/manual/7.18/reference/rest/decision-definition/post-evaluate/">Evaluate Decision REST API</a>
+        from <em>Camunda</em>.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="identifier">simulate</span><span> {
+    </span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>)
+  }</span></code></pre>
+        <p>As this is a single request, all you need is to add your DMN description you did with the BPMN DSL.</p>
+        <p>See <a href="../bpmnDsl.html#business-rule-tasks-decision-dmns">Business Rule Tasks (Decision DMNs)</a></p>
+        <p>The simulation does the following steps:</p>
+        <ul>
+          <li>Take the attributes from your input</li>
+          <li>Call the evaluation service</li>
+          <li>Validate the result with your output</li>
+        </ul>
+        <p><strong>The Example:</strong></p>
+        <p>We have the following DMN definition (bpmn):</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">InvoiceAssignApproverDMN</span><span> = </span><span class="identifier">collectEntries</span><span>(
+  </span><span class="identifier">decisionDefinitionKey</span><span> = </span><span class="string-literal">&quot;invoice-assign-approver&quot;</span><span>,
+  </span><span class="identifier">in</span><span> = </span><span class="type-name">SelectApproverGroup</span><span>(),
+  </span><span class="identifier">out</span><span> = </span><span class="type-name">Seq</span><span>(</span><span class="type-name">ApproverGroup</span><span>.</span><span class="identifier">management</span><span>),
+  </span><span class="identifier">descr</span><span> = </span><span class="string-literal">&quot;Decision Table on who must approve the Invoice.&quot;</span><span>,
+)</span></code></pre>
+        <p>This uses the following Inputs and outputs (domain):</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">SelectApproverGroup</span><span>(
+                                      </span><span class="identifier">amount</span><span>: </span><span class="type-name">Double</span><span> = </span><span class="number-literal">30.0</span><span>,
+                                      </span><span class="identifier">invoiceCategory</span><span>: </span><span class="type-name">InvoiceCategory</span><span> = 
+                                        </span><span class="type-name">InvoiceCategory</span><span>.</span><span class="identifier">`Software License Costs`</span><span>
+                              )
+
+</span><span class="annotation">@description</span><span>(</span><span class="string-literal">&quot;These Groups can approve the invoice.&quot;</span><span>)
+</span><span class="identifier">enum</span><span> </span><span class="type-name">ApproverGroup</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">Adt</span><span>.</span><span class="type-name">PureEncoder</span><span>, </span><span class="type-name">Adt</span><span>.</span><span class="type-name">PureDecoder</span><span> :
+  </span><span class="keyword">case</span><span> </span><span class="identifier">accounting</span><span>, </span><span class="identifier">sales</span><span>, </span><span class="identifier">management</span></code></pre>
+        <ul>
+          <li>Running this will use the inputs <code>amount</code> and <code>invoiceCategory</code> for the evaluation.</li>
+          <li>The result, a list of <code>ApproverGroup</code>s (<em>collectEntries</em>), will then be matched against our specified <code>ApproverGroup</code>s.</li>
+        </ul>
+        <div class="callout info">
+          <i class="icofont-laika">&#xef4e;</i>
+          <p>At time of writing, there is no replacement in <strong><em>Camunda 8</em></strong> for this.</p>
+        </div>
+        
+        <h3 id="start-scenario-with-message" class="section"><a class="anchor-link left" href="#start-scenario-with-message"><i class="icofont-laika">&#xef71;</i></a>Start Scenario with message</h3>
+        <p>It is also possible to send a message to a process with a <em>Start Message Event</em>.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
+</span><span class="identifier">scenario</span><span>(</span><span class="type-name">PROCESS</span><span>.</span><span class="identifier">startWithMsg</span><span>)
+</span><span class="identifier">scenario</span><span>(</span><span class="type-name">PROCESS</span><span>.</span><span class="identifier">startWithMsg</span><span>)(
+  </span><span class="type-name">INTERACTIONS</span><span>
+)
+...</span></code></pre>
+        <p>All that is needed is to postfix the process with <code>.startWithMsg</code>.</p>
+        
+        <h3 id="ignore-a-scenario" class="section"><a class="anchor-link left" href="#ignore-a-scenario"><i class="icofont-laika">&#xef71;</i></a>Ignore a Scenario</h3>
+        <p>You can ignore a scenario by just prefix your Scenario with <code>ignore.</code>.</p>
+        
+        <h4 id="examples" class="section"><a class="anchor-link left" href="#examples"><i class="icofont-laika">&#xef71;</i></a>Examples:</h4>
+        <pre><code class="nohighlight"><span>  </span><span class="identifier">simulate</span><span> {
+    </span><span class="identifier">ignore</span><span>.</span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
+      </span><span class="type-name">AssignReviewerUT</span><span>,
+      </span><span class="type-name">ReviewInvoiceUT</span><span>
+    )
+    </span><span class="identifier">ignore</span><span>.</span><span class="identifier">incidentScenario</span><span>(
+      </span><span class="identifier">`Invoice Receipt that fails`</span><span>,
+      </span><span class="string-literal">&quot;Could not archive invoice...&quot;</span><span>
+    )(
+      </span><span class="type-name">ApproveInvoiceUT</span><span>,
+      </span><span class="type-name">PrepareBankTransferUT</span><span>
+    )
+    </span><span class="identifier">ignore</span><span>.</span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>)
+    </span><span class="identifier">ignore</span><span>.</span><span class="identifier">badScenario</span><span>(
+      </span><span class="type-name">BadValidationP</span><span>,
+      </span><span class="number-literal">500</span><span>,
+        </span><span class="string-literal">&quot;Validation Error: Input is not valid: DecodingFailure(Missing required field, List(DownField(creditor)))&quot;</span><span>
+    )
+  }</span></code></pre>
+        <p>An ignored Scenario will create a Warning in the output Log, like this:</p>
+        <p><img src="images/simulation_outputIgnore.png" alt="simulation_outputIgnore"></p>
+        <div class="callout info">
+          <i class="icofont-laika">&#xef4e;</i>
+          <p>It is not possible to ignore the whole simulation at once.</p>
+        </div>
+        
+        <h2 id="steps" class="section"><a class="anchor-link left" href="#steps"><i class="icofont-laika">&#xef71;</i></a>Steps</h2>
+        <p>This is a List with Process Interactions like <a href="../bpmnDsl.html#user-task">User Task</a>, <a href="../bpmnDsl.html#receive-message-event">Receive Message Event</a> or <a href="../bpmnDsl.html#receive-signal-event">Receive Signal Event</a>.
+        Each Interaction is simply the Activity you define with the <a href="../bpmnDsl.html#bpmn-dsl">BPMN DSL</a>.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
+</span><span class="identifier">scenario</span><span>(</span><span class="type-name">PROCESS</span><span>)(
+  </span><span class="type-name">STEP1</span><span>,
+  </span><span class="type-name">STEP2</span><span>,
+  ...
+)
+...</span></code></pre>
+        <p>See example in <a href="#process-scenarios">Process Scenarios</a>.</p>
+        
+        <h3 id="sub-process-call-activity" class="section"><a class="anchor-link left" href="#sub-process-call-activity"><i class="icofont-laika">&#xef71;</i></a>Sub Process (Call Activity)</h3>
+        <p>A special case are sub processes. If your process contains sub processes, there are
+        the following possibilities:</p>
+        <ul>
+          <li>The sub process has no interactions:</li>
+        </ul>
+        <ul>
+          <li>Nothing to do.</li>
+          <li>The sub process contains interactions, but is mocked (returns a defined result, skipping the interactions):</li>
+        </ul>
+        <ul>
+          <li>Nothing to do.</li>
+          <li>The sub process contains interactions:</li>
+        </ul>
+        <ul>
+          <li>
+            You can add a subProcess to your simulation, like:
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
+</span><span class="identifier">subProcess</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
+</span><span class="type-name">AssignReviewerUT</span><span>,
+</span><span class="type-name">ReviewInvoiceUT</span><span> </span><span class="comment">// do clarify
+</span><span>),
+... </span></code></pre>
+            <p>This will change the context to the sub process and in the end switch it back to
+            the main process.</p>
+          </li>
+        </ul>
+        <div class="callout info">
+          <i class="icofont-laika">&#xef4e;</i>
+          <p>This only works for one hierarchy of sub processes. 
+            When you have more complex sub processes, you must mock them.</p>
+        </div>
+        
+        <h2 id="validation" class="section"><a class="anchor-link left" href="#validation"><i class="icofont-laika">&#xef71;</i></a>Validation</h2>
+        <p>The simulation uses your BPMN DSL objects not just to run the process and its interactions.
+        It also uses the the input- and output domain objects to validate variables of the process.</p>
+        <pre><code class="nohighlight"><span class="comment">// domain classes
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InvoiceReceipt</span><span>(
+  </span><span class="identifier">creditor</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Great Pizza for Everyone Inc.&quot;</span><span>,
+  </span><span class="identifier">amount</span><span>: </span><span class="type-name">Double</span><span> = </span><span class="number-literal">300.0</span><span>,
+  ...
+)
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">ApproveInvoice</span><span>(
+   </span><span class="identifier">approved</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">true</span><span>
+)
+...
+</span><span class="comment">// bpmn object
+</span><span class="identifier">process</span><span>(
+  </span><span class="identifier">id</span><span> = </span><span class="string-literal">&quot;ReviewInvoiceP&quot;</span><span>,
+  </span><span class="identifier">descr</span><span> = </span><span class="string-literal">&quot;This starts the Review Invoice Process.&quot;</span><span>,
+  </span><span class="identifier">in</span><span> = </span><span class="type-name">InvoiceReceipt</span><span>(),
+  </span><span class="identifier">out</span><span> = </span><span class="type-name">InvoiceReviewed</span><span>()
+)</span></code></pre>
+        <ul>
+          <li>in: The input of a BPMN object. </li>
+          <li>out: The output of a BPMN object.</li>
+        </ul>
+        <p>Each attribute of the in/out-objects represents a variable on the process.</p>
+        <p>The exact usage of the BPMN DSL objects differ slightly:</p>
+        <p><strong>Process</strong></p>
+        <ul>
+          <li>in: Each attribute is an input variable to start the process.</li>
+          <li>out: When process is finished it <strong>validates</strong> if these attributes match the according
+          variables in the process.</li>
+        </ul>
+        <p><strong>User Task</strong></p>
+        <ul>
+          <li>in: When the process is at the User Task, it <strong>validates</strong> if these attributes match the according
+          variables in the process.</li>
+          <li>out: Each attribute is a variable to complete the User Task.</li>
+        </ul>
+        <p><strong>Receive Message Event</strong></p>
+        <ul>
+          <li>in: Each attribute is a variable to send a message to start or proceed the process.</li>
+        </ul>
+        <p><strong>Receive Signal Event</strong></p>
+        <ul>
+          <li>in: Each attribute is a variable to send a signal to start or proceed the process.</li>
+        </ul>
+        
+        <h3 id="test-overrides" class="section"><a class="anchor-link left" href="#test-overrides"><i class="icofont-laika">&#xef71;</i></a>Test Overrides</h3>
+        <p>There may be lots of variables to test or you first just want to develop the process.
+        In this case you can override the validation with the domain objects.</p>
+        <pre><code class="nohighlight"><span>...
+</span><span class="identifier">scenario</span><span>(</span><span class="type-name">WithOverrideScenario</span><span>)(
+  </span><span class="identifier">`ApproveInvoiceUT with Override`</span><span>,
+  </span><span class="type-name">PrepareBankTransferUT</span><span>
+)
+...
+</span><span class="keyword">private</span><span> </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">WithOverrideScenario</span><span> =
+  </span><span class="identifier">`Invoice Receipt with Override`</span><span>
+        .</span><span class="identifier">exists</span><span>(</span><span class="string-literal">&quot;approved&quot;</span><span>)
+        .</span><span class="identifier">notExists</span><span>(</span><span class="string-literal">&quot;clarified&quot;</span><span>)
+        .</span><span class="identifier">isEquals</span><span>(</span><span class="string-literal">&quot;approved&quot;</span><span>, </span><span class="boolean-literal">true</span><span>)
+
+</span><span class="keyword">private</span><span> </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">`ApproveInvoiceUT with Override`</span><span> =
+  </span><span class="type-name">ApproveInvoiceUT</span><span>
+          .</span><span class="identifier">exists</span><span>(</span><span class="string-literal">&quot;amount&quot;</span><span>)
+          .</span><span class="identifier">notExists</span><span>(</span><span class="string-literal">&quot;amounts&quot;</span><span>)
+          .</span><span class="identifier">isEquals</span><span>(</span><span class="string-literal">&quot;amount&quot;</span><span>, </span><span class="number-literal">300.0</span><span>)</span></code></pre>
+        <p>As you see in this example, you can simply add checks. 
+        Now only these checks are run by the validation.</p>
+        <p>The following overrides are provided (for now):</p>
+        
+        <h4 id="exists" class="section"><a class="anchor-link left" href="#exists"><i class="icofont-laika">&#xef71;</i></a>exists</h4>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  .</span><span class="identifier">exists</span><span>(</span><span class="type-name">VARIABLE_NAME</span><span>)</span></code></pre>
+        <p>A variable with this <code>VARIABLE_NAME</code> must exists.</p>
+        
+        <h4 id="notexists" class="section"><a class="anchor-link left" href="#notexists"><i class="icofont-laika">&#xef71;</i></a>notExists</h4>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  .</span><span class="identifier">notExists</span><span>(</span><span class="type-name">VARIABLE_NAME</span><span>)</span></code></pre>
+        <p>A variable with this <code>VARIABLE_NAME</code> must not exists.</p>
+        
+        <h4 id="isequals" class="section"><a class="anchor-link left" href="#isequals"><i class="icofont-laika">&#xef71;</i></a>isEquals</h4>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  .</span><span class="identifier">isEquals</span><span>(</span><span class="type-name">VARIABLE_NAME</span><span>, </span><span class="type-name">VARIABLE_VALUE</span><span>)</span></code></pre>
+        <p>A variable with this <code>VARIABLE_NAME</code> must have the value <code>VARIABLE_VALUE</code>.</p>
+        
+        <h4 id="hassize" class="section"><a class="anchor-link left" href="#hassize"><i class="icofont-laika">&#xef71;</i></a>hasSize</h4>
+        <p>For collections:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  .</span><span class="identifier">hasSize</span><span>(</span><span class="type-name">VARIABLE_NAME</span><span>, </span><span class="type-name">VARIABLE_VALUE_SIZE</span><span>)</span></code></pre>
+        <p>A variable with this <code>VARIABLE_NAME</code> must be a collection with the size <code>VARIABLE_VALUE_SIZE</code>.</p>
+        <p>For DMN ResultList and CollectEntries:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  .</span><span class="identifier">hasSize</span><span>(</span><span class="type-name">VARIABLE_VALUE_SIZE</span><span>)</span></code></pre>
+        <p>A DMNs result must be a collection with the size <code>VARIABLE_VALUE_SIZE</code>.</p>
+        
+        <h4 id="contains" class="section"><a class="anchor-link left" href="#contains"><i class="icofont-laika">&#xef71;</i></a>contains</h4>
+        <p>For collections:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  .</span><span class="identifier">contains</span><span>(</span><span class="type-name">VARIABLE_NAME</span><span>, </span><span class="type-name">VARIABLE_VALUE</span><span>)</span></code></pre>
+        <p>A variable with this <code>VARIABLE_NAME</code> must be a collection and one of its values must have the <code>VARIABLE_VALUE</code>.</p>
+        <p>For DMN ResultList and CollectEntries:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  .</span><span class="identifier">contains</span><span>(</span><span class="type-name">VARIABLE_VALUE</span><span>)</span></code></pre>
+        <p>A DMNs result must be a collection and one of its values must have the <code>VARIABLE_VALUE</code>.</p>
+        
+        <h2 id="timing" class="section"><a class="anchor-link left" href="#timing"><i class="icofont-laika">&#xef71;</i></a>Timing</h2>
+        <p>The interactions with a process are time relevant. 
+        For example you only can interact with a User Task if the process is actually at that User Task.</p>
+        <p>For this we check every second if the process is ready. 
+        The time on how long it should check can be configured. See <code>maxCount</code> in <a href="#configuration">Configuration</a>.
+        Whenever this timeout is reached, it throws an exception and the scenario has failed.</p>
+        <p>Here an example output:</p>
+        <p><img src="images/simulation_timeout.png" alt="simulation_timeout"></p>
+        <p>Depending on the interaction, we have the following strategies:</p>
+        <p><strong>Process</strong></p>
+        <p>To check the variables of a process, the process must be finished.
+        It checks if the state of the process is <code>COMPLETED</code>.</p>
+        <p><strong>User Task</strong></p>
+        <p>It simple tries until there is a User Task in the process available.
+        If there are more than one, it just takes the first one.</p>
+        <p><strong>Receive Message Event</strong></p>
+        <p>We try to correlate the message until it is successful.
+        This works as Camunda tries to correlate a message to exactly one
+        <em>Receive Message Event</em> (we use the <code>processInstanceId</code>).</p>
+        <p><strong>Receive Signal Event</strong></p>
+        <p>The way of Correlate Messages does not work for Signals, as they are 
+        <em>fire and forget</em>.
+        So you need to add an attribute with a certain value, we can check.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">scenario</span><span>(</span><span class="identifier">signalExampleProcess</span><span>) (
+  </span><span class="identifier">signalExample</span><span>
+  .</span><span class="identifier">waitFor</span><span>(</span><span class="string-literal">&quot;signalReady&quot;</span><span>, </span><span class="boolean-literal">true</span><span>),
+)</span></code></pre>
+        <p>Just add the postfix <code>.waitFor(WAITFOR_VARIABLE_NAME, WAITFOR_VARIABLE_VALUE)</code> to the BPMN Signal definition.
+        In your process you must now set this variable with the according value, when the process is at this event.</p>
+        <div class="callout info">
+          <i class="icofont-laika">&#xef4e;</i>
+          <p>This is also possible for <em>Receive Message Event</em>.
+          If you do not define it for <em>Receive Signal Event</em> it takes the default
+          value <code>waitForSignal</code> and checks if it is <code>true</code>.</p>
+        </div>
+        
+        <h2 id="load-testing" class="section"><a class="anchor-link left" href="#load-testing"><i class="icofont-laika">&#xef71;</i></a>Load Testing</h2>
+        <div class="callout info">
+          <i class="icofont-laika">&#xef4e;</i>
+          <p>At the moment this is not supported.</p>
+        </div>
+
+      </main>
+
+    </div>
+
+  </body>
+</html>
