@@ -11,52 +11,36 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
   
   def run(sim: SSimulation): T
 
-  class SimulationBuilder:
-    private val ib = ListBuffer.empty[SScenario]
+  def simulate(body: SScenario*): T =
+    run(SSimulation(body.toList)) // runs Scenarios
 
-    def pushScenario(x: SScenario) = ib.append(x)
-
-    def mkBlock = SSimulation(ib.toList)
-
-  type SimulationConstr = SimulationBuilder ?=> Unit
-
-  extension (scen: SScenario)
-    private[simulation] def stage: SimulationConstr =
-      (bldr: SimulationBuilder) ?=> bldr.pushScenario(scen)
-
-  def simulate(body: SimulationConstr): T =
-    val sb = SimulationBuilder()
-    body(using sb)
-    val sim = sb.mkBlock
-    run(sim) // runs Scenarios
-
-  def scenario(scen: ProcessScenario): SimulationConstr =
+  def scenario(scen: ProcessScenario): SScenario =
     scenario(scen)()
 
-  def scenario(scen: DmnScenario): SimulationConstr =
-    scen.stage
+  def scenario(scen: DmnScenario): SScenario =
+    scen
 
-  def scenario(scen: ProcessScenario)(body: SStep*): SimulationConstr =
-    scen.withSteps(body.toList).stage
+  def scenario(scen: ProcessScenario)(body: SStep*): SScenario =
+    scen.withSteps(body.toList)
 
   inline def badScenario(
       inline process: Process[_, _],
       status: Int,
       errorMsg: Optable[String] = None
-  ): SimulationConstr =
-    BadScenario(nameOfVariable(process), process, status, errorMsg.value).stage
+  ): BadScenario =
+    BadScenario(nameOfVariable(process), process, status, errorMsg.value)
 
   inline def incidentScenario(
                                inline process: Process[_, _],
                                incidentMsg: String
-  )(body: SStep*): SimulationConstr =
+  )(body: SStep*): IncidentScenario =
     IncidentScenario(
-      nameOfVariable(process), process, body.toList, incidentMsg).stage
+      nameOfVariable(process), process, body.toList, incidentMsg)
 
   inline def incidentScenario(
                                inline process: Process[_, _],
                                incidentMsg: String
-                             ): SimulationConstr =
+                             ): IncidentScenario =
     incidentScenario(process, incidentMsg)()
 
   inline def subProcess(inline process: Process[_, _])(
@@ -104,24 +88,24 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
 
   object ignore:
 
-    def scenario(scen: SScenario): SimulationConstr =
-      scenario(scen)()
+    def scenario(scen: SScenario): SScenario =
+      scen.ignored
 
-    def scenario(scen: SScenario)(body: SStep*): SimulationConstr =
-      scen.ignored.stage
+    def scenario(scen: SScenario)(body: SStep*): SScenario =
+      scen.ignored
 
     def badScenario(scen: SScenario,
                     status: Int,
-                    errorMsg: Optable[String] = None): SimulationConstr =
-      scenario(scen)()
+                    errorMsg: Optable[String] = None): SScenario =
+      scen.ignored
 
     def incidentScenario(scen: SScenario,
-                         incidentMsg: String): SimulationConstr =
-      scenario(scen)()
+                         incidentMsg: String): SScenario =
+      scen.ignored
 
     def incidentScenario(scen: SScenario,
-                         incidentMsg: String)(body: SStep*): SimulationConstr =
-      scenario(scen)()
+                         incidentMsg: String)(body: SStep*): SScenario =
+      scen.ignored
   end ignore
 
 end SimulationDsl

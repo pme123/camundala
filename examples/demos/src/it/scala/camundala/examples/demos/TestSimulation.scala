@@ -11,6 +11,6 @@ import scala.concurrent.duration.*
 class TestSimulation extends DemosSimulation:
 
   import TestDomain.*
-  simulate {
-    scenario(CamundalaGenerateTestP)
-  }
+  simulate(
+    CamundalaGenerateTestP
+  )

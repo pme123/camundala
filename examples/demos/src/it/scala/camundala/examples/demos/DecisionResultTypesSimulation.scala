@@ -9,25 +9,23 @@ import camundala.simulation.custom.CustomSimulation
 import scala.concurrent.duration.*
 
 // exampleDemos/It/testOnly *DecisionResultTypesSimulation
-
 class DecisionResultTypesSimulation extends DemosSimulation:
   import TestDomain.*
 
-  simulate {
-    scenario(singleEntryDMN)
-    scenario(singleResultDMN)
-    scenario(collectEntriesDMN)
-    scenario(resultListDMN)
-    scenario(collectEntriesDMNEmptySeq)
-    scenario(resultListDMNEmptySeq)
+  simulate (
+    singleEntryDMN,
+    singleResultDMN,
+    collectEntriesDMN,
+    resultListDMN,
+    collectEntriesDMNEmptySeq,
+    resultListDMNEmptySeq,
     /*  TestOverrides Example*/
-    scenario(collectEntriesOverride)
-    scenario(resultListOverride)
+    collectEntriesOverride,
+    resultListOverride,
     /* bad cases
-    scenario(singleResultDMNBadOutput)
-    scenario(resultListDMNBadOutput)*/
-
-  }
+    singleResultDMNBadOutput,
+    resultListDMNBadOutput,*/
+  )
 
   private lazy val collectEntriesOverrideDMN = collectEntriesDMN
   private lazy val collectEntriesOverride =

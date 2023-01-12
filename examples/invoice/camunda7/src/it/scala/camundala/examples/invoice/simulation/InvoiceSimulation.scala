@@ -1,35 +1,34 @@
 package camundala.examples.invoice
 package simulation
 
-import bpmn.*
-import domain.*
+import camundala.examples.invoice.bpmn.*
+import camundala.examples.invoice.domain.*
 import camundala.simulation.*
 import camundala.simulation.custom.CustomSimulation
 
 // exampleInvoiceC7/It/testOnly *InvoiceSimulation
 class InvoiceSimulation extends CustomSimulation:
 
-  simulate {
-
+  simulate(
     scenario(`Review Invoice`)(
       AssignReviewerUT,
       ReviewInvoiceUT
-    )
+    ),
     incidentScenario(
       `Invoice Receipt that fails`,
       "Could not archive invoice..."
     )(
       ApproveInvoiceUT,
       PrepareBankTransferUT
-    )
+    ),
     scenario(`Invoice Receipt`)(
       ApproveInvoiceUT,
       PrepareBankTransferUT
-    )
+    ),
     scenario(WithOverrideScenario)(
       `ApproveInvoiceUT with Override`,
       PrepareBankTransferUT
-    )
+    ),
     scenario(`Invoice Receipt with Review`)(
       NotApproveInvoiceUT,
       subProcess(`Review Invoice`)(
@@ -38,23 +37,22 @@ class InvoiceSimulation extends CustomSimulation:
       ),
       ApproveInvoiceUT, // now approve
       PrepareBankTransferUT
-    )
+    ),
     scenario(`Invoice Receipt with Review failed`)(
       NotApproveInvoiceUT, // do not approve
       subProcess(`Review Invoice not clarified`)(
         AssignReviewerUT,
         ReviewInvoiceNotClarifiedUT // do not clarify
       )
-    )
-    scenario(InvoiceAssignApproverDMN)
-    scenario(InvoiceAssignApproverDMN2)
-
+    ),
+    scenario(InvoiceAssignApproverDMN),
+    scenario(InvoiceAssignApproverDMN2),
     badScenario(
       BadValidationP,
       500,
-        "Validation Error: Input is not valid: DecodingFailure(Missing required field, List(DownField(creditor)))"
+      "Validation Error: Input is not valid: DecodingFailure(Missing required field, List(DownField(creditor)))"
     )
-  }
+  )
 
   override implicit def config =
     super.config

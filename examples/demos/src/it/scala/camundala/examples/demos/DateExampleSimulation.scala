@@ -9,7 +9,6 @@ import sttp.tapir.generic.auto.*
 // exampleDemos/It/testOnly *DateExampleSimulation
 class DateExampleSimulation extends DemosSimulation:
 
-  simulate {
-    scenario(DateExampleDMN)
-
-  }
+  simulate(
+    DateExampleDMN
+  )

@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Invoice Example Process API
   version: '1.0'
-  description: "\n\nCreated at 07/11/2022, 11:17\n\n**[Check Project on Cawemo](https://cawemo.com/folders/a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala)**\n\
+  summary: "\n\nCreated at 12/01/2023, 18:17\n\n**[Check Project on Cawemo](https://cawemo.com/folders/a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala)**\n\
     \n> This is the invoice demo application which is shipped with the full distributions\
     \ in Camunda 7.\n\nSee the original [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).\n\
     \nI bundled it here! Just run `InvoiceProcessApplication`.\n\n> This requires\
@@ -31,54 +31,10 @@ info:
     and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).\n\
     \n### Unreleased\nInitial Version\n\n</p>\n</details>\n\n"
 paths:
-  /process/InvoiceReceipt/InvoiceReceiptP/InvoiceReceipt:
+  /decisiondmn/DMNs/invoice-assign-approver/InvoiceAssignApproverDMN:
     head:
       tags:
-      - Invoice Receipt
-      summary: 'Process: InvoiceReceiptP'
-      description: "\nThis starts the Invoice Receipt Process.\n\n<iframe src=\"https://cawemo.com/embed/e289c19a-8a57-4467-8583-de72a5e57488\"\
-        \ style=\"width:100%;height:500px;border:1px solid #ccc\" allowfullscreen></iframe>\n\
-        \n\n\n**Used in no other Process.**\n\n<details>\n<summary><b>Uses 1 Project(s)\
-        \ (EXPERIMENTAL)</b></summary>\n<p>\n\n\n- _invoice-example_\n   - _[ReviewInvoiceP](No\
-        \ URL defined for invoice-example/OpenApi.html#operation/Process:%20ReviewInvoiceP)_\
-        \ \n   - _[invoice-assign-approver](No URL defined for invoice-example/OpenApi.html#operation/DecisionDmn:%20invoice-assign-approver)_\
-        \ (DMN)\n\n\n\n</p>\n</details>\n"
-      operationId: 'Process: InvoiceReceiptP'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
-            examples:
-              Invoice Receipt:
-                value:
-                  creditor: Great Pizza for Everyone Inc.
-                  amount: 300.0
-                  invoiceCategory: Travel Expenses
-                  invoiceNumber: I-12345
-                  invoiceDocument:
-                    fileName: invoice.pdf
-                    ref: processes/invoice.pdf
-                    mimeType: application/pdf
-        required: true
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InvoiceReceiptCheck'
-              examples:
-                Invoice Receipt:
-                  value:
-                    approved: true
-                    approverGroups:
-                    - accounting
-                    - sales
-  /decisiondmn/InvoiceReceipt/invoice-assign-approver/InvoiceAssignApproverDMN:
-    head:
-      tags:
-      - Invoice Receipt
+      - DMNs
       summary: 'DecisionDmn: invoice-assign-approver'
       description: |2
 
@@ -89,7 +45,7 @@ paths:
 
 
         <details>
-        <summary><b>Used in 2 Project(s) (EXPERIMENTAL)</b></summary>
+        <summary><b>Used in 3 Project(s) (EXPERIMENTAL)</b></summary>
         <p>
 
 
@@ -101,6 +57,11 @@ paths:
         - _camundala-dsl_
            - [InvoiceReceiptP](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20InvoiceReceiptP)
            - [invoice](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20invoice)
+
+
+        - _camundala-example_
+           - [InvoiceReceiptP](No URL defined for camundala-example/OpenApi.html#operation/Process:%20InvoiceReceiptP)
+           - [invoice](No URL defined for camundala-example/OpenApi.html#operation/Process:%20invoice)
 
 
 
@@ -130,312 +91,24 @@ paths:
                 InvoiceAssignApproverDMN:
                   value:
                   - management
-  /usertask/InvoiceReceipt/ApproveInvoiceUT:
-    head:
-      tags:
-      - Invoice Receipt
-      summary: 'UserTask: ApproveInvoiceUT'
-      description: Approve the invoice (or not).
-      operationId: 'UserTask: ApproveInvoiceUT'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
-            examples:
-              ApproveInvoiceUT:
-                value:
-                  creditor: Great Pizza for Everyone Inc.
-                  amount: 300.0
-                  invoiceCategory: Travel Expenses
-                  invoiceNumber: I-12345
-                  invoiceDocument:
-                    fileName: invoice.pdf
-                    ref: processes/invoice.pdf
-                    mimeType: application/pdf
-        required: true
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApproveInvoice'
-              examples:
-                ApproveInvoiceUT:
-                  value:
-                    approved: true
-                Invoice approved:
-                  value:
-                    approved: true
-                Invoice NOT approved:
-                  value:
-                    approved: false
-  /usertask/InvoiceReceipt/PrepareBankTransferUT:
-    head:
-      tags:
-      - Invoice Receipt
-      summary: 'UserTask: PrepareBankTransferUT'
-      description: Prepare the bank transfer in the Financial Accounting System.
-      operationId: 'UserTask: PrepareBankTransferUT'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
-            examples:
-              PrepareBankTransferUT:
-                value:
-                  creditor: Great Pizza for Everyone Inc.
-                  amount: 300.0
-                  invoiceCategory: Travel Expenses
-                  invoiceNumber: I-12345
-                  invoiceDocument:
-                    fileName: invoice.pdf
-                    ref: processes/invoice.pdf
-                    mimeType: application/pdf
-        required: true
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PrepareBankTransfer'
-              examples:
-                PrepareBankTransferUT:
-                  value: {}
-  /process/ReviewInvoice/ReviewInvoiceP/ReviewInvoice:
-    head:
-      tags:
-      - Review Invoice
-      summary: 'Process: ReviewInvoiceP'
-      description: |2
-
-        This starts the Review Invoice Process.
-
-        <iframe src="https://cawemo.com/embed/cc9f978a-e98a-4b01-991d-36d682574cda" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
-
-
-
-        <details>
-        <summary><b>Used in 2 Project(s) (EXPERIMENTAL)</b></summary>
-        <p>
-
-
-        - _camundala_
-           - [InvoiceReceiptP](No URL defined for camundala/OpenApi.html#operation/Process:%20InvoiceReceiptP)
-
-
-        - _camundala-dsl_
-           - [InvoiceReceiptP](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20InvoiceReceiptP)
-
-
-
-
-        </p>
-        </details>
-
-        **Uses no other Processes.**
-      operationId: 'Process: ReviewInvoiceP'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
-            examples:
-              Review Invoice:
-                value:
-                  creditor: Great Pizza for Everyone Inc.
-                  amount: 300.0
-                  invoiceCategory: Travel Expenses
-                  invoiceNumber: I-12345
-                  invoiceDocument:
-                    fileName: invoice.pdf
-                    ref: processes/invoice.pdf
-                    mimeType: application/pdf
-        required: true
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InvoiceReviewed'
-              examples:
-                Review Invoice:
-                  value:
-                    clarified: true
-  /usertask/ReviewInvoice/AssignReviewerUT:
-    head:
-      tags:
-      - Review Invoice
-      summary: 'UserTask: AssignReviewerUT'
-      description: Select the Reviewer.
-      operationId: 'UserTask: AssignReviewerUT'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
-            examples:
-              AssignReviewerUT:
-                value:
-                  creditor: Great Pizza for Everyone Inc.
-                  amount: 300.0
-                  invoiceCategory: Travel Expenses
-                  invoiceNumber: I-12345
-                  invoiceDocument:
-                    fileName: invoice.pdf
-                    ref: processes/invoice.pdf
-                    mimeType: application/pdf
-        required: true
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AssignedReviewer'
-              examples:
-                AssignReviewerUT:
-                  value:
-                    reviewer: John
-  /usertask/ReviewInvoice/ReviewInvoiceUT:
-    head:
-      tags:
-      - Review Invoice
-      summary: 'UserTask: ReviewInvoiceUT'
-      description: Review Invoice and approve.
-      operationId: 'UserTask: ReviewInvoiceUT'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
-            examples:
-              ReviewInvoiceUT:
-                value:
-                  creditor: Great Pizza for Everyone Inc.
-                  amount: 300.0
-                  invoiceCategory: Travel Expenses
-                  invoiceNumber: I-12345
-                  invoiceDocument:
-                    fileName: invoice.pdf
-                    ref: processes/invoice.pdf
-                    mimeType: application/pdf
-        required: true
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InvoiceReviewed'
-              examples:
-                ReviewInvoiceUT:
-                  value:
-                    clarified: true
-                Invoice clarified:
-                  value:
-                    clarified: true
-                Invoice NOT clarified:
-                  value:
-                    clarified: false
 components:
   schemas:
-    ApproveInvoice:
-      required:
-      - approved
-      type: object
-      properties:
-        approved:
-          type: boolean
-          description: If true, the Boss accepted the Invoice
-      description: Every Invoice has to be accepted by the Boss.
     ApproverGroup:
       oneOf:
       - $ref: '#/components/schemas/accounting'
       - $ref: '#/components/schemas/management'
       - $ref: '#/components/schemas/sales'
-    AssignedReviewer:
-      required:
-      - reviewer
-      type: object
-      properties:
-        reviewer:
-          type: string
     CollectEntries_camundala.examples.invoice.domain.ApproverGroup[]:
       oneOf:
       - $ref: '#/components/schemas/ApproverGroup'
-    FileRefInOut:
-      required:
-      - fileName
-      - ref
-      type: object
-      properties:
-        fileName:
-          type: string
-        ref:
-          type: string
-          description: A reference to retrieve the file in your application.
-        mimeType:
-          type: string
     InvoiceCategory:
       oneOf:
       - $ref: '#/components/schemas/Misc'
       - $ref: '#/components/schemas/Software License Costs'
       - $ref: '#/components/schemas/Travel Expenses'
-    InvoiceReceipt:
-      required:
-      - creditor
-      - amount
-      - invoiceCategory
-      - invoiceNumber
-      - invoiceDocument
-      type: object
-      properties:
-        creditor:
-          type: string
-        amount:
-          type: number
-          format: double
-        invoiceCategory:
-          $ref: '#/components/schemas/InvoiceCategory'
-        invoiceNumber:
-          type: string
-        invoiceDocument:
-          $ref: '#/components/schemas/FileRefInOut'
-      description: Received Invoice that need approval.
-    InvoiceReceiptCheck:
-      type: object
-      properties:
-        approved:
-          type: boolean
-          description: If true, the Boss accepted the Invoice
-        clarified:
-          type: boolean
-          description: Flag that is set by the Reviewer (only set if there was a review).
-        approverGroups:
-          type: array
-          items:
-            type: string
-          description: The groups selected from the DMN
-    InvoiceReviewed:
-      required:
-      - clarified
-      type: object
-      properties:
-        clarified:
-          type: boolean
-          description: Flag that is set by the Reviewer
     Misc:
       type: object
       description: There are three possible Categories
-    PrepareBankTransfer:
-      type: object
-      description: Prepares the bank transfer for the invoice. Only readOnly fields
-        from the Process.
     SelectApproverGroup:
       required:
       - amount

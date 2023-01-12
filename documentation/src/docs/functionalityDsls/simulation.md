@@ -46,22 +46,22 @@ import camundala.simulation.custom.CustomSimulation
 class InvoiceSimulation extends CustomSimulation:
 
   // the is one simulate - use curly brackets {}
-  simulate {
+  simulate (
     // add scenarios - no comma needed
     scenario(`Review Invoice`)(
       AssignReviewerUT,
       ReviewInvoiceUT
-    )
-    scenario(InvoiceAssignApproverDMN)
+    ),
+    scenario(InvoiceAssignApproverDMN),
     incidentScenario(
       `Invoice Receipt that fails`,
       "Could not archive invoice..."
     )(
       ApproveInvoiceUT,
       PrepareBankTransferUT
-    )
+    ),
     // more scenarios  ..
-  }
+  )
 end InvoiceSimulation
 ```
 
@@ -290,9 +290,13 @@ _Camundala_ uses the [Evaluate Decision REST API](https://docs.camunda.org/manua
 from _Camunda_.
 
 ```scala
-  simulate {
+simulate (
     scenario(InvoiceAssignApproverDMN)
-  }
+)
+// OR
+simulate (
+  InvoiceAssignApproverDMN // scenario is created automatically
+)
 ```
 As this is a single request, all you need is to add your DMN description you did with the BPMN DSL.
 
@@ -352,25 +356,25 @@ You can ignore a scenario by just prefix your Scenario with `ignore.`.
 
 #### Examples:
 ```scala
-  simulate {
+simulate (
     ignore.scenario(`Review Invoice`)(
       AssignReviewerUT,
       ReviewInvoiceUT
-    )
+    ),
     ignore.incidentScenario(
       `Invoice Receipt that fails`,
       "Could not archive invoice..."
     )(
       ApproveInvoiceUT,
       PrepareBankTransferUT
-    )
-    ignore.scenario(InvoiceAssignApproverDMN)
+    ),
+    ignore.scenario(InvoiceAssignApproverDMN),
     ignore.badScenario(
       BadValidationP,
       500,
         "Validation Error: Input is not valid: DecodingFailure(Missing required field, List(DownField(creditor)))"
-    )
-  }
+    ),
+)
 ```
 An ignored Scenario will create a Warning in the output Log, like this:
 

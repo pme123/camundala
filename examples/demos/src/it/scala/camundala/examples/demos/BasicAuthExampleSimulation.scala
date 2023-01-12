@@ -9,10 +9,9 @@ import sttp.tapir.generic.auto.*
 // exampleDemos/It/testOnly *BasicAuthExampleSimulation
 class BasicAuthExampleSimulation extends BasicSimulationDsl:
 
-  simulate {
-    scenario(DateExampleDMN)
-
-  }
+  simulate (
+    DateExampleDMN
+  )
 
   override implicit def config =
     super.config.withPort(8033)
