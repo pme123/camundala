@@ -19,11 +19,8 @@ trait ApiCreator
       TapirApiCreator,
       App:
 
-  def document(body: ApiConstr): Unit =
-    val sb = ApiBuilder()
-    body(using sb)
-    val apiDoc = sb.mkBlock
-    toOpenApi(apiDoc)
+  def document(apis: CApi*): Unit =
+    toOpenApi(ApiDoc(apis.toList))
 
   protected def toOpenApi(apiDoc: ApiDoc): Unit =
     writeOpenApi(

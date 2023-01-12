@@ -1,4 +1,4 @@
-# Simulation
+# Simulations
 
 @:callout(warning)
 This expects that your variables are simple values or JSON-objects/ -arrays.
@@ -32,8 +32,7 @@ my time on Simulations. I also think you should only do one of them, due to the 
 @:@
 
 ## Get Started
-Simulations use the BPMNs you created - in this context I refer 
-to the [Bpmn DSL](../bpmnDsl.md)
+Simulations use the BPMNs you created - in this context I refer to the [Bpmn DSL](../bpmnDsl.md)
 
 Let's start with a basic example:
 ```scala

@@ -16,42 +16,21 @@ import scala.util.matching.*
 trait ApiDsl:
 
   class ApiBuilder:
-    private val ib = ListBuffer.empty[GroupedApi]
+    private val ib = ListBuffer.empty[CApi]
 
-    def pushApi(x: GroupedApi): Unit = ib.append(x)
+    def pushApi(x: CApi): Unit = ib.append(x)
 
-    def mkApiLists: List[GroupedApi] = ib.toList
+    def mkApiLists: List[CApi] = ib.toList
     def mkBlock: ApiDoc = ApiDoc(ib.toList)
 
-  type ApiConstr = ApiBuilder ?=> Unit
-
-  extension (api: GroupedApi)
-    private[api] def stage: ApiConstr =
-      (bldr: ApiBuilder) ?=> bldr.pushApi(api)
-
-  def group(name: String)(body: ApiConstr): ApiConstr =
-      val sb = ApiBuilder()
-      body(using sb)
-      val apis = sb.mkApiLists
-      CApiGroup(name, apis).stage
+  def group(name: String)(apis: CApi*): CApiGroup =
+    CApiGroup(name, apis.toList)
 
   def api[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
-  ](pApi: ProcessApi[In, Out]): ApiConstr =
-    api(pApi)()
-
-  def api[
-    In <: Product : Encoder : Decoder : Schema,
-    Out <: Product : Encoder : Decoder : Schema : ClassTag
-  ](pApi: DecisionDmnApi[In, Out]): ApiConstr =
-    pApi.stage
-
-  def api[
-      In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema: ClassTag
-  ](pApi: ProcessApi[In, Out])(body: CApi*): ApiConstr =
-    pApi.withApis(body.toList).stage
+  ](pApi: ProcessApi[In, Out])(body: CApi*): ProcessApi[In, Out] =
+    pApi.withApis(body.toList)
 
   implicit inline def toApi[
       In <: Product: Encoder: Decoder: Schema,

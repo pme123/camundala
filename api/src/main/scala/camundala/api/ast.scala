@@ -12,7 +12,7 @@ import io.circe.syntax.*
 import scala.annotation.targetName
 import scala.reflect.ClassTag
 
-case class ApiDoc(apis: List[GroupedApi])
+case class ApiDoc(apis: List[CApi])
 
 sealed trait CApi:
   def name: String
@@ -120,12 +120,12 @@ object DecisionDmnApi:
       Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](name: String, inOut: DecisionDmn[In, Out]): DecisionDmnApi[In, Out] =
     DecisionDmnApi(name, inOut, ApiExamples(name, inOut))
-  
+
 end DecisionDmnApi
 
 case class CApiGroup(
     name: String,
-    apis: List[GroupedApi]
+    apis: List[CApi]
 ) extends GroupedApi:
 
   def withApis(apis: List[GroupedApi]): GroupedApi = copy(apis = apis)

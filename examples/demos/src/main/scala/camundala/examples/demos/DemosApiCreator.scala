@@ -17,15 +17,15 @@ object DemosApiCreator extends DefaultApiCreator:
       .withBasePath(pwd / "examples" / "demos")
       .withPort(8034)
 
-  document {
-    api(singleEntryDMN)
-    api(collectEntriesDMN)
-    api(singleResultDMN)
-    api(resultListDMN)
+  document (
+    singleEntryDMN,
+    collectEntriesDMN,
+    singleResultDMN,
+    resultListDMN,
     api(demoProcess)(
       singleEntryDMN,
       collectEntriesDMN,
       singleResultDMN,
       resultListDMN
-    )
-  }
+    ),
+  )

@@ -3,8 +3,8 @@ package api
 
 import camundala.api.Sample.{SampleOut, descr, name, process, standardSample}
 import camundala.bpmn.BpmnDsl
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.auto.*
+import io.circe.{Decoder, Encoder}
 import sttp.model.StatusCode
 import sttp.tapir.Schema.annotations.description
 import sttp.tapir.generic.auto.*
@@ -21,14 +21,16 @@ object TestApiCreator extends DefaultApiCreator, App:
     super.apiConfig
       .withDocProjectUrl(project => s"https://MYDOCHOST/$project")
       .withBasePath(os.pwd / "api")
-  document {
-    group("myGroup2") {
+
+  document(
+    group("myGroup2")(
       api(Sample.testProcess)(
-        Sample.testUT,
-      )
-      api(testProcess2)
-    }
-  }
+        Sample.testUT
+      ),
+      testProcess2
+    )
+  )
+
   private lazy val testProcess2 =
     process("sample-process2", standardSample, SampleOut())
 

@@ -19,7 +19,10 @@ trait TapirApiCreator extends AbstractApiCreator:
 
   protected def create(apiDoc: ApiDoc): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     println(s"Start API: ${apiDoc.apis.size} top level APIs")
-    apiDoc.apis.flatMap(_.create())
+    apiDoc.apis.flatMap{
+      case groupedApi: GroupedApi => groupedApi.create()
+      case cApi: CApi => cApi.create("")
+    }
 
   extension (groupedApi: GroupedApi)
     def create(): Seq[PublicEndpoint[?, Unit, ?, Any]] =
@@ -41,7 +44,7 @@ trait TapirApiCreator extends AbstractApiCreator:
           da.createEndpoint(tag, da.additionalDescr)
         case aa @ ActivityApi(_, _, _) =>
           aa.createEndpoint(tag)
-        case pa @ ProcessApi(name, _, _, apis) if apis.forall(_.isInstanceOf[ActivityApi[?,?]]) =>
+        case pa @ ProcessApi(name, _, _, apis) if apis.isEmpty => //.forall(_.isInstanceOf[ActivityApi[?,?]]) =>
           pa.createEndpoint(tag, pa.additionalDescr) ++ apis.flatMap(_.create(tag))
         case ga =>
           throw IllegalArgumentException(

@@ -2,10 +2,10 @@ openapi: 3.0.3
 info:
   title: Demos Example Process API
   version: '1.0'
-  description: |2+
+  summary: |2+
 
 
-    Created at 14/11/2022, 19:24
+    Created at 12/01/2023, 16:25
 
     ****
 
@@ -81,6 +81,7 @@ paths:
               schema:
                 oneOf:
                 - type: integer
+                  format: int32
               examples:
                 singleEntryDMN:
                   value: 1
@@ -94,7 +95,7 @@ paths:
 
 
         <details>
-        <summary><b>Used in 2 Project(s) (EXPERIMENTAL)</b></summary>
+        <summary><b>Used in 3 Project(s) (EXPERIMENTAL)</b></summary>
         <p>
 
 
@@ -106,6 +107,11 @@ paths:
         - _camundala-dsl_
            - [InvoiceReceiptP](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20InvoiceReceiptP)
            - [invoice](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20invoice)
+
+
+        - _camundala-example_
+           - [InvoiceReceiptP](No URL defined for camundala-example/OpenApi.html#operation/Process:%20InvoiceReceiptP)
+           - [invoice](No URL defined for camundala-example/OpenApi.html#operation/Process:%20invoice)
 
 
 
@@ -131,6 +137,7 @@ paths:
               schema:
                 oneOf:
                 - type: integer
+                  format: int32
               examples:
                 collectEntriesDMN:
                   value:
@@ -261,6 +268,7 @@ paths:
               schema:
                 oneOf:
                 - type: integer
+                  format: int32
               examples:
                 singleEntryDMN:
                   value: 1
@@ -274,7 +282,7 @@ paths:
 
 
         <details>
-        <summary><b>Used in 2 Project(s) (EXPERIMENTAL)</b></summary>
+        <summary><b>Used in 3 Project(s) (EXPERIMENTAL)</b></summary>
         <p>
 
 
@@ -286,6 +294,11 @@ paths:
         - _camundala-dsl_
            - [InvoiceReceiptP](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20InvoiceReceiptP)
            - [invoice](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20invoice)
+
+
+        - _camundala-example_
+           - [InvoiceReceiptP](No URL defined for camundala-example/OpenApi.html#operation/Process:%20InvoiceReceiptP)
+           - [invoice](No URL defined for camundala-example/OpenApi.html#operation/Process:%20invoice)
 
 
 
@@ -311,6 +324,7 @@ paths:
               schema:
                 oneOf:
                 - type: integer
+                  format: int32
               examples:
                 collectEntriesDMN:
                   value:
@@ -401,6 +415,7 @@ components:
       properties:
         index:
           type: integer
+          format: int32
         emoji:
           type: string
     ResultList_camundala.examples.demos.DecisionResultTypes.ManyOutResult[]:

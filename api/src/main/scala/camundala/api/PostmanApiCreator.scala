@@ -23,18 +23,20 @@ trait PostmanApiCreator extends AbstractApiCreator:
     println(s"Start Postman API: ${apiDoc.apis.size} top level APIs")
     apiDoc.apis.flatMap(_.createPostman())
 
-  extension (groupedApi: GroupedApi)
+  extension (cApi: CApi)
     def createPostman(): Seq[PublicEndpoint[?, Unit, ?, Any]] =
-      println(s"Start Grouped API: ${groupedApi.name}")
-      groupedApi match
+      println(s"Start Grouped API: ${cApi.name}")
+      cApi match
         case pa: ProcessApi[?, ?] =>
           createPostmanForProcess(pa, pa.name) ++ pa.apis.flatMap(
-            _.createPostman(groupedApi.name)
+            _.createPostman(cApi.name)
           )
         case da: DecisionDmnApi[?, ?] =>
           createPostmanForDecisionDmn(da.toActivityApi, da.name)
-        case _: CApiGroup =>
-          groupedApi.apis.flatMap(_.createPostman(groupedApi.name, true))
+        case gApi: CApiGroup =>
+          gApi.apis.flatMap(_.createPostman(cApi.name, true))
+        case _: CApi =>
+          cApi.createPostman(cApi.name, true)
 
   end extension
 

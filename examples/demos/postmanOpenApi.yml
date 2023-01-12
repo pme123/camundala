@@ -2,13 +2,13 @@ openapi: 3.0.3
 info:
   title: Demos Example Process API
   version: '1.0'
-  description: |2+
+  summary: |2+
 
     **This is for Postman - to have example requests. Be aware the Output is not provided!**
 
 
 
-    Created at 14/11/2022, 19:24
+    Created at 12/01/2023, 16:25
 
     ****
 
@@ -270,6 +270,7 @@ components:
       properties:
         value:
           type: integer
+          format: int32
         type:
           type: string
     CJson:
