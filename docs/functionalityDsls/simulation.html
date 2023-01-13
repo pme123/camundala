@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Laika 0.18.2 + Helium Theme" />
-    <title>Simulation</title>
+    <title>Simulations</title>
     
     
       <meta name="description" content="camundala-documentation"/>
@@ -54,7 +54,7 @@
         <li class="level1"><a href="../projectSetup.html">Project Setup</a></li>
         <li class="level1 nav-header">Functional DSLs</li>
         <li class="level2"><a href="apiDoc.html">API Documentation</a></li>
-        <li class="level2 active"><a href="#">Simulation</a></li>
+        <li class="level2 active"><a href="#">Simulations</a></li>
       </ul>
       
     </nav>
@@ -62,7 +62,7 @@
     <div id="container">
 
       <nav id="page-nav">
-        <p class="header"><a href="#">Simulation</a></p>
+        <p class="header"><a href="#">Simulations</a></p>
         
         <ul class="nav-list">
           <li class="level1"><a href="#why">Why</a></li>
@@ -70,7 +70,7 @@
           <li class="level2"><a href="#simulate">simulate</a></li>
           <li class="level2"><a href="#scenario-1">scenario</a></li>
           <li class="level2"><a href="#run-the-simulation">Run the Simulation</a></li>
-          <li class="level1"><a href="#simulation-2">Simulation</a></li>
+          <li class="level1"><a href="#simulation">Simulation</a></li>
           <li class="level2"><a href="#naming">Naming</a></li>
           <li class="level2"><a href="#configuration">Configuration</a></li>
           <li class="level1"><a href="#scenarios">Scenarios</a></li>
@@ -91,7 +91,7 @@
 
       <main class="content">
 
-        <h1 id="simulation-1" class="title">Simulation</h1>
+        <h1 id="simulations" class="title">Simulations</h1>
         <div class="callout warning">
           <i class="icofont-laika">&#xf026;</i>
           <p>This expects that your variables are simple values or JSON-objects/ -arrays.</p>
@@ -123,8 +123,7 @@
         </div>
         
         <h2 id="get-started" class="section"><a class="anchor-link left" href="#get-started"><i class="icofont-laika">&#xef71;</i></a>Get Started</h2>
-        <p>Simulations use the BPMNs you created - in this context I refer 
-        to the <a href="../bpmnDsl.html">Bpmn DSL</a></p>
+        <p>Simulations use the BPMNs you created - in this context I refer to the <a href="../bpmnDsl.html">Bpmn DSL</a></p>
         <p>Let&#39;s start with a basic example:</p>
         <pre><code class="nohighlight"><span class="comment">// put your simulations in the simulation package of your project
 </span><span class="keyword">package</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">examples</span><span>.</span><span class="identifier">invoice</span><span>.</span><span class="identifier">simulation</span><span>
@@ -136,22 +135,22 @@
 </span><span class="keyword">class</span><span> </span><span class="type-name">InvoiceSimulation</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CustomSimulation</span><span>:
 
   </span><span class="comment">// the is one simulate - use curly brackets {}
-</span><span>  </span><span class="identifier">simulate</span><span> {
+</span><span>  </span><span class="identifier">simulate</span><span> (
     </span><span class="comment">// add scenarios - no comma needed
 </span><span>    </span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
       </span><span class="type-name">AssignReviewerUT</span><span>,
       </span><span class="type-name">ReviewInvoiceUT</span><span>
-    )
-    </span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>)
+    ),
+    </span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>),
     </span><span class="identifier">incidentScenario</span><span>(
       </span><span class="identifier">`Invoice Receipt that fails`</span><span>,
       </span><span class="string-literal">&quot;Could not archive invoice...&quot;</span><span>
     )(
       </span><span class="type-name">ApproveInvoiceUT</span><span>,
       </span><span class="type-name">PrepareBankTransferUT</span><span>
-    )
+    ),
     </span><span class="comment">// more scenarios  ..
-</span><span>  }
+</span><span>  )
 </span><span class="identifier">end</span><span> </span><span class="type-name">InvoiceSimulation</span></code></pre>
         
         <h4 id="simulate" class="section"><a class="anchor-link left" href="#simulate"><i class="icofont-laika">&#xef71;</i></a>simulate</h4>
@@ -199,7 +198,7 @@
         <p><code>15:15:32.926 INFO: Process &#39;ReviewInvoiceP&#39; started (check http://localhost:8034/camunda/app/cockpit/default/#/process-instance/42f84722-82cc-11ed-b5c6-9e5abd655523)</code></p>
         <p>This is not available for a DMN Scenario.</p>
         
-        <h2 id="simulation-2" class="section"><a class="anchor-link left" href="#simulation-2"><i class="icofont-laika">&#xef71;</i></a>Simulation</h2>
+        <h2 id="simulation" class="section"><a class="anchor-link left" href="#simulation"><i class="icofont-laika">&#xef71;</i></a>Simulation</h2>
         
         <h3 id="naming" class="section"><a class="anchor-link left" href="#naming"><i class="icofont-laika">&#xef71;</i></a>Naming</h3>
         <p>The DSL is using the names of your BPMN objects like Processes and UserTasks.
@@ -348,9 +347,13 @@
         <h3 id="dmn-scenario" class="section"><a class="anchor-link left" href="#dmn-scenario"><i class="icofont-laika">&#xef71;</i></a>DMN Scenario</h3>
         <p><em>Camundala</em> uses the <a href="https://docs.camunda.org/manual/7.18/reference/rest/decision-definition/post-evaluate/">Evaluate Decision REST API</a>
         from <em>Camunda</em>.</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="identifier">simulate</span><span> {
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">simulate</span><span> (
     </span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>)
-  }</span></code></pre>
+)
+</span><span class="comment">// OR
+</span><span class="identifier">simulate</span><span> (
+  </span><span class="type-name">InvoiceAssignApproverDMN</span><span> </span><span class="comment">// scenario is created automatically
+</span><span>)</span></code></pre>
         <p>As this is a single request, all you need is to add your DMN description you did with the BPMN DSL.</p>
         <p>See <a href="../bpmnDsl.html#business-rule-tasks-decision-dmns">Business Rule Tasks (Decision DMNs)</a></p>
         <p>The simulation does the following steps:</p>
@@ -400,25 +403,25 @@
         <p>You can ignore a scenario by just prefix your Scenario with <code>ignore.</code>.</p>
         
         <h4 id="examples" class="section"><a class="anchor-link left" href="#examples"><i class="icofont-laika">&#xef71;</i></a>Examples:</h4>
-        <pre><code class="nohighlight"><span>  </span><span class="identifier">simulate</span><span> {
+        <pre><code class="nohighlight"><span class="identifier">simulate</span><span> (
     </span><span class="identifier">ignore</span><span>.</span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
       </span><span class="type-name">AssignReviewerUT</span><span>,
       </span><span class="type-name">ReviewInvoiceUT</span><span>
-    )
+    ),
     </span><span class="identifier">ignore</span><span>.</span><span class="identifier">incidentScenario</span><span>(
       </span><span class="identifier">`Invoice Receipt that fails`</span><span>,
       </span><span class="string-literal">&quot;Could not archive invoice...&quot;</span><span>
     )(
       </span><span class="type-name">ApproveInvoiceUT</span><span>,
       </span><span class="type-name">PrepareBankTransferUT</span><span>
-    )
-    </span><span class="identifier">ignore</span><span>.</span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>)
+    ),
+    </span><span class="identifier">ignore</span><span>.</span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>),
     </span><span class="identifier">ignore</span><span>.</span><span class="identifier">badScenario</span><span>(
       </span><span class="type-name">BadValidationP</span><span>,
       </span><span class="number-literal">500</span><span>,
         </span><span class="string-literal">&quot;Validation Error: Input is not valid: DecodingFailure(Missing required field, List(DownField(creditor)))&quot;</span><span>
-    )
-  }</span></code></pre>
+    ),
+)</span></code></pre>
         <p>An ignored Scenario will create a Warning in the output Log, like this:</p>
         <p><img src="images/simulation_outputIgnore.png" alt="simulation_outputIgnore"></p>
         <div class="callout info">

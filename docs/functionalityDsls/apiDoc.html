@@ -54,7 +54,7 @@
         <li class="level1"><a href="../projectSetup.html">Project Setup</a></li>
         <li class="level1 nav-header">Functional DSLs</li>
         <li class="level2 active"><a href="#">API Documentation</a></li>
-        <li class="level2"><a href="simulation.html">Simulation</a></li>
+        <li class="level2"><a href="simulation.html">Simulations</a></li>
       </ul>
       
     </nav>
@@ -65,6 +65,29 @@
         <p class="header"><a href="#">API Documentation</a></p>
         
         <ul class="nav-list">
+          <li class="level1"><a href="#why">Why</a></li>
+          <li class="level1"><a href="#getting-started">Getting Started</a></li>
+          <li class="level2"><a href="#document-1">document</a></li>
+          <li class="level2"><a href="#api">api</a></li>
+          <li class="level2"><a href="#group">group</a></li>
+          <li class="level2"><a href="#create-the-documentation">Create the Documentation</a></li>
+          <li class="level1"><a href="#document-2">Document</a></li>
+          <li class="level2"><a href="#naming">Naming</a></li>
+          <li class="level2"><a href="#strange-stuff">Strange Stuff</a></li>
+          <li class="level2"><a href="#configuration">Configuration</a></li>
+          <li class="level2"><a href="#default-apicreator">Default ApiCreator</a></li>
+          <li class="level2"><a href="#custom-apicreator">Custom ApiCreator</a></li>
+          <li class="level1"><a href="#apis">Apis</a></li>
+          <li class="level2"><a href="#implicit-apis">Implicit Apis</a></li>
+          <li class="level2"><a href="#process-apis">Process Apis</a></li>
+          <li class="level2"><a href="#input-variables">Input Variables</a></li>
+          <li class="level2"><a href="#output-variables">Output Variables</a></li>
+          <li class="level2"><a href="#examples">Examples</a></li>
+          <li class="level2"><a href="#cawemo-description">Cawemo description</a></li>
+          <li class="level1"><a href="#groups">Groups</a></li>
+          <li class="level1"><a href="#postman-open-api">Postman Open API</a></li>
+          <li class="level1"><a href="#other-stuff">Other stuff</a></li>
+          <li class="level2"><a href="#generic-service-process">Generic Service Process</a></li>
         </ul>
         
         <p class="footer"></p>
@@ -73,6 +96,455 @@
       <main class="content">
 
         <h1 id="api-documentation" class="title">API Documentation</h1>
+        <div class="callout info">
+          <i class="icofont-laika">&#xef4e;</i>
+          <p>The focus is to describe or better define how someone must interact with your processes.</p>
+          <p>This is done with <a href="https://redocly.com/redoc/">ReDoc</a> which is an Open API documentation tool.
+          So there are some quirks, but I think you get used to them fast.</p>
+        </div>
+        
+        <h2 id="why" class="section"><a class="anchor-link left" href="#why"><i class="icofont-laika">&#xef71;</i></a>Why</h2>
+        <p>To have accurate and not outdated documentation is a challenge. 
+        The closest you can get, is when your running or better tested code is the documentation.</p>
+        <p>And this is what we do here!
+        Together with the <a href="simulation.html#simulations">Simulations</a> you get the most accurate documentation possible without having too much work.</p>
+        
+        <h2 id="getting-started" class="section"><a class="anchor-link left" href="#getting-started"><i class="icofont-laika">&#xef71;</i></a>Getting Started</h2>
+        <p>The documentation uses the BPMNs you created - in this context I refer to the <a href="../bpmnDsl.html">Bpmn DSL</a></p>
+        <p>Let&#39;s start with a basic example:</p>
+        <pre><code class="nohighlight"><span class="comment">// put your api in a package of your project
+</span><span class="keyword">package</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">examples</span><span>.</span><span class="identifier">invoice</span><span>
+
+</span><span class="comment">// import camundala dependencies
+</span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">api</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">bpmn</span><span>.*
+
+</span><span class="comment">// import the projects bpmns (Processes, UserTasks etc.)
+</span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">examples</span><span>.</span><span class="identifier">invoice</span><span>.</span><span class="identifier">bpmn</span><span>.*
+</span><span class="comment">// import the projects domain (inputs and outputs)
+// - needed if you have additional infos (e.g.not needed for simulation)
+</span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">examples</span><span>.</span><span class="identifier">invoice</span><span>.</span><span class="identifier">domain</span><span>.*
+
+</span><span class="comment">// define an object that extends from a common Api Creator
+</span><span class="keyword">object</span><span> </span><span class="identifier">api</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">DefaultApiCreator</span><span>:
+  </span><span class="comment">// technical name of the project
+</span><span>  </span><span class="keyword">val</span><span> </span><span class="identifier">projectName</span><span> = </span><span class="string-literal">&quot;invoice-example&quot;</span><span>
+  </span><span class="comment">// readable name of the project
+</span><span>  </span><span class="keyword">protected</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">title</span><span> = </span><span class="string-literal">&quot;Invoice Example Process API&quot;</span><span>
+  </span><span class="comment">// version of your project
+</span><span>  </span><span class="keyword">protected</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">version</span><span> = </span><span class="string-literal">&quot;1.0&quot;</span><span>
+
+  </span><span class="comment">// the documentation
+</span><span>  </span><span class="identifier">document</span><span> (
+    </span><span class="identifier">api</span><span>(</span><span class="identifier">`Invoice Receipt`</span><span>)(
+      </span><span class="type-name">InvoiceAssignApproverDMN</span><span>,
+      </span><span class="type-name">ApproveInvoiceUT</span><span>,
+      </span><span class="type-name">PrepareBankTransferUT</span><span>
+    ),
+    </span><span class="identifier">api</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
+      </span><span class="type-name">AssignReviewerUT</span><span>,
+      </span><span class="type-name">ReviewInvoiceUT</span><span>
+    ),
+    </span><span class="identifier">group</span><span>(</span><span class="string-literal">&quot;DMNs&quot;</span><span>)(
+      </span><span class="type-name">InvoiceAssignApproverDMN</span><span>
+    )
+  )</span></code></pre>
+        
+        <h4 id="document-1" class="section"><a class="anchor-link left" href="#document-1"><i class="icofont-laika">&#xef71;</i></a>document</h4>
+        <p>This is the entry point for your documentation.
+        Usually there is one documentation for a project.
+        A document consists of one or more <code>api</code>s or <code>group</code>s.</p>
+        
+        <h4 id="api" class="section"><a class="anchor-link left" href="#api"><i class="icofont-laika">&#xef71;</i></a>api</h4>
+        <p>Usually an api is the documentation of a process with its interactions or a DMN Decision.</p>
+        
+        <h4 id="group" class="section"><a class="anchor-link left" href="#group"><i class="icofont-laika">&#xef71;</i></a>group</h4>
+        <p>We can group our <code>api</code>s. </p>
+        
+        <h3 id="create-the-documentation" class="section"><a class="anchor-link left" href="#create-the-documentation"><i class="icofont-laika">&#xef71;</i></a>Create the Documentation</h3>
+        <ul>
+          <li>
+            <p>In your <em>sbt-console</em>:  <code>run</code></p>
+            <ul>
+              <li>If you have more runnable applications you need to choose the api class. </li>
+            </ul>
+          </li>
+          <li>This creates a YAML file (Open API) with your documentation. </li>
+          <li>
+            <p>In the console you find the paths to the created documentation.</p>
+            <ul>
+              <li>By default it&#39;s here: <code>YOUR_PROJECT_PATH/openApi.yml</code></li>
+            </ul>
+            <ul>
+              <li>There is also a link to an HTML (<code>YOUR_PROJECT_PATH/OpenApi.html</code>). 
+              You can copy it from here <a href="https://github.com/pme123/camundala-example/blob/master/OpenApi.html">OpenApi.html</a></li>
+            </ul>
+          </li>
+          <li>Open <code>OpenApi.html</code> in a webserver (e.g. from your IDE).
+          The parts of the document are described in the following chapters.</li>
+        </ul>
+        
+        <h2 id="document-2" class="section"><a class="anchor-link left" href="#document-2"><i class="icofont-laika">&#xef71;</i></a>Document</h2>
+        
+        <h3 id="naming" class="section"><a class="anchor-link left" href="#naming"><i class="icofont-laika">&#xef71;</i></a>Naming</h3>
+        <p>The DSL is using the names of your BPMN Processes just for Taging (grouping in the document structure).</p>
+        <p>Example:</p>
+        <p><img src="images/api_apiStructure.png" alt="api_apiStructure"></p>
+        <ul>
+          <li>The tag is the name created from the variable <code>Invoice Receipt</code>. </li>
+          <li>Each Api is composed by the <em>endpointType</em> (e.g. <em>Process</em>) and the <em>id</em> of the BPMN object (e.g. <em>InvoiceReceiptP</em>).</li>
+        </ul>
+        
+        <h3 id="strange-stuff" class="section"><a class="anchor-link left" href="#strange-stuff"><i class="icofont-laika">&#xef71;</i></a>Strange Stuff</h3>
+        <p>As we use a REST API documentation tool, there are some strange things to get used to.</p>
+        
+        <h4 id="head" class="section"><a class="anchor-link left" href="#head"><i class="icofont-laika">&#xef71;</i></a>head</h4>
+        <p>As there are not really services behind*, we just use the HTTP method <em>HEAD</em>.</p>
+        
+        <h4 id="path" class="section"><a class="anchor-link left" href="#path"><i class="icofont-laika">&#xef71;</i></a>path</h4>
+        <p>We create a unique path, like <em>endpointType / tag / nameOrId</em>.
+        This is required as Open API skips Apis with identical paths.</p>
+        
+        <h4 id="responses-200" class="section"><a class="anchor-link left" href="#responses-200"><i class="icofont-laika">&#xef71;</i></a>Responses 200</h4>
+        <p>The output variables are described in the <em>200</em> (<em>ok</em>) response, as a status is required by Open API.</p>
+        <p>See <a href="#postman-open-api">Postman Open API</a> for additional informations.</p>
+        
+        <h3 id="configuration" class="section"><a class="anchor-link left" href="#configuration"><i class="icofont-laika">&#xef71;</i></a>Configuration</h3>
+        <p>This is the default Configuration:</p>
+        <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">ApiConfig</span><span>(
+    </span><span class="comment">// define tenant if you have one
+</span><span>    </span><span class="identifier">tenantId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">None</span><span>,
+    </span><span class="comment">// contact email / phone, if there are questions
+</span><span>    </span><span class="identifier">contact</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Contact</span><span>] = </span><span class="type-name">None</span><span>,
+    </span><span class="comment">// REST endpoint (for testing API)
+</span><span>    </span><span class="identifier">endpoint</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;http://localhost:8080/engine-rest&quot;</span><span>,
+    </span><span class="comment">// Base Path of your project (if changed - all doc paths will be adjusted)
+</span><span>    </span><span class="identifier">basePath</span><span>: </span><span class="type-name">Path</span><span> = </span><span class="identifier">pwd</span><span>,
+    </span><span class="comment">// If your project is on cawemo, add here the Id of the folder of your bpmns.
+</span><span>    </span><span class="identifier">cawemoFolder</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">None</span><span>,
+    </span><span class="identifier">openApiPath</span><span>: </span><span class="type-name">Path</span><span> = </span><span class="identifier">pwd</span><span> / </span><span class="string-literal">&quot;openApi.yml&quot;</span><span>,
+    </span><span class="identifier">postmanOpenApiPath</span><span>: </span><span class="type-name">Path</span><span> = </span><span class="identifier">pwd</span><span> / </span><span class="string-literal">&quot;postmanOpenApi.yml&quot;</span><span>,
+    </span><span class="identifier">openApiDocuPath</span><span>: </span><span class="type-name">Path</span><span> = </span><span class="identifier">pwd</span><span> / </span><span class="string-literal">&quot;OpenApi.html&quot;</span><span>,
+    </span><span class="identifier">postmanOpenApiDocuPath</span><span>: </span><span class="type-name">Path</span><span> = </span><span class="identifier">pwd</span><span> / </span><span class="string-literal">&quot;PostmanOpenApi.html&quot;</span><span>,
+    </span><span class="comment">// If you work with JIRA, you can add matchers that will create automatically URLs to JIRA Tasks
+</span><span>    </span><span class="comment">// &quot;COM&quot; -&gt; &quot;https://issue.myCompany.ch/browse&quot;
+</span><span>    </span><span class="identifier">jiraUrls</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>] = </span><span class="type-name">Map</span><span>.</span><span class="identifier">empty</span><span>,
+    </span><span class="comment">// Path where you have all your projects (used to search for dependencies)
+</span><span>    </span><span class="identifier">localProjectPaths</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">Path</span><span>] = </span><span class="type-name">Seq</span><span>(</span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="identifier">os</span><span>.</span><span class="identifier">up</span><span>),
+    </span><span class="comment">// The URL of your published documentations
+</span><span>    </span><span class="comment">// myProject =&gt; s&quot;http://myCompany.ch/bpmnDocs/$myProject&quot;
+</span><span>    </span><span class="identifier">docProjectUrl</span><span>: </span><span class="type-name">String</span><span> =&gt; </span><span class="type-name">String</span><span> = </span><span class="identifier">proj</span><span> =&gt; </span><span class="string-literal">s&quot;No URL defined for </span><span class="substitution">$proj</span><span class="string-literal">&quot;</span><span>
+)</span></code></pre>
+        <p>You can override your configuration by creating your own <code>ApiConfig</code>,
+        or you can have a hierarchy that you define.
+        E.g. <em>company -&gt; department -&gt; project</em> - see next chapter.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">apiConfig</span><span>: </span><span class="type-name">ApiConfig</span><span> =
+    </span><span class="keyword">super</span><span>.</span><span class="identifier">apiConfig</span><span>
+      .</span><span class="identifier">withTenantId</span><span>(</span><span class="string-literal">&quot;myCompany&quot;</span><span>)
+      .</span><span class="identifier">withDocProjectUrl</span><span>(</span><span class="identifier">myProject</span><span> =&gt; </span><span class="string-literal">s&quot;http://myCompany.ch/bpmnDocs/</span><span class="substitution">$myProject</span><span class="string-literal">&quot;</span><span>)
+      .</span><span class="identifier">withLocalProjectPaths</span><span>(
+        </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="identifier">os</span><span>.</span><span class="identifier">up</span><span> / </span><span class="identifier">os</span><span>.</span><span class="identifier">up</span><span> / </span><span class="string-literal">&quot;company-packages&quot;</span><span>,
+        </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="identifier">os</span><span>.</span><span class="identifier">up</span><span> / </span><span class="identifier">os</span><span>.</span><span class="identifier">up</span><span> / </span><span class="string-literal">&quot;deparment-a-packages&quot;</span><span>)
+      .</span><span class="identifier">withJiraUrls</span><span>(</span><span class="string-literal">&quot;COM&quot;</span><span> -&gt; </span><span class="string-literal">&quot;https://issue.myCompany.ch/browse&quot;</span><span>)  </span></code></pre>
+        
+        <h3 id="default-apicreator" class="section"><a class="anchor-link left" href="#default-apicreator"><i class="icofont-laika">&#xef71;</i></a>Default ApiCreator</h3>
+        <p>The default Creator will create a standard documentation, that you can extend with Custom ApiCreators.</p>
+        <p>Standard Features:</p>
+        
+        <h4 id="readme" class="section"><a class="anchor-link left" href="#readme"><i class="icofont-laika">&#xef71;</i></a>README</h4>
+        <p>If you have a read me in your base path (<code>config.basePath / &quot;README.md</code>), 
+        we integrate it automatically in the documentation - as a visible part.</p>
+        
+        <h4 id="changelog" class="section"><a class="anchor-link left" href="#changelog"><i class="icofont-laika">&#xef71;</i></a>CHANGELOG</h4>
+        <p>If you have a change log in your base path (<code>config.basePath / &quot;CHANGELOG.md</code>), 
+        we integrate it automatically in the documentation - as a collapsed part.</p>
+        
+        <h4 id="jira-tickets" class="section"><a class="anchor-link left" href="#jira-tickets"><i class="icofont-laika">&#xef71;</i></a>Jira Tickets</h4>
+        <p>We replace configured JIRA Ticket pattern with its URL.</p>
+        <p>Configuration:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">apiConfig</span><span>: </span><span class="type-name">ApiConfig</span><span> =
+    </span><span class="keyword">super</span><span>.</span><span class="identifier">apiConfig</span><span>
+      .</span><span class="identifier">withJiraUrls</span><span>(</span><span class="type-name">JIRA_PROJECT</span><span> -&gt; </span><span class="type-name">JIRA_URL</span><span>)  </span></code></pre>
+        <ul>
+          <li>JIRA_PROJECT: The shortcut for the JIRA Project (prefix of jira ticket number).</li>
+          <li>JIRA_URL: The base URL to browse JIRA tickets, e.g. <code>https://issue.myCompany.ch/browse</code>.</li>
+        </ul>
+        <p>Now in the Change Log all occurrences of the regex <code>JIRA_PROJECT-(\\d+)</code> (-&gt; <code>JIRA_TICKET</code>) 
+        will be replaced with <code>[JIRA_TICKET]($url/JIRA_TICKET)</code>. 
+        In the generated documentation this is a link to the according Jira ticket.</p>
+        
+        <h4 id="cawemo-bpmn-diagrams" class="section"><a class="anchor-link left" href="#cawemo-bpmn-diagrams"><i class="icofont-laika">&#xef71;</i></a>Cawemo BPMN diagrams</h4>
+        <p>If you are using Cawemo you can add a link to the folder, your BPMNs and DMNs are located.</p>
+        <p>Configuration:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">apiConfig</span><span>: </span><span class="type-name">ApiConfig</span><span> =
+    </span><span class="keyword">super</span><span>.</span><span class="identifier">apiConfig</span><span>
+      .</span><span class="identifier">withCawemoFolder</span><span>(</span><span class="string-literal">&quot;877ccd9b-4e0c-4810-801b-4314372e76c1--myProject&quot;</span><span>)</span></code></pre>
+        <p>Here an example with these features:</p>
+        <p><img src="images/api_standardCreator.png" alt="api_standardCreator"></p>
+        
+        <h3 id="custom-apicreator" class="section"><a class="anchor-link left" href="#custom-apicreator"><i class="icofont-laika">&#xef71;</i></a>Custom ApiCreator</h3>
+        <p>In General you will have your own Creator that holds the configuration, pattern for descriptions etc.
+        Here is an example of a companies Creator:</p>
+        <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MyCompanyApiCreator</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">DefaultApiCreator</span><span> :
+
+  </span><span class="comment">// adjust the config with company specifics - see above
+</span><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">apiConfig</span><span>: </span><span class="type-name">ApiConfig</span><span> =
+    </span><span class="keyword">super</span><span>.</span><span class="identifier">apiConfig</span><span>
+      .</span><span class="keyword">with</span><span>..
+
+  </span><span class="comment">// takes the general descriptions and adds company specific stuff
+</span><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">description</span><span> =
+    </span><span class="keyword">super</span><span>.</span><span class="identifier">description</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">descr</span><span> =&gt;
+      </span><span class="string-literal">s&quot;&quot;&quot;|</span><span class="substitution">$descr</span><span class="string-literal">
+         |</span><span class="substitution">$postmanApi</span><span class="string-literal">
+         |</span><span class="substitution">$changeLog</span><span class="string-literal">
+         |</span><span class="substitution">$releasing</span><span class="string-literal">
+         |&quot;&quot;&quot;</span><span>.</span><span class="identifier">stripMargin</span><span>
+    )</span></code></pre>
+        <p>Now in your department you can have yet another one:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MyDepartmenetApiCreator</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">MyCompanyApiCreator</span><span> :
+
+  </span><span class="comment">// adjust the Company config with department specifics - see above
+</span><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">apiConfig</span><span>: </span><span class="type-name">ApiConfig</span><span> =
+    </span><span class="keyword">super</span><span>.</span><span class="identifier">apiConfig</span><span>
+      .</span><span class="keyword">with</span><span>..</span></code></pre>
+        
+        <h2 id="apis" class="section"><a class="anchor-link left" href="#apis"><i class="icofont-laika">&#xef71;</i></a>Apis</h2>
+        <p>Each Api defines its inputs and outputs, as well as if needed additional information.</p>
+        <p>Based on the BPMN objects</p>
+        
+        <h3 id="implicit-apis" class="section"><a class="anchor-link left" href="#implicit-apis"><i class="icofont-laika">&#xef71;</i></a>Implicit Apis</h3>
+        <p>All Apis that have no &#39;children&#39;, are created automatically from their BPMN objects.</p>
+        
+        <h3 id="process-apis" class="section"><a class="anchor-link left" href="#process-apis"><i class="icofont-laika">&#xef71;</i></a>Process Apis</h3>
+        <p>A process Api must be specific, if you want to group all its interactions in the processes tag.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
+</span><span class="identifier">api</span><span>(</span><span class="type-name">PROCESS</span><span>)(
+  </span><span class="type-name">INTERACTIONS</span><span>
+)
+...</span></code></pre>
+        <ul>
+          <li>PROCESS: The Process you want to document.</li>
+          <li>INTERACTIONS: The interactions with this process, like User Tasks.</li>
+        </ul>
+        <p>Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
+</span><span class="identifier">api</span><span>(</span><span class="identifier">`Invoice Receipt`</span><span>)(
+  </span><span class="type-name">InvoiceAssignApproverDMN</span><span>,
+  </span><span class="type-name">ApproveInvoiceUT</span><span>,
+  </span><span class="type-name">PrepareBankTransferUT</span><span>
+)
+...</span></code></pre>
+        <p>This will create the following structure in  the doc:</p>
+        <p><img src="images/api_apiStructure.png" alt="api_apiStructure"></p>
+        
+        <h3 id="input-variables" class="section"><a class="anchor-link left" href="#input-variables"><i class="icofont-laika">&#xef71;</i></a>Input Variables</h3>
+        <p>The input variables are taken from the domain model of the BPMN object.</p>
+        <p>Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InvoiceReceipt</span><span>(
+     </span><span class="identifier">creditor</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Great Pizza for Everyone Inc.&quot;</span><span>,
+     ...
+  )
+  ...
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">ApproveInvoiceUT</span><span> =
+    </span><span class="identifier">userTask</span><span>(
+      </span><span class="identifier">id</span><span> = </span><span class="string-literal">&quot;ApproveInvoiceUT&quot;</span><span>,
+      </span><span class="identifier">descr</span><span> = </span><span class="string-literal">&quot;Approve the invoice (or not).&quot;</span><span>,
+      </span><span class="identifier">in</span><span> = </span><span class="type-name">InvoiceReceipt</span><span>(), </span><span class="comment">// INPUT
+</span><span>      </span><span class="identifier">out</span><span> = </span><span class="type-name">ApproveInvoice</span><span>()
+    )</span></code></pre>
+        <p>This creates this input description documentation:</p>
+        <p><img src="images/api_inputs.png" alt="api_inputs"></p>
+        
+        <h3 id="output-variables" class="section"><a class="anchor-link left" href="#output-variables"><i class="icofont-laika">&#xef71;</i></a>Output Variables</h3>
+        <p>The output variables are taken from the domain model of the BPMN object.</p>
+        <p>Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">ApproveInvoice</span><span>(
+     </span><span class="identifier">approved</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">true</span><span>
+  )
+  ...
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">ApproveInvoiceUT</span><span> =
+    </span><span class="identifier">userTask</span><span>(
+      </span><span class="identifier">id</span><span> = </span><span class="string-literal">&quot;ApproveInvoiceUT&quot;</span><span>,
+      </span><span class="identifier">descr</span><span> = </span><span class="string-literal">&quot;Approve the invoice (or not).&quot;</span><span>,
+      </span><span class="identifier">in</span><span> = </span><span class="type-name">InvoiceReceipt</span><span>(), 
+      </span><span class="identifier">out</span><span> = </span><span class="type-name">ApproveInvoice</span><span>() </span><span class="comment">// OUTPUT
+</span><span>    )</span></code></pre>
+        <p>This creates this output description documentation:</p>
+        <p><img src="images/api_outputs.png" alt="api_outputs"></p>
+        
+        <h3 id="examples" class="section"><a class="anchor-link left" href="#examples"><i class="icofont-laika">&#xef71;</i></a>Examples</h3>
+        <p>By default we create an example for the input- and one for the output variables.
+        You find them on the right side of your Api documentation.</p>
+        <p>If you want to add more examples, you can do this the following ways:</p>
+        
+        <h4 id="input" class="section"><a class="anchor-link left" href="#input"><i class="icofont-laika">&#xef71;</i></a>input</h4>
+        <p>Just add another input object and give it a name:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">InvoiceAssignApproverDMN</span><span> =
+  </span><span class="identifier">bpmn</span><span>.</span><span class="type-name">InvoiceAssignApproverDMN</span><span>
+    .</span><span class="identifier">withInExample</span><span>(</span><span class="identifier">budget</span><span>)
+    .</span><span class="identifier">withInExample</span><span>(</span><span class="identifier">`day-to-day expense`</span><span>)
+    .</span><span class="identifier">withInExample</span><span>(</span><span class="identifier">exceptional</span><span>)
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">budget</span><span> = </span><span class="type-name">SelectApproverGroup</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">`day-to-day expense`</span><span> = </span><span class="type-name">SelectApproverGroup</span><span>(</span><span class="number-literal">125</span><span>, </span><span class="type-name">InvoiceCategory</span><span>.</span><span class="type-name">Misc</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">exceptional</span><span> = </span><span class="type-name">SelectApproverGroup</span><span>(</span><span class="number-literal">12345</span><span>, </span><span class="type-name">InvoiceCategory</span><span>.</span><span class="type-name">Misc</span><span>)</span></code></pre>
+        <p>Here the name of the example is taken from the variable name automatically.</p>
+        <p>In the documentation you can now select the different examples.</p>
+        <p><img src="images/api_inputExamples.png" alt="api_inputExamples"></p>
+        
+        <h4 id="output" class="section"><a class="anchor-link left" href="#output"><i class="icofont-laika">&#xef71;</i></a>output</h4>
+        <p>Same with output objects:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">private</span><span> </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">ReviewInvoiceUT</span><span> =
+    </span><span class="identifier">bpmn</span><span>.</span><span class="type-name">ReviewInvoiceUT</span><span>
+      .</span><span class="identifier">withOutExample</span><span>(</span><span class="string-literal">&quot;Invoice clarified&quot;</span><span>, </span><span class="type-name">InvoiceReviewed</span><span>())
+      .</span><span class="identifier">withOutExample</span><span>(</span><span class="string-literal">&quot;Invoice NOT clarified&quot;</span><span>, </span><span class="type-name">InvoiceReviewed</span><span>(</span><span class="boolean-literal">false</span><span>))</span></code></pre>
+        <p>Here the name of the example is given explicitly.</p>
+        <p>In the documentation you can now select the different examples.</p>
+        <p><img src="images/api_outputExamples.png" alt="api_outputExamples"></p>
+        
+        <h4 id="in-and-output" class="section"><a class="anchor-link left" href="#in-and-output"><i class="icofont-laika">&#xef71;</i></a>in- and output</h4>
+        <p>You can also add input- and output examples in one step:</p>
+        <pre><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">InvoiceAssignApproverDMN</span><span> =
+    </span><span class="identifier">bpmn</span><span>.</span><span class="type-name">InvoiceAssignApproverDMN</span><span>
+      .</span><span class="identifier">withExample</span><span>(
+        </span><span class="string-literal">&quot;budget&quot;</span><span>,
+        </span><span class="identifier">bpmn</span><span>.</span><span class="type-name">InvoiceAssignApproverDMN</span><span>
+          .</span><span class="identifier">withIn</span><span>(</span><span class="type-name">SelectApproverGroup</span><span>())
+          .</span><span class="identifier">withOut</span><span>(</span><span class="type-name">CollectEntries</span><span>(</span><span class="type-name">ApproverGroup</span><span>.</span><span class="identifier">management</span><span>))
+      )
+      .</span><span class="identifier">withExample</span><span>(
+        </span><span class="string-literal">&quot;day-to-day expense&quot;</span><span>,
+        </span><span class="identifier">bpmn</span><span>.</span><span class="type-name">InvoiceAssignApproverDMN</span><span>
+          .</span><span class="identifier">withIn</span><span>(</span><span class="type-name">SelectApproverGroup</span><span>(</span><span class="number-literal">125</span><span>, </span><span class="type-name">InvoiceCategory</span><span>.</span><span class="type-name">Misc</span><span>))
+          .</span><span class="identifier">withOut</span><span>(
+            </span><span class="type-name">CollectEntries</span><span>(</span><span class="type-name">ApproverGroup</span><span>.</span><span class="identifier">accounting</span><span>, </span><span class="type-name">ApproverGroup</span><span>.</span><span class="identifier">sales</span><span>)
+          )
+      )</span></code></pre>
+        
+        <h3 id="cawemo-description" class="section"><a class="anchor-link left" href="#cawemo-description"><i class="icofont-laika">&#xef71;</i></a>Cawemo description</h3>
+        <p>If you use Cawemo you can integrate the BPMN- and DMN-diagrams in your documentation.</p>
+        <p>Example: </p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">process</span><span>(
+  </span><span class="identifier">id</span><span> = </span><span class="type-name">InvoiceReceiptPIdent</span><span>,
+  </span><span class="identifier">descr</span><span> = </span><span class="identifier">cawemoDescr</span><span>(
+    </span><span class="string-literal">&quot;This starts the Invoice Receipt Process.&quot;</span><span>,
+    </span><span class="string-literal">&quot;e289c19a-8a57-4467-8583-de72a5e57488&quot;</span><span>
+  ),
+  </span><span class="identifier">in</span><span> = </span><span class="type-name">InvoiceReceipt</span><span>(),
+  </span><span class="identifier">out</span><span> = </span><span class="type-name">InvoiceReceiptCheck</span><span>() 
+)</span></code></pre>
+        <p>Just use the <code>cawemoDescr</code> function with the id of your diagram. 
+        This is the identifier you get in the share link URL in Cawemo.</p>
+        <p><img src="images/api_cawemoBpmn.png" alt="api_cawemoBpmn"></p>
+        
+        <h2 id="groups" class="section"><a class="anchor-link left" href="#groups"><i class="icofont-laika">&#xef71;</i></a>Groups</h2>
+        <p>You can organize your Apis within Groups.
+        This is especially useful if you have a lot of processes or dmns.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
+</span><span class="identifier">group</span><span>(</span><span class="type-name">NAME_OF_GROUP</span><span>)(
+  </span><span class="type-name">APIs</span><span>
+)
+...</span></code></pre>
+        <ul>
+          <li>NAME<em>OF</em>GROUP: A name for your group.</li>
+          <li>APIs: A list of BPMN objects (they will be translated to apis automatically).</li>
+        </ul>
+        <p>Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
+</span><span class="identifier">group</span><span>(</span><span class="string-literal">&quot;User Tasks&quot;</span><span>)(
+  </span><span class="type-name">ApproveInvoiceUT</span><span>,
+  </span><span class="type-name">PrepareBankTransferUT</span><span>,
+  </span><span class="type-name">AssignReviewerUT</span><span>,
+  </span><span class="type-name">ReviewInvoiceUT</span><span>
+)
+...</span></code></pre>
+        <p>This will create the following structure in  the doc:</p>
+        <p><img src="images/api_groupStructure.png" alt="api_groupStructure"></p>
+        <div class="callout warning">
+          <i class="icofont-laika">&#xf026;</i>
+          <p>Be aware that <code>document</code> only supports two levels. 
+          This is because we use Tags to structure the APIs.</p>
+          <p>Correct 1-2 Levels:</p>
+          <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="identifier">api</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
+      </span><span class="type-name">AssignReviewerUT</span><span>,
+      </span><span class="type-name">ReviewInvoiceUT</span><span>
+    ),
+    </span><span class="type-name">OtherServiceProcess</span><span>,
+    </span><span class="identifier">group</span><span>(</span><span class="string-literal">&quot;DMNs&quot;</span><span>)(
+      </span><span class="type-name">InvoiceAssignApproverDMN</span><span>
+    ),
+    </span><span class="identifier">group</span><span>(</span><span class="string-literal">&quot;Helper Processes&quot;</span><span>)(
+      </span><span class="type-name">MyServiceProcess</span><span>
+    ),</span></code></pre>
+          <p>Wrong &gt; 2 Levels:</p>
+          <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="identifier">api</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
+       </span><span class="identifier">api</span><span>(</span><span class="type-name">MyServiceProcess</span><span>)(
+         </span><span class="type-name">SelectServiceUT</span><span>
+       )
+    )
+    </span><span class="identifier">group</span><span>(</span><span class="string-literal">&quot;Cool Processes&quot;</span><span>)(
+      </span><span class="identifier">api</span><span>(</span><span class="type-name">MyServiceProcess</span><span>)(
+        </span><span class="type-name">SelectServiceUT</span><span>
+      )
+    )</span></code></pre>
+        </div>
+        
+        <h2 id="postman-open-api" class="section"><a class="anchor-link left" href="#postman-open-api"><i class="icofont-laika">&#xef71;</i></a>Postman Open API</h2>
+        <p>Next to the Documentation, it creates also a YAML that you can import into Postman.
+        With a few manual adjustments (due to restrictions in Open API) you have test client for your processes.</p>
+        <ul>
+          <li>By default it&#39;s here: <code>YOUR_PROJECT_PATH/postmanOpenApi.yml</code></li>
+          <li>There is also a link to an HTML (<code>YOUR_PROJECT_PATH/PostmanOpenApi.html</code>).
+          You can copy it from here <a href="https://github.com/pme123/camundala-example/blob/master/PostmanOpenApi.html">PostmanOpenApi.html</a></li>
+        </ul>
+        <p>Import into Postman:</p>
+        <ul>
+          <li>
+            <p><em>Show import settings</em>:</p>
+            <ul>
+              <li>Select: <em>Copy collections to workspace</em></li>
+              <li>Select <em>Folder organization</em>: <em>Tags</em></li>
+            </ul>
+          </li>
+        </ul>
+        <p>Manual adjustments in most request:</p>
+        <ul>
+          <li>
+            <p>Remove part of the path:</p>
+            <ul>
+              <li>if you have a path like this: <code>{{baseUrl}}/decision-definition/key/:key/--REMOVE:invoice-assign-approver--/evaluate</code></li>
+              <li>just delete this part: <code>--REMOVE:some identifier--</code></li>
+            </ul>
+          </li>
+          <li>
+            <p>Connect the requests (set the reference to the process or task)</p>
+            <ul>
+              <li>
+                for Start Process:
+                <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">let</span><span> </span><span class="identifier">processInstanceId</span><span> = </span><span class="identifier">pm</span><span>.</span><span class="identifier">response</span><span>.</span><span class="identifier">json</span><span>().</span><span class="identifier">id</span><span>
+</span><span class="identifier">console</span><span>.</span><span class="identifier">log</span><span>(</span><span class="string-literal">&quot;processInstanceId: &quot;</span><span> + </span><span class="identifier">processInstanceId</span><span>)
+</span><span class="identifier">pm</span><span>.</span><span class="identifier">collectionVariables</span><span>.</span><span class="identifier">set</span><span>(</span><span class="string-literal">&quot;processInstanceId&quot;</span><span>, </span><span class="identifier">processInstanceId</span><span>)</span></code></pre>
+              </li>
+              <li>
+                for Get Task:
+                <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">let</span><span> </span><span class="identifier">taskId</span><span> = </span><span class="identifier">pm</span><span>.</span><span class="identifier">response</span><span>.</span><span class="identifier">json</span><span>()[</span><span class="number-literal">0</span><span>].</span><span class="identifier">id</span><span>
+</span><span class="identifier">console</span><span>.</span><span class="identifier">log</span><span>(</span><span class="string-literal">&quot;taskId: &quot;</span><span> + </span><span class="identifier">taskId</span><span>)
+</span><span class="identifier">pm</span><span>.</span><span class="identifier">collectionVariables</span><span>.</span><span class="identifier">set</span><span>(</span><span class="string-literal">&quot;taskId&quot;</span><span>, </span><span class="identifier">taskId</span><span>)</span></code></pre>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <div class="callout info">
+          <i class="icofont-laika">&#xef4e;</i>
+          <p>That it is not possible to have the API Documentation as the postman Open API is not nice.</p>
+          <p>In the future we will provide a REST API that will work for both.</p>
+          <p>This will also allow a painless transition to Camunda 8.</p>
+        </div>
+        
+        <h2 id="other-stuff" class="section"><a class="anchor-link left" href="#other-stuff"><i class="icofont-laika">&#xef71;</i></a>Other stuff</h2>
+        
+        <h3 id="generic-service-process" class="section"><a class="anchor-link left" href="#generic-service-process"><i class="icofont-laika">&#xef71;</i></a>Generic Service Process</h3>
         <p>TODO</p>
 
       </main>
