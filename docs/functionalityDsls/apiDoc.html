@@ -84,6 +84,7 @@
           <li class="level2"><a href="#output-variables">Output Variables</a></li>
           <li class="level2"><a href="#examples">Examples</a></li>
           <li class="level2"><a href="#cawemo-description">Cawemo description</a></li>
+          <li class="level2"><a href="#project-dependencies">Project dependencies</a></li>
           <li class="level1"><a href="#groups">Groups</a></li>
           <li class="level1"><a href="#postman-open-api">Postman Open API</a></li>
           <li class="level1"><a href="#other-stuff">Other stuff</a></li>
@@ -315,6 +316,8 @@
         
         <h3 id="implicit-apis" class="section"><a class="anchor-link left" href="#implicit-apis"><i class="icofont-laika">&#xef71;</i></a>Implicit Apis</h3>
         <p>All Apis that have no &#39;children&#39;, are created automatically from their BPMN objects.</p>
+        <p>So <code>api</code> is optional (example <code>AssignReviewerUT</code> is equal to <code>api(AssignReviewerUT)</code>).
+        You can do whatever you prefer.</p>
         
         <h3 id="process-apis" class="section"><a class="anchor-link left" href="#process-apis"><i class="icofont-laika">&#xef71;</i></a>Process Apis</h3>
         <p>A process Api must be specific, if you want to group all its interactions in the processes tag.</p>
@@ -438,6 +441,9 @@
         This is the identifier you get in the share link URL in Cawemo.</p>
         <p><img src="images/api_cawemoBpmn.png" alt="api_cawemoBpmn"></p>
         
+        <h3 id="project-dependencies" class="section"><a class="anchor-link left" href="#project-dependencies"><i class="icofont-laika">&#xef71;</i></a>Project dependencies</h3>
+        <p>TODO</p>
+        
         <h2 id="groups" class="section"><a class="anchor-link left" href="#groups"><i class="icofont-laika">&#xef71;</i></a>Groups</h2>
         <p>You can organize your Apis within Groups.
         This is especially useful if you have a lot of processes or dmns.</p>
@@ -538,8 +544,9 @@
         <div class="callout info">
           <i class="icofont-laika">&#xef4e;</i>
           <p>That it is not possible to have the API Documentation as the postman Open API is not nice.</p>
-          <p>In the future we will provide a REST API that will work for both.</p>
-          <p>This will also allow a painless transition to Camunda 8.</p>
+          <p>However as we can describe a UserTask as one API, it takes three requests to actually handle a UserTask.</p>
+          <p>In the future we may provide a REST API that will work for both.</p>
+          <p>This would also allow a painless transition to Camunda 8.</p>
         </div>
         
         <h2 id="other-stuff" class="section"><a class="anchor-link left" href="#other-stuff"><i class="icofont-laika">&#xef71;</i></a>Other stuff</h2>
