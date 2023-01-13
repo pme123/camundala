@@ -38,12 +38,12 @@ object api extends DefaultApiCreator:
       ReviewInvoiceUT
     ),
     group("User Tasks")(
-      ApproveInvoiceUT,
+      api(ApproveInvoiceUT), // api( is optional
       PrepareBankTransferUT,
       AssignReviewerUT,
       ReviewInvoiceUT
     ),
-    InvoiceAssignApproverDMN3
+    api(InvoiceAssignApproverDMN3) // api( is optional
   )
 
   private lazy val ApproveInvoiceUT =

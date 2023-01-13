@@ -234,6 +234,9 @@ Based on the BPMN objects
 ### Implicit Apis
 All Apis that have no 'children', are created automatically from their BPMN objects.
 
+So `api` is optional (example `AssignReviewerUT` is equal to `api(AssignReviewerUT)`).
+You can do whatever you prefer.
+
 ### Process Apis
 A process Api must be specific, if you want to group all its interactions in the processes tag.
 
@@ -388,6 +391,9 @@ This is the identifier you get in the share link URL in Cawemo.
 
 ![api_cawemoBpmn](images/api_cawemoBpmn.png)
 
+### Project dependencies
+TODO
+
 ## Groups
 You can organize your Apis within Groups.
 This is especially useful if you have a lot of processes or dmns.
@@ -493,9 +499,11 @@ Manual adjustments in most request:
 @:callout(info)
 That it is not possible to have the API Documentation as the postman Open API is not nice.
 
-In the future we will provide a REST API that will work for both.
+However as we can describe a UserTask as one API, it takes three requests to actually handle a UserTask.
 
-This will also allow a painless transition to Camunda 8.
+In the future we may provide a REST API that will work for both.
+
+This would also allow a painless transition to Camunda 8.
 @:@
 
 ## Other stuff

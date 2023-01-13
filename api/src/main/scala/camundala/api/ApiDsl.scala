@@ -27,6 +27,12 @@ trait ApiDsl:
     CApiGroup(name, apis.toList)
 
   def api[
+    In <: Product : Encoder : Decoder : Schema,
+    Out <: Product : Encoder : Decoder : Schema : ClassTag
+  ](pApi: InOutApi[In, Out]): InOutApi[In, Out] =
+    pApi
+    
+  def api[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](pApi: ProcessApi[In, Out])(body: CApi*): ProcessApi[In, Out] =
