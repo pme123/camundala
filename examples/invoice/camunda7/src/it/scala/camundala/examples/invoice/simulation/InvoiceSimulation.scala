@@ -74,6 +74,7 @@ class InvoiceSimulation extends CustomSimulation:
       .exists("approved")
       .notExists("clarified")
       .isEquals("approved", true)
+      .isEquals("invoiceCategory", InvoiceCategory.`Travel Expenses`)
 
   private lazy val `ApproveInvoiceUT with Override` =
     ApproveInvoiceUT

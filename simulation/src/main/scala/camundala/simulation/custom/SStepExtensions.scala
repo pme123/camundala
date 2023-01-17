@@ -136,8 +136,8 @@ trait SStepExtensions
                   data
                     .info(s"Process ${hasProcessSteps.name} has finished.")
                 )
-              case _ =>
-                given ScenarioData = data
+              case state =>
+                given ScenarioData = data.debug(s"State for ${hasProcessSteps.name} is $state")
                 tryOrFail(checkFinished(), hasProcessSteps)
             }
       )

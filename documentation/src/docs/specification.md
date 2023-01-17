@@ -82,12 +82,46 @@ Checkout the whole Domain Description on [**Github**](https://github.com/pme123/
 
 There are 2 things you have to care for that is not purely your domain.
 
-### 1. Documentation
+### Case Class
+You describe your domain model with case classes, 
+as they are easy to create and there is support for documentation and JSON marshalling.
+
+### Simple Enum
+If an attribute of a Case Class is an enumeration you can use the Scala `enum`.
+
+```scala
+    enum InvoiceCategory derives Adt.PureEncoder, Adt.PureDecoder:
+      case `Travel Expenses`, Misc, `Software License Costs`
+```
+
+### Hierarchy Enum
+If you have inputs or outputs that can differ, you can use the Scala `enum` as well. It just looks a bit different:
+
+```scala
+  enum GetCodesOut derives Adt.Encoder, Adt.Decoder:
+    case KeyValues(
+        codesResult: Option[Map[String, String]] = None,
+        poBox: Option[Map[String, String]] = Some(defaultPoBoxFr)
+    )
+
+    case ManualKeys(
+        codesResult: Option[Seq[Map[String, String]]] = None,
+        poBox: Option[Seq[Map[String, Json]]] = Some(
+          Seq(
+            Map("key" -> 1.asJson, "name" -> "Postfach".asJson),
+            ...
+          )
+        )
+    )
+  end GetCodesOut
+```
+
+### Documentation
 The closer the documentation is to your code, that you work with, the higher is the chance that you will spot mistakes.
 So we use `@description("my descr")` from _[Tapir](https://tapir.softwaremill.com/en/latest/index.html)_. 
 These descriptions will then automatically taken into account when the API documentation is generated.
 
-### 2. JSON marshalling
+### JSON marshalling
 
 @:callout(info)
 We need this to get to and from JSON.
