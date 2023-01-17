@@ -115,6 +115,28 @@ If you have inputs or outputs that can differ, you can use the Scala `enum` as w
     )
   end GetCodesOut
 ```
+### Generic Objects
+Sometimes your domain is huge are you will start fast. 
+To have still at least an example and correct test data, you can use a generic datatype, like `Json`.
+
+This looks like this:
+```scala
+case class MyDomainClass(
+  ... // some specific attributes
+  someJson: Json = toJson("""{"value": 12}""")
+)
+```
+You can create examples with `toJson("""{"value": 12}""")`.
+
+This will be a Json Variable in the Simulations and you can use them everywhere in your domain model.
+
+@:callout(info)
+That this works you need this import: `import sttp.tapir.json.circe.*` - see [JSON marshalling].
+
+**Tip**: Start with _Jsons_ and replace them with proper classes as soon you start documenting
+(mostly when the process is stable).
+@:@
+
 
 ### Documentation
 The closer the documentation is to your code, that you work with, the higher is the chance that you will spot mistakes.
@@ -145,6 +167,7 @@ Sorry for this technical noise 😥.
 
   given Schema[InvoiceCategory] = Schema.derived
   ```
+
 ## Example
 
 Here you find the Domain Specification of the Invoice example: [Invoice domain](https://github.com/pme123/camundala/blob/master/examples/invoice/camunda8/src/main/scala/camundala/examples/invoice/domain.scala)

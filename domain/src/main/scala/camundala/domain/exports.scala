@@ -1,6 +1,7 @@
 package camundala
 package domain
 
+import io.circe.{Json, parser}
 import java.util.Base64
 import scala.language.implicitConversions
 
@@ -54,3 +55,14 @@ object Optable {
   implicit def fromOpt[T](o: Option[T]): Optable[T] = Optable(o)
   implicit def fromValue[T](v: T): Optable[T] = Optable(Option(v))
 }
+
+//json
+def throwErr(err: String) =
+  println(s"ERROR: $err")
+  throw new IllegalArgumentException(err)
+  
+def toJson(json: String): Json =
+  parser.parse(json) match
+    case Right(v) => v.deepDropNullValues
+    case Left(exc) =>
+      throwErr(s"Could not create Json from your String -> $exc")

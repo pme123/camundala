@@ -2,6 +2,7 @@ package camundala
 package camunda
 
 import camundala.bpmn.*
+import camundala.domain.*
 
 import scala.language.implicitConversions
 

@@ -17,17 +17,7 @@ export os.{pwd, Path, ResourcePath, read}
 
 // sttp
 export sttp.model.StatusCode
-
-def throwErr(err: String) =
-  println(s"ERROR: $err")
-  throw new IllegalArgumentException(err)
-
-def toJson(json: String): Json =
-  parser.parse(json) match
-    case Right(v) => v.deepDropNullValues
-    case Left(exc) =>
-      throwErr(s"Could not create Json from your String -> $exc")
-
+  
 def toJsonString[T <: Product: Encoder](product: T): String =
   product.asJson.deepDropNullValues.toString
 

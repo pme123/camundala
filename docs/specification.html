@@ -67,8 +67,13 @@
         <ul class="nav-list">
           <li class="level1"><a href="#process">Process</a></li>
           <li class="level1"><a href="#domain">Domain</a></li>
-          <li class="level2"><a href="#_1-documentation">1. Documentation</a></li>
-          <li class="level2"><a href="#_2-json-marshalling">2. JSON marshalling</a></li>
+          <li class="level2"><a href="#case-class">Case Class</a></li>
+          <li class="level2"><a href="#simple-enum">Simple Enum</a></li>
+          <li class="level2"><a href="#hierarchy-enum">Hierarchy Enum</a></li>
+          <li class="level2"><a href="#generic-objects">Generic Objects</a></li>
+          <li class="level2"><a href="#documentation">Documentation</a></li>
+          <li class="level2"><a href="#json-marshalling">JSON marshalling</a></li>
+          <li class="level1"><a href="#example">Example</a></li>
         </ul>
         
         <p class="footer"></p>
@@ -154,12 +159,57 @@
         <p>Checkout the whole Domain Description on <a href="https://github.com/pme123/camundala/blob/develop/examples/invoice/camunda8/src/main/scala/camundala/examples/invoice/domain.scala"><strong>Github</strong></a>.</p>
         <p>There are 2 things you have to care for that is not purely your domain.</p>
         
-        <h3 id="_1-documentation" class="section"><a class="anchor-link left" href="#_1-documentation"><i class="icofont-laika">&#xef71;</i></a>1. Documentation</h3>
+        <h3 id="case-class" class="section"><a class="anchor-link left" href="#case-class"><i class="icofont-laika">&#xef71;</i></a>Case Class</h3>
+        <p>You describe your domain model with case classes, 
+        as they are easy to create and there is support for documentation and JSON marshalling.</p>
+        
+        <h3 id="simple-enum" class="section"><a class="anchor-link left" href="#simple-enum"><i class="icofont-laika">&#xef71;</i></a>Simple Enum</h3>
+        <p>If an attribute of a Case Class is an enumeration you can use the Scala <code>enum</code>.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">Adt</span><span>.</span><span class="type-name">PureEncoder</span><span>, </span><span class="type-name">Adt</span><span>.</span><span class="type-name">PureDecoder</span><span>:
+      </span><span class="keyword">case</span><span> </span><span class="identifier">`Travel Expenses`</span><span>, </span><span class="type-name">Misc</span><span>, </span><span class="identifier">`Software License Costs`</span></code></pre>
+        
+        <h3 id="hierarchy-enum" class="section"><a class="anchor-link left" href="#hierarchy-enum"><i class="icofont-laika">&#xef71;</i></a>Hierarchy Enum</h3>
+        <p>If you have inputs or outputs that can differ, you can use the Scala <code>enum</code> as well. It just looks a bit different:</p>
+        <pre><code class="nohighlight"><span>  </span><span class="identifier">enum</span><span> </span><span class="type-name">GetCodesOut</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">Adt</span><span>.</span><span class="type-name">Encoder</span><span>, </span><span class="type-name">Adt</span><span>.</span><span class="type-name">Decoder</span><span>:
+    </span><span class="keyword">case</span><span> </span><span class="type-name">KeyValues</span><span>(
+        </span><span class="identifier">codesResult</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]] = </span><span class="type-name">None</span><span>,
+        </span><span class="identifier">poBox</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]] = </span><span class="type-name">Some</span><span>(</span><span class="identifier">defaultPoBoxFr</span><span>)
+    )
+
+    </span><span class="keyword">case</span><span> </span><span class="type-name">ManualKeys</span><span>(
+        </span><span class="identifier">codesResult</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Seq</span><span>[</span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]]] = </span><span class="type-name">None</span><span>,
+        </span><span class="identifier">poBox</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Seq</span><span>[</span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Json</span><span>]]] = </span><span class="type-name">Some</span><span>(
+          </span><span class="type-name">Seq</span><span>(
+            </span><span class="type-name">Map</span><span>(</span><span class="string-literal">&quot;key&quot;</span><span> -&gt; </span><span class="number-literal">1</span><span>.</span><span class="identifier">asJson</span><span>, </span><span class="string-literal">&quot;name&quot;</span><span> -&gt; </span><span class="string-literal">&quot;Postfach&quot;</span><span>.</span><span class="identifier">asJson</span><span>),
+            ...
+          )
+        )
+    )
+  </span><span class="identifier">end</span><span> </span><span class="type-name">GetCodesOut</span></code></pre>
+        
+        <h3 id="generic-objects" class="section"><a class="anchor-link left" href="#generic-objects"><i class="icofont-laika">&#xef71;</i></a>Generic Objects</h3>
+        <p>Sometimes your domain is huge are you will start fast. 
+        To have still at least an example and correct test data, you can use a generic datatype, like <code>Json</code>.</p>
+        <p>This looks like this:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MyDomainClass</span><span>(
+  ... </span><span class="comment">// some specific attributes
+</span><span>  </span><span class="identifier">someJson</span><span>: </span><span class="type-name">Json</span><span> = </span><span class="identifier">toJson</span><span>(</span><span class="string-literal">&quot;&quot;&quot;{&quot;value&quot;: 12}&quot;&quot;&quot;</span><span>)
+)</span></code></pre>
+        <p>You can create examples with <code>toJson(&quot;&quot;&quot;{&quot;value&quot;: 12}&quot;&quot;&quot;)</code>.</p>
+        <p>This will be a Json Variable in the Simulations and you can use them everywhere in your domain model.</p>
+        <div class="callout info">
+          <i class="icofont-laika">&#xef4e;</i>
+          <p>That this works you need this import: <code>import sttp.tapir.json.circe.*</code> - see <a href="#json-marshalling">JSON marshalling</a>.</p>
+          <p><strong>Tip</strong>: Start with <em>Jsons</em> and replace them with proper classes as soon you start documenting
+          (mostly when the process is stable).</p>
+        </div>
+        
+        <h3 id="documentation" class="section"><a class="anchor-link left" href="#documentation"><i class="icofont-laika">&#xef71;</i></a>Documentation</h3>
         <p>The closer the documentation is to your code, that you work with, the higher is the chance that you will spot mistakes.
         So we use <code>@description(&quot;my descr&quot;)</code> from <em><a href="https://tapir.softwaremill.com/en/latest/index.html">Tapir</a></em>. 
         These descriptions will then automatically taken into account when the API documentation is generated.</p>
         
-        <h3 id="_2-json-marshalling" class="section"><a class="anchor-link left" href="#_2-json-marshalling"><i class="icofont-laika">&#xef71;</i></a>2. JSON marshalling</h3>
+        <h3 id="json-marshalling" class="section"><a class="anchor-link left" href="#json-marshalling"><i class="icofont-laika">&#xef71;</i></a>JSON marshalling</h3>
         <div class="callout info">
           <i class="icofont-laika">&#xef4e;</i>
           <p>We need this to get to and from JSON.
@@ -180,10 +230,10 @@
   </span><span class="keyword">case</span><span> </span><span class="identifier">`Travel Expenses`</span><span>, </span><span class="type-name">Misc</span><span>, </span><span class="identifier">`Software License Costs`</span><span>
 
 </span><span class="identifier">given</span><span> </span><span class="type-name">Schema</span><span>[</span><span class="type-name">InvoiceCategory</span><span>] = </span><span class="type-name">Schema</span><span>.</span><span class="identifier">derived</span></code></pre>
-            
-            <h2 id="example"><a class="anchor-link left" href="#example"><i class="icofont-laika">&#xef71;</i></a>Example</h2>
           </li>
         </ul>
+        
+        <h2 id="example" class="section"><a class="anchor-link left" href="#example"><i class="icofont-laika">&#xef71;</i></a>Example</h2>
         <p>Here you find the Domain Specification of the Invoice example: <a href="https://github.com/pme123/camundala/blob/master/examples/invoice/camunda8/src/main/scala/camundala/examples/invoice/domain.scala">Invoice domain</a></p>
 
       </main>
