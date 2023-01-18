@@ -111,22 +111,25 @@ trait SScenarioExtensions extends SStepExtensions:
 
     def prepareStartProcess() =
       val process = scenario.process
-      val body = StartProcessIn(
-        process.camundaInMap,
-        businessKey = Some(scenario.name)
-      ).asJson.deepDropNullValues.toString
-      val uri = config.tenantId match
-        case Some(tenantId) =>
-          uri"${config.endpoint}/process-definition/key/${process.id}/tenant-id/$tenantId/start"
-        case None =>
-          uri"${config.endpoint}/process-definition/key/${process.id}/start"
+      if(process == null)
+        Left("The process is null! Check if your variable is LAZY (`lazy val myProcess = ...`).")
+      else
+        val body = StartProcessIn(
+          process.camundaInMap,
+          businessKey = Some(scenario.name)
+        ).asJson.deepDropNullValues.toString
+        val uri = config.tenantId match
+          case Some(tenantId) =>
+            uri"${config.endpoint}/process-definition/key/${process.id}/tenant-id/$tenantId/start"
+          case None =>
+            uri"${config.endpoint}/process-definition/key/${process.id}/start"
 
-      val request = basicRequest
-        .auth()
-        .contentType("application/json")
-        .body(body)
-        .post(uri)
-      request
+        val request = basicRequest
+          .auth()
+          .contentType("application/json")
+          .body(body)
+          .post(uri)
+        request
     end prepareStartProcess
   end extension
 
