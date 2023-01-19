@@ -601,6 +601,17 @@ If you do not define it for _Receive Signal Event_ it takes the default
 value `waitForSignal` and checks if it is `true`.
 @:@
 
+### Concrete wait time
+If you have a use case that is easier to just wait a bit (not recommended;), you can just add this step
+
+```scala
+scenario(signalExampleProcess) (
+  waitFor(2),
+  nextUserTask,
+)
+```
+
+This will wait for 2 seconds.
 
 ## Load Testing
 @:callout(info)

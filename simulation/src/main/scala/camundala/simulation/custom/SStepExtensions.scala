@@ -1,10 +1,12 @@
 package camundala.simulation
 package custom
 
+import camundala.api.CamundaProperty
 import camundala.bpmn.*
 import camundala.domain.*
 import sttp.client3.*
-import camundala.api.CamundaProperty
+
+import scala.util.Try
 
 trait SStepExtensions
     extends SUserTaskExtensions,
@@ -30,9 +32,7 @@ trait SStepExtensions
             given ScenarioData <- sp.switchToMainProcess()
           } yield summon[ScenarioData]
         case SWaitTime(seconds) =>
-          Left(data.error(s"SWaitTime is not implemented"))
-        //  Seq(exec().pause(seconds))
-
+          waitFor(seconds)
       }
   }
 
@@ -137,7 +137,8 @@ trait SStepExtensions
                     .info(s"Process ${hasProcessSteps.name} has finished.")
                 )
               case state =>
-                given ScenarioData = data.debug(s"State for ${hasProcessSteps.name} is $state")
+                given ScenarioData =
+                  data.debug(s"State for ${hasProcessSteps.name} is $state")
                 tryOrFail(checkFinished(), hasProcessSteps)
             }
       )
@@ -145,4 +146,15 @@ trait SStepExtensions
 
   end extension
 
+  private def waitFor(seconds: Int)(using data: ScenarioData) =
+    Try(Thread.sleep(seconds * 1000)).toEither
+      .map(_ => data.info(s"Waited for $seconds second(s)."))
+      .left
+      .map(ex =>
+        data
+          .error(
+            s"Problem when waiting for $seconds second(s). ${ex.getMessage}."
+          )
+          .debug(ex.toString)
+      )
 end SStepExtensions

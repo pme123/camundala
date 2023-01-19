@@ -22,6 +22,7 @@ class InvoiceSimulation extends CustomSimulation:
       PrepareBankTransferUT
     ),
     scenario(`Invoice Receipt`)(
+      waitFor(12),
       ApproveInvoiceUT,
       PrepareBankTransferUT
     ),

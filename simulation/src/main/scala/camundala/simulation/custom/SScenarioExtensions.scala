@@ -109,41 +109,45 @@ trait SScenarioExtensions extends SStepExtensions:
       )
     }
 
-    def prepareStartProcess() =
+    private def prepareStartProcess() =
       val process = scenario.process
-      if(process == null)
-        Left("The process is null! Check if your variable is LAZY (`lazy val myProcess = ...`).")
-      else
-        val body = StartProcessIn(
-          process.camundaInMap,
-          businessKey = Some(scenario.name)
-        ).asJson.deepDropNullValues.toString
-        val uri = config.tenantId match
-          case Some(tenantId) =>
-            uri"${config.endpoint}/process-definition/key/${process.id}/tenant-id/$tenantId/start"
-          case None =>
-            uri"${config.endpoint}/process-definition/key/${process.id}/start"
+      val body = StartProcessIn(
+        process.camundaInMap,
+        businessKey = Some(scenario.name)
+      ).asJson.deepDropNullValues.toString
+      val uri = config.tenantId match
+        case Some(tenantId) =>
+          uri"${config.endpoint}/process-definition/key/${process.id}/tenant-id/$tenantId/start"
+        case None =>
+          uri"${config.endpoint}/process-definition/key/${process.id}/start"
 
-        val request = basicRequest
-          .auth()
-          .contentType("application/json")
-          .body(body)
-          .post(uri)
-        request
+      val request: Request[Either[String, String], Any] = basicRequest
+        .auth()
+        .contentType("application/json")
+        .body(body)
+        .post(uri)
+      request
     end prepareStartProcess
   end extension
 
   extension (scenario: ProcessScenario)
     def run(): Future[ResultType] =
       scenario.logScenario { (data: ScenarioData) =>
-        given ScenarioData = data
-        for
-          given ScenarioData <- scenario.startType match
-            case ProcessStartType.START => scenario.startProcess()
-            case ProcessStartType.MESSAGE => scenario.sendMessage()
-          given ScenarioData <- scenario.runSteps()
-          given ScenarioData <- scenario.check()
-        yield summon[ScenarioData]
+        if (scenario.process == null)
+          Left(
+            data.error(
+              "The process is null! Check if your variable is LAZY (`lazy val myProcess = ...`)."
+            )
+          )
+        else
+          given ScenarioData = data
+          for
+            given ScenarioData <- scenario.startType match
+              case ProcessStartType.START => scenario.startProcess()
+              case ProcessStartType.MESSAGE => scenario.sendMessage()
+            given ScenarioData <- scenario.runSteps()
+            given ScenarioData <- scenario.check()
+          yield summon[ScenarioData]
       }
   end extension
 
@@ -294,8 +298,12 @@ trait SScenarioExtensions extends SStepExtensions:
       Future {
         val startTime = System.currentTimeMillis()
         if (scenario.isIgnored)
-          Right(ScenarioData(scenario.name)
-            .warn(s"${Console.MAGENTA}${"#" * 7} Scenario '${scenario.name}'  IGNORED ${"#" * 7}${Console.RESET}"))
+          Right(
+            ScenarioData(scenario.name)
+              .warn(
+                s"${Console.MAGENTA}${"#" * 7} Scenario '${scenario.name}'  IGNORED ${"#" * 7}${Console.RESET}"
+              )
+          )
         else {
           val data = ScenarioData(scenario.name)
             .info(s"${"#" * 7} Scenario '${scenario.name}' ${"#" * 7}")
