@@ -3,27 +3,29 @@ package dmn
 
 import bpmn.*
 import domain.*
-
+import io.circe.generic.auto.*
 import io.circe.syntax.*
 import org.latestbit.circe.adt.codec.JsonTaggedAdt
+import pme123.camunda.dmn.tester.shared.*
 
-import scala.language.reflectiveCalls
+import scala.language.{implicitConversions, reflectiveCalls}
 import scala.reflect.{ClassTag, classTag}
 
-trait DmnTesterConfigCreator extends App:
+trait DmnTesterConfigCreator extends DmnConfigWriter:
 
-  def basePath: Path = pwd / "dmnTester" / "dmnConfigs"
-  def dmnBasePath: Path = pwd / "dmnTester" / "dmns"
-  def defaultDmnPath(dmnKey: String) = dmnBasePath / s"$dmnKey.dmn"
+  private def dmnBasePath: os.Path = starterConfig.dmnPaths.head
+  private def dmnConfigPath: os.Path = starterConfig.dmnConfigPaths.head
+  def defaultDmnPath(dmnKey: String): os.Path = dmnBasePath / s"$dmnKey.dmn"
 
-  def dmnTester(dmnTesterObjects: DmnTesterObject*) =
+  def dmnTester(dmnTesterObjects: DmnTesterObject*): Seq[Unit] =
     dmnConfigs(dmnTesterObjects).map { c =>
-      val path = basePath / s"${c.decisionId}.conf"
-      if (os.exists(path))
-        os.remove(path)
-      os.write(path, c.asJson.toString, createFolders = true)
-      println(s"Created Open API $path")
+      updateConfig(c, dmnConfigPath)
     }
+
+  implicit def toTesterObjectScenario(
+                                   decisionDmn: DecisionDmn[_, _]
+                                ): DmnTesterObject =
+    DmnTesterObject(decisionDmn, defaultDmnPath(decisionDmn.decisionDefinitionKey))
 
   private def dmnConfigs(
       dmnTesterObjects: Seq[DmnTesterObject]
@@ -35,14 +37,15 @@ trait DmnTesterConfigCreator extends App:
       DmnConfig(
         dmn.decisionDefinitionKey,
         TesterData(testerData.toList),
-        dmnTO.dmnPath.relativeTo(pwd).segments.toList
+        dmnTO.dmnPath.relativeTo(projectBasePath).segments.toList,
+        testUnit = false
       )
 
     }
-  
+
   private def toConfig[T <: Product](
       product: T,
-      addTestValues: Map[String, List[String]]
+      addTestValues: Map[String, List[TesterValue]]
   ) =
     product.productElementNames
       .zip(product.productIterator)
@@ -51,7 +54,7 @@ trait DmnTesterConfigCreator extends App:
   private def testValues[E: ClassTag](
       k: String,
       value: E,
-      addTestValues: Map[String, List[String]]
+      addTestValues: Map[String, List[TesterValue]]
   ) =
     val unwrapValue = value match
       case Some(v) => v
@@ -63,16 +66,21 @@ trait DmnTesterConfigCreator extends App:
         TesterInput(
           k,
           false,
-          addTestValues.getOrElse(k, List(v.toString))
+          addTestValues.getOrElse(k, List(TesterValue.fromAny(v)))
         )
-      case v: Boolean =>
-        TesterInput(k, false, List("true", "false"))
-      case v: scala.reflect.Enum =>
-        val e: { def values: Array[?] } = v.asInstanceOf[{ def values: Array[?] }]
+      case _: Boolean =>
         TesterInput(
           k,
           false,
-          e.values.map(_.toString).toList
+          List(TesterValue.fromAny(true), toTesterValue(false))
+        )
+      case v: scala.reflect.Enum =>
+        val e: { def values: Array[?] } =
+          v.asInstanceOf[{ def values: Array[?] }]
+        TesterInput(
+          k,
+          false,
+          e.values.map(v => toTesterValue(v)).toList
         )
       case v =>
         throw new IllegalArgumentException(
@@ -82,20 +90,24 @@ trait DmnTesterConfigCreator extends App:
   case class DmnTesterObject(
       dDmn: DecisionDmn[_, _],
       dmnPath: Path,
-      addTestValues: Map[String, List[String]] = Map.empty
+      addTestValues: Map[String, List[TesterValue]] = Map.empty
   )
 
-  extension (dDmn: DecisionDmn[_, _])
-    def tester: DmnTesterObject =
-      DmnTesterObject(dDmn, defaultDmnPath(dDmn.decisionDefinitionKey))
+  private def toTesterValue(value: Any) =
+    value match
+      // enums not supported in DmnTester 2.13
+      case e: scala.reflect.Enum => TesterValue.fromAny(e.toString)
+      case v => TesterValue.fromAny(v)
 
   extension (dmnTO: DmnTesterObject)
-    def dmnPath(path: Path) =
+    def dmnPath(path: Path): DmnTesterObject =
       dmnTO.copy(dmnPath = path)
 
-    def testValues(key: String, values: AnyVal*) =
+    def testValues(key: String, values: AnyVal*): DmnTesterObject =
       dmnTO.copy(addTestValues =
-        dmnTO.addTestValues + (key -> values.map(_.toString).toList)
+        dmnTO.addTestValues + (key -> values
+          .map(v => toTesterValue(v.toString))
+          .toList)
       )
 
 end DmnTesterConfigCreator

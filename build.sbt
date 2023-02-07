@@ -39,7 +39,11 @@ def projectSettings(projName: String): Seq[Def.Setting[_]] = Seq(
   name := s"camundala-$projName",
   organization := org,
   scalaVersion := scala3Version,
-  version := projectVersion
+  version := projectVersion,
+  scalacOptions ++= Seq(
+    "-Xmax-inlines",
+    "50" // is declared as erased, but is in fact used
+  )
 )
 
 lazy val domain = project
@@ -47,11 +51,7 @@ lazy val domain = project
   .configure(publicationSettings)
   .settings(projectSettings("domain"))
   .settings(
-    libraryDependencies ++= tapirDependencies,
-    scalacOptions ++= Seq(
-      "-Xmax-inlines",
-      "50" // is declared as erased, but is in fact used
-    )
+    libraryDependencies ++= tapirDependencies
   )
 
 lazy val bpmn = project
@@ -59,11 +59,7 @@ lazy val bpmn = project
   .configure(publicationSettings)
   .settings(projectSettings("bpmn"))
   .settings(
-    libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.8.1", // dangerous library - in domain this caused 'geny.Generator$ already has a symbol'
-    scalacOptions ++= Seq(
-      "-Xmax-inlines",
-      "50" // is declared as erased, but is in fact used
-    )
+    libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.8.1" // dangerous library - in domain this caused 'geny.Generator$ already has a symbol'
   )
   .dependsOn(domain)
 
@@ -76,11 +72,7 @@ lazy val api = project
       Seq(
         "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
         "com.novocode" % "junit-interface" % "0.11" % Test
-      ),
-    scalacOptions ++= Seq(
-      "-Xmax-inlines",
-      "50" // is declared as erased, but is in fact used
-    )
+      )
   )
   .dependsOn(bpmn)
 
@@ -90,11 +82,7 @@ lazy val camunda = project
   .settings(projectSettings("camunda"))
   .settings(
     libraryDependencies +=
-      "org.camunda.bpm" % "camunda-engine" % camundaVersion,
-    scalacOptions ++= Seq(
-      "-Xmax-inlines",
-      "50" // is declared as erased, but is in fact used
-    )
+      "org.camunda.bpm" % "camunda-engine" % camundaVersion
   )
   .dependsOn(bpmn)
 
@@ -103,11 +91,7 @@ lazy val camunda8 = project
   .configure(preventPublication)
   .settings(projectSettings("camunda8"))
   .settings(
-    libraryDependencies ++= zeebeDependencies,
-    scalacOptions ++= Seq(
-      "-Xmax-inlines",
-      "50" // is declared as erased, but is in fact used
-    )
+    libraryDependencies ++= zeebeDependencies
   )
   .dependsOn(bpmn)
 
@@ -115,6 +99,12 @@ lazy val dmn = project
   .in(file("./dmn"))
   .configure(preventPublication)
   .settings(projectSettings("dmn"))
+  .settings(
+    libraryDependencies ++= Seq(
+      sttpDependency,
+      "io.github.pme123" %% "camunda-dmn-tester-shared" % "0.18.0-SNAPSHOT"
+    )
+  )
   .dependsOn(bpmn)
 
 lazy val simulation = project
@@ -123,12 +113,8 @@ lazy val simulation = project
   .settings(projectSettings("simulation"))
   .settings(
     libraryDependencies ++= Seq(
-      "com.softwaremill.sttp.client3" %% "core" % "3.8.3",
+      sttpDependency,
       "org.scala-sbt" % "test-interface" % "1.0"
-    ),
-    scalacOptions ++= Seq(
-      "-Xmax-inlines",
-      "50" // is declared as erased, but is in fact used
     )
   )
   .dependsOn(api)
@@ -169,6 +155,7 @@ lazy val tapirDependencies = Seq(
   //"com.softwaremill.quicklens" %% "quicklens" % "1.7.5", // simple modifying case classes
   "org.latestbit" %% "circe-tagged-adt-codec" % "0.10.1" // to encode enums
 )
+lazy val sttpDependency = "com.softwaremill.sttp.client3" %% "circe" % "3.8.10"
 val camundaVersion = "7.18.0"
 /* NOT IN USE
 lazy val camundaTestDependencies = Seq(

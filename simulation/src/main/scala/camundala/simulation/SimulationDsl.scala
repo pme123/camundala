@@ -66,7 +66,7 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     SReceiveSignalEvent(nameOfVariable(inOut), inOut)
 
   extension (rse: ReceiveSignalEvent[_])
-    def waitFor(readyVariable: String, readyValue: Any = true) =
+    def waitFor(readyVariable: String, readyValue: Any = true): SReceiveSignalEvent =
       SReceiveSignalEvent(rse.name, rse, readyVariable, readyValue)
 
   end extension
