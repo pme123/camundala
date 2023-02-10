@@ -12,6 +12,7 @@ import os.Path
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import scala.annotation.tailrec
+
 trait DmnConfigWriter extends DmnTesterStarter:
 
   def updateConfig(dmnConfig: DmnConfig, configPath: Path): Unit =
