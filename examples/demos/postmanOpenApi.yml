@@ -8,7 +8,7 @@ info:
 
 
 
-    Created at 12/01/2023, 18:24
+    Created at 10/02/2023, 08:14
 
     ****
 
@@ -216,6 +216,37 @@ paths:
       responses:
         '200':
           description: ''
+  /process-definition/key/enum-example/start:
+    post:
+      tags:
+      - example
+      summary: 'example: StartProcess'
+      description: |2
+
+
+        See API Doc: [example](No URL defined for demos-example/OpenApi.html#operation/Process:%20enum-example)
+      operationId: postProcess-definitionKeyEnum-exampleStart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              example:
+                value:
+                  variables:
+                    someValue:
+                      value: hello
+                      type: String
+                    customMock:
+                      value: A(12)
+                      type: String
+                  businessKey: example
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
 components:
   schemas:
     CBoolean:
@@ -328,3 +359,19 @@ components:
       type: object
       additionalProperties:
         $ref: '#/components/schemas/CamundaVariable'
+    StartProcessIn:
+      required:
+      - variables
+      - withVariablesInReturn
+      type: object
+      properties:
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+        businessKey:
+          type: string
+          description: The business key of the process instance.
+        withVariablesInReturn:
+          type: boolean
+          description: Set to false will not return the Process Variables.
+      description: 'A JSON object with the following properties: (at least an empty
+        JSON object {} or an empty request body)'

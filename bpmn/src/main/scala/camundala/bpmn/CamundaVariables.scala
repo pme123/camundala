@@ -98,8 +98,7 @@ object CamundaVariable:
             mimeType
           )
         )
-      case v: (Product | Iterable[?] | Map[?, ?])
-        if !v.isInstanceOf[scala.reflect.Enum] =>
+      case v: (Product | Iterable[?] | Map[?, ?]) =>
         CJson(
           product.asJson.deepDropNullValues.hcursor
             .downField(key)
@@ -126,6 +125,7 @@ object CamundaVariable:
       case v: Double =>
         CDouble(v)
       case v: scala.reflect.Enum =>
+        println(s"TOCAMUNDA: ${v}")
         CString(v.toString)
       case ldt: LocalDateTime =>
         CString(ldt.toString)

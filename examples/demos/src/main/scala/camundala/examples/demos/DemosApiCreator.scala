@@ -3,6 +3,7 @@ package camundala.examples.demos
 import camundala.api.*
 import camundala.bpmn.*
 import DecisionResultTypes.*
+import camundala.examples.demos.EnumExample.enumExample
 
 object DemosApiCreator extends DefaultApiCreator:
 
@@ -28,4 +29,5 @@ object DemosApiCreator extends DefaultApiCreator:
       singleResultDMN,
       resultListDMN
     ),
+    enumExample,
   )
