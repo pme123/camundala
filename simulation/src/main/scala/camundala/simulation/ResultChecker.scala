@@ -64,8 +64,15 @@ trait ResultChecker {
               case CJson(j, _) =>
                 toJson(j).asArray match
                   case Some(vector) =>
-                    println(s"VECTOR: $vector - ${value.value.getClass}")
-                    vector.map(x => {println(s"hello: ${x.getClass}"); x.toString}).contains(value.value.toString)
+                    vector
+                      .exists(x =>
+                        value match
+                          case CString(v,_) =>
+                            x.asString.contains(v)
+                          case CInteger(v,_) => x.asNumber.contains(v)
+                          case CBoolean (v,_)  => x.asBoolean.contains(v)
+                          case _ => x.toString == value.value.toString
+                      )
                   case _ =>
                     false
               case _ => false

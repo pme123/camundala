@@ -132,6 +132,7 @@ trait SScenarioExtensions extends SStepExtensions:
 
   extension (scenario: ProcessScenario)
     def run(): Future[ResultType] =
+      println(s"Scenario started ${scenario.name}")
       scenario.logScenario { (data: ScenarioData) =>
         if (scenario.process == null)
           Left(

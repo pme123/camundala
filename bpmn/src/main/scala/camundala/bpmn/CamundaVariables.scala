@@ -1,14 +1,13 @@
 package camundala
 package bpmn
 
-import domain.*
-
+import camundala.domain.*
 import io.circe.*
 import io.circe.Json.*
 import io.circe.syntax.*
 
-import scala.annotation.tailrec
 import java.time.LocalDateTime
+import scala.annotation.tailrec
 
 sealed trait CamundaVariable:
   def value: Any
@@ -68,13 +67,13 @@ object CamundaVariable:
   import reflect.Selectable.reflectiveSelectable
 
   def toCamunda[T <: Product: Encoder](
-                                        products: Seq[T]
-                                      ): Seq[Map[String, CamundaVariable]] =
+      products: Seq[T]
+  ): Seq[Map[String, CamundaVariable]] =
     products.map(toCamunda)
 
-  def toCamunda[T <: Product : Encoder](
-                                         product: T
-                                       ): Map[String, CamundaVariable] =
+  def toCamunda[T <: Product: Encoder](
+      product: T
+  ): Map[String, CamundaVariable] =
     product.productElementNames
       .zip(product.productIterator)
       .filterNot { case _ -> v => v.isInstanceOf[None.type] } // don't send null
@@ -83,10 +82,10 @@ object CamundaVariable:
 
   @tailrec
   def objectToCamunda[T <: Product: Encoder](
-                                              product: T,
-                                              key: String,
-                                              value: Any
-                                            ): CamundaVariable =
+      product: T,
+      key: String,
+      value: Any
+  ): CamundaVariable =
     value match
       case None => CNull
       case Some(v) => objectToCamunda(product, key, v)
@@ -99,14 +98,14 @@ object CamundaVariable:
           )
         )
       case v: (Product | Iterable[?] | Map[?, ?]) =>
-        CJson(
-          product.asJson.deepDropNullValues.hcursor
-            .downField(key)
-            .as[Json] match
-            case Right(v) => v.toString
-            case Left(ex) =>
-              throwErr(s"$key of $v could NOT be Parsed to a JSON!\n$ex")
-        )
+        product.asJson.deepDropNullValues.hcursor
+          .downField(key)
+          .as[Json] match {
+            case Right(str) if str.isString => CString(str.asString.get) // Pure Enum!
+            case Right(v) => CJson(v.toString)
+            case Left(ex) => throwErr(s"$key of $v could NOT be Parsed to a JSON!\n$ex")
+          }
+
       case v =>
         valueToCamunda(v)
 
@@ -125,7 +124,6 @@ object CamundaVariable:
       case v: Double =>
         CDouble(v)
       case v: scala.reflect.Enum =>
-        println(s"TOCAMUNDA: ${v}")
         CString(v.toString)
       case ldt: LocalDateTime =>
         CString(ldt.toString)
@@ -141,31 +139,31 @@ object CamundaVariable:
 
     private val `type`: String = "String"
   case class CString(value: String, private val `type`: String = "String")
-    extends CamundaVariable
+      extends CamundaVariable
   case class CInteger(value: Int, private val `type`: String = "Integer")
-    extends CamundaVariable
+      extends CamundaVariable
   case class CLong(value: Long, private val `type`: String = "Long")
-    extends CamundaVariable
+      extends CamundaVariable
   case class CBoolean(value: Boolean, private val `type`: String = "Boolean")
-    extends CamundaVariable
+      extends CamundaVariable
 
   case class CDouble(value: Double, private val `type`: String = "Double")
-    extends CamundaVariable
+      extends CamundaVariable
 
   case class CFile(
-                    @description("The File's content as Base64 encoded String.")
-                    value: String,
-                    valueInfo: CFileValueInfo,
-                    private val `type`: String = "File"
-                  ) extends CamundaVariable
+      @description("The File's content as Base64 encoded String.")
+      value: String,
+      valueInfo: CFileValueInfo,
+      private val `type`: String = "File"
+  ) extends CamundaVariable
 
   case class CFileValueInfo(
-                             filename: String,
-                             mimetype: Option[String]
-                           )
+      filename: String,
+      mimetype: Option[String]
+  )
 
   case class CJson(value: String, private val `type`: String = "Json")
-    extends CamundaVariable
+      extends CamundaVariable
 
   implicit val decodeCamundaVariable: Decoder[CamundaVariable] =
     (c: HCursor) =>
@@ -176,10 +174,10 @@ object CamundaVariable:
       yield value
 
   def decodeValue(
-                   valueType: String,
-                   anyValue: ACursor,
-                   valueInfo: ACursor
-                 ): Either[DecodingFailure, CamundaVariable] =
+      valueType: String,
+      anyValue: ACursor,
+      valueInfo: ACursor
+  ): Either[DecodingFailure, CamundaVariable] =
     valueType match
       case "Null" => Right(CNull)
       case "Boolean" => anyValue.as[Boolean].map(CBoolean(_))
@@ -191,42 +189,46 @@ object CamundaVariable:
         valueInfo.as[CFileValueInfo].map(vi => CFile("not_set", vi))
       case _ => anyValue.as[String].map(CString(_))
 
+  type JsonToCamundaValue = CamundaVariable | Map[String, CamundaVariable] |
+    Seq[Any]
 
-  type JsonToCamundaValue = CamundaVariable | Map[String, CamundaVariable] | Seq[Any]
-  
   def jsonToCamundaValue(json: Json): JsonToCamundaValue =
 
-    val folder: Json.Folder[JsonToCamundaValue] = new Json.Folder[JsonToCamundaValue] {
-      def onNull: CamundaVariable = CNull
+    val folder: Json.Folder[JsonToCamundaValue] =
+      new Json.Folder[JsonToCamundaValue] {
+        def onNull: CamundaVariable = CNull
 
-      def onBoolean(value: Boolean): CamundaVariable = CBoolean(value)
+        def onBoolean(value: Boolean): CamundaVariable = CBoolean(value)
 
-      def onNumber(value: JsonNumber): CamundaVariable =
-        value.toBigDecimal.map {
-          case v if v.isValidInt => CInteger(v.intValue)
-          case v if v.isValidLong => CLong(v.longValue)
-          case v => CDouble(v.doubleValue)
-        }.getOrElse(CDouble(value.toDouble))
+        def onNumber(value: JsonNumber): CamundaVariable =
+          value.toBigDecimal
+            .map {
+              case v if v.isValidInt => CInteger(v.intValue)
+              case v if v.isValidLong => CLong(v.longValue)
+              case v => CDouble(v.doubleValue)
+            }
+            .getOrElse(CDouble(value.toDouble))
 
-      def onString(value: String): CamundaVariable = CString(value)
+        def onString(value: String): CamundaVariable = CString(value)
 
-      def onArray(value: Vector[Json]): JsonToCamundaValue =
-        value.collect {
-          case v if !v.isNull => v.foldWith(this)
-        }
+        def onArray(value: Vector[Json]): JsonToCamundaValue =
+          value.collect {
+            case v if !v.isNull => v.foldWith(this)
+          }
 
-      def onObject(value: JsonObject): JsonToCamundaValue =
-        value
-          .filter { case (_, v) => !v.isNull }.toMap
-          .map((k, v) => k -> (jsonToCamundaValue(v) match
-            case cv: CamundaVariable => cv
-            case _: (Map[?, ?] | Seq[?]) => CJson(v.toString)
-            ))
-    }
+        def onObject(value: JsonObject): JsonToCamundaValue =
+          value
+            .filter { case (_, v) => !v.isNull }
+            .toMap
+            .map((k, v) =>
+              k -> (jsonToCamundaValue(v) match
+                case cv: CamundaVariable => cv
+                case _: (Map[?, ?] | Seq[?]) => CJson(v.toString)
+              )
+            )
+      }
     json.foldWith(folder)
 
   end jsonToCamundaValue
 
 end CamundaVariable
-
-
