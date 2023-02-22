@@ -130,8 +130,12 @@ trait SStepExtensions
               data
                 .error(s"Problem extracting state from $body\n $ex")
             }
-            .flatMap {
-              case state if state == "COMPLETED" =>
+            .flatMap { /*
+            COMPLETED - completed through normal end event
+            EXTERNALLY_TERMINATED - terminated externally, for instance through REST API
+            INTERNALLY_TERMINATED - terminated internally, for instance by terminating boundary event
+            */
+              case state if state == "COMPLETED" || state.endsWith("_TERMINATED") =>
                 Right(
                   data
                     .info(s"Process ${hasProcessSteps.name} has finished.")
