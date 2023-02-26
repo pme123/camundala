@@ -13,12 +13,11 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import scala.annotation.tailrec
 
-trait DmnConfigWriter extends DmnTesterStarter:
-
+trait DmnConfigWriter extends DmnTesterHelpers:
+  
   def updateConfig(dmnConfig: DmnConfig, configPath: Path): Unit =
     val encodedPath = URLEncoder.encode(configPath.relativeTo(projectBasePath).toString, StandardCharsets.UTF_8)
-    println(s"updateConfig: $encodedPath")
-    waitForServer
+    println(s"updateConfig: ${dmnConfig.decisionId}")
     client.send(
       basicRequest
         .contentType("application/json")
@@ -27,18 +26,8 @@ trait DmnConfigWriter extends DmnTesterStarter:
         .response(asString)
     ).body match
       case Right(_) =>
-        println(s"Successfully updated $configPath" )
-        println("Check it on http://localhost:8883")
+        println(s"Successfully updated ${dmnConfig.decisionId}" )
       case Left(v) => println(s"Problem updating $configPath: \n $v" )
-
-  @tailrec
-  private def waitForServer: Boolean =
-      if(checkIsRunning())
-        true
-      else
-        println("Waiting for server")
-        Thread.sleep(1000)
-        waitForServer
 
 end DmnConfigWriter
 

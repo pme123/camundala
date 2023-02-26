@@ -53,7 +53,7 @@ trait BpmnDsl:
   ](
       decisionDefinitionKey: String,
       in: In,
-      out: CollectEntries[Out],
+      out: CollectEntries[Out] = CollectEntries(Seq.empty[Int]),
       descr: Optable[String] = None
   ): DecisionDmn[In, CollectEntries[Out]] =
    /* require(

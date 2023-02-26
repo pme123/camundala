@@ -1,8 +1,8 @@
 package camundala
 package dmn
 
-import bpmn.*
-import domain.*
+import camundala.bpmn.*
+import camundala.domain.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 import org.latestbit.circe.adt.codec.JsonTaggedAdt
@@ -13,22 +13,26 @@ import scala.reflect.{ClassTag, classTag}
 
 trait DmnTesterConfigCreator extends DmnConfigWriter:
 
-  private def dmnBasePath: os.Path = starterConfig.dmnPaths.head
-  private def dmnConfigPath: os.Path = starterConfig.dmnConfigPaths.head
-  def defaultDmnPath(dmnKey: String): os.Path = dmnBasePath / s"$dmnKey.dmn"
+  protected def dmnBasePath: os.Path = starterConfig.dmnPaths.head
+  protected def dmnConfigPath: os.Path = starterConfig.dmnConfigPaths.head
+  protected def defaultDmnPath(dmnName: String): os.Path = dmnBasePath / s"$dmnName.dmn"
 
-  def dmnTester(dmnTesterObjects: DmnTesterObject*): Seq[Unit] =
-    dmnConfigs(dmnTesterObjects).map { c =>
-      updateConfig(c, dmnConfigPath)
-    }
+  protected def createDmnConfigs(dmnTesterObjects: DmnTesterObject[?]*): Unit =
+    println(s"createDmnConfigs: $dmnConfigPath")
+    dmnConfigs(dmnTesterObjects)
+      .foreach(updateConfig(_, dmnConfigPath))
+    println("Check it on http://localhost:8883")
 
-  implicit def toTesterObjectScenario(
-                                   decisionDmn: DecisionDmn[_, _]
-                                ): DmnTesterObject =
-    DmnTesterObject(decisionDmn, defaultDmnPath(decisionDmn.decisionDefinitionKey))
+  given [In <: Product]: Conversion[DecisionDmn[In, _], DmnTesterObject[In]]
+    with
+    def apply(decisionDmn: DecisionDmn[In, _]): DmnTesterObject[In] =
+      DmnTesterObject(
+        decisionDmn,
+        defaultDmnPath(decisionDmn.decisionDefinitionKey)
+      )
 
   private def dmnConfigs(
-      dmnTesterObjects: Seq[DmnTesterObject]
+      dmnTesterObjects: Seq[DmnTesterObject[?]]
   ): Seq[DmnConfig] =
     dmnTesterObjects.map { dmnTO =>
       val dmn = dmnTO.dDmn
@@ -38,7 +42,8 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
         dmn.decisionDefinitionKey,
         TesterData(testerData.toList),
         dmnTO.dmnPath.relativeTo(projectBasePath).segments.toList,
-        testUnit = false
+        testUnit = dmnTO._testUnit,
+        acceptMissingRules = dmnTO._acceptMissingRules
       )
 
     }
@@ -59,19 +64,21 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
     val unwrapValue = value match
       case Some(v) => v
       case v => v
-
+    val isNullable = value match
+      case Some(_) => true
+      case _ => false
     //noinspection ScalaUnnecessaryParentheses
     unwrapValue match
       case v: (Double | Int | Long | Short | String | Float) =>
         TesterInput(
           k,
-          false,
+          isNullable,
           addTestValues.getOrElse(k, List(TesterValue.fromAny(v)))
         )
       case _: Boolean =>
         TesterInput(
           k,
-          false,
+          isNullable,
           List(TesterValue.fromAny(true), toTesterValue(false))
         )
       case v: scala.reflect.Enum =>
@@ -79,7 +86,7 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
           v.asInstanceOf[{ def values: Array[?] }]
         TesterInput(
           k,
-          false,
+          isNullable,
           e.values.map(v => toTesterValue(v)).toList
         )
       case v =>
@@ -87,10 +94,12 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
           s"Not supported for DMN Input ($k -> $v)"
         )
 
-  case class DmnTesterObject(
-      dDmn: DecisionDmn[_, _],
+  case class DmnTesterObject[In <: Product](
+      dDmn: DecisionDmn[In, _],
       dmnPath: Path,
-      addTestValues: Map[String, List[TesterValue]] = Map.empty
+      addTestValues: Map[String, List[TesterValue]] = Map.empty,
+      _testUnit: Boolean = false,
+      _acceptMissingRules: Boolean = false
   )
 
   private def toTesterValue(value: Any) =
@@ -99,11 +108,21 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
       case e: scala.reflect.Enum => TesterValue.fromAny(e.toString)
       case v => TesterValue.fromAny(v)
 
-  extension (dmnTO: DmnTesterObject)
-    def dmnPath(path: Path): DmnTesterObject =
+  extension [In <: Product](dmnTO: DmnTesterObject[In])
+
+    def dmnPath(path: Path): DmnTesterObject[In] =
       dmnTO.copy(dmnPath = path)
 
-    def testValues(key: String, values: AnyVal*): DmnTesterObject =
+    def dmnPath(dmnName: String): DmnTesterObject[In] =
+      dmnPath(defaultDmnPath(dmnName))
+
+    def testUnit: DmnTesterObject[In] =
+      dmnTO.copy(_testUnit = true)
+
+    def acceptMissingRules: DmnTesterObject[In] =
+      dmnTO.copy(_acceptMissingRules = true)
+
+    def testValues(key: String, values: Any*): DmnTesterObject[In] =
       dmnTO.copy(addTestValues =
         dmnTO.addTestValues + (key -> values
           .map(v => toTesterValue(v.toString))

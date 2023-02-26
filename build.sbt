@@ -97,12 +97,12 @@ lazy val camunda8 = project
 
 lazy val dmn = project
   .in(file("./dmn"))
-  .configure(preventPublication)
+  .configure(publicationSettings)
   .settings(projectSettings("dmn"))
   .settings(
     libraryDependencies ++= Seq(
       sttpDependency,
-      "io.github.pme123" %% "camunda-dmn-tester-shared" % "0.17.5"
+      "io.github.pme123" %% "camunda-dmn-tester-shared" % "0.17.7"
     )
   )
   .dependsOn(bpmn)

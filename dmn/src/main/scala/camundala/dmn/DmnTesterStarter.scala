@@ -2,73 +2,88 @@ package camundala.dmn
 
 import sttp.client3.*
 
+import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
-trait DmnTesterStarter:
+trait DmnTesterStarter extends DmnTesterHelpers:
 
-  def projectBasePath: os.Path = os.pwd
-
-  case class DmnTesterStarterConfig(
-      containerName: String = "camunda-dmn-tester",
-      dmnConfigPaths: Seq[os.Path] = Seq(projectBasePath / "dmnConfigs"),
-      dmnPaths: Seq[os.Path] = Seq(
-        projectBasePath / "src" / "main" / "resources"
-      ),
-      exposedPort: Int = 8883,
-      imageVersion: String = "latest"
-  )
-
-  def starterConfig: DmnTesterStarterConfig = DmnTesterStarterConfig()
-
-  def run(): Unit =
+  def startDmnTester(): Unit =
     println("Check logs in Docker Console!")
+    println(s"Open the browser: http://localhost:${starterConfig.exposedPort}")
     if (checkIsRunning())
       println(s"Port ${starterConfig.exposedPort} is running")
     else
-      os.proc(
-        "docker",
-        "run",
-        "--name",
-        starterConfig.containerName,
-        "-d",
-        "--rm",
-        "-e",
-        s"TESTER_CONFIG_PATHS=${starterConfig.dmnConfigPaths
-          .map(_.relativeTo(projectBasePath))
-          .mkString(",")}",
-        "-v",
-        starterConfig.dmnPaths.map(p =>
-          s"$p:/opt/docker/${p.relativeTo(projectBasePath)}"
-        ),
-        "-v",
-        starterConfig.dmnConfigPaths.map(p =>
-          s"$p:/opt/docker/${p.relativeTo(projectBasePath)}"
-        ),
-        "-p",
-        s"${starterConfig.exposedPort}:8883",
-        s"pame/camunda-dmn-tester:${starterConfig.imageVersion}"
-      ).call()
-  end run
+      runDocker()
+  end startDmnTester
 
-  protected lazy val client: SimpleHttpClient = SimpleHttpClient()
-  protected lazy val apiUrl = s"http://localhost:${starterConfig.exposedPort}/api"
-  protected def checkIsRunning(): Boolean =
-    Try(client
-      .send(
-        basicRequest
-          .contentType("application/json")
-          .get(uri"$apiUrl/basePath")
-          .response(asString)
-      )
-      .body match
-      case Left(exc) =>
-        println(s"Docker is not Running.")
-        false
-      case Right(_) => true
+  @tailrec
+  protected final def waitForServer: Boolean =
+    if (checkIsRunning())
+      true
+    else
+      println("Waiting for server")
+      Thread.sleep(1000)
+      waitForServer
+
+  private def checkIsRunning(): Boolean =
+    Try(
+      client
+        .send(
+          basicRequest
+            .get(uri"$infoUrl")
+            .response(asString)
+        )
+        .body match
+        case Left(_) =>
+          false
+        case Right(result) if !result.contains(getClass.getName) =>
+          println(s"Docker is Running - BUT for another project: $result. This project: ${getClass.getName}")
+            stopDocker()
+            runDocker()
+          true
+        case Right(result) =>
+          println(s"Docker is Running for project: $result.")
+          true
     ) match
       case Success(value) => value
       case Failure(_) => false
 
-object DmnTesterStarter extends DmnTesterStarter, App:
-  run()
-end DmnTesterStarter
+  protected def runDocker(): Unit =
+    println(s"Start Docker for ${starterConfig.containerName}!")
+    os.proc(
+      "docker",
+      "run",
+      "--name",
+      starterConfig.containerName,
+      "--rm",
+      "-d",
+      "-e",
+      s"STARTING_APP=${getClass.getName}",
+      "-e",
+      s"TESTER_CONFIG_PATHS=${
+        starterConfig.dmnConfigPaths
+          .map(_.relativeTo(projectBasePath))
+          .mkString(",")
+      }",
+      "-v",
+      starterConfig.dmnPaths.map(p =>
+        s"$p:/opt/docker/${p.relativeTo(projectBasePath)}"
+      ),
+      "-v",
+      starterConfig.dmnConfigPaths.map(p =>
+        s"$p:/opt/docker/${p.relativeTo(projectBasePath)}"
+      ),
+      "-p",
+      s"${starterConfig.exposedPort}:8883",
+      s"pame/camunda-dmn-tester:${starterConfig.imageVersion}"
+    ).callOnConsole()
+  end runDocker
+
+  private def stopDocker(): Unit =
+    println(s"Stopping Docker ${starterConfig.containerName}!")
+    os.proc(
+      "docker",
+      "stop",
+      starterConfig.containerName,
+    ).callOnConsole()
+

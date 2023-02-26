@@ -2,31 +2,58 @@ package camundala
 package examples.invoice
 package dmn
 
-import bpmn.*
-import domain.*
 import camundala.bpmn.*
-import camundala.dmn.{DmnTesterConfigCreator, DmnTesterStarter}
-import org.latestbit.circe.adt.codec.JsonTaggedAdt
+import camundala.domain.*
+import camundala.dmn.{DmnConfigWriter, DmnTesterConfigCreator, DmnTesterStarter}
+import camundala.examples.invoice.bpmn.*
+import camundala.examples.invoice.domain.*
 
-object InvoiceDmnTesterConfigCreator extends DmnTesterConfigCreator, App:
+object InvoiceDmnTesterConfigCreator
+    extends DmnTesterConfigCreator,
+      DmnConfigWriter,
+      DmnTesterStarter,
+      App:
 
-  override val projectBasePath: Path =
+  override protected val projectBasePath: Path =
     pwd / "examples" / "invoice" / "camunda7"
 
   override val starterConfig: DmnTesterStarterConfig = DmnTesterStarterConfig(
-
   )
 
-  run()
+  startDmnTester()
 
-  dmnTester(
+  createDmnConfigs(
     InvoiceAssignApproverDMN
-      .dmnPath(defaultDmnPath("invoiceBusinessDecisions"))
-      .testValues("amount", 249, 250, 999, 1000, 1001)
+      .dmnPath("invoiceBusinessDecisions")
+      .testValues("amount", 249, 250, 999, 1000, 1001),
+    // for demonstration - created unit test - acceptMissingRules just for demo
+    InvoiceAssignApproverDmnUnit
+      .acceptMissingRules
+      .testUnit
+      .dmnPath("invoiceBusinessDecisions")
   )
 
+  case class InvoiceAssignApproverDmnIn(
+                                         invoiceClassification: InvoiceClassification = InvoiceClassification.`day-to-day expense`,
+                           )
 
+  object InvoiceAssignApproverDmnIn:
+    given Schema[InvoiceAssignApproverDmnIn] = Schema.derived
+    given Encoder[InvoiceAssignApproverDmnIn] = deriveEncoder
+    given Decoder[InvoiceAssignApproverDmnIn] = deriveDecoder
+  end InvoiceAssignApproverDmnIn
 
+  @description("There are three possible Categories")
+  enum InvoiceClassification derives Adt.PureEncoder, Adt.PureDecoder:
+    case `day-to-day expense`, budget, exceptional
 
+  object InvoiceClassification:
+    given Schema[InvoiceClassification] = Schema.derived
+
+  private lazy val InvoiceAssignApproverDmnUnit =
+    collectEntries(
+      decisionDefinitionKey = "invoice-assign-approver",
+      in = InvoiceAssignApproverDmnIn(),
+    )
 
 end InvoiceDmnTesterConfigCreator
