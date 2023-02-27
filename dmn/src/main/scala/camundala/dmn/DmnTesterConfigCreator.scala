@@ -34,7 +34,9 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
   private def dmnConfigs(
       dmnTesterObjects: Seq[DmnTesterObject[?]]
   ): Seq[DmnConfig] =
-    dmnTesterObjects.map { dmnTO =>
+    dmnTesterObjects
+      .filterNot(_._inTestMode)
+      .map { dmnTO =>
       val dmn = dmnTO.dDmn
       val in: Product = dmn.in
       val testerData = toConfig(in, dmnTO.addTestValues)
@@ -99,7 +101,8 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
       dmnPath: Path,
       addTestValues: Map[String, List[TesterValue]] = Map.empty,
       _testUnit: Boolean = false,
-      _acceptMissingRules: Boolean = false
+      _acceptMissingRules: Boolean = false,
+      _inTestMode: Boolean = false,
   )
 
   private def toTesterValue(value: Any) =
@@ -118,6 +121,9 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
 
     def testUnit: DmnTesterObject[In] =
       dmnTO.copy(_testUnit = true)
+
+    def inTestMode: DmnTesterObject[In] =
+      dmnTO.copy(_inTestMode = true)
 
     def acceptMissingRules: DmnTesterObject[In] =
       dmnTO.copy(_acceptMissingRules = true)

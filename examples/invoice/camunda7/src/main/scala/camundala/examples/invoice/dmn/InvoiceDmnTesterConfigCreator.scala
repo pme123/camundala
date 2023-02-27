@@ -31,6 +31,7 @@ object InvoiceDmnTesterConfigCreator
       .acceptMissingRules
       .testUnit
       .dmnPath("invoiceBusinessDecisions")
+      .inTestMode
   )
 
   case class InvoiceAssignApproverDmnIn(
