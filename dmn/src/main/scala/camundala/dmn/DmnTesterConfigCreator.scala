@@ -8,6 +8,7 @@ import io.circe.syntax.*
 import org.latestbit.circe.adt.codec.JsonTaggedAdt
 import pme123.camunda.dmn.tester.shared.*
 
+import java.time.LocalDateTime
 import scala.language.{implicitConversions, reflectiveCalls}
 import scala.reflect.{ClassTag, classTag}
 
@@ -15,7 +16,8 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
 
   protected def dmnBasePath: os.Path = starterConfig.dmnPaths.head
   protected def dmnConfigPath: os.Path = starterConfig.dmnConfigPaths.head
-  protected def defaultDmnPath(dmnName: String): os.Path = dmnBasePath / s"$dmnName.dmn"
+  protected def defaultDmnPath(dmnName: String): os.Path =
+    dmnBasePath / s"$dmnName.dmn"
 
   protected def createDmnConfigs(dmnTesterObjects: DmnTesterObject[?]*): Unit =
     println(s"createDmnConfigs: $dmnConfigPath")
@@ -37,33 +39,39 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
     dmnTesterObjects
       .filterNot(_._inTestMode)
       .map { dmnTO =>
-      val dmn = dmnTO.dDmn
-      val in: Product = dmn.in
-      val testerData = toConfig(in, dmnTO.addTestValues)
-      DmnConfig(
-        dmn.decisionDefinitionKey,
-        TesterData(testerData.toList),
-        dmnTO.dmnPath.relativeTo(projectBasePath).segments.toList,
-        testUnit = dmnTO._testUnit,
-        acceptMissingRules = dmnTO._acceptMissingRules
-      )
+        val dmn = dmnTO.dDmn
+        val in: Product = dmn.in
+        val inputs = toInputs(in, dmnTO)
+        val variables = toVariables(in, dmnTO)
+        DmnConfig(
+          dmn.decisionDefinitionKey,
+          TesterData(inputs, variables),
+          dmnTO.dmnPath.relativeTo(projectBasePath).segments.toList,
+          testUnit = dmnTO._testUnit,
+          acceptMissingRules = dmnTO._acceptMissingRules
+        )
 
-    }
+      }
 
-  private def toConfig[T <: Product](
+  private def toInputs[T <: Product](
       product: T,
-      addTestValues: Map[String, List[TesterValue]]
+      dmnTO: DmnTesterObject[?]
   ) =
     product.productElementNames
+      .filterNot(dmnTO.variableKeys.contains)
       .zip(product.productIterator)
-      .map { case (k, v) => testValues(k, v, addTestValues) }
+      .map { case (k, v) =>
+        testValues(k, v, dmnTO.addTestValues)
+      }
+      .toList
 
   private def testValues[E: ClassTag](
       k: String,
       value: E,
       addTestValues: Map[String, List[TesterValue]]
-  ) =
+  ): TesterInput =
     val unwrapValue = value match
+      case d: LocalDateTime => d.toString
       case Some(v) => v
       case v => v
     val isNullable = value match
@@ -89,20 +97,33 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
         TesterInput(
           k,
           isNullable,
-          e.values.map(v => toTesterValue(v)).toList
+          addTestValues.getOrElse(k, e.values.map(v => toTesterValue(v)).toList)
         )
       case v =>
         throw new IllegalArgumentException(
           s"Not supported for DMN Input ($k -> $v)"
         )
 
+  private def toVariables[T <: Product](
+      product: T,
+      dmnTO: DmnTesterObject[?]
+  ) =
+    product.productElementNames
+      .filter(dmnTO.variableKeys.contains)
+      .zip(product.productIterator)
+      .map { case (k, v) =>
+        testValues(k, v, Map.empty)
+      }
+      .toList
+
   case class DmnTesterObject[In <: Product](
-      dDmn: DecisionDmn[In, _],
-      dmnPath: Path,
-      addTestValues: Map[String, List[TesterValue]] = Map.empty,
-      _testUnit: Boolean = false,
-      _acceptMissingRules: Boolean = false,
-      _inTestMode: Boolean = false,
+                                             dDmn: DecisionDmn[In, _],
+                                             dmnPath: Path,
+                                             addTestValues: Map[String, List[TesterValue]] = Map.empty,
+                                             variableKeys: Seq[String] = Seq.empty,
+                                             _testUnit: Boolean = false,
+                                             _acceptMissingRules: Boolean = false,
+                                             _inTestMode: Boolean = false
   )
 
   private def toTesterValue(value: Any) =
@@ -134,5 +155,9 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
           .map(v => toTesterValue(v.toString))
           .toList)
       )
+
+    def variables(keys: String*): DmnTesterObject[In] =
+      dmnTO.copy(variableKeys =
+        dmnTO.variableKeys ++ keys)
 
 end DmnTesterConfigCreator

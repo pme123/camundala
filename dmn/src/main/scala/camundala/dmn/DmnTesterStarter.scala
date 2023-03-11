@@ -6,7 +6,7 @@ import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
 trait DmnTesterStarter extends DmnTesterHelpers:
-
+  
   def startDmnTester(): Unit =
     println("Check logs in Docker Console!")
     println(s"Open the browser: http://localhost:${starterConfig.exposedPort}")

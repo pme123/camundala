@@ -102,7 +102,7 @@ lazy val dmn = project
   .settings(
     libraryDependencies ++= Seq(
       sttpDependency,
-      "io.github.pme123" %% "camunda-dmn-tester-shared" % "0.17.7"
+      "io.github.pme123" %% "camunda-dmn-tester-shared" % "0.18.0-SNAPSHOT"
     )
   )
   .dependsOn(bpmn)
@@ -237,7 +237,7 @@ lazy val exampleDemos = project
     //   libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % "it",
 
   )
-  .dependsOn(camunda, simulation)
+  .dependsOn(dmn, camunda, simulation)
 
 val springBootVersion = "2.7.6"
 val h2Version = "2.1.214"
