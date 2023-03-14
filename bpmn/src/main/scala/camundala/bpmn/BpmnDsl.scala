@@ -3,6 +3,8 @@ package bpmn
 
 import domain.*
 
+import scala.reflect.ClassTag
+
 trait BpmnDsl:
 
   def process[
@@ -34,7 +36,7 @@ trait BpmnDsl:
 
   def singleEntry[
       In <: Product: Encoder: Decoder: Schema,
-      Out <: DmnValueType: Encoder: Decoder: Schema
+      Out <: DmnValueType: Encoder: Decoder: Schema: ClassTag
   ](
       decisionDefinitionKey: String,
       in: In,

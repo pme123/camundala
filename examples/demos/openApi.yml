@@ -5,7 +5,7 @@ info:
   summary: |2+
 
 
-    Created at 10/02/2023, 08:14
+    Created at 12/03/2023, 19:26
 
     ****
 
@@ -398,10 +398,10 @@ paths:
                     emoji: 🤩
                   - index: 2
                     emoji: 😂
-  /process/example/enum-example/example:
+  /process/enumExample/enum-example/enumExample:
     head:
       tags:
-      - example
+      - enumExample
       summary: 'Process: enum-example'
       description: |2
 
@@ -417,13 +417,14 @@ paths:
             schema:
               $ref: '#/components/schemas/Input1'
             examples:
-              example:
+              enumExample:
                 value:
                   someValue: hello
+                  simpleEnum: One
                   customMock:
-                    Some:
-                      value:
-                        intValue: 12
+                    intValue: 12
+                    simpleEnum: One
+                    type: A
                   type: A
         required: true
       responses:
@@ -434,29 +435,101 @@ paths:
               schema:
                 $ref: '#/components/schemas/Output'
               examples:
-                example:
+                enumExample:
                   value:
                     intValue: 12
+                    simpleEnum: One
                     type: A
+  /decisiondmn/DateExampleDMN/DateExample/DateExampleDMN:
+    head:
+      tags:
+      - DateExampleDMN
+      summary: 'DecisionDmn: DateExample'
+      description: |2
+
+
+
+        **Used in no other Process.**
+      operationId: 'DecisionDmn: DateExample'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Input2'
+            examples:
+              DateExampleDMN:
+                value:
+                  inDate: '2013-12-12T12:12:12'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: string
+              examples:
+                DateExampleDMN:
+                  value: 2012-12-12T12:12:12.000+0100
+  /decisiondmn/VariablesExampleDMN/VariablesExample/VariablesExampleDMN:
+    head:
+      tags:
+      - VariablesExampleDMN
+      summary: 'DecisionDmn: VariablesExample'
+      description: |2
+
+
+
+        **Used in no other Process.**
+      operationId: 'DecisionDmn: VariablesExample'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Input3'
+            examples:
+              VariablesExampleDMN:
+                value:
+                  letters: A_dynamic_2
+                  inputVariable: dynamic
+                  outputVariable: dynamicOut
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: string
+              examples:
+                VariablesExampleDMN:
+                  value: OK dynamicOut
 components:
   schemas:
     A:
       required:
-      - someValue
+      - simpleEnum
       type: object
       properties:
         someValue:
           type: string
+        simpleEnum:
+          $ref: '#/components/schemas/SimpleEnum'
         customMock:
-          $ref: '#/components/schemas/A1'
+          $ref: '#/components/schemas/Output'
     A1:
       required:
       - intValue
+      - simpleEnum
       type: object
       properties:
         intValue:
           type: integer
           format: int32
+        simpleEnum:
+          $ref: '#/components/schemas/SimpleEnum'
     Input:
       required:
       - letter
@@ -467,6 +540,28 @@ components:
     Input1:
       oneOf:
       - $ref: '#/components/schemas/A'
+    Input2:
+      required:
+      - inDate
+      type: object
+      properties:
+        inDate:
+          type: string
+    Input3:
+      required:
+      - letters
+      - inputVariable
+      - outputVariable
+      type: object
+      properties:
+        letters:
+          type: string
+        inputVariable:
+          oneOf:
+          - type: string
+        outputVariable:
+          oneOf:
+          - type: string
     ManyOutResult:
       required:
       - index
@@ -478,12 +573,20 @@ components:
           format: int32
         emoji:
           type: string
+    One:
+      type: object
     Output:
       oneOf:
       - $ref: '#/components/schemas/A1'
     ResultList_camundala.examples.demos.DecisionResultTypes.ManyOutResult[]:
       oneOf:
       - $ref: '#/components/schemas/ManyOutResult'
+    SimpleEnum:
+      oneOf:
+      - $ref: '#/components/schemas/One'
+      - $ref: '#/components/schemas/Two'
     SingleResult_camundala.examples.demos.DecisionResultTypes.ManyOutResult[]:
       oneOf:
       - $ref: '#/components/schemas/ManyOutResult'
+    Two:
+      type: object

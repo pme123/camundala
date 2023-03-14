@@ -8,7 +8,7 @@ info:
 
 
 
-    Created at 10/02/2023, 08:14
+    Created at 12/03/2023, 19:26
 
     ****
 
@@ -219,12 +219,12 @@ paths:
   /process-definition/key/enum-example/start:
     post:
       tags:
-      - example
-      summary: 'example: StartProcess'
+      - enumExample
+      summary: 'enumExample: StartProcess'
       description: |2
 
 
-        See API Doc: [example](No URL defined for demos-example/OpenApi.html#operation/Process:%20enum-example)
+        See API Doc: [enumExample](No URL defined for demos-example/OpenApi.html#operation/Process:%20enum-example)
       operationId: postProcess-definitionKeyEnum-exampleStart
       requestBody:
         content:
@@ -232,17 +232,109 @@ paths:
             schema:
               $ref: '#/components/schemas/StartProcessIn'
             examples:
-              example:
+              enumExample:
                 value:
                   variables:
                     someValue:
                       value: hello
                       type: String
-                    customMock:
-                      value: A(12)
+                    simpleEnum:
+                      value: One
                       type: String
-                  businessKey: example
+                    customMock:
+                      value: |-
+                        {
+                          "intValue" : 12,
+                          "simpleEnum" : "One",
+                          "type" : "A"
+                        }
+                      type: Json
+                  businessKey: enumExample
                   withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /decision-definition/key/{key}/--REMOVE:DateExample--/evaluate:
+    post:
+      tags:
+      - DateExampleDMN
+      summary: 'DateExampleDMN: EvaluateDecision'
+      description: |2
+
+
+
+        Decision DMN:
+        - _decisionDefinitionKey_: `DateExample`,
+
+
+        See API Doc: [DateExampleDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20DateExample)
+      operationId: postDecision-definitionKeyKey--remove:dateexample--Evaluate
+      parameters:
+      - name: key
+        in: path
+        description: The Process- or Decision-DefinitionKey of the Process or Decision
+        required: true
+        schema:
+          type: string
+          default: DateExample
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateDecisionIn'
+            examples:
+              DateExampleDMN:
+                value:
+                  variables:
+                    inDate:
+                      value: '2013-12-12T12:12:12'
+                      type: String
+        required: true
+      responses:
+        '200':
+          description: ''
+  /decision-definition/key/{key}/--REMOVE:VariablesExample--/evaluate:
+    post:
+      tags:
+      - VariablesExampleDMN
+      summary: 'VariablesExampleDMN: EvaluateDecision'
+      description: |2
+
+
+
+        Decision DMN:
+        - _decisionDefinitionKey_: `VariablesExample`,
+
+
+        See API Doc: [VariablesExampleDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20VariablesExample)
+      operationId: postDecision-definitionKeyKey--remove:variablesexample--Evaluate
+      parameters:
+      - name: key
+        in: path
+        description: The Process- or Decision-DefinitionKey of the Process or Decision
+        required: true
+        schema:
+          type: string
+          default: VariablesExample
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateDecisionIn'
+            examples:
+              VariablesExampleDMN:
+                value:
+                  variables:
+                    letters:
+                      value: A_dynamic_2
+                      type: String
+                    inputVariable:
+                      value: dynamic
+                      type: String
+                    outputVariable:
+                      value: dynamicOut
+                      type: String
         required: true
       responses:
         '200':

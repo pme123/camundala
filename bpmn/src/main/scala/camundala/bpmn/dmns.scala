@@ -1,7 +1,7 @@
 package camundala
 package bpmn
 
-import domain.*
+import camundala.domain.*
 import io.circe.HCursor
 import io.circe.syntax.*
 import sttp.tapir.*
@@ -9,6 +9,7 @@ import sttp.tapir.SchemaType.{SProduct, SProductField, SchemaWithValue}
 
 import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 import java.util.Date
+import scala.reflect.ClassTag
 
 case class Dmns(dmns: Seq[Dmn]):
 
@@ -19,8 +20,8 @@ object Dmns:
 
 case class Dmn(path: Path, decisions: DecisionDmn[?, ?]*)
 
-type DmnValueSimple = String | Boolean | Int | Long | Double |
-  LocalDate | LocalDateTime | ZonedDateTime
+type DmnValueSimple = String | Boolean | Int | Long | Double | LocalDate |
+  LocalDateTime | ZonedDateTime
 
 type DmnValueType = DmnValueSimple | scala.reflect.Enum
 
@@ -55,31 +56,33 @@ implicit def DmnValueTypeEncoder[T <: DmnValueSimple]: Encoder[T] =
     final def apply(dv: T): Json = valueToJson(dv)
   }
 
-implicit def LocalDateDecoder : Decoder[LocalDate] = new Decoder[LocalDate] {
+implicit def LocalDateDecoder: Decoder[LocalDate] = new Decoder[LocalDate] {
   final def apply(c: HCursor): Decoder.Result[LocalDate] =
     for result <- c.as[String]
     yield LocalDate.parse(result)
 
 }
 
-implicit def LocalDateTimeDecoder : Decoder[LocalDateTime] = new Decoder[LocalDateTime] {
-  final def apply(c: HCursor): Decoder.Result[LocalDateTime] =
-    for result <- c.as[String]
-    yield LocalDateTime.parse(result)
+implicit def LocalDateTimeDecoder: Decoder[LocalDateTime] =
+  new Decoder[LocalDateTime] {
+    final def apply(c: HCursor): Decoder.Result[LocalDateTime] =
+      for result <- c.as[String]
+      yield LocalDateTime.parse(result)
 
-}
+  }
 
-implicit def ZonedDateTimeDecoder : Decoder[ZonedDateTime] = new Decoder[ZonedDateTime] {
-  final def apply(c: HCursor): Decoder.Result[ZonedDateTime] =
-    for result <- c.as[String]
-    yield ZonedDateTime.parse(result)
+implicit def ZonedDateTimeDecoder: Decoder[ZonedDateTime] =
+  new Decoder[ZonedDateTime] {
+    final def apply(c: HCursor): Decoder.Result[ZonedDateTime] =
+      for result <- c.as[String]
+      yield ZonedDateTime.parse(result)
 
-}
+  }
 
 @description(
   "SingleEntry: Output of a DMN Table. This returns one `DmnValueType`."
 )
-case class SingleEntry[Out <: DmnValueType](
+case class SingleEntry[Out <: DmnValueType: ClassTag](
     result: Out
 ):
   lazy val toCamunda: CamundaVariable = CamundaVariable.valueToCamunda(result)
@@ -145,7 +148,7 @@ implicit def SingleEntryEncoder[T <: DmnValueType: Encoder]
     : Encoder[SingleEntry[T]] = new Encoder[SingleEntry[T]] {
   final def apply(sr: SingleEntry[T]): Json = sr.result.asJson
 }
-implicit def SingleEntryDecoder[T <: DmnValueType: Decoder]
+implicit def SingleEntryDecoder[T <: DmnValueType: Decoder: ClassTag]
     : Decoder[SingleEntry[T]] = new Decoder[SingleEntry[T]] {
   final def apply(c: HCursor): Decoder.Result[SingleEntry[T]] =
     for result <- c.as[T]
@@ -231,6 +234,39 @@ object DecisionDmn:
     DecisionDmn(
       InOutDescr(id, NoInput(), SingleEntry("INIT ONLY"))
     )
+
+@description(
+  "A wrapper, to indicate if an Input is a Variable."
+)
+case class DmnVariable[In <: DmnValueType: ClassTag](
+    value: In
+)
+
+
+implicit def schemaForDmnVariable[A <: DmnValueType: Encoder: Decoder](implicit
+                                                                   sa: Schema[A]
+                                                                  ): Schema[DmnVariable[A]] =
+  Schema[DmnVariable[A]](
+    SchemaType.SCoproduct(List(sa), None) { case DmnVariable(x) =>
+      Some(SchemaWithValue(sa, x))
+    },
+    for {
+      na <- sa.name
+    } yield Schema.SName("DmnVariable", List(na.show))
+  )
+
+implicit def DmnVariableEncoder[T <: DmnValueType: Encoder: Decoder: Schema: ClassTag]
+: Encoder[DmnVariable[T]] = new Encoder[DmnVariable[T]] {
+  final def apply(sr: DmnVariable[T]): Json = sr.value.asJson
+}
+implicit def DmnVariableDecoder[T <: DmnValueType: Encoder: Decoder: Schema: ClassTag]
+: Decoder[DmnVariable[T]] = new Decoder[DmnVariable[T]] {
+  final def apply(c: HCursor): Decoder.Result[DmnVariable[T]] =
+    for value <- c.as[T]
+      yield DmnVariable[T](value)
+
+}
+
 
 extension (output: Product)
 

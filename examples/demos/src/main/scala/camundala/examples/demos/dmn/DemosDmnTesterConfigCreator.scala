@@ -5,6 +5,7 @@ import camundala.dmn.*
 import camundala.domain.*
 import camundala.examples.demos.DateExample.*
 import camundala.examples.demos.DecisionResultTypes.*
+import camundala.examples.demos.VariablesExample.VariablesExampleDMN
 
 import java.time.LocalDateTime
 
@@ -40,6 +41,12 @@ object DemosDmnTesterConfigCreator
         "inDate",
         Seq("2012-12-12T12:12:12", "2012-12-12T12:12:11", "2012-12-12T12:12:13")
           .map(LocalDateTime.parse): _*
+      ),
+    VariablesExampleDMN
+      .testUnit
+      .testValues(
+        "letters",
+        "A_dynamic_2", "B", "C"
       )
   )
 

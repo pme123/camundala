@@ -42,7 +42,7 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
         val dmn = dmnTO.dDmn
         val in: Product = dmn.in
         val inputs = toInputs(in, dmnTO)
-        val variables = toVariables(in, dmnTO)
+        val variables = toVariables(in)
         DmnConfig(
           dmn.decisionDefinitionKey,
           TesterData(inputs, variables),
@@ -58,9 +58,8 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
       dmnTO: DmnTesterObject[?]
   ) =
     product.productElementNames
-      .filterNot(dmnTO.variableKeys.contains)
       .zip(product.productIterator)
-      .map { case (k, v) =>
+      .collect { case (k, v) if !v.isInstanceOf[DmnVariable[?]] =>
         testValues(k, v, dmnTO.addTestValues)
       }
       .toList
@@ -106,24 +105,22 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
 
   private def toVariables[T <: Product](
       product: T,
-      dmnTO: DmnTesterObject[?]
   ) =
     product.productElementNames
-      .filter(dmnTO.variableKeys.contains)
       .zip(product.productIterator)
-      .map { case (k, v) =>
-        testValues(k, v, Map.empty)
+      .collect { case (k, v: DmnVariable[?]) =>
+        val result: DmnValueType = v.value
+        testValues(k, result, Map.empty)
       }
       .toList
 
   case class DmnTesterObject[In <: Product](
-                                             dDmn: DecisionDmn[In, _],
-                                             dmnPath: Path,
-                                             addTestValues: Map[String, List[TesterValue]] = Map.empty,
-                                             variableKeys: Seq[String] = Seq.empty,
-                                             _testUnit: Boolean = false,
-                                             _acceptMissingRules: Boolean = false,
-                                             _inTestMode: Boolean = false
+      dDmn: DecisionDmn[In, _],
+      dmnPath: Path,
+      addTestValues: Map[String, List[TesterValue]] = Map.empty,
+      _testUnit: Boolean = false,
+      _acceptMissingRules: Boolean = false,
+      _inTestMode: Boolean = false
   )
 
   private def toTesterValue(value: Any) =
@@ -155,9 +152,5 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
           .map(v => toTesterValue(v.toString))
           .toList)
       )
-
-    def variables(keys: String*): DmnTesterObject[In] =
-      dmnTO.copy(variableKeys =
-        dmnTO.variableKeys ++ keys)
 
 end DmnTesterConfigCreator

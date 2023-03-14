@@ -30,4 +30,6 @@ object DemosApiCreator extends DefaultApiCreator:
       resultListDMN
     ),
     enumExample,
+    DateExample.DateExampleDMN,
+    VariablesExample.VariablesExampleDMN,
   )
