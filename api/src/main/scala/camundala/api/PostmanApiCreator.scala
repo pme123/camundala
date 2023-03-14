@@ -46,7 +46,7 @@ trait PostmanApiCreator extends AbstractApiCreator:
         isGroup: Boolean = false
     ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       cApi match
-        case pa @ ProcessApi(name, inOut, _, apis) if apis.isEmpty =>
+        case pa @ ProcessApi(name, inOut, _, apis, _) if apis.isEmpty =>
           println(s"${inOut.getClass.getSimpleName}: $tag - $name")
           createPostmanForProcess(pa, tag, isGroup)
         case aa @ ActivityApi(name, inOut, _) =>
@@ -63,7 +63,7 @@ trait PostmanApiCreator extends AbstractApiCreator:
             case other =>
               println(s"TODO: $other")
               Seq.empty
-        case pa @ ProcessApi(name, _, _, apis)
+        case pa @ ProcessApi(name, _, _, apis, _)
             if apis.forall(_.isInstanceOf[ActivityApi[?, ?]]) =>
           createPostmanForProcess(pa, tag) ++ apis.flatMap(_.createPostman(tag))
         case da: DecisionDmnApi[?,?] =>

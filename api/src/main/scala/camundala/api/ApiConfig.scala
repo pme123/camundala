@@ -1,7 +1,7 @@
 package camundala
 package api
 
-import bpmn.*
+import camundala.bpmn.*
 import sttp.apispec.openapi.Contact
 
 case class ApiConfig(
@@ -25,14 +25,19 @@ case class ApiConfig(
     localProjectPaths: Seq[Path] = Seq(os.pwd / os.up),
     // The URL of your published documentations
     // myProject => s"http://myCompany/bpmnDocs/${myProject}"
-    docProjectUrl: String => String = proj => s"No URL defined for $proj"
+    docProjectUrl: String => String = proj => s"No URL defined for $proj",
+    // If you want to integrate your BPMNs and DMNs in your Documentation.
+    // Add the path the diagrams are located on your webserver.
+    // myProject => s"http://myCompany/bpmnDocs/${myProject}/${diagramDownloadPath}"
+    // if you want to have a diagram - you must define this!
+    diagramDownloadPath: Option[String] = None
 ):
 
   def withTenantId(tenantId: String): ApiConfig =
     copy(tenantId = Some(tenantId))
 
   def withCawemoFolder(folderName: String): ApiConfig =
-      copy(cawemoFolder = Some(folderName))
+    copy(cawemoFolder = Some(folderName))
 
   def withBasePath(path: Path): ApiConfig =
     copy(
@@ -52,9 +57,11 @@ case class ApiConfig(
   def withDocProjectUrl(url: String => String): ApiConfig =
     copy(docProjectUrl = url)
 
+  def withDiagramDownloadPath(diagramDownloadPath: String): ApiConfig =
+    copy(diagramDownloadPath = Some(diagramDownloadPath))
+
   def withLocalProjectPaths(paths: Path*): ApiConfig =
     copy(localProjectPaths = paths)
 
   def withJiraUrls(urls: (String, String)*): ApiConfig =
     copy(jiraUrls = urls.toMap)
-

@@ -10,6 +10,7 @@ lazy val projectVersion =
   Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
 val scala3Version = "3.2.1"
 val org = "io.github.pme123"
+val dmnTesterVersion = "0.17.8"
 
 ThisBuild / versionScheme := Some("early-semver")
 
@@ -102,7 +103,7 @@ lazy val dmn = project
   .settings(
     libraryDependencies ++= Seq(
       sttpDependency,
-      "io.github.pme123" %% "camunda-dmn-tester-shared" % "0.18.0-SNAPSHOT"
+      "io.github.pme123" %% "camunda-dmn-tester-shared" % dmnTesterVersion
     )
   )
   .dependsOn(bpmn)

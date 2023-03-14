@@ -5,7 +5,7 @@ info:
   summary: |2+
 
 
-    Created at 12/03/2023, 19:26
+    Created at 14/03/2023, 17:20
 
     ****
 
@@ -46,6 +46,17 @@ paths:
       - singleEntryDMN
       summary: 'DecisionDmn: singleEntry'
       description: |2
+
+
+
+        <div class="diagramCanvas">
+          <div class="diagram" id="DecisionResultTypes-38523">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-38523'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
+
 
 
 
@@ -91,6 +102,17 @@ paths:
       - collectEntriesDMN
       summary: 'DecisionDmn: collectEntries'
       description: |2
+
+
+
+        <div class="diagramCanvas">
+          <div class="diagram" id="DecisionResultTypes-814">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-814'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
+
 
 
 
@@ -152,6 +174,17 @@ paths:
 
 
 
+        <div class="diagramCanvas">
+          <div class="diagram" id="DecisionResultTypes-24798">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-24798'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
+
+
+
+
         **Used in no other Process.**
       operationId: 'DecisionDmn: singleResult'
       requestBody:
@@ -185,6 +218,17 @@ paths:
 
 
 
+        <div class="diagramCanvas">
+          <div class="diagram" id="DecisionResultTypes-42149">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-42149'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
+
+
+
+
         **Used in no other Process.**
       operationId: 'DecisionDmn: resultList'
       requestBody:
@@ -211,19 +255,22 @@ paths:
                     emoji: 🤩
                   - index: 2
                     emoji: 😂
-  /process/demoProcess/just-for-demo/demoProcess:
+  /process/demoProcess/camundala-mapping-example/demoProcess:
     head:
       tags:
       - demoProcess
-      summary: 'Process: just-for-demo'
-      description: |2
-
-
-
-        **Used in no other Process.**
-
-        **Uses no other Processes.**
-      operationId: 'Process: just-for-demo'
+      summary: 'Process: camundala-mapping-example'
+      description: "\n\n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\"\
+        \ id=\"mapping-example-46137\">\n    <img onLoad=\"openFromUrl('mapping-example.bpmn',\
+        \ new BpmnJS({ container: $('#mapping-example-46137'), height: '95%', width:\
+        \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
+        \ />\n  </div>\n</div>\n\nDownload: [mapping-example.bpmn](src/main/resources/mapping-example.bpmn)\n\
+        \n\n\n\n**Used in no other Process.**\n\n<details>\n<summary><b>Uses 1 Project(s)\
+        \ (EXPERIMENTAL)</b></summary>\n<p>\n\n\n- _demos-example_\n   - _[camundala-address-service](No\
+        \ URL defined for demos-example/OpenApi.html#operation/Process:%20camundala-address-service)_\
+        \ \n   - _[camundala-print-service](No URL defined for demos-example/OpenApi.html#operation/Process:%20camundala-print-service)_\
+        \ \n\n\n\n</p>\n</details>\n"
+      operationId: 'Process: camundala-mapping-example'
       responses:
         '200':
           description: ''
@@ -233,6 +280,17 @@ paths:
       - demoProcess
       summary: 'DecisionDmn: singleEntry'
       description: |2
+
+
+
+        <div class="diagramCanvas">
+          <div class="diagram" id="DecisionResultTypes-34849">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-34849'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
+
 
 
 
@@ -278,6 +336,17 @@ paths:
       - demoProcess
       summary: 'DecisionDmn: collectEntries'
       description: |2
+
+
+
+        <div class="diagramCanvas">
+          <div class="diagram" id="DecisionResultTypes-42755">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-42755'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
+
 
 
 
@@ -339,6 +408,17 @@ paths:
 
 
 
+        <div class="diagramCanvas">
+          <div class="diagram" id="DecisionResultTypes-1077">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-1077'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
+
+
+
+
         **Used in no other Process.**
       operationId: 'DecisionDmn: singleResult'
       requestBody:
@@ -369,6 +449,17 @@ paths:
       - demoProcess
       summary: 'DecisionDmn: resultList'
       description: |2
+
+
+
+        <div class="diagramCanvas">
+          <div class="diagram" id="DecisionResultTypes-58520">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-58520'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
+
 
 
 
@@ -404,6 +495,17 @@ paths:
       - enumExample
       summary: 'Process: enum-example'
       description: |2
+
+
+
+        <div class="diagramCanvas">
+          <div class="diagram" id="enum-example-55177">
+            <img onLoad="openFromUrl('enum-example.bpmn', new BpmnJS({ container: $('#enum-example-55177'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [enum-example.bpmn](src/main/resources/enum-example.bpmn)
+
 
 
 
@@ -449,6 +551,17 @@ paths:
 
 
 
+        <div class="diagramCanvas">
+          <div class="diagram" id="DateExample-21261">
+            <img onLoad="openFromUrl('DateExample.dmn', new DmnJS({ container: $('#DateExample-21261'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [DateExample.dmn](src/main/resources/DateExample.dmn)
+
+
+
+
         **Used in no other Process.**
       operationId: 'DecisionDmn: DateExample'
       requestBody:
@@ -478,6 +591,17 @@ paths:
       - VariablesExampleDMN
       summary: 'DecisionDmn: VariablesExample'
       description: |2
+
+
+
+        <div class="diagramCanvas">
+          <div class="diagram" id="VariablesExample-5408">
+            <img onLoad="openFromUrl('VariablesExample.dmn', new DmnJS({ container: $('#VariablesExample-5408'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [VariablesExample.dmn](src/main/resources/VariablesExample.dmn)
+
 
 
 

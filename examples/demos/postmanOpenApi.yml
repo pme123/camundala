@@ -8,7 +8,7 @@ info:
 
 
 
-    Created at 12/03/2023, 19:26
+    Created at 14/03/2023, 17:20
 
     ****
 
@@ -203,7 +203,7 @@ paths:
       responses:
         '200':
           description: ''
-  /process-definition/key/just-for-demo/start:
+  /process-definition/key/camundala-mapping-example/start:
     post:
       tags:
       - demoProcess
@@ -211,8 +211,8 @@ paths:
       description: |2
 
 
-        See API Doc: [demoProcess](No URL defined for demos-example/OpenApi.html#operation/Process:%20just-for-demo)
-      operationId: postProcess-definitionKeyJust-for-demoStart
+        See API Doc: [demoProcess](No URL defined for demos-example/OpenApi.html#operation/Process:%20camundala-mapping-example)
+      operationId: postProcess-definitionKeyCamundala-mapping-exampleStart
       responses:
         '200':
           description: ''

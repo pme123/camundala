@@ -40,11 +40,11 @@ trait TapirApiCreator extends AbstractApiCreator:
   extension (cApi: CApi)
     def create(tag: String): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       cApi match
-        case da @ DecisionDmnApi(_, _, _) =>
+        case da @ DecisionDmnApi(_, _, _, _) =>
           da.createEndpoint(tag, da.additionalDescr)
         case aa @ ActivityApi(_, _, _) =>
           aa.createEndpoint(tag)
-        case pa @ ProcessApi(name, _, _, apis) if apis.isEmpty => //.forall(_.isInstanceOf[ActivityApi[?,?]]) =>
+        case pa @ ProcessApi(name, _, _, apis, _) if apis.isEmpty => //.forall(_.isInstanceOf[ActivityApi[?,?]]) =>
           pa.createEndpoint(tag, pa.additionalDescr) ++ apis.flatMap(_.create(tag))
         case ga =>
           throw IllegalArgumentException(
@@ -80,7 +80,7 @@ trait TapirApiCreator extends AbstractApiCreator:
           .tag(tag)
           .in(path)
           .summary(inOutApi.endpointName)
-          .description(inOutApi.descr + additionalDescr.getOrElse(""))
+          .description(inOutApi.apiDescription(apiConfig.diagramDownloadPath) + additionalDescr.getOrElse(""))
           .head
       ).map(ep => inOutApi.toInput.map(ep.in).getOrElse(ep))
         .map(ep => inOutApi.toOutput.map(ep.out).getOrElse(ep))

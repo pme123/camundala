@@ -11,6 +11,7 @@ import io.circe.syntax.*
 
 import scala.annotation.targetName
 import scala.reflect.ClassTag
+import scala.util.Random
 
 case class ApiDoc(apis: List[CApi])
 
@@ -69,6 +70,28 @@ sealed trait InOutApi[
 
   lazy val variableNamesOut: List[String] =
     inOut.out.productElementNames.toList
+
+  def apiDescription(diagramDownloadPath: Option[String]): String = descr
+
+  protected def diagramName: Option[String] = None
+
+  protected def diagramFrame(diagramDownloadPath: String): String =
+    val postfix = if (typeName == "Process") "bpmn" else "dmn"
+    val postfixUpper = postfix.head.toUpper + postfix.tail
+    val name = diagramName.getOrElse(id).replace("valiant-", "")
+    val fileName = s"$name.$postfix"
+    val randomPostfix = Random.nextInt(100000)
+    s"""
+       |<div class="diagramCanvas">
+       |  <div class="diagram" id="$name-$randomPostfix">
+       |    <img onLoad="openFromUrl('$fileName', new ${postfixUpper}JS({ container: $$('#$name-$randomPostfix'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+       |  </div>
+       |</div>
+       |
+       |Download: [$fileName]($diagramDownloadPath/$fileName)
+       |""".stripMargin
+  end diagramFrame
+
 end InOutApi
 
 case class ProcessApi[
@@ -78,7 +101,8 @@ case class ProcessApi[
     name: String,
     inOut: Process[In, Out],
     apiExamples: ApiExamples[In, Out],
-    apis: List[CApi] = List.empty
+    apis: List[CApi] = List.empty,
+    override val diagramName: Option[String] = None,
 ) extends InOutApi[In, Out],
       GroupedApi:
 
@@ -87,6 +111,12 @@ case class ProcessApi[
       examples: ApiExamples[In, Out]
   ): InOutApi[In, Out] =
     copy(apiExamples = examples)
+
+  override def apiDescription(diagramDownloadPath: Option[String]): String =
+    s"""$descr
+       |
+       |${diagramDownloadPath.map(diagramFrame).getOrElse("")}
+       |""".stripMargin
 
 object ProcessApi:
   def apply[
@@ -103,17 +133,27 @@ case class DecisionDmnApi[
 ](
     name: String,
     inOut: DecisionDmn[In, Out],
-    apiExamples: ApiExamples[In, Out]
+    apiExamples: ApiExamples[In, Out],
+    override val diagramName: Option[String] = None,
 ) extends InOutApi[In, Out],
       GroupedApi:
   // has no children
   val apis: List[CApi] = List.empty
+
   def withExamples(
       examples: ApiExamples[In, Out]
   ): InOutApi[In, Out] =
     copy(apiExamples = examples)
+
   def toActivityApi: ActivityApi[In, Out] =
     ActivityApi(name, inOut)
+
+  override def apiDescription(diagramDownloadPath: Option[String]): String =
+    s"""$descr
+       |
+       |${diagramDownloadPath.map(diagramFrame).getOrElse("")}
+       |""".stripMargin
+
 object DecisionDmnApi:
   def apply[
       In <: Product: Encoder: Decoder: Schema,

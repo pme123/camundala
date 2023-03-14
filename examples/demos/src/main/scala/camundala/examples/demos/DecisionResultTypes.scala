@@ -65,7 +65,7 @@ object DecisionResultTypes extends BpmnDsl:
   )
 
   lazy val demoProcess = process(
-    "just-for-demo"
+    "camundala-mapping-example"
   )
 
   given Schema[Input] = Schema.derived

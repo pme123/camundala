@@ -80,5 +80,23 @@ trait ApiDsl:
 
     def withOutExample(label: String, example: Out): T =
       inOutApi.addOutExample(label, example).asInstanceOf[T]
+  end extension
 
+  extension[
+    In <: Product : Encoder : Decoder : Schema,
+    Out <: Product : Encoder : Decoder : Schema : ClassTag,
+    T <: DecisionDmnApi[In, Out]
+  ] (decApi: T)
+
+    def withDiagramName(diagramName: String) = decApi.copy(diagramName = Some(diagramName))
+  end extension
+
+  extension[
+    In <: Product : Encoder : Decoder : Schema,
+    Out <: Product : Encoder : Decoder : Schema : ClassTag,
+    T <: ProcessApi[In, Out]
+  ] (processApi: T)
+
+    def withDiagramName(diagramName: String) = processApi.copy(diagramName = Some(diagramName))
+  end extension
 end ApiDsl

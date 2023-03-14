@@ -2,7 +2,7 @@ package camundala.examples.demos
 
 import camundala.api.*
 import camundala.bpmn.*
-import DecisionResultTypes.*
+import camundala.examples.demos.DecisionResultTypes.*
 import camundala.examples.demos.EnumExample.enumExample
 
 object DemosApiCreator extends DefaultApiCreator:
@@ -16,20 +16,29 @@ object DemosApiCreator extends DefaultApiCreator:
   override protected val apiConfig: ApiConfig =
     super.apiConfig
       .withBasePath(pwd / "examples" / "demos")
+      .withDiagramDownloadPath(
+        "src/main/resources"
+      )
       .withPort(8034)
 
-  document (
-    singleEntryDMN,
-    collectEntriesDMN,
-    singleResultDMN,
-    resultListDMN,
-    api(demoProcess)(
-      singleEntryDMN,
-      collectEntriesDMN,
-      singleResultDMN,
-      resultListDMN
+  document(
+    singleEntryDMN
+      .withDiagramName("DecisionResultTypes"),
+    collectEntriesDMN
+      .withDiagramName("DecisionResultTypes"),
+    singleResultDMN
+      .withDiagramName("DecisionResultTypes"),
+    resultListDMN
+      .withDiagramName("DecisionResultTypes"),
+    api(demoProcess
+      .withDiagramName("mapping-example")
+    )(
+      singleEntryDMN.withDiagramName("DecisionResultTypes"),
+      collectEntriesDMN.withDiagramName("DecisionResultTypes"),
+      singleResultDMN.withDiagramName("DecisionResultTypes"),
+      resultListDMN.withDiagramName("DecisionResultTypes"),
     ),
     enumExample,
     DateExample.DateExampleDMN,
-    VariablesExample.VariablesExampleDMN,
+    VariablesExample.VariablesExampleDMN
   )
