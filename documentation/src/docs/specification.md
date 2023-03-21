@@ -51,7 +51,7 @@ Here is the _UserTask_ 'Approve Invoice' from our _Invoice Process_.
       )
     )
 
-    enum InvoiceCategory derives Adt.PureEncoder, Adt.PureDecoder:
+    enum InvoiceCategory derives ConfiguredEnumCodec:
       case `Travel Expenses`, Misc, `Software License Costs`
     
     ```
@@ -90,7 +90,7 @@ as they are easy to create and there is support for documentation and JSON marsh
 If an attribute of a Case Class is an enumeration you can use the Scala `enum`.
 
 ```scala
-    enum InvoiceCategory derives Adt.PureEncoder, Adt.PureDecoder:
+    enum InvoiceCategory derives ConfiguredEnumCodec:
       case `Travel Expenses`, Misc, `Software License Costs`
 ```
 
@@ -162,7 +162,7 @@ Sorry for this technical noise 😥.
 * Enumeration:
   ```scala
   // ..derives Adt.PureEncoder, Adt.PureDecoder is needed for JSON marshalling
-  enum InvoiceCategory derives Adt.PureEncoder, Adt.PureDecoder:
+  enum InvoiceCategory derives ConfiguredEnumCodec:
       case `Travel Expenses`, Misc, `Software License Costs`
 
   given Schema[InvoiceCategory] = Schema.derived

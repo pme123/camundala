@@ -5,7 +5,7 @@ import camundala.domain.*
 
 object EnumExample extends BpmnDsl:
 
-  enum Input derives Adt.Decoder, Adt.Encoder:
+  enum Input derives ConfiguredCodec:
 
     case A(
         someValue: Option[String] = Some("hello"),
@@ -15,14 +15,15 @@ object EnumExample extends BpmnDsl:
   object Input:
     given Schema[Input] = Schema.derived
 
-  enum Output derives Adt.Decoder, Adt.Encoder:
+  enum Output derives ConfiguredCodec:
 
     case A(intValue: Int = 12, simpleEnum: SimpleEnum = SimpleEnum.One)
   object Output:
     given Schema[Output] = Schema.derived
 
-  enum SimpleEnum derives Adt.PureDecoder, Adt.PureEncoder:
+  enum SimpleEnum derives ConfiguredEnumCodec:
      case One,Two
+
   object SimpleEnum:
     given Schema[SimpleEnum] = Schema.derived
 

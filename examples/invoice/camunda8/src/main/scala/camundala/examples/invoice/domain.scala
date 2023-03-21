@@ -17,7 +17,7 @@ object domain :
                            )
 
   @description("There are three possible Categories")
-  enum InvoiceCategory derives Adt.PureEncoder, Adt.PureDecoder :
+  enum InvoiceCategory derives ConfiguredEnumCodec :
     case `Travel Expenses`, Misc, `Software License Costs`
 
   case class SelectApproverGroup(
@@ -28,7 +28,7 @@ object domain :
 
 
   @description("These Groups can approve the invoice.")
-  enum ApproverGroup derives Adt.PureEncoder, Adt.PureDecoder :
+  enum ApproverGroup derives ConfiguredEnumCodec :
     case accounting, sales, management
 
   @description("""Every Invoice has to be accepted by the Boss.""")

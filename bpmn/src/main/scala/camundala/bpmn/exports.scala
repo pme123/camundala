@@ -5,8 +5,6 @@ import domain.*
 
 import io.circe.{Json, parser}
 import io.circe.syntax.*
-import org.latestbit.circe.adt.codec.impl
-
 import scala.deriving.Mirror
 import scala.compiletime.{constValue, constValueTuple}
 

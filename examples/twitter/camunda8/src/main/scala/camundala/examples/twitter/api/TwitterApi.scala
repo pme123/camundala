@@ -59,7 +59,7 @@ case class TweetOut(
                           endStatus: EndStatus = EndStatus.published
                         )
 
-enum EndStatus derives Adt.PureEncoder, Adt.PureDecoder :
+enum EndStatus derives ConfiguredEnumCodec :
   case published, notPublished
 
 object TweetOut:

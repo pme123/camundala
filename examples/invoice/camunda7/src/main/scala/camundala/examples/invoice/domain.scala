@@ -27,7 +27,7 @@ object domain :
   end InvoiceReceipt
 
   @description("There are three possible Categories")
-  enum InvoiceCategory derives Adt.PureEncoder, Adt.PureDecoder :
+  enum InvoiceCategory derives ConfiguredEnumCodec :
     case `Travel Expenses`, Misc, `Software License Costs`
   object InvoiceCategory:
     given Schema[InvoiceCategory] = Schema.derived
@@ -44,7 +44,7 @@ object domain :
   end SelectApproverGroup
 
   @description("These Groups can approve the invoice.")
-  enum ApproverGroup derives Adt.PureEncoder, Adt.PureDecoder :
+  enum ApproverGroup derives ConfiguredEnumCodec :
     case accounting, sales, management
   object ApproverGroup:
     given Schema[ApproverGroup] = Schema.derived

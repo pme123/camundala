@@ -5,7 +5,6 @@ import camundala.bpmn.*
 import camundala.domain.*
 import io.circe.generic.auto.*
 import io.circe.syntax.*
-import org.latestbit.circe.adt.codec.JsonTaggedAdt
 import pme123.camunda.dmn.tester.shared.*
 
 import java.time.LocalDateTime

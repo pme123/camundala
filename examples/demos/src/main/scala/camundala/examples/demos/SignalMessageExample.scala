@@ -41,7 +41,7 @@ object SignalMessageExample extends BpmnDsl:
     given Encoder[SignalMessageExampleOut] = deriveEncoder
     given Decoder[SignalMessageExampleOut] = deriveDecoder
 
-  enum EndStatus derives Adt.PureEncoder, Adt.PureDecoder :
+  enum EndStatus derives ConfiguredEnumCodec :
     case messageReceived, signalReceived
 
   object EndStatus:

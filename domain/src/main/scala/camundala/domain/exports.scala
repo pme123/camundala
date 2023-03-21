@@ -1,17 +1,25 @@
 package camundala
 package domain
 
-import io.circe.{Json, parser}
-import java.util.Base64
-import scala.language.implicitConversions
+import io.circe.Codec.AsObject.derivedConfigured
+import io.circe.derivation.Configuration
+import io.circe.{Codec, Json, parser}
 
+import java.util.Base64
+import scala.deriving.Mirror
+import scala.language.implicitConversions
 // circe
 export io.circe.{Decoder, Encoder, Json}
 export io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 
-// One import for this ADT/JSON codec
-export org.latestbit.circe.adt.codec.JsonTaggedAdt
-export org.latestbit.circe.adt.codec.{JsonTaggedAdt => Adt}
+// Circe Enum codec
+// used implicit instead of given - so no extra import is needed domain.{*, given}
+implicit val c: Configuration = Configuration.default
+  .withDefaults
+  .withDiscriminator("type")
+export io.circe.derivation.ConfiguredCodec
+export io.circe.derivation.ConfiguredEnumCodec
+
 
 // tapir
 export sttp.tapir.Schema

@@ -20,7 +20,7 @@ case class TestOverrides(overrides: Seq[TestOverride]): //Seq[TestOverride])
     overrides :+ testOverride
   )
 
-enum TestOverrideType derives Adt.PureEncoder:
+enum TestOverrideType derives ConfiguredEnumCodec:
   case Exists, NotExists, IsEquals, HasSize, Contains
 
 object TestOverrideType:

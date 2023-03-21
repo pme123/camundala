@@ -45,7 +45,7 @@ object InvoiceDmnTesterConfigCreator
   end InvoiceAssignApproverDmnIn
 
   @description("There are three possible Categories")
-  enum InvoiceClassification derives Adt.PureEncoder, Adt.PureDecoder:
+  enum InvoiceClassification derives ConfiguredEnumCodec:
     case `day-to-day expense`, budget, exceptional
 
   object InvoiceClassification:
