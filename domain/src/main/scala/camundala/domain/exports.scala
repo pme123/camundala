@@ -3,14 +3,14 @@ package domain
 
 import io.circe.Codec.AsObject.derivedConfigured
 import io.circe.derivation.Configuration
-import io.circe.{Codec, Json, parser}
+import io.circe.parser
 
 import java.util.Base64
 import scala.deriving.Mirror
 import scala.language.implicitConversions
 // circe
-export io.circe.{Decoder, Encoder, Json}
-export io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+export io.circe.{Codec as CirceCodec, Decoder, Encoder, Json}
+export io.circe.generic.semiauto.{deriveCodec, deriveDecoder, deriveEncoder}
 
 // Circe Enum codec
 // used implicit instead of given - so no extra import is needed domain.{*, given}
@@ -36,8 +36,7 @@ case class FileInOut(
 
 object FileInOut:
   given Schema[FileInOut] = Schema.derived
-  given Encoder[FileInOut] = deriveEncoder
-  given Decoder[FileInOut] = deriveDecoder
+  given CirceCodec[FileInOut] = deriveCodec
 
 /**
  * In Camunda 8 only json is allowed!
@@ -51,8 +50,7 @@ case class FileRefInOut(
 
 object FileRefInOut:
   given Schema[FileRefInOut] = Schema.derived
-  given Encoder[FileRefInOut] = deriveEncoder
-  given Decoder[FileRefInOut] = deriveDecoder
+  given CirceCodec[FileRefInOut] = deriveCodec
 
 
 // Use this in the DSL to avoid Option[?]

@@ -8,7 +8,7 @@ info:
 
 
 
-    Created at 20/03/2023, 08:10
+    Created at 22/03/2023, 20:40
 
     ****
 
@@ -339,6 +339,185 @@ paths:
       responses:
         '200':
           description: ''
+  /process-definition/key/simulation-TestOverrides/start:
+    post:
+      tags:
+      - simulationProcess
+      summary: 'simulationProcess: StartProcess'
+      description: |2
+
+
+        See API Doc: [simulationProcess](No URL defined for demos-example/OpenApi.html#operation/Process:%20simulation-TestOverrides)
+      operationId: postProcess-definitionKeySimulation-testoverridesStart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              simulationProcess:
+                value:
+                  variables:
+                    simpleValue:
+                      value: hello
+                      type: String
+                    collectionValue:
+                      value: |-
+                        [
+                          "hello",
+                          "bye"
+                        ]
+                      type: Json
+                    objectValue:
+                      value: |-
+                        {
+                          "name" : "salu",
+                          "other" : false
+                        }
+                      type: Json
+                    objectCollectionValue:
+                      value: |-
+                        [
+                          {
+                            "name" : "salu",
+                            "other" : false
+                          },
+                          {
+                            "name" : "tschau",
+                            "other" : true
+                          }
+                        ]
+                      type: Json
+                  businessKey: simulationProcess
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /process-definition/key/signal-example/--REMOVEsignalExample--/start:
+    post:
+      tags:
+      - SignalMessageExample
+      summary: 'signalExample: StartProcess'
+      description: |2
+
+
+        See API Doc: [signalExample](No URL defined for demos-example/OpenApi.html#operation/Process:%20signal-example)
+      operationId: postProcess-definitionKeySignal-example--removesignalexample--Start
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              signalExample:
+                value:
+                  variables:
+                    someValue:
+                      value: hello
+                      type: String
+                  businessKey: signalExample
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /process-definition/key/message-for-example/--REMOVEmessageExample--/start:
+    post:
+      tags:
+      - SignalMessageExample
+      summary: 'messageExample: StartProcess'
+      description: |2
+
+
+        See API Doc: [messageExample](No URL defined for demos-example/OpenApi.html#operation/Process:%20message-for-example)
+      operationId: postProcess-definitionKeyMessage-for-example--removemessageexample--Start
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              messageExample:
+                value:
+                  variables:
+                    someValue:
+                      value: hello
+                      type: String
+                  businessKey: messageExample
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /signal/--REMOVE:intermediate-signal-for-example--:
+    post:
+      tags:
+      - SignalMessageExample
+      summary: 'signalIntermediateExample: SendSignal'
+      description: |2
+
+        - _messageName_: `intermediate-signal-for-example`
+
+        Signal:
+        - _messageName_: `intermediate-signal-for-example`,
+
+
+        See API Doc: [signalIntermediateExample](No URL defined for demos-example/OpenApi.html#operation/ReceiveSignalEvent:%20intermediate-signal-for-example)
+      operationId: postSignal--remove:intermediate-signal-for-example--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendSignalIn'
+            examples:
+              signalIntermediateExample:
+                value:
+                  name: intermediate-signal-for-example
+                  variables:
+                    someValue:
+                      value: hello
+                      type: String
+        required: true
+      responses:
+        '200':
+          description: ''
+  /message/--REMOVE:intermediate-message-for-example--:
+    post:
+      tags:
+      - SignalMessageExample
+      summary: 'messageIntermediateExample: CorrelateMessage'
+      description: |2
+
+        - _messageName_: `intermediate-message-for-example`
+
+        Message:
+        - _messageName_: `intermediate-message-for-example`,
+
+
+        See API Doc: [messageIntermediateExample](No URL defined for demos-example/OpenApi.html#operation/ReceiveMessageEvent:%20intermediate-message-for-example)
+      operationId: postMessage--remove:intermediate-message-for-example--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CorrelateMessageIn'
+            examples:
+              messageIntermediateExample:
+                value:
+                  messageName: intermediate-message-for-example
+                  businessKey: messageIntermediateExample
+                  processVariables:
+                    someValue:
+                      value: hello
+                      type: String
+                  all: false
+                  resultEnabled: true
+                  variablesInResultEnabled: true
+        required: true
+      responses:
+        '200':
+          description: ''
 components:
   schemas:
     CBoolean:
@@ -439,6 +618,38 @@ components:
       - $ref: '#/components/schemas/CLong'
       - $ref: '#/components/schemas/CNull'
       - $ref: '#/components/schemas/CString'
+    CorrelateMessageIn:
+      required:
+      - messageName
+      - all
+      - resultEnabled
+      - variablesInResultEnabled
+      type: object
+      properties:
+        messageName:
+          type: string
+        businessKey:
+          type: string
+        tenantId:
+          type: string
+        withoutTenantId:
+          type: boolean
+        processInstanceId:
+          type: string
+        correlationKeys:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+        localCorrelationKeys:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+        processVariables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+        processVariablesLocal:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+        all:
+          type: boolean
+        resultEnabled:
+          type: boolean
+        variablesInResultEnabled:
+          type: boolean
     EvaluateDecisionIn:
       required:
       - variables
@@ -451,6 +662,32 @@ components:
       type: object
       additionalProperties:
         $ref: '#/components/schemas/CamundaVariable'
+    SendSignalIn:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the signal to deliver.
+        tenantId:
+          type: string
+          description: |2
+
+            Specifies a tenant to deliver the signal. The signal can only be received on executions or process definitions which belongs to the given tenant.
+
+            Note: Cannot be used in combination with executionId.
+        withoutTenantId:
+          type: boolean
+        executionId:
+          type: string
+          description: |2
+
+            Optionally specifies a single execution which is notified by the signal.
+
+            Note: If no execution id is defined the signal is broadcasted to all subscribed handlers.
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
     StartProcessIn:
       required:
       - variables

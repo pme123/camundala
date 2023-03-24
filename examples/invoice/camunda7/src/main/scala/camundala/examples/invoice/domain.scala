@@ -22,8 +22,7 @@ object domain :
                          )
   object InvoiceReceipt:
     given Schema[InvoiceReceipt] = Schema.derived
-    given Encoder[InvoiceReceipt] = deriveEncoder
-    given Decoder[InvoiceReceipt] = deriveDecoder
+    given CirceCodec[InvoiceReceipt] = deriveCodec
   end InvoiceReceipt
 
   @description("There are three possible Categories")
@@ -39,8 +38,7 @@ object domain :
                                 )
   object SelectApproverGroup:
     given Schema[SelectApproverGroup] = Schema.derived
-    given Encoder[SelectApproverGroup] = deriveEncoder
-    given Decoder[SelectApproverGroup] = deriveDecoder
+    given CirceCodec[SelectApproverGroup] = deriveCodec
   end SelectApproverGroup
 
   @description("These Groups can approve the invoice.")
@@ -56,8 +54,7 @@ object domain :
                            )
   object ApproveInvoice:
     given Schema[ApproveInvoice] = Schema.derived
-    given Encoder[ApproveInvoice] = deriveEncoder
-    given Decoder[ApproveInvoice] = deriveDecoder
+    given CirceCodec[ApproveInvoice] = deriveCodec
   end ApproveInvoice
 
   @description(
@@ -67,15 +64,13 @@ object domain :
                                 )
   object PrepareBankTransfer:
     given Schema[PrepareBankTransfer] = Schema.derived
-    given Encoder[PrepareBankTransfer] = deriveEncoder
-    given Decoder[PrepareBankTransfer] = deriveDecoder
+    given CirceCodec[PrepareBankTransfer] = deriveCodec
   end PrepareBankTransfer
 
   case class AssignedReviewer(reviewer: String = "John")
   object AssignedReviewer:
     given Schema[AssignedReviewer] = Schema.derived
-    given Encoder[AssignedReviewer] = deriveEncoder
-    given Decoder[AssignedReviewer] = deriveDecoder
+    given CirceCodec[AssignedReviewer] = deriveCodec
   end AssignedReviewer
 
   case class InvoiceReviewed(
@@ -84,8 +79,7 @@ object domain :
                             )
   object InvoiceReviewed:
     given Schema[InvoiceReviewed] = Schema.derived
-    given Encoder[InvoiceReviewed] = deriveEncoder
-    given Decoder[InvoiceReviewed] = deriveDecoder
+    given CirceCodec[InvoiceReviewed] = deriveCodec
   end InvoiceReviewed
 
   case class InvoiceReceiptCheck(
@@ -96,8 +90,7 @@ object domain :
                                 )
   object InvoiceReceiptCheck:
     given Schema[InvoiceReceiptCheck] = Schema.derived
-    given Encoder[InvoiceReceiptCheck] = deriveEncoder
-    given Decoder[InvoiceReceiptCheck] = deriveDecoder
+    given CirceCodec[InvoiceReceiptCheck] = deriveCodec
   end InvoiceReceiptCheck
 
 end domain

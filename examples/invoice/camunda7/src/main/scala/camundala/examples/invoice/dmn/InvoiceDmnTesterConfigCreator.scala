@@ -40,8 +40,7 @@ object InvoiceDmnTesterConfigCreator
 
   object InvoiceAssignApproverDmnIn:
     given Schema[InvoiceAssignApproverDmnIn] = Schema.derived
-    given Encoder[InvoiceAssignApproverDmnIn] = deriveEncoder
-    given Decoder[InvoiceAssignApproverDmnIn] = deriveDecoder
+    given CirceCodec[InvoiceAssignApproverDmnIn] = deriveCodec
   end InvoiceAssignApproverDmnIn
 
   @description("There are three possible Categories")

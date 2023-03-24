@@ -11,8 +11,7 @@ object SimulationTestOverridesExample extends BpmnDsl:
 
   object SimpleObject:
     given Schema[SimpleObject] = Schema.derived
-    given Encoder[SimpleObject] = deriveEncoder
-    given Decoder[SimpleObject] = deriveDecoder
+    given CirceCodec[SimpleObject] = deriveCodec
 
   case class InOutput(
                        simpleValue: String = "hello",
@@ -22,8 +21,7 @@ object SimulationTestOverridesExample extends BpmnDsl:
                      )
   object InOutput:
     given Schema[InOutput] = Schema.derived
-    given Encoder[InOutput] = deriveEncoder
-    given Decoder[InOutput] = deriveDecoder
+    given CirceCodec[InOutput] = deriveCodec
 
   lazy val simulationProcess = process(
     id = "simulation-TestOverrides",

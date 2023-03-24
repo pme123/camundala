@@ -30,15 +30,23 @@ object DemosApiCreator extends DefaultApiCreator:
       .withDiagramName("DecisionResultTypes"),
     resultListDMN
       .withDiagramName("DecisionResultTypes"),
-    api(demoProcess
-      .withDiagramName("mapping-example")
+    api(
+      demoProcess
+        .withDiagramName("mapping-example")
     )(
       singleEntryDMN.withDiagramName("DecisionResultTypes"),
       collectEntriesDMN.withDiagramName("DecisionResultTypes"),
       singleResultDMN.withDiagramName("DecisionResultTypes"),
-      resultListDMN.withDiagramName("DecisionResultTypes"),
+      resultListDMN.withDiagramName("DecisionResultTypes")
     ),
     enumExample,
     DateExample.DateExampleDMN,
-    VariablesExample.VariablesExampleDMN
+    VariablesExample.VariablesExampleDMN,
+    SimulationTestOverridesExample.simulationProcess,
+    group("SignalMessageExample")(
+      SignalMessageExample.signalExample,
+      SignalMessageExample.messageExample,
+      SignalMessageExample.signalIntermediateExample,
+      SignalMessageExample.messageIntermediateExample
+    )
   )

@@ -2,6 +2,7 @@ package camundala
 package bpmn
 
 import camundala.domain.*
+import io.circe
 import io.circe.HCursor
 import io.circe.syntax.*
 import sttp.tapir.*
@@ -243,7 +244,7 @@ case class DmnVariable[In <: DmnValueType: ClassTag](
 )
 
 
-implicit def schemaForDmnVariable[A <: DmnValueType: Encoder: Decoder](implicit
+implicit def schemaForDmnVariable[A <: DmnValueType](implicit
                                                                    sa: Schema[A]
                                                                   ): Schema[DmnVariable[A]] =
   Schema[DmnVariable[A]](
@@ -255,11 +256,11 @@ implicit def schemaForDmnVariable[A <: DmnValueType: Encoder: Decoder](implicit
     } yield Schema.SName("DmnVariable", List(na.show))
   )
 
-implicit def DmnVariableEncoder[T <: DmnValueType: Encoder: Decoder: Schema: ClassTag]
+implicit def DmnVariableEncoder[T <: DmnValueType: Encoder: ClassTag]
 : Encoder[DmnVariable[T]] = new Encoder[DmnVariable[T]] {
   final def apply(sr: DmnVariable[T]): Json = sr.value.asJson
 }
-implicit def DmnVariableDecoder[T <: DmnValueType: Encoder: Decoder: Schema: ClassTag]
+implicit def DmnVariableDecoder[T <: DmnValueType: Decoder: ClassTag]
 : Decoder[DmnVariable[T]] = new Decoder[DmnVariable[T]] {
   final def apply(c: HCursor): Decoder.Result[DmnVariable[T]] =
     for value <- c.as[T]

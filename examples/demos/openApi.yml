@@ -5,7 +5,7 @@ info:
   summary: |2+
 
 
-    Created at 20/03/2023, 08:10
+    Created at 22/03/2023, 20:40
 
     ****
 
@@ -50,8 +50,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-22494">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-22494'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-61566">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-61566'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -106,8 +106,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-12944">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-12944'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-83481">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-83481'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -175,8 +175,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-12063">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-12063'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-18411">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-18411'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -219,8 +219,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-75396">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-75396'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-54469">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-54469'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -261,8 +261,8 @@ paths:
       - demoProcess
       summary: 'Process: camundala-mapping-example'
       description: "\n\n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\"\
-        \ id=\"mapping-example-86878\">\n    <img onLoad=\"openFromUrl('mapping-example.bpmn',\
-        \ new BpmnJS({ container: $('#mapping-example-86878'), height: '95%', width:\
+        \ id=\"mapping-example-72745\">\n    <img onLoad=\"openFromUrl('mapping-example.bpmn',\
+        \ new BpmnJS({ container: $('#mapping-example-72745'), height: '95%', width:\
         \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [mapping-example.bpmn](src/main/resources/mapping-example.bpmn)\n\
         \n\n\n\n**Used in no other Process.**\n\n<details>\n<summary><b>Uses 1 Project(s)\
@@ -284,8 +284,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-47893">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-47893'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-4981">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-4981'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -340,8 +340,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-51215">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-51215'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-71883">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-71883'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -409,8 +409,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-51939">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-51939'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-63625">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-63625'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -453,8 +453,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-51399">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-51399'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-57553">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-57553'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -499,8 +499,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="enum-example-28982">
-            <img onLoad="openFromUrl('enum-example.bpmn', new BpmnJS({ container: $('#enum-example-28982'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="enum-example-66542">
+            <img onLoad="openFromUrl('enum-example.bpmn', new BpmnJS({ container: $('#enum-example-66542'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -552,8 +552,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DateExample-12594">
-            <img onLoad="openFromUrl('DateExample.dmn', new DmnJS({ container: $('#DateExample-12594'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DateExample-23619">
+            <img onLoad="openFromUrl('DateExample.dmn', new DmnJS({ container: $('#DateExample-23619'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -595,8 +595,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="VariablesExample-299">
-            <img onLoad="openFromUrl('VariablesExample.dmn', new DmnJS({ container: $('#VariablesExample-299'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="VariablesExample-62350">
+            <img onLoad="openFromUrl('VariablesExample.dmn', new DmnJS({ container: $('#VariablesExample-62350'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -630,6 +630,217 @@ paths:
               examples:
                 VariablesExampleDMN:
                   value: OK dynamicOut
+  /process/simulationProcess/simulation-TestOverrides/simulationProcess:
+    head:
+      tags:
+      - simulationProcess
+      summary: 'Process: simulation-TestOverrides'
+      description: |2
+
+
+
+        <div class="diagramCanvas">
+          <div class="diagram" id="simulation-TestOverrides-13841">
+            <img onLoad="openFromUrl('simulation-TestOverrides.bpmn', new BpmnJS({ container: $('#simulation-TestOverrides-13841'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [simulation-TestOverrides.bpmn](src/main/resources/simulation-TestOverrides.bpmn)
+
+
+
+
+        **Used in no other Process.**
+
+        **Uses no other Processes.**
+      operationId: 'Process: simulation-TestOverrides'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InOutput'
+            examples:
+              simulationProcess:
+                value:
+                  simpleValue: hello
+                  collectionValue:
+                  - hello
+                  - bye
+                  objectValue:
+                    name: salu
+                    other: false
+                  objectCollectionValue:
+                  - name: salu
+                    other: false
+                  - name: tschau
+                    other: true
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InOutput'
+              examples:
+                simulationProcess:
+                  value:
+                    simpleValue: hello
+                    collectionValue:
+                    - hello
+                    - bye
+                    objectValue:
+                      name: salu
+                      other: false
+                    objectCollectionValue:
+                    - name: salu
+                      other: false
+                    - name: tschau
+                      other: true
+  /process/SignalMessageExample/signal-example/signalExample:
+    head:
+      tags:
+      - SignalMessageExample
+      summary: 'Process: signal-example'
+      description: |2
+
+
+
+        <div class="diagramCanvas">
+          <div class="diagram" id="signal-example-21627">
+            <img onLoad="openFromUrl('signal-example.bpmn', new BpmnJS({ container: $('#signal-example-21627'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [signal-example.bpmn](src/main/resources/signal-example.bpmn)
+
+
+
+
+        **Used in no other Process.**
+
+        **Uses no other Processes.**
+      operationId: 'Process: signal-example'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignalMessageExampleIn'
+            examples:
+              signalExample:
+                value:
+                  someValue: hello
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignalMessageExampleOut'
+              examples:
+                signalExample:
+                  value:
+                    someValue: hello
+                    endStatus: signalReceived
+  /process/SignalMessageExample/message-for-example/messageExample:
+    head:
+      tags:
+      - SignalMessageExample
+      summary: 'Process: message-for-example'
+      description: |2
+
+
+
+        <div class="diagramCanvas">
+          <div class="diagram" id="message-for-example-91581">
+            <img onLoad="openFromUrl('message-for-example.bpmn', new BpmnJS({ container: $('#message-for-example-91581'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [message-for-example.bpmn](src/main/resources/message-for-example.bpmn)
+
+
+
+
+        <details>
+        <summary><b>Used in 1 Project(s) (EXPERIMENTAL)</b></summary>
+        <p>
+
+
+        - _camundala_
+           - [signal-example](No URL defined for camundala/OpenApi.html#operation/Process:%20signal-example)
+
+
+
+
+        </p>
+        </details>
+
+        **Uses no other Processes.**
+      operationId: 'Process: message-for-example'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignalMessageExampleIn'
+            examples:
+              messageExample:
+                value:
+                  someValue: hello
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignalMessageExampleOut'
+              examples:
+                messageExample:
+                  value:
+                    someValue: hello
+                    endStatus: messageReceived
+  /receivesignalevent/SignalMessageExample/intermediate-signal-for-example/signalIntermediateExample:
+    head:
+      tags:
+      - SignalMessageExample
+      summary: 'ReceiveSignalEvent: intermediate-signal-for-example'
+      description: '- _messageName_: `intermediate-signal-for-example`'
+      operationId: 'ReceiveSignalEvent: intermediate-signal-for-example'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignalMessageExampleIn'
+            examples:
+              signalIntermediateExample:
+                value:
+                  someValue: hello
+        required: true
+      responses:
+        '200':
+          description: ''
+  /receivemessageevent/SignalMessageExample/intermediate-message-for-example/messageIntermediateExample:
+    head:
+      tags:
+      - SignalMessageExample
+      summary: 'ReceiveMessageEvent: intermediate-message-for-example'
+      description: '- _messageName_: `intermediate-message-for-example`'
+      operationId: 'ReceiveMessageEvent: intermediate-message-for-example'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignalMessageExampleIn'
+            examples:
+              messageIntermediateExample:
+                value:
+                  someValue: hello
+        required: true
+      responses:
+        '200':
+          description: ''
 components:
   schemas:
     A:
@@ -654,6 +865,28 @@ components:
           format: int32
         simpleEnum:
           $ref: '#/components/schemas/SimpleEnum'
+    EndStatus:
+      oneOf:
+      - $ref: '#/components/schemas/messageReceived'
+      - $ref: '#/components/schemas/signalReceived'
+    InOutput:
+      required:
+      - simpleValue
+      - objectValue
+      type: object
+      properties:
+        simpleValue:
+          type: string
+        collectionValue:
+          type: array
+          items:
+            type: string
+        objectValue:
+          $ref: '#/components/schemas/SimpleObject'
+        objectCollectionValue:
+          type: array
+          items:
+            $ref: '#/components/schemas/SimpleObject'
     Input:
       required:
       - letter
@@ -705,12 +938,43 @@ components:
     ResultList_camundala.examples.demos.DecisionResultTypes.ManyOutResult[]:
       oneOf:
       - $ref: '#/components/schemas/ManyOutResult'
+    SignalMessageExampleIn:
+      required:
+      - someValue
+      type: object
+      properties:
+        someValue:
+          type: string
+    SignalMessageExampleOut:
+      required:
+      - someValue
+      - endStatus
+      type: object
+      properties:
+        someValue:
+          type: string
+        endStatus:
+          $ref: '#/components/schemas/EndStatus'
     SimpleEnum:
       oneOf:
       - $ref: '#/components/schemas/One'
       - $ref: '#/components/schemas/Two'
+    SimpleObject:
+      required:
+      - name
+      - other
+      type: object
+      properties:
+        name:
+          type: string
+        other:
+          type: boolean
     SingleResult_camundala.examples.demos.DecisionResultTypes.ManyOutResult[]:
       oneOf:
       - $ref: '#/components/schemas/ManyOutResult'
     Two:
+      type: object
+    messageReceived:
+      type: object
+    signalReceived:
       type: object

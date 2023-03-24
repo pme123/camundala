@@ -29,8 +29,7 @@ object SignalMessageExample extends BpmnDsl:
   case class SignalMessageExampleIn(someValue: String = "hello")
   object SignalMessageExampleIn:
     given Schema[SignalMessageExampleIn] = Schema.derived
-    given Encoder[SignalMessageExampleIn] = deriveEncoder
-    given Decoder[SignalMessageExampleIn] = deriveDecoder
+    given CirceCodec[SignalMessageExampleIn] = deriveCodec
 
   case class SignalMessageExampleOut(
                                       someValue: String = "hello",
@@ -38,8 +37,7 @@ object SignalMessageExample extends BpmnDsl:
                                     )
   object SignalMessageExampleOut:
     given Schema[SignalMessageExampleOut] = Schema.derived
-    given Encoder[SignalMessageExampleOut] = deriveEncoder
-    given Decoder[SignalMessageExampleOut] = deriveDecoder
+    given CirceCodec[SignalMessageExampleOut] = deriveCodec
 
   enum EndStatus derives ConfiguredEnumCodec :
     case messageReceived, signalReceived

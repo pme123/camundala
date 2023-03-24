@@ -69,15 +69,12 @@ object DecisionResultTypes extends BpmnDsl:
   )
 
   given Schema[Input] = Schema.derived
-  given Encoder[Input] = deriveEncoder
-  given Decoder[Input] = deriveDecoder
+  given CirceCodec[Input] = deriveCodec
 
   given Schema[ManyOutResult] = Schema.derived
-  given Encoder[ManyOutResult] = deriveEncoder
-  given Decoder[ManyOutResult] = deriveDecoder
+  given CirceCodec[ManyOutResult] = deriveCodec
 
   given Schema[BadManyOutResult] = Schema.derived
-  given Encoder[BadManyOutResult] = deriveEncoder
-  given Decoder[BadManyOutResult] = deriveDecoder
+  given CirceCodec[BadManyOutResult] = deriveCodec
 
 end DecisionResultTypes

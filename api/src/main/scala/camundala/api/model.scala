@@ -42,14 +42,11 @@ given Encoder[StatusCode] = Encoder.instance(st => st.code.asJson)
 given Decoder[StatusCode] = (c: HCursor) => c.value.as[Int].map(StatusCode(_))
 
 given Schema[RequestErrorOutput] = Schema.derived
-given Encoder[RequestErrorOutput] = deriveEncoder
-given Decoder[RequestErrorOutput] = deriveDecoder
+given CirceCodec[RequestErrorOutput] = deriveCodec
 given Schema[CamundaError] = Schema.derived
-given Encoder[CamundaError] = deriveEncoder
-given Decoder[CamundaError] = deriveDecoder
+given CirceCodec[CamundaError] = deriveCodec
 given Schema[CamundaAuthError] = Schema.derived
-given Encoder[CamundaAuthError] = deriveEncoder
-given Decoder[CamundaAuthError] = deriveDecoder
+given CirceCodec[CamundaAuthError] = deriveCodec
 
 @description(
   """Output for /history/variable-instance?processInstanceIdIn=#{processInstanceId}
@@ -341,34 +338,27 @@ type FormVariables = Map[String, CamundaVariable]
 
 object StartProcessIn:
   given Schema[StartProcessIn] = Schema.derived
-  given Encoder[StartProcessIn] = deriveEncoder
-  given Decoder[StartProcessIn] = deriveDecoder
+  given CirceCodec[StartProcessIn] = deriveCodec
 
 object CorrelateMessageIn:
   given Schema[CorrelateMessageIn] = Schema.derived
-  given Encoder[CorrelateMessageIn] = deriveEncoder
-  given Decoder[CorrelateMessageIn] = deriveDecoder
+  given CirceCodec[CorrelateMessageIn] = deriveCodec
 
 object SendSignalIn:
   given Schema[SendSignalIn] = Schema.derived
-  given Encoder[SendSignalIn] = deriveEncoder
-  given Decoder[SendSignalIn] = deriveDecoder
+  given CirceCodec[SendSignalIn] = deriveCodec
 
 object CompleteTaskIn:
   given Schema[CompleteTaskIn] = Schema.derived
-  given Encoder[CompleteTaskIn] = deriveEncoder
-  given Decoder[CompleteTaskIn] = deriveDecoder
+  given CirceCodec[CompleteTaskIn] = deriveCodec
 object CompleteTaskOut:
   given Schema[CompleteTaskOut] = Schema.derived
-  given Encoder[CompleteTaskOut] = deriveEncoder
-  given Decoder[CompleteTaskOut] = deriveDecoder
+  given CirceCodec[CompleteTaskOut] = deriveCodec
 
 object GetActiveTaskIn:
   given Schema[GetActiveTaskIn] = Schema.derived
-  given Encoder[GetActiveTaskIn] = deriveEncoder
-  given Decoder[GetActiveTaskIn] = deriveDecoder
+  given CirceCodec[GetActiveTaskIn] = deriveCodec
 
 object EvaluateDecisionIn:
   given Schema[EvaluateDecisionIn] = Schema.derived
-  given Encoder[EvaluateDecisionIn] = deriveEncoder
-  given Decoder[EvaluateDecisionIn] = deriveDecoder
+  given CirceCodec[EvaluateDecisionIn] = deriveCodec
