@@ -128,7 +128,7 @@
   )
 )
 
-</span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">Adt</span><span>.</span><span class="type-name">PureEncoder</span><span>, </span><span class="type-name">Adt</span><span>.</span><span class="type-name">PureDecoder</span><span>:
+</span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">ConfiguredEnumCodec</span><span>:
   </span><span class="keyword">case</span><span> </span><span class="identifier">`Travel Expenses`</span><span>, </span><span class="type-name">Misc</span><span>, </span><span class="identifier">`Software License Costs`</span></code></pre>
           </li>
           <li>
@@ -165,7 +165,7 @@
         
         <h3 id="simple-enum" class="section"><a class="anchor-link left" href="#simple-enum"><i class="icofont-laika">&#xef71;</i></a>Simple Enum</h3>
         <p>If an attribute of a Case Class is an enumeration you can use the Scala <code>enum</code>.</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">Adt</span><span>.</span><span class="type-name">PureEncoder</span><span>, </span><span class="type-name">Adt</span><span>.</span><span class="type-name">PureDecoder</span><span>:
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">ConfiguredEnumCodec</span><span>:
       </span><span class="keyword">case</span><span> </span><span class="identifier">`Travel Expenses`</span><span>, </span><span class="type-name">Misc</span><span>, </span><span class="identifier">`Software License Costs`</span></code></pre>
         
         <h3 id="hierarchy-enum" class="section"><a class="anchor-link left" href="#hierarchy-enum"><i class="icofont-laika">&#xef71;</i></a>Hierarchy Enum</h3>
@@ -226,7 +226,7 @@
           <li>
             <p>Enumeration:</p>
             <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// ..derives Adt.PureEncoder, Adt.PureDecoder is needed for JSON marshalling
-</span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">Adt</span><span>.</span><span class="type-name">PureEncoder</span><span>, </span><span class="type-name">Adt</span><span>.</span><span class="type-name">PureDecoder</span><span>:
+</span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">ConfiguredEnumCodec</span><span>:
   </span><span class="keyword">case</span><span> </span><span class="identifier">`Travel Expenses`</span><span>, </span><span class="type-name">Misc</span><span>, </span><span class="identifier">`Software License Costs`</span><span>
 
 </span><span class="identifier">given</span><span> </span><span class="type-name">Schema</span><span>[</span><span class="type-name">InvoiceCategory</span><span>] = </span><span class="type-name">Schema</span><span>.</span><span class="identifier">derived</span></code></pre>
