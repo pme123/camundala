@@ -1,5 +1,6 @@
 package camundala.api
 
 trait DefaultApiCreator
-    extends ApiCreator,
+    extends ApiDsl,
+      ApiCreator,
       CamundaPostmanApiCreator

@@ -5,7 +5,7 @@ info:
   summary: |2+
 
 
-    Created at 22/03/2023, 20:40
+    Created at 24/03/2023, 16:20
 
     ****
 
@@ -40,18 +40,18 @@ info:
     </details>
 
 paths:
-  /decisiondmn/singleEntryDMN/singleEntry/singleEntryDMN:
+  /decisiondmn/singleEntry:
     head:
       tags:
-      - singleEntryDMN
+      - singleEntry
       summary: 'DecisionDmn: singleEntry'
       description: |2
 
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-61566">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-61566'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-51595">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-51595'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -80,7 +80,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Input'
             examples:
-              singleEntryDMN:
+              singleEntry:
                 value:
                   letter: A
         required: true
@@ -94,20 +94,20 @@ paths:
                 - type: integer
                   format: int32
               examples:
-                singleEntryDMN:
+                singleEntry:
                   value: 1
-  /decisiondmn/collectEntriesDMN/collectEntries/collectEntriesDMN:
+  /decisiondmn/collectEntries:
     head:
       tags:
-      - collectEntriesDMN
+      - collectEntries
       summary: 'DecisionDmn: collectEntries'
       description: |2
 
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-83481">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-83481'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-71789">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-71789'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -147,7 +147,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Input'
             examples:
-              collectEntriesDMN:
+              collectEntries:
                 value:
                   letter: A
         required: true
@@ -161,22 +161,22 @@ paths:
                 - type: integer
                   format: int32
               examples:
-                collectEntriesDMN:
+                collectEntries:
                   value:
                   - 1
                   - 2
-  /decisiondmn/singleResultDMN/singleResult/singleResultDMN:
+  /decisiondmn/singleResult:
     head:
       tags:
-      - singleResultDMN
+      - singleResult
       summary: 'DecisionDmn: singleResult'
       description: |2
 
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-18411">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-18411'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-32572">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-32572'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -193,7 +193,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Input'
             examples:
-              singleResultDMN:
+              singleResult:
                 value:
                   letter: A
         required: true
@@ -205,22 +205,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/SingleResult_camundala.examples.demos.DecisionResultTypes.ManyOutResult[]'
               examples:
-                singleResultDMN:
+                singleResult:
                   value:
                     index: 1
                     emoji: 🤩
-  /decisiondmn/resultListDMN/resultList/resultListDMN:
+  /decisiondmn/resultList:
     head:
       tags:
-      - resultListDMN
+      - resultList
       summary: 'DecisionDmn: resultList'
       description: |2
 
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-54469">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-54469'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-82783">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-82783'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -237,7 +237,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Input'
             examples:
-              resultListDMN:
+              resultList:
                 value:
                   letter: A
         required: true
@@ -249,20 +249,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResultList_camundala.examples.demos.DecisionResultTypes.ManyOutResult[]'
               examples:
-                resultListDMN:
+                resultList:
                   value:
                   - index: 1
                     emoji: 🤩
                   - index: 2
                     emoji: 😂
-  /process/demoProcess/camundala-mapping-example/demoProcess:
+  /process/camundala-mapping-example:
     head:
       tags:
-      - demoProcess
+      - camundala-mapping-example
       summary: 'Process: camundala-mapping-example'
       description: "\n\n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\"\
-        \ id=\"mapping-example-72745\">\n    <img onLoad=\"openFromUrl('mapping-example.bpmn',\
-        \ new BpmnJS({ container: $('#mapping-example-72745'), height: '95%', width:\
+        \ id=\"mapping-example-21416\">\n    <img onLoad=\"openFromUrl('mapping-example.bpmn',\
+        \ new BpmnJS({ container: $('#mapping-example-21416'), height: '95%', width:\
         \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [mapping-example.bpmn](src/main/resources/mapping-example.bpmn)\n\
         \n\n\n\n**Used in no other Process.**\n\n<details>\n<summary><b>Uses 1 Project(s)\
@@ -274,18 +274,18 @@ paths:
       responses:
         '200':
           description: ''
-  /decisiondmn/demoProcess/singleEntry/singleEntryDMN:
+  /decisiondmn/camundala-mapping-example/singleEntry:
     head:
       tags:
-      - demoProcess
+      - camundala-mapping-example
       summary: 'DecisionDmn: singleEntry'
       description: |2
 
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-4981">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-4981'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-25221">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-25221'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -314,7 +314,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Input'
             examples:
-              singleEntryDMN:
+              singleEntry:
                 value:
                   letter: A
         required: true
@@ -328,20 +328,20 @@ paths:
                 - type: integer
                   format: int32
               examples:
-                singleEntryDMN:
+                singleEntry:
                   value: 1
-  /decisiondmn/demoProcess/collectEntries/collectEntriesDMN:
+  /decisiondmn/camundala-mapping-example/collectEntries:
     head:
       tags:
-      - demoProcess
+      - camundala-mapping-example
       summary: 'DecisionDmn: collectEntries'
       description: |2
 
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-71883">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-71883'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-76911">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-76911'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -381,7 +381,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Input'
             examples:
-              collectEntriesDMN:
+              collectEntries:
                 value:
                   letter: A
         required: true
@@ -395,22 +395,22 @@ paths:
                 - type: integer
                   format: int32
               examples:
-                collectEntriesDMN:
+                collectEntries:
                   value:
                   - 1
                   - 2
-  /decisiondmn/demoProcess/singleResult/singleResultDMN:
+  /decisiondmn/camundala-mapping-example/singleResult:
     head:
       tags:
-      - demoProcess
+      - camundala-mapping-example
       summary: 'DecisionDmn: singleResult'
       description: |2
 
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-63625">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-63625'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-34355">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-34355'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -427,7 +427,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Input'
             examples:
-              singleResultDMN:
+              singleResult:
                 value:
                   letter: A
         required: true
@@ -439,22 +439,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/SingleResult_camundala.examples.demos.DecisionResultTypes.ManyOutResult[]'
               examples:
-                singleResultDMN:
+                singleResult:
                   value:
                     index: 1
                     emoji: 🤩
-  /decisiondmn/demoProcess/resultList/resultListDMN:
+  /decisiondmn/camundala-mapping-example/resultList:
     head:
       tags:
-      - demoProcess
+      - camundala-mapping-example
       summary: 'DecisionDmn: resultList'
       description: |2
 
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-57553">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-57553'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-85418">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-85418'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -471,7 +471,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Input'
             examples:
-              resultListDMN:
+              resultList:
                 value:
                   letter: A
         required: true
@@ -483,24 +483,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResultList_camundala.examples.demos.DecisionResultTypes.ManyOutResult[]'
               examples:
-                resultListDMN:
+                resultList:
                   value:
                   - index: 1
                     emoji: 🤩
                   - index: 2
                     emoji: 😂
-  /process/enumExample/enum-example/enumExample:
+  /process/enum-example:
     head:
       tags:
-      - enumExample
+      - enum-example
       summary: 'Process: enum-example'
       description: |2
 
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="enum-example-66542">
-            <img onLoad="openFromUrl('enum-example.bpmn', new BpmnJS({ container: $('#enum-example-66542'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="enum-example-27691">
+            <img onLoad="openFromUrl('enum-example.bpmn', new BpmnJS({ container: $('#enum-example-27691'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -519,7 +519,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Input1'
             examples:
-              enumExample:
+              enum-example:
                 value:
                   someValue: hello
                   simpleEnum: One
@@ -537,23 +537,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/Output'
               examples:
-                enumExample:
+                enum-example:
                   value:
                     intValue: 12
                     simpleEnum: One
                     type: A
-  /decisiondmn/DateExampleDMN/DateExample/DateExampleDMN:
+  /decisiondmn/DateExample:
     head:
       tags:
-      - DateExampleDMN
+      - DateExample
       summary: 'DecisionDmn: DateExample'
       description: |2
 
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DateExample-23619">
-            <img onLoad="openFromUrl('DateExample.dmn', new DmnJS({ container: $('#DateExample-23619'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DateExample-7598">
+            <img onLoad="openFromUrl('DateExample.dmn', new DmnJS({ container: $('#DateExample-7598'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -570,7 +570,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Input2'
             examples:
-              DateExampleDMN:
+              DateExample:
                 value:
                   inDate: '2013-12-12T12:12:12'
         required: true
@@ -583,20 +583,20 @@ paths:
                 oneOf:
                 - type: string
               examples:
-                DateExampleDMN:
+                DateExample:
                   value: 2012-12-12T12:12:12.000+0100
-  /decisiondmn/VariablesExampleDMN/VariablesExample/VariablesExampleDMN:
+  /decisiondmn/VariablesExample:
     head:
       tags:
-      - VariablesExampleDMN
+      - VariablesExample
       summary: 'DecisionDmn: VariablesExample'
       description: |2
 
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="VariablesExample-62350">
-            <img onLoad="openFromUrl('VariablesExample.dmn', new DmnJS({ container: $('#VariablesExample-62350'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="VariablesExample-15120">
+            <img onLoad="openFromUrl('VariablesExample.dmn', new DmnJS({ container: $('#VariablesExample-15120'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -613,7 +613,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Input3'
             examples:
-              VariablesExampleDMN:
+              VariablesExample:
                 value:
                   letters: A_dynamic_2
                   inputVariable: dynamic
@@ -628,20 +628,20 @@ paths:
                 oneOf:
                 - type: string
               examples:
-                VariablesExampleDMN:
+                VariablesExample:
                   value: OK dynamicOut
-  /process/simulationProcess/simulation-TestOverrides/simulationProcess:
+  /process/simulation-TestOverrides:
     head:
       tags:
-      - simulationProcess
+      - simulation-TestOverrides
       summary: 'Process: simulation-TestOverrides'
       description: |2
 
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="simulation-TestOverrides-13841">
-            <img onLoad="openFromUrl('simulation-TestOverrides.bpmn', new BpmnJS({ container: $('#simulation-TestOverrides-13841'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="simulation-TestOverrides-64815">
+            <img onLoad="openFromUrl('simulation-TestOverrides.bpmn', new BpmnJS({ container: $('#simulation-TestOverrides-64815'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -660,7 +660,7 @@ paths:
             schema:
               $ref: '#/components/schemas/InOutput'
             examples:
-              simulationProcess:
+              simulation-TestOverrides:
                 value:
                   simpleValue: hello
                   collectionValue:
@@ -683,7 +683,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/InOutput'
               examples:
-                simulationProcess:
+                simulation-TestOverrides:
                   value:
                     simpleValue: hello
                     collectionValue:
@@ -697,7 +697,7 @@ paths:
                       other: false
                     - name: tschau
                       other: true
-  /process/SignalMessageExample/signal-example/signalExample:
+  /process/SignalMessageExample/signal-example:
     head:
       tags:
       - SignalMessageExample
@@ -707,8 +707,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="signal-example-21627">
-            <img onLoad="openFromUrl('signal-example.bpmn', new BpmnJS({ container: $('#signal-example-21627'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="signal-example-54611">
+            <img onLoad="openFromUrl('signal-example.bpmn', new BpmnJS({ container: $('#signal-example-54611'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -727,7 +727,7 @@ paths:
             schema:
               $ref: '#/components/schemas/SignalMessageExampleIn'
             examples:
-              signalExample:
+              signal-example:
                 value:
                   someValue: hello
         required: true
@@ -739,11 +739,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/SignalMessageExampleOut'
               examples:
-                signalExample:
+                signal-example:
                   value:
                     someValue: hello
                     endStatus: signalReceived
-  /process/SignalMessageExample/message-for-example/messageExample:
+  /process/SignalMessageExample/message-for-example:
     head:
       tags:
       - SignalMessageExample
@@ -753,8 +753,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="message-for-example-91581">
-            <img onLoad="openFromUrl('message-for-example.bpmn', new BpmnJS({ container: $('#message-for-example-91581'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="message-for-example-70370">
+            <img onLoad="openFromUrl('message-for-example.bpmn', new BpmnJS({ container: $('#message-for-example-70370'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -785,7 +785,7 @@ paths:
             schema:
               $ref: '#/components/schemas/SignalMessageExampleIn'
             examples:
-              messageExample:
+              message-for-example:
                 value:
                   someValue: hello
         required: true
@@ -797,11 +797,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/SignalMessageExampleOut'
               examples:
-                messageExample:
+                message-for-example:
                   value:
                     someValue: hello
                     endStatus: messageReceived
-  /receivesignalevent/SignalMessageExample/intermediate-signal-for-example/signalIntermediateExample:
+  /receivesignalevent/SignalMessageExample/intermediate-signal-for-example:
     head:
       tags:
       - SignalMessageExample
@@ -814,14 +814,14 @@ paths:
             schema:
               $ref: '#/components/schemas/SignalMessageExampleIn'
             examples:
-              signalIntermediateExample:
+              intermediate-signal-for-example:
                 value:
                   someValue: hello
         required: true
       responses:
         '200':
           description: ''
-  /receivemessageevent/SignalMessageExample/intermediate-message-for-example/messageIntermediateExample:
+  /receivemessageevent/SignalMessageExample/intermediate-message-for-example:
     head:
       tags:
       - SignalMessageExample
@@ -834,7 +834,7 @@ paths:
             schema:
               $ref: '#/components/schemas/SignalMessageExampleIn'
             examples:
-              messageIntermediateExample:
+              intermediate-message-for-example:
                 value:
                   someValue: hello
         required: true

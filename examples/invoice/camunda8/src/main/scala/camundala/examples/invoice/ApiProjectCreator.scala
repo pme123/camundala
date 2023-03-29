@@ -7,7 +7,7 @@ import camundala.api.*
 import camundala.bpmn.*
 import camundala.domain.*
 
-object api extends DefaultApiCreator:
+object ApiProjectCreator extends DefaultApiCreator:
 
   val projectName = "invoice-example"
 
@@ -21,20 +21,20 @@ object api extends DefaultApiCreator:
       .withPort(8034)
       .withCawemoFolder("a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala")
 
-  document {
+  document (
     api(`Invoice Receipt`)(
       InvoiceAssignApproverDMN,
       ApproveInvoiceUT,
       PrepareBankTransferUT
-    )
+    ),
     api(`Review Invoice`)(
       AssignReviewerUT,
       ReviewInvoiceUT
-    )
+    ),
     group("DMNs")(
       InvoiceAssignApproverDMN
-    )
-  }
+    ),
+  )
 
   private lazy val ApproveInvoiceUT =
     bpmn.ApproveInvoiceUT

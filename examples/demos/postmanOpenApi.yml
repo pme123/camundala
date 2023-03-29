@@ -8,7 +8,7 @@ info:
 
 
 
-    Created at 22/03/2023, 20:40
+    Created at 24/03/2023, 16:20
 
     ****
 
@@ -50,8 +50,8 @@ paths:
   /decision-definition/key/{key}/--REMOVE:singleEntry--/evaluate:
     post:
       tags:
-      - singleEntryDMN
-      summary: 'singleEntryDMN: EvaluateDecision'
+      - singleEntry
+      summary: 'singleEntry: EvaluateDecision'
       description: |2
 
 
@@ -60,7 +60,7 @@ paths:
         - _decisionDefinitionKey_: `singleEntry`,
 
 
-        See API Doc: [singleEntryDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20singleEntry)
+        See API Doc: [singleEntry](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20singleEntry)
       operationId: postDecision-definitionKeyKey--remove:singleentry--Evaluate
       parameters:
       - name: key
@@ -76,7 +76,7 @@ paths:
             schema:
               $ref: '#/components/schemas/EvaluateDecisionIn'
             examples:
-              singleEntryDMN:
+              singleEntry:
                 value:
                   variables:
                     letter:
@@ -89,8 +89,8 @@ paths:
   /decision-definition/key/{key}/--REMOVE:collectEntries--/evaluate:
     post:
       tags:
-      - collectEntriesDMN
-      summary: 'collectEntriesDMN: EvaluateDecision'
+      - collectEntries
+      summary: 'collectEntries: EvaluateDecision'
       description: |2
 
 
@@ -99,7 +99,7 @@ paths:
         - _decisionDefinitionKey_: `collectEntries`,
 
 
-        See API Doc: [collectEntriesDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20collectEntries)
+        See API Doc: [collectEntries](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20collectEntries)
       operationId: postDecision-definitionKeyKey--remove:collectentries--Evaluate
       parameters:
       - name: key
@@ -115,7 +115,7 @@ paths:
             schema:
               $ref: '#/components/schemas/EvaluateDecisionIn'
             examples:
-              collectEntriesDMN:
+              collectEntries:
                 value:
                   variables:
                     letter:
@@ -128,8 +128,8 @@ paths:
   /decision-definition/key/{key}/--REMOVE:singleResult--/evaluate:
     post:
       tags:
-      - singleResultDMN
-      summary: 'singleResultDMN: EvaluateDecision'
+      - singleResult
+      summary: 'singleResult: EvaluateDecision'
       description: |2
 
 
@@ -138,7 +138,7 @@ paths:
         - _decisionDefinitionKey_: `singleResult`,
 
 
-        See API Doc: [singleResultDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20singleResult)
+        See API Doc: [singleResult](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20singleResult)
       operationId: postDecision-definitionKeyKey--remove:singleresult--Evaluate
       parameters:
       - name: key
@@ -154,7 +154,7 @@ paths:
             schema:
               $ref: '#/components/schemas/EvaluateDecisionIn'
             examples:
-              singleResultDMN:
+              singleResult:
                 value:
                   variables:
                     letter:
@@ -167,8 +167,8 @@ paths:
   /decision-definition/key/{key}/--REMOVE:resultList--/evaluate:
     post:
       tags:
-      - resultListDMN
-      summary: 'resultListDMN: EvaluateDecision'
+      - resultList
+      summary: 'resultList: EvaluateDecision'
       description: |2
 
 
@@ -177,7 +177,7 @@ paths:
         - _decisionDefinitionKey_: `resultList`,
 
 
-        See API Doc: [resultListDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20resultList)
+        See API Doc: [resultList](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20resultList)
       operationId: postDecision-definitionKeyKey--remove:resultlist--Evaluate
       parameters:
       - name: key
@@ -193,7 +193,7 @@ paths:
             schema:
               $ref: '#/components/schemas/EvaluateDecisionIn'
             examples:
-              resultListDMN:
+              resultList:
                 value:
                   variables:
                     letter:
@@ -206,12 +206,12 @@ paths:
   /process-definition/key/camundala-mapping-example/start:
     post:
       tags:
-      - demoProcess
-      summary: 'demoProcess: StartProcess'
+      - camundala-mapping-example
+      summary: 'camundala-mapping-example: StartProcess'
       description: |2
 
 
-        See API Doc: [demoProcess](No URL defined for demos-example/OpenApi.html#operation/Process:%20camundala-mapping-example)
+        See API Doc: [camundala-mapping-example](No URL defined for demos-example/OpenApi.html#operation/Process:%20camundala-mapping-example)
       operationId: postProcess-definitionKeyCamundala-mapping-exampleStart
       responses:
         '200':
@@ -219,12 +219,12 @@ paths:
   /process-definition/key/enum-example/start:
     post:
       tags:
-      - enumExample
-      summary: 'enumExample: StartProcess'
+      - enum-example
+      summary: 'enum-example: StartProcess'
       description: |2
 
 
-        See API Doc: [enumExample](No URL defined for demos-example/OpenApi.html#operation/Process:%20enum-example)
+        See API Doc: [enum-example](No URL defined for demos-example/OpenApi.html#operation/Process:%20enum-example)
       operationId: postProcess-definitionKeyEnum-exampleStart
       requestBody:
         content:
@@ -232,7 +232,7 @@ paths:
             schema:
               $ref: '#/components/schemas/StartProcessIn'
             examples:
-              enumExample:
+              enum-example:
                 value:
                   variables:
                     someValue:
@@ -249,7 +249,7 @@ paths:
                           "type" : "A"
                         }
                       type: Json
-                  businessKey: enumExample
+                  businessKey: enum-example
                   withVariablesInReturn: true
         required: true
       responses:
@@ -258,8 +258,8 @@ paths:
   /decision-definition/key/{key}/--REMOVE:DateExample--/evaluate:
     post:
       tags:
-      - DateExampleDMN
-      summary: 'DateExampleDMN: EvaluateDecision'
+      - DateExample
+      summary: 'DateExample: EvaluateDecision'
       description: |2
 
 
@@ -268,7 +268,7 @@ paths:
         - _decisionDefinitionKey_: `DateExample`,
 
 
-        See API Doc: [DateExampleDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20DateExample)
+        See API Doc: [DateExample](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20DateExample)
       operationId: postDecision-definitionKeyKey--remove:dateexample--Evaluate
       parameters:
       - name: key
@@ -284,7 +284,7 @@ paths:
             schema:
               $ref: '#/components/schemas/EvaluateDecisionIn'
             examples:
-              DateExampleDMN:
+              DateExample:
                 value:
                   variables:
                     inDate:
@@ -297,8 +297,8 @@ paths:
   /decision-definition/key/{key}/--REMOVE:VariablesExample--/evaluate:
     post:
       tags:
-      - VariablesExampleDMN
-      summary: 'VariablesExampleDMN: EvaluateDecision'
+      - VariablesExample
+      summary: 'VariablesExample: EvaluateDecision'
       description: |2
 
 
@@ -307,7 +307,7 @@ paths:
         - _decisionDefinitionKey_: `VariablesExample`,
 
 
-        See API Doc: [VariablesExampleDMN](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20VariablesExample)
+        See API Doc: [VariablesExample](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20VariablesExample)
       operationId: postDecision-definitionKeyKey--remove:variablesexample--Evaluate
       parameters:
       - name: key
@@ -323,7 +323,7 @@ paths:
             schema:
               $ref: '#/components/schemas/EvaluateDecisionIn'
             examples:
-              VariablesExampleDMN:
+              VariablesExample:
                 value:
                   variables:
                     letters:
@@ -342,12 +342,12 @@ paths:
   /process-definition/key/simulation-TestOverrides/start:
     post:
       tags:
-      - simulationProcess
-      summary: 'simulationProcess: StartProcess'
+      - simulation-TestOverrides
+      summary: 'simulation-TestOverrides: StartProcess'
       description: |2
 
 
-        See API Doc: [simulationProcess](No URL defined for demos-example/OpenApi.html#operation/Process:%20simulation-TestOverrides)
+        See API Doc: [simulation-TestOverrides](No URL defined for demos-example/OpenApi.html#operation/Process:%20simulation-TestOverrides)
       operationId: postProcess-definitionKeySimulation-testoverridesStart
       requestBody:
         content:
@@ -355,7 +355,7 @@ paths:
             schema:
               $ref: '#/components/schemas/StartProcessIn'
             examples:
-              simulationProcess:
+              simulation-TestOverrides:
                 value:
                   variables:
                     simpleValue:
@@ -388,63 +388,63 @@ paths:
                           }
                         ]
                       type: Json
-                  businessKey: simulationProcess
+                  businessKey: simulation-TestOverrides
                   withVariablesInReturn: true
         required: true
       responses:
         '200':
           description: ''
-  /process-definition/key/signal-example/--REMOVEsignalExample--/start:
+  /process-definition/key/signal-example/--REMOVEsignal-example--/start:
     post:
       tags:
       - SignalMessageExample
-      summary: 'signalExample: StartProcess'
+      summary: 'signal-example: StartProcess'
       description: |2
 
 
-        See API Doc: [signalExample](No URL defined for demos-example/OpenApi.html#operation/Process:%20signal-example)
-      operationId: postProcess-definitionKeySignal-example--removesignalexample--Start
+        See API Doc: [signal-example](No URL defined for demos-example/OpenApi.html#operation/Process:%20signal-example)
+      operationId: postProcess-definitionKeySignal-example--removesignal-example--Start
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/StartProcessIn'
             examples:
-              signalExample:
+              signal-example:
                 value:
                   variables:
                     someValue:
                       value: hello
                       type: String
-                  businessKey: signalExample
+                  businessKey: signal-example
                   withVariablesInReturn: true
         required: true
       responses:
         '200':
           description: ''
-  /process-definition/key/message-for-example/--REMOVEmessageExample--/start:
+  /process-definition/key/message-for-example/--REMOVEmessage-for-example--/start:
     post:
       tags:
       - SignalMessageExample
-      summary: 'messageExample: StartProcess'
+      summary: 'message-for-example: StartProcess'
       description: |2
 
 
-        See API Doc: [messageExample](No URL defined for demos-example/OpenApi.html#operation/Process:%20message-for-example)
-      operationId: postProcess-definitionKeyMessage-for-example--removemessageexample--Start
+        See API Doc: [message-for-example](No URL defined for demos-example/OpenApi.html#operation/Process:%20message-for-example)
+      operationId: postProcess-definitionKeyMessage-for-example--removemessage-for-example--Start
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/StartProcessIn'
             examples:
-              messageExample:
+              message-for-example:
                 value:
                   variables:
                     someValue:
                       value: hello
                       type: String
-                  businessKey: messageExample
+                  businessKey: message-for-example
                   withVariablesInReturn: true
         required: true
       responses:
@@ -454,7 +454,7 @@ paths:
     post:
       tags:
       - SignalMessageExample
-      summary: 'signalIntermediateExample: SendSignal'
+      summary: 'intermediate-signal-for-example: SendSignal'
       description: |2
 
         - _messageName_: `intermediate-signal-for-example`
@@ -463,7 +463,7 @@ paths:
         - _messageName_: `intermediate-signal-for-example`,
 
 
-        See API Doc: [signalIntermediateExample](No URL defined for demos-example/OpenApi.html#operation/ReceiveSignalEvent:%20intermediate-signal-for-example)
+        See API Doc: [intermediate-signal-for-example](No URL defined for demos-example/OpenApi.html#operation/ReceiveSignalEvent:%20intermediate-signal-for-example)
       operationId: postSignal--remove:intermediate-signal-for-example--
       requestBody:
         content:
@@ -471,7 +471,7 @@ paths:
             schema:
               $ref: '#/components/schemas/SendSignalIn'
             examples:
-              signalIntermediateExample:
+              intermediate-signal-for-example:
                 value:
                   name: intermediate-signal-for-example
                   variables:
@@ -486,7 +486,7 @@ paths:
     post:
       tags:
       - SignalMessageExample
-      summary: 'messageIntermediateExample: CorrelateMessage'
+      summary: 'intermediate-message-for-example: CorrelateMessage'
       description: |2
 
         - _messageName_: `intermediate-message-for-example`
@@ -495,7 +495,7 @@ paths:
         - _messageName_: `intermediate-message-for-example`,
 
 
-        See API Doc: [messageIntermediateExample](No URL defined for demos-example/OpenApi.html#operation/ReceiveMessageEvent:%20intermediate-message-for-example)
+        See API Doc: [intermediate-message-for-example](No URL defined for demos-example/OpenApi.html#operation/ReceiveMessageEvent:%20intermediate-message-for-example)
       operationId: postMessage--remove:intermediate-message-for-example--
       requestBody:
         content:
@@ -503,10 +503,10 @@ paths:
             schema:
               $ref: '#/components/schemas/CorrelateMessageIn'
             examples:
-              messageIntermediateExample:
+              intermediate-message-for-example:
                 value:
                   messageName: intermediate-message-for-example
-                  businessKey: messageIntermediateExample
+                  businessKey: intermediate-message-for-example
                   processVariables:
                     someValue:
                       value: hello

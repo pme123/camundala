@@ -1,7 +1,7 @@
 package camundala.examples.invoice
 package rest
 
-import api.*
+import ApiProjectCreator.*
 import bpmn.*
 import domain.*
 import camundala.domain.*

@@ -20,6 +20,10 @@ implicit val c: Configuration = Configuration.default
 export io.circe.derivation.ConfiguredCodec
 export io.circe.derivation.ConfiguredEnumCodec
 
+// Circe JSON
+export sttp.tapir.json.circe.circeCodec
+export sttp.tapir.json.circe.schemaForCirceJson
+export sttp.tapir.json.circe.schemaForCirceJsonObject
 
 // tapir
 export sttp.tapir.Schema

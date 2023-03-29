@@ -14,7 +14,7 @@ import java.util.Date
 import scala.util.matching.Regex
 
 trait ApiCreator
-    extends ApiDsl,
+    extends 
       PostmanApiCreator,
       TapirApiCreator,
       App:

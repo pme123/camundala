@@ -5,7 +5,7 @@ info:
   summary: |2+
 
 
-    Created at 22/03/2023, 21:02
+    Created at 24/03/2023, 16:30
 
     **[Check Project on Cawemo](https://cawemo.com/folders/a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala)**
 
@@ -46,10 +46,10 @@ info:
     </details>
 
 paths:
-  /process/InvoiceReceipt/InvoiceReceiptP/InvoiceReceipt:
+  /process/InvoiceReceiptP:
     head:
       tags:
-      - Invoice Receipt
+      - InvoiceReceiptP
       summary: 'Process: InvoiceReceiptP'
       description: "\nThis starts the Invoice Receipt Process.\n\n<iframe src=\"https://cawemo.com/embed/e289c19a-8a57-4467-8583-de72a5e57488\"\
         \ style=\"width:100%;height:500px;border:1px solid #ccc\" allowfullscreen></iframe>\n\
@@ -65,7 +65,7 @@ paths:
             schema:
               $ref: '#/components/schemas/InvoiceReceipt'
             examples:
-              Invoice Receipt:
+              InvoiceReceiptP:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
@@ -80,13 +80,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/InvoiceReceiptCheck'
               examples:
-                Invoice Receipt:
+                InvoiceReceiptP:
                   value:
                     approved: true
-  /decisiondmn/InvoiceReceipt/invoice-assign-approver/InvoiceAssignApproverDMN:
+  /decisiondmn/InvoiceReceiptP/invoice-assign-approver:
     head:
       tags:
-      - Invoice Receipt
+      - InvoiceReceiptP
       summary: 'DecisionDmn: invoice-assign-approver'
       description: |2
 
@@ -130,7 +130,7 @@ paths:
             schema:
               $ref: '#/components/schemas/SelectApproverGroup'
             examples:
-              InvoiceAssignApproverDMN:
+              invoice-assign-approver:
                 value:
                   amount: 30.0
                   invoiceCategory: Software License Costs
@@ -143,7 +143,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CollectEntries_camundala.examples.invoice.domain.ApproverGroup[]'
               examples:
-                InvoiceAssignApproverDMN:
+                invoice-assign-approver:
                   value:
                   - management
                 budget:
@@ -153,10 +153,10 @@ paths:
                   value:
                   - accounting
                   - sales
-  /usertask/InvoiceReceipt/ApproveInvoiceUT:
+  /usertask/InvoiceReceiptP/ApproveInvoiceUT:
     head:
       tags:
-      - Invoice Receipt
+      - InvoiceReceiptP
       summary: 'UserTask: ApproveInvoiceUT'
       description: Approve the invoice (or not).
       operationId: 'UserTask: ApproveInvoiceUT'
@@ -190,10 +190,10 @@ paths:
                 Invoice NOT approved:
                   value:
                     approved: false
-  /usertask/InvoiceReceipt/PrepareBankTransferUT:
+  /usertask/InvoiceReceiptP/PrepareBankTransferUT:
     head:
       tags:
-      - Invoice Receipt
+      - InvoiceReceiptP
       summary: 'UserTask: PrepareBankTransferUT'
       description: Prepare the bank transfer in the Financial Accounting System.
       operationId: 'UserTask: PrepareBankTransferUT'
@@ -220,10 +220,10 @@ paths:
               examples:
                 PrepareBankTransferUT:
                   value: {}
-  /process/ReviewInvoice/ReviewInvoiceP/ReviewInvoice:
+  /process/ReviewInvoiceP:
     head:
       tags:
-      - Review Invoice
+      - ReviewInvoiceP
       summary: 'Process: ReviewInvoiceP'
       description: |2
 
@@ -266,7 +266,7 @@ paths:
             schema:
               $ref: '#/components/schemas/InvoiceReceipt'
             examples:
-              Review Invoice:
+              ReviewInvoiceP:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
@@ -281,13 +281,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/InvoiceReviewed'
               examples:
-                Review Invoice:
+                ReviewInvoiceP:
                   value:
                     clarified: true
-  /usertask/ReviewInvoice/AssignReviewerUT:
+  /usertask/ReviewInvoiceP/AssignReviewerUT:
     head:
       tags:
-      - Review Invoice
+      - ReviewInvoiceP
       summary: 'UserTask: AssignReviewerUT'
       description: Select the Reviewer.
       operationId: 'UserTask: AssignReviewerUT'
@@ -315,10 +315,10 @@ paths:
                 AssignReviewerUT:
                   value:
                     reviewer: John
-  /usertask/ReviewInvoice/ReviewInvoiceUT:
+  /usertask/ReviewInvoiceP/ReviewInvoiceUT:
     head:
       tags:
-      - Review Invoice
+      - ReviewInvoiceP
       summary: 'UserTask: ReviewInvoiceUT'
       description: Review Invoice and approve.
       operationId: 'UserTask: ReviewInvoiceUT'
@@ -487,10 +487,10 @@ paths:
                 Invoice NOT clarified:
                   value:
                     clarified: false
-  /decisiondmn/InvoiceAssignApproverDMN/invoice-assign-approver/InvoiceAssignApproverDMN:
+  /decisiondmn/invoice-assign-approver:
     head:
       tags:
-      - InvoiceAssignApproverDMN
+      - invoice-assign-approver
       summary: 'DecisionDmn: invoice-assign-approver'
       description: |2
 
@@ -534,7 +534,7 @@ paths:
             schema:
               $ref: '#/components/schemas/SelectApproverGroup'
             examples:
-              InvoiceAssignApproverDMN:
+              invoice-assign-approver:
                 value:
                   amount: 30.0
                   invoiceCategory: Software License Costs
@@ -555,7 +555,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CollectEntries_camundala.examples.invoice.domain.ApproverGroup[]'
               examples:
-                InvoiceAssignApproverDMN:
+                invoice-assign-approver:
                   value:
                   - management
                 budget:
