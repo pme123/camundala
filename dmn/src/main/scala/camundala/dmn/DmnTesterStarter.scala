@@ -6,7 +6,7 @@ import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
 trait DmnTesterStarter extends DmnTesterHelpers:
-  
+
   def startDmnTester(): Unit =
     println("Check logs in Docker Console!")
     println(s"Open the browser: http://localhost:${starterConfig.exposedPort}")
@@ -14,12 +14,12 @@ trait DmnTesterStarter extends DmnTesterHelpers:
       println(s"Port ${starterConfig.exposedPort} is running")
     else
       runDocker()
+      waitForServer
   end startDmnTester
 
   @tailrec
   protected final def waitForServer: Boolean =
-    if (checkIsRunning())
-      true
+    if (checkIsRunning()) true
     else
       println("Waiting for server")
       Thread.sleep(1000)
@@ -37,9 +37,12 @@ trait DmnTesterStarter extends DmnTesterHelpers:
         case Left(_) =>
           false
         case Right(result) if !result.contains(getClass.getName) =>
-          println(s"Docker is Running - BUT for another project: $result. This project: ${getClass.getName}")
-            stopDocker()
-            runDocker()
+          println(
+            s"Docker is Running - BUT for another project: $result. This project: ${getClass.getName}"
+          )
+          stopDocker()
+          runDocker()
+          waitForServer
           true
         case Right(result) =>
           println(s"Docker is Running for project: $result.")
@@ -60,11 +63,9 @@ trait DmnTesterStarter extends DmnTesterHelpers:
       "-e",
       s"STARTING_APP=${getClass.getName}",
       "-e",
-      s"TESTER_CONFIG_PATHS=${
-        starterConfig.dmnConfigPaths
-          .map(_.relativeTo(projectBasePath))
-          .mkString(",")
-      }",
+      s"TESTER_CONFIG_PATHS=${starterConfig.dmnConfigPaths
+        .map(_.relativeTo(projectBasePath))
+        .mkString(",")}",
       "-v",
       starterConfig.dmnPaths.map(p =>
         s"$p:/opt/docker/${p.relativeTo(projectBasePath)}"
@@ -84,6 +85,5 @@ trait DmnTesterStarter extends DmnTesterHelpers:
     os.proc(
       "docker",
       "stop",
-      starterConfig.containerName,
+      starterConfig.containerName
     ).callOnConsole()
-
