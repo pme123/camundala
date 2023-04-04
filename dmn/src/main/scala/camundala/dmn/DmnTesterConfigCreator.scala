@@ -13,10 +13,12 @@ import scala.reflect.{ClassTag, classTag}
 
 trait DmnTesterConfigCreator extends DmnConfigWriter:
 
+  // the path where the DMNs are
   protected def dmnBasePath: os.Path = starterConfig.dmnPaths.head
+  // the path where the DMN Configs are
   protected def dmnConfigPath: os.Path = starterConfig.dmnConfigPaths.head
-  protected def defaultDmnPath(dmnName: String): os.Path =
-    dmnBasePath / s"$dmnName.dmn"
+  // creating the Path to the DMN - by default the _dmnName_ is `decisionDmn.decisionDefinitionKey`.
+  protected def defaultDmnPath(dmnName: String): os.Path = dmnBasePath / s"$dmnName.dmn"
 
   protected def createDmnConfigs(dmnTesterObjects: DmnTesterObject[?]*): Unit =
     println(s"createDmnConfigs: $dmnConfigPath")
@@ -145,11 +147,11 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
     def acceptMissingRules: DmnTesterObject[In] =
       dmnTO.copy(_acceptMissingRules = true)
 
-    def testValues(key: String, values: Any*): DmnTesterObject[In] =
+    inline def testValues(inline key: In => DmnValueType, values: Any*): DmnTesterObject[In] =
+      val testerValues = values
+        .map(v => toTesterValue(v.toString))
+        .toList
       dmnTO.copy(addTestValues =
-        dmnTO.addTestValues + (key -> values
-          .map(v => toTesterValue(v.toString))
-          .toList)
+        dmnTO.addTestValues + (nameOfVariable(key) -> testerValues)
       )
-
 end DmnTesterConfigCreator

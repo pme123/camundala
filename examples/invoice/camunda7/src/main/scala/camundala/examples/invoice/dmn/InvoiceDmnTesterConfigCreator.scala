@@ -4,13 +4,12 @@ package dmn
 
 import camundala.bpmn.*
 import camundala.domain.*
-import camundala.dmn.{DmnConfigWriter, DmnTesterConfigCreator, DmnTesterStarter}
+import camundala.dmn.{DmnTesterConfigCreator, DmnTesterStarter}
 import camundala.examples.invoice.bpmn.*
 import camundala.examples.invoice.domain.*
 
 object InvoiceDmnTesterConfigCreator
     extends DmnTesterConfigCreator,
-      DmnConfigWriter,
       DmnTesterStarter,
       App:
 
@@ -25,7 +24,7 @@ object InvoiceDmnTesterConfigCreator
   createDmnConfigs(
     InvoiceAssignApproverDMN
       .dmnPath("invoiceBusinessDecisions")
-      .testValues("amount", 249, 250, 999, 1000, 1001),
+      .testValues(_.amounts, 249, 250, 999, 1000, 1001),
     // for demonstration - created unit test - acceptMissingRules just for demo
     InvoiceAssignApproverDmnUnit
       .acceptMissingRules

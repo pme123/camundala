@@ -11,7 +11,6 @@ import java.time.LocalDateTime
 
 object DemosDmnTesterConfigCreator
     extends DmnTesterConfigCreator,
-      DmnConfigWriter,
       DmnTesterStarter,
       App:
 
@@ -26,26 +25,26 @@ object DemosDmnTesterConfigCreator
   createDmnConfigs(
     singleEntryDMN.testUnit.inTestMode
       .dmnPath("DecisionResultTypes")
-      .testValues("letter", "A", "B", "C"),
+      .testValues(_.letter, "A", "B", "C"),
     collectEntriesDMN.testUnit.inTestMode
       .dmnPath("DecisionResultTypes")
-      .testValues("letter", "A", "B", "C"),
+      .testValues(_.letter, "A", "B", "C"),
     singleResultDMN.testUnit.inTestMode
       .dmnPath("DecisionResultTypes"),
     resultListDMN.testUnit.inTestMode
       .dmnPath("DecisionResultTypes")
-      .testValues("letter", "A", "B", "C"),
+      .testValues(_.letter, "A", "B", "C"),
     DateExampleDMN.testUnit
       .inTestMode
       .testValues(
-        "inDate",
+        _.inDate,
         Seq("2012-12-12T12:12:12", "2012-12-12T12:12:11", "2012-12-12T12:12:13")
           .map(LocalDateTime.parse): _*
       ),
     VariablesExampleDMN
       .testUnit
       .testValues(
-        "letters",
+        _.letters,
         "A_dynamic_2", "B", "C"
       )
   )

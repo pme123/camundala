@@ -36,7 +36,7 @@ Simulations use the BPMNs you created - in this context I refer to the [Bpmn DSL
 
 Let's start with a basic example:
 ```scala
-// put your simulations in the simulation package of your project
+// put your simulations in the simulation package of your project (it)
 package camundala.examples.invoice.simulation
 // import the projects bpmns (Processes, UserTasks etc.)
 import camundala.examples.invoice.bpmn.*
@@ -45,9 +45,8 @@ import camundala.simulation.custom.CustomSimulation
 // define a class that extends from a simulation DSL   
 class InvoiceSimulation extends CustomSimulation:
 
-  // the is one simulate - use curly brackets {}
   simulate (
-    // add scenarios - no comma needed
+    // add scenarios (comma separated)
     scenario(`Review Invoice`)(
       AssignReviewerUT,
       ReviewInvoiceUT
