@@ -24,7 +24,7 @@ object InvoiceDmnTesterConfigCreator
   createDmnConfigs(
     InvoiceAssignApproverDMN
       .dmnPath("invoiceBusinessDecisions")
-      .testValues(_.amounts, 249, 250, 999, 1000, 1001),
+      .testValues(_.amount, 249, 250, 999, 1000, 1001),
     // for demonstration - created unit test - acceptMissingRules just for demo
     InvoiceAssignApproverDmnUnit
       .acceptMissingRules
