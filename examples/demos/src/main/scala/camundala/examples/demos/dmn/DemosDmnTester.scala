@@ -9,7 +9,7 @@ import camundala.examples.demos.VariablesExample.VariablesExampleDMN
 
 import java.time.LocalDateTime
 
-object DemosDmnTesterConfigCreator
+object DemosDmnTester
     extends DmnTesterConfigCreator,
       DmnTesterStarter,
       App:
@@ -49,4 +49,4 @@ object DemosDmnTesterConfigCreator
       )
   )
 
-end DemosDmnTesterConfigCreator
+end DemosDmnTester

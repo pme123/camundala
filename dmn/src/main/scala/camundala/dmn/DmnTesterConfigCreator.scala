@@ -147,7 +147,7 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
     def acceptMissingRules: DmnTesterObject[In] =
       dmnTO.copy(_acceptMissingRules = true)
 
-    inline def testValues(inline key: In => DmnValueType, values: Any*): DmnTesterObject[In] =
+    inline def testValues(inline key: In => DmnValueType | Option[DmnValueType], values: Any*): DmnTesterObject[In] =
       val testerValues = values
         .map(v => toTesterValue(v.toString))
         .toList

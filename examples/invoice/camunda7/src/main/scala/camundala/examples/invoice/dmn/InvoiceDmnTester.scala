@@ -8,7 +8,7 @@ import camundala.dmn.{DmnTesterConfigCreator, DmnTesterStarter}
 import camundala.examples.invoice.bpmn.*
 import camundala.examples.invoice.domain.*
 
-object InvoiceDmnTesterConfigCreator
+object InvoiceDmnTester
     extends DmnTesterConfigCreator,
       DmnTesterStarter,
       App:
@@ -55,4 +55,4 @@ object InvoiceDmnTesterConfigCreator
       in = InvoiceAssignApproverDmnIn(),
     )
 
-end InvoiceDmnTesterConfigCreator
+end InvoiceDmnTester
