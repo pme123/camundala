@@ -55,6 +55,7 @@
         <li class="level1 nav-header">Functional DSLs</li>
         <li class="level2"><a href="apiDoc.html">API Documentation</a></li>
         <li class="level2 active"><a href="#">Simulations</a></li>
+        <li class="level2"><a href="dmnTester.html">DMN Tester</a></li>
       </ul>
       
     </nav>
@@ -126,7 +127,7 @@
         <h2 id="get-started" class="section"><a class="anchor-link left" href="#get-started"><i class="icofont-laika">&#xef71;</i></a>Get Started</h2>
         <p>Simulations use the BPMNs you created - in this context I refer to the <a href="../bpmnDsl.html">Bpmn DSL</a></p>
         <p>Let&#39;s start with a basic example:</p>
-        <pre><code class="nohighlight"><span class="comment">// put your simulations in the simulation package of your project
+        <pre><code class="nohighlight"><span class="comment">// put your simulations in the simulation package of your project (it)
 </span><span class="keyword">package</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">examples</span><span>.</span><span class="identifier">invoice</span><span>.</span><span class="identifier">simulation</span><span>
 </span><span class="comment">// import the projects bpmns (Processes, UserTasks etc.)
 </span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">examples</span><span>.</span><span class="identifier">invoice</span><span>.</span><span class="identifier">bpmn</span><span>.*
@@ -135,9 +136,8 @@
 </span><span class="comment">// define a class that extends from a simulation DSL   
 </span><span class="keyword">class</span><span> </span><span class="type-name">InvoiceSimulation</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CustomSimulation</span><span>:
 
-  </span><span class="comment">// the is one simulate - use curly brackets {}
-</span><span>  </span><span class="identifier">simulate</span><span> (
-    </span><span class="comment">// add scenarios - no comma needed
+  </span><span class="identifier">simulate</span><span> (
+    </span><span class="comment">// add scenarios (comma separated)
 </span><span>    </span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
       </span><span class="type-name">AssignReviewerUT</span><span>,
       </span><span class="type-name">ReviewInvoiceUT</span><span>
