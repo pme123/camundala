@@ -67,9 +67,10 @@
         
         <ul class="nav-list">
           <li class="level1"><a href="#why">Why</a></li>
-          <li class="level2"><a href="#get-started">Get Started</a></li>
-          <li class="level2"><a href="#startdmntester">startDmnTester</a></li>
-          <li class="level2"><a href="#createdmnconfigs">createDmnConfigs</a></li>
+          <li class="level1"><a href="#get-started">Get Started</a></li>
+          <li class="level2"><a href="#run-the-dmn-tester">Run the DMN Tester</a></li>
+          <li class="level1"><a href="#startdmntester">startDmnTester</a></li>
+          <li class="level1"><a href="#createdmnconfigs">createDmnConfigs</a></li>
           <li class="level2"><a href="#testvalues">.testValues</a></li>
           <li class="level2"><a href="#testunit">.testUnit</a></li>
           <li class="level2"><a href="#dmnpath">.dmnPath</a></li>
@@ -92,11 +93,11 @@
         <p>The <em>DMN Tester</em> lets you easily validate your DMNs, that you create or get from the business analysts.</p>
         <p>The <em>DMN Tester</em> gives you a UI, to configure a test for a DMN. 
         As there is already some information in your domain model, we must only define the rest.
-        And so we can directly run the tests.</p>
+        And so we can directly run the tests, without configure them manually in the UI.</p>
         <p>See <a href="https://github.com/camunda-community-hub/camunda-dmn-tester">Github</a> for more information
         on what the <em>DMN Tester</em> is all about.</p>
         
-        <h3 id="get-started" class="section"><a class="anchor-link left" href="#get-started"><i class="icofont-laika">&#xef71;</i></a>Get Started</h3>
+        <h2 id="get-started" class="section"><a class="anchor-link left" href="#get-started"><i class="icofont-laika">&#xef71;</i></a>Get Started</h2>
         <p>The <em>DMN Tester DSL</em> use the DMNs you created - in this context I refer to the <a href="../bpmnDsl.html#business-rule-tasks-decision-dmns">Bpmn DSL</a></p>
         <p>Let&#39;s start with a basic example:</p>
         <pre><code class="nohighlight"><span class="comment">// put your dmns in the dmn package of your project (main)
@@ -106,7 +107,7 @@
 </span><span class="comment">// import Camundala dmn DSL / the DMN Tester starter
 </span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">dmn</span><span>.{</span><span class="type-name">DmnTesterConfigCreator</span><span>, </span><span class="type-name">DmnTesterStarter</span><span>}
 </span><span class="comment">// define an object that extends ..  
-</span><span class="keyword">object</span><span> </span><span class="type-name">InvoiceDmnTesterConfigCreator</span><span> 
+</span><span class="keyword">object</span><span> </span><span class="type-name">ProjectDmnTester</span><span> 
   </span><span class="keyword">extends</span><span> </span><span class="type-name">DmnTesterConfigCreator</span><span>, </span><span class="comment">//  .. from a Config Creator DSL 
 </span><span>    </span><span class="type-name">DmnTesterStarter</span><span>, </span><span class="comment">// .. from a starter - that runs the DMN Tester automatically
 </span><span>    </span><span class="type-name">App</span><span>: </span><span class="comment">// .. to run the Application
@@ -125,9 +126,13 @@
             .</span><span class="identifier">inTestMode</span><span>
         )
 
-</span><span class="identifier">end</span><span> </span><span class="type-name">InvoiceDmnTesterConfigCreator</span></code></pre>
+</span><span class="identifier">end</span><span> </span><span class="type-name">ProjectDmnTester</span></code></pre>
         
-        <h3 id="startdmntester" class="section"><a class="anchor-link left" href="#startdmntester"><i class="icofont-laika">&#xef71;</i></a>startDmnTester</h3>
+        <h3 id="run-the-dmn-tester" class="section"><a class="anchor-link left" href="#run-the-dmn-tester"><i class="icofont-laika">&#xef71;</i></a>Run the DMN Tester</h3>
+        <p>In your <em>sbt-console</em>:</p>
+        <p><code>runMain camundala.examples.invoice.dmn.ProjectDmnTester</code></p>
+        
+        <h2 id="startdmntester" class="section"><a class="anchor-link left" href="#startdmntester"><i class="icofont-laika">&#xef71;</i></a>startDmnTester</h2>
         <p>Starts the Docker container. 
         This makes the whole process pretty nice and fast. 
         The following steps are done:</p>
@@ -138,7 +143,7 @@
           <li>If not - the Container is started.</li>
         </ul>
         
-        <h3 id="createdmnconfigs" class="section"><a class="anchor-link left" href="#createdmnconfigs"><i class="icofont-laika">&#xef71;</i></a>createDmnConfigs</h3>
+        <h2 id="createdmnconfigs" class="section"><a class="anchor-link left" href="#createdmnconfigs"><i class="icofont-laika">&#xef71;</i></a>createDmnConfigs</h2>
         <p>A DSL to create the DMN Tester configurations.</p>
         <p>You start from the DMN, that you defined, here an example:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">InvoiceAssignApproverDMN</span><span> = </span><span class="identifier">collectEntries</span><span>(

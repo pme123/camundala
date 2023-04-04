@@ -8,12 +8,12 @@ The _DMN Tester_ lets you easily validate your DMNs, that you create or get from
 
 The _DMN Tester_ gives you a UI, to configure a test for a DMN. 
 As there is already some information in your domain model, we must only define the rest.
-And so we can directly run the tests.
+And so we can directly run the tests, without configure them manually in the UI.
 
 See [Github](https://github.com/camunda-community-hub/camunda-dmn-tester) for more information
 on what the _DMN Tester_ is all about.
 
-### Get Started
+## Get Started
 The _DMN Tester DSL_ use the DMNs you created - in this context I refer to the [Bpmn DSL](../bpmnDsl.md#business-rule-tasks-decision-dmns)
 
 Let's start with a basic example:
@@ -25,7 +25,7 @@ import camundala.examples.invoice.bpmn.*
 // import Camundala dmn DSL / the DMN Tester starter
 import camundala.dmn.{DmnTesterConfigCreator, DmnTesterStarter}
 // define an object that extends ..  
-object InvoiceDmnTesterConfigCreator 
+object ProjectDmnTester 
   extends DmnTesterConfigCreator, //  .. from a Config Creator DSL 
     DmnTesterStarter, // .. from a starter - that runs the DMN Tester automatically
     App: // .. to run the Application
@@ -44,10 +44,15 @@ object InvoiceDmnTesterConfigCreator
             .inTestMode
         )
 
-end InvoiceDmnTesterConfigCreator
+end ProjectDmnTester
 ```
 
-### startDmnTester
+### Run the DMN Tester
+In your _sbt-console_:
+ 
+  `runMain camundala.examples.invoice.dmn.ProjectDmnTester`
+
+## startDmnTester
 Starts the Docker container. 
 This makes the whole process pretty nice and fast. 
 The following steps are done:
@@ -57,7 +62,7 @@ The following steps are done:
 - If it is running for another project - it stops the Container.
 - If not - the Container is started.
 
-### createDmnConfigs
+## createDmnConfigs
 A DSL to create the DMN Tester configurations.
 
 You start from the DMN, that you defined, here an example:
