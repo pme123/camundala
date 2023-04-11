@@ -135,10 +135,7 @@ case class DecisionDmnApi[
     inOut: DecisionDmn[In, Out],
     apiExamples: ApiExamples[In, Out],
     override val diagramName: Option[String] = None,
-) extends InOutApi[In, Out],
-      GroupedApi:
-  // has no children
-  val apis: List[CApi] = List.empty
+) extends InOutApi[In, Out]:
 
   def withExamples(
       examples: ApiExamples[In, Out]

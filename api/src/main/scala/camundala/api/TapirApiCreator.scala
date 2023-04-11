@@ -31,8 +31,6 @@ trait TapirApiCreator extends AbstractApiCreator:
       groupedApi match
         case pa: ProcessApi[?, ?] =>
           pa.createEndpoint(pa.name, pa.additionalDescr) ++ apis
-        case da: DecisionDmnApi[?, ?] =>
-          da.createEndpoint(da.name, da.additionalDescr)
         case _: CApiGroup => apis
 
   end extension
@@ -128,15 +126,21 @@ trait TapirApiCreator extends AbstractApiCreator:
         case _ => pa.id
 
     def additionalDescr: Option[String] =
-      val usedByDescr = UsedByReferenceCreator(processName).create()
-      val usesDescr = UsesReferenceCreator(processName).create()
-      Some(s"\n\n${usedByDescr.mkString}${usesDescr.mkString}")
+      if(apiConfig.gitConfigs.isConfigured)
+        val usedByDescr = UsedByReferenceCreator(processName).create()
+        val usesDescr = UsesReferenceCreator(processName).create()
+        Some(s"\n\n${usedByDescr.mkString}${usesDescr.mkString}")
+      else
+        None
   end extension
 
   extension (dmn: DecisionDmnApi[?, ?])
     def additionalDescr: Option[String] =
-      val usedByDescr = UsedByReferenceCreator(dmn.id).create()
-      Some(s"\n\n${usedByDescr.mkString}")
+      if(apiConfig.gitConfigs.isConfigured)
+        val usedByDescr = UsedByReferenceCreator(dmn.id).create()
+        Some(s"\n\n${usedByDescr.mkString}")
+      else
+        None
   end extension
 
 end TapirApiCreator

@@ -5,7 +5,7 @@ info:
   summary: |2+
 
 
-    Created at 24/03/2023, 16:30
+    Created at 09/04/2023, 20:15
 
     **[Check Project on Cawemo](https://cawemo.com/folders/a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala)**
 
@@ -51,13 +51,14 @@ paths:
       tags:
       - InvoiceReceiptP
       summary: 'Process: InvoiceReceiptP'
-      description: "\nThis starts the Invoice Receipt Process.\n\n<iframe src=\"https://cawemo.com/embed/e289c19a-8a57-4467-8583-de72a5e57488\"\
-        \ style=\"width:100%;height:500px;border:1px solid #ccc\" allowfullscreen></iframe>\n\
-        \n\n\n\n\n\n**Used in no other Process.**\n\n<details>\n<summary><b>Uses 1\
-        \ Project(s) (EXPERIMENTAL)</b></summary>\n<p>\n\n\n- _invoice-example_\n\
-        \   - _[ReviewInvoiceP](No URL defined for invoice-example/OpenApi.html#operation/Process:%20ReviewInvoiceP)_\
-        \ \n   - _[invoice-assign-approver](No URL defined for invoice-example/OpenApi.html#operation/DecisionDmn:%20invoice-assign-approver)_\
-        \ (DMN)\n\n\n\n</p>\n</details>\n"
+      description: |2+
+
+        This starts the Invoice Receipt Process.
+
+        <iframe src="https://cawemo.com/embed/e289c19a-8a57-4467-8583-de72a5e57488" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
+
+
+
       operationId: 'Process: InvoiceReceiptP'
       requestBody:
         content:
@@ -88,7 +89,7 @@ paths:
       tags:
       - InvoiceReceiptP
       summary: 'DecisionDmn: invoice-assign-approver'
-      description: |2
+      description: |2+
 
         Decision Table on who must approve the Invoice.
 
@@ -96,33 +97,6 @@ paths:
 
 
 
-
-
-
-        <details>
-        <summary><b>Used in 3 Project(s) (EXPERIMENTAL)</b></summary>
-        <p>
-
-
-        - _camundala_
-           - [InvoiceReceiptP](No URL defined for camundala/OpenApi.html#operation/Process:%20InvoiceReceiptP)
-           - [invoice](No URL defined for camundala/OpenApi.html#operation/Process:%20invoice)
-
-
-        - _camundala-dsl_
-           - [InvoiceReceiptP](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20InvoiceReceiptP)
-           - [invoice](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20invoice)
-
-
-        - _camundala-example_
-           - [InvoiceReceiptP](No URL defined for camundala-example/OpenApi.html#operation/Process:%20InvoiceReceiptP)
-           - [invoice](No URL defined for camundala-example/OpenApi.html#operation/Process:%20invoice)
-
-
-
-
-        </p>
-        </details>
       operationId: 'DecisionDmn: invoice-assign-approver'
       requestBody:
         content:
@@ -225,7 +199,7 @@ paths:
       tags:
       - ReviewInvoiceP
       summary: 'Process: ReviewInvoiceP'
-      description: |2
+      description: |2+
 
         This starts the Review Invoice Process.
 
@@ -233,32 +207,6 @@ paths:
 
 
 
-
-
-
-        <details>
-        <summary><b>Used in 3 Project(s) (EXPERIMENTAL)</b></summary>
-        <p>
-
-
-        - _camundala_
-           - [InvoiceReceiptP](No URL defined for camundala/OpenApi.html#operation/Process:%20InvoiceReceiptP)
-
-
-        - _camundala-dsl_
-           - [InvoiceReceiptP](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20InvoiceReceiptP)
-
-
-        - _camundala-example_
-           - [InvoiceReceiptP](No URL defined for camundala-example/OpenApi.html#operation/Process:%20InvoiceReceiptP)
-
-
-
-
-        </p>
-        </details>
-
-        **Uses no other Processes.**
       operationId: 'Process: ReviewInvoiceP'
       requestBody:
         content:
@@ -487,12 +435,12 @@ paths:
                 Invoice NOT clarified:
                   value:
                     clarified: false
-  /decisiondmn/invoice-assign-approver:
+  /decisiondmn/DMNs/invoice-assign-approver:
     head:
       tags:
-      - invoice-assign-approver
+      - DMNs
       summary: 'DecisionDmn: invoice-assign-approver'
-      description: |2
+      description: |2+
 
         Decision Table on who must approve the Invoice.
 
@@ -500,33 +448,6 @@ paths:
 
 
 
-
-
-
-        <details>
-        <summary><b>Used in 3 Project(s) (EXPERIMENTAL)</b></summary>
-        <p>
-
-
-        - _camundala_
-           - [InvoiceReceiptP](No URL defined for camundala/OpenApi.html#operation/Process:%20InvoiceReceiptP)
-           - [invoice](No URL defined for camundala/OpenApi.html#operation/Process:%20invoice)
-
-
-        - _camundala-dsl_
-           - [InvoiceReceiptP](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20InvoiceReceiptP)
-           - [invoice](No URL defined for camundala-dsl/OpenApi.html#operation/Process:%20invoice)
-
-
-        - _camundala-example_
-           - [InvoiceReceiptP](No URL defined for camundala-example/OpenApi.html#operation/Process:%20InvoiceReceiptP)
-           - [invoice](No URL defined for camundala-example/OpenApi.html#operation/Process:%20invoice)
-
-
-
-
-        </p>
-        </details>
       operationId: 'DecisionDmn: invoice-assign-approver'
       requestBody:
         content:

@@ -23,12 +23,10 @@ object TestApiCreator extends DefaultApiCreator, App:
       .withBasePath(os.pwd / "api")
 
   document(
-    group("myGroup2")(
       api(Sample.testProcess)(
         Sample.testUT
       ),
       testProcess2
-    )
   )
 
   private lazy val testProcess2 =

@@ -1,7 +1,7 @@
 import sbt.url
 import laika.markdown.github.GitHubFlavor
 import laika.parse.code.SyntaxHighlighting
-import laika.rewrite.link._
+import laika.rewrite.link.*
 import laika.ast.ExternalTarget
 
 import scala.util.Using
@@ -36,7 +36,7 @@ lazy val root = project
     exampleDemos
   )
 
-def projectSettings(projName: String): Seq[Def.Setting[_]] = Seq(
+def projectSettings(projName: String) = Seq(
   name := s"camundala-$projName",
   organization := org,
   scalaVersion := scala3Version,
@@ -60,7 +60,7 @@ lazy val bpmn = project
   .configure(publicationSettings)
   .settings(projectSettings("bpmn"))
   .settings(
-    libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.8.1" // dangerous library - in domain this caused 'geny.Generator$ already has a symbol'
+    libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.9.1" // dangerous library - in domain this caused 'geny.Generator$ already has a symbol'
   )
   .dependsOn(domain)
 

@@ -43,7 +43,9 @@ object api extends DefaultApiCreator:
       AssignReviewerUT,
       ReviewInvoiceUT
     ),
-    api(InvoiceAssignApproverDMN3) // api( is optional
+    group("DMNs")(
+      api(InvoiceAssignApproverDMN3) // api( is optional)
+    )
   )
 
   private lazy val ApproveInvoiceUT =

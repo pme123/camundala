@@ -9,20 +9,20 @@ import sttp.tapir.docs.openapi.{OpenAPIDocsInterpreter, OpenAPIDocsOptions}
 import sttp.tapir.json.circe.*
 import sttp.tapir.{EndpointInput, PublicEndpoint}
 
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util.Date
 import scala.util.matching.Regex
 
-trait ApiCreator
-    extends 
-      PostmanApiCreator,
-      TapirApiCreator,
-      App:
+trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
 
   def document(apis: CApi*): Unit =
-    toOpenApi(ApiDoc(apis.toList))
+    val apiDoc = ApiDoc(apis.toList)
+    writeOpenApis(apiDoc)
+    writeCatalog(apiDoc)
 
-  protected def toOpenApi(apiDoc: ApiDoc): Unit =
+  private def writeOpenApis(apiDoc: ApiDoc): Unit =
     writeOpenApi(
       apiConfig.openApiPath,
       openApi(apiDoc),
@@ -124,5 +124,41 @@ trait ApiCreator
     os.write(path, yaml)
     println(s"Created Open API $path")
     println(s"See Open API Html $docPath")
+
+  private def writeCatalog(apiDoc: ApiDoc): Unit =
+    val catalogPath = apiConfig.catalogPath
+    if (os.exists(catalogPath))
+      os.remove(catalogPath)
+    val catalog = toCatalog(apiDoc)
+    os.write(catalogPath, catalog)
+    println(s"Created Catalog $catalogPath")
+
+  private def toCatalog(apiDoc: ApiDoc): String =
+    s"""## $title
+       |${toCatalog(apiDoc.apis)}
+       |""".stripMargin
+
+  private def toCatalog(apis: List[CApi], groupAnchor: Option[String] = None): String =
+    apis
+      .map {
+        case ProcessApi(name, inOut, _, apis, _) =>
+          if (groupAnchor.nonEmpty) s"- ${createLink(name, groupAnchor)}"
+          else
+            s"""
+               |#### ${createLink(name)}
+               |- ${createLink(name, Some(inOut.typeName), Some(name))}
+               |""".stripMargin + toCatalog(apis, Some(name))
+        case api: GroupedApi => s"\n#### ${createLink(api.name)}\n" + toCatalog(api.apis, Some(api.name))
+        case api: InOutApi[?, ?] => s"- ${createLink(api.name, Some(api.inOut.typeName), groupAnchor)}"
+      }
+      .mkString("\n")
+  end toCatalog
+
+  private def createLink(name:String, typeName: Option[String] = None, groupAnchor: Option[String] = None): String =
+    val projName = apiConfig.docProjectUrl(projectName)
+    val anchor = groupAnchor.map(a => s"tag/${a.replace(" ", "-")}/").getOrElse("") +
+      typeName.map(n => s"operation/$n:%20$name").getOrElse(s"tag/${name.replace(" ", "-")}")
+    s"[${typeName.map(tn => s"$tn: ").getOrElse("")}$name]($projName/OpenApi.html#$anchor)"
+  end createLink
 
 end ApiCreator
