@@ -134,7 +134,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
     println(s"Created Catalog $catalogPath")
 
   private def toCatalog(apiDoc: ApiDoc): String =
-    s"""## $title
+    s"""### $title
        |${toCatalog(apiDoc.apis)}
        |""".stripMargin
 
