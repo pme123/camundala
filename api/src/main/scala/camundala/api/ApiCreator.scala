@@ -141,24 +141,23 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
   private def toCatalog(apis: List[CApi], groupAnchor: Option[String] = None): String =
     apis
       .map {
-        case ProcessApi(name, inOut, _, apis, _) =>
-          if (groupAnchor.nonEmpty) s"- ${createLink(name, groupAnchor)}"
+        case pa@ProcessApi(name, inOut, _, apis, _) =>
+          if (groupAnchor.nonEmpty) s"- ${createLink(pa.endpointName, groupAnchor)}"
           else
             s"""
                |#### ${createLink(name)}
-               |- ${createLink(name, Some(inOut.typeName), Some(name))}
+               |- ${createLink(pa.endpointName, Some(name))}
                |""".stripMargin + toCatalog(apis, Some(name))
         case api: GroupedApi => s"\n#### ${createLink(api.name)}\n" + toCatalog(api.apis, Some(api.name))
-        case api: InOutApi[?, ?] => s"- ${createLink(api.name, Some(api.inOut.typeName), groupAnchor)}"
+        case api: InOutApi[?, ?] => s"- ${createLink(s"${api.typeName}: ${api.name}", groupAnchor)}"
       }
       .mkString("\n")
   end toCatalog
 
-  private def createLink(name:String, typeName: Option[String] = None, groupAnchor: Option[String] = None): String =
+  private def createLink(name:String, groupAnchor: Option[String] = None): String =
     val projName = apiConfig.docProjectUrl(projectName)
-    val anchor = groupAnchor.map(a => s"tag/${a.replace(" ", "-")}/").getOrElse("") +
-      typeName.map(n => s"operation/$n:%20$name").getOrElse(s"tag/${name.replace(" ", "-")}")
-    s"[${typeName.map(tn => s"$tn: ").getOrElse("")}$name]($projName/OpenApi.html#$anchor)"
+    val anchor = groupAnchor.map(a => s"tag/${a.replace(" ", "-")}/operation/${name.replace(" ", "%20")}").getOrElse(s"tag/${name.replace(" ", "-")}")
+    s"[$name]($projName/OpenApi.html#$anchor)"
   end createLink
 
 end ApiCreator
