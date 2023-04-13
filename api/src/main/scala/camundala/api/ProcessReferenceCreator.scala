@@ -70,7 +70,6 @@ trait ProcessReferenceCreator:
     private def findUsagesInBpmn(): Seq[(String, Seq[(String, String)])] =
       println(s"Find Used by References for $refId")
       allBpmns
-        .toSeq
         .flatMap { case (processName, paths) =>
           paths
             .filter { case _ -> c =>

@@ -31,7 +31,9 @@ case class ApiConfig(
     // Add the path the diagrams are located on your webserver.
     // myProject => s"http://myCompany/bpmnDocs/${myProject}/${diagramDownloadPath}"
     // if you want to have a diagram - you must define this!
-    diagramDownloadPath: Option[String] = None
+    diagramDownloadPath: Option[String] = None,
+    // if you want to adjust the diagramName
+    diagramNameAdjuster: Option[String => String] = None,
 ):
   val catalogPath: Path = basePath / catalogFileName
 
@@ -75,6 +77,9 @@ case class ApiConfig(
 
   def addJiraUrl(jiraTag: String, url: String): ApiConfig =
     copy(jiraUrls = jiraUrls + (jiraTag -> url))
+
+  def withDiagramNameAdjuster(adjuster: String => String): ApiConfig =
+    copy(diagramNameAdjuster = Some(adjuster))
 
 case class GitConfigs(
     // Path, where the Git Projects are cloned.

@@ -1,13 +1,13 @@
 package camundala
 package api
 
-import domain.*
-import bpmn.*
+import camundala.bpmn.*
+import camundala.domain.*
+import io.circe.syntax.*
 import sttp.model.StatusCode
 import sttp.tapir.*
 import sttp.tapir.EndpointIO.Example
 import sttp.tapir.json.circe.*
-import io.circe.syntax.*
 
 import scala.annotation.targetName
 import scala.reflect.ClassTag
@@ -71,14 +71,15 @@ sealed trait InOutApi[
   lazy val variableNamesOut: List[String] =
     inOut.out.productElementNames.toList
 
-  def apiDescription(diagramDownloadPath: Option[String]): String = descr
+  def apiDescription(diagramDownloadPath: Option[String], diagramNameAdjuster: Option[String => String]): String = descr
 
   protected def diagramName: Option[String] = None
 
-  protected def diagramFrame(diagramDownloadPath: String): String =
+  protected def diagramFrame(diagramDownloadPath: String, diagramNameAdjuster: Option[String => String]): String =
     val postfix = if (typeName == "Process") "bpmn" else "dmn"
     val postfixUpper = postfix.head.toUpper + postfix.tail
-    val name = diagramName.getOrElse(id).replace("valiant-", "")
+    val pureDiagramName = diagramName.getOrElse(id)
+    val name = diagramNameAdjuster.map(_(pureDiagramName)).getOrElse(pureDiagramName)
     val fileName = s"$name.$postfix"
     val randomPostfix = Random.nextInt(100000)
     s"""
@@ -102,7 +103,7 @@ case class ProcessApi[
     inOut: Process[In, Out],
     apiExamples: ApiExamples[In, Out],
     apis: List[CApi] = List.empty,
-    override val diagramName: Option[String] = None,
+    override val diagramName: Option[String] = None
 ) extends InOutApi[In, Out],
       GroupedApi:
 
@@ -112,10 +113,13 @@ case class ProcessApi[
   ): InOutApi[In, Out] =
     copy(apiExamples = examples)
 
-  override def apiDescription(diagramDownloadPath: Option[String]): String =
+  override def apiDescription(diagramDownloadPath: Option[String], diagramNameAdjuster: Option[String => String]): String =
     s"""$descr
        |
-       |${diagramDownloadPath.map(diagramFrame).getOrElse("")}
+       |${inOut.in match
+      case _: GenericServiceIn => "" // no diagram if generic
+      case _ => diagramDownloadPath.map(diagramFrame(_, diagramNameAdjuster)).getOrElse("")
+    }
        |""".stripMargin
 
 object ProcessApi:
@@ -134,7 +138,7 @@ case class DecisionDmnApi[
     name: String,
     inOut: DecisionDmn[In, Out],
     apiExamples: ApiExamples[In, Out],
-    override val diagramName: Option[String] = None,
+    override val diagramName: Option[String] = None
 ) extends InOutApi[In, Out]:
 
   def withExamples(
@@ -145,10 +149,10 @@ case class DecisionDmnApi[
   def toActivityApi: ActivityApi[In, Out] =
     ActivityApi(name, inOut)
 
-  override def apiDescription(diagramDownloadPath: Option[String]): String =
+  override def apiDescription(diagramDownloadPath: Option[String], diagramNameAdjuster: Option[String => String]): String =
     s"""$descr
        |
-       |${diagramDownloadPath.map(diagramFrame).getOrElse("")}
+       |${diagramDownloadPath.map(diagramFrame(_, diagramNameAdjuster)).getOrElse("")}
        |""".stripMargin
 
 object DecisionDmnApi:
