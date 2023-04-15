@@ -7,8 +7,12 @@ import camundala.bpmn.CamundaVariable.*
 import camundala.domain.*
 import camundala.simulation.TestOverrideType.*
 import io.circe.parser.*
+import io.circe.*
+import io.circe.syntax.*
 
-trait ResultChecker {
+import scala.collection.mutable.ListBuffer
+
+trait ResultChecker :
 
   def checkProps(
       withOverrides: WithTestOverrides[_],
@@ -155,19 +159,20 @@ trait ResultChecker {
                   s"!!! The expected File value '${expectedValue}'\n of $key does not match the result variable: '$cFileValueInfo'."
                 )
               matches
-            case CamundaProperty(_, CJson(cValue, _)) =>
-              val cJson = toJson(cValue)
-              val pJson = toJson(expectedValue.value.toString)
-              val setCJson = cJson.as[Set[Json]].toOption.getOrElse(cJson)
-              val setPJson = pJson.as[Set[Json]].toOption.getOrElse(pJson)
+            case CamundaProperty(key, CJson(cValue, _)) =>
+              val resultJson = toJson(cValue)
+              val expectedJson = toJson(expectedValue.value.toString)
+              val matches = checkJson(expectedJson, resultJson, key)
+           /*   val setCJson = resultJson.as[Set[Json]].toOption.getOrElse(resultJson)
+              val setPJson = expectedJson.as[Set[Json]].toOption.getOrElse(expectedJson)
               val matches: Boolean = setCJson == setPJson
               if (!matches)
                 println(
-                  s"<<< cJson: ${setCJson.getClass} / expectedJson: ${setPJson.getClass}"
+                  s"<<< resultJson: ${setCJson.getClass} / expectedJson: ${setPJson.getClass}"
                 )
                 println(
-                  s"!!! The expected Json value '$setPJson' of $key does not match the result variable cJson: '$setCJson'."
-                )
+                  s"!!! The expected Json value '$setPJson' of $key does not match the result variable resultJson: '$setCJson'."
+                ) */
               matches
             case CamundaProperty(_, cValue) =>
               val matches: Boolean = cValue.value == expectedValue.value
@@ -188,4 +193,59 @@ trait ResultChecker {
           }
       }
       .forall(_ == true)
-}
+
+  end checkP
+
+  private def checkJson(expectedJson: io.circe.Json, resultJson: io.circe.Json, key: String): Boolean =
+    val diffs: ListBuffer[String] = ListBuffer()
+    def compareJsons(expJson: io.circe.Json, resJson: io.circe.Json, path: String): Unit = {
+      if (expJson != resJson) {
+        (expJson, resJson) match {
+          case _ if expJson.isArray && resJson.isArray =>
+            val expJsonArray = expJson.asArray.toList.flatten
+            val resJsonArray = resJson.asArray.toList.flatten
+            for ((expJson, resJson) <- expJsonArray.zipAll(resJsonArray, Json.Null, Json.Null)) {
+              compareJsons(expJson, resJson, s"$path[${expJsonArray.indexOf(expJson)}]")
+            }
+          case _ if expJson.isObject && resJson.isObject =>
+            val expJsonObj = expJson.asObject.get
+            val resJsonObj = resJson.asObject.get
+            val expKeys = expJsonObj.keys.toSeq
+            val resKeys = resJsonObj.keys.toSeq
+            val commonKeys = expKeys.intersect(resKeys).toSet
+            val uniqueKeys = (expKeys ++ resKeys).toSet.diff(commonKeys)
+            for (key <- commonKeys) {
+              compareJsons(expJsonObj(key).get, resJsonObj(key).get, s"$path.$key")
+            }
+            for (key <- uniqueKeys) {
+               if (expKeys.contains(key))
+                expJsonObj(key).foreach{ json =>
+                  diffs += s"$path.$key: ${json.noSpaces} (expected field not in result)"
+                }
+              else
+                resJsonObj(key).foreach { json =>
+                  diffs += s"$path.$key: ${json.noSpaces} (field in result not expected)"
+                }
+            }
+          case _ =>
+            diffs += s"$path: ${expJson.noSpaces} (expected) != ${resJson.noSpaces} (result)"
+        }
+      }
+    }
+
+    compareJsons(expectedJson, resultJson, "")
+
+    if (diffs.isEmpty) {
+      println("The two JSONs are the same.")
+    } else {
+      println(s"The JSON variable $key have the following different fields:")
+      for (diff <- diffs) {
+        println(diff)
+      }
+    }
+    diffs.isEmpty
+  end checkJson
+
+
+end ResultChecker
+
