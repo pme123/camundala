@@ -15,8 +15,9 @@ trait ApiBaseDsl:
 
   def api[
     In <: Product : Encoder : Decoder : Schema,
-    Out <: Product : Encoder : Decoder : Schema : ClassTag
-  ](pApi: InOutApi[In, Out]): InOutApi[In, Out] =
+    Out <: Product : Encoder : Decoder : Schema : ClassTag,
+    T <: InOutApi[In, Out]
+  ](pApi: T): T =
     pApi
 
   def api[
