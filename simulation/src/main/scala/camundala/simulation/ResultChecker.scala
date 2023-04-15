@@ -162,18 +162,7 @@ trait ResultChecker :
             case CamundaProperty(key, CJson(cValue, _)) =>
               val resultJson = toJson(cValue)
               val expectedJson = toJson(expectedValue.value.toString)
-              val matches = checkJson(expectedJson, resultJson, key)
-           /*   val setCJson = resultJson.as[Set[Json]].toOption.getOrElse(resultJson)
-              val setPJson = expectedJson.as[Set[Json]].toOption.getOrElse(expectedJson)
-              val matches: Boolean = setCJson == setPJson
-              if (!matches)
-                println(
-                  s"<<< resultJson: ${setCJson.getClass} / expectedJson: ${setPJson.getClass}"
-                )
-                println(
-                  s"!!! The expected Json value '$setPJson' of $key does not match the result variable resultJson: '$setCJson'."
-                ) */
-              matches
+              checkJson(expectedJson, resultJson, key)
             case CamundaProperty(_, cValue) =>
               val matches: Boolean = cValue.value == expectedValue.value
               if (!matches)
@@ -235,9 +224,7 @@ trait ResultChecker :
 
     compareJsons(expectedJson, resultJson, "")
 
-    if (diffs.isEmpty) {
-      println("The two JSONs are the same.")
-    } else {
+    if (diffs.nonEmpty) {
       println(s"The JSON variable $key have the following different fields:")
       for (diff <- diffs) {
         println(diff)
