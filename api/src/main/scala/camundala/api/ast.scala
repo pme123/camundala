@@ -21,6 +21,7 @@ sealed trait CApi:
 sealed trait GroupedApi extends CApi:
   def name: String
   def apis: List[_ <: CApi]
+  def withApis(apis: List[_ <: CApi]): GroupedApi
 
 sealed trait InOutApi[
     In <: Product: Encoder: Decoder: Schema,
@@ -169,7 +170,7 @@ case class CApiGroup(
     apis: List[CApi]
 ) extends GroupedApi:
 
-  def withApis(apis: List[GroupedApi]): GroupedApi = copy(apis = apis)
+  def withApis(apis: List[CApi]): CApiGroup = copy(apis = apis)
 
 end CApiGroup
 

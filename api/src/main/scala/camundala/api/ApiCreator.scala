@@ -134,29 +134,75 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
     println(s"Created Catalog $catalogPath")
 
   private def toCatalog(apiDoc: ApiDoc): String =
+    val optimizedApis =
+      if (apiConfig.catalogOptimized)
+        optimizeApis(apiDoc)
+      else apiDoc.apis
     s"""### $title
-       |${toCatalog(apiDoc.apis)}
+       |${toCatalog(optimizedApis)}
        |""".stripMargin
 
-  private def toCatalog(apis: List[CApi], groupAnchor: Option[String] = None): String =
+  private def optimizeApis(apiDoc: ApiDoc): List[CApi] =
+    apiDoc.apis.foldLeft(List.empty[CApi]) {
+      case (result, groupedApi: GroupedApi) =>
+        val filteredApis =
+          groupedApi.apis.flatMap(api => checkApi(api, result).toList)
+        if (filteredApis.nonEmpty)
+          result :+ groupedApi.withApis(filteredApis)
+        else result
+      case (result, otherApi: CApi) =>
+        result ++ checkApi(otherApi, result).toList
+    }
+
+  // check if the Api is already listed in the result apis
+  private def checkApi(api: CApi, result: List[CApi]): Option[CApi] =
+    if (
+      result
+        .flatMap {
+          case api: GroupedApi => api.apis
+          case other => Seq(api)
+        }
+        .exists(a => a.name == api.name)
+    )
+      None
+    else
+      Some(api)
+
+  private def toCatalog(
+      apis: List[CApi],
+      groupAnchor: Option[String] = None
+  ): String =
     apis
       .map {
-        case pa@ProcessApi(name, inOut, _, apis, _) =>
-          if (groupAnchor.nonEmpty) s"- ${createLink(pa.endpointName, groupAnchor)}"
+        case pa @ ProcessApi(name, inOut, _, apis, _) =>
+          if (groupAnchor.nonEmpty)
+            s"- ${createLink(pa.endpointName, groupAnchor)}"
           else
             s"""
                |#### ${createLink(name)}
                |- ${createLink(pa.endpointName, Some(name))}
                |""".stripMargin + toCatalog(apis, Some(name))
-        case api: GroupedApi => s"\n#### ${createLink(api.name)}\n" + toCatalog(api.apis, Some(api.name))
-        case api: InOutApi[?, ?] => s"- ${createLink(s"${api.typeName}: ${api.name}", groupAnchor)}"
+        case api: GroupedApi =>
+          s"\n#### ${createLink(api.name)}\n" + toCatalog(
+            api.apis,
+            Some(api.name)
+          )
+        case api: InOutApi[?, ?] =>
+          s"- ${createLink(s"${api.typeName}: ${api.name}", groupAnchor)}"
       }
       .mkString("\n")
   end toCatalog
 
-  private def createLink(name:String, groupAnchor: Option[String] = None): String =
+  private def createLink(
+      name: String,
+      groupAnchor: Option[String] = None
+  ): String =
     val projName = apiConfig.docProjectUrl(projectName)
-    val anchor = groupAnchor.map(a => s"tag/${a.replace(" ", "-")}/operation/${name.replace(" ", "%20")}").getOrElse(s"tag/${name.replace(" ", "-")}")
+    val anchor = groupAnchor
+      .map(a =>
+        s"tag/${a.replace(" ", "-")}/operation/${name.replace(" ", "%20")}"
+      )
+      .getOrElse(s"tag/${name.replace(" ", "-")}")
     s"[$name]($projName/OpenApi.html#$anchor)"
   end createLink
 
