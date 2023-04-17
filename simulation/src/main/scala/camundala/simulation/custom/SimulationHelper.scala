@@ -65,6 +65,7 @@ trait SimulationHelper extends ResultChecker, Logging:
     given ScenarioData = data
       .info(debugMsg)
       .debug(s"- URI: ${request.uri}")
+      .debug(s"- Body: ${request.body}")
 
     val response = request.send(backend)
     if (StatusCode.NoContent == response.code)

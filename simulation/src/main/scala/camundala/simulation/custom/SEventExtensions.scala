@@ -87,6 +87,7 @@ trait SEventExtensions extends SimulationHelper:
           .post(uri)
 
         given ScenarioData = data
+          .debug(s"- Request body: $body")
 
         val response = request.send(backend)
         response.body
@@ -95,7 +96,7 @@ trait SEventExtensions extends SimulationHelper:
               .info(
                 s"Message '${sEvent.name}' received"
               )
-              .debug(s"- body: $body")
+              .debug(s"- response body: $body")
           }.left
           .flatMap { _ =>
             tryOrFail(correlate(), sEvent)
