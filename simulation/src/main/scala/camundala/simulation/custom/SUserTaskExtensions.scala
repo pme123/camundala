@@ -16,6 +16,7 @@ trait SUserTaskExtensions extends SimulationHelper:
       for {
         given ScenarioData <- task()
         given ScenarioData <- checkForm()
+        given ScenarioData <- userTask.waitForSec.map(waitFor).getOrElse(Right(summon[ScenarioData]))
         given ScenarioData <- completeTask()
       } yield summon[ScenarioData]
 

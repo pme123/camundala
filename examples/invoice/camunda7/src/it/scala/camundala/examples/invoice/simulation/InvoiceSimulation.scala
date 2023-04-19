@@ -18,11 +18,12 @@ class InvoiceSimulation extends CustomSimulation:
       `Invoice Receipt that fails`,
       "Could not archive invoice..."
     )(
-      ApproveInvoiceUT,
+      ApproveInvoiceUT
+      .waitForSec(1), // tests wait function for UserTasks
       PrepareBankTransferUT
     ),
     scenario(`Invoice Receipt`)(
-      waitFor(12),
+      waitFor(1),
       ApproveInvoiceUT,
       PrepareBankTransferUT
     ),
@@ -51,7 +52,7 @@ class InvoiceSimulation extends CustomSimulation:
     badScenario(
       BadValidationP,
       500,
-      "Validation Error: Input is not valid: DecodingFailure(Missing required field, List(DownField(creditor)))"
+      "Validation Error: Input is not valid: DecodingFailure at .creditor: Missing required field"
     )
   )
 

@@ -116,7 +116,9 @@ sealed trait SInOutStep extends SStep, WithTestOverrides[SInOutStep]:
 case class SUserTask(
     name: String,
     inOut: UserTask[_, _],
-    testOverrides: Option[TestOverrides] = None
+    testOverrides: Option[TestOverrides] = None,
+    // after getting a task, you can wait - used for intermediate events running something.
+    waitForSec: Option[Int] = None
 ) extends SInOutStep:
 
   def add(testOverride: TestOverride): SUserTask =

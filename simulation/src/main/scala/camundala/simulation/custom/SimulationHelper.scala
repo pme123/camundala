@@ -113,5 +113,18 @@ trait SimulationHelper extends ResultChecker, Logging:
       )
     }
   }
-  
+
+  protected def waitFor(seconds: Int)(using data: ScenarioData): Either[ScenarioData, ScenarioData] =
+    Try(Thread.sleep(seconds * 1000)).toEither
+      .map(_ => data.info(s"Waited for $seconds second(s)."))
+      .left
+      .map(ex =>
+        data
+          .error(
+            s"Problem when waiting for $seconds second(s). ${ex.getMessage}."
+          )
+          .debug(ex.toString)
+      )
+  end waitFor
+
 end SimulationHelper

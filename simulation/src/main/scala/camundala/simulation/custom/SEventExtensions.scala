@@ -10,44 +10,54 @@ import sttp.client3.*
 trait SEventExtensions extends SimulationHelper:
 
   extension (sEvent: SEvent)
-
     def loadVariable()(using data: ScenarioData): ResultType = {
       val variableName = sEvent.readyVariable
       val readyValue = sEvent.readyValue
       def loadVariable(
-                   processInstanceId: Any
-                 )(data: ScenarioData): ResultType = {
+          processInstanceId: Any
+      )(data: ScenarioData): ResultType = {
         val uri =
           uri"${config.endpoint}/history/variable-instance?variableName=$variableName&processInstanceId=$processInstanceId&deserializeValues=false"
         val request = basicRequest
           .auth()
           .get(uri)
         given ScenarioData = data
-        runRequest(request, s"${sEvent.inOut.getClass.getSimpleName} '${sEvent.name}' loadVariables")(
-          (body, data) =>
-            body.hcursor.downArray
-              .downField("value")
-              .as[Json]
-              .flatMap { value =>
-                if(value.toString == readyValue.toString)
-                  Right(data
+        runRequest(
+          request,
+          s"${sEvent.inOut.getClass.getSimpleName} '${sEvent.name}' loadVariables"
+        )((body, data) =>
+          body.hcursor.downArray
+            .downField("value")
+            .as[Json]
+            .flatMap { value =>
+              if (value.toString == readyValue.toString)
+                Right(
+                  data
                     .info(
                       s"Variable for '${sEvent.name}' ready ($variableName = '$readyValue')"
-                    ))
-                else
-                  Left (data
-                    .info(s"Variable found for '${sEvent.name}' but not ready ($variableName = '$readyValue' (result: '$value'))")
-                  )
-              }
-              .left
-              .flatMap { _ =>
-                tryOrFail(loadVariable(processInstanceId), sEvent)
-              }
-          )
+                    )
+                )
+              else
+                Left(
+                  data
+                    .info(
+                      s"Variable found for '${sEvent.name}' but not ready ($variableName = '$readyValue' (result: '$value'))"
+                    )
+                )
+            }
+            .left
+            .flatMap { _ =>
+              tryOrFail(loadVariable(processInstanceId), sEvent)
+            }
+        )
       }
 
       val processInstanceId = data.context.processInstanceId
-      loadVariable(processInstanceId)(data.withRequestCount(0))
+      loadVariable(processInstanceId)(
+        data
+          .debug(s"Load - Wait for $variableName with ready value: $readyValue")
+          .withRequestCount(0)
+      )
     }
 
   end extension
@@ -97,7 +107,8 @@ trait SEventExtensions extends SimulationHelper:
                 s"Message '${sEvent.name}' received"
               )
               .debug(s"- response body: $body")
-          }.left
+          }
+          .left
           .flatMap { _ =>
             tryOrFail(correlate(), sEvent)
           }

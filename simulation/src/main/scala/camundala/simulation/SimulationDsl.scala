@@ -78,6 +78,12 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
       SReceiveMessageEvent(rme.name, rme).start
   end extension
 
+  extension (ut: UserTask[?,?])
+    def waitForSec(sec: Int): SUserTask =
+      SUserTask(ut.name, ut, waitForSec = Some(sec))
+
+  end extension
+
   def waitFor(timeInSec: Int): SWaitTime = SWaitTime(timeInSec)
 
   extension (scen: ProcessScenario)

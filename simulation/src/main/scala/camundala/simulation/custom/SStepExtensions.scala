@@ -13,11 +13,11 @@ trait SStepExtensions
       SEventExtensions,
       SSubProcessExtensions:
 
-  extension (step: SStep) {
+  extension (step: SStep)
     def run()(using
         data: ScenarioData
     ): ResultType =
-      step match {
+      step match
         case ut: SUserTask =>
           ut.getAndComplete()
         case e: SReceiveMessageEvent =>
@@ -33,8 +33,10 @@ trait SStepExtensions
           } yield summon[ScenarioData]
         case SWaitTime(seconds) =>
           waitFor(seconds)
-      }
-  }
+    end run
+
+  end extension
+
 
   extension (hasProcessSteps: HasProcessSteps)
     def runSteps()(using
@@ -150,15 +152,4 @@ trait SStepExtensions
 
   end extension
 
-  private def waitFor(seconds: Int)(using data: ScenarioData) =
-    Try(Thread.sleep(seconds * 1000)).toEither
-      .map(_ => data.info(s"Waited for $seconds second(s)."))
-      .left
-      .map(ex =>
-        data
-          .error(
-            s"Problem when waiting for $seconds second(s). ${ex.getMessage}."
-          )
-          .debug(ex.toString)
-      )
 end SStepExtensions
