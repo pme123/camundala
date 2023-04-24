@@ -225,7 +225,7 @@ trait ResultChecker :
     compareJsons(expectedJson, resultJson, "")
 
     if (diffs.nonEmpty) {
-      println(s"The JSON variable $key have the following different fields:")
+      println(s"!!! The JSON variable $key have the following different fields:")
       for (diff <- diffs) {
         println(diff)
       }
