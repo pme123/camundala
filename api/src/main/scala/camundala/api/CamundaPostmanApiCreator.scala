@@ -41,20 +41,28 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
     Seq(
       api.evaluateDecision(tag)
     )
-  protected def createPostmanForReceiveMessageEvent(
+  protected def createPostmanForMessageEvent(
       api: ActivityApi[?, ?],
       tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     Seq(
       api.correlateMessage(tag)
     )
-  protected def createPostmanForReceiveSignalEvent(
+  protected def createPostmanForSignalEvent(
       api: ActivityApi[?, ?],
       tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
-    println("SIGNAL Camunda")
     Seq(
       api.sendSignal(tag)
+    )
+
+  protected def createPostmanForTimerEvent(
+                                          api: ActivityApi[?, ?],
+                                          tag: String
+                                        ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+    Seq(
+      api.getActiveJob(tag),
+      api.executeTimer(tag)
     )
 
   extension (process: ProcessApi[?, ?])
@@ -89,6 +97,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
         .postmanBaseEndpoint(tag, input, "GetActiveTask")
         .in(path)
         .post
+    end getActiveTask
 
     def getTaskFormVariables(tag: String): PublicEndpoint[?, Unit, ?, Any] =
       val path =
@@ -151,7 +160,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
         .post
 
     def correlateMessage(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val event = api.inOut.asInstanceOf[ReceiveMessageEvent[?]]
+      val event = api.inOut.asInstanceOf[MessageEvent[?]]
       val path = "message" / s"--REMOVE:${event.messageName}--"
       val input = api
         .toPostmanInput((example: FormVariables) =>
@@ -174,7 +183,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
         .post
 
     def sendSignal(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val event = api.inOut.asInstanceOf[ReceiveSignalEvent[?]]
+      val event = api.inOut.asInstanceOf[SignalEvent[?]]
       val path = "signal" / s"--REMOVE:${event.messageName}--"
       val input = api
         .toPostmanInput((example: FormVariables) =>
@@ -192,6 +201,26 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
                      |""".stripMargin
       api
         .postmanBaseEndpoint(tag, input, "SendSignal", Some(descr))
+        .in(path)
+        .post
+
+    def getActiveJob(tag: String): PublicEndpoint[?, Unit, ?, Any] =
+      val path = "job" / s"--REMOVE:${api.id}--"
+
+      val input =
+        api
+          .toPostmanInput(_ => GetActiveJobIn())
+      api
+        .postmanBaseEndpoint(tag, input, "GetActiveJob")
+        .in(path)
+        .post
+    end getActiveJob
+
+    def executeTimer(tag: String): PublicEndpoint[?, Unit, ?, Any] =
+      val event = api.inOut.asInstanceOf[TimerEvent]
+      val path = "job" / jobIdPath() / "execute" / s"--REMOVE:${event.id}--"
+      api
+        .postmanBaseEndpoint(tag, None, "ExecuteTimer", Some(api.descr))
         .in(path)
         .post
 

@@ -48,5 +48,8 @@ object DemosApiCreator extends DefaultApiCreator:
       SignalMessageExample.messageExample,
       SignalMessageExample.signalIntermediateExample,
       SignalMessageExample.messageIntermediateExample
+    ),
+    api(TimerExample.timerProcess)(
+      TimerExample.timer
     )
   )

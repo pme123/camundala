@@ -62,17 +62,17 @@ trait SEventExtensions extends SimulationHelper:
 
   end extension
 
-  extension (sEvent: SReceiveMessageEvent)
+  extension (sEvent: SMessageEvent)
     def event = sEvent.inOut
 
     def sendMessage()(using ScenarioData): ResultType =
-      if (sEvent.optReadyVariable.nonEmpty) {
-        for {
-          given ScenarioData <- sEvent.loadVariable()
-          given ScenarioData <- sendMsg()
-        } yield summon[ScenarioData]
-      } else // default: try until it returns status 200
-        sendMsg()
+      for {
+        // default: try until it returns status 200
+        given ScenarioData <- sEvent.optReadyVariable
+          .map(_ => sEvent.loadVariable())
+          .getOrElse(Right(summon[ScenarioData]))
+        given ScenarioData <- sendMsg()
+      } yield summon[ScenarioData]
 
     def sendMsg()(using data: ScenarioData): ResultType = {
       def correlate()(data: ScenarioData): ResultType =
@@ -118,7 +118,7 @@ trait SEventExtensions extends SimulationHelper:
     }
   end extension // SReceiveMessageEvent
 
-  extension (sEvent: SReceiveSignalEvent)
+  extension (sEvent: SSignalEvent)
     def event = sEvent.inOut
     def sendSignal()(using ScenarioData): ResultType =
       for {
@@ -146,5 +146,83 @@ trait SEventExtensions extends SimulationHelper:
       )
     }
   end extension // SReceiveSignalEvent
+
+  extension (sEvent: STimerEvent)
+
+    def getAndExecute()(using data: ScenarioData): ResultType =
+      given ScenarioData = data.withTaskId(notSet)
+
+      for {
+        // default it waits until there is a job ready
+        given ScenarioData <- sEvent.optReadyVariable
+          .map(_ => sEvent.loadVariable())
+          .getOrElse(Right(summon[ScenarioData]))
+        given ScenarioData <- job()
+        given ScenarioData <- executeTimer()
+      } yield summon[ScenarioData]
+
+    private def job()(using data: ScenarioData): ResultType = {
+      def getJob(
+          processInstanceId: Any
+      )(data: ScenarioData): ResultType = {
+        val uri =
+          uri"${config.endpoint}/job?processInstanceId=$processInstanceId"
+        val request = basicRequest
+          .auth()
+          .get(uri)
+
+        given ScenarioData = data
+          .info(
+            s"TimerEvent '${sEvent.name}' get"
+          )
+          .debug(s"- URI: $uri")
+
+        request
+          .extractBody()
+          .flatMap(body =>
+            body.hcursor.downArray
+              .downField("id")
+              .as[String]
+              .map { (jobId: String) =>
+                summon[ScenarioData]
+                  .withJobId(jobId)
+                  .info(
+                    s"TimerEvent '${sEvent.name}' ready"
+                  )
+                  .info(s"- jobId: $jobId")
+                  .debug(s"- body: $body")
+              }
+              .left
+              .flatMap { _ =>
+                tryOrFail(getJob(processInstanceId), sEvent)
+              }
+          )
+      }
+
+      val processInstanceId = data.context.processInstanceId
+      getJob(processInstanceId)(data.withRequestCount(0))
+    }
+
+    private def executeTimer()(using ScenarioData): ResultType =
+      for {
+        given ScenarioData <- execEvent()
+      } yield summon[ScenarioData]
+
+    private def execEvent()(using
+        data: ScenarioData
+    ): ResultType = {
+
+      val uri = uri"${config.endpoint}/job/${data.context.jobId}/execute"
+
+      val request = basicRequest
+        .auth()
+        .contentType("application/json")
+        .post(uri)
+
+      runRequest(request, s"Timer '${sEvent.name}' sent")((_, data) =>
+        Right(data)
+      )
+    }
+  end extension // SReceiveTimerEvent
 
 end SEventExtensions

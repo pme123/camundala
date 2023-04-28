@@ -56,13 +56,12 @@ trait PostmanApiCreator extends AbstractApiCreator:
               createPostmanForUserTask(aa, tag)
             case _: DecisionDmn[?, ?] =>
               createPostmanForDecisionDmn(aa, tag)
-            case _: ReceiveMessageEvent[?] =>
-              createPostmanForReceiveMessageEvent(aa, tag)
-            case _: ReceiveSignalEvent[?] =>
-              createPostmanForReceiveSignalEvent(aa, tag)
-            case other =>
-              println(s"TODO: $other")
-              Seq.empty
+            case _: MessageEvent[?] =>
+              createPostmanForMessageEvent(aa, tag)
+            case _: SignalEvent[?] =>
+              createPostmanForSignalEvent(aa, tag)
+            case _: TimerEvent =>
+              createPostmanForTimerEvent(aa, tag)
         case pa @ ProcessApi(name, _, _, apis, _)
             if apis.forall(_.isInstanceOf[ActivityApi[?, ?]]) =>
           createPostmanForProcess(pa, tag) ++ apis.flatMap(_.createPostman(tag))
@@ -91,12 +90,17 @@ trait PostmanApiCreator extends AbstractApiCreator:
       tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]]
 
-  protected def createPostmanForReceiveMessageEvent(
+  protected def createPostmanForMessageEvent(
       api: ActivityApi[?, ?],
       tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]]
 
-  protected def createPostmanForReceiveSignalEvent(
+  protected def createPostmanForSignalEvent(
+      api: ActivityApi[?, ?],
+      tag: String
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]]
+
+  protected def createPostmanForTimerEvent(
       api: ActivityApi[?, ?],
       tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]]
@@ -165,6 +169,20 @@ trait PostmanApiCreator extends AbstractApiCreator:
                      |pm.collectionVariables.set("taskId", result.id)
                      |```
                      |""".stripMargin)
+      .default("{{taskId}}")
+
+  protected def jobIdPath() =
+    path[String]("jobId")
+      .description(
+        """The jobId of the Timer.
+          |> This is the result id of the `GetJob`
+          |
+          |Add in the _Tests_ panel of _Postman_ in GetActiveJob:
+          |```
+          |let result = pm.response.json()[0];
+          |pm.collectionVariables.set("jobId", result.id)
+          |```
+          |""".stripMargin)
       .default("{{taskId}}")
 
   protected def definitionKeyPath(key: String): EndpointInput[String] =

@@ -20,10 +20,12 @@ trait SStepExtensions
       step match
         case ut: SUserTask =>
           ut.getAndComplete()
-        case e: SReceiveMessageEvent =>
+        case e: SMessageEvent =>
           e.sendMessage()
-        case e: SReceiveSignalEvent =>
+        case e: SSignalEvent =>
           e.sendSignal()
+        case e: STimerEvent =>
+          e.getAndExecute()
         case sp: SSubProcess =>
           for {
             given ScenarioData <- sp.switchToSubProcess()

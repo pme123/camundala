@@ -8,7 +8,7 @@ info:
 
 
 
-    Created at 07/04/2023, 08:14
+    Created at 28/04/2023, 16:27
 
     ****
 
@@ -463,7 +463,7 @@ paths:
         - _messageName_: `intermediate-signal-for-example`,
 
 
-        See API Doc: [intermediate-signal-for-example](No URL defined for demos-example/OpenApi.html#operation/ReceiveSignalEvent:%20intermediate-signal-for-example)
+        See API Doc: [intermediate-signal-for-example](No URL defined for demos-example/OpenApi.html#operation/SignalEvent:%20intermediate-signal-for-example)
       operationId: postSignal--remove:intermediate-signal-for-example--
       requestBody:
         content:
@@ -495,7 +495,7 @@ paths:
         - _messageName_: `intermediate-message-for-example`,
 
 
-        See API Doc: [intermediate-message-for-example](No URL defined for demos-example/OpenApi.html#operation/ReceiveMessageEvent:%20intermediate-message-for-example)
+        See API Doc: [intermediate-message-for-example](No URL defined for demos-example/OpenApi.html#operation/MessageEvent:%20intermediate-message-for-example)
       operationId: postMessage--remove:intermediate-message-for-example--
       requestBody:
         content:
@@ -515,6 +515,61 @@ paths:
                   resultEnabled: true
                   variablesInResultEnabled: true
         required: true
+      responses:
+        '200':
+          description: ''
+  /process-definition/key/timer-example/start:
+    post:
+      tags:
+      - timer-example
+      summary: 'timer-example: StartProcess'
+      description: |2
+
+
+        See API Doc: [timer-example](No URL defined for demos-example/OpenApi.html#operation/Process:%20timer-example)
+      operationId: postProcess-definitionKeyTimer-exampleStart
+      responses:
+        '200':
+          description: ''
+  /job/--REMOVE:wait%20for%20one%20day--:
+    post:
+      tags:
+      - timer-example
+      summary: 'wait for one day: GetActiveJob'
+      description: |2
+
+
+        See API Doc: [wait for one day](No URL defined for demos-example/OpenApi.html#operation/TimerEvent:%20wait%20for%20one%20day)
+      operationId: postJob--remove:wait for one day--
+      responses:
+        '200':
+          description: ''
+  /job/{jobId}/execute/--REMOVE:wait%20for%20one%20day--:
+    post:
+      tags:
+      - timer-example
+      summary: 'wait for one day: ExecuteTimer'
+      description: |2
+
+
+        See API Doc: [wait for one day](No URL defined for demos-example/OpenApi.html#operation/TimerEvent:%20wait%20for%20one%20day)
+      operationId: postJobJobidExecute--remove:wait for one day--
+      parameters:
+      - name: jobId
+        in: path
+        description: |
+          The jobId of the Timer.
+          > This is the result id of the `GetJob`
+
+          Add in the _Tests_ panel of _Postman_ in GetActiveJob:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("jobId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
       responses:
         '200':
           description: ''

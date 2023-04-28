@@ -26,7 +26,7 @@ camunda:
 #    generic-properties.properties:
 
 # Uncomment if you need to run the application on a non-standard port
-server.port: 8033
+server.port: 8887
 
 # logging:
 #   level.root: INFO

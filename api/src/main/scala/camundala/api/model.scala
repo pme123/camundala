@@ -115,6 +115,9 @@ case class StartProcessIn(
     @description("Set to false will not return the Process Variables.")
     withVariablesInReturn: Boolean = true
 )
+object StartProcessIn:
+  given Schema[StartProcessIn] = Schema.derived
+  given CirceCodec[StartProcessIn] = deriveCodec
 
 case class CorrelateMessageIn(
     messageName: String,
@@ -130,6 +133,9 @@ case class CorrelateMessageIn(
     resultEnabled: Boolean = true,
     variablesInResultEnabled: Boolean = true
 )
+object CorrelateMessageIn:
+  given Schema[CorrelateMessageIn] = Schema.derived
+  given CirceCodec[CorrelateMessageIn] = deriveCodec
 
 case class SendSignalIn(
     @description("The name of the signal to deliver.")
@@ -155,6 +161,34 @@ Note: If no execution id is defined the signal is broadcasted to all subscribed 
     variables: Option[Map[String, CamundaVariable]] = None
 )
 
+object SendSignalIn:
+  given Schema[SendSignalIn] = Schema.derived
+  given CirceCodec[SendSignalIn] = deriveCodec
+
+@description(
+  "Same as ExecuteTimerIn."
+)
+case class GetActiveJobIn(
+                           @description(
+                             """
+                               |The id of the process - you want to get the active tasks.
+                               |> This is the result id of the `StartProcessOut`
+                               |
+                               |Add in the _Tests_ panel of _Postman_:
+                               |```
+                               |let result = pm.response.json();
+                               |pm.collectionVariables.set("processInstanceId", result.id)
+                               |```
+                               |""".stripMargin
+                           )
+                           processInstanceId: String = "{{processInstanceId}}",
+                           @description("We are only interested in the active Job(s)")
+                           active: Boolean = true
+                         )
+object GetActiveJobIn:
+  given Schema[GetActiveJobIn] = Schema.derived
+  given CirceCodec[GetActiveJobIn] = deriveCodec
+
 /*
 @endpointInput("task/{taskId}/form-variables")
 case class GetTaskFormVariablesPath(
@@ -177,9 +211,12 @@ case class CompleteTaskIn(
     )
     withVariablesInReturn: Boolean = true
 )
+object CompleteTaskIn:
+  given Schema[CompleteTaskIn] = Schema.derived
+  given CirceCodec[CompleteTaskIn] = deriveCodec
 
 @description(
-  "A JSON object with the following properties"
+  "Same as GetActiveJobIn."
 )
 case class GetActiveTaskIn(
     @description(
@@ -198,6 +235,9 @@ case class GetActiveTaskIn(
     @description("We are only interested in the active Task(s)")
     active: Boolean = true
 )
+object GetActiveTaskIn:
+  given Schema[GetActiveTaskIn] = Schema.derived
+  given CirceCodec[GetActiveTaskIn] = deriveCodec
 
 @description(
   "A JSON object with the following properties:"
@@ -206,6 +246,9 @@ case class EvaluateDecisionIn(
     // use the description of the object
     variables: Map[ExampleName, CamundaVariable]
 )
+object EvaluateDecisionIn:
+  given Schema[EvaluateDecisionIn] = Schema.derived
+  given CirceCodec[EvaluateDecisionIn] = deriveCodec
 
 case class RequestInput[T](examples: Map[ExampleName, T]):
   def :+(label: String, example: T): RequestInput[T] =
@@ -299,6 +342,10 @@ case class CompleteTaskOut(
     )
     variables: Map[ExampleName, CamundaVariable]
 )
+object CompleteTaskOut:
+  given Schema[CompleteTaskOut] = Schema.derived
+  given CirceCodec[CompleteTaskOut] = deriveCodec
+end CompleteTaskOut
 
 case class GetActiveTaskOut(
     @description(
@@ -319,6 +366,10 @@ case class GetActiveTaskOut(
     )
     id: String = "f150c3f1-13f5-11ec-936e-0242ac1d0007"
 )
+object GetActiveTaskOut:
+  given Schema[GetActiveTaskOut] = Schema.derived
+  given CirceCodec[GetActiveTaskOut] = deriveCodec
+end GetActiveTaskOut
 
 @description(
   """A JSON object containing a property for each variable returned. The key is the variable name,
@@ -336,29 +387,3 @@ case class GetActiveTaskOut(
 )
 type FormVariables = Map[String, CamundaVariable]
 
-object StartProcessIn:
-  given Schema[StartProcessIn] = Schema.derived
-  given CirceCodec[StartProcessIn] = deriveCodec
-
-object CorrelateMessageIn:
-  given Schema[CorrelateMessageIn] = Schema.derived
-  given CirceCodec[CorrelateMessageIn] = deriveCodec
-
-object SendSignalIn:
-  given Schema[SendSignalIn] = Schema.derived
-  given CirceCodec[SendSignalIn] = deriveCodec
-
-object CompleteTaskIn:
-  given Schema[CompleteTaskIn] = Schema.derived
-  given CirceCodec[CompleteTaskIn] = deriveCodec
-object CompleteTaskOut:
-  given Schema[CompleteTaskOut] = Schema.derived
-  given CirceCodec[CompleteTaskOut] = deriveCodec
-
-object GetActiveTaskIn:
-  given Schema[GetActiveTaskIn] = Schema.derived
-  given CirceCodec[GetActiveTaskIn] = deriveCodec
-
-object EvaluateDecisionIn:
-  given Schema[EvaluateDecisionIn] = Schema.derived
-  given CirceCodec[EvaluateDecisionIn] = deriveCodec

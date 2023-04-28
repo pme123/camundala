@@ -8,7 +8,7 @@ import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
 
 trait SimulationDsl[T] extends TestOverrideExtensions:
-  
+
   def run(sim: SSimulation): T
 
   def simulate(body: SScenario*): T =
@@ -31,16 +31,15 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     BadScenario(nameOfVariable(process), process, status, errorMsg.value)
 
   inline def incidentScenario(
-                               inline process: Process[_, _],
-                               incidentMsg: String
+      inline process: Process[_, _],
+      incidentMsg: String
   )(body: SStep*): IncidentScenario =
-    IncidentScenario(
-      nameOfVariable(process), process, body.toList, incidentMsg)
+    IncidentScenario(nameOfVariable(process), process, body.toList, incidentMsg)
 
   inline def incidentScenario(
-                               inline process: Process[_, _],
-                               incidentMsg: String
-                             ): IncidentScenario =
+      inline process: Process[_, _],
+      incidentMsg: String
+  ): IncidentScenario =
     incidentScenario(process, incidentMsg)()
 
   inline def subProcess(inline process: Process[_, _])(
@@ -54,31 +53,43 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     ProcessScenario(nameOfVariable(process), process)
 
   implicit inline def toScenario(
-                                  inline decisionDmn: DecisionDmn[_, _]
-                                ): DmnScenario =
+      inline decisionDmn: DecisionDmn[_, _]
+  ): DmnScenario =
     DmnScenario(nameOfVariable(decisionDmn), decisionDmn)
 
   implicit inline def toStep(inline inOut: UserTask[_, _]): SUserTask =
     SUserTask(nameOfVariable(inOut), inOut)
-  implicit inline def toStep(inline inOut: ReceiveMessageEvent[_]): SReceiveMessageEvent =
-    SReceiveMessageEvent(nameOfVariable(inOut), inOut)
-  implicit inline def toStep(inline inOut: ReceiveSignalEvent[_]): SReceiveSignalEvent =
-    SReceiveSignalEvent(nameOfVariable(inOut), inOut)
+  implicit inline def toStep(inline inOut: MessageEvent[_]): SMessageEvent =
+    SMessageEvent(nameOfVariable(inOut), inOut)
+  implicit inline def toStep(inline inOut: SignalEvent[_]): SSignalEvent =
+    SSignalEvent(nameOfVariable(inOut), inOut)
+  implicit inline def toStep(inline inOut: TimerEvent): STimerEvent =
+    STimerEvent(nameOfVariable(inOut), inOut)
 
-  extension (rse: ReceiveSignalEvent[_])
-    def waitFor(readyVariable: String, readyValue: Any = true): SReceiveSignalEvent =
-      SReceiveSignalEvent(rse.name, rse, readyVariable, readyValue)
-
+  extension (event: MessageEvent[_])
+    def waitFor(readyVariable: String): SMessageEvent =
+      event.waitFor(readyVariable, true)
+    def waitFor(readyVariable: String, readyValue: Any): SMessageEvent =
+      SMessageEvent(event.name, event, Some(readyVariable), readyValue)
+    def start: SMessageEvent =
+      SMessageEvent(event.name, event).start
   end extension
 
-  extension (rme: ReceiveMessageEvent[_])
-    def waitFor(readyVariable: String, readyValue: Any): SReceiveMessageEvent =
-      SReceiveMessageEvent(rme.name, rme, Some(readyVariable), readyValue)
-    def start: SReceiveMessageEvent =
-      SReceiveMessageEvent(rme.name, rme).start
+  extension (event: SignalEvent[_])
+    def waitFor(readyVariable: String): SSignalEvent =
+      event.waitFor(readyVariable, true)
+    def waitFor(readyVariable: String, readyValue: Any = true): SSignalEvent =
+      SSignalEvent(event.name, event, readyVariable, readyValue)
   end extension
 
-  extension (ut: UserTask[?,?])
+  extension (event: TimerEvent)
+    def waitFor(readyVariable: String): STimerEvent =
+      event.waitFor(readyVariable, true)
+    def waitFor(readyVariable: String, readyValue: Any): STimerEvent =
+      STimerEvent(event.name, event, Some(readyVariable), readyValue)
+  end extension
+
+  extension (ut: UserTask[?, ?])
     def waitForSec(sec: Int): SUserTask =
       SUserTask(ut.name, ut, waitForSec = Some(sec))
 
@@ -100,17 +111,19 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     def scenario(scen: SScenario)(body: SStep*): SScenario =
       scen.ignored
 
-    def badScenario(scen: SScenario,
-                    status: Int,
-                    errorMsg: Optable[String] = None): SScenario =
+    def badScenario(
+        scen: SScenario,
+        status: Int,
+        errorMsg: Optable[String] = None
+    ): SScenario =
       scen.ignored
 
-    def incidentScenario(scen: SScenario,
-                         incidentMsg: String): SScenario =
+    def incidentScenario(scen: SScenario, incidentMsg: String): SScenario =
       scen.ignored
 
-    def incidentScenario(scen: SScenario,
-                         incidentMsg: String)(body: SStep*): SScenario =
+    def incidentScenario(scen: SScenario, incidentMsg: String)(
+        body: SStep*
+    ): SScenario =
       scen.ignored
   end ignore
 

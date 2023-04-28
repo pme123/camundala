@@ -140,33 +140,50 @@ sealed trait SEvent extends SInOutStep:
   def readyVariable: String
   def readyValue: Any
 
-case class SReceiveMessageEvent(
-    name: String,
-    inOut: ReceiveMessageEvent[_],
-    optReadyVariable: Option[String] = None,
-    readyValue: Any = true,
-    processInstanceId: Boolean = true,
-    testOverrides: Option[TestOverrides] = None
+case class SMessageEvent(
+                                 name: String,
+                                 inOut: MessageEvent[_],
+                                 optReadyVariable: Option[String] = None,
+                                 readyValue: Any = true,
+                                 processInstanceId: Boolean = true,
+                                 testOverrides: Option[TestOverrides] = None
 ) extends SEvent:
   lazy val readyVariable: String = optReadyVariable.getOrElse(notSet)
 
-  def add(testOverride: TestOverride): SReceiveMessageEvent =
+  def add(testOverride: TestOverride): SMessageEvent =
     copy(testOverrides = addOverride(testOverride))
 
   // If you send a Message to start a process, there is no processInstanceId
-  def start: SReceiveMessageEvent =
+  def start: SMessageEvent =
     copy(processInstanceId = false)
 
-case class SReceiveSignalEvent(
-    name: String,
-    inOut: ReceiveSignalEvent[_],
-    readyVariable: String = "waitForSignal",
-    readyValue: Any = true,
-    testOverrides: Option[TestOverrides] = None
+case class SSignalEvent(
+                                name: String,
+                                inOut: SignalEvent[_],
+                                readyVariable: String = "waitForSignal",
+                                readyValue: Any = true,
+                                testOverrides: Option[TestOverrides] = None
 ) extends SEvent:
 
-  def add(testOverride: TestOverride): SReceiveSignalEvent =
+  def add(testOverride: TestOverride): SSignalEvent =
     copy(testOverrides = addOverride(testOverride))
+
+end SSignalEvent
+
+case class STimerEvent(
+                                name: String,
+                                inOut: TimerEvent,
+                                optReadyVariable: Option[String] = None,
+                                readyValue: Any = true,
+                                testOverrides: Option[TestOverrides] = None
+) extends SEvent:
+  lazy val readyVariable: String = optReadyVariable.getOrElse(notSet)
+
+  def add(testOverride: TestOverride): STimerEvent =
+    copy(testOverrides = addOverride(testOverride))
+
+end STimerEvent
+
 
 case class SWaitTime(seconds: Int = 5) extends SStep:
   val name: String = s"Wait for $seconds seconds"
