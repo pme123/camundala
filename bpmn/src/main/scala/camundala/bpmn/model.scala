@@ -1,11 +1,10 @@
 package camundala
 package bpmn
 
-import domain.*
+import camundala.domain.*
+
+import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 import scala.language.implicitConversions
-import java.time.LocalDate
-import java.time.ZonedDateTime
-import java.time.LocalDateTime
 
 case class InOutDescr[
     In <: Product: Encoder: Decoder: Schema,
@@ -40,7 +39,7 @@ trait InOut[
   lazy val camundaOutMap: Map[String, CamundaVariable] =
     CamundaVariable.toCamunda(out)
   def camundaToCheckMap: Map[String, CamundaVariable] = camundaOutMap
-  
+
   def withInOutDescr(inOutDescr: InOutDescr[In, Out]): T
 
   def withId(i: String): T =
@@ -87,6 +86,7 @@ case class Process[
       elements: (ProcessNode | InOut[?, ?, ?])*
   ): Process[In, Out] =
     this.copy(elements = elements)
+end Process
 
 case class UserTask[
     In <: Product: Encoder: Decoder: Schema,
@@ -108,44 +108,65 @@ object UserTask:
     UserTask(
       InOutDescr(id, NoInput(), NoOutput())
     )
+end UserTask
 
-case class ReceiveMessageEvent[
+sealed trait ReceiveEvent[
+    In <: Product: Encoder: Decoder: Schema,
+    T <: ReceiveEvent[In, T]
+] extends ProcessNode,
+      Activity[In, NoOutput, T]
+
+case class MessageEvent[
     In <: Product: Encoder: Decoder: Schema
 ](
     messageName: String,
     inOutDescr: InOutDescr[In, NoOutput]
-) extends ProcessNode,
-      Activity[In, NoOutput, ReceiveMessageEvent[In]]:
+) extends ReceiveEvent[In, MessageEvent[In]]:
 
-  def withInOutDescr(descr: InOutDescr[In, NoOutput]): ReceiveMessageEvent[In] =
+  def withInOutDescr(descr: InOutDescr[In, NoOutput]): MessageEvent[In] =
     copy(inOutDescr = descr)
 
-object ReceiveMessageEvent:
+object MessageEvent:
 
-  def init(id: String): ReceiveMessageEvent[NoInput] =
-    ReceiveMessageEvent(
+  def init(id: String): MessageEvent[NoInput] =
+    MessageEvent(
       id,
       InOutDescr(id, NoInput(), NoOutput())
     )
+end MessageEvent
 
-case class ReceiveSignalEvent[
+case class SignalEvent[
     In <: Product: Encoder: Decoder: Schema
 ](
     messageName: String,
     inOutDescr: InOutDescr[In, NoOutput]
-) extends ProcessNode,
-      Activity[In, NoOutput, ReceiveSignalEvent[In]]:
+) extends ReceiveEvent[In, SignalEvent[In]]:
 
-  def withInOutDescr(descr: InOutDescr[In, NoOutput]): ReceiveSignalEvent[In] =
+  def withInOutDescr(descr: InOutDescr[In, NoOutput]): SignalEvent[In] =
     copy(inOutDescr = descr)
 
-object ReceiveSignalEvent:
+object SignalEvent:
 
-  def init(id: String): ReceiveSignalEvent[NoInput] =
-    ReceiveSignalEvent(
+  def init(id: String): SignalEvent[NoInput] =
+    SignalEvent(
       id,
       InOutDescr(id, NoInput(), NoOutput())
     )
+end SignalEvent
+
+case class TimerEvent(
+    title: String,
+    inOutDescr: InOutDescr[NoInput, NoOutput]
+) extends ReceiveEvent[NoInput, TimerEvent]:
+
+  def withInOutDescr(descr: InOutDescr[NoInput, NoOutput]): TimerEvent =
+    copy(inOutDescr = descr)
+
+object TimerEvent:
+
+  def init(title: String): TimerEvent =
+    TimerEvent(title, InOutDescr(title, NoInput(), NoOutput()))
+end TimerEvent
 
 case class NoInput()
 object NoInput:
@@ -181,4 +202,3 @@ def valueToJson(value: Any): Json =
       Json.fromString(zdt.toString())
     case v =>
       Json.fromString(v.toString)
-

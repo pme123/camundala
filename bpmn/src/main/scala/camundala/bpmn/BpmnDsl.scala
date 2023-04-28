@@ -1,7 +1,7 @@
 package camundala
 package bpmn
 
-import domain.*
+import camundala.domain.*
 
 import scala.reflect.ClassTag
 
@@ -43,7 +43,7 @@ trait BpmnDsl:
       out: Out,
       descr: Optable[String] = None
   ): DecisionDmn[In, SingleEntry[Out]] =
-   /* require(
+    /* require(
       out.isSingleEntry,
       "A singleEntry must look like `case class SingleEntry(result: DmnValueType)`"
     ) */
@@ -58,13 +58,15 @@ trait BpmnDsl:
       out: CollectEntries[Out] = CollectEntries(Seq.empty[Int]),
       descr: Optable[String] = None
   ): DecisionDmn[In, CollectEntries[Out]] =
-   /* require(
+    /* require(
       out.isCollectEntries,
       "A collectEntries must look like `case class CollectEntries(result: Int*)`"
     )*/
     dmn(decisionDefinitionKey, in, out, descr.value)
 
-  implicit def toCollectEntries[Out <: DmnValueType: Encoder: Decoder: Schema](out: Seq[Out]): CollectEntries[Out] =
+  implicit def toCollectEntries[Out <: DmnValueType: Encoder: Decoder: Schema](
+      out: Seq[Out]
+  ): CollectEntries[Out] =
     CollectEntries(out)
 
   def singleResult[
@@ -76,7 +78,7 @@ trait BpmnDsl:
       out: Out,
       descr: Optable[String] = None
   ): DecisionDmn[In, SingleResult[Out]] =
-  /*  require(
+    /*  require(
       out.isSingleResult,
       """A singleResult must look like `case class SingleResult(result: ManyOutResult)`
         | with `case class ManyOutResult(index: Int, emoji: String)`
@@ -94,7 +96,7 @@ trait BpmnDsl:
       out: Seq[Out],
       descr: Optable[String] = None
   ): DecisionDmn[In, ResultList[Out]] =
-  /*  require(
+    /*  require(
       out.isResultList,
       """A resultList must look like `case class ResultList(results: ManyOutResult*)`
         | with `case class ManyOutResult(index: Int, emoji: String)`
@@ -104,18 +106,37 @@ trait BpmnDsl:
     dmn(decisionDefinitionKey, in, ResultList(out), descr.value)
 
   def userTask[
-    In <: Product : Encoder : Decoder : Schema,
-    Out <: Product : Encoder : Decoder : Schema
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
   ](
-     id: String,
-     in: In = NoInput(),
-     out: Out = NoOutput(),
-     descr: Optable[String] = None
-   ): UserTask[In, Out] =
+      id: String,
+      in: In = NoInput(),
+      out: Out = NoOutput(),
+      descr: Optable[String] = None
+  ): UserTask[In, Out] =
     UserTask(
       InOutDescr(id, in, out, descr.value)
     )
 
+  def messageEvent[
+      Msg <: Product: Encoder: Decoder: Schema
+  ](
+      messageName: String,
+      in: Msg = NoInput(),
+      id: Option[String] = None,
+      descr: Optable[String] = None
+  ): MessageEvent[Msg] =
+    MessageEvent(
+      messageName,
+      InOutDescr(
+        id.getOrElse(messageName),
+        in,
+        NoOutput(),
+        msgNameDescr(messageName, descr)
+      )
+    )
+
+  @deprecated("Use messageEvent.")
   def receiveMessageEvent[
       Msg <: Product: Encoder: Decoder: Schema
   ](
@@ -123,12 +144,28 @@ trait BpmnDsl:
       in: Msg = NoInput(),
       id: Option[String] = None,
       descr: Optable[String] = None
-  ): ReceiveMessageEvent[Msg] =
-    ReceiveMessageEvent(
+  ): MessageEvent[Msg] =
+    messageEvent(messageName, in, id, descr)
+
+  def signalEvent[
+      Msg <: Product: Encoder: Decoder: Schema
+  ](
+      messageName: String,
+      in: Msg = NoInput(),
+      id: Option[String] = None,
+      descr: Optable[String] = None
+  ): SignalEvent[Msg] =
+    SignalEvent(
       messageName,
-      InOutDescr(id.getOrElse(messageName), in, NoOutput(), msgNameDescr(messageName, descr))
+      InOutDescr(
+        id.getOrElse(messageName),
+        in,
+        NoOutput(),
+        msgNameDescr(messageName, descr)
+      )
     )
 
+  @deprecated("Use signalEvent.")
   def receiveSignalEvent[
       Msg <: Product: Encoder: Decoder: Schema
   ](
@@ -136,13 +173,18 @@ trait BpmnDsl:
       in: Msg = NoInput(),
       id: Option[String] = None,
       descr: Optable[String] = None
-  ): ReceiveSignalEvent[Msg] =
-    ReceiveSignalEvent(
-      messageName,
-      InOutDescr(id.getOrElse(messageName), in, NoOutput(), msgNameDescr(messageName, descr))
+  ): SignalEvent[Msg] =
+    signalEvent(messageName, in, id, descr)
+
+  def timerEvent(
+      title: String,
+      descr: Optable[String] = None
+  ): TimerEvent =
+    TimerEvent(
+      title,
+      InOutDescr(title, descr = descr.value)
     )
 
   private def msgNameDescr(messageName: String, descr: Optable[String]) =
     val msgNameDescr = s"- _messageName_: `$messageName`"
     Some(descr.value.map(_ + s"\n$msgNameDescr").getOrElse(msgNameDescr))
-
