@@ -75,6 +75,7 @@
           <li class="level1"><a href="#user-task">User Task</a></li>
           <li class="level1"><a href="#receive-message-event">Receive Message Event</a></li>
           <li class="level1"><a href="#receive-signal-event">Receive Signal Event</a></li>
+          <li class="level1"><a href="#timer-event">Timer Event</a></li>
         </ul>
         
         <p class="footer"></p>
@@ -189,19 +190,29 @@
         <h2 id="receive-message-event" class="section"><a class="anchor-link left" href="#receive-message-event"><i class="icofont-laika">&#xef71;</i></a>Receive Message Event</h2>
         <p>A <em>Receive Message Event</em> represents a catching message event. 
         The input defines the message you expect.
-        This works only as intermediate event.</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">messageExample</span><span> = </span><span class="identifier">receiveMessageEvent</span><span>(
+        This works only as intermediate event.
+        As we don&#39;t support <em>throwing Message events</em> we can simplify this to <em>messageEvent</em>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">messageExample</span><span> = </span><span class="identifier">messageEvent</span><span>(
   </span><span class="string-literal">&quot;message-for-example&quot;</span><span>,
   </span><span class="identifier">in</span><span> = </span><span class="type-name">MessageExampleIn</span><span>(),
 )</span></code></pre>
         
         <h2 id="receive-signal-event" class="section"><a class="anchor-link left" href="#receive-signal-event"><i class="icofont-laika">&#xef71;</i></a>Receive Signal Event</h2>
-        <p>A <em>Receive Signal Event</em> represents a catching signal event. 
+        <p>A <em>Receive Signal Event</em> represents a catching signal event.
         The input defines the signal you expect.
-        This works only as intermediate event.</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">signalExample</span><span> = </span><span class="identifier">receiveSignalEvent</span><span>(
+        This works only as intermediate event.
+        As we don&#39;t support <em>Throwing Signal events</em> we can simplify this to <em>signalEvent</em>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">signalExample</span><span> = </span><span class="identifier">signalEvent</span><span>(
   </span><span class="string-literal">&quot;signal-for-example&quot;</span><span>,
   </span><span class="identifier">in</span><span> = </span><span class="type-name">SignalExampleIn</span><span>(),
+)</span></code></pre>
+        
+        <h2 id="timer-event" class="section"><a class="anchor-link left" href="#timer-event"><i class="icofont-laika">&#xef71;</i></a>Timer Event</h2>
+        <p>A <em>Timer Event</em> represents a timer event.
+        There is no input needed, you can use it to describe the timers in your API doc, or using them in the Simulations to execute the job of the timer immediately.
+        This works only as intermediate event.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">timerExample</span><span> = </span><span class="identifier">timerEvent</span><span>(
+  </span><span class="string-literal">&quot;timer-for-example&quot;</span><span>,
 )</span></code></pre>
 
       </main>

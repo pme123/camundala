@@ -609,6 +609,12 @@
           If you do not define it for <em>Receive Signal Event</em> it takes the default
           value <code>waitForSignal</code> and checks if it is <code>true</code>.</p>
         </div>
+        <p><strong>Timer Event</strong></p>
+        <p>You can execute an intermediate timer event immediately.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">scenario</span><span>(</span><span class="identifier">timerExampleProcess</span><span>) (
+  </span><span class="identifier">timerExample</span><span>
+    .</span><span class="identifier">waitFor</span><span>(</span><span class="string-literal">&quot;timerReady&quot;</span><span>, </span><span class="boolean-literal">true</span><span>),
+)</span></code></pre>
         
         <h3 id="concrete-wait-time" class="section"><a class="anchor-link left" href="#concrete-wait-time"><i class="icofont-laika">&#xef71;</i></a>Concrete wait time</h3>
         <p>If you have a use case that is easier to just wait a bit (not recommended;), you can just add this step</p>
