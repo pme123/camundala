@@ -146,22 +146,36 @@ userTask(
 A _Receive Message Event_ represents a catching message event. 
 The input defines the message you expect.
 This works only as intermediate event.
+As we don't support _throwing Message events_ we can simplify this to _messageEvent_:
 
 ```scala
-lazy val messageExample = receiveMessageEvent(
+lazy val messageExample = messageEvent(
   "message-for-example",
   in = MessageExampleIn(),
 )
 ```
 
 ## Receive Signal Event
-A _Receive Signal Event_ represents a catching signal event. 
+A _Receive Signal Event_ represents a catching signal event.
 The input defines the signal you expect.
+This works only as intermediate event.
+As we don't support _Throwing Signal events_ we can simplify this to _signalEvent_:
+
+```scala
+lazy val signalExample = signalEvent(
+  "signal-for-example",
+  in = SignalExampleIn(),
+)
+```
+
+
+## Timer Event
+A _Timer Event_ represents a timer event.
+There is no input needed, you can use it to describe the timers in your API doc, or using them in the Simulations to execute the job of the timer immediately.
 This works only as intermediate event.
 
 ```scala
-lazy val signalExample = receiveSignalEvent(
-  "signal-for-example",
-  in = SignalExampleIn(),
+lazy val timerExample = timerEvent(
+  "timer-for-example",
 )
 ```

@@ -75,7 +75,7 @@ You see here the following elements:
     * enumerations - like `InvoiceCategory`
     * objects - just other _Case Classes_
 * `invoiceDocument: FileRefInOut` in _Camunda 8_ only JSONs are allowed - so you need a File representation.
-* `enum InvoiceCategory..` this is how you define an enumeration. `..derives Adt.PureEncoder, Adt.PureDecoder..` is for JSON marshalling.
+* `enum InvoiceCategory..` this is how you define an enumeration. `..derives ConfiguredEnumCodec..` is for JSON marshalling.
 * `` `Travel Expenses`, `` if you have names with spaces you need to use Back-Ticks.
 
 Checkout the whole Domain Description on [**Github**](https://github.com/pme123/camundala/blob/develop/examples/invoice/camunda8/src/main/scala/camundala/examples/invoice/domain.scala).
@@ -98,7 +98,7 @@ If an attribute of a Case Class is an enumeration you can use the Scala `enum`.
 If you have inputs or outputs that can differ, you can use the Scala `enum` as well. It just looks a bit different:
 
 ```scala
-  enum GetCodesOut derives Adt.Encoder, Adt.Decoder:
+  enum GetCodesOut derives ConfiguredCodec:
     case KeyValues(
         codesResult: Option[Map[String, String]] = None,
         poBox: Option[Map[String, String]] = Some(defaultPoBoxFr)
@@ -155,13 +155,17 @@ Sorry for this technical noise 😥.
 * Case Classes:
   ```scala
   given Schema[InvoiceReceipt] = Schema.derived
-  given Encoder[InvoiceReceipt] = deriveEncoder
-  given Decoder[InvoiceReceipt] = deriveDecoder
+  given CirceCodec[InvoiceReceipt] = deriveCodec
  ```
 
 * Enumeration:
   ```scala
-  // ..derives Adt.PureEncoder, Adt.PureDecoder is needed for JSON marshalling
+  // ..derives ConfiguredCodec is needed for JSON marshalling of enums
+  enum GetCodesOut derives ConfiguredCodec:
+    ...
+  given Schema[GetCodesOut] = Schema.derived
+  
+  // for simple enums:
   enum InvoiceCategory derives ConfiguredEnumCodec:
       case `Travel Expenses`, Misc, `Software License Costs`
 

@@ -600,6 +600,17 @@ If you do not define it for _Receive Signal Event_ it takes the default
 value `waitForSignal` and checks if it is `true`.
 @:@
 
+**Timer Event**
+
+You can execute an intermediate timer event immediately.
+
+```scala
+scenario(timerExampleProcess) (
+  timerExample
+    .waitFor("timerReady", true),
+)
+```
+
 ### Concrete wait time
 If you have a use case that is easier to just wait a bit (not recommended;), you can just add this step
 
