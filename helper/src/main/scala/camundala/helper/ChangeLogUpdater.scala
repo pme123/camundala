@@ -3,7 +3,11 @@ package camundala.helper
 import java.time.LocalDate
 import scala.language.postfixOps
 
-case class ChangeLogUpdater(newVersion: String):
+case class ChangeLogUpdater(
+    newVersion: String,
+    // standard for Github
+    commitsAddressUpdater: String => String
+):
 
   private def checkForNewCommits: Boolean =
     if (
@@ -49,8 +53,7 @@ case class ChangeLogUpdater(newVersion: String):
       .lines()
       .head
     println(s"REMOTE: $remote")
-    remote
-      .replace(".git", "/commit/")
+    commitsAddressUpdater(remote)
   end commitsAddress
 
   private lazy val gitLogNew = gitLog.out
@@ -87,28 +90,33 @@ case class ChangeLogUpdater(newVersion: String):
       changeLog.replace(
         l,
         s"""
-       |//---DRAFT start
-       |## $newVersion - ${LocalDate.now()}
-       |### Changed ${gitLogNew.mkString.replace("\nEXISTING VERSION", "")}
-       |//---DRAFT end
-       |
-       |$l""".stripMargin
+           |//---DRAFT start
+           |## $newVersion - ${LocalDate.now()}
+           |### Changed ${gitLogNew.mkString.replace("\nEXISTING VERSION", "")}
+           |//---DRAFT end
+           |
+           |$l""".stripMargin
       )
     )
     .getOrElse(s"""|$changeLog
-        |
-        |//---DRAFT start
-        |## $newVersion - ${LocalDate.now()}
-        |### Changed ${gitLogNew.mkString}
-        |//---DRAFT end
-        |""".stripMargin)
+                   |
+                   |//---DRAFT start
+                   |## $newVersion - ${LocalDate.now()}
+                   |### Changed ${gitLogNew.mkString}
+                   |//---DRAFT end
+                   |""".stripMargin)
   end newChangeLog
 
 object ChangeLogUpdater:
-  def verifyChangelog(newVersion: String): Unit =
-    if (ChangeLogUpdater(newVersion).checkForNewCommits)
-      throw new IllegalStateException("The CHANGELOG is still in a DRAFT version! Please adjust CHANGELOG.md")
+  def verifyChangelog(
+      newVersion: String,
+      // standard for Github
+      commitsAddress: String => String = _.replace(".git", "/commit/")
+  ): Unit =
+    if (ChangeLogUpdater(newVersion, commitsAddress).checkForNewCommits)
+      throw new IllegalStateException(
+        "The CHANGELOG is still in a DRAFT version! Please adjust CHANGELOG.md"
+      )
   end verifyChangelog
 
 end ChangeLogUpdater
-
