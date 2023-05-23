@@ -28,6 +28,7 @@ lazy val root = project
     camunda,
     camunda8,
     simulation,
+    helper,
     documentation,
     exampleTwitterC7,
     exampleTwitterC8,
@@ -55,12 +56,13 @@ lazy val domain = project
     libraryDependencies ++= tapirDependencies
   )
 
+val osLibDependency = "com.lihaoyi" %% "os-lib" % "0.9.1"
 lazy val bpmn = project
   .in(file("./bpmn"))
   .configure(publicationSettings)
   .settings(projectSettings("bpmn"))
   .settings(
-    libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.9.1" // dangerous library - in domain this caused 'geny.Generator$ already has a symbol'
+    libraryDependencies += osLibDependency
   )
   .dependsOn(domain)
 
@@ -183,6 +185,14 @@ lazy val camundaTestDependencies = Seq(
   "com.novocode" % "junit-interface" % "0.11"
 )
  */
+
+lazy val helper = project
+  .in(file("./helper"))
+  .configure(publicationSettings)
+  .settings(projectSettings("helper"))
+  .settings(
+    libraryDependencies += osLibDependency
+  )
 
 // EXAMPLES
 lazy val exampleInvoiceC7 = project

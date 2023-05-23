@@ -15,7 +15,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## 1.5.10 - 2023-05-22
+
+//---DRAFT start
+## 1.15.11 - 2023-05-23
+### Changed 
+- Added CHANGELOG. - see [Commit](https://github.com/pme123/camundala/commit/dfc5ea4eb309208edad8a9ad51b7c6bbcdd2358e)
+//---DRAFT end
+
+## 1.15.10 - 2023-05-22
 Due to a bad release - 1.5.9, and it is not possible to remove a release from maven central - 
 I decided to start the semantic versioning now.
 

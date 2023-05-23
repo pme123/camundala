@@ -1,5 +1,7 @@
 import mainargs._
 
+import $ivy.`io.github.pme123:camundala-helper_3:1.16.0-SNAPSHOT compat`, camundala.helper._
+
 /** <pre> Creates a new Release for the client and publishes to
   * bpf-generic-release:
   *
@@ -27,10 +29,10 @@ def release(version: String): Unit = {
 
   val isSnapshot = version.contains("-")
   os.proc("sbt", "-J-Xmx3G", "laikaSite").call()
-  os.proc("sbt", "-J-Xmx3G", "publishSigned").call()
 
   if (!isSnapshot) {
-
+    ChangeLogUpdater.verifyChangelog(version)
+    os.proc("sbt", "-J-Xmx3G", "publishSigned").call()
     os.proc("git", "fetch", "--all").call()
     os.proc("git", "commit", "-a", "-m", s"Released Version $version").call()
     os.proc("git", "tag", "-a", version, "-m", s"Version $version").call()
@@ -56,7 +58,9 @@ def release(version: String): Unit = {
         |  - hit _release_ Button (this will take some time)""".stripMargin
     )
     println(s"Published Version: $version")
-  }
+  } else
+    os.proc("sbt", "-J-Xmx3G", "publishLocal").call()
+
 }
 private def replaceVersion(newVersion: String) = {
   val versionsPath = os.pwd / "version"
