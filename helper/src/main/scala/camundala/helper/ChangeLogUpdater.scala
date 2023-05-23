@@ -5,7 +5,7 @@ import scala.language.postfixOps
 
 case class ChangeLogUpdater(newVersion: String):
 
-  private def checkForNewCommits: Boolean = {
+  private def checkForNewCommits: Boolean =
     if (
       (!lastVersion.contains(newVersion) && gitLogNew.nonEmpty) || changeLog
         .contains("---DRAFT")
@@ -18,7 +18,6 @@ case class ChangeLogUpdater(newVersion: String):
       os.write.over(os.pwd / "CHANGELOG.md", newChangeLog)
       true
     } else false
-  }
 
   //private val valiantGit = "https://git.swisscom.com/projects/VAF/repos/valiant-cms/commits/"
   private lazy val changeLog = os.read(os.pwd / "CHANGELOG.md")
