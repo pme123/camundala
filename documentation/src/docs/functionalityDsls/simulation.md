@@ -632,23 +632,23 @@ Here an example output:
 
 Depending on the interaction, we have the following strategies:
 
-**Process**
+#### Process
 
 To check the variables of a process, the process must be finished.
 It checks if the state of the process is `COMPLETED`.
 
-**User Task**
+#### User Task
 
 It simple tries until there is a User Task in the process available.
 If there are more than one, it just takes the first one.
 
-**Receive Message Event**
+#### Receive Message Event
 
 We try to correlate the message until it is successful.
 This works as Camunda tries to correlate a message to exactly one
 _Receive Message Event_ (we use the `processInstanceId`).
 
-**Receive Signal Event**
+#### Receive Signal Event
 
 The way of Correlate Messages does not work for Signals, as they are 
 _fire and forget_.
@@ -670,7 +670,7 @@ If you do not define it for _Receive Signal Event_ it takes the default
 value `waitForSignal` and checks if it is `true`.
 @:@
 
-**Timer Event**
+#### Timer Event
 
 You can execute an intermediate timer event immediately.
 

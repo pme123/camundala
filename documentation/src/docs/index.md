@@ -91,7 +91,7 @@ We use _**Scala 3**_ for everything, except the Process Specification (BPMN).
   (from [Context Function for DSL Design in Scala](https://akmetiuk.com/posts/2022-04-02-context-functions.html))
 
 ## Getting Started
-Just go throw the pages:
+Just go through the pages:
 
 1. [Process & Domain Specification](specification.md)
 2. [BPMN DSL](bpmnDsl.md)
