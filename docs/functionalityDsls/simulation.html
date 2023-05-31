@@ -1,112 +1,121 @@
 <!DOCTYPE html>
 <html lang="en-CH">
+  
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="Laika 0.18.2 + Helium Theme" />
-    <title>Simulations</title>
-    
-    
-      <meta name="description" content="camundala-documentation"/>
-    
-    
-    
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
-    
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
-    
-    <link rel="stylesheet" type="text/css" href="../helium/icofont.min.css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.1 + Helium Theme" />
+  <title>Simulations</title>
+  
+  
+  <meta name="description" content="camundala-documentation"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/icofont.min.css" />
     <link rel="stylesheet" type="text/css" href="../helium/laika-helium.css" />
-    <script src="../helium/laika-helium.js"></script>
-    
-    
-    <script> /* for avoiding page load transitions */ </script>
-  </head>
+  <script src="../helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
 
   <body>
 
     <header id="top-bar">
 
-      <div class="row">
-        <a id="nav-icon">
-          <i class="icofont-laika" title="Navigation">&#xefa2;</i>
-        </a>
-        
-      </div>
-  
-      <a class="icon-link" href="../index.html"><i class="icofont-laika" title="Home">&#xef47;</i></a>
-      
-      <span class="row links"></span>
-      
-    </header>
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
 
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
     <nav id="sidebar">
 
-      <div class="row">
-        
-      </div>
-      
-      <ul class="nav-list">
-        <li class="level1"><a href="../index.html">Intro</a></li>
-        <li class="level1"><a href="../specification.html">Process &amp; Domain Specification</a></li>
-        <li class="level1"><a href="../bpmnDsl.html">BPMN DSL</a></li>
-        <li class="level1"><a href="../projectSetup.html">Project Setup</a></li>
-        <li class="level1 nav-header">Functional DSLs</li>
-        <li class="level2"><a href="apiDoc.html">API Documentation</a></li>
-        <li class="level2 active"><a href="#">Simulations</a></li>
-        <li class="level2"><a href="dmnTester.html">DMN Tester</a></li>
-      </ul>
-      
-    </nav>
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../">Intro</a></li>
+    <li class="level1 nav-leaf"><a href="../specification.html">Process &amp; Domain Specification</a></li>
+    <li class="level1 nav-leaf"><a href="../bpmnDsl.html">BPMN DSL</a></li>
+    <li class="level1 nav-leaf"><a href="../projectSetup.html">Project Setup</a></li>
+    <li class="level1 nav-header">Functional DSLs</li>
+    <li class="level2 nav-leaf"><a href="apiDoc.html">API Documentation</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Simulations</a></li>
+    <li class="level2 nav-leaf"><a href="dmnTester.html">DMN Tester</a></li>
+  </ul>
+
+</nav>
 
     <div id="container">
 
-      <nav id="page-nav">
-        <p class="header"><a href="#">Simulations</a></p>
-        
-        <ul class="nav-list">
-          <li class="level1"><a href="#why">Why</a></li>
-          <li class="level1"><a href="#get-started">Get Started</a></li>
-          <li class="level2"><a href="#simulate">simulate</a></li>
-          <li class="level2"><a href="#scenario-1">scenario</a></li>
-          <li class="level2"><a href="#run-the-simulation">Run the Simulation</a></li>
-          <li class="level1"><a href="#simulation">Simulation</a></li>
-          <li class="level2"><a href="#naming">Naming</a></li>
-          <li class="level2"><a href="#configuration">Configuration</a></li>
-          <li class="level1"><a href="#scenarios">Scenarios</a></li>
-          <li class="level2"><a href="#process-scenarios">Process Scenarios</a></li>
-          <li class="level2"><a href="#dmn-scenario">DMN Scenario</a></li>
-          <li class="level2"><a href="#start-scenario-with-message">Start Scenario with message</a></li>
-          <li class="level2"><a href="#ignore-a-scenario">Ignore a Scenario</a></li>
-          <li class="level1"><a href="#steps">Steps</a></li>
-          <li class="level2"><a href="#sub-process-call-activity">Sub Process (Call Activity)</a></li>
-          <li class="level1"><a href="#validation">Validation</a></li>
-          <li class="level2"><a href="#test-overrides">Test Overrides</a></li>
-          <li class="level1"><a href="#timing">Timing</a></li>
-          <li class="level2"><a href="#concrete-wait-time">Concrete wait time</a></li>
-          <li class="level1"><a href="#load-testing">Load Testing</a></li>
-        </ul>
-        
-        <p class="footer"></p>
-      </nav>
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Simulations</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#why">Why</a></li>
+    <li class="level1 nav-node"><a href="#get-started">Get Started</a></li>
+    <li class="level2 nav-leaf"><a href="#simulate">simulate</a></li>
+    <li class="level2 nav-leaf"><a href="#scenario-1">scenario</a></li>
+    <li class="level2 nav-leaf"><a href="#run-the-simulation">Run the Simulation</a></li>
+    <li class="level1 nav-node"><a href="#simulation">Simulation</a></li>
+    <li class="level2 nav-leaf"><a href="#naming">Naming</a></li>
+    <li class="level2 nav-leaf"><a href="#configuration">Configuration</a></li>
+    <li class="level1 nav-node"><a href="#scenarios">Scenarios</a></li>
+    <li class="level2 nav-leaf"><a href="#process-scenarios">Process Scenarios</a></li>
+    <li class="level2 nav-leaf"><a href="#dmn-scenario">DMN Scenario</a></li>
+    <li class="level2 nav-leaf"><a href="#start-scenario-with-message">Start Scenario with message</a></li>
+    <li class="level2 nav-leaf"><a href="#ignore-a-scenario">Ignore a Scenario</a></li>
+    <li class="level2 nav-leaf"><a href="#ignore-all-scenarios">Ignore all Scenarios</a></li>
+    <li class="level1 nav-node"><a href="#steps">Steps</a></li>
+    <li class="level2 nav-leaf"><a href="#sub-process-call-activity">Sub Process (Call Activity)</a></li>
+    <li class="level1 nav-node"><a href="#validation">Validation</a></li>
+    <li class="level2 nav-leaf"><a href="#test-overrides">Test Overrides</a></li>
+    <li class="level2 nav-leaf"><a href="#read-the-results">Read the Results</a></li>
+    <li class="level1 nav-node"><a href="#timing">Timing</a></li>
+    <li class="level2 nav-leaf"><a href="#concrete-wait-time">Concrete wait time</a></li>
+    <li class="level1 nav-leaf"><a href="#load-testing">Load Testing</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
 
       <main class="content">
 
         <h1 id="simulations" class="title">Simulations</h1>
         <div class="callout warning">
-          <i class="icofont-laika">&#xf026;</i>
+          <i class="icofont-laika warning">&#xf026;</i>
           <p>This expects that your variables are simple values or JSON-objects/ -arrays.</p>
           <p>For now this only works for <strong><em>Camunda 7</em></strong>.</p>
         </div>
         <p>Simulations let you run BPMNs and DMNs automatically on an installed Camunda 7 Platform. 
         The diagrams must be deployed.</p>
         <div class="callout info">
-          <i class="icofont-laika">&#xef4e;</i>
+          <i class="icofont-laika info">&#xef4e;</i>
           <p>For the deployment I created a script that also starts the Simulation.</p>
         </div>
         
-        <h2 id="why" class="section"><a class="anchor-link left" href="#why"><i class="icofont-laika">&#xef71;</i></a>Why</h2>
+        <h2 id="why" class="section"><a class="anchor-link left" href="#why"><i class="icofont-laika link">&#xef71;</i></a>Why</h2>
         <p>I like Simulations because:</p>
         <ul>
           <li>If there are problems, you easily can check the Camunda Cockpit.</li>
@@ -119,12 +128,12 @@
         </ul>
         <p>Of course most of these points are also true for Unit- and/or Scenario tests.</p>
         <div class="callout info">
-          <i class="icofont-laika">&#xef4e;</i>
+          <i class="icofont-laika info">&#xef4e;</i>
           <p>I also experimented with Unit- and Scenario Tests, and it would also be possible. But for now I concentrate 
           my time on Simulations. I also think you should only do one of them, due to the work involved.</p>
         </div>
         
-        <h2 id="get-started" class="section"><a class="anchor-link left" href="#get-started"><i class="icofont-laika">&#xef71;</i></a>Get Started</h2>
+        <h2 id="get-started" class="section"><a class="anchor-link left" href="#get-started"><i class="icofont-laika link">&#xef71;</i></a>Get Started</h2>
         <p>Simulations use the BPMNs you created - in this context I refer to the <a href="../bpmnDsl.html">Bpmn DSL</a></p>
         <p>Let&#39;s start with a basic example:</p>
         <pre><code class="nohighlight"><span class="comment">// put your simulations in the simulation package of your project (it)
@@ -154,17 +163,17 @@
 </span><span>  )
 </span><span class="identifier">end</span><span> </span><span class="type-name">InvoiceSimulation</span></code></pre>
         
-        <h4 id="simulate" class="section"><a class="anchor-link left" href="#simulate"><i class="icofont-laika">&#xef71;</i></a>simulate</h4>
+        <h4 id="simulate" class="section"><a class="anchor-link left" href="#simulate"><i class="icofont-laika link">&#xef71;</i></a>simulate</h4>
         <p>This is the entry point for your Simulation. 
         There is one Simulation per Simulation class (file). 
         A Simulation contains one or more Scenarios.</p>
         
-        <h4 id="scenario-1" class="section"><a class="anchor-link left" href="#scenario-1"><i class="icofont-laika">&#xef71;</i></a>scenario</h4>
+        <h4 id="scenario-1" class="section"><a class="anchor-link left" href="#scenario-1"><i class="icofont-laika link">&#xef71;</i></a>scenario</h4>
         <p>A scenario consists of a BPMN process or a DMN decision.
         Then in optional second brackets you can add steps that interact
         with the process. For DMNs there won&#39;t be any.</p>
         
-        <h3 id="run-the-simulation" class="section"><a class="anchor-link left" href="#run-the-simulation"><i class="icofont-laika">&#xef71;</i></a>Run the Simulation</h3>
+        <h3 id="run-the-simulation" class="section"><a class="anchor-link left" href="#run-the-simulation"><i class="icofont-laika link">&#xef71;</i></a>Run the Simulation</h3>
         <p>In your <em>sbt-console</em>:</p>
         <ul>
           <li>
@@ -182,7 +191,7 @@
         ...
         <img src="images/simulation_log2.png" alt="simulation_log2.png"></p>
         
-        <h4 id="log-levels-colors" class="section"><a class="anchor-link left" href="#log-levels-colors"><i class="icofont-laika">&#xef71;</i></a>Log Levels Colors</h4>
+        <h4 id="log-levels-colors" class="section"><a class="anchor-link left" href="#log-levels-colors"><i class="icofont-laika link">&#xef71;</i></a>Log Levels Colors</h4>
         <p>Depending on the log level, the most important delimiters are in color:</p>
         <ul>
           <li><strong>Error: Red</strong></li>
@@ -190,18 +199,18 @@
           <li><strong>Info: Green</strong></li>
         </ul>
         
-        <h4 id="simulation-succeed-failure" class="section"><a class="anchor-link left" href="#simulation-succeed-failure"><i class="icofont-laika">&#xef71;</i></a>Simulation succeed / failure</h4>
+        <h4 id="simulation-succeed-failure" class="section"><a class="anchor-link left" href="#simulation-succeed-failure"><i class="icofont-laika link">&#xef71;</i></a>Simulation succeed / failure</h4>
         <p>As soon as there is a log entry with the level ERROR, the Simulations fail and the failing
         Simulations are listed.</p>
         
-        <h4 id="reference-to-camunda-cockpit" class="section"><a class="anchor-link left" href="#reference-to-camunda-cockpit"><i class="icofont-laika">&#xef71;</i></a>Reference to Camunda Cockpit</h4>
+        <h4 id="reference-to-camunda-cockpit" class="section"><a class="anchor-link left" href="#reference-to-camunda-cockpit"><i class="icofont-laika link">&#xef71;</i></a>Reference to Camunda Cockpit</h4>
         <p>Each Process Scenario will print a link to the according Process-Instance:</p>
         <p><code>15:15:32.926 INFO: Process &#39;ReviewInvoiceP&#39; started (check http://localhost:8034/camunda/app/cockpit/default/#/process-instance/42f84722-82cc-11ed-b5c6-9e5abd655523)</code></p>
         <p>This is not available for a DMN Scenario.</p>
         
-        <h2 id="simulation" class="section"><a class="anchor-link left" href="#simulation"><i class="icofont-laika">&#xef71;</i></a>Simulation</h2>
+        <h2 id="simulation" class="section"><a class="anchor-link left" href="#simulation"><i class="icofont-laika link">&#xef71;</i></a>Simulation</h2>
         
-        <h3 id="naming" class="section"><a class="anchor-link left" href="#naming"><i class="icofont-laika">&#xef71;</i></a>Naming</h3>
+        <h3 id="naming" class="section"><a class="anchor-link left" href="#naming"><i class="icofont-laika link">&#xef71;</i></a>Naming</h3>
         <p>The DSL is using the names of your BPMN objects like Processes and UserTasks.
         As these objects can be reused in different Scenarios and Steps, we take the name 
         of the variable. </p>
@@ -225,7 +234,7 @@
         <p>In this example we have a ProcessScenario with the name <em>Invoice Receipt with Review</em>.
         The first Step has the name <em>NotApproveInvoiceUT</em>.</p>
         <div class="callout info">
-          <i class="icofont-laika">&#xef4e;</i>
+          <i class="icofont-laika info">&#xef4e;</i>
           <p>Use descriptive variable names. 
           If you use special characters, you need to use backticks, like:</p>
           <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">`Invoice Receipt with Review`</span><span> = ...</span></code></pre>
@@ -233,7 +242,7 @@
         <p>These names are then used in the output Log:</p>
         <p><img src="images/simulation_outputNaming.png" alt="simulation_outputNaming"></p>
         
-        <h3 id="configuration" class="section"><a class="anchor-link left" href="#configuration"><i class="icofont-laika">&#xef71;</i></a>Configuration</h3>
+        <h3 id="configuration" class="section"><a class="anchor-link left" href="#configuration"><i class="icofont-laika link">&#xef71;</i></a>Configuration</h3>
         <p>The following is the default configuration:</p>
         <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">SimulationConfig</span><span>[</span><span class="type-name">B</span><span>](
        </span><span class="comment">// define tenant if you have one
@@ -257,12 +266,12 @@
       .</span><span class="identifier">withPort</span><span>(</span><span class="number-literal">8034</span><span>)
       .</span><span class="identifier">withLogLevel</span><span>(</span><span class="type-name">LogLevel</span><span>.</span><span class="type-name">DEBUG</span><span>)</span></code></pre>
         
-        <h2 id="scenarios" class="section"><a class="anchor-link left" href="#scenarios"><i class="icofont-laika">&#xef71;</i></a>Scenarios</h2>
+        <h2 id="scenarios" class="section"><a class="anchor-link left" href="#scenarios"><i class="icofont-laika link">&#xef71;</i></a>Scenarios</h2>
         <p>The following chapters explain the different scenario types:</p>
         
-        <h3 id="process-scenarios" class="section"><a class="anchor-link left" href="#process-scenarios"><i class="icofont-laika">&#xef71;</i></a>Process Scenarios</h3>
+        <h3 id="process-scenarios" class="section"><a class="anchor-link left" href="#process-scenarios"><i class="icofont-laika link">&#xef71;</i></a>Process Scenarios</h3>
         
-        <h4 id="scenario-2" class="section"><a class="anchor-link left" href="#scenario-2"><i class="icofont-laika">&#xef71;</i></a>scenario</h4>
+        <h4 id="scenario-2" class="section"><a class="anchor-link left" href="#scenario-2"><i class="icofont-laika link">&#xef71;</i></a>scenario</h4>
         <p>An end to end simulation of one process path.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
 </span><span class="identifier">scenario</span><span>(</span><span class="type-name">PROCESS</span><span>)
@@ -290,7 +299,7 @@
 )
 ...</span></code></pre>
         
-        <h4 id="incidentscenario" class="section"><a class="anchor-link left" href="#incidentscenario"><i class="icofont-laika">&#xef71;</i></a>incidentScenario</h4>
+        <h4 id="incidentscenario" class="section"><a class="anchor-link left" href="#incidentscenario"><i class="icofont-laika link">&#xef71;</i></a>incidentScenario</h4>
         <p>To simulate a process that stops due an incident needs a special treatment
         as it never finishes.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
@@ -320,7 +329,7 @@
 )
 ...</span></code></pre>
         
-        <h4 id="badscenario" class="section"><a class="anchor-link left" href="#badscenario"><i class="icofont-laika">&#xef71;</i></a>badScenario</h4>
+        <h4 id="badscenario" class="section"><a class="anchor-link left" href="#badscenario"><i class="icofont-laika link">&#xef71;</i></a>badScenario</h4>
         <p>Yet another case is if the process never gets started. 
         For example you validate the input variables and they fail.
         In this case Camunda throws an Error. 
@@ -345,7 +354,7 @@
 )
 ...</span></code></pre>
         
-        <h3 id="dmn-scenario" class="section"><a class="anchor-link left" href="#dmn-scenario"><i class="icofont-laika">&#xef71;</i></a>DMN Scenario</h3>
+        <h3 id="dmn-scenario" class="section"><a class="anchor-link left" href="#dmn-scenario"><i class="icofont-laika link">&#xef71;</i></a>DMN Scenario</h3>
         <p><em>Camundala</em> uses the <a href="https://docs.camunda.org/manual/7.18/reference/rest/decision-definition/post-evaluate/">Evaluate Decision REST API</a>
         from <em>Camunda</em>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">simulate</span><span> (
@@ -386,11 +395,11 @@
           <li>The result, a list of <code>ApproverGroup</code>s (<em>collectEntries</em>), will then be matched against our specified <code>ApproverGroup</code>s.</li>
         </ul>
         <div class="callout info">
-          <i class="icofont-laika">&#xef4e;</i>
+          <i class="icofont-laika info">&#xef4e;</i>
           <p>At time of writing, there is no replacement in <strong><em>Camunda 8</em></strong> for this.</p>
         </div>
         
-        <h3 id="start-scenario-with-message" class="section"><a class="anchor-link left" href="#start-scenario-with-message"><i class="icofont-laika">&#xef71;</i></a>Start Scenario with message</h3>
+        <h3 id="start-scenario-with-message" class="section"><a class="anchor-link left" href="#start-scenario-with-message"><i class="icofont-laika link">&#xef71;</i></a>Start Scenario with message</h3>
         <p>It is also possible to send a message to a process with a <em>Start Message Event</em>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
 </span><span class="identifier">scenario</span><span>(</span><span class="type-name">PROCESS</span><span>.</span><span class="identifier">startWithMsg</span><span>)
@@ -400,10 +409,10 @@
 ...</span></code></pre>
         <p>All that is needed is to postfix the process with <code>.startWithMsg</code>.</p>
         
-        <h3 id="ignore-a-scenario" class="section"><a class="anchor-link left" href="#ignore-a-scenario"><i class="icofont-laika">&#xef71;</i></a>Ignore a Scenario</h3>
+        <h3 id="ignore-a-scenario" class="section"><a class="anchor-link left" href="#ignore-a-scenario"><i class="icofont-laika link">&#xef71;</i></a>Ignore a Scenario</h3>
         <p>You can ignore a scenario by just prefix your Scenario with <code>ignore.</code>.</p>
         
-        <h4 id="examples" class="section"><a class="anchor-link left" href="#examples"><i class="icofont-laika">&#xef71;</i></a>Examples:</h4>
+        <h4 id="examples" class="section"><a class="anchor-link left" href="#examples"><i class="icofont-laika link">&#xef71;</i></a>Examples:</h4>
         <pre><code class="nohighlight"><span class="identifier">simulate</span><span> (
     </span><span class="identifier">ignore</span><span>.</span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
       </span><span class="type-name">AssignReviewerUT</span><span>,
@@ -425,12 +434,15 @@
 )</span></code></pre>
         <p>An ignored Scenario will create a Warning in the output Log, like this:</p>
         <p><img src="images/simulation_outputIgnore.png" alt="simulation_outputIgnore"></p>
-        <div class="callout info">
-          <i class="icofont-laika">&#xef4e;</i>
-          <p>It is not possible to ignore the whole simulation at once.</p>
-        </div>
         
-        <h2 id="steps" class="section"><a class="anchor-link left" href="#steps"><i class="icofont-laika">&#xef71;</i></a>Steps</h2>
+        <h3 id="ignore-all-scenarios" class="section"><a class="anchor-link left" href="#ignore-all-scenarios"><i class="icofont-laika link">&#xef71;</i></a>Ignore all Scenarios</h3>
+        <p>If you want to ignore all the Scenarios you can &#39;ignore&#39; the Simulation like:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="identifier">ignore</span><span>.</span><span class="identifier">simulate</span><span>(
+    </span><span class="identifier">scenario</span><span>(...),
+    </span><span class="identifier">scenario</span><span>(...),
+  )</span></code></pre>
+        
+        <h2 id="steps" class="section"><a class="anchor-link left" href="#steps"><i class="icofont-laika link">&#xef71;</i></a>Steps</h2>
         <p>This is a List with Process Interactions like <a href="../bpmnDsl.html#user-task">User Task</a>, <a href="../bpmnDsl.html#receive-message-event">Receive Message Event</a> or <a href="../bpmnDsl.html#receive-signal-event">Receive Signal Event</a>.
         Each Interaction is simply the Activity you define with the <a href="../bpmnDsl.html#bpmn-dsl">BPMN DSL</a>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
@@ -442,7 +454,7 @@
 ...</span></code></pre>
         <p>See example in <a href="#process-scenarios">Process Scenarios</a>.</p>
         
-        <h3 id="sub-process-call-activity" class="section"><a class="anchor-link left" href="#sub-process-call-activity"><i class="icofont-laika">&#xef71;</i></a>Sub Process (Call Activity)</h3>
+        <h3 id="sub-process-call-activity" class="section"><a class="anchor-link left" href="#sub-process-call-activity"><i class="icofont-laika link">&#xef71;</i></a>Sub Process (Call Activity)</h3>
         <p>A special case are sub processes. If your process contains sub processes, there are
         the following possibilities:</p>
         <ul>
@@ -470,12 +482,12 @@
           </li>
         </ul>
         <div class="callout info">
-          <i class="icofont-laika">&#xef4e;</i>
+          <i class="icofont-laika info">&#xef4e;</i>
           <p>This only works for one hierarchy of sub processes. 
             When you have more complex sub processes, you must mock them.</p>
         </div>
         
-        <h2 id="validation" class="section"><a class="anchor-link left" href="#validation"><i class="icofont-laika">&#xef71;</i></a>Validation</h2>
+        <h2 id="validation" class="section"><a class="anchor-link left" href="#validation"><i class="icofont-laika link">&#xef71;</i></a>Validation</h2>
         <p>The simulation uses your BPMN DSL objects not just to run the process and its interactions.
         It also uses the the input- and output domain objects to validate variables of the process.</p>
         <pre><code class="nohighlight"><span class="comment">// domain classes
@@ -522,7 +534,7 @@
           <li>in: Each attribute is a variable to send a signal to start or proceed the process.</li>
         </ul>
         
-        <h3 id="test-overrides" class="section"><a class="anchor-link left" href="#test-overrides"><i class="icofont-laika">&#xef71;</i></a>Test Overrides</h3>
+        <h3 id="test-overrides" class="section"><a class="anchor-link left" href="#test-overrides"><i class="icofont-laika link">&#xef71;</i></a>Test Overrides</h3>
         <p>There may be lots of variables to test or you first just want to develop the process.
         In this case you can override the validation with the domain objects.</p>
         <pre><code class="nohighlight"><span>...
@@ -546,19 +558,19 @@
         Now only these checks are run by the validation.</p>
         <p>The following overrides are provided (for now):</p>
         
-        <h4 id="exists" class="section"><a class="anchor-link left" href="#exists"><i class="icofont-laika">&#xef71;</i></a>exists</h4>
+        <h4 id="exists" class="section"><a class="anchor-link left" href="#exists"><i class="icofont-laika link">&#xef71;</i></a>exists</h4>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  .</span><span class="identifier">exists</span><span>(</span><span class="type-name">VARIABLE_NAME</span><span>)</span></code></pre>
         <p>A variable with this <code>VARIABLE_NAME</code> must exists.</p>
         
-        <h4 id="notexists" class="section"><a class="anchor-link left" href="#notexists"><i class="icofont-laika">&#xef71;</i></a>notExists</h4>
+        <h4 id="notexists" class="section"><a class="anchor-link left" href="#notexists"><i class="icofont-laika link">&#xef71;</i></a>notExists</h4>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  .</span><span class="identifier">notExists</span><span>(</span><span class="type-name">VARIABLE_NAME</span><span>)</span></code></pre>
         <p>A variable with this <code>VARIABLE_NAME</code> must not exists.</p>
         
-        <h4 id="isequals" class="section"><a class="anchor-link left" href="#isequals"><i class="icofont-laika">&#xef71;</i></a>isEquals</h4>
+        <h4 id="isequals" class="section"><a class="anchor-link left" href="#isequals"><i class="icofont-laika link">&#xef71;</i></a>isEquals</h4>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  .</span><span class="identifier">isEquals</span><span>(</span><span class="type-name">VARIABLE_NAME</span><span>, </span><span class="type-name">VARIABLE_VALUE</span><span>)</span></code></pre>
         <p>A variable with this <code>VARIABLE_NAME</code> must have the value <code>VARIABLE_VALUE</code>.</p>
         
-        <h4 id="hassize" class="section"><a class="anchor-link left" href="#hassize"><i class="icofont-laika">&#xef71;</i></a>hasSize</h4>
+        <h4 id="hassize" class="section"><a class="anchor-link left" href="#hassize"><i class="icofont-laika link">&#xef71;</i></a>hasSize</h4>
         <p>For collections:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  .</span><span class="identifier">hasSize</span><span>(</span><span class="type-name">VARIABLE_NAME</span><span>, </span><span class="type-name">VARIABLE_VALUE_SIZE</span><span>)</span></code></pre>
         <p>A variable with this <code>VARIABLE_NAME</code> must be a collection with the size <code>VARIABLE_VALUE_SIZE</code>.</p>
@@ -566,7 +578,7 @@
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  .</span><span class="identifier">hasSize</span><span>(</span><span class="type-name">VARIABLE_VALUE_SIZE</span><span>)</span></code></pre>
         <p>A DMNs result must be a collection with the size <code>VARIABLE_VALUE_SIZE</code>.</p>
         
-        <h4 id="contains" class="section"><a class="anchor-link left" href="#contains"><i class="icofont-laika">&#xef71;</i></a>contains</h4>
+        <h4 id="contains" class="section"><a class="anchor-link left" href="#contains"><i class="icofont-laika link">&#xef71;</i></a>contains</h4>
         <p>For collections:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  .</span><span class="identifier">contains</span><span>(</span><span class="type-name">VARIABLE_NAME</span><span>, </span><span class="type-name">VARIABLE_VALUE</span><span>)</span></code></pre>
         <p>A variable with this <code>VARIABLE_NAME</code> must be a collection and one of its values must have the <code>VARIABLE_VALUE</code>.</p>
@@ -574,7 +586,63 @@
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  .</span><span class="identifier">contains</span><span>(</span><span class="type-name">VARIABLE_VALUE</span><span>)</span></code></pre>
         <p>A DMNs result must be a collection and one of its values must have the <code>VARIABLE_VALUE</code>.</p>
         
-        <h2 id="timing" class="section"><a class="anchor-link left" href="#timing"><i class="icofont-laika">&#xef71;</i></a>Timing</h2>
+        <h3 id="read-the-results" class="section"><a class="anchor-link left" href="#read-the-results"><i class="icofont-laika link">&#xef71;</i></a>Read the Results</h3>
+        <p>During execution and checking the results some of the results are printed on the console.
+        The most important stuff is then gathered during the Simulation and printed grouped by the Simulation and Scenario.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>The reason that there are some logs during execution, is that we used Gatling earlier.
+          So the core still is not migrated to the new Simulation, that gathers all the logs and prints it nicely at the end.</p>
+        </div>
+        
+        <h4 id="simulations-overview" class="section"><a class="anchor-link left" href="#simulations-overview"><i class="icofont-laika link">&#xef71;</i></a>Simulations Overview</h4>
+        <div class="logo">
+          <img src="images/simulation_simulationsOverview.png" width="800">
+        </div>
+        <ul>
+          <li>First you see all Scenarios grouped by its LogLevel.</li>
+          <li>Failed Simulations are listed at the end.</li>
+        </ul>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>If you run more than one Simulation (<code>sbt It/test</code>), each Simulation is printed with the Scenario overview.
+          At the end all Simulation that failed are listed.</p>
+        </div>
+        
+        <h4 id="scenarios-overview" class="section"><a class="anchor-link left" href="#scenarios-overview"><i class="icofont-laika link">&#xef71;</i></a>Scenarios Overview</h4>
+        <div class="logo">
+          <img src="images/simulation_scenariosOverview.png" width="800">
+        </div>
+        <ul>
+          <li>Each Scenario is started with a marker in the color of its log level.</li>
+          <li>According to the configured Log Level all messages are printed.</li>
+          <li>You have a link to the process in the Camunda Cockpit.</li>
+          <li>If the Validation failed, you need to look for <code>!!!</code> in the above log. <strong>See the next chapters.</strong></li>
+          <li>It ends with a marker that shows the time the Scenario took.</li>
+        </ul>
+        
+        <h4 id="result-is-different" class="section"><a class="anchor-link left" href="#result-is-different"><i class="icofont-laika link">&#xef71;</i></a>Result is different</h4>
+        <p>The expected value does not match the value of the process.</p>
+        <p>Example:</p>
+        <pre class="keep-together pdf epub"><code class="shell">!!! The expected value &#39;CString(hello,String)&#39; of someOut does not match the result variable &#39;CString(other,String)&#39;.
+ List(CamundaProperty(.., CamundaProperty(simpleEnum,CString(One,String)), CamundaProperty(someValue,CString(hello,String)), ...))</code></pre>
+        <blockquote>
+          <p>It always lists all Variables of the Process below the message.</p>
+          
+          <h4 id="result-is-missing"><a class="anchor-link left" href="#result-is-missing"><i class="icofont-laika link">&#xef71;</i></a>Result is missing</h4>
+          <p>This is for optional variables, where you expect a value, but in the process there is no such variable.</p>
+        </blockquote>
+        <p>Example:</p>
+        <pre class="keep-together pdf epub"><code class="shell">!!! The expected value &#39;CString(hello,String)&#39; of someOut does not match the result variable &#39;CNull&#39;.
+ List(CamundaProperty(.., CamundaProperty(simpleEnum,CString(One,String)), CamundaProperty(someValue,CString(hello,String)), ...))</code></pre>
+        
+        <h4 id="result-is-not-expected" class="section"><a class="anchor-link left" href="#result-is-not-expected"><i class="icofont-laika link">&#xef71;</i></a>Result is not expected</h4>
+        <p>This is for optional variables you have set to <code>None</code>, but in the process such a variable exists.</p>
+        <p>Example:</p>
+        <pre class="keep-together pdf epub"><code class="shell">!!! The expected value &#39;CNull&#39; of someOut does not match the result variable &#39;CString(hello,String)&#39;.
+ List(CamundaProperty(.., CamundaProperty(simpleEnum,CString(One,String)), CamundaProperty(someValue,CString(hello,String)), ...))</code></pre>
+        
+        <h2 id="timing" class="section"><a class="anchor-link left" href="#timing"><i class="icofont-laika link">&#xef71;</i></a>Timing</h2>
         <p>The interactions with a process are time relevant. 
         For example you only can interact with a User Task if the process is actually at that User Task.</p>
         <p>For this we check every second if the process is ready. 
@@ -604,7 +672,7 @@
         <p>Just add the postfix <code>.waitFor(WAITFOR_VARIABLE_NAME, WAITFOR_VARIABLE_VALUE)</code> to the BPMN Signal definition.
         In your process you must now set this variable with the according value, when the process is at this event.</p>
         <div class="callout info">
-          <i class="icofont-laika">&#xef4e;</i>
+          <i class="icofont-laika info">&#xef4e;</i>
           <p>This is also possible for <em>Receive Message Event</em>.
           If you do not define it for <em>Receive Signal Event</em> it takes the default
           value <code>waitForSignal</code> and checks if it is <code>true</code>.</p>
@@ -616,7 +684,7 @@
     .</span><span class="identifier">waitFor</span><span>(</span><span class="string-literal">&quot;timerReady&quot;</span><span>, </span><span class="boolean-literal">true</span><span>),
 )</span></code></pre>
         
-        <h3 id="concrete-wait-time" class="section"><a class="anchor-link left" href="#concrete-wait-time"><i class="icofont-laika">&#xef71;</i></a>Concrete wait time</h3>
+        <h3 id="concrete-wait-time" class="section"><a class="anchor-link left" href="#concrete-wait-time"><i class="icofont-laika link">&#xef71;</i></a>Concrete wait time</h3>
         <p>If you have a use case that is easier to just wait a bit (not recommended;), you can just add this step</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">scenario</span><span>(</span><span class="identifier">signalExampleProcess</span><span>) (
   </span><span class="identifier">waitFor</span><span>(</span><span class="number-literal">2</span><span>),
@@ -624,15 +692,23 @@
 )</span></code></pre>
         <p>This will wait for 2 seconds.</p>
         
-        <h2 id="load-testing" class="section"><a class="anchor-link left" href="#load-testing"><i class="icofont-laika">&#xef71;</i></a>Load Testing</h2>
+        <h2 id="load-testing" class="section"><a class="anchor-link left" href="#load-testing"><i class="icofont-laika link">&#xef71;</i></a>Load Testing</h2>
         <div class="callout info">
-          <i class="icofont-laika">&#xef4e;</i>
+          <i class="icofont-laika info">&#xef4e;</i>
           <p>At the moment this is not supported.</p>
         </div>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://planet42.github.io/Laika/">Laika</a> with the Helium theme.
+</footer>
+
 
       </main>
 
     </div>
 
   </body>
+
 </html>

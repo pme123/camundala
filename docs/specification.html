@@ -1,91 +1,98 @@
 <!DOCTYPE html>
 <html lang="en-CH">
+  
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="Laika 0.18.2 + Helium Theme" />
-    <title>Process &amp; Domain Specification</title>
-    
-    
-      <meta name="description" content="camundala-documentation"/>
-    
-    
-    
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
-    
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
-    
-    <link rel="stylesheet" type="text/css" href="helium/icofont.min.css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.1 + Helium Theme" />
+  <title>Process &amp; Domain Specification</title>
+  
+  
+  <meta name="description" content="camundala-documentation"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="helium/icofont.min.css" />
     <link rel="stylesheet" type="text/css" href="helium/laika-helium.css" />
-    <script src="helium/laika-helium.js"></script>
-    
-    
-    <script> /* for avoiding page load transitions */ </script>
-  </head>
+  <script src="helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
 
   <body>
 
     <header id="top-bar">
 
-      <div class="row">
-        <a id="nav-icon">
-          <i class="icofont-laika" title="Navigation">&#xefa2;</i>
-        </a>
-        
-      </div>
-  
-      <a class="icon-link" href="index.html"><i class="icofont-laika" title="Home">&#xef47;</i></a>
-      
-      <span class="row links"></span>
-      
-    </header>
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
 
+  <a class="icon-link glyph-link" href="index.html"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
     <nav id="sidebar">
 
-      <div class="row">
-        
-      </div>
-      
-      <ul class="nav-list">
-        <li class="level1"><a href="index.html">Intro</a></li>
-        <li class="level1 active"><a href="#">Process &amp; Domain Specification</a></li>
-        <li class="level1"><a href="bpmnDsl.html">BPMN DSL</a></li>
-        <li class="level1"><a href="projectSetup.html">Project Setup</a></li>
-        <li class="level1 nav-header">Functional DSLs</li>
-        <li class="level2"><a href="functionalityDsls/apiDoc.html">API Documentation</a></li>
-        <li class="level2"><a href="functionalityDsls/simulation.html">Simulations</a></li>
-        <li class="level2"><a href="functionalityDsls/dmnTester.html">DMN Tester</a></li>
-      </ul>
-      
-    </nav>
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="index.html">Intro</a></li>
+    <li class="level1 active nav-leaf"><a href="#">Process &amp; Domain Specification</a></li>
+    <li class="level1 nav-leaf"><a href="bpmnDsl.html">BPMN DSL</a></li>
+    <li class="level1 nav-leaf"><a href="projectSetup.html">Project Setup</a></li>
+    <li class="level1 nav-header">Functional DSLs</li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/apiDoc.html">API Documentation</a></li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/simulation.html">Simulations</a></li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/dmnTester.html">DMN Tester</a></li>
+  </ul>
+
+</nav>
 
     <div id="container">
 
-      <nav id="page-nav">
-        <p class="header"><a href="#">Process &amp; Domain Specification</a></p>
-        
-        <ul class="nav-list">
-          <li class="level1"><a href="#process">Process</a></li>
-          <li class="level1"><a href="#domain">Domain</a></li>
-          <li class="level2"><a href="#case-class">Case Class</a></li>
-          <li class="level2"><a href="#simple-enum">Simple Enum</a></li>
-          <li class="level2"><a href="#hierarchy-enum">Hierarchy Enum</a></li>
-          <li class="level2"><a href="#generic-objects">Generic Objects</a></li>
-          <li class="level2"><a href="#documentation">Documentation</a></li>
-          <li class="level2"><a href="#json-marshalling">JSON marshalling</a></li>
-          <li class="level1"><a href="#example">Example</a></li>
-        </ul>
-        
-        <p class="footer"></p>
-      </nav>
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Process &amp; Domain Specification</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#process">Process</a></li>
+    <li class="level1 nav-node"><a href="#domain">Domain</a></li>
+    <li class="level2 nav-leaf"><a href="#case-class">Case Class</a></li>
+    <li class="level2 nav-leaf"><a href="#simple-enum">Simple Enum</a></li>
+    <li class="level2 nav-leaf"><a href="#hierarchy-enum">Hierarchy Enum</a></li>
+    <li class="level2 nav-leaf"><a href="#generic-objects">Generic Objects</a></li>
+    <li class="level2 nav-leaf"><a href="#documentation">Documentation</a></li>
+    <li class="level2 nav-leaf"><a href="#json-marshalling">JSON marshalling</a></li>
+    <li class="level1 nav-leaf"><a href="#example">Example</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
 
       <main class="content">
 
         <h1 id="process-domain-specification" class="title">Process &amp; Domain Specification</h1>
         <p>First we define our Business Processes and -Domain.</p>
         
-        <h2 id="process" class="section"><a class="anchor-link left" href="#process"><i class="icofont-laika">&#xef71;</i></a>Process</h2>
+        <h2 id="process" class="section"><a class="anchor-link left" href="#process"><i class="icofont-laika link">&#xef71;</i></a>Process</h2>
         <p>Here we use the <a href="https://www.bpmn.org">BPMN Specification</a> with some extensions from <a href="https://camunda.com">Camunda</a>. 
         You can use <a href="https://camunda.com">Camunda</a>&#39;s tools to create them, see <a href="https://camunda.com/de/platform/modeler/">Camunda Modeler</a>.</p>
         <p>To get started we will take the Invoice Example. 
@@ -95,7 +102,7 @@
         <p>Nothing interesting here, just a standard Camunda/ BPMN Model. 
         Let&#39;s define the Domain for this process.</p>
         
-        <h2 id="domain" class="section"><a class="anchor-link left" href="#domain"><i class="icofont-laika">&#xef71;</i></a>Domain</h2>
+        <h2 id="domain" class="section"><a class="anchor-link left" href="#domain"><i class="icofont-laika link">&#xef71;</i></a>Domain</h2>
         <p>Whenever we interact with the <em>Process</em>, der are <em>Business Objects</em> involved.
         But also a Service that we integrate defines its <em>Domain</em>.</p>
         <p>So implementing a Process is more or less working with Domain Objects, 
@@ -160,16 +167,16 @@
         <p>Checkout the whole Domain Description on <a href="https://github.com/pme123/camundala/blob/develop/examples/invoice/camunda8/src/main/scala/camundala/examples/invoice/domain.scala"><strong>Github</strong></a>.</p>
         <p>There are 2 things you have to care for that is not purely your domain.</p>
         
-        <h3 id="case-class" class="section"><a class="anchor-link left" href="#case-class"><i class="icofont-laika">&#xef71;</i></a>Case Class</h3>
+        <h3 id="case-class" class="section"><a class="anchor-link left" href="#case-class"><i class="icofont-laika link">&#xef71;</i></a>Case Class</h3>
         <p>You describe your domain model with case classes, 
         as they are easy to create and there is support for documentation and JSON marshalling.</p>
         
-        <h3 id="simple-enum" class="section"><a class="anchor-link left" href="#simple-enum"><i class="icofont-laika">&#xef71;</i></a>Simple Enum</h3>
+        <h3 id="simple-enum" class="section"><a class="anchor-link left" href="#simple-enum"><i class="icofont-laika link">&#xef71;</i></a>Simple Enum</h3>
         <p>If an attribute of a Case Class is an enumeration you can use the Scala <code>enum</code>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">ConfiguredEnumCodec</span><span>:
       </span><span class="keyword">case</span><span> </span><span class="identifier">`Travel Expenses`</span><span>, </span><span class="type-name">Misc</span><span>, </span><span class="identifier">`Software License Costs`</span></code></pre>
         
-        <h3 id="hierarchy-enum" class="section"><a class="anchor-link left" href="#hierarchy-enum"><i class="icofont-laika">&#xef71;</i></a>Hierarchy Enum</h3>
+        <h3 id="hierarchy-enum" class="section"><a class="anchor-link left" href="#hierarchy-enum"><i class="icofont-laika link">&#xef71;</i></a>Hierarchy Enum</h3>
         <p>If you have inputs or outputs that can differ, you can use the Scala <code>enum</code> as well. It just looks a bit different:</p>
         <pre><code class="nohighlight"><span>  </span><span class="identifier">enum</span><span> </span><span class="type-name">GetCodesOut</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">ConfiguredCodec</span><span>:
     </span><span class="keyword">case</span><span> </span><span class="type-name">KeyValues</span><span>(
@@ -188,7 +195,7 @@
     )
   </span><span class="identifier">end</span><span> </span><span class="type-name">GetCodesOut</span></code></pre>
         
-        <h3 id="generic-objects" class="section"><a class="anchor-link left" href="#generic-objects"><i class="icofont-laika">&#xef71;</i></a>Generic Objects</h3>
+        <h3 id="generic-objects" class="section"><a class="anchor-link left" href="#generic-objects"><i class="icofont-laika link">&#xef71;</i></a>Generic Objects</h3>
         <p>Sometimes your domain is huge are you will start fast. 
         To have still at least an example and correct test data, you can use a generic datatype, like <code>Json</code>.</p>
         <p>This looks like this:</p>
@@ -199,20 +206,20 @@
         <p>You can create examples with <code>toJson(&quot;&quot;&quot;{&quot;value&quot;: 12}&quot;&quot;&quot;)</code>.</p>
         <p>This will be a Json Variable in the Simulations and you can use them everywhere in your domain model.</p>
         <div class="callout info">
-          <i class="icofont-laika">&#xef4e;</i>
+          <i class="icofont-laika info">&#xef4e;</i>
           <p>That this works you need this import: <code>import sttp.tapir.json.circe.*</code> - see <a href="#json-marshalling">JSON marshalling</a>.</p>
           <p><strong>Tip</strong>: Start with <em>Jsons</em> and replace them with proper classes as soon you start documenting
           (mostly when the process is stable).</p>
         </div>
         
-        <h3 id="documentation" class="section"><a class="anchor-link left" href="#documentation"><i class="icofont-laika">&#xef71;</i></a>Documentation</h3>
+        <h3 id="documentation" class="section"><a class="anchor-link left" href="#documentation"><i class="icofont-laika link">&#xef71;</i></a>Documentation</h3>
         <p>The closer the documentation is to your code, that you work with, the higher is the chance that you will spot mistakes.
         So we use <code>@description(&quot;my descr&quot;)</code> from <em><a href="https://tapir.softwaremill.com/en/latest/index.html">Tapir</a></em>. 
         These descriptions will then automatically taken into account when the API documentation is generated.</p>
         
-        <h3 id="json-marshalling" class="section"><a class="anchor-link left" href="#json-marshalling"><i class="icofont-laika">&#xef71;</i></a>JSON marshalling</h3>
+        <h3 id="json-marshalling" class="section"><a class="anchor-link left" href="#json-marshalling"><i class="icofont-laika link">&#xef71;</i></a>JSON marshalling</h3>
         <div class="callout info">
-          <i class="icofont-laika">&#xef4e;</i>
+          <i class="icofont-laika info">&#xef4e;</i>
           <p>We need this to get to and from JSON.
           There is an automatic way, but it turned out that it made compiling slow.</p>
           <p>Sorry for this technical noise 😥.</p>
@@ -238,12 +245,20 @@
           </li>
         </ul>
         
-        <h2 id="example" class="section"><a class="anchor-link left" href="#example"><i class="icofont-laika">&#xef71;</i></a>Example</h2>
+        <h2 id="example" class="section"><a class="anchor-link left" href="#example"><i class="icofont-laika link">&#xef71;</i></a>Example</h2>
         <p>Here you find the Domain Specification of the Invoice example: <a href="https://github.com/pme123/camundala/blob/master/examples/invoice/camunda8/src/main/scala/camundala/examples/invoice/domain.scala">Invoice domain</a></p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://planet42.github.io/Laika/">Laika</a> with the Helium theme.
+</footer>
+
 
       </main>
 
     </div>
 
   </body>
+
 </html>

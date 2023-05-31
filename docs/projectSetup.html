@@ -1,77 +1,84 @@
 <!DOCTYPE html>
 <html lang="en-CH">
+  
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="Laika 0.18.2 + Helium Theme" />
-    <title>Project Setup</title>
-    
-    
-      <meta name="description" content="camundala-documentation"/>
-    
-    
-    
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
-    
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
-    
-    <link rel="stylesheet" type="text/css" href="helium/icofont.min.css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.1 + Helium Theme" />
+  <title>Project Setup</title>
+  
+  
+  <meta name="description" content="camundala-documentation"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="helium/icofont.min.css" />
     <link rel="stylesheet" type="text/css" href="helium/laika-helium.css" />
-    <script src="helium/laika-helium.js"></script>
-    
-    
-    <script> /* for avoiding page load transitions */ </script>
-  </head>
+  <script src="helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
 
   <body>
 
     <header id="top-bar">
 
-      <div class="row">
-        <a id="nav-icon">
-          <i class="icofont-laika" title="Navigation">&#xefa2;</i>
-        </a>
-        
-      </div>
-  
-      <a class="icon-link" href="index.html"><i class="icofont-laika" title="Home">&#xef47;</i></a>
-      
-      <span class="row links"></span>
-      
-    </header>
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
 
+  <a class="icon-link glyph-link" href="index.html"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
     <nav id="sidebar">
 
-      <div class="row">
-        
-      </div>
-      
-      <ul class="nav-list">
-        <li class="level1"><a href="index.html">Intro</a></li>
-        <li class="level1"><a href="specification.html">Process &amp; Domain Specification</a></li>
-        <li class="level1"><a href="bpmnDsl.html">BPMN DSL</a></li>
-        <li class="level1 active"><a href="#">Project Setup</a></li>
-        <li class="level1 nav-header">Functional DSLs</li>
-        <li class="level2"><a href="functionalityDsls/apiDoc.html">API Documentation</a></li>
-        <li class="level2"><a href="functionalityDsls/simulation.html">Simulations</a></li>
-        <li class="level2"><a href="functionalityDsls/dmnTester.html">DMN Tester</a></li>
-      </ul>
-      
-    </nav>
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="index.html">Intro</a></li>
+    <li class="level1 nav-leaf"><a href="specification.html">Process &amp; Domain Specification</a></li>
+    <li class="level1 nav-leaf"><a href="bpmnDsl.html">BPMN DSL</a></li>
+    <li class="level1 active nav-leaf"><a href="#">Project Setup</a></li>
+    <li class="level1 nav-header">Functional DSLs</li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/apiDoc.html">API Documentation</a></li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/simulation.html">Simulations</a></li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/dmnTester.html">DMN Tester</a></li>
+  </ul>
+
+</nav>
 
     <div id="container">
 
-      <nav id="page-nav">
-        <p class="header"><a href="#">Project Setup</a></p>
-        
-        <ul class="nav-list">
-          <li class="level1"><a href="#file-structure">File structure</a></li>
-          <li class="level2"><a href="#build-sbt">build.sbt</a></li>
-        </ul>
-        
-        <p class="footer"></p>
-      </nav>
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Project Setup</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-node"><a href="#file-structure">File structure</a></li>
+    <li class="level2 nav-leaf"><a href="#build-sbt">build.sbt</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
 
       <main class="content">
 
@@ -87,7 +94,7 @@
         installation - I use <em>Camunda</em>&#39;s docker images.</p>
         <p>As these example are in a complexer multi-module project, we show here and explain each part.</p>
         
-        <h2 id="file-structure" class="section"><a class="anchor-link left" href="#file-structure"><i class="icofont-laika">&#xef71;</i></a>File structure</h2>
+        <h2 id="file-structure" class="section"><a class="anchor-link left" href="#file-structure"><i class="icofont-laika link">&#xef71;</i></a>File structure</h2>
         <pre><code class="nohighlight"><span class="identifier">src</span><span> </span><span class="comment">// uses maven src setup
 </span><span>    </span><span class="regex-literal">/ main /</span><span> </span><span class="identifier">scala</span><span> 
                    / </span><span class="identifier">yourproject</span><span>.</span><span class="identifier">package</span><span> 
@@ -102,7 +109,7 @@
         </span><span class="regex-literal">/ build.properties /</span><span>/ </span><span class="identifier">version</span><span> </span><span class="keyword">of</span><span> </span><span class="identifier">sbt</span><span> - </span><span class="identifier">see</span><span> </span><span class="identifier">below</span><span>
 </span><span class="identifier">build</span><span>.</span><span class="identifier">sbt</span><span> </span><span class="comment">// dependencies etc. - see below</span></code></pre>
         
-        <h3 id="build-sbt" class="section"><a class="anchor-link left" href="#build-sbt"><i class="icofont-laika">&#xef71;</i></a>build.sbt</h3>
+        <h3 id="build-sbt" class="section"><a class="anchor-link left" href="#build-sbt"><i class="icofont-laika link">&#xef71;</i></a>build.sbt</h3>
         <p>Here you define the dependencies.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">camundalaVersion</span><span> = </span><span class="string-literal">&quot;0.12.0&quot;</span><span>
 </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">camundalaDependencies</span><span> = </span><span class="type-name">Seq</span><span>(
@@ -111,9 +118,17 @@
 )</span></code></pre>
         <p>Here we want to do API Documentation and Simulations. </p>
 
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://planet42.github.io/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
       </main>
 
     </div>
 
   </body>
+
 </html>

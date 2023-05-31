@@ -1,85 +1,92 @@
 <!DOCTYPE html>
 <html lang="en-CH">
+  
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="Laika 0.18.2 + Helium Theme" />
-    <title>BPMN DSL</title>
-    
-    
-      <meta name="description" content="camundala-documentation"/>
-    
-    
-    
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
-    
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
-    
-    <link rel="stylesheet" type="text/css" href="helium/icofont.min.css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.1 + Helium Theme" />
+  <title>BPMN DSL</title>
+  
+  
+  <meta name="description" content="camundala-documentation"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="helium/icofont.min.css" />
     <link rel="stylesheet" type="text/css" href="helium/laika-helium.css" />
-    <script src="helium/laika-helium.js"></script>
-    
-    
-    <script> /* for avoiding page load transitions */ </script>
-  </head>
+  <script src="helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
 
   <body>
 
     <header id="top-bar">
 
-      <div class="row">
-        <a id="nav-icon">
-          <i class="icofont-laika" title="Navigation">&#xefa2;</i>
-        </a>
-        
-      </div>
-  
-      <a class="icon-link" href="index.html"><i class="icofont-laika" title="Home">&#xef47;</i></a>
-      
-      <span class="row links"></span>
-      
-    </header>
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
 
+  <a class="icon-link glyph-link" href="index.html"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
     <nav id="sidebar">
 
-      <div class="row">
-        
-      </div>
-      
-      <ul class="nav-list">
-        <li class="level1"><a href="index.html">Intro</a></li>
-        <li class="level1"><a href="specification.html">Process &amp; Domain Specification</a></li>
-        <li class="level1 active"><a href="#">BPMN DSL</a></li>
-        <li class="level1"><a href="projectSetup.html">Project Setup</a></li>
-        <li class="level1 nav-header">Functional DSLs</li>
-        <li class="level2"><a href="functionalityDsls/apiDoc.html">API Documentation</a></li>
-        <li class="level2"><a href="functionalityDsls/simulation.html">Simulations</a></li>
-        <li class="level2"><a href="functionalityDsls/dmnTester.html">DMN Tester</a></li>
-      </ul>
-      
-    </nav>
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="index.html">Intro</a></li>
+    <li class="level1 nav-leaf"><a href="specification.html">Process &amp; Domain Specification</a></li>
+    <li class="level1 active nav-leaf"><a href="#">BPMN DSL</a></li>
+    <li class="level1 nav-leaf"><a href="projectSetup.html">Project Setup</a></li>
+    <li class="level1 nav-header">Functional DSLs</li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/apiDoc.html">API Documentation</a></li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/simulation.html">Simulations</a></li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/dmnTester.html">DMN Tester</a></li>
+  </ul>
+
+</nav>
 
     <div id="container">
 
-      <nav id="page-nav">
-        <p class="header"><a href="#">BPMN DSL</a></p>
-        
-        <ul class="nav-list">
-          <li class="level1"><a href="#process">Process</a></li>
-          <li class="level1"><a href="#business-rule-tasks-decision-dmns">Business Rule Tasks (Decision DMNs)</a></li>
-          <li class="level2"><a href="#singleentry">singleEntry</a></li>
-          <li class="level2"><a href="#singleresult">singleResult</a></li>
-          <li class="level2"><a href="#collectentries">collectEntries</a></li>
-          <li class="level2"><a href="#resultlist">resultList</a></li>
-          <li class="level1"><a href="#user-task">User Task</a></li>
-          <li class="level1"><a href="#receive-message-event">Receive Message Event</a></li>
-          <li class="level1"><a href="#receive-signal-event">Receive Signal Event</a></li>
-          <li class="level1"><a href="#timer-event">Timer Event</a></li>
-        </ul>
-        
-        <p class="footer"></p>
-      </nav>
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">BPMN DSL</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#process">Process</a></li>
+    <li class="level1 nav-node"><a href="#business-rule-tasks-decision-dmns">Business Rule Tasks (Decision DMNs)</a></li>
+    <li class="level2 nav-leaf"><a href="#singleentry">singleEntry</a></li>
+    <li class="level2 nav-leaf"><a href="#singleresult">singleResult</a></li>
+    <li class="level2 nav-leaf"><a href="#collectentries">collectEntries</a></li>
+    <li class="level2 nav-leaf"><a href="#resultlist">resultList</a></li>
+    <li class="level1 nav-leaf"><a href="#user-task">User Task</a></li>
+    <li class="level1 nav-leaf"><a href="#receive-message-event">Receive Message Event</a></li>
+    <li class="level1 nav-leaf"><a href="#receive-signal-event">Receive Signal Event</a></li>
+    <li class="level1 nav-leaf"><a href="#timer-event">Timer Event</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
 
       <main class="content">
 
@@ -109,7 +116,7 @@
         <p>The element is a <em>process</em> with its inputs and outputs. As we also want to test its execution, 
         we defined also an output, also the process does not have one.</p>
         <div class="callout info">
-          <i class="icofont-laika">&#xef4e;</i>
+          <i class="icofont-laika info">&#xef4e;</i>
           <p>If your element has no Input and/or Output, just leave it empty, as this is the default case.</p>
           <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">process</span><span>(
   </span><span class="identifier">id</span><span> = </span><span class="type-name">MyDoItItselfProcess</span><span>
@@ -117,7 +124,7 @@
         </div>
         <p>We only support elements you can interact with. The next subchapters describe them with an example.</p>
         
-        <h2 id="process" class="section"><a class="anchor-link left" href="#process"><i class="icofont-laika">&#xef71;</i></a>Process</h2>
+        <h2 id="process" class="section"><a class="anchor-link left" href="#process"><i class="icofont-laika link">&#xef71;</i></a>Process</h2>
         <p>We already showed a process example above. Here the sub process <em>Review Invoice</em>:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">process</span><span>(
   </span><span class="identifier">id</span><span> = </span><span class="string-literal">&quot;ReviewInvoiceP&quot;</span><span>,
@@ -126,7 +133,7 @@
   </span><span class="identifier">out</span><span> = </span><span class="type-name">InvoiceReviewed</span><span>()
 )</span></code></pre>
         
-        <h2 id="business-rule-tasks-decision-dmns" class="section"><a class="anchor-link left" href="#business-rule-tasks-decision-dmns"><i class="icofont-laika">&#xef71;</i></a>Business Rule Tasks (Decision DMNs)</h2>
+        <h2 id="business-rule-tasks-decision-dmns" class="section"><a class="anchor-link left" href="#business-rule-tasks-decision-dmns"><i class="icofont-laika link">&#xef71;</i></a>Business Rule Tasks (Decision DMNs)</h2>
         <p>We support only Decision DMNs.
         The input is always a domain object (each field must be a simple value that matches a column of the dmn).
         As <strong>simple values</strong> we support:</p>
@@ -146,7 +153,7 @@
         <p>Inputs are always <em>domain objects</em>.</p>
         <p>In the DSL we have an element for each of the four different return types - so you don&#39;t mix up the types 😊.</p>
         
-        <h3 id="singleentry" class="section"><a class="anchor-link left" href="#singleentry"><i class="icofont-laika">&#xef71;</i></a>singleEntry</h3>
+        <h3 id="singleentry" class="section"><a class="anchor-link left" href="#singleentry"><i class="icofont-laika link">&#xef71;</i></a>singleEntry</h3>
         <p>This is a single result with one <em>simple value</em>. </p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">singleEntry</span><span>(
     </span><span class="identifier">decisionDefinitionKey</span><span> = </span><span class="string-literal">&quot;singleEntry&quot;</span><span>,
@@ -154,7 +161,7 @@
     </span><span class="identifier">out</span><span> = </span><span class="number-literal">1</span><span>
   )</span></code></pre>
         
-        <h3 id="singleresult" class="section"><a class="anchor-link left" href="#singleresult"><i class="icofont-laika">&#xef71;</i></a>singleResult</h3>
+        <h3 id="singleresult" class="section"><a class="anchor-link left" href="#singleresult"><i class="icofont-laika link">&#xef71;</i></a>singleResult</h3>
         <p>This is a single result with more than one value (<em>domain object</em>).</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">singleResult</span><span>(
     </span><span class="identifier">decisionDefinitionKey</span><span> = </span><span class="string-literal">&quot;singleResult&quot;</span><span>,
@@ -162,7 +169,7 @@
     </span><span class="identifier">out</span><span> = </span><span class="type-name">ManyOutResult</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="string-literal">&quot;🤩&quot;</span><span>)
 )</span></code></pre>
         
-        <h3 id="collectentries" class="section"><a class="anchor-link left" href="#collectentries"><i class="icofont-laika">&#xef71;</i></a>collectEntries</h3>
+        <h3 id="collectentries" class="section"><a class="anchor-link left" href="#collectentries"><i class="icofont-laika link">&#xef71;</i></a>collectEntries</h3>
         <p>This is a list of <em>simple values</em>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">collectEntries</span><span>(
     </span><span class="identifier">decisionDefinitionKey</span><span> = </span><span class="string-literal">&quot;collectEntries&quot;</span><span>,
@@ -170,7 +177,7 @@
     </span><span class="identifier">out</span><span> = </span><span class="type-name">Seq</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>)
   )</span></code></pre>
         
-        <h3 id="resultlist" class="section"><a class="anchor-link left" href="#resultlist"><i class="icofont-laika">&#xef71;</i></a>resultList</h3>
+        <h3 id="resultlist" class="section"><a class="anchor-link left" href="#resultlist"><i class="icofont-laika link">&#xef71;</i></a>resultList</h3>
         <p>This is a list of <em>domain objects</em>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">resultList</span><span>(
     </span><span class="identifier">decisionDefinitionKey</span><span> = </span><span class="string-literal">&quot;resultList&quot;</span><span>,
@@ -178,7 +185,7 @@
     </span><span class="identifier">out</span><span> = </span><span class="type-name">List</span><span>(</span><span class="type-name">ManyOutResult</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="string-literal">&quot;🤩&quot;</span><span>), </span><span class="type-name">ManyOutResult</span><span>(</span><span class="number-literal">2</span><span>, </span><span class="string-literal">&quot;😂&quot;</span><span>))
   )</span></code></pre>
         
-        <h2 id="user-task" class="section"><a class="anchor-link left" href="#user-task"><i class="icofont-laika">&#xef71;</i></a>User Task</h2>
+        <h2 id="user-task" class="section"><a class="anchor-link left" href="#user-task"><i class="icofont-laika link">&#xef71;</i></a>User Task</h2>
         <p>A <em>User Task</em> describes its form values that it offers and the values it must be completed with.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">userTask</span><span>(
     </span><span class="identifier">id</span><span> = </span><span class="string-literal">&quot;ApproveInvoiceUT&quot;</span><span>,
@@ -187,7 +194,7 @@
     </span><span class="identifier">out</span><span> = </span><span class="type-name">ApproveInvoice</span><span>()
   )</span></code></pre>
         
-        <h2 id="receive-message-event" class="section"><a class="anchor-link left" href="#receive-message-event"><i class="icofont-laika">&#xef71;</i></a>Receive Message Event</h2>
+        <h2 id="receive-message-event" class="section"><a class="anchor-link left" href="#receive-message-event"><i class="icofont-laika link">&#xef71;</i></a>Receive Message Event</h2>
         <p>A <em>Receive Message Event</em> represents a catching message event. 
         The input defines the message you expect.
         This works only as intermediate event.
@@ -197,7 +204,7 @@
   </span><span class="identifier">in</span><span> = </span><span class="type-name">MessageExampleIn</span><span>(),
 )</span></code></pre>
         
-        <h2 id="receive-signal-event" class="section"><a class="anchor-link left" href="#receive-signal-event"><i class="icofont-laika">&#xef71;</i></a>Receive Signal Event</h2>
+        <h2 id="receive-signal-event" class="section"><a class="anchor-link left" href="#receive-signal-event"><i class="icofont-laika link">&#xef71;</i></a>Receive Signal Event</h2>
         <p>A <em>Receive Signal Event</em> represents a catching signal event.
         The input defines the signal you expect.
         This works only as intermediate event.
@@ -207,7 +214,7 @@
   </span><span class="identifier">in</span><span> = </span><span class="type-name">SignalExampleIn</span><span>(),
 )</span></code></pre>
         
-        <h2 id="timer-event" class="section"><a class="anchor-link left" href="#timer-event"><i class="icofont-laika">&#xef71;</i></a>Timer Event</h2>
+        <h2 id="timer-event" class="section"><a class="anchor-link left" href="#timer-event"><i class="icofont-laika link">&#xef71;</i></a>Timer Event</h2>
         <p>A <em>Timer Event</em> represents a timer event.
         There is no input needed, you can use it to describe the timers in your API doc, or using them in the Simulations to execute the job of the timer immediately.
         This works only as intermediate event.</p>
@@ -215,9 +222,17 @@
   </span><span class="string-literal">&quot;timer-for-example&quot;</span><span>,
 )</span></code></pre>
 
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://planet42.github.io/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
       </main>
 
     </div>
 
   </body>
+
 </html>

@@ -105,6 +105,9 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
 
   object ignore:
 
+    def simulate(body: SScenario*): T =
+      run(SSimulation(body.map(_.ignored).toList))
+
     def scenario(scen: SScenario): SScenario =
       scen.ignored
 

@@ -4,6 +4,6 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.3.19")
 //addSbtPlugin("com.codecommit" % "sbt-github-actions" % "0.13.0")
 //addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.5.9")
 
-addSbtPlugin("org.planet42" % "laika-sbt" % "0.18.2")
+addSbtPlugin("org.planet42" % "laika-sbt" % "0.19.1")
 
 addDependencyTreePlugin // sbt dependencyBrowseTreeHTML -> target/tree.html

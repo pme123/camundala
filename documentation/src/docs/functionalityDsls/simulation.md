@@ -379,9 +379,16 @@ An ignored Scenario will create a Warning in the output Log, like this:
 
 ![simulation_outputIgnore](images/simulation_outputIgnore.png)
 
-@:callout(info)
-It is not possible to ignore the whole simulation at once.
-@:@
+### Ignore all Scenarios
+
+If you want to ignore all the Scenarios you can 'ignore' the Simulation like:
+
+```scala
+  ignore.simulate(
+    scenario(...),
+    scenario(...),
+  )
+```
 
 ## Steps
 This is a List with Process Interactions like [User Task], [Receive Message Event] or [Receive Signal Event].
@@ -547,6 +554,69 @@ For DMN ResultList and CollectEntries:
   .contains(VARIABLE_VALUE)
 ```
 A DMNs result must be a collection and one of its values must have the `VARIABLE_VALUE`.
+
+### Read the Results
+During execution and checking the results some of the results are printed on the console.
+The most important stuff is then gathered during the Simulation and printed grouped by the Simulation and Scenario.
+
+@:callout(info)
+The reason that there are some logs during execution, is that we used Gatling earlier.
+So the core still is not migrated to the new Simulation, that gathers all the logs and prints it nicely at the end.
+@:@
+
+#### Simulations Overview
+@:image(images/simulation_simulationsOverview.png) {
+intrinsicWidth = 800
+style = logo
+}
+
+- First you see all Scenarios grouped by its LogLevel.
+- Failed Simulations are listed at the end.
+
+@:callout(info)
+If you run more than one Simulation (`sbt It/test`), each Simulation is printed with the Scenario overview.
+At the end all Simulation that failed are listed.
+@:@
+
+#### Scenarios Overview
+@:image(images/simulation_scenariosOverview.png) {
+intrinsicWidth = 800
+style = logo
+}
+
+- Each Scenario is started with a marker in the color of its log level.
+- According to the configured Log Level all messages are printed.
+- You have a link to the process in the Camunda Cockpit.
+- If the Validation failed, you need to look for `!!!` in the above log. **See the next chapters.**
+- It ends with a marker that shows the time the Scenario took.
+
+#### Result is different
+The expected value does not match the value of the process.
+
+Example:
+```shell
+!!! The expected value 'CString(hello,String)' of someOut does not match the result variable 'CString(other,String)'.
+ List(CamundaProperty(.., CamundaProperty(simpleEnum,CString(One,String)), CamundaProperty(someValue,CString(hello,String)), ...))
+```
+> It always lists all Variables of the Process below the message.
+#### Result is missing
+This is for optional variables, where you expect a value, but in the process there is no such variable.
+
+Example:
+```shell
+!!! The expected value 'CString(hello,String)' of someOut does not match the result variable 'CNull'.
+ List(CamundaProperty(.., CamundaProperty(simpleEnum,CString(One,String)), CamundaProperty(someValue,CString(hello,String)), ...))
+```
+
+#### Result is not expected
+This is for optional variables you have set to `None`, but in the process such a variable exists.
+
+Example:
+```shell
+!!! The expected value 'CNull' of someOut does not match the result variable 'CString(hello,String)'.
+ List(CamundaProperty(.., CamundaProperty(simpleEnum,CString(One,String)), CamundaProperty(someValue,CString(hello,String)), ...))
+```
+
 
 ## Timing
 The interactions with a process are time relevant. 

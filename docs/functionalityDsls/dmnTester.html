@@ -1,95 +1,102 @@
 <!DOCTYPE html>
 <html lang="en-CH">
+  
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="Laika 0.18.2 + Helium Theme" />
-    <title>DMN Tester</title>
-    
-    
-      <meta name="description" content="camundala-documentation"/>
-    
-    
-    
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
-    
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
-    
-    <link rel="stylesheet" type="text/css" href="../helium/icofont.min.css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.1 + Helium Theme" />
+  <title>DMN Tester</title>
+  
+  
+  <meta name="description" content="camundala-documentation"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/icofont.min.css" />
     <link rel="stylesheet" type="text/css" href="../helium/laika-helium.css" />
-    <script src="../helium/laika-helium.js"></script>
-    
-    
-    <script> /* for avoiding page load transitions */ </script>
-  </head>
+  <script src="../helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
 
   <body>
 
     <header id="top-bar">
 
-      <div class="row">
-        <a id="nav-icon">
-          <i class="icofont-laika" title="Navigation">&#xefa2;</i>
-        </a>
-        
-      </div>
-  
-      <a class="icon-link" href="../index.html"><i class="icofont-laika" title="Home">&#xef47;</i></a>
-      
-      <span class="row links"></span>
-      
-    </header>
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
 
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
     <nav id="sidebar">
 
-      <div class="row">
-        
-      </div>
-      
-      <ul class="nav-list">
-        <li class="level1"><a href="../index.html">Intro</a></li>
-        <li class="level1"><a href="../specification.html">Process &amp; Domain Specification</a></li>
-        <li class="level1"><a href="../bpmnDsl.html">BPMN DSL</a></li>
-        <li class="level1"><a href="../projectSetup.html">Project Setup</a></li>
-        <li class="level1 nav-header">Functional DSLs</li>
-        <li class="level2"><a href="apiDoc.html">API Documentation</a></li>
-        <li class="level2"><a href="simulation.html">Simulations</a></li>
-        <li class="level2 active"><a href="#">DMN Tester</a></li>
-      </ul>
-      
-    </nav>
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../">Intro</a></li>
+    <li class="level1 nav-leaf"><a href="../specification.html">Process &amp; Domain Specification</a></li>
+    <li class="level1 nav-leaf"><a href="../bpmnDsl.html">BPMN DSL</a></li>
+    <li class="level1 nav-leaf"><a href="../projectSetup.html">Project Setup</a></li>
+    <li class="level1 nav-header">Functional DSLs</li>
+    <li class="level2 nav-leaf"><a href="apiDoc.html">API Documentation</a></li>
+    <li class="level2 nav-leaf"><a href="simulation.html">Simulations</a></li>
+    <li class="level2 active nav-leaf"><a href="#">DMN Tester</a></li>
+  </ul>
+
+</nav>
 
     <div id="container">
 
-      <nav id="page-nav">
-        <p class="header"><a href="#">DMN Tester</a></p>
-        
-        <ul class="nav-list">
-          <li class="level1"><a href="#why">Why</a></li>
-          <li class="level1"><a href="#get-started">Get Started</a></li>
-          <li class="level2"><a href="#run-the-dmn-tester">Run the DMN Tester</a></li>
-          <li class="level1"><a href="#startdmntester">startDmnTester</a></li>
-          <li class="level1"><a href="#createdmnconfigs">createDmnConfigs</a></li>
-          <li class="level2"><a href="#testvalues">.testValues</a></li>
-          <li class="level2"><a href="#testunit">.testUnit</a></li>
-          <li class="level2"><a href="#dmnpath">.dmnPath</a></li>
-          <li class="level2"><a href="#acceptmissingrules">.acceptMissingRules</a></li>
-          <li class="level2"><a href="#intestmode">.inTestMode</a></li>
-          <li class="level1"><a href="#variables">Variables</a></li>
-          <li class="level1"><a href="#configuration">Configuration</a></li>
-          <li class="level1"><a href="#problem-handling">Problem Handling</a></li>
-        </ul>
-        
-        <p class="footer"></p>
-      </nav>
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">DMN Tester</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#why">Why</a></li>
+    <li class="level1 nav-node"><a href="#get-started">Get Started</a></li>
+    <li class="level2 nav-leaf"><a href="#run-the-dmn-tester">Run the DMN Tester</a></li>
+    <li class="level1 nav-leaf"><a href="#startdmntester">startDmnTester</a></li>
+    <li class="level1 nav-node"><a href="#createdmnconfigs">createDmnConfigs</a></li>
+    <li class="level2 nav-leaf"><a href="#testvalues">.testValues</a></li>
+    <li class="level2 nav-leaf"><a href="#testunit">.testUnit</a></li>
+    <li class="level2 nav-leaf"><a href="#dmnpath">.dmnPath</a></li>
+    <li class="level2 nav-leaf"><a href="#acceptmissingrules">.acceptMissingRules</a></li>
+    <li class="level2 nav-leaf"><a href="#intestmode">.inTestMode</a></li>
+    <li class="level1 nav-leaf"><a href="#variables">Variables</a></li>
+    <li class="level1 nav-leaf"><a href="#configuration">Configuration</a></li>
+    <li class="level1 nav-leaf"><a href="#problem-handling">Problem Handling</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
 
       <main class="content">
 
         <h1 id="dmn-tester" class="title">DMN Tester</h1>
         <p>You can integrate the DMN Tester in your project pretty simple. </p>
         
-        <h2 id="why" class="section"><a class="anchor-link left" href="#why"><i class="icofont-laika">&#xef71;</i></a>Why</h2>
+        <h2 id="why" class="section"><a class="anchor-link left" href="#why"><i class="icofont-laika link">&#xef71;</i></a>Why</h2>
         <p>The <em>DMN Tester</em> lets you easily validate your DMNs, that you create or get from the business analysts.</p>
         <p>The <em>DMN Tester</em> gives you a UI, to configure a test for a DMN. 
         As there is already some information in your domain model, we must only define the rest.
@@ -97,7 +104,7 @@
         <p>See <a href="https://github.com/camunda-community-hub/camunda-dmn-tester">Github</a> for more information
         on what the <em>DMN Tester</em> is all about.</p>
         
-        <h2 id="get-started" class="section"><a class="anchor-link left" href="#get-started"><i class="icofont-laika">&#xef71;</i></a>Get Started</h2>
+        <h2 id="get-started" class="section"><a class="anchor-link left" href="#get-started"><i class="icofont-laika link">&#xef71;</i></a>Get Started</h2>
         <p>The <em>DMN Tester DSL</em> use the DMNs you created - in this context I refer to the <a href="../bpmnDsl.html#business-rule-tasks-decision-dmns">Bpmn DSL</a></p>
         <p>Let&#39;s start with a basic example:</p>
         <pre><code class="nohighlight"><span class="comment">// put your dmns in the dmn package of your project (main)
@@ -128,11 +135,11 @@
 
 </span><span class="identifier">end</span><span> </span><span class="type-name">ProjectDmnTester</span></code></pre>
         
-        <h3 id="run-the-dmn-tester" class="section"><a class="anchor-link left" href="#run-the-dmn-tester"><i class="icofont-laika">&#xef71;</i></a>Run the DMN Tester</h3>
+        <h3 id="run-the-dmn-tester" class="section"><a class="anchor-link left" href="#run-the-dmn-tester"><i class="icofont-laika link">&#xef71;</i></a>Run the DMN Tester</h3>
         <p>In your <em>sbt-console</em>:</p>
         <p><code>runMain camundala.examples.invoice.dmn.ProjectDmnTester</code></p>
         
-        <h2 id="startdmntester" class="section"><a class="anchor-link left" href="#startdmntester"><i class="icofont-laika">&#xef71;</i></a>startDmnTester</h2>
+        <h2 id="startdmntester" class="section"><a class="anchor-link left" href="#startdmntester"><i class="icofont-laika link">&#xef71;</i></a>startDmnTester</h2>
         <p>Starts the Docker container. 
         This makes the whole process pretty nice and fast. 
         The following steps are done:</p>
@@ -143,7 +150,7 @@
           <li>If not - the Container is started.</li>
         </ul>
         
-        <h2 id="createdmnconfigs" class="section"><a class="anchor-link left" href="#createdmnconfigs"><i class="icofont-laika">&#xef71;</i></a>createDmnConfigs</h2>
+        <h2 id="createdmnconfigs" class="section"><a class="anchor-link left" href="#createdmnconfigs"><i class="icofont-laika link">&#xef71;</i></a>createDmnConfigs</h2>
         <p>A DSL to create the DMN Tester configurations.</p>
         <p>You start from the DMN, that you defined, here an example:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">InvoiceAssignApproverDMN</span><span> = </span><span class="identifier">collectEntries</span><span>(
@@ -157,7 +164,7 @@
   )</span></code></pre>
         <p>Now you can add the following:</p>
         
-        <h3 id="testvalues" class="section"><a class="anchor-link left" href="#testvalues"><i class="icofont-laika">&#xef71;</i></a>.testValues</h3>
+        <h3 id="testvalues" class="section"><a class="anchor-link left" href="#testvalues"><i class="icofont-laika link">&#xef71;</i></a>.testValues</h3>
         <p>Define the input values for the DMN you want to test. </p>
         <p>For the following types this is done automatically:</p>
         <ul>
@@ -170,7 +177,7 @@
     .</span><span class="identifier">testValues</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">amount</span><span>, </span><span class="number-literal">249</span><span>, </span><span class="number-literal">250</span><span>, </span><span class="number-literal">999</span><span>, </span><span class="number-literal">1000</span><span>, </span><span class="number-literal">1001</span><span>)</span></code></pre>
         <p>It starts with the name of the input (<code>_.amount</code>) and is followed by all test values with the according type.</p>
         <div class="callout info">
-          <i class="icofont-laika">&#xef4e;</i>
+          <i class="icofont-laika info">&#xef4e;</i>
           <p>The underline in <code>_.amount</code> is the input of the DMN (<em>for the coder: it is a function:</em> <code>In =&gt; DmnValueType</code>). 
           This makes sure the compiler checks if there is such an attribute.</p>
           <pre class="keep-together pdf epub"><code class="log">[error] -- [E008] Not Found Error: /Users/mpa/dev/Github/pme123/camundala/examples/invoice/camunda7/src/main/scala/camundala/examples/invoice/dmn/InvoiceDmnTesterConfigCreator.scala:27:20 
@@ -179,12 +186,12 @@
 [error]    |value amounts is not a member of camundala.examples.invoice.domain.SelectApproverGroup - did you mean _$1.amount?</code></pre>
         </div>
         
-        <h3 id="testunit" class="section"><a class="anchor-link left" href="#testunit"><i class="icofont-laika">&#xef71;</i></a>.testUnit</h3>
+        <h3 id="testunit" class="section"><a class="anchor-link left" href="#testunit"><i class="icofont-laika link">&#xef71;</i></a>.testUnit</h3>
         <p>By default, a DMN Test is integrated - meaning that it will take all dependent inputs into account.</p>
         <p>So if you have complex set of dependent DMN Tables you can test them separately, like:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>.</span><span class="identifier">testUnit</span></code></pre>
         
-        <h3 id="dmnpath" class="section"><a class="anchor-link left" href="#dmnpath"><i class="icofont-laika">&#xef71;</i></a>.dmnPath</h3>
+        <h3 id="dmnpath" class="section"><a class="anchor-link left" href="#dmnpath"><i class="icofont-laika link">&#xef71;</i></a>.dmnPath</h3>
         <p>To support different naming schemes, you can adjust the DMN file name the following way:</p>
         <ul>
           <li>Nothing to do, if the file name is <code>dmnBasePath / s&quot;${decisionId}.dmn&quot;</code>. (see configuration)</li>
@@ -203,20 +210,20 @@
           </li>
         </ul>
         
-        <h3 id="acceptmissingrules" class="section"><a class="anchor-link left" href="#acceptmissingrules"><i class="icofont-laika">&#xef71;</i></a>.acceptMissingRules</h3>
+        <h3 id="acceptmissingrules" class="section"><a class="anchor-link left" href="#acceptmissingrules"><i class="icofont-laika link">&#xef71;</i></a>.acceptMissingRules</h3>
         <p>Sometimes you have a lot of rules that you don&#39;t want to test all.
         Adding <code>.acceptMissingRules</code> will allow missing rules in your test.</p>
         
-        <h3 id="intestmode" class="section"><a class="anchor-link left" href="#intestmode"><i class="icofont-laika">&#xef71;</i></a>.inTestMode</h3>
+        <h3 id="intestmode" class="section"><a class="anchor-link left" href="#intestmode"><i class="icofont-laika link">&#xef71;</i></a>.inTestMode</h3>
         <p>When you validated a test result, you can create Test Cases.
         If you do so, you must add <code>.inTestMode</code>, 
         otherwise the configuration will be overridden, when running the DMN Tester the next time.</p>
         
-        <h2 id="variables" class="section"><a class="anchor-link left" href="#variables"><i class="icofont-laika">&#xef71;</i></a>Variables</h2>
+        <h2 id="variables" class="section"><a class="anchor-link left" href="#variables"><i class="icofont-laika link">&#xef71;</i></a>Variables</h2>
         <p>If you have dynamic content in your DMN (input or output), you need to add them as well.</p>
         <p>To distinguish them from testing inputs, we wrap them in a <em>DmnVariable</em> class.</p>
         <div class="callout info">
-          <i class="icofont-laika">&#xef4e;</i>
+          <i class="icofont-laika info">&#xef4e;</i>
           <p>Camunda DMN Engine handles Variables and Test Inputs exactly the same.</p>
           <p>We distinguish them, because Variables are not important for the matching process.
           So we do not need to have different values for them.</p>
@@ -233,7 +240,7 @@
         So it is a corner case if this is rather a test input.</p>
         <p>The output variable can be whatever you want.</p>
         
-        <h2 id="configuration" class="section"><a class="anchor-link left" href="#configuration"><i class="icofont-laika">&#xef71;</i></a>Configuration</h2>
+        <h2 id="configuration" class="section"><a class="anchor-link left" href="#configuration"><i class="icofont-laika link">&#xef71;</i></a>Configuration</h2>
         <p>The following is the default configuration:</p>
         <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">DmnTesterStarterConfig</span><span>(
          </span><span class="comment">// the name of the container that will be started
@@ -290,7 +297,7 @@
 
 </span><span class="identifier">end</span><span> </span><span class="type-name">ProjectDmnTester</span></code></pre>
         
-        <h2 id="problem-handling" class="section"><a class="anchor-link left" href="#problem-handling"><i class="icofont-laika">&#xef71;</i></a>Problem Handling</h2>
+        <h2 id="problem-handling" class="section"><a class="anchor-link left" href="#problem-handling"><i class="icofont-laika link">&#xef71;</i></a>Problem Handling</h2>
         <p>The DMN Tester is run on Docker.
         So to find problems, you have:</p>
         <ul>
@@ -299,9 +306,17 @@
         </ul>
         <p>If you are stuck, or find a problem, please create an issue on Github.</p>
 
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://planet42.github.io/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
       </main>
 
     </div>
 
   </body>
+
 </html>

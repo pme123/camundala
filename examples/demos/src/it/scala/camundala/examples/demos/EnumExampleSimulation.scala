@@ -11,10 +11,16 @@ class EnumExampleSimulation extends DemosSimulation:
 
   simulate(
     enumExample,
-    enumExampleWithNone
+    ignore.scenario(enumExampleWithNone),
+    enumExampleThatFails
   )
 
   private lazy val enumExampleWithNone =
     enumExample
       .withIn(Input.A(someValue = None))
       .withOut(Output.A(someOut = None))
+
+  private lazy val enumExampleThatFails =
+    enumExample
+      .withIn(Input.A(someValue = Some("other")))
+      .withOut(Output.A())
