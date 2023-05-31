@@ -15,13 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-
-//---DRAFT start
 ## 1.15.13 - 2023-05-31
 ### Changed 
 - Added _ignore.simulation_ / extended documentation for Simulations. - see [Commit](https://github.com/pme123/camundala/commit/8e7c44950633a530e89b26a21245ee8f8d9303d8)
 - Added check to verify that None variables are tested correctly. - see [Commit](https://github.com/pme123/camundala/commit/74e4b922b31c88d00caf49e2fa34cb7bb2b173dc)
-//---DRAFT end
 
 ## 1.15.12 - 2023-05-23
 ### Changed 
