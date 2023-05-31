@@ -10,6 +10,13 @@
     <bpmn:sequenceFlow id="Flow_1w1jmvp" sourceRef="StartEvent_1" targetRef="Activity_1hgrd2v" />
     <bpmn:sequenceFlow id="Flow_05puxco" sourceRef="Activity_1hgrd2v" targetRef="Event_0p19q09" />
     <bpmn:scriptTask id="Activity_1hgrd2v" name="print Mock" scriptFormat="groovy" camunda:resultVariable="intValue">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="someOut">
+            <camunda:script scriptFormat="groovy">execution.getVariable("someValue")</camunda:script>
+          </camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_1w1jmvp</bpmn:incoming>
       <bpmn:outgoing>Flow_05puxco</bpmn:outgoing>
       <bpmn:script>println("MOCK is $customMock")

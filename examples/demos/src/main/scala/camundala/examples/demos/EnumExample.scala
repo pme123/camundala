@@ -17,7 +17,7 @@ object EnumExample extends BpmnDsl:
 
   enum Output derives ConfiguredCodec:
 
-    case A(intValue: Int = 12, simpleEnum: SimpleEnum = SimpleEnum.One)
+    case A(someOut: Option[String] = Some("hello"), intValue: Int = 12, simpleEnum: SimpleEnum = SimpleEnum.One)
   object Output:
     given Schema[Output] = Schema.derived
 

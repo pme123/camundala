@@ -76,7 +76,7 @@ object CamundaVariable:
   ): Map[String, CamundaVariable] =
     product.productElementNames
       .zip(product.productIterator)
-      .filterNot { case _ -> v => v.isInstanceOf[None.type] } // don't send null
+     // .filterNot { case _ -> v => v.isInstanceOf[None.type] } // don't send null
       .map { case (k, v) => k -> objectToCamunda(product, k, v) }
       .toMap
 
