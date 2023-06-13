@@ -129,13 +129,22 @@ case class ApiConfig(
     openApiDocuPath: Path = pwd / "OpenApi.html",
     postmanOpenApiDocuPath: Path = pwd / "PostmanOpenApi.html",
     // If you work with JIRA, you can add matchers that will create automatically URLs to JIRA Tasks
-    // "COM" -> "https://issue.myCompany.ch/browse"
     jiraUrls: Map[String, String] = Map.empty,
-    // Path where you have all your projects (used to search for dependencies)
-    localProjectPaths: Seq[Path] = Seq(os.pwd / os.up),
+    // Git Projects: Configure, projects you want to evaluate for dependency resolution
+    gitConfigs: GitConfigs = GitConfigs(os.pwd / os.up),
     // The URL of your published documentations
-    // myProject => s"http://myCompany.ch/bpmnDocs/$myProject"
-    docProjectUrl: String => String = proj => s"No URL defined for $proj"
+    // myProject => s"http://myCompany/bpmnDocs/${myProject}"
+    docProjectUrl: String => String = proj => s"No URL defined for $proj",
+    // If you want to integrate your BPMNs and DMNs in your Documentation.
+    // Add the path the diagrams are located on your webserver.
+    // myProject => s"http://myCompany/bpmnDocs/${myProject}/${diagramDownloadPath}"
+    // if you want to have a diagram - you must define this!
+    diagramDownloadPath: Option[String] = None,
+    // if you want to adjust the diagramName
+    diagramNameAdjuster: Option[String => String] = None,
+    // by default the Api are optimized in a way that each Api is listed just ones.
+    // so for example, if you list your DMNs extra, they will be removed from the catalog.md
+    catalogOptimized: Boolean = true
 )
 ```
 You can override your configuration by creating your own `ApiConfig`,
@@ -417,7 +426,77 @@ This is the identifier you get in the share link URL in Cawemo.
 ![api_cawemoBpmn](images/api_cawemoBpmn.png)
 
 ### Project dependencies
-TODO
+To know where your process is used and what processes your process is using, is very helpful.
+
+Camundala uses Git for this and creates bullet lists grouped by projects:
+
+It works for **BPMN**s and **DMN**s.
+
+Used in 2 Project(s)
+
+- myProjectA
+    - myProcessAA
+    - myProcessAC
+
+- myProjectB
+  - myProcessBA
+
+Uses 1 Project(s)
+
+- myHelperProject
+   - myHelperProcess
+   - myHelperDMN
+
+#### GitConfigs
+All that is needed, is to configure the projects you want to check for dependencies.
+
+Example:
+
+```scala
+GitConfigs(
+  os.pwd / os.up / "git-temp",
+  Seq(
+    GitConfig(
+      cloneUrl = "https://github.com/myCompany",
+      projects = Seq(
+        "myHelperProject",
+        "myProject",
+        "myProjectA",
+        "myProjectB"
+      )
+    )
+  )
+)
+```
+This will clone or update these projects (`$cloneUrl/$project.git`) into `../git-temp`, 
+for example `https://github.com/myCompany/myProject.git`.
+
+#### Used Dependency Resolution
+For each Process (BPMN):
+
+- Takes the id of the DMN or BPMN.
+- Checks all DMNs and BPMNs of all configured projects, if they refer this id.
+- Lists these DMNs and BPMNs, grouped by their projects.
+
+#### Uses Dependency Resolution
+@:callout(info)
+At the moment we refer BPMNs and DMNs like this:
+
+- `bpmnId`
+- `projectId:bpmnId`
+
+This is not standard Camunda and it involves adjustments of the BPMN/DMN during deployment.
+
+As ids must be unique, we will change this in the future and resolve the Ids by searching all configured project for these ids.
+
+TODO: implement.
+@:@
+
+For each Process (BPMN or DMN):
+
+- Extracts all referred ids of DMNs and BPMNs.
+- Lists the DMNs and BPMNs, grouped by their projects - Generic Service Processes are listed by their service name.
+
 
 ### Generic Service Process
 @:callout(info)

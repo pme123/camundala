@@ -103,7 +103,7 @@ trait ProcessReferenceCreator:
       projectName -> s"[$extractId](${docProjectUrl(projectName)}/OpenApi.html$anchor)"
 
     private def usedByTitle(processCount: Int): String =
-      s"Used in $processCount Project(s) (EXPERIMENTAL)"
+      s"Used in $processCount Project(s)"
 
   end UsedByReferenceCreator
 
@@ -204,7 +204,7 @@ trait ProcessReferenceCreator:
       }.headOption
 
     private def usesTitle(processCount: Int): String =
-      s"Uses $processCount Project(s) (EXPERIMENTAL)"
+      s"Uses $processCount Project(s)"
 
   end UsesReferenceCreator
 
