@@ -5,12 +5,12 @@ package dmn
 import camundala.bpmn.*
 import camundala.domain.*
 import camundala.dmn.{DmnTesterConfigCreator, DmnTesterStarter}
-import camundala.examples.invoice.bpmn.*
-import camundala.examples.invoice.domain.*
+import camundala.examples.invoice.InvoiceReceipt.InvoiceAssignApproverDMN
 
 object InvoiceDmnTester
     extends DmnTesterConfigCreator,
       DmnTesterStarter,
+      BpmnDsl,
       App:
 
   override protected val projectBasePath: Path =
@@ -22,7 +22,7 @@ object InvoiceDmnTester
   startDmnTester()
 
   createDmnConfigs(
-    InvoiceAssignApproverDMN
+    InvoiceAssignApproverDMN.example
       .dmnPath("invoiceBusinessDecisions")
       .testValues(_.amount, 249, 250, 999, 1000, 1001),
     // for demonstration - created unit test - acceptMissingRules just for demo
@@ -51,7 +51,7 @@ object InvoiceDmnTester
 
   private lazy val InvoiceAssignApproverDmnUnit =
     collectEntries(
-      decisionDefinitionKey = "invoice-assign-approver",
+      decisionDefinitionKey = "example-invoice-c7-assignApprover",
       in = InvoiceAssignApproverDmnIn(),
     )
 

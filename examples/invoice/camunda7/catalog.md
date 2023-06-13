@@ -1,12 +1,12 @@
 ### Invoice Example Process API
 
-#### [InvoiceReceiptP](No URL defined for invoice-example/OpenApi.html#tag/InvoiceReceiptP)
-- [Process: InvoiceReceiptP](No URL defined for invoice-example/OpenApi.html#tag/InvoiceReceiptP/operation/Process:%20InvoiceReceiptP)
-- [DecisionDmn: invoice-assign-approver](No URL defined for invoice-example/OpenApi.html#tag/InvoiceReceiptP/operation/DecisionDmn:%20invoice-assign-approver)
-- [UserTask: ApproveInvoiceUT](No URL defined for invoice-example/OpenApi.html#tag/InvoiceReceiptP/operation/UserTask:%20ApproveInvoiceUT)
-- [UserTask: PrepareBankTransferUT](No URL defined for invoice-example/OpenApi.html#tag/InvoiceReceiptP/operation/UserTask:%20PrepareBankTransferUT)
+#### [example-invoice-c7](No URL defined for invoice-example/OpenApi.html#tag/example-invoice-c7)
+- [Process: example-invoice-c7](No URL defined for invoice-example/OpenApi.html#tag/example-invoice-c7/operation/Process:%20example-invoice-c7)
+- [DecisionDmn: example-invoice-c7-assignApprover](No URL defined for invoice-example/OpenApi.html#tag/example-invoice-c7/operation/DecisionDmn:%20example-invoice-c7-assignApprover)
+- [UserTask: ApproveInvoiceUT](No URL defined for invoice-example/OpenApi.html#tag/example-invoice-c7/operation/UserTask:%20ApproveInvoiceUT)
+- [UserTask: PrepareBankTransferUT](No URL defined for invoice-example/OpenApi.html#tag/example-invoice-c7/operation/UserTask:%20PrepareBankTransferUT)
 
-#### [ReviewInvoiceP](No URL defined for invoice-example/OpenApi.html#tag/ReviewInvoiceP)
-- [Process: ReviewInvoiceP](No URL defined for invoice-example/OpenApi.html#tag/ReviewInvoiceP/operation/Process:%20ReviewInvoiceP)
-- [UserTask: AssignReviewerUT](No URL defined for invoice-example/OpenApi.html#tag/ReviewInvoiceP/operation/UserTask:%20AssignReviewerUT)
-- [UserTask: ReviewInvoiceUT](No URL defined for invoice-example/OpenApi.html#tag/ReviewInvoiceP/operation/UserTask:%20ReviewInvoiceUT)
+#### [example-invoice-c7-review](No URL defined for invoice-example/OpenApi.html#tag/example-invoice-c7-review)
+- [Process: example-invoice-c7-review](No URL defined for invoice-example/OpenApi.html#tag/example-invoice-c7-review/operation/Process:%20example-invoice-c7-review)
+- [UserTask: AssignReviewerUT](No URL defined for invoice-example/OpenApi.html#tag/example-invoice-c7-review/operation/UserTask:%20AssignReviewerUT)
+- [UserTask: ReviewInvoiceUT](No URL defined for invoice-example/OpenApi.html#tag/example-invoice-c7-review/operation/UserTask:%20ReviewInvoiceUT)

@@ -77,7 +77,7 @@
       </rule>
     </decisionTable>
   </decision>
-  <decision id="invoice-assign-approver" name="Assign Approver Group">
+  <decision id="example-invoice-c7-assignApprover" name="Assign Approver Group">
     <informationRequirement id="InformationRequirement_1kkeocv">
       <requiredDecision href="#invoiceClassification" />
     </informationRequirement>
@@ -126,7 +126,7 @@
       <dmndi:DMNShape id="DMNShape_1abvt5s" dmnElementRef="invoiceClassification">
         <dc:Bounds height="55" width="100" x="153" y="215" />
       </dmndi:DMNShape>
-      <dmndi:DMNShape id="DMNShape_1ay7af5" dmnElementRef="invoice-assign-approver">
+      <dmndi:DMNShape id="DMNShape_1ay7af5" dmnElementRef="example-invoice-c7-assignApprover">
         <dc:Bounds height="55" width="100" x="240" y="84" />
       </dmndi:DMNShape>
       <dmndi:DMNEdge id="DMNEdge_1wn1950" dmnElementRef="InformationRequirement_1kkeocv">

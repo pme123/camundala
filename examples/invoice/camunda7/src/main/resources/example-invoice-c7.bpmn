@@ -23,13 +23,13 @@
    <collaboration id="collaboration_3" isClosed="false">
       <participant id="Process_Engine_1"
                    name="Invoice Receipt"
-                   processRef="InvoiceReceiptP"/>
+                   processRef="example-invoice-c7"/>
    </collaboration>
    <process camunda:candidateStarterGroups=""
             camunda:candidateStarterUsers=""
             camunda:historyTimeToLive="45"
             camunda:versionTag="V2.0"
-            id="InvoiceReceiptP"
+            id="example-invoice-c7"
             isClosed="false"
             isExecutable="true"
             name="Invoice Receipt"
@@ -117,7 +117,7 @@
             <targetRef>Property_0bzbsgl</targetRef>
          </dataInputAssociation>
       </userTask>
-      <businessRuleTask camunda:decisionRef="invoice-assign-approver"
+      <businessRuleTask camunda:decisionRef="example-invoice-c7-assignApprover"
                         camunda:decisionRefTenantId=""
                         camunda:exclusive="false"
                         camunda:mapDecisionResult="collectEntries"
@@ -164,7 +164,7 @@
          <incoming>SequenceFlow_2__PrepareBankTransferUT__ArchiveInvoiceST</incoming>
          <outgoing>SequenceFlow_3__ArchiveInvoiceST__InvoiceProcessedEE</outgoing>
       </serviceTask>
-      <callActivity calledElement="ReviewInvoiceP"
+      <callActivity calledElement="example-invoice-c7-review"
                     camunda:exclusive="false"
                     completionQuantity="1"
                     id="ReviewInvoiceCA"

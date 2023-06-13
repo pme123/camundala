@@ -51,7 +51,7 @@ We already showed a process example above. Here the sub process _Review Invoice_
 
 ```scala
 process(
-  id = "ReviewInvoiceP",
+  id = "example-invoice-c7-review",
   descr = "This starts the Review Invoice Process.",
   in = InvoiceReceipt(),
   out = InvoiceReviewed()

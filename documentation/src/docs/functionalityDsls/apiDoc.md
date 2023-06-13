@@ -10,7 +10,7 @@ So there are some quirks, but I think you get used to them fast.
 ## Why
 
 To have accurate and not outdated documentation is a challenge. 
-The closest you can get, is when your running or better tested code is the documentation.
+The closest you can get, is when your running- or tested code is the documentation.
 
 And this is what we do here!
 Together with the [Simulations] you get the most accurate documentation possible without having too much work.
@@ -35,7 +35,7 @@ import camundala.examples.invoice.bpmn.*
 import camundala.examples.invoice.domain.*
 
 // define an object that extends from a common Api Creator
-object api extends DefaultApiCreator:
+object ApiCreator extends DefaultApiCreator:
   // technical name of the project
   val projectName = "invoice-example"
   // readable name of the project
@@ -74,7 +74,7 @@ We can group our `api`s.
 ### Create the Documentation
 - In your _sbt-console_:  `run`
 
-     - If you have more runnable applications you need to choose the api class. 
+     - If you have more runnable applications you need to choose the _ApiCreator_ class. 
 - This creates a YAML file (Open API) with your documentation. 
 - In the console you find the paths to the created documentation.
 
@@ -93,7 +93,7 @@ Example:
 ![api_apiStructure](images/api_apiStructure.png)
 
 - The tag is the name created from the variable `Invoice Receipt`. 
-- Each Api is composed by the _endpointType_ (e.g. _Process_) and the _id_ of the BPMN object (e.g. _InvoiceReceiptP_).
+- Each Api is composed by the _endpointType_ (e.g. _Process_) and the _id_ of the BPMN object (e.g. _example-invoice-c7_).
 
 ### Strange Stuff
 As we use a REST API documentation tool, there are some strange things to get used to.
@@ -182,7 +182,34 @@ Now in the Change Log all occurrences of the regex `JIRA_PROJECT-(\\d+)` (-> `JI
 will be replaced with `[JIRA_TICKET]($url/JIRA_TICKET)`. 
 In the generated documentation this is a link to the according Jira ticket.
 
+#### BPMN diagrams 
+You can include your BPMN- and DMN diagrams directly, doing the following steps:
+
+- Configure the path, where you provide your diagrams - this is the relative path, from where your _OpenApi.html_ is located.
+    ```scala
+      override protected def apiConfig: ApiConfig =
+        super.apiConfig
+          .withDiagramDownloadPath("diagrams")
+    ```
+- Adjust _OpenApi.html_ with the correct path:
+  ```javascript
+      function openFromUrl(url, viewer) {
+        console.log('attempting to open <' + url + '>');
+        // adjust relative path to your BPMNs
+        $.ajax("diagrams/" + url, {dataType: 'text'}).done(async function (xml)  
+        ...
+  ```
+  
+@:callout(info)
+If you want to check the diagrams locally, you can use `src/main/resources/`
+@:@
+
 #### Cawemo BPMN diagrams
+@:callout(info)
+We stopped using Cawemo diagrams, as the synchronisation is manually - yes we are programmers🦥😉. 
+We recommend using Diagrams directly from your project - see previous chapter.
+@:@
+
 If you are using Cawemo you can add a link to the folder, your BPMNs and DMNs are located.
 
 Configuration:
@@ -266,46 +293,44 @@ This will create the following structure in  the doc:
 
 ![api_apiStructure](images/api_apiStructure.png)
 
-### Input Variables
-The input variables are taken from the domain model of the BPMN object.
+### Input-/ Output-Variables
+The input- and output variables are taken from the domain model of the BPMN object.
 
 Example:
 ```scala
-  case class InvoiceReceipt(
-     creditor: String = "Great Pizza for Everyone Inc.",
-     ...
-  )
+object ReviewInvoice extends BpmnDsl:
+  val processName = "example-invoice-c7-review"
+  
+  @description("Same Input as _InvoiceReceipt_, only different Mocking")
+  case class In(
+                       creditor: String = "Great Pizza for Everyone Inc.",
+                       amount: Double = 300.0,
+                       invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`,
+                       invoiceNumber: String = "I-12345",
+                       @description("You can let the Archive Service fail for testing.")
+                       shouldFail: Option[Boolean] = None,
+                       @description("You can mock me by providing the output.")
+                       outputMock: Option[Out] = None
+               )
+  
+  case class Out(
+                        @description("Flag that is set by the Reviewer")
+                        clarified: Boolean = true
+                )
   ...
-  lazy val ApproveInvoiceUT =
-    userTask(
-      id = "ApproveInvoiceUT",
-      descr = "Approve the invoice (or not).",
-      in = InvoiceReceipt(), // INPUT
-      out = ApproveInvoice()
+  lazy val example: Process[In, Out] =
+    process(
+      id = processName,
+      descr = "This starts the Review Invoice Process.",
+      in = In(), // INPUT
+      out = Out() // OUTPUT
     )
 ```
 This creates this input description documentation:
 
 ![api_inputs](images/api_inputs.png)
 
-### Output Variables
-The output variables are taken from the domain model of the BPMN object.
-
-Example:
-```scala
-  case class ApproveInvoice(
-     approved: Boolean = true
-  )
-  ...
-  lazy val ApproveInvoiceUT =
-    userTask(
-      id = "ApproveInvoiceUT",
-      descr = "Approve the invoice (or not).",
-      in = InvoiceReceipt(), 
-      out = ApproveInvoice() // OUTPUT
-    )
-```
-This creates this output description documentation:
+And it creates this output description documentation:
 
 ![api_outputs](images/api_outputs.png)
 
@@ -394,6 +419,41 @@ This is the identifier you get in the share link URL in Cawemo.
 ### Project dependencies
 TODO
 
+### Generic Service Process
+@:callout(info)
+At the moment we wrap all our REST API calls with a process. This may change in the future, as at the moment - processes is the only way to abstract over External Tasks in our company😢 (when adding additional functionality like mocking).
+
+However, it still makes sense to hide technical details and to document these Services, if you want to use them in more than one process.
+@:@
+For the usability of Services in a process, we create a _Generic Service Process_.
+
+```scala
+trait GenericServiceIn:
+  def serviceName: String
+```
+
+Just inherit this Trait in your input class:
+
+```scala
+object MyService
+  extends BpmnDsl: 
+    case class In(
+      ...
+      serviceName: String = "myService-get",
+      ...
+    ) extends GenericServiceIn
+  ...
+```
+
+This will adjust the following things in the API documentation:
+
+- No Bpmn Diagram is inlined.
+- Needed to find Usages in other Processes.
+
+And in the Postman API:
+
+- The _endpointName_ is just the _serviceName_, instead of _s"$endpointType: $\{inOutApi.id\}"_.
+
 ## Groups
 You can organize your Apis within Groups.
 This is especially useful if you have a lot of processes or dmns.
@@ -478,7 +538,7 @@ Manual adjustments in most request:
 
 - Remove part of the path:
 
-    - if you have a path like this: `{{baseUrl}}/decision-definition/key/:key/--REMOVE:invoice-assign-approver--/evaluate`
+    - if you have a path like this: `{{baseUrl}}/decision-definition/key/:key/--REMOVE:example-invoice-c7-assignApprover--/evaluate`
     - just delete this part: `--REMOVE:some identifier--`
 
 - Connect the requests (set the reference to the process or task)
@@ -505,7 +565,3 @@ In the future we may provide a REST API that will work for both.
 
 This would also allow a painless transition to Camunda 8.
 @:@
-
-## Other stuff
-### Generic Service Process
-TODO

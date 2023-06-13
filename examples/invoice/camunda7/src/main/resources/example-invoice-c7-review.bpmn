@@ -12,7 +12,7 @@
                   targetNamespace="http://bpmn.io/schema/bpmn"
                   typeLanguage="http://www.w3.org/2001/XMLSchema">
    <bpmn:process camunda:isStartableInTasklist="false"
-                 id="ReviewInvoiceP"
+                 id="example-invoice-c7-review"
                  isClosed="false"
                  isExecutable="true"
                  name="Review Invoice"
@@ -60,7 +60,7 @@
       </bpmn:userTask>
    </bpmn:process>
    <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-      <bpmndi:BPMNPlane bpmnElement="ReviewInvoiceP" id="BPMNPlane_1">
+      <bpmndi:BPMNPlane bpmnElement="example-invoice-c7-review" id="BPMNPlane_1">
          <bpmndi:BPMNEdge bpmnElement="SequenceFlow_0vvoxt0" id="SequenceFlow_0vvoxt0_di">
             <di:waypoint x="530" y="97"/>
             <di:waypoint x="592" y="97"/>

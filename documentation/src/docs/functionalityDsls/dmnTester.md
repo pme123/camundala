@@ -69,13 +69,10 @@ You start from the DMN, that you defined, here an example:
 
 ```scala
   lazy val InvoiceAssignApproverDMN = collectEntries(
-    decisionDefinitionKey = "invoice-assign-approver",
+    decisionDefinitionKey = "example-invoice-c7-assignApprover",
     in = SelectApproverGroup(),
     out = Seq(ApproverGroup.management),
-    descr = cawemoDescr(
-      "Decision Table on who must approve the Invoice.",
-      "155ba236-d5d1-42f7-8b56-3e90e0bb98d4"
-    )
+    descr = "Decision Table on who must approve the Invoice.",
   )
 ```
 

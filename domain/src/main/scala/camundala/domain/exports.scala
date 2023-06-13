@@ -4,6 +4,7 @@ package domain
 import io.circe.Codec.AsObject.derivedConfigured
 import io.circe.derivation.Configuration
 import io.circe.parser
+import io.circe.syntax.*
 
 import java.util.Base64
 import scala.deriving.Mirror
@@ -17,6 +18,7 @@ export io.circe.generic.semiauto.{deriveCodec, deriveDecoder, deriveEncoder}
 implicit val c: Configuration = Configuration.default
   .withDefaults
   .withDiscriminator("type")
+
 export io.circe.derivation.ConfiguredCodec
 export io.circe.derivation.ConfiguredEnumCodec
 
@@ -76,3 +78,18 @@ def toJson(json: String): Json =
     case Right(v) => v.deepDropNullValues
     case Left(exc) =>
       throwErr(s"Could not create Json from your String -> $exc")
+
+// descriptions
+def serviceNameDescr(serviceName: String) = s"As this uses the generic Service you need to name the Service to '$serviceName'."
+
+def outputMockDescr[Out : CirceCodec, Schema](mock: Out) =
+  s"""You can provide mocking in your process, with just returning this object if provided.
+     |
+     |Here an example:
+     |
+     |```scala
+     |${mock.asJson}
+     |```
+     |""".stripMargin
+val testModeDescr = "This flag indicades that this is a test - in the process it can behave accordingly."
+val handledErrorsDescr = "A comma separated list of HTTP-Status-Codes, that are modelled in the BPMN as Business-Exceptions - see Outputs. z.B: `404,500`"

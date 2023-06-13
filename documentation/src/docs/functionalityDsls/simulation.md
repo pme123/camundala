@@ -107,7 +107,7 @@ Simulations are listed.
 #### Reference to Camunda Cockpit
 Each Process Scenario will print a link to the according Process-Instance:
 
-`15:15:32.926 INFO: Process 'ReviewInvoiceP' started (check http://localhost:8034/camunda/app/cockpit/default/#/process-instance/42f84722-82cc-11ed-b5c6-9e5abd655523)`
+`15:15:32.926 INFO: Process 'example-invoice-c7-review' started (check http://localhost:8034/camunda/app/cockpit/default/#/process-instance/42f84722-82cc-11ed-b5c6-9e5abd655523)`
 
 This is not available for a DMN Scenario.
 
@@ -312,7 +312,7 @@ The simulation does the following steps:
 We have the following DMN definition (bpmn):
 ```scala
 lazy val InvoiceAssignApproverDMN = collectEntries(
-  decisionDefinitionKey = "invoice-assign-approver",
+  decisionDefinitionKey = "example-invoice-c7-assignApprover",
   in = SelectApproverGroup(),
   out = Seq(ApproverGroup.management),
   descr = "Decision Table on who must approve the Invoice.",
@@ -448,7 +448,7 @@ case class ApproveInvoice(
 ...
 // bpmn object
 process(
-  id = "ReviewInvoiceP",
+  id = "example-invoice-c7-review",
   descr = "This starts the Review Invoice Process.",
   in = InvoiceReceipt(),
   out = InvoiceReviewed()
@@ -692,6 +692,30 @@ scenario(signalExampleProcess) (
 ```
 
 This will wait for 2 seconds.
+
+## Mocking
+@:callout(info)
+Mocking is handled directly in the processes itself.
+
+So depending on the pattern you provide, you need to provide this logic in your process.
+
+In the future we will provide helpers that supports these patterns.
+@:@
+
+We defined the following two Patterns.
+
+### Just return the mocked Output
+
+As you specify each Output of a Process, you just can use them for Mocking.
+
+In our _Invoice_ example, the process _Invoice Receipt_ uses the _Review Invoice_ process.
+
+- If we want to mock it, we need define this in the input class of the _Invoice Receipt_ process:
+  ```scala
+
+```
+
+### Mock the wrapped Service Response.
 
 ## Load Testing
 @:callout(info)

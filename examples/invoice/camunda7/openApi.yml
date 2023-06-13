@@ -5,9 +5,9 @@ info:
   summary: |2+
 
 
-    Created at 15/04/2023, 12:41
+    Created at 13/06/2023, 07:42
 
-    **[Check Project on Cawemo](https://cawemo.com/folders/a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala)**
+    ****
 
     > This is the invoice demo application which is shipped with the full distributions.
 
@@ -46,32 +46,35 @@ info:
     </details>
 
 paths:
-  /process/InvoiceReceiptP:
+  /process/example-invoice-c7:
     head:
       tags:
-      - InvoiceReceiptP
-      summary: 'Process: InvoiceReceiptP'
-      description: |2+
-
+      - example-invoice-c7
+      summary: 'Process: example-invoice-c7'
+      description: |+
         This starts the Invoice Receipt Process.
 
-        <iframe src="https://cawemo.com/embed/e289c19a-8a57-4467-8583-de72a5e57488" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
 
+        <div class="diagramCanvas">
+          <div class="diagram" id="example-invoice-c7-38156">
+            <img onLoad="openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container: $('#example-invoice-c7-38156'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
 
+        Download: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)
 
-      operationId: 'Process: InvoiceReceiptP'
+      operationId: 'Process: example-invoice-c7'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
+              $ref: '#/components/schemas/In'
             examples:
-              InvoiceReceiptP:
+              example-invoice-c7:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
                   invoiceCategory: Travel Expenses
-                  invoiceNumber: I-12345
         required: true
       responses:
         '200':
@@ -79,35 +82,51 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InvoiceReceiptCheck'
+                $ref: '#/components/schemas/Out1'
               examples:
-                InvoiceReceiptP:
+                example-invoice-c7:
                   value:
                     approved: true
-  /decisiondmn/InvoiceReceiptP/invoice-assign-approver:
+  /decisiondmn/example-invoice-c7/example-invoice-c7-assignApprover:
     head:
       tags:
-      - InvoiceReceiptP
-      summary: 'DecisionDmn: invoice-assign-approver'
-      description: |2+
-
+      - example-invoice-c7
+      summary: 'DecisionDmn: example-invoice-c7-assignApprover'
+      description: |+
         Decision Table on who must approve the Invoice.
 
-        <iframe src="https://cawemo.com/embed/155ba236-d5d1-42f7-8b56-3e90e0bb98d4" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
 
+        <div class="diagramCanvas">
+          <div class="diagram" id="example-invoice-c7-assignApprover-29945">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-29945'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
 
+        Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)
 
-      operationId: 'DecisionDmn: invoice-assign-approver'
+      operationId: 'DecisionDmn: example-invoice-c7-assignApprover'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SelectApproverGroup'
+              $ref: '#/components/schemas/In1'
             examples:
-              invoice-assign-approver:
+              example-invoice-c7-assignApprover:
                 value:
                   amount: 30.0
                   invoiceCategory: Software License Costs
+              budget:
+                value:
+                  amount: 30.0
+                  invoiceCategory: Software License Costs
+              day-to-day expense:
+                value:
+                  amount: 125.0
+                  invoiceCategory: Misc
+              exceptional:
+                value:
+                  amount: 12345.0
+                  invoiceCategory: Misc
         required: true
       responses:
         '200':
@@ -115,22 +134,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CollectEntries_camundala.examples.invoice.domain.ApproverGroup[]'
+                $ref: '#/components/schemas/CollectEntries_camundala.examples.invoice.InvoiceReceipt.ApproverGroup[]'
               examples:
-                invoice-assign-approver:
+                example-invoice-c7-assignApprover:
                   value:
                   - management
-                budget:
-                  value:
-                  - management
-                day-to-day expense:
-                  value:
-                  - accounting
-                  - sales
-  /usertask/InvoiceReceiptP/ApproveInvoiceUT:
+  /usertask/example-invoice-c7/ApproveInvoiceUT:
     head:
       tags:
-      - InvoiceReceiptP
+      - example-invoice-c7
       summary: 'UserTask: ApproveInvoiceUT'
       description: Approve the invoice (or not).
       operationId: 'UserTask: ApproveInvoiceUT'
@@ -138,14 +150,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
+              $ref: '#/components/schemas/In'
             examples:
               ApproveInvoiceUT:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
                   invoiceCategory: Travel Expenses
-                  invoiceNumber: I-12345
         required: true
       responses:
         '200':
@@ -153,7 +164,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApproveInvoice'
+                $ref: '#/components/schemas/Out2'
               examples:
                 ApproveInvoiceUT:
                   value:
@@ -164,10 +175,10 @@ paths:
                 Invoice NOT approved:
                   value:
                     approved: false
-  /usertask/InvoiceReceiptP/PrepareBankTransferUT:
+  /usertask/example-invoice-c7/PrepareBankTransferUT:
     head:
       tags:
-      - InvoiceReceiptP
+      - example-invoice-c7
       summary: 'UserTask: PrepareBankTransferUT'
       description: Prepare the bank transfer in the Financial Accounting System.
       operationId: 'UserTask: PrepareBankTransferUT'
@@ -175,7 +186,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
+              $ref: '#/components/schemas/In2'
             examples:
               PrepareBankTransferUT:
                 value:
@@ -187,36 +198,33 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PrepareBankTransfer'
-              examples:
-                PrepareBankTransferUT:
-                  value: {}
-  /process/ReviewInvoiceP:
+  /process/example-invoice-c7-review:
     head:
       tags:
-      - ReviewInvoiceP
-      summary: 'Process: ReviewInvoiceP'
-      description: |2+
-
+      - example-invoice-c7-review
+      summary: 'Process: example-invoice-c7-review'
+      description: |+
         This starts the Review Invoice Process.
 
-        <iframe src="https://cawemo.com/embed/cc9f978a-e98a-4b01-991d-36d682574cda" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
 
+        <div class="diagramCanvas">
+          <div class="diagram" id="example-invoice-c7-review-79605">
+            <img onLoad="openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({ container: $('#example-invoice-c7-review-79605'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
 
+        Download: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)
 
-      operationId: 'Process: ReviewInvoiceP'
+      operationId: 'Process: example-invoice-c7-review'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
+              $ref: '#/components/schemas/In3'
             examples:
-              ReviewInvoiceP:
+              example-invoice-c7-review:
                 value:
-                  creditor: Great Pizza for Everyone Inc.
+                  creditor: aaaaGreat Pizza for Everyone Inc.
                   amount: 300.0
                   invoiceCategory: Travel Expenses
                   invoiceNumber: I-12345
@@ -227,15 +235,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InvoiceReviewed'
+                $ref: '#/components/schemas/Out'
               examples:
-                ReviewInvoiceP:
+                example-invoice-c7-review:
                   value:
                     clarified: true
-  /usertask/ReviewInvoiceP/AssignReviewerUT:
+  /usertask/example-invoice-c7-review/AssignReviewerUT:
     head:
       tags:
-      - ReviewInvoiceP
+      - example-invoice-c7-review
       summary: 'UserTask: AssignReviewerUT'
       description: Select the Reviewer.
       operationId: 'UserTask: AssignReviewerUT'
@@ -243,7 +251,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
+              $ref: '#/components/schemas/In2'
             examples:
               AssignReviewerUT:
                 value:
@@ -258,15 +266,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AssignedReviewer'
+                $ref: '#/components/schemas/Out3'
               examples:
                 AssignReviewerUT:
                   value:
                     reviewer: John
-  /usertask/ReviewInvoiceP/ReviewInvoiceUT:
+  /usertask/example-invoice-c7-review/ReviewInvoiceUT:
     head:
       tags:
-      - ReviewInvoiceP
+      - example-invoice-c7-review
       summary: 'UserTask: ReviewInvoiceUT'
       description: Review Invoice and approve.
       operationId: 'UserTask: ReviewInvoiceUT'
@@ -274,7 +282,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
+              $ref: '#/components/schemas/In2'
             examples:
               ReviewInvoiceUT:
                 value:
@@ -289,7 +297,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InvoiceReviewed'
+                $ref: '#/components/schemas/Out4'
               examples:
                 ReviewInvoiceUT:
                   value:
@@ -311,14 +319,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
+              $ref: '#/components/schemas/In'
             examples:
               ApproveInvoiceUT:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
                   invoiceCategory: Travel Expenses
-                  invoiceNumber: I-12345
         required: true
       responses:
         '200':
@@ -326,7 +333,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApproveInvoice'
+                $ref: '#/components/schemas/Out2'
               examples:
                 ApproveInvoiceUT:
                   value:
@@ -348,7 +355,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
+              $ref: '#/components/schemas/In2'
             examples:
               PrepareBankTransferUT:
                 value:
@@ -360,13 +367,6 @@ paths:
       responses:
         '200':
           description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PrepareBankTransfer'
-              examples:
-                PrepareBankTransferUT:
-                  value: {}
   /usertask/UserTasks/AssignReviewerUT:
     head:
       tags:
@@ -378,7 +378,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
+              $ref: '#/components/schemas/In2'
             examples:
               AssignReviewerUT:
                 value:
@@ -393,7 +393,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AssignedReviewer'
+                $ref: '#/components/schemas/Out3'
               examples:
                 AssignReviewerUT:
                   value:
@@ -409,7 +409,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvoiceReceipt'
+              $ref: '#/components/schemas/In2'
             examples:
               ReviewInvoiceUT:
                 value:
@@ -424,7 +424,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InvoiceReviewed'
+                $ref: '#/components/schemas/Out4'
               examples:
                 ReviewInvoiceUT:
                   value:
@@ -435,38 +435,34 @@ paths:
                 Invoice NOT clarified:
                   value:
                     clarified: false
-  /decisiondmn/DMNs/invoice-assign-approver:
+  /decisiondmn/DMNs/example-invoice-c7-assignApprover:
     head:
       tags:
       - DMNs
-      summary: 'DecisionDmn: invoice-assign-approver'
-      description: |2+
-
+      summary: 'DecisionDmn: example-invoice-c7-assignApprover'
+      description: |+
         Decision Table on who must approve the Invoice.
 
-        <iframe src="https://cawemo.com/embed/155ba236-d5d1-42f7-8b56-3e90e0bb98d4" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
 
+        <div class="diagramCanvas">
+          <div class="diagram" id="example-invoice-c7-assignApprover-39250">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-39250'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
 
+        Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)
 
-      operationId: 'DecisionDmn: invoice-assign-approver'
+      operationId: 'DecisionDmn: example-invoice-c7-assignApprover'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SelectApproverGroup'
+              $ref: '#/components/schemas/In1'
             examples:
-              invoice-assign-approver:
+              example-invoice-c7-assignApprover:
                 value:
                   amount: 30.0
                   invoiceCategory: Software License Costs
-              budget:
-                value:
-                  amount: 30.0
-                  invoiceCategory: Software License Costs
-              day-to-day expense:
-                value:
-                  amount: 125.0
-                  invoiceCategory: Misc
         required: true
       responses:
         '200':
@@ -474,9 +470,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CollectEntries_camundala.examples.invoice.domain.ApproverGroup[]'
+                $ref: '#/components/schemas/CollectEntries_camundala.examples.invoice.InvoiceReceipt.ApproverGroup[]'
               examples:
-                invoice-assign-approver:
+                example-invoice-c7-assignApprover:
                   value:
                   - management
                 budget:
@@ -488,36 +484,45 @@ paths:
                   - sales
 components:
   schemas:
-    ApproveInvoice:
-      required:
-      - approved
-      type: object
-      properties:
-        approved:
-          type: boolean
-          description: If true, the Boss accepted the Invoice
-      description: Every Invoice has to be accepted by the Boss.
     ApproverGroup:
       oneOf:
       - $ref: '#/components/schemas/accounting'
       - $ref: '#/components/schemas/management'
       - $ref: '#/components/schemas/sales'
-    AssignedReviewer:
-      required:
-      - reviewer
-      type: object
-      properties:
-        reviewer:
-          type: string
-    CollectEntries_camundala.examples.invoice.domain.ApproverGroup[]:
+    CollectEntries_camundala.examples.invoice.InvoiceReceipt.ApproverGroup[]:
       oneOf:
       - $ref: '#/components/schemas/ApproverGroup'
-    InvoiceCategory:
-      oneOf:
-      - $ref: '#/components/schemas/Misc'
-      - $ref: '#/components/schemas/Software License Costs'
-      - $ref: '#/components/schemas/Travel Expenses'
-    InvoiceReceipt:
+    In:
+      required:
+      - creditor
+      - amount
+      - invoiceCategory
+      type: object
+      properties:
+        creditor:
+          type: string
+        amount:
+          type: number
+          format: double
+        invoiceCategory:
+          $ref: '#/components/schemas/InvoiceCategory'
+        shouldFail:
+          type: boolean
+          description: You can let the Archive Service fail for testing.
+        invoiceReviewedMock:
+          $ref: '#/components/schemas/Out'
+    In1:
+      required:
+      - amount
+      - invoiceCategory
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+        invoiceCategory:
+          $ref: '#/components/schemas/InvoiceCategory'
+    In2:
       required:
       - creditor
       - amount
@@ -537,7 +542,48 @@ components:
         shouldFail:
           type: boolean
           description: You can let the Archive Service fail for testing.
-    InvoiceReceiptCheck:
+      description: Same Input as _InvoiceReceipt_, only without mocking - no mocking
+        in UserTasks
+    In3:
+      required:
+      - creditor
+      - amount
+      - invoiceCategory
+      - invoiceNumber
+      type: object
+      properties:
+        creditor:
+          type: string
+        amount:
+          type: number
+          format: double
+        invoiceCategory:
+          $ref: '#/components/schemas/InvoiceCategory'
+        invoiceNumber:
+          type: string
+        shouldFail:
+          type: boolean
+          description: You can let the Archive Service fail for testing.
+        outputMock:
+          $ref: '#/components/schemas/Out'
+      description: Same Input as _InvoiceReceipt_, only different Mocking
+    InvoiceCategory:
+      oneOf:
+      - $ref: '#/components/schemas/Misc'
+      - $ref: '#/components/schemas/Software License Costs'
+      - $ref: '#/components/schemas/Travel Expenses'
+    Misc:
+      type: object
+    Out:
+      required:
+      - clarified
+      type: object
+      properties:
+        clarified:
+          type: boolean
+          description: Flag that is set by the Reviewer
+      description: Mocking the subProcess _Invoice Receipt_.
+    Out1:
       required:
       - approved
       type: object
@@ -548,7 +594,23 @@ components:
         clarified:
           type: boolean
           description: Flag that is set by the Reviewer (only set if there was a review).
-    InvoiceReviewed:
+    Out2:
+      required:
+      - approved
+      type: object
+      properties:
+        approved:
+          type: boolean
+          description: If true, the Boss accepted the Invoice
+      description: Every Invoice has to be accepted by the Boss.
+    Out3:
+      required:
+      - reviewer
+      type: object
+      properties:
+        reviewer:
+          type: string
+    Out4:
       required:
       - clarified
       type: object
@@ -556,36 +618,13 @@ components:
         clarified:
           type: boolean
           description: Flag that is set by the Reviewer
-    Misc:
-      type: object
-      description: There are three possible Categories
-    PrepareBankTransfer:
-      type: object
-      description: Prepares the bank transfer for the invoice. Only readOnly fields
-        from the Process.
-    SelectApproverGroup:
-      required:
-      - amount
-      - invoiceCategory
-      type: object
-      properties:
-        amount:
-          type: number
-          format: double
-        invoiceCategory:
-          $ref: '#/components/schemas/InvoiceCategory'
     Software License Costs:
       type: object
-      description: There are three possible Categories
     Travel Expenses:
       type: object
-      description: There are three possible Categories
     accounting:
       type: object
-      description: These Groups can approve the invoice.
     management:
       type: object
-      description: These Groups can approve the invoice.
     sales:
       type: object
-      description: These Groups can approve the invoice.

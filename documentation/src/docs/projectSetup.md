@@ -18,13 +18,12 @@ As these example are in a complexer multi-module project, we show here and expla
 src // uses maven src setup
     / main / scala 
                    / yourproject.package 
-                                         / domain.scala // put your domain here
-                                         / bpmn.scala   // put your bpmn here
-                                         / api.scala    // put your api here
+                                         / MyProcess.scala // put your domain here, needed for this process - provide BPMN examples
+                                         / ApiCreater.scala   // Compose here your API Documentation
                                          / otherStuff   // e.g. services etc.
     / it / scala
                  / yourproject.package
-                                        / InvoiceSimulation.scala // put your simulations here
+                                        / MyProcessSimulation.scala // put your simulations here
 project 
         / build.properties // version of sbt - see below
 build.sbt // dependencies etc. - see below
