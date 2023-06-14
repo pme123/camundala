@@ -143,6 +143,69 @@ The closer the documentation is to your code, that you work with, the higher is 
 So we use `@description("my descr")` from _[Tapir](https://tapir.softwaremill.com/en/latest/index.html)_. 
 These descriptions will then automatically taken into account when the API documentation is generated.
 
+@:callout(info)
+Be aware that the description of Input- and Output Objects are not taken into the doc by Open API.
+
+So document them in the process description if needed.
+@:@
+
+### Mocking
+This looks a bit strange, that mocking is at the domain level. 
+However, it turns out that this is quite helpful:
+
+- API Documentation: You see if a process provides Mocking, and/or if it is possible to mock certain sub processes.
+- Simulation: You can simple mock sub processes.
+- Postman Requests: You can manipulate with mocks the path taken in the process (even on production).
+
+#### Mock the process itself
+If you provide the possibility to mock your entire process, you should do this in the following way:
+
+```scala
+  case class In(
+      ...
+      @description(outputMockDescr(ReviewInvoice.Out()))
+      outputMock: Option[Out] = None
+  )
+```
+
+- Use the input parameter `outputMock`.
+- In your process:
+    - validate your input (optional step).
+    - if `outputMock` is set, set all process variables with the values of the `outputMock`.
+    - finish the process
+
+@:callout(info)
+This is a common pattern, that you can implement generic. 
+In the future we will provide this out of the box.
+@:@
+
+#### Mock a sub process
+If a sub process provides the possibility to mock, you can easily use this in your process.
+
+Here are the steps:
+
+```scala
+  case class In(
+      ...
+    @description(subProcessMockDescr(ReviewInvoice.Out()))
+    invoiceReviewedMock: Option[ReviewInvoice.Out] = None
+  )
+```
+
+- Use an input parameter that indicates the subprocess `invoiceReviewedMock`.
+- In your process:
+    - Map in your BPMN the input parameter to the input parameter of the subprocess: `invoiceReviewedMock` > `outputMock`
+
+#### Mock description
+@:callout(info)
+Through a restriction of Open API you can only have one description for a class.
+As we mock outputs that can not be described directly we should be fine.
+@:@
+
+Use `outputMockDescr(ReviewInvoice.Out())` will create a nice description including an example and the class of the mock.
+
+TODO: Implement Mocking for this example.
+
 ### JSON marshalling
 
 @:callout(info)

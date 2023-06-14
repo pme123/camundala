@@ -2,6 +2,7 @@ package camundala.examples.invoice
 
 import camundala.bpmn.*
 import camundala.domain.*
+import camundala.examples.invoice.ReviewInvoice.Out
 
 import scala.collection.immutable.Seq
 
@@ -24,7 +25,7 @@ object InvoiceReceipt extends BpmnDsl:
                                                      )*/
       @description("You can let the Archive Service fail for testing.")
       shouldFail: Option[Boolean] = None,
-      @description("Mocking the subProcess _Invoice Receipt_.")
+      @description(outputMockDescr(ReviewInvoice.Out()))
       invoiceReviewedMock: Option[ReviewInvoice.Out] = None
   )
   object In:
@@ -80,7 +81,7 @@ object InvoiceReceipt extends BpmnDsl:
   end InvoiceAssignApproverDMN
 
   object ApproveInvoiceUT:
-    type In = InvoiceReceipt.In
+    type In = InvoiceReceipt.PrepareBankTransferUT.In
 
     @description("""Every Invoice has to be accepted by the Boss.""")
     case class Out(
@@ -96,7 +97,7 @@ object InvoiceReceipt extends BpmnDsl:
       userTask(
         id = "ApproveInvoiceUT",
         descr = "Approve the invoice (or not).",
-        in = In(),
+        in = InvoiceReceipt.PrepareBankTransferUT.In(),
         out = Out()
       )
   end ApproveInvoiceUT

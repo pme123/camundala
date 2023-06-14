@@ -9,13 +9,13 @@ object ReviewInvoice extends BpmnDsl:
 
   @description("Same Input as _InvoiceReceipt_, only different Mocking")
   case class In(
-      creditor: String = "aaaaGreat Pizza for Everyone Inc.",
+      creditor: String = "Great Pizza for Everyone Inc.",
       amount: Double = 300.0,
       invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`,
       invoiceNumber: String = "I-12345",
       @description("You can let the Archive Service fail for testing.")
       shouldFail: Option[Boolean] = None,
-      @description(outputMockDescr(Out()))
+      @description(outputMockDescr(ReviewInvoice.Out()))
       outputMock: Option[Out] = None
   )
   object In:

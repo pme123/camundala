@@ -8,7 +8,7 @@ info:
 
 
 
-    Created at 13/06/2023, 07:42
+    Created at 14/06/2023, 08:55
 
     ****
 
@@ -384,7 +384,7 @@ paths:
                 value:
                   variables:
                     creditor:
-                      value: aaaaGreat Pizza for Everyone Inc.
+                      value: Great Pizza for Everyone Inc.
                       type: String
                     invoiceNumber:
                       value: I-12345

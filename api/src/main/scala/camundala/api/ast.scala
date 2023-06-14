@@ -72,7 +72,12 @@ sealed trait InOutApi[
   lazy val variableNamesOut: List[String] =
     inOut.out.productElementNames.toList
 
-  def apiDescription(diagramDownloadPath: Option[String], diagramNameAdjuster: Option[String => String]): String = descr
+  def apiDescription(diagramDownloadPath: Option[String], diagramNameAdjuster: Option[String => String]): String =
+    s"""$descr
+       |
+       |- Input:  `${inOut.in.getClass.getName.replace("$", " > ")}`
+       |- Output: `${inOut.out.getClass.getName.replace("$", " > ")}`
+       |""".stripMargin
 
   protected def diagramName: Option[String] = None
 
@@ -115,7 +120,7 @@ case class ProcessApi[
     copy(apiExamples = examples)
 
   override def apiDescription(diagramDownloadPath: Option[String], diagramNameAdjuster: Option[String => String]): String =
-    s"""$descr
+    s"""${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
        |
        |${inOut.in match
       case _: GenericServiceIn => "" // no diagram if generic
@@ -151,7 +156,7 @@ case class DecisionDmnApi[
     ActivityApi(name, inOut)
 
   override def apiDescription(diagramDownloadPath: Option[String], diagramNameAdjuster: Option[String => String]): String =
-    s"""$descr
+    s"""${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
        |
        |${diagramDownloadPath.map(diagramFrame(_, diagramNameAdjuster)).getOrElse("")}
        |""".stripMargin

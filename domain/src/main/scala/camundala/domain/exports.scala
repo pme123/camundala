@@ -83,13 +83,21 @@ def toJson(json: String): Json =
 def serviceNameDescr(serviceName: String) = s"As this uses the generic Service you need to name the Service to '$serviceName'."
 
 def outputMockDescr[Out : CirceCodec, Schema](mock: Out) =
-  s"""You can provide mocking in your process, with just returning this object if provided.
+  s"""You can mock the response variables of this (sub)process.
+     |
+     |Class: `${mock.getClass.getName.replace("$", " > ")}`
      |
      |Here an example:
      |
      |```scala
      |${mock.asJson}
      |```
+     |
+     |General to mocking:
+     |
+     |- `outputMock` mocks this process.
+     |- `someSubProcessMock` mocks a sub process
      |""".stripMargin
+
 val testModeDescr = "This flag indicades that this is a test - in the process it can behave accordingly."
 val handledErrorsDescr = "A comma separated list of HTTP-Status-Codes, that are modelled in the BPMN as Business-Exceptions - see Outputs. z.B: `404,500`"

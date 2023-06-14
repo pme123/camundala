@@ -5,7 +5,7 @@ info:
   summary: |2+
 
 
-    Created at 13/06/2023, 07:42
+    Created at 14/06/2023, 08:55
 
     ****
 
@@ -54,10 +54,14 @@ paths:
       description: |+
         This starts the Invoice Receipt Process.
 
+        - Input:  `camundala.examples.invoice.InvoiceReceipt > In`
+        - Output: `camundala.examples.invoice.InvoiceReceipt > Out`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-38156">
-            <img onLoad="openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container: $('#example-invoice-c7-38156'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-56172">
+            <img onLoad="openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container: $('#example-invoice-c7-56172'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -95,10 +99,14 @@ paths:
       description: |+
         Decision Table on who must approve the Invoice.
 
+        - Input:  `camundala.examples.invoice.InvoiceReceipt > InvoiceAssignApproverDMN > In`
+        - Output: `camundala.bpmn.CollectEntries`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-29945">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-29945'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-30232">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-30232'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -144,19 +152,24 @@ paths:
       tags:
       - example-invoice-c7
       summary: 'UserTask: ApproveInvoiceUT'
-      description: Approve the invoice (or not).
+      description: |
+        Approve the invoice (or not).
+
+        - Input:  `camundala.examples.invoice.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.examples.invoice.InvoiceReceipt > ApproveInvoiceUT > Out`
       operationId: 'UserTask: ApproveInvoiceUT'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/In'
+              $ref: '#/components/schemas/In2'
             examples:
               ApproveInvoiceUT:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
                   invoiceCategory: Travel Expenses
+                  invoiceNumber: I-12345
         required: true
       responses:
         '200':
@@ -180,7 +193,11 @@ paths:
       tags:
       - example-invoice-c7
       summary: 'UserTask: PrepareBankTransferUT'
-      description: Prepare the bank transfer in the Financial Accounting System.
+      description: |
+        Prepare the bank transfer in the Financial Accounting System.
+
+        - Input:  `camundala.examples.invoice.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.bpmn.NoOutput`
       operationId: 'UserTask: PrepareBankTransferUT'
       requestBody:
         content:
@@ -206,10 +223,14 @@ paths:
       description: |+
         This starts the Review Invoice Process.
 
+        - Input:  `camundala.examples.invoice.ReviewInvoice > In`
+        - Output: `camundala.examples.invoice.ReviewInvoice > Out`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-review-79605">
-            <img onLoad="openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({ container: $('#example-invoice-c7-review-79605'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-review-24997">
+            <img onLoad="openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({ container: $('#example-invoice-c7-review-24997'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -224,7 +245,7 @@ paths:
             examples:
               example-invoice-c7-review:
                 value:
-                  creditor: aaaaGreat Pizza for Everyone Inc.
+                  creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
                   invoiceCategory: Travel Expenses
                   invoiceNumber: I-12345
@@ -245,7 +266,11 @@ paths:
       tags:
       - example-invoice-c7-review
       summary: 'UserTask: AssignReviewerUT'
-      description: Select the Reviewer.
+      description: |
+        Select the Reviewer.
+
+        - Input:  `camundala.examples.invoice.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.examples.invoice.ReviewInvoice > AssignReviewerUT > Out`
       operationId: 'UserTask: AssignReviewerUT'
       requestBody:
         content:
@@ -276,7 +301,11 @@ paths:
       tags:
       - example-invoice-c7-review
       summary: 'UserTask: ReviewInvoiceUT'
-      description: Review Invoice and approve.
+      description: |
+        Review Invoice and approve.
+
+        - Input:  `camundala.examples.invoice.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.examples.invoice.ReviewInvoice > ReviewInvoiceUT > Out`
       operationId: 'UserTask: ReviewInvoiceUT'
       requestBody:
         content:
@@ -313,19 +342,24 @@ paths:
       tags:
       - User Tasks
       summary: 'UserTask: ApproveInvoiceUT'
-      description: Approve the invoice (or not).
+      description: |
+        Approve the invoice (or not).
+
+        - Input:  `camundala.examples.invoice.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.examples.invoice.InvoiceReceipt > ApproveInvoiceUT > Out`
       operationId: 'UserTask: ApproveInvoiceUT'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/In'
+              $ref: '#/components/schemas/In2'
             examples:
               ApproveInvoiceUT:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
                   invoiceCategory: Travel Expenses
+                  invoiceNumber: I-12345
         required: true
       responses:
         '200':
@@ -349,7 +383,11 @@ paths:
       tags:
       - User Tasks
       summary: 'UserTask: PrepareBankTransferUT'
-      description: Prepare the bank transfer in the Financial Accounting System.
+      description: |
+        Prepare the bank transfer in the Financial Accounting System.
+
+        - Input:  `camundala.examples.invoice.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.bpmn.NoOutput`
       operationId: 'UserTask: PrepareBankTransferUT'
       requestBody:
         content:
@@ -372,7 +410,11 @@ paths:
       tags:
       - User Tasks
       summary: 'UserTask: AssignReviewerUT'
-      description: Select the Reviewer.
+      description: |
+        Select the Reviewer.
+
+        - Input:  `camundala.examples.invoice.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.examples.invoice.ReviewInvoice > AssignReviewerUT > Out`
       operationId: 'UserTask: AssignReviewerUT'
       requestBody:
         content:
@@ -403,7 +445,11 @@ paths:
       tags:
       - User Tasks
       summary: 'UserTask: ReviewInvoiceUT'
-      description: Review Invoice and approve.
+      description: |
+        Review Invoice and approve.
+
+        - Input:  `camundala.examples.invoice.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.examples.invoice.ReviewInvoice > ReviewInvoiceUT > Out`
       operationId: 'UserTask: ReviewInvoiceUT'
       requestBody:
         content:
@@ -443,10 +489,14 @@ paths:
       description: |+
         Decision Table on who must approve the Invoice.
 
+        - Input:  `camundala.examples.invoice.InvoiceReceipt > InvoiceAssignApproverDMN > In`
+        - Output: `camundala.bpmn.CollectEntries`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-39250">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-39250'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-95219">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-95219'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -582,7 +632,23 @@ components:
         clarified:
           type: boolean
           description: Flag that is set by the Reviewer
-      description: Mocking the subProcess _Invoice Receipt_.
+      description: |
+        You can mock the response variables of this (sub)process.
+
+        Class: `camundala.examples.invoice.ReviewInvoice > Out`
+
+        Here an example:
+
+        ```scala
+        {
+          "clarified" : true
+        }
+        ```
+
+        General to mocking:
+
+        - `outputMock` mocks this process.
+        - `someSubProcessMock` mocks a sub process
     Out1:
       required:
       - approved
