@@ -204,8 +204,6 @@ As we mock outputs that can not be described directly we should be fine.
 
 Use `outputMockDescr(ReviewInvoice.Out())` will create a nice description including an example and the class of the mock.
 
-TODO: Implement Mocking for this example.
-
 ### JSON marshalling
 
 @:callout(info)
@@ -235,6 +233,26 @@ Sorry for this technical noise 😥.
   given Schema[InvoiceCategory] = Schema.derived
   ```
 
-## Example
+### Mock / Validation implementation
+We provide an example with the invoice example for Camunda 7.
+**Be aware** that this was not tested in practice (we sadly have a proprietary solution).
 
-Here you find the Domain Specification of the Invoice example: [Invoice domain](https://github.com/pme123/camundala/blob/master/examples/invoice/camunda8/src/main/scala/camundala/examples/invoice/domain.scala)
+[Mock Example BPMN](images/mockExampleBpmn.png)
+
+- Implement a Listener that validates and handles the mocking.
+
+  ```scala
+  class InvoiceInputHandler extends InputHandler[InvoiceReceipt.In] :
+  
+    lazy val prototype: InvoiceReceipt.In = InvoiceReceipt.In()
+  ```
+
+    - Validation: The prototype is needed to generic figure out what input variables are expected.
+    - Mocking: Nothing needed.
+
+- Add it to the Start event in the BPMN:
+    - Listener Type: `Java class`
+    - Java class: `camundala.examples.invoice.listener.InvoiceInputHandler`
+
+- Add a condition (Expression) that finishes the process if mocked.
+    - Condition Expression: `${mocked}`

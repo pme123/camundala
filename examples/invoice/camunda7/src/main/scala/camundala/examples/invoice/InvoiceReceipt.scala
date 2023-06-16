@@ -14,7 +14,7 @@ object InvoiceReceipt extends BpmnDsl:
       creditor: String = "Great Pizza for Everyone Inc.",
       amount: Double = 300.0,
       invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`,
-      //  invoiceNumber: String = "I-12345",
+      invoiceNumber: String = "I-12345",
       // removed due to problems with sttp client
       /*   invoiceDocument: FileInOut = FileInOut(
                                                        "invoice.pdf",
@@ -111,8 +111,6 @@ object InvoiceReceipt extends BpmnDsl:
         amount: Double = 300.0,
         invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`,
         invoiceNumber: String = "I-12345",
-        @description("You can let the Archive Service fail for testing.")
-        shouldFail: Option[Boolean] = None
     )
     object In:
       given Schema[In] = Schema.derived

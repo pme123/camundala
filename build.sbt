@@ -84,9 +84,10 @@ lazy val camunda = project
   .configure(preventPublication)
   .settings(projectSettings("camunda"))
   .settings(
-    libraryDependencies +=
-      "org.camunda.bpm" % "camunda-engine" % camundaVersion
-  )
+    libraryDependencies ++= Seq(
+      "org.camunda.bpm" % "camunda-engine" % camundaVersion,
+      "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.18.1",
+  ))
   .dependsOn(bpmn)
 
 lazy val camunda8 = project

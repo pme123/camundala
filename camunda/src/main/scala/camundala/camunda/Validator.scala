@@ -13,14 +13,13 @@ import org.camunda.bpm.engine.variable.value.TypedValue
 import sttp.tapir.generic.auto.*
 import sttp.tapir.json.circe.*
 
-abstract class Validator[T <: Product : Encoder : Decoder]
-  extends ExecutionListener :
+trait Validator[T <: Product : Encoder : Decoder] :
 
-  def product: T
+  def prototype: T
 
-  @throws[Exception]
-  override def notify(execution: DelegateExecution): Unit =
-    val ir = product.productElementNames.toSeq
+  def validate(execution: DelegateExecution): Unit =
+    println(s"EXECUTION Variables: ${execution.getVariables}")
+    val ir = prototype.productElementNames.toSeq
       .map { k =>
         val typedValue: TypedValue = execution.getVariableTyped(k)
         if (typedValue == null)
@@ -31,16 +30,16 @@ abstract class Validator[T <: Product : Encoder : Decoder]
           s""""$k": $value"""
       }.filterNot(_ == "NOT_SET")
       .mkString("{", ",", "}")
-   
+
     toJson(ir).as[T] match
       case Right(_) =>
-        println(s"Validation Succeeded (${product.getClass.getSimpleName})")
+        println(s"Validation Succeeded (${prototype.getClass.getSimpleName})")
       case Left(ex) =>
-        println(s"Validation Failed $ex (${product.getClass.getSimpleName})")
+        println(s"Validation Failed $ex (${prototype.getClass.getSimpleName})")
         throw new IllegalArgumentException(s"Validation Error: Input is not valid: $ex")
 
 
-  private def extractValue(typedValue: TypedValue) =
+  private def extractValue(typedValue: TypedValue): AnyRef =
     typedValue.getType match
       case _: PrimitiveValueType =>
         typedValue.getValue match

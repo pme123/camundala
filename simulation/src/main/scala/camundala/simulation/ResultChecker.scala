@@ -6,13 +6,13 @@ import camundala.bpmn.*
 import camundala.bpmn.CamundaVariable.*
 import camundala.domain.*
 import camundala.simulation.TestOverrideType.*
-import io.circe.parser.*
 import io.circe.*
+import io.circe.parser.*
 import io.circe.syntax.*
 
 import scala.collection.mutable.ListBuffer
 
-trait ResultChecker :
+trait ResultChecker:
 
   def checkProps(
       withOverrides: WithTestOverrides[_],
@@ -71,10 +71,10 @@ trait ResultChecker :
                     vector
                       .exists(x =>
                         value match
-                          case CString(v,_) =>
+                          case CString(v, _) =>
                             x.asString.contains(v)
-                          case CInteger(v,_) => x.asNumber.contains(v)
-                          case CBoolean (v,_)  => x.asBoolean.contains(v)
+                          case CInteger(v, _) => x.asNumber.contains(v)
+                          case CBoolean(v, _) => x.asBoolean.contains(v)
                           case _ => x.toString == value.value.toString
                       )
                   case _ =>
@@ -133,8 +133,15 @@ trait ResultChecker :
       camundaVariableMap: Map[String, CamundaVariable],
       result: Seq[CamundaProperty]
   ): Boolean =
+    println(s"camundaVariableMap: $camundaVariableMap")
     camundaVariableMap
-      .map { case key -> expectedValue =>
+      .map {
+        case key -> CNull => // must not be in the result
+          result
+            .find(_.key == key)
+            .map( _ => println(s"!!! The variable '$key' exists in the result - but is NOT expected."))
+            .isEmpty
+        case key -> expectedValue =>
         result
           .find(_.key == key)
           .map {
@@ -185,16 +192,34 @@ trait ResultChecker :
 
   end checkP
 
-  private def checkJson(expectedJson: io.circe.Json, resultJson: io.circe.Json, key: String): Boolean =
+  private def checkJson(
+      expectedJson: io.circe.Json,
+      resultJson: io.circe.Json,
+      key: String
+  ): Boolean =
     val diffs: ListBuffer[String] = ListBuffer()
-    def compareJsons(expJson: io.circe.Json, resJson: io.circe.Json, path: String): Unit = {
+    def compareJsons(
+        expJson: io.circe.Json,
+        resJson: io.circe.Json,
+        path: String
+    ): Unit = {
       if (expJson != resJson) {
         (expJson, resJson) match {
           case _ if expJson.isArray && resJson.isArray =>
             val expJsonArray = expJson.asArray.toList.flatten
             val resJsonArray = resJson.asArray.toList.flatten
-            for ((expJson, resJson) <- expJsonArray.zipAll(resJsonArray, Json.Null, Json.Null)) {
-              compareJsons(expJson, resJson, s"$path[${expJsonArray.indexOf(expJson)}]")
+            for (
+              (expJson, resJson) <- expJsonArray.zipAll(
+                resJsonArray,
+                Json.Null,
+                Json.Null
+              )
+            ) {
+              compareJsons(
+                expJson,
+                resJson,
+                s"$path[${expJsonArray.indexOf(expJson)}]"
+              )
             }
           case _ if expJson.isObject && resJson.isObject =>
             val expJsonObj = expJson.asObject.get
@@ -204,11 +229,15 @@ trait ResultChecker :
             val commonKeys = expKeys.intersect(resKeys).toSet
             val uniqueKeys = (expKeys ++ resKeys).toSet.diff(commonKeys)
             for (key <- commonKeys) {
-              compareJsons(expJsonObj(key).get, resJsonObj(key).get, s"$path.$key")
+              compareJsons(
+                expJsonObj(key).get,
+                resJsonObj(key).get,
+                s"$path.$key"
+              )
             }
             for (key <- uniqueKeys) {
-               if (expKeys.contains(key))
-                expJsonObj(key).foreach{ json =>
+              if (expKeys.contains(key))
+                expJsonObj(key).foreach { json =>
                   diffs += s"$path.$key: ${json.noSpaces} (expected field not in result)"
                 }
               else
@@ -225,7 +254,9 @@ trait ResultChecker :
     compareJsons(expectedJson, resultJson, "")
 
     if (diffs.nonEmpty) {
-      println(s"!!! The JSON variable $key have the following different fields:")
+      println(
+        s"!!! The JSON variable $key have the following different fields:"
+      )
       for (diff <- diffs) {
         println(diff)
       }
@@ -233,6 +264,4 @@ trait ResultChecker :
     diffs.isEmpty
   end checkJson
 
-
 end ResultChecker
-
