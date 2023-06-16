@@ -92,8 +92,14 @@
     <li class="level2 nav-leaf"><a href="#test-overrides">Test Overrides</a></li>
     <li class="level2 nav-leaf"><a href="#read-the-results">Read the Results</a></li>
     <li class="level1 nav-node"><a href="#timing">Timing</a></li>
+    <li class="level2 nav-leaf"><a href="#process">Process</a></li>
+    <li class="level2 nav-leaf"><a href="#user-task">User Task</a></li>
+    <li class="level2 nav-leaf"><a href="#receive-message-event">Receive Message Event</a></li>
+    <li class="level2 nav-leaf"><a href="#receive-signal-event">Receive Signal Event</a></li>
+    <li class="level2 nav-leaf"><a href="#timer-event">Timer Event</a></li>
     <li class="level2 nav-leaf"><a href="#concrete-wait-time">Concrete wait time</a></li>
-    <li class="level1 nav-leaf"><a href="#load-testing">Load Testing</a></li>
+    <li class="level1 nav-node"><a href="#mocking">Mocking</a></li>
+    <li class="level2 nav-leaf"><a href="#just-return-the-mocked-output">Just return the mocked Output</a></li>
   </ul>
 
   <p class="footer"></p>
@@ -205,7 +211,7 @@
         
         <h4 id="reference-to-camunda-cockpit" class="section"><a class="anchor-link left" href="#reference-to-camunda-cockpit"><i class="icofont-laika link">&#xef71;</i></a>Reference to Camunda Cockpit</h4>
         <p>Each Process Scenario will print a link to the according Process-Instance:</p>
-        <p><code>15:15:32.926 INFO: Process &#39;ReviewInvoiceP&#39; started (check http://localhost:8034/camunda/app/cockpit/default/#/process-instance/42f84722-82cc-11ed-b5c6-9e5abd655523)</code></p>
+        <p><code>15:15:32.926 INFO: Process &#39;example-invoice-c7-review&#39; started (check http://localhost:8034/camunda/app/cockpit/default/#/process-instance/42f84722-82cc-11ed-b5c6-9e5abd655523)</code></p>
         <p>This is not available for a DMN Scenario.</p>
         
         <h2 id="simulation" class="section"><a class="anchor-link left" href="#simulation"><i class="icofont-laika link">&#xef71;</i></a>Simulation</h2>
@@ -282,7 +288,7 @@
         <ul>
           <li>PROCESS: The Process you defined with the <a href="../bpmnDsl.html#bpmn-dsl">BPMN DSL</a>.</li>
           <li>INTERACTIONS: Whenever the Path of the Process comes to an Activity that interacts
-          with the outside world (<a href="../bpmnDsl.html#user-task">User Task</a>, <a href="../bpmnDsl.html#receive-message-event">Receive Message Event</a> or <a href="../bpmnDsl.html#receive-signal-event">Receive Signal Event</a>),
+          with the outside world (<a href="#user-task">User Task</a>, <a href="#receive-message-event">Receive Message Event</a> or <a href="#receive-signal-event">Receive Signal Event</a>),
           you add an according Process Step - see <a href="#steps">Steps</a>.
           This is <strong>optional</strong>, you can skip it if your process has no interactions.</li>
         </ul>
@@ -375,7 +381,7 @@
         <p><strong>The Example:</strong></p>
         <p>We have the following DMN definition (bpmn):</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">InvoiceAssignApproverDMN</span><span> = </span><span class="identifier">collectEntries</span><span>(
-  </span><span class="identifier">decisionDefinitionKey</span><span> = </span><span class="string-literal">&quot;invoice-assign-approver&quot;</span><span>,
+  </span><span class="identifier">decisionDefinitionKey</span><span> = </span><span class="string-literal">&quot;example-invoice-c7-assignApprover&quot;</span><span>,
   </span><span class="identifier">in</span><span> = </span><span class="type-name">SelectApproverGroup</span><span>(),
   </span><span class="identifier">out</span><span> = </span><span class="type-name">Seq</span><span>(</span><span class="type-name">ApproverGroup</span><span>.</span><span class="identifier">management</span><span>),
   </span><span class="identifier">descr</span><span> = </span><span class="string-literal">&quot;Decision Table on who must approve the Invoice.&quot;</span><span>,
@@ -443,7 +449,7 @@
   )</span></code></pre>
         
         <h2 id="steps" class="section"><a class="anchor-link left" href="#steps"><i class="icofont-laika link">&#xef71;</i></a>Steps</h2>
-        <p>This is a List with Process Interactions like <a href="../bpmnDsl.html#user-task">User Task</a>, <a href="../bpmnDsl.html#receive-message-event">Receive Message Event</a> or <a href="../bpmnDsl.html#receive-signal-event">Receive Signal Event</a>.
+        <p>This is a List with Process Interactions like <a href="#user-task">User Task</a>, <a href="#receive-message-event">Receive Message Event</a> or <a href="#receive-signal-event">Receive Signal Event</a>.
         Each Interaction is simply the Activity you define with the <a href="../bpmnDsl.html#bpmn-dsl">BPMN DSL</a>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
 </span><span class="identifier">scenario</span><span>(</span><span class="type-name">PROCESS</span><span>)(
@@ -502,7 +508,7 @@
 ...
 </span><span class="comment">// bpmn object
 </span><span class="identifier">process</span><span>(
-  </span><span class="identifier">id</span><span> = </span><span class="string-literal">&quot;ReviewInvoiceP&quot;</span><span>,
+  </span><span class="identifier">id</span><span> = </span><span class="string-literal">&quot;example-invoice-c7-review&quot;</span><span>,
   </span><span class="identifier">descr</span><span> = </span><span class="string-literal">&quot;This starts the Review Invoice Process.&quot;</span><span>,
   </span><span class="identifier">in</span><span> = </span><span class="type-name">InvoiceReceipt</span><span>(),
   </span><span class="identifier">out</span><span> = </span><span class="type-name">InvoiceReviewed</span><span>()
@@ -651,17 +657,21 @@
         <p>Here an example output:</p>
         <p><img src="images/simulation_timeout.png" alt="simulation_timeout"></p>
         <p>Depending on the interaction, we have the following strategies:</p>
-        <p><strong>Process</strong></p>
+        
+        <h4 id="process" class="section"><a class="anchor-link left" href="#process"><i class="icofont-laika link">&#xef71;</i></a>Process</h4>
         <p>To check the variables of a process, the process must be finished.
         It checks if the state of the process is <code>COMPLETED</code>.</p>
-        <p><strong>User Task</strong></p>
+        
+        <h4 id="user-task" class="section"><a class="anchor-link left" href="#user-task"><i class="icofont-laika link">&#xef71;</i></a>User Task</h4>
         <p>It simple tries until there is a User Task in the process available.
         If there are more than one, it just takes the first one.</p>
-        <p><strong>Receive Message Event</strong></p>
+        
+        <h4 id="receive-message-event" class="section"><a class="anchor-link left" href="#receive-message-event"><i class="icofont-laika link">&#xef71;</i></a>Receive Message Event</h4>
         <p>We try to correlate the message until it is successful.
         This works as Camunda tries to correlate a message to exactly one
         <em>Receive Message Event</em> (we use the <code>processInstanceId</code>).</p>
-        <p><strong>Receive Signal Event</strong></p>
+        
+        <h4 id="receive-signal-event" class="section"><a class="anchor-link left" href="#receive-signal-event"><i class="icofont-laika link">&#xef71;</i></a>Receive Signal Event</h4>
         <p>The way of Correlate Messages does not work for Signals, as they are 
         <em>fire and forget</em>.
         So you need to add an attribute with a certain value, we can check.</p>
@@ -677,7 +687,8 @@
           If you do not define it for <em>Receive Signal Event</em> it takes the default
           value <code>waitForSignal</code> and checks if it is <code>true</code>.</p>
         </div>
-        <p><strong>Timer Event</strong></p>
+        
+        <h4 id="timer-event" class="section"><a class="anchor-link left" href="#timer-event"><i class="icofont-laika link">&#xef71;</i></a>Timer Event</h4>
         <p>You can execute an intermediate timer event immediately.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">scenario</span><span>(</span><span class="identifier">timerExampleProcess</span><span>) (
   </span><span class="identifier">timerExample</span><span>
@@ -692,11 +703,31 @@
 )</span></code></pre>
         <p>This will wait for 2 seconds.</p>
         
-        <h2 id="load-testing" class="section"><a class="anchor-link left" href="#load-testing"><i class="icofont-laika link">&#xef71;</i></a>Load Testing</h2>
+        <h2 id="mocking" class="section"><a class="anchor-link left" href="#mocking"><i class="icofont-laika link">&#xef71;</i></a>Mocking</h2>
         <div class="callout info">
           <i class="icofont-laika info">&#xef4e;</i>
-          <p>At the moment this is not supported.</p>
+          <p>Mocking is handled directly in the processes itself.</p>
+          <p>So depending on the pattern you provide, you need to provide this logic in your process.</p>
+          <p>In the future we will provide helpers that supports these patterns.</p>
         </div>
+        <p>We defined the following two Patterns.</p>
+        
+        <h3 id="just-return-the-mocked-output" class="section"><a class="anchor-link left" href="#just-return-the-mocked-output"><i class="icofont-laika link">&#xef71;</i></a>Just return the mocked Output</h3>
+        <p>As you specify each Output of a Process, you just can use them for Mocking.</p>
+        <p>In our <em>Invoice</em> example, the process <em>Invoice Receipt</em> uses the <em>Review Invoice</em> process.</p>
+        <ul>
+          <li>
+            If we want to mock it, we need define this in the input class of the <em>Invoice Receipt</em> process:
+            <pre><code></code></pre>
+          </li>
+        </ul>
+        <pre><code>
+### Mock the wrapped Service Response.
+
+## Load Testing
+@:callout(info)
+At the moment this is not supported.
+@:@</code></pre>
 
         
 <hr class="footer-rule"/>

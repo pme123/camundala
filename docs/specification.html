@@ -79,8 +79,9 @@
     <li class="level2 nav-leaf"><a href="#hierarchy-enum">Hierarchy Enum</a></li>
     <li class="level2 nav-leaf"><a href="#generic-objects">Generic Objects</a></li>
     <li class="level2 nav-leaf"><a href="#documentation">Documentation</a></li>
+    <li class="level2 nav-leaf"><a href="#mocking">Mocking</a></li>
     <li class="level2 nav-leaf"><a href="#json-marshalling">JSON marshalling</a></li>
-    <li class="level1 nav-leaf"><a href="#example">Example</a></li>
+    <li class="level2 nav-leaf"><a href="#mock-validation-implementation">Mock / Validation implementation</a></li>
   </ul>
 
   <p class="footer"></p>
@@ -216,6 +217,70 @@
         <p>The closer the documentation is to your code, that you work with, the higher is the chance that you will spot mistakes.
         So we use <code>@description(&quot;my descr&quot;)</code> from <em><a href="https://tapir.softwaremill.com/en/latest/index.html">Tapir</a></em>. 
         These descriptions will then automatically taken into account when the API documentation is generated.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Be aware that the description of Input- and Output Objects are not taken into the doc by Open API.</p>
+          <p>So document them in the process description if needed.</p>
+        </div>
+        
+        <h3 id="mocking" class="section"><a class="anchor-link left" href="#mocking"><i class="icofont-laika link">&#xef71;</i></a>Mocking</h3>
+        <p>This looks a bit strange, that mocking is at the domain level. 
+        However, it turns out that this is quite helpful:</p>
+        <ul>
+          <li>API Documentation: You see if a process provides Mocking, and/or if it is possible to mock certain sub processes.</li>
+          <li>Simulation: You can simple mock sub processes.</li>
+          <li>Postman Requests: You can manipulate with mocks the path taken in the process (even on production).</li>
+        </ul>
+        
+        <h4 id="mock-the-process-itself" class="section"><a class="anchor-link left" href="#mock-the-process-itself"><i class="icofont-laika link">&#xef71;</i></a>Mock the process itself</h4>
+        <p>If you provide the possibility to mock your entire process, you should do this in the following way:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">In</span><span>(
+      ...
+      </span><span class="annotation">@description</span><span>(</span><span class="identifier">outputMockDescr</span><span>(</span><span class="type-name">ReviewInvoice</span><span>.</span><span class="type-name">Out</span><span>()))
+      </span><span class="identifier">outputMock</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Out</span><span>] = </span><span class="type-name">None</span><span>
+  )</span></code></pre>
+        <ul>
+          <li>Use the input parameter <code>outputMock</code>.</li>
+          <li>
+            In your process:
+            <ul>
+              <li>validate your input (optional step).</li>
+              <li>if <code>outputMock</code> is set, set all process variables with the values of the <code>outputMock</code>.</li>
+              <li>finish the process</li>
+            </ul>
+          </li>
+        </ul>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>This is a common pattern, that you can implement generic. 
+          In the future we will provide this out of the box.</p>
+        </div>
+        
+        <h4 id="mock-a-sub-process" class="section"><a class="anchor-link left" href="#mock-a-sub-process"><i class="icofont-laika link">&#xef71;</i></a>Mock a sub process</h4>
+        <p>If a sub process provides the possibility to mock, you can easily use this in your process.</p>
+        <p>Here are the steps:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">In</span><span>(
+      ...
+    </span><span class="annotation">@description</span><span>(</span><span class="identifier">subProcessMockDescr</span><span>(</span><span class="type-name">ReviewInvoice</span><span>.</span><span class="type-name">Out</span><span>()))
+    </span><span class="identifier">invoiceReviewedMock</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">ReviewInvoice</span><span>.</span><span class="type-name">Out</span><span>] = </span><span class="type-name">None</span><span>
+  )</span></code></pre>
+        <ul>
+          <li>Use an input parameter that indicates the subprocess <code>invoiceReviewedMock</code>.</li>
+          <li>
+            In your process:
+            <ul>
+              <li>Map in your BPMN the input parameter to the input parameter of the subprocess: <code>invoiceReviewedMock</code> &gt; <code>outputMock</code></li>
+            </ul>
+          </li>
+        </ul>
+        
+        <h4 id="mock-description" class="section"><a class="anchor-link left" href="#mock-description"><i class="icofont-laika link">&#xef71;</i></a>Mock description</h4>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Through a restriction of Open API you can only have one description for a class.
+          As we mock outputs that can not be described directly we should be fine.</p>
+        </div>
+        <p>Use <code>outputMockDescr(ReviewInvoice.Out())</code> will create a nice description including an example and the class of the mock.</p>
         
         <h3 id="json-marshalling" class="section"><a class="anchor-link left" href="#json-marshalling"><i class="icofont-laika link">&#xef71;</i></a>JSON marshalling</h3>
         <div class="callout info">
@@ -245,8 +310,35 @@
           </li>
         </ul>
         
-        <h2 id="example" class="section"><a class="anchor-link left" href="#example"><i class="icofont-laika link">&#xef71;</i></a>Example</h2>
-        <p>Here you find the Domain Specification of the Invoice example: <a href="https://github.com/pme123/camundala/blob/master/examples/invoice/camunda8/src/main/scala/camundala/examples/invoice/domain.scala">Invoice domain</a></p>
+        <h3 id="mock-validation-implementation" class="section"><a class="anchor-link left" href="#mock-validation-implementation"><i class="icofont-laika link">&#xef71;</i></a>Mock / Validation implementation</h3>
+        <p>We provide an example with the invoice example for Camunda 7.
+        <strong>Be aware</strong> that this was not tested in practice (we sadly have a proprietary solution).</p>
+        <p><a href="images/mockExampleBpmn.png">Mock Example BPMN</a></p>
+        <ul>
+          <li>
+            <p>Implement a Listener that validates and handles the mocking.</p>
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">InvoiceInputHandler</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">InputHandler</span><span>[</span><span class="type-name">InvoiceReceipt</span><span>.</span><span class="type-name">In</span><span>] :
+
+</span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">prototype</span><span>: </span><span class="type-name">InvoiceReceipt</span><span>.</span><span class="type-name">In</span><span> = </span><span class="type-name">InvoiceReceipt</span><span>.</span><span class="type-name">In</span><span>()</span></code></pre>
+            <ul>
+              <li>Validation: The prototype is needed to generic figure out what input variables are expected.</li>
+              <li>Mocking: Nothing needed.</li>
+            </ul>
+          </li>
+          <li>
+            <p>Add it to the Start event in the BPMN:</p>
+            <ul>
+              <li>Listener Type: <code>Java class</code></li>
+              <li>Java class: <code>camundala.examples.invoice.listener.InvoiceInputHandler</code></li>
+            </ul>
+          </li>
+          <li>
+            <p>Add a condition (Expression) that finishes the process if mocked.</p>
+            <ul>
+              <li>Condition Expression: <code>${mocked}</code></li>
+            </ul>
+          </li>
+        </ul>
 
         
 <hr class="footer-rule"/>

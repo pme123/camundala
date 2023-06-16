@@ -15,6 +15,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.15.14 - 2023-06-16
+### Changed 
+- MAP-6880: Some cosmetics for Mocker and Validator. - see [Commit](https://github.com/pme123/camundala/commit/682a63af41e3a3ca7c57dee24c5ff94fdb75bda8)
+- MAP-6880: Added documentation creation to Github action. - see [Commit](https://github.com/pme123/camundala/commit/158538b25b09efc1f1b9f6cf3177a51ba39b92a1)
+- MAP-6880: Adding Mocking documentation and example. - see [Commit](https://github.com/pme123/camundala/commit/3d8f9cd070c990a424e9d397ec51e4aaa15782fd)
+- MAP-6880: Specified and documented standard mocking. - see [Commit](https://github.com/pme123/camundala/commit/97c6bfa14b3e0a25efa16af5e29cc2af338b30fc)
+- Documentation of API document. - see [Commit](https://github.com/pme123/camundala/commit/63bb466b9db751d3b5c94840b41160b36c0f2ac8)
+- Documentation of API document. - see [Commit](https://github.com/pme123/camundala/commit/247fb33c5c8937a6c214e580740d8e7ae10e87e6)
+- Fixes in documentation. - see [Commit](https://github.com/pme123/camundala/commit/3ee1961dfd329333cfd3526400c6ccb75e76ca2a)
+
 ## 1.15.13 - 2023-05-31
 ### Changed 
 - Added _ignore.simulation_ / extended documentation for Simulations. - see [Commit](https://github.com/pme123/camundala/commit/8e7c44950633a530e89b26a21245ee8f8d9303d8)

@@ -154,13 +154,10 @@
         <p>A DSL to create the DMN Tester configurations.</p>
         <p>You start from the DMN, that you defined, here an example:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">InvoiceAssignApproverDMN</span><span> = </span><span class="identifier">collectEntries</span><span>(
-    </span><span class="identifier">decisionDefinitionKey</span><span> = </span><span class="string-literal">&quot;invoice-assign-approver&quot;</span><span>,
+    </span><span class="identifier">decisionDefinitionKey</span><span> = </span><span class="string-literal">&quot;example-invoice-c7-assignApprover&quot;</span><span>,
     </span><span class="identifier">in</span><span> = </span><span class="type-name">SelectApproverGroup</span><span>(),
     </span><span class="identifier">out</span><span> = </span><span class="type-name">Seq</span><span>(</span><span class="type-name">ApproverGroup</span><span>.</span><span class="identifier">management</span><span>),
-    </span><span class="identifier">descr</span><span> = </span><span class="identifier">cawemoDescr</span><span>(
-      </span><span class="string-literal">&quot;Decision Table on who must approve the Invoice.&quot;</span><span>,
-      </span><span class="string-literal">&quot;155ba236-d5d1-42f7-8b56-3e90e0bb98d4&quot;</span><span>
-    )
+    </span><span class="identifier">descr</span><span> = </span><span class="string-literal">&quot;Decision Table on who must approve the Invoice.&quot;</span><span>,
   )</span></code></pre>
         <p>Now you can add the following:</p>
         

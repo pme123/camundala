@@ -87,15 +87,13 @@
     <li class="level1 nav-node"><a href="#apis">Apis</a></li>
     <li class="level2 nav-leaf"><a href="#implicit-apis">Implicit Apis</a></li>
     <li class="level2 nav-leaf"><a href="#process-apis">Process Apis</a></li>
-    <li class="level2 nav-leaf"><a href="#input-variables">Input Variables</a></li>
-    <li class="level2 nav-leaf"><a href="#output-variables">Output Variables</a></li>
+    <li class="level2 nav-leaf"><a href="#input-output-variables">Input-/ Output-Variables</a></li>
     <li class="level2 nav-leaf"><a href="#examples">Examples</a></li>
     <li class="level2 nav-leaf"><a href="#cawemo-description">Cawemo description</a></li>
     <li class="level2 nav-leaf"><a href="#project-dependencies">Project dependencies</a></li>
+    <li class="level2 nav-leaf"><a href="#generic-service-process">Generic Service Process</a></li>
     <li class="level1 nav-leaf"><a href="#groups">Groups</a></li>
     <li class="level1 nav-leaf"><a href="#postman-open-api">Postman Open API</a></li>
-    <li class="level1 nav-node"><a href="#other-stuff">Other stuff</a></li>
-    <li class="level2 nav-leaf"><a href="#generic-service-process">Generic Service Process</a></li>
   </ul>
 
   <p class="footer"></p>
@@ -114,7 +112,7 @@
         
         <h2 id="why" class="section"><a class="anchor-link left" href="#why"><i class="icofont-laika link">&#xef71;</i></a>Why</h2>
         <p>To have accurate and not outdated documentation is a challenge. 
-        The closest you can get, is when your running or better tested code is the documentation.</p>
+        The closest you can get, is when your running- or tested code is the documentation.</p>
         <p>And this is what we do here!
         Together with the <a href="simulation.html#simulations">Simulations</a> you get the most accurate documentation possible without having too much work.</p>
         
@@ -135,7 +133,7 @@
 </span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">examples</span><span>.</span><span class="identifier">invoice</span><span>.</span><span class="identifier">domain</span><span>.*
 
 </span><span class="comment">// define an object that extends from a common Api Creator
-</span><span class="keyword">object</span><span> </span><span class="identifier">api</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">DefaultApiCreator</span><span>:
+</span><span class="keyword">object</span><span> </span><span class="type-name">ApiCreator</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">DefaultApiCreator</span><span>:
   </span><span class="comment">// technical name of the project
 </span><span>  </span><span class="keyword">val</span><span> </span><span class="identifier">projectName</span><span> = </span><span class="string-literal">&quot;invoice-example&quot;</span><span>
   </span><span class="comment">// readable name of the project
@@ -175,7 +173,7 @@
           <li>
             <p>In your <em>sbt-console</em>:  <code>run</code></p>
             <ul>
-              <li>If you have more runnable applications you need to choose the api class. </li>
+              <li>If you have more runnable applications you need to choose the <em>ApiCreator</em> class. </li>
             </ul>
           </li>
           <li>This creates a YAML file (Open API) with your documentation. </li>
@@ -201,7 +199,7 @@
         <p><img src="images/api_apiStructure.png" alt="api_apiStructure"></p>
         <ul>
           <li>The tag is the name created from the variable <code>Invoice Receipt</code>. </li>
-          <li>Each Api is composed by the <em>endpointType</em> (e.g. <em>Process</em>) and the <em>id</em> of the BPMN object (e.g. <em>InvoiceReceiptP</em>).</li>
+          <li>Each Api is composed by the <em>endpointType</em> (e.g. <em>Process</em>) and the <em>id</em> of the BPMN object (e.g. <em>example-invoice-c7</em>).</li>
         </ul>
         
         <h3 id="strange-stuff" class="section"><a class="anchor-link left" href="#strange-stuff"><i class="icofont-laika link">&#xef71;</i></a>Strange Stuff</h3>
@@ -236,13 +234,22 @@
     </span><span class="identifier">openApiDocuPath</span><span>: </span><span class="type-name">Path</span><span> = </span><span class="identifier">pwd</span><span> / </span><span class="string-literal">&quot;OpenApi.html&quot;</span><span>,
     </span><span class="identifier">postmanOpenApiDocuPath</span><span>: </span><span class="type-name">Path</span><span> = </span><span class="identifier">pwd</span><span> / </span><span class="string-literal">&quot;PostmanOpenApi.html&quot;</span><span>,
     </span><span class="comment">// If you work with JIRA, you can add matchers that will create automatically URLs to JIRA Tasks
-</span><span>    </span><span class="comment">// &quot;COM&quot; -&gt; &quot;https://issue.myCompany.ch/browse&quot;
 </span><span>    </span><span class="identifier">jiraUrls</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>] = </span><span class="type-name">Map</span><span>.</span><span class="identifier">empty</span><span>,
-    </span><span class="comment">// Path where you have all your projects (used to search for dependencies)
-</span><span>    </span><span class="identifier">localProjectPaths</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">Path</span><span>] = </span><span class="type-name">Seq</span><span>(</span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="identifier">os</span><span>.</span><span class="identifier">up</span><span>),
+    </span><span class="comment">// Git Projects: Configure, projects you want to evaluate for dependency resolution
+</span><span>    </span><span class="identifier">gitConfigs</span><span>: </span><span class="type-name">GitConfigs</span><span> = </span><span class="type-name">GitConfigs</span><span>(</span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="identifier">os</span><span>.</span><span class="identifier">up</span><span>),
     </span><span class="comment">// The URL of your published documentations
-</span><span>    </span><span class="comment">// myProject =&gt; s&quot;http://myCompany.ch/bpmnDocs/$myProject&quot;
-</span><span>    </span><span class="identifier">docProjectUrl</span><span>: </span><span class="type-name">String</span><span> =&gt; </span><span class="type-name">String</span><span> = </span><span class="identifier">proj</span><span> =&gt; </span><span class="string-literal">s&quot;No URL defined for </span><span class="substitution">$proj</span><span class="string-literal">&quot;</span><span>
+</span><span>    </span><span class="comment">// myProject =&gt; s&quot;http://myCompany/bpmnDocs/${myProject}&quot;
+</span><span>    </span><span class="identifier">docProjectUrl</span><span>: </span><span class="type-name">String</span><span> =&gt; </span><span class="type-name">String</span><span> = </span><span class="identifier">proj</span><span> =&gt; </span><span class="string-literal">s&quot;No URL defined for </span><span class="substitution">$proj</span><span class="string-literal">&quot;</span><span>,
+    </span><span class="comment">// If you want to integrate your BPMNs and DMNs in your Documentation.
+</span><span>    </span><span class="comment">// Add the path the diagrams are located on your webserver.
+</span><span>    </span><span class="comment">// myProject =&gt; s&quot;http://myCompany/bpmnDocs/${myProject}/${diagramDownloadPath}&quot;
+</span><span>    </span><span class="comment">// if you want to have a diagram - you must define this!
+</span><span>    </span><span class="identifier">diagramDownloadPath</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">None</span><span>,
+    </span><span class="comment">// if you want to adjust the diagramName
+</span><span>    </span><span class="identifier">diagramNameAdjuster</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span> =&gt; </span><span class="type-name">String</span><span>] = </span><span class="type-name">None</span><span>,
+    </span><span class="comment">// by default the Api are optimized in a way that each Api is listed just ones.
+</span><span>    </span><span class="comment">// so for example, if you list your DMNs extra, they will be removed from the catalog.md
+</span><span>    </span><span class="identifier">catalogOptimized</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">true</span><span>
 )</span></code></pre>
         <p>You can override your configuration by creating your own <code>ApiConfig</code>,
         or you can have a hierarchy that you define.
@@ -282,7 +289,35 @@
         will be replaced with <code>[JIRA_TICKET]($url/JIRA_TICKET)</code>. 
         In the generated documentation this is a link to the according Jira ticket.</p>
         
+        <h4 id="bpmn-diagrams" class="section"><a class="anchor-link left" href="#bpmn-diagrams"><i class="icofont-laika link">&#xef71;</i></a>BPMN diagrams</h4>
+        <p>You can include your BPMN- and DMN diagrams directly, doing the following steps:</p>
+        <ul>
+          <li>
+            Configure the path, where you provide your diagrams - this is the relative path, from where your <em>OpenApi.html</em> is located.
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">apiConfig</span><span>: </span><span class="type-name">ApiConfig</span><span> =
+    </span><span class="keyword">super</span><span>.</span><span class="identifier">apiConfig</span><span>
+      .</span><span class="identifier">withDiagramDownloadPath</span><span>(</span><span class="string-literal">&quot;diagrams&quot;</span><span>)</span></code></pre>
+          </li>
+          <li>
+            Adjust <em>OpenApi.html</em> with the correct path:
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">function</span><span> </span><span class="identifier">openFromUrl</span><span>(</span><span class="identifier">url</span><span>, </span><span class="identifier">viewer</span><span>) {
+    </span><span class="identifier">console</span><span>.</span><span class="identifier">log</span><span>(</span><span class="string-literal">&#39;attempting to open &lt;&#39;</span><span> + </span><span class="identifier">url</span><span> + </span><span class="string-literal">&#39;&gt;&#39;</span><span>);
+    </span><span class="comment">// adjust relative path to your BPMNs
+</span><span>    </span><span class="identifier">$</span><span>.</span><span class="identifier">ajax</span><span>(</span><span class="string-literal">&quot;diagrams/&quot;</span><span> + </span><span class="identifier">url</span><span>, {</span><span class="identifier">dataType</span><span>: </span><span class="string-literal">&#39;text&#39;</span><span>}).</span><span class="identifier">done</span><span>(</span><span class="keyword">async</span><span> </span><span class="keyword">function</span><span> (</span><span class="identifier">xml</span><span>)  
+    ...</span></code></pre>
+          </li>
+        </ul>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>If you want to check the diagrams locally, you can use <code>src/main/resources/</code></p>
+        </div>
+        
         <h4 id="cawemo-bpmn-diagrams" class="section"><a class="anchor-link left" href="#cawemo-bpmn-diagrams"><i class="icofont-laika link">&#xef71;</i></a>Cawemo BPMN diagrams</h4>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>We stopped using Cawemo diagrams, as the synchronisation is manually - yes we are programmers🦥😉. 
+          We recommend using Diagrams directly from your project - see previous chapter.</p>
+        </div>
         <p>If you are using Cawemo you can add a link to the folder, your BPMNs and DMNs are located.</p>
         <p>Configuration:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">apiConfig</span><span>: </span><span class="type-name">ApiConfig</span><span> =
@@ -349,39 +384,39 @@
         <p>This will create the following structure in  the doc:</p>
         <p><img src="images/api_apiStructure.png" alt="api_apiStructure"></p>
         
-        <h3 id="input-variables" class="section"><a class="anchor-link left" href="#input-variables"><i class="icofont-laika link">&#xef71;</i></a>Input Variables</h3>
-        <p>The input variables are taken from the domain model of the BPMN object.</p>
+        <h3 id="input-output-variables" class="section"><a class="anchor-link left" href="#input-output-variables"><i class="icofont-laika link">&#xef71;</i></a>Input-/ Output-Variables</h3>
+        <p>The input- and output variables are taken from the domain model of the BPMN object.</p>
         <p>Example:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InvoiceReceipt</span><span>(
-     </span><span class="identifier">creditor</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Great Pizza for Everyone Inc.&quot;</span><span>,
-     ...
-  )
+        <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">ReviewInvoice</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">BpmnDsl</span><span>:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">processName</span><span> = </span><span class="string-literal">&quot;example-invoice-c7-review&quot;</span><span>
+  
+  </span><span class="annotation">@description</span><span>(</span><span class="string-literal">&quot;Same Input as _InvoiceReceipt_, only different Mocking&quot;</span><span>)
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">In</span><span>(
+                       </span><span class="identifier">creditor</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Great Pizza for Everyone Inc.&quot;</span><span>,
+                       </span><span class="identifier">amount</span><span>: </span><span class="type-name">Double</span><span> = </span><span class="number-literal">300.0</span><span>,
+                       </span><span class="identifier">invoiceCategory</span><span>: </span><span class="type-name">InvoiceCategory</span><span> = </span><span class="type-name">InvoiceCategory</span><span>.</span><span class="identifier">`Travel Expenses`</span><span>,
+                       </span><span class="identifier">invoiceNumber</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;I-12345&quot;</span><span>,
+                       </span><span class="annotation">@description</span><span>(</span><span class="string-literal">&quot;You can let the Archive Service fail for testing.&quot;</span><span>)
+                       </span><span class="identifier">shouldFail</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Boolean</span><span>] = </span><span class="type-name">None</span><span>,
+                       </span><span class="annotation">@description</span><span>(</span><span class="string-literal">&quot;You can mock me by providing the output.&quot;</span><span>)
+                       </span><span class="identifier">outputMock</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Out</span><span>] = </span><span class="type-name">None</span><span>
+               )
+  
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Out</span><span>(
+                        </span><span class="annotation">@description</span><span>(</span><span class="string-literal">&quot;Flag that is set by the Reviewer&quot;</span><span>)
+                        </span><span class="identifier">clarified</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">true</span><span>
+                )
   ...
-  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">ApproveInvoiceUT</span><span> =
-    </span><span class="identifier">userTask</span><span>(
-      </span><span class="identifier">id</span><span> = </span><span class="string-literal">&quot;ApproveInvoiceUT&quot;</span><span>,
-      </span><span class="identifier">descr</span><span> = </span><span class="string-literal">&quot;Approve the invoice (or not).&quot;</span><span>,
-      </span><span class="identifier">in</span><span> = </span><span class="type-name">InvoiceReceipt</span><span>(), </span><span class="comment">// INPUT
-</span><span>      </span><span class="identifier">out</span><span> = </span><span class="type-name">ApproveInvoice</span><span>()
-    )</span></code></pre>
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">example</span><span>: </span><span class="type-name">Process</span><span>[</span><span class="type-name">In</span><span>, </span><span class="type-name">Out</span><span>] =
+    </span><span class="identifier">process</span><span>(
+      </span><span class="identifier">id</span><span> = </span><span class="identifier">processName</span><span>,
+      </span><span class="identifier">descr</span><span> = </span><span class="string-literal">&quot;This starts the Review Invoice Process.&quot;</span><span>,
+      </span><span class="identifier">in</span><span> = </span><span class="type-name">In</span><span>(), </span><span class="comment">// INPUT
+</span><span>      </span><span class="identifier">out</span><span> = </span><span class="type-name">Out</span><span>() </span><span class="comment">// OUTPUT
+</span><span>    )</span></code></pre>
         <p>This creates this input description documentation:</p>
         <p><img src="images/api_inputs.png" alt="api_inputs"></p>
-        
-        <h3 id="output-variables" class="section"><a class="anchor-link left" href="#output-variables"><i class="icofont-laika link">&#xef71;</i></a>Output Variables</h3>
-        <p>The output variables are taken from the domain model of the BPMN object.</p>
-        <p>Example:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">ApproveInvoice</span><span>(
-     </span><span class="identifier">approved</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">true</span><span>
-  )
-  ...
-  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">ApproveInvoiceUT</span><span> =
-    </span><span class="identifier">userTask</span><span>(
-      </span><span class="identifier">id</span><span> = </span><span class="string-literal">&quot;ApproveInvoiceUT&quot;</span><span>,
-      </span><span class="identifier">descr</span><span> = </span><span class="string-literal">&quot;Approve the invoice (or not).&quot;</span><span>,
-      </span><span class="identifier">in</span><span> = </span><span class="type-name">InvoiceReceipt</span><span>(), 
-      </span><span class="identifier">out</span><span> = </span><span class="type-name">ApproveInvoice</span><span>() </span><span class="comment">// OUTPUT
-</span><span>    )</span></code></pre>
-        <p>This creates this output description documentation:</p>
+        <p>And it creates this output description documentation:</p>
         <p><img src="images/api_outputs.png" alt="api_outputs"></p>
         
         <h3 id="examples" class="section"><a class="anchor-link left" href="#examples"><i class="icofont-laika link">&#xef71;</i></a>Examples</h3>
@@ -450,7 +485,109 @@
         <p><img src="images/api_cawemoBpmn.png" alt="api_cawemoBpmn"></p>
         
         <h3 id="project-dependencies" class="section"><a class="anchor-link left" href="#project-dependencies"><i class="icofont-laika link">&#xef71;</i></a>Project dependencies</h3>
-        <p>TODO</p>
+        <p>To know where your process is used and what processes your process is using, is very helpful.</p>
+        <p>Camundala uses Git for this and creates bullet lists grouped by projects:</p>
+        <p>It works for <strong>BPMN</strong>s and <strong>DMN</strong>s.</p>
+        <p>Used in 2 Project(s)</p>
+        <ul>
+          <li>
+            <p>myProjectA</p>
+            <ul>
+              <li>myProcessAA</li>
+              <li>myProcessAC</li>
+            </ul>
+          </li>
+          <li>
+            <p>myProjectB</p>
+          </li>
+        </ul>
+        <ul>
+          <li>myProcessBA</li>
+        </ul>
+        <p>Uses 1 Project(s)</p>
+        <ul>
+          <li>myHelperProject</li>
+        </ul>
+        <ul>
+          <li>myHelperProcess</li>
+        </ul>
+        <ul>
+          <li>myHelperDMN</li>
+        </ul>
+        
+        <h4 id="gitconfigs" class="section"><a class="anchor-link left" href="#gitconfigs"><i class="icofont-laika link">&#xef71;</i></a>GitConfigs</h4>
+        <p>All that is needed, is to configure the projects you want to check for dependencies.</p>
+        <p>Example:</p>
+        <pre><code class="nohighlight"><span class="type-name">GitConfigs</span><span>(
+  </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="identifier">os</span><span>.</span><span class="identifier">up</span><span> / </span><span class="string-literal">&quot;git-temp&quot;</span><span>,
+  </span><span class="type-name">Seq</span><span>(
+    </span><span class="type-name">GitConfig</span><span>(
+      </span><span class="identifier">cloneUrl</span><span> = </span><span class="string-literal">&quot;https://github.com/myCompany&quot;</span><span>,
+      </span><span class="identifier">projects</span><span> = </span><span class="type-name">Seq</span><span>(
+        </span><span class="string-literal">&quot;myHelperProject&quot;</span><span>,
+        </span><span class="string-literal">&quot;myProject&quot;</span><span>,
+        </span><span class="string-literal">&quot;myProjectA&quot;</span><span>,
+        </span><span class="string-literal">&quot;myProjectB&quot;</span><span>
+      )
+    )
+  )
+)</span></code></pre>
+        <p>This will clone or update these projects (<code>$cloneUrl/$project.git</code>) into <code>../git-temp</code>, 
+        for example <code>https://github.com/myCompany/myProject.git</code>.</p>
+        
+        <h4 id="used-dependency-resolution" class="section"><a class="anchor-link left" href="#used-dependency-resolution"><i class="icofont-laika link">&#xef71;</i></a>Used Dependency Resolution</h4>
+        <p>For each Process (BPMN):</p>
+        <ul>
+          <li>Takes the id of the DMN or BPMN.</li>
+          <li>Checks all DMNs and BPMNs of all configured projects, if they refer this id.</li>
+          <li>Lists these DMNs and BPMNs, grouped by their projects.</li>
+        </ul>
+        
+        <h4 id="uses-dependency-resolution" class="section"><a class="anchor-link left" href="#uses-dependency-resolution"><i class="icofont-laika link">&#xef71;</i></a>Uses Dependency Resolution</h4>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>At the moment we refer BPMNs and DMNs like this:</p>
+          <ul>
+            <li><code>bpmnId</code></li>
+            <li><code>projectId:bpmnId</code></li>
+          </ul>
+          <p>This is not standard Camunda and it involves adjustments of the BPMN/DMN during deployment.</p>
+          <p>As ids must be unique, we will change this in the future and resolve the Ids by searching all configured project for these ids.</p>
+          <p>TODO: implement.</p>
+        </div>
+        <p>For each Process (BPMN or DMN):</p>
+        <ul>
+          <li>Extracts all referred ids of DMNs and BPMNs.</li>
+          <li>Lists the DMNs and BPMNs, grouped by their projects - Generic Service Processes are listed by their service name.</li>
+        </ul>
+        
+        <h3 id="generic-service-process" class="section"><a class="anchor-link left" href="#generic-service-process"><i class="icofont-laika link">&#xef71;</i></a>Generic Service Process</h3>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>At the moment we wrap all our REST API calls with a process. This may change in the future, as at the moment - processes is the only way to abstract over External Tasks in our company😢 (when adding additional functionality like mocking).</p>
+          <p>However, it still makes sense to hide technical details and to document these Services, if you want to use them in more than one process.</p>
+        </div>
+        <p>For the usability of Services in a process, we create a <em>Generic Service Process</em>.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">GenericServiceIn</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">serviceName</span><span>: </span><span class="type-name">String</span></code></pre>
+        <p>Just inherit this Trait in your input class:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">MyService</span><span>
+  </span><span class="keyword">extends</span><span> </span><span class="type-name">BpmnDsl</span><span>: 
+    </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">In</span><span>(
+      ...
+      </span><span class="identifier">serviceName</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;myService-get&quot;</span><span>,
+      ...
+    ) </span><span class="keyword">extends</span><span> </span><span class="type-name">GenericServiceIn</span><span>
+  ...</span></code></pre>
+        <p>This will adjust the following things in the API documentation:</p>
+        <ul>
+          <li>No Bpmn Diagram is inlined.</li>
+          <li>Needed to find Usages in other Processes.</li>
+        </ul>
+        <p>And in the Postman API:</p>
+        <ul>
+          <li>The <em>endpointName</em> is just the <em>serviceName</em>, instead of <em>s&quot;$endpointType: ${inOutApi.id}&quot;</em>.</li>
+        </ul>
         
         <h2 id="groups" class="section"><a class="anchor-link left" href="#groups"><i class="icofont-laika link">&#xef71;</i></a>Groups</h2>
         <p>You can organize your Apis within Groups.
@@ -527,7 +664,7 @@
           <li>
             <p>Remove part of the path:</p>
             <ul>
-              <li>if you have a path like this: <code>{{baseUrl}}/decision-definition/key/:key/--REMOVE:invoice-assign-approver--/evaluate</code></li>
+              <li>if you have a path like this: <code>{{baseUrl}}/decision-definition/key/:key/--REMOVE:example-invoice-c7-assignApprover--/evaluate</code></li>
               <li>just delete this part: <code>--REMOVE:some identifier--</code></li>
             </ul>
           </li>
@@ -556,11 +693,6 @@
           <p>In the future we may provide a REST API that will work for both.</p>
           <p>This would also allow a painless transition to Camunda 8.</p>
         </div>
-        
-        <h2 id="other-stuff" class="section"><a class="anchor-link left" href="#other-stuff"><i class="icofont-laika link">&#xef71;</i></a>Other stuff</h2>
-        
-        <h3 id="generic-service-process" class="section"><a class="anchor-link left" href="#generic-service-process"><i class="icofont-laika link">&#xef71;</i></a>Generic Service Process</h3>
-        <p>TODO</p>
 
         
 <hr class="footer-rule"/>

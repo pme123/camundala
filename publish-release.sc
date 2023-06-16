@@ -1,6 +1,6 @@
 import mainargs._
 
-import $ivy.`io.github.pme123:camundala-helper_3:1.16.0-SNAPSHOT compat`, camundala.helper._
+import $ivy.`io.github.pme123:camundala-helper_3:1.15.13 compat`, camundala.helper._
 
 /** <pre> Creates a new Release for the client and publishes to
   * bpf-generic-release:
