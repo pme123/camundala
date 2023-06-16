@@ -13,12 +13,14 @@ import org.camunda.bpm.engine.variable.value.TypedValue
 import sttp.tapir.generic.auto.*
 import sttp.tapir.json.circe.*
 
+/**
+ * Validator to validate the input variables automatically.
+ */
 trait Validator[T <: Product : Encoder : Decoder] :
 
   def prototype: T
 
   def validate(execution: DelegateExecution): Unit =
-    println(s"EXECUTION Variables: ${execution.getVariables}")
     val ir = prototype.productElementNames.toSeq
       .map { k =>
         val typedValue: TypedValue = execution.getVariableTyped(k)
@@ -48,7 +50,7 @@ trait Validator[T <: Product : Encoder : Decoder] :
           case en: scala.reflect.Enum =>
             en.toString
           case other =>
-            println(s"UneXPECTED: $other")
+            println(s"Unexpected: $other")
             other
       case _: SerializableValueType => typedValue.getValue
       case _: FileValueType =>

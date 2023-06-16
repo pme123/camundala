@@ -24,15 +24,15 @@ import org.camunda.bpm.engine.variable.value.TypedValue
 import sttp.tapir.generic.auto.*
 import sttp.tapir.json.circe.*
 
+/**
+ * Check, if the variable `outputMock` is set and if it sets its values as process variables.
+ */
 trait Mocker:
 
   def mockOrProceed(execution: DelegateExecution): Unit =
     val outputMock = execution.getVariable("outputMock")
-    println(s"outputMock: $outputMock")
-    val outputMockStr =
-      s"is $outputMock" // only way outputMock does not throw a NullpointerException??!!
     val mocked =
-      if (null == outputMock) false
+      if (Option(outputMock).isEmpty) false
       else
         val parsedJson: Either[ParsingFailure, Json] =
           parser.parse(outputMock.toString)
@@ -41,7 +41,6 @@ trait Mocker:
           case Right(jsonObj) if jsonObj.isObject =>
             jsonObj.asObject.get.toMap
               .foreach { case k -> json =>
-                println(s"setVariable: $k: $json")
                 execution.setVariable(k, camundaVariable(json))
               }
           case Right(other) =>
@@ -54,8 +53,6 @@ trait Mocker:
             )
 
         true
-    println(s"mocked: $mocked")
-
     execution.setVariable("mocked", mocked)
   end mockOrProceed
 
