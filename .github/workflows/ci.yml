@@ -16,6 +16,8 @@ jobs:
         uses: coursier/cache-action@v6
       - name: Compile
         run: sbt compile
+      - name: Documentation
+        run: sbt laikaSite
       - name: Test
         run: sbt test
       - name: Test Report
