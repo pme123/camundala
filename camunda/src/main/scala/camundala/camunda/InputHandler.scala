@@ -12,7 +12,7 @@ import org.camunda.bpm.engine.variable.value.TypedValue
 import sttp.tapir.generic.auto.*
 import sttp.tapir.json.circe.*
 
-abstract class InputHandler[T <: Product : Encoder : Decoder]
+abstract class InputHandler[T <: Product : CirceCodec]
   extends ExecutionListener, Validator[T], Mocker :
 
   @throws[Exception]

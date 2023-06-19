@@ -83,7 +83,7 @@ implicit def ZonedDateTimeDecoder: Decoder[ZonedDateTime] =
 @description(
   "SingleEntry: Output of a DMN Table. This returns one `DmnValueType`."
 )
-case class SingleEntry[Out <: DmnValueType: ClassTag](
+case class SingleEntry[Out <: DmnValueType: Encoder: Decoder: ClassTag](
     result: Out
 ):
   lazy val toCamunda: CamundaVariable = CamundaVariable.valueToCamunda(result)
@@ -92,7 +92,7 @@ case class SingleEntry[Out <: DmnValueType: ClassTag](
 @description(
   "CollectEntry: Output of a DMN Table. This returns a Sequence of `DmnValueType`s."
 )
-case class CollectEntries[Out <: DmnValueType](
+case class CollectEntries[Out <: DmnValueType : Encoder: Decoder: Schema](
     result: Seq[Out]
 ):
   lazy val toCamunda: Seq[CamundaVariable] =
@@ -145,11 +145,15 @@ implicit def schemaForSingleEntry[A <: DmnValueType: Encoder: Decoder](implicit
     } yield Schema.SName("SingleEntry", List(na.show))
   )
 
+implicit def SingleEntryCodec[T <: DmnValueType: CirceCodec: ClassTag]
+    : CirceCodec[SingleEntry[T]] =
+  CirceCodec.from(SingleEntryDecoder, SingleEntryEncoder)
+
 implicit def SingleEntryEncoder[T <: DmnValueType: Encoder]
     : Encoder[SingleEntry[T]] = new Encoder[SingleEntry[T]] {
   final def apply(sr: SingleEntry[T]): Json = sr.result.asJson
 }
-implicit def SingleEntryDecoder[T <: DmnValueType: Decoder: ClassTag]
+implicit def SingleEntryDecoder[T <: DmnValueType: Encoder: Decoder: ClassTag]
     : Decoder[SingleEntry[T]] = new Decoder[SingleEntry[T]] {
   final def apply(c: HCursor): Decoder.Result[SingleEntry[T]] =
     for result <- c.as[T]
@@ -169,11 +173,11 @@ implicit def schemaForCollectEntries[A <: DmnValueType: Encoder: Decoder](
     } yield Schema.SName("CollectEntries", List(na.show))
   )
 
-implicit def CollectEntriesEncoder[T <: DmnValueType: Encoder]
+implicit def CollectEntriesEncoder[T <: DmnValueType: Encoder: Decoder]
     : Encoder[CollectEntries[T]] = new Encoder[CollectEntries[T]] {
   final def apply(sr: CollectEntries[T]): Json = sr.result.asJson
 }
-implicit def CollectEntriesDecoder[T <: DmnValueType: Decoder]
+implicit def CollectEntriesDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
     : Decoder[CollectEntries[T]] = new Decoder[CollectEntries[T]] {
   final def apply(c: HCursor): Decoder.Result[CollectEntries[T]] =
     for result <- c.as[Seq[T]]

@@ -35,8 +35,7 @@ case class Tweet(
 
 object Tweet:
   given Schema[Tweet] = Schema.derived
-  given Encoder[Tweet] = deriveEncoder
-  given Decoder[Tweet] = deriveDecoder
+  given CirceCodec[Tweet] = deriveCodec
 
 @description("Every Tweet has to be accepted by the Boss.")
 case class ReviewedTweet(
@@ -48,8 +47,7 @@ case class ReviewedTweet(
 
 object ReviewedTweet:
   given Schema[ReviewedTweet] = Schema.derived
-  given Encoder[ReviewedTweet] = deriveEncoder
-  given Decoder[ReviewedTweet] = deriveDecoder
+  given CirceCodec[ReviewedTweet] = deriveCodec
 
 @description("Every Tweet has to be accepted by the Boss.")
 case class TweetOut(
@@ -61,9 +59,9 @@ case class TweetOut(
 
 enum EndStatus derives ConfiguredEnumCodec :
   case published, notPublished
+object EndStatus:
+  given Schema[EndStatus] = Schema.derived
 
 object TweetOut:
-  given Schema[EndStatus] = Schema.derived
   given Schema[TweetOut] = Schema.derived
-  given Encoder[TweetOut] = deriveEncoder
-  given Decoder[TweetOut] = deriveDecoder
+  given CirceCodec[TweetOut] = deriveCodec

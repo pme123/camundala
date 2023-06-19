@@ -1,11 +1,11 @@
 openapi: 3.0.3
 info:
-  title: Twitter Process API
+  title: Twitter Process API C8
   version: '1.0'
-  description: |2+
+  summary: |2+
 
 
-    Created at 27/06/2022, 07:08
+    Created at 19/06/2023, 11:46
 
     ****
 
@@ -47,20 +47,27 @@ info:
 
 
 paths:
-  /process/twitterDemoProcess/TwitterDemoP:
+  /process/TwitterDemoP:
     head:
       tags:
-      - twitterDemoProcess
-      summary: 'Process: twitterDemoProcess'
-      description: This runs the Twitter Approvement Process.
-      operationId: 'Process: twitterDemoProcess'
+      - TwitterDemoP
+      summary: 'Process: TwitterDemoP'
+      description: |+
+        This runs the Twitter Approvement Process.
+
+        - Input:  `camundala.examples.twitter.api.Tweet`
+        - Output: `camundala.examples.twitter.api.ReviewedTweet`
+
+
+
+      operationId: 'Process: TwitterDemoP'
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Tweet'
             examples:
-              twitterDemoProcess:
+              TwitterDemoP:
                 value:
                   tweet: Hello Tweet
                   author: pme123
@@ -74,26 +81,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReviewedTweet'
               examples:
-                twitterDemoProcess:
+                TwitterDemoP:
                   value:
                     tweet: Hello Tweet
                     author: pme123
                     boss: Great Master
                     approved: false
-  /usertask/twitterDemoProcess/user_task_review_tweet:
+  /usertask/TwitterDemoP/user_task_review_tweet:
     head:
       tags:
-      - twitterDemoProcess
-      summary: 'UserTask: reviewTweetApprovedUT'
-      description: '-'
-      operationId: 'UserTask: reviewTweetApprovedUT'
+      - TwitterDemoP
+      summary: 'UserTask: user_task_review_tweet'
+      description: |2
+
+
+        - Input:  `camundala.examples.twitter.api.Tweet`
+        - Output: `camundala.examples.twitter.api.ReviewedTweet`
+      operationId: 'UserTask: user_task_review_tweet'
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Tweet'
             examples:
-              reviewTweetApprovedUT:
+              user_task_review_tweet:
                 value:
                   tweet: Hello Tweet
                   author: pme123
@@ -107,6 +118,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReviewedTweet'
               examples:
+                user_task_review_tweet:
+                  value:
+                    tweet: Hello Tweet
+                    author: pme123
+                    boss: Great Master
+                    approved: false
                 Tweet accepted:
                   value:
                     tweet: Hello Tweet

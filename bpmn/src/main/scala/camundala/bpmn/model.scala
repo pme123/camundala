@@ -171,14 +171,12 @@ end TimerEvent
 case class NoInput()
 object NoInput:
   given Schema[NoInput] = Schema.derived
-  given Encoder[NoInput] = deriveEncoder
-  given Decoder[NoInput] = deriveDecoder
+  given CirceCodec[NoInput] = deriveCodec
 
 case class NoOutput()
 object NoOutput:
   given Schema[NoOutput] = Schema.derived
-  given Encoder[NoOutput] = deriveEncoder
-  given Decoder[NoOutput] = deriveDecoder
+  given CirceCodec[NoOutput] = deriveCodec
 
 def valueToJson(value: Any): Json =
   value match
@@ -195,10 +193,10 @@ def valueToJson(value: Any): Json =
     case null =>
       Json.Null
     case ld: LocalDate =>
-      Json.fromString(ld.toString())
+      Json.fromString(ld.toString)
     case ldt: LocalDateTime =>
-      Json.fromString(ldt.toString())
+      Json.fromString(ldt.toString)
     case zdt: ZonedDateTime =>
-      Json.fromString(zdt.toString())
+      Json.fromString(zdt.toString)
     case v =>
       Json.fromString(v.toString)

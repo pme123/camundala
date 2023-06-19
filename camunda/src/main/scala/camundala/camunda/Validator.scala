@@ -16,7 +16,7 @@ import sttp.tapir.json.circe.*
 /**
  * Validator to validate the input variables automatically.
  */
-trait Validator[T <: Product : Encoder : Decoder] :
+trait Validator[T <: Product : CirceCodec] :
 
   def prototype: T
 

@@ -5,7 +5,7 @@ info:
   summary: |2+
 
 
-    Created at 14/06/2023, 08:55
+    Created at 19/06/2023, 10:53
 
     ****
 
@@ -60,8 +60,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-56172">
-            <img onLoad="openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container: $('#example-invoice-c7-56172'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-2787">
+            <img onLoad="openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container: $('#example-invoice-c7-2787'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -79,6 +79,7 @@ paths:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
                   invoiceCategory: Travel Expenses
+                  invoiceNumber: I-12345
         required: true
       responses:
         '200':
@@ -105,8 +106,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-30232">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-30232'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-82946">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-82946'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -229,8 +230,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-review-24997">
-            <img onLoad="openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({ container: $('#example-invoice-c7-review-24997'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-review-56175">
+            <img onLoad="openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({ container: $('#example-invoice-c7-review-56175'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -495,8 +496,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-95219">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-95219'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-46045">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-46045'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -547,6 +548,7 @@ components:
       - creditor
       - amount
       - invoiceCategory
+      - invoiceNumber
       type: object
       properties:
         creditor:
@@ -556,6 +558,8 @@ components:
           format: double
         invoiceCategory:
           $ref: '#/components/schemas/InvoiceCategory'
+        invoiceNumber:
+          type: string
         shouldFail:
           type: boolean
           description: You can let the Archive Service fail for testing.
@@ -589,9 +593,6 @@ components:
           $ref: '#/components/schemas/InvoiceCategory'
         invoiceNumber:
           type: string
-        shouldFail:
-          type: boolean
-          description: You can let the Archive Service fail for testing.
       description: Same Input as _InvoiceReceipt_, only without mocking - no mocking
         in UserTasks
     In3:

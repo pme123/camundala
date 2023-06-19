@@ -3,6 +3,7 @@ package bpmn
 
 import camundala.domain.*
 
+import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
 trait BpmnDsl:

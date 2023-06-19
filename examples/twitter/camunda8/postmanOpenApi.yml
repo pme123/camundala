@@ -1,14 +1,14 @@
 openapi: 3.0.3
 info:
-  title: Twitter Process API
+  title: Twitter Process API C8
   version: '1.0'
-  description: |2+
+  summary: |2+
 
     **This is for Postman - to have example requests. Be aware the Output is not provided!**
 
 
 
-    Created at 27/06/2022, 07:08
+    Created at 19/06/2023, 11:46
 
     ****
 
@@ -57,9 +57,12 @@ paths:
   /process-definition/key/TwitterDemoP/start:
     post:
       tags:
-      - twitterDemoProcess
-      summary: 'twitterDemoProcess: StartProcess'
-      description: This runs the Twitter Approvement Process.
+      - TwitterDemoP
+      summary: 'TwitterDemoP: StartProcess'
+      description: |
+        This runs the Twitter Approvement Process.
+
+        See API Doc: [TwitterDemoP](No URL defined for twitter-example-c8/OpenApi.html#operation/Process:%20TwitterDemoP)
       operationId: postProcess-definitionKeyTwitterdemopStart
       requestBody:
         content:
@@ -67,7 +70,7 @@ paths:
             schema:
               $ref: '#/components/schemas/StartProcessIn'
             examples:
-              twitterDemoProcess:
+              TwitterDemoP:
                 value:
                   variables:
                     tweet:
@@ -79,26 +82,29 @@ paths:
                     boss:
                       value: Great Master
                       type: String
-                  businessKey: twitterDemoProcess
+                  businessKey: TwitterDemoP
                   withVariablesInReturn: true
         required: true
       responses:
         '200':
           description: ''
-  /task/--REMOVE:reviewTweetApprovedUT--:
+  /task/--REMOVE:user_task_review_tweet--:
     post:
       tags:
-      - twitterDemoProcess
-      summary: 'reviewTweetApprovedUT: GetActiveTask'
-      description: '-'
-      operationId: postTask--remove:reviewtweetapprovedut--
+      - TwitterDemoP
+      summary: 'user_task_review_tweet: GetActiveTask'
+      description: |2
+
+
+        See API Doc: [user_task_review_tweet](No URL defined for twitter-example-c8/OpenApi.html#operation/UserTask:%20user_task_review_tweet)
+      operationId: postTask--remove:user_task_review_tweet--
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/GetActiveTaskIn'
             examples:
-              reviewTweetApprovedUT:
+              user_task_review_tweet:
                 value:
                   processInstanceId: '{{processInstanceId}}'
                   active: true
@@ -106,13 +112,16 @@ paths:
       responses:
         '200':
           description: ''
-  /task/{taskId}/form-variables/--REMOVE:reviewTweetApprovedUT--:
+  /task/{taskId}/form-variables/--REMOVE:user_task_review_tweet--:
     get:
       tags:
-      - twitterDemoProcess
-      summary: 'reviewTweetApprovedUT: GetTaskFormVariables'
-      description: '-'
-      operationId: getTaskTaskidForm-variables--remove:reviewtweetapprovedut--
+      - TwitterDemoP
+      summary: 'user_task_review_tweet: GetTaskFormVariables'
+      description: |2
+
+
+        See API Doc: [user_task_review_tweet](No URL defined for twitter-example-c8/OpenApi.html#operation/UserTask:%20user_task_review_tweet)
+      operationId: getTaskTaskidForm-variables--remove:user_task_review_tweet--
       parameters:
       - name: taskId
         in: path
@@ -138,7 +147,7 @@ paths:
         required: false
         schema:
           type: string
-          default: tweet,author,boss
+          default: name,example
       - name: deserializeValues
         in: query
         required: false
@@ -148,13 +157,16 @@ paths:
       responses:
         '200':
           description: ''
-  /task/{taskId}/complete/--REMOVE:reviewTweetApprovedUT--:
+  /task/{taskId}/complete/--REMOVE:user_task_review_tweet--:
     post:
       tags:
-      - twitterDemoProcess
-      summary: 'reviewTweetApprovedUT: CompleteTask'
-      description: '-'
-      operationId: postTaskTaskidComplete--remove:reviewtweetapprovedut--
+      - TwitterDemoP
+      summary: 'user_task_review_tweet: CompleteTask'
+      description: |2
+
+
+        See API Doc: [user_task_review_tweet](No URL defined for twitter-example-c8/OpenApi.html#operation/UserTask:%20user_task_review_tweet)
+      operationId: postTaskTaskidComplete--remove:user_task_review_tweet--
       parameters:
       - name: taskId
         in: path
@@ -177,6 +189,22 @@ paths:
             schema:
               $ref: '#/components/schemas/CompleteTaskIn'
             examples:
+              user_task_review_tweet:
+                value:
+                  variables:
+                    tweet:
+                      value: Hello Tweet
+                      type: String
+                    author:
+                      value: pme123
+                      type: String
+                    boss:
+                      value: Great Master
+                      type: String
+                    approved:
+                      value: false
+                      type: Boolean
+                  withVariablesInReturn: true
               Tweet accepted:
                 value:
                   variables:
@@ -236,16 +264,6 @@ components:
           format: double
         type:
           type: string
-    CEnum:
-      required:
-      - value
-      - type
-      type: object
-      properties:
-        value:
-          type: string
-        type:
-          type: string
     CFile:
       required:
       - value
@@ -277,6 +295,7 @@ components:
       properties:
         value:
           type: integer
+          format: int32
         type:
           type: string
     CJson:
@@ -316,7 +335,6 @@ components:
       oneOf:
       - $ref: '#/components/schemas/CBoolean'
       - $ref: '#/components/schemas/CDouble'
-      - $ref: '#/components/schemas/CEnum'
       - $ref: '#/components/schemas/CFile'
       - $ref: '#/components/schemas/CInteger'
       - $ref: '#/components/schemas/CJson'
@@ -358,7 +376,7 @@ components:
         active:
           type: boolean
           description: We are only interested in the active Task(s)
-      description: A JSON object with the following properties
+      description: Same as GetActiveJobIn.
     Map_CamundaVariable:
       type: object
       additionalProperties:
