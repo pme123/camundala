@@ -133,60 +133,65 @@ trait ResultChecker:
       camundaVariableMap: Map[String, CamundaVariable],
       result: Seq[CamundaProperty]
   ): Boolean =
-    println(s"camundaVariableMap: $camundaVariableMap")
     camundaVariableMap
       .map {
         case key -> CNull => // must not be in the result
           result
-            .find(_.key == key)
-            .map( _ => println(s"!!! The variable '$key' exists in the result - but is NOT expected."))
+            .find(p =>
+              p.key == key && p.value != CNull
+            ) // it is only ok, if the value is null
+            .map(p =>
+              println(
+                s"!!! The variable '$key' (value: '${p.value.value}') exists in the result - but is NOT expected."
+              )
+            )
             .isEmpty
         case key -> expectedValue =>
-        result
-          .find(_.key == key)
-          .map {
-            case CamundaProperty(
-                  _,
-                  cValue @ CFile(
+          result
+            .find(_.key == key)
+            .map {
+              case CamundaProperty(
                     _,
-                    cFileValueInfo @ CFileValueInfo(cFileName, _),
-                    _
+                    cValue @ CFile(
+                      _,
+                      cFileValueInfo @ CFileValueInfo(cFileName, _),
+                      _
+                    )
+                  ) =>
+                val matches = expectedValue match
+                  case CFile(_, CFileValueInfo(pFileName, _), _) =>
+                    cFileName == pFileName
+                  case o =>
+                    false
+                if (!matches)
+                  println(
+                    s"<<< cFile: ${cValue.getClass} / expectedFile: ${expectedValue.getClass}"
                   )
-                ) =>
-              val matches = expectedValue match
-                case CFile(_, CFileValueInfo(pFileName, _), _) =>
-                  cFileName == pFileName
-                case o =>
-                  false
-              if (!matches)
-                println(
-                  s"<<< cFile: ${cValue.getClass} / expectedFile: ${expectedValue.getClass}"
-                )
-                println(
-                  s"!!! The expected File value '${expectedValue}'\n of $key does not match the result variable: '$cFileValueInfo'."
-                )
-              matches
-            case CamundaProperty(key, CJson(cValue, _)) =>
-              val resultJson = toJson(cValue)
-              val expectedJson = toJson(expectedValue.value.toString)
-              checkJson(expectedJson, resultJson, key)
-            case CamundaProperty(_, cValue) =>
-              val matches: Boolean = cValue.value == expectedValue.value
-              if (!matches)
-                println(
-                  s"<<< cValue: ${cValue.getClass} / expectedValue ${expectedValue.getClass}"
-                )
-                println(
-                  s"!!! The expected value '$expectedValue' of $key does not match the result variable '${cValue}'.\n $result"
-                )
-              matches
-          }
-          .getOrElse {
-            println(
-              s"!!! $key does not exist in the result variables.\n $result"
-            )
-            false
-          }
+                  println(
+                    s"!!! The expected File value '${expectedValue}'\n of $key does not match the result variable: '$cFileValueInfo'."
+                  )
+                matches
+              case CamundaProperty(key, CJson(cValue, _)) =>
+                val resultJson = toJson(cValue)
+                val expectedJson = toJson(expectedValue.value.toString)
+                checkJson(expectedJson, resultJson, key)
+              case CamundaProperty(_, cValue) =>
+                val matches: Boolean = cValue.value == expectedValue.value
+                if (!matches)
+                  println(
+                    s"<<< cValue: ${cValue.getClass} / expectedValue ${expectedValue.getClass}"
+                  )
+                  println(
+                    s"!!! The expected value '$expectedValue' of $key does not match the result variable '${cValue}'.\n $result"
+                  )
+                matches
+            }
+            .getOrElse {
+              println(
+                s"!!! $key does not exist in the result variables.\n $result"
+              )
+              false
+            }
       }
       .forall(_ == true)
 

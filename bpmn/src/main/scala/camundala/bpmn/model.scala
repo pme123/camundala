@@ -51,10 +51,19 @@ trait InOut[
   def withIn(in: In): T =
     withInOutDescr(inOutDescr.copy(in = in))
 
+  // this allows you to manipulate the existing in directly
+  def withIn(inFunct: In => In): T =
+    withInOutDescr(inOutDescr.copy(in = inFunct(in)))
+
   def withOut(out: Out): T =
     withInOutDescr(
       inOutDescr.copy(out = out)
     )
+
+  // this allows you to manipulate the existing out directly
+  def withOut(outFunct: Out => Out): T =
+    withInOutDescr(inOutDescr.copy(out = outFunct(out)))
+
 trait ProcessElement extends Product:
   def id: String
   def typeName: String = getClass.getSimpleName
