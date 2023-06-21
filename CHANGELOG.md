@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.15.16 - 2023-06-21
+### Changed 
+- MAP-6880: Added withIn/ withOut functions / fix in JSON check for values that must not exist. - see [Commit](https://github.com/pme123/camundala/commit/4fd38506d71c0aff17ac30d96e670d617572622e)
+
 ## 1.15.15 - 2023-06-19
 ### Changed 
 - MAP-6880: Adjusted de/encoding of JSONs. - see [Commit](https://github.com/pme123/camundala/commit/b4797ae7f3631705784507ee83f10aa821391cfe)
