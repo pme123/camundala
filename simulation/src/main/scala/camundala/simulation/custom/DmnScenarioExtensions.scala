@@ -55,9 +55,7 @@ trait DmnScenarioExtensions extends SScenarioExtensions:
     private def evaluateDmn(resultSeq: Seq[Map[String, CamundaVariable]])(using
         data: ScenarioData
     ): ResultType =
-      val result = resultSeq.map(
-        _.filter(_._2 != CamundaVariable.CNull)
-      )
+      val result = resultSeq
       val decisionDmn: DecisionDmn[_, _] = scenario.inOut
       val check: ResultType = decisionDmn.out match
         case expected: SingleEntry[_] =>
