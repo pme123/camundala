@@ -12,3 +12,5 @@ class DateExampleSimulation extends DemosSimulation:
   simulate(
     DateExampleDMN
   )
+
+end DateExampleSimulation
