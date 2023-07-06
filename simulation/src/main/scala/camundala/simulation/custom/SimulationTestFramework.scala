@@ -62,7 +62,7 @@ final class SimulationRunner(
             println(
               s"""${logLevel.color}${s"$line START $name $line"
                 .takeRight(maxLine)}${Console.RESET}
-                 |${simResults.flatMap((sr: (LogLevel, Seq[ScenarioResult])) => sr._2.map(_.log)).mkString("\n")}
+                 |${simResults.reverse.flatMap((sr: (LogLevel, Seq[ScenarioResult])) => sr._2.map(_.log)).mkString("\n")}
                  |${simResults.map(sr => printResult(sr._1, sr._2)).mkString("\n")}
                  |${logLevel.color}${s"$line END $name in $timeInSec sec $line"
                 .takeRight(maxLine)}${Console.RESET}
