@@ -1,2 +1,2 @@
 ### Demos Example Process API
-- [DecisionDmn: singleEntry](No URL defined for demos-example/OpenApi.html#tag/DecisionDmn:-singleEntry)
+- [DecisionDmn: singleEntry](https://webstor.ch/demos-example/OpenApi.html#tag/DecisionDmn:-singleEntry)
