@@ -3,8 +3,7 @@ package camundala.examples.twitter.api
 import camundala.api.*
 import camundala.bpmn.*
 import TwitterApi.*
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
+
 
 object TwitterApiCreator extends DefaultApiCreator:
 

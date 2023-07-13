@@ -10,7 +10,7 @@ object InvoiceReceipt extends BpmnDsl:
 
   val processName = "example-invoice-c7"
 
-  case class In(
+  case class  In(
       creditor: String = "Great Pizza for Everyone Inc.",
       amount: Double = 300.0,
       invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`,
@@ -127,12 +127,6 @@ object InvoiceReceipt extends BpmnDsl:
         out = NoOutput()
       )
   end PrepareBankTransferUT
-
-  enum InvoiceCategory derives ConfiguredEnumCodec:
-    case `Travel Expenses`, Misc, `Software License Costs`
-  object InvoiceCategory:
-    given Schema[InvoiceCategory] = Schema.derived
-  end InvoiceCategory
 
   enum ApproverGroup derives ConfiguredEnumCodec:
     case accounting, sales, management

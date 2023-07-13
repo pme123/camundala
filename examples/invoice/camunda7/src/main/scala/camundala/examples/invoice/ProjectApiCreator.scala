@@ -6,9 +6,10 @@ import camundala.api.*
 import camundala.bpmn.*
 import camundala.domain.*
 import camundala.examples.invoice.InvoiceReceipt.InvoiceAssignApproverDMN.*
-import camundala.examples.invoice.InvoiceReceipt.{ApproverGroup, InvoiceAssignApproverDMN, InvoiceCategory, PrepareBankTransferUT}
+import camundala.examples.invoice.InvoiceReceipt.{ApproverGroup, InvoiceAssignApproverDMN, PrepareBankTransferUT}
 
 // define an object that extends from a common Api Creator
+// exampleInvoiceC7/run
 object ProjectApiCreator extends DefaultApiCreator:
   // technical name of the project
   val projectName = "invoice-example"
@@ -20,6 +21,7 @@ object ProjectApiCreator extends DefaultApiCreator:
   override protected val apiConfig: ApiConfig =
     super.apiConfig
       .withBasePath(pwd / "examples" / "invoice" / "camunda7")
+      .withDocProjectUrl(project => s"https://webstor.ch/camundala/myCompany/$project")
       .withPort(8034)
       .withDiagramDownloadPath("diagrams")
 //  .withCawemoFolder("a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala")

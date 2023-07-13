@@ -3,7 +3,6 @@ package dmn
 
 import camundala.bpmn.*
 import camundala.domain.*
-import io.circe.generic.auto.*
 import io.circe.syntax.*
 import pme123.camunda.dmn.tester.shared.*
 

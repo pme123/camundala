@@ -5,7 +5,7 @@ info:
   summary: |2+
 
 
-    Created at 28/04/2023, 16:27
+    Created at 09/07/2023, 12:56
 
     ****
 
@@ -48,10 +48,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.examples.demos.DecisionResultTypes > Input`
+        - Output: `camundala.bpmn.SingleEntry`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-75103">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-75103'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-35988">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-35988'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -88,10 +92,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.examples.demos.DecisionResultTypes > Input`
+        - Output: `camundala.bpmn.CollectEntries`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-11160">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-11160'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-41962">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-41962'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -130,10 +138,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.examples.demos.DecisionResultTypes > Input`
+        - Output: `camundala.bpmn.SingleResult`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-35144">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-35144'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-91895">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-91895'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -170,10 +182,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.examples.demos.DecisionResultTypes > Input`
+        - Output: `camundala.bpmn.ResultList`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-12025">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-12025'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-53559">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-53559'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -212,10 +228,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.bpmn.NoInput`
+        - Output: `camundala.bpmn.NoOutput`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="mapping-example-86257">
-            <img onLoad="openFromUrl('mapping-example.bpmn', new BpmnJS({ container: $('#mapping-example-86257'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="mapping-example-80500">
+            <img onLoad="openFromUrl('mapping-example.bpmn', new BpmnJS({ container: $('#mapping-example-80500'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -233,10 +253,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.examples.demos.DecisionResultTypes > Input`
+        - Output: `camundala.bpmn.SingleEntry`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-12236">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-12236'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-57657">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-57657'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -273,10 +297,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.examples.demos.DecisionResultTypes > Input`
+        - Output: `camundala.bpmn.CollectEntries`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-25498">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-25498'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-16342">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-16342'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -315,10 +343,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.examples.demos.DecisionResultTypes > Input`
+        - Output: `camundala.bpmn.SingleResult`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-19799">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-19799'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-74579">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-74579'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -355,10 +387,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.examples.demos.DecisionResultTypes > Input`
+        - Output: `camundala.bpmn.ResultList`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-36720">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-36720'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-73579">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-73579'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -397,10 +433,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.examples.demos.EnumExample > Input > A`
+        - Output: `camundala.examples.demos.EnumExample > Output > A`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="enum-example-24020">
-            <img onLoad="openFromUrl('enum-example.bpmn', new BpmnJS({ container: $('#enum-example-24020'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="enum-example-84346">
+            <img onLoad="openFromUrl('enum-example.bpmn', new BpmnJS({ container: $('#enum-example-84346'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -418,6 +458,7 @@ paths:
                   someValue: hello
                   simpleEnum: One
                   customMock:
+                    someOut: hello
                     intValue: 12
                     simpleEnum: One
                     type: A
@@ -433,6 +474,7 @@ paths:
               examples:
                 enum-example:
                   value:
+                    someOut: hello
                     intValue: 12
                     simpleEnum: One
                     type: A
@@ -444,10 +486,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.examples.demos.DateExample > Input`
+        - Output: `camundala.bpmn.SingleEntry`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DateExample-57386">
-            <img onLoad="openFromUrl('DateExample.dmn', new DmnJS({ container: $('#DateExample-57386'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DateExample-83657">
+            <img onLoad="openFromUrl('DateExample.dmn', new DmnJS({ container: $('#DateExample-83657'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -483,10 +529,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.examples.demos.VariablesExample > Input`
+        - Output: `camundala.bpmn.SingleEntry`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="VariablesExample-53986">
-            <img onLoad="openFromUrl('VariablesExample.dmn', new DmnJS({ container: $('#VariablesExample-53986'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="VariablesExample-73353">
+            <img onLoad="openFromUrl('VariablesExample.dmn', new DmnJS({ container: $('#VariablesExample-73353'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -524,10 +574,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.examples.demos.SimulationTestOverridesExample > InOutput`
+        - Output: `camundala.examples.demos.SimulationTestOverridesExample > InOutput`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="simulation-TestOverrides-80045">
-            <img onLoad="openFromUrl('simulation-TestOverrides.bpmn', new BpmnJS({ container: $('#simulation-TestOverrides-80045'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="simulation-TestOverrides-78364">
+            <img onLoad="openFromUrl('simulation-TestOverrides.bpmn', new BpmnJS({ container: $('#simulation-TestOverrides-78364'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -585,10 +639,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.examples.demos.SignalMessageExample > SignalMessageExampleIn`
+        - Output: `camundala.examples.demos.SignalMessageExample > SignalMessageExampleOut`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="signal-example-37476">
-            <img onLoad="openFromUrl('signal-example.bpmn', new BpmnJS({ container: $('#signal-example-37476'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="signal-example-40856">
+            <img onLoad="openFromUrl('signal-example.bpmn', new BpmnJS({ container: $('#signal-example-40856'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -625,10 +683,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.examples.demos.SignalMessageExample > SignalMessageExampleIn`
+        - Output: `camundala.examples.demos.SignalMessageExample > SignalMessageExampleOut`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="message-for-example-1514">
-            <img onLoad="openFromUrl('message-for-example.bpmn', new BpmnJS({ container: $('#message-for-example-1514'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="message-for-example-8646">
+            <img onLoad="openFromUrl('message-for-example.bpmn', new BpmnJS({ container: $('#message-for-example-8646'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -662,7 +724,11 @@ paths:
       tags:
       - SignalMessageExample
       summary: 'SignalEvent: intermediate-signal-for-example'
-      description: '- _messageName_: `intermediate-signal-for-example`'
+      description: |
+        - _messageName_: `intermediate-signal-for-example`
+
+        - Input:  `camundala.examples.demos.SignalMessageExample > SignalMessageExampleIn`
+        - Output: `camundala.bpmn.NoOutput`
       operationId: 'SignalEvent: intermediate-signal-for-example'
       requestBody:
         content:
@@ -682,7 +748,11 @@ paths:
       tags:
       - SignalMessageExample
       summary: 'MessageEvent: intermediate-message-for-example'
-      description: '- _messageName_: `intermediate-message-for-example`'
+      description: |
+        - _messageName_: `intermediate-message-for-example`
+
+        - Input:  `camundala.examples.demos.SignalMessageExample > SignalMessageExampleIn`
+        - Output: `camundala.bpmn.NoOutput`
       operationId: 'MessageEvent: intermediate-message-for-example'
       requestBody:
         content:
@@ -705,10 +775,14 @@ paths:
       description: |2+
 
 
+        - Input:  `camundala.bpmn.NoInput`
+        - Output: `camundala.bpmn.NoOutput`
+
+
 
         <div class="diagramCanvas">
-          <div class="diagram" id="timer-example-84102">
-            <img onLoad="openFromUrl('timer-example.bpmn', new BpmnJS({ container: $('#timer-example-84102'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="timer-example-28312">
+            <img onLoad="openFromUrl('timer-example.bpmn', new BpmnJS({ container: $('#timer-example-28312'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -723,7 +797,11 @@ paths:
       tags:
       - timer-example
       summary: 'TimerEvent: wait for one day'
-      description: ''
+      description: |2
+
+
+        - Input:  `camundala.bpmn.NoInput`
+        - Output: `camundala.bpmn.NoOutput`
       operationId: 'TimerEvent: wait for one day'
       responses:
         '200':
@@ -747,6 +825,8 @@ components:
       - simpleEnum
       type: object
       properties:
+        someOut:
+          type: string
         intValue:
           type: integer
           format: int32

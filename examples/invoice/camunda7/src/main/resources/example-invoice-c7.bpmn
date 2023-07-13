@@ -57,12 +57,12 @@
       <documentation>Approve the invoice (or not).</documentation>
       <extensionElements>
         <camunda:taskListener event="create">
-          <camunda:script scriptFormat="Javascript">if(!!task.getVariable('approver')) {
+          <camunda:script scriptFormat="Groovy">if(!!task.getVariable('approver')) {
   task.setAssignee(approver);
 }</camunda:script>
         </camunda:taskListener>
         <camunda:taskListener event="assignment">
-          <camunda:script scriptFormat="Javascript">task.setVariable('approver', task.getAssignee());</camunda:script>
+          <camunda:script scriptFormat="Groovy">task.setVariable('approver', task.getAssignee());</camunda:script>
         </camunda:taskListener>
       </extensionElements>
       <incoming>sequenceFlow_178__AssignApproverGroupBRT__ApproveInvoiceUT</incoming>

@@ -2,8 +2,7 @@ package camundala.examples.demos
 
 import camundala.examples.demos.TimerExample.*
 import camundala.simulation.*
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
+
 
 // exampleDemos/It/testOnly *TimerExampleSimulation
 class TimerExampleSimulation extends DemosSimulation:

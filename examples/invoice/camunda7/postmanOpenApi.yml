@@ -8,7 +8,7 @@ info:
 
 
 
-    Created at 19/06/2023, 10:53
+    Created at 09/07/2023, 13:44
 
     ****
 
@@ -61,7 +61,7 @@ paths:
       description: |
         This starts the Invoice Receipt Process.
 
-        See API Doc: [example-invoice-c7](No URL defined for invoice-example/OpenApi.html#operation/Process:%20example-invoice-c7)
+        See API Doc: [example-invoice-c7](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/Process:%20example-invoice-c7)
       operationId: postProcess-definitionKeyExample-invoice-c7Start
       requestBody:
         content:
@@ -103,7 +103,7 @@ paths:
         - _decisionDefinitionKey_: `example-invoice-c7-assignApprover`,
 
 
-        See API Doc: [example-invoice-c7-assignApprover](No URL defined for invoice-example/OpenApi.html#operation/DecisionDmn:%20example-invoice-c7-assignApprover)
+        See API Doc: [example-invoice-c7-assignApprover](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/DecisionDmn:%20example-invoice-c7-assignApprover)
       operationId: postDecision-definitionKeyKey--remove:example-invoice-c7-assignapprover--Evaluate
       parameters:
       - name: key
@@ -140,7 +140,7 @@ paths:
       description: |
         Approve the invoice (or not).
 
-        See API Doc: [ApproveInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
+        See API Doc: [ApproveInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
       operationId: postTask--remove:approveinvoiceut--
       requestBody:
         content:
@@ -164,7 +164,7 @@ paths:
       description: |
         Approve the invoice (or not).
 
-        See API Doc: [ApproveInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
+        See API Doc: [ApproveInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
       operationId: getTaskTaskidForm-variables--remove:approveinvoiceut--
       parameters:
       - name: taskId
@@ -209,7 +209,7 @@ paths:
       description: |
         Approve the invoice (or not).
 
-        See API Doc: [ApproveInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
+        See API Doc: [ApproveInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
       operationId: postTaskTaskidComplete--remove:approveinvoiceut--
       parameters:
       - name: taskId
@@ -266,7 +266,7 @@ paths:
       description: |
         Prepare the bank transfer in the Financial Accounting System.
 
-        See API Doc: [PrepareBankTransferUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
+        See API Doc: [PrepareBankTransferUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
       operationId: postTask--remove:preparebanktransferut--
       requestBody:
         content:
@@ -290,7 +290,7 @@ paths:
       description: |
         Prepare the bank transfer in the Financial Accounting System.
 
-        See API Doc: [PrepareBankTransferUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
+        See API Doc: [PrepareBankTransferUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
       operationId: getTaskTaskidForm-variables--remove:preparebanktransferut--
       parameters:
       - name: taskId
@@ -335,7 +335,7 @@ paths:
       description: |
         Prepare the bank transfer in the Financial Accounting System.
 
-        See API Doc: [PrepareBankTransferUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
+        See API Doc: [PrepareBankTransferUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
       operationId: postTaskTaskidComplete--remove:preparebanktransferut--
       parameters:
       - name: taskId
@@ -375,7 +375,7 @@ paths:
       description: |
         This starts the Review Invoice Process.
 
-        See API Doc: [example-invoice-c7-review](No URL defined for invoice-example/OpenApi.html#operation/Process:%20example-invoice-c7-review)
+        See API Doc: [example-invoice-c7-review](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/Process:%20example-invoice-c7-review)
       operationId: postProcess-definitionKeyExample-invoice-c7-reviewStart
       requestBody:
         content:
@@ -412,7 +412,7 @@ paths:
       description: |
         Select the Reviewer.
 
-        See API Doc: [AssignReviewerUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
+        See API Doc: [AssignReviewerUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
       operationId: postTask--remove:assignreviewerut--
       requestBody:
         content:
@@ -436,7 +436,7 @@ paths:
       description: |
         Select the Reviewer.
 
-        See API Doc: [AssignReviewerUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
+        See API Doc: [AssignReviewerUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
       operationId: getTaskTaskidForm-variables--remove:assignreviewerut--
       parameters:
       - name: taskId
@@ -481,7 +481,7 @@ paths:
       description: |
         Select the Reviewer.
 
-        See API Doc: [AssignReviewerUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
+        See API Doc: [AssignReviewerUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
       operationId: postTaskTaskidComplete--remove:assignreviewerut--
       parameters:
       - name: taskId
@@ -524,7 +524,7 @@ paths:
       description: |
         Review Invoice and approve.
 
-        See API Doc: [ReviewInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
+        See API Doc: [ReviewInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
       operationId: postTask--remove:reviewinvoiceut--
       requestBody:
         content:
@@ -548,7 +548,7 @@ paths:
       description: |
         Review Invoice and approve.
 
-        See API Doc: [ReviewInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
+        See API Doc: [ReviewInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
       operationId: getTaskTaskidForm-variables--remove:reviewinvoiceut--
       parameters:
       - name: taskId
@@ -593,7 +593,7 @@ paths:
       description: |
         Review Invoice and approve.
 
-        See API Doc: [ReviewInvoiceUT](No URL defined for invoice-example/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
+        See API Doc: [ReviewInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
       operationId: postTaskTaskidComplete--remove:reviewinvoiceut--
       parameters:
       - name: taskId

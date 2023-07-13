@@ -5,6 +5,7 @@ import camundala.bpmn.*
 import camundala.examples.demos.DecisionResultTypes.*
 import camundala.examples.demos.EnumExample.enumExample
 
+// exampleDemos/run
 object DemosApiCreator extends DefaultApiCreator:
 
   val projectName = "demos-example"
@@ -16,6 +17,7 @@ object DemosApiCreator extends DefaultApiCreator:
   override protected val apiConfig: ApiConfig =
     super.apiConfig
       .withBasePath(pwd / "examples" / "demos")
+      .withDocProjectUrl(project => s"https://webstor.ch/camundala/myCompany/$project")
       .withDiagramDownloadPath(
         "src/main/resources"
       )

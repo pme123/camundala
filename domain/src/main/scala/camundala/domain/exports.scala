@@ -79,6 +79,11 @@ def toJson(json: String): Json =
     case Left(exc) =>
       throwErr(s"Could not create Json from your String -> $exc")
 
+  
+trait MockSupport[Out : CirceCodec, Schema]:
+  def outputMock: Option[Out]
+  def servicesMocked: Boolean     
+
 // descriptions
 def serviceNameDescr(serviceName: String) = s"As this uses the generic Service you need to name the Service to '$serviceName'."
 
@@ -98,6 +103,8 @@ def outputMockDescr[Out : CirceCodec, Schema](mock: Out) =
      |- `outputMock` mocks this process.
      |- `someSubProcessMock` mocks a sub process
      |""".stripMargin
+
+val servicesMockedDescr = "This flag will mock every Service that this Process calls, using the default Mock."   
 
 val testModeDescr = "This flag indicades that this is a test - in the process it can behave accordingly."
 val handledErrorsDescr = "A comma separated list of HTTP-Status-Codes, that are modelled in the BPMN as Business-Exceptions - see Outputs. z.B: `404,500`"

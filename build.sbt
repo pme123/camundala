@@ -8,7 +8,7 @@ import scala.util.Using
 
 lazy val projectVersion =
   Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
-val scala3Version = "3.2.2"
+val scala3Version = "3.3.0"
 val org = "io.github.pme123"
 val dmnTesterVersion = "0.17.9"
 
@@ -34,7 +34,8 @@ lazy val root = project
     exampleTwitterC8,
     exampleInvoiceC7,
     exampleInvoiceC8,
-    exampleDemos
+    exampleDemos,
+    exampleMyCompany
   )
 
 def projectSettings(projName: String) = Seq(
@@ -43,8 +44,7 @@ def projectSettings(projName: String) = Seq(
   scalaVersion := scala3Version,
   version := projectVersion,
   scalacOptions ++= Seq(
-    "-Xmax-inlines",
-    "50" // is declared as erased, but is in fact used
+    "-Xmax-inlines:50" // is declared as erased, but is in fact used
   )
 )
 
@@ -74,6 +74,7 @@ lazy val api = project
     libraryDependencies ++=
       Seq(
         "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
+        "com.typesafe" % "config" % "1.4.2",
         "com.novocode" % "junit-interface" % "0.11" % Test
       )
   )
@@ -81,13 +82,16 @@ lazy val api = project
 
 lazy val camunda = project
   .in(file("./camunda"))
-  .configure(preventPublication)
+  .configure(publicationSettings)
   .settings(projectSettings("camunda"))
   .settings(
     libraryDependencies ++= Seq(
-      "org.camunda.bpm" % "camunda-engine" % camundaVersion,
-      "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.18.1",
-  ))
+      "org.camunda.bpm" % "camunda-engine" % camundaVersion, // listeners
+      "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion,
+      "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
+      "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.18.1"
+    )
+  )
   .dependsOn(bpmn)
 
 lazy val camunda8 = project
@@ -161,7 +165,7 @@ lazy val tapirDependencies = Seq(
   "io.circe" %% "circe-generic" % circeVersion
 )
 lazy val sttpDependency = "com.softwaremill.sttp.client3" %% "circe" % "3.8.10"
-val camundaVersion = "7.18.0"
+val camundaVersion = "7.19.0"
 /* NOT IN USE
 lazy val camundaTestDependencies = Seq(
   // provide Camunda interaction
@@ -246,11 +250,71 @@ lazy val exampleDemos = project
   .configure(preventPublication)
   .configure(integrationTests)
   .settings(
-    libraryDependencies ++= camundaDependencies
+    libraryDependencies ++= camundaDependencies,
     //   libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % "it",
-
+    buildInfoKeys := Seq[BuildInfoKey](
+      organization,
+      name,
+      version,
+      scalaVersion,
+      sbtVersion
+    ),
+    buildInfoPackage := "camundala.examples.demos"
   )
+  .enablePlugins(BuildInfoPlugin)
   .dependsOn(dmn, camunda, simulation)
+
+// start company documentation example
+import laika.ast.MessageFilter
+import laika.ast.Path.Root
+import laika.helium.Helium
+import laika.helium.config.*
+import laika.rewrite.link.LinkConfig
+import laika.rewrite.Version
+import laika.rewrite.Versions
+import com.typesafe.config.ConfigFactory
+import scala.jdk.CollectionConverters.*
+
+val config = ConfigFactory.parseFile(new File("examples/myCompany/CONFIG.conf"))
+val currentVersion = config.getString("release.tag")
+val released = config.getBoolean("released")
+val olderVersions = config.getList("releases.older").asScala
+val versions = Versions(
+  currentVersion = Version(
+    currentVersion,
+    currentVersion,
+    label = Some(if (released) "Stable" else "Dev")
+  ),
+  olderVersions =
+    olderVersions.map(_.unwrapped().toString).map(v => Version(v, v)),
+  newerVersions = Seq()
+)
+lazy val exampleMyCompany = project
+  .in(file("./examples/myCompany"))
+  .settings(projectSettings("example-exampleDemos"))
+  .settings(
+    laikaConfig := LaikaConfig.defaults
+      .withConfigValue(LinkConfig(excludeFromValidation = Seq(Root)))
+      .withRawContent
+    //  .failOnMessages(MessageFilter.None)
+    //  .renderMessages(MessageFilter.None)
+    ,
+    laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting),
+    laikaTheme := Helium.defaults.site
+      .topNavigationBar(
+        homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home)
+      )
+      .site
+      .favIcons(
+        Favicon.internal(Root / "favicon.ico", sizes = "32x32")
+      )
+      .site
+      .versions(versions)
+      .build
+  )
+  .enablePlugins(LaikaPlugin)
+  .configure(preventPublication)
+  .dependsOn(api)
 
 val springBootVersion = "2.7.6"
 val h2Version = "2.1.214"

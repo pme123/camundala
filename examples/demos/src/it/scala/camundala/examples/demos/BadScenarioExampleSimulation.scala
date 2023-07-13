@@ -4,8 +4,6 @@ import BadScenarioExample.*
 import camundala.examples.demos.SignalMessageExample.*
 import camundala.simulation.*
 import camundala.simulation.custom.CustomSimulation
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
 
 // exampleDemos/It/testOnly *BadScenarioExampleSimulation
 class BadScenarioExampleSimulation extends DemosSimulation:

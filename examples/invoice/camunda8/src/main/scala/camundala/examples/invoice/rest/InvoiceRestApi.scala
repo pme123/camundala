@@ -10,8 +10,6 @@ import camundala.bpmn.*
 import camundala.camunda8.*
 import io.circe
 import io.circe.parser.*
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
 import org.springframework.http.{HttpStatus, ResponseEntity}
 import org.springframework.web.bind.annotation.*
 

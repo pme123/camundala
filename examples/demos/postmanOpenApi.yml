@@ -8,7 +8,7 @@ info:
 
 
 
-    Created at 28/04/2023, 16:27
+    Created at 09/07/2023, 12:56
 
     ****
 
@@ -60,7 +60,7 @@ paths:
         - _decisionDefinitionKey_: `singleEntry`,
 
 
-        See API Doc: [singleEntry](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20singleEntry)
+        See API Doc: [singleEntry](https://webstor.ch/demos-example/OpenApi.html#operation/DecisionDmn:%20singleEntry)
       operationId: postDecision-definitionKeyKey--remove:singleentry--Evaluate
       parameters:
       - name: key
@@ -99,7 +99,7 @@ paths:
         - _decisionDefinitionKey_: `collectEntries`,
 
 
-        See API Doc: [collectEntries](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20collectEntries)
+        See API Doc: [collectEntries](https://webstor.ch/demos-example/OpenApi.html#operation/DecisionDmn:%20collectEntries)
       operationId: postDecision-definitionKeyKey--remove:collectentries--Evaluate
       parameters:
       - name: key
@@ -138,7 +138,7 @@ paths:
         - _decisionDefinitionKey_: `singleResult`,
 
 
-        See API Doc: [singleResult](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20singleResult)
+        See API Doc: [singleResult](https://webstor.ch/demos-example/OpenApi.html#operation/DecisionDmn:%20singleResult)
       operationId: postDecision-definitionKeyKey--remove:singleresult--Evaluate
       parameters:
       - name: key
@@ -177,7 +177,7 @@ paths:
         - _decisionDefinitionKey_: `resultList`,
 
 
-        See API Doc: [resultList](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20resultList)
+        See API Doc: [resultList](https://webstor.ch/demos-example/OpenApi.html#operation/DecisionDmn:%20resultList)
       operationId: postDecision-definitionKeyKey--remove:resultlist--Evaluate
       parameters:
       - name: key
@@ -211,7 +211,7 @@ paths:
       description: |2
 
 
-        See API Doc: [camundala-mapping-example](No URL defined for demos-example/OpenApi.html#operation/Process:%20camundala-mapping-example)
+        See API Doc: [camundala-mapping-example](https://webstor.ch/demos-example/OpenApi.html#operation/Process:%20camundala-mapping-example)
       operationId: postProcess-definitionKeyCamundala-mapping-exampleStart
       responses:
         '200':
@@ -224,7 +224,7 @@ paths:
       description: |2
 
 
-        See API Doc: [enum-example](No URL defined for demos-example/OpenApi.html#operation/Process:%20enum-example)
+        See API Doc: [enum-example](https://webstor.ch/demos-example/OpenApi.html#operation/Process:%20enum-example)
       operationId: postProcess-definitionKeyEnum-exampleStart
       requestBody:
         content:
@@ -244,6 +244,7 @@ paths:
                     customMock:
                       value: |-
                         {
+                          "someOut" : "hello",
                           "intValue" : 12,
                           "simpleEnum" : "One",
                           "type" : "A"
@@ -268,7 +269,7 @@ paths:
         - _decisionDefinitionKey_: `DateExample`,
 
 
-        See API Doc: [DateExample](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20DateExample)
+        See API Doc: [DateExample](https://webstor.ch/demos-example/OpenApi.html#operation/DecisionDmn:%20DateExample)
       operationId: postDecision-definitionKeyKey--remove:dateexample--Evaluate
       parameters:
       - name: key
@@ -307,7 +308,7 @@ paths:
         - _decisionDefinitionKey_: `VariablesExample`,
 
 
-        See API Doc: [VariablesExample](No URL defined for demos-example/OpenApi.html#operation/DecisionDmn:%20VariablesExample)
+        See API Doc: [VariablesExample](https://webstor.ch/demos-example/OpenApi.html#operation/DecisionDmn:%20VariablesExample)
       operationId: postDecision-definitionKeyKey--remove:variablesexample--Evaluate
       parameters:
       - name: key
@@ -347,7 +348,7 @@ paths:
       description: |2
 
 
-        See API Doc: [simulation-TestOverrides](No URL defined for demos-example/OpenApi.html#operation/Process:%20simulation-TestOverrides)
+        See API Doc: [simulation-TestOverrides](https://webstor.ch/demos-example/OpenApi.html#operation/Process:%20simulation-TestOverrides)
       operationId: postProcess-definitionKeySimulation-testoverridesStart
       requestBody:
         content:
@@ -402,7 +403,7 @@ paths:
       description: |2
 
 
-        See API Doc: [signal-example](No URL defined for demos-example/OpenApi.html#operation/Process:%20signal-example)
+        See API Doc: [signal-example](https://webstor.ch/demos-example/OpenApi.html#operation/Process:%20signal-example)
       operationId: postProcess-definitionKeySignal-example--removesignal-example--Start
       requestBody:
         content:
@@ -430,7 +431,7 @@ paths:
       description: |2
 
 
-        See API Doc: [message-for-example](No URL defined for demos-example/OpenApi.html#operation/Process:%20message-for-example)
+        See API Doc: [message-for-example](https://webstor.ch/demos-example/OpenApi.html#operation/Process:%20message-for-example)
       operationId: postProcess-definitionKeyMessage-for-example--removemessage-for-example--Start
       requestBody:
         content:
@@ -463,7 +464,7 @@ paths:
         - _messageName_: `intermediate-signal-for-example`,
 
 
-        See API Doc: [intermediate-signal-for-example](No URL defined for demos-example/OpenApi.html#operation/SignalEvent:%20intermediate-signal-for-example)
+        See API Doc: [intermediate-signal-for-example](https://webstor.ch/demos-example/OpenApi.html#operation/SignalEvent:%20intermediate-signal-for-example)
       operationId: postSignal--remove:intermediate-signal-for-example--
       requestBody:
         content:
@@ -495,7 +496,7 @@ paths:
         - _messageName_: `intermediate-message-for-example`,
 
 
-        See API Doc: [intermediate-message-for-example](No URL defined for demos-example/OpenApi.html#operation/MessageEvent:%20intermediate-message-for-example)
+        See API Doc: [intermediate-message-for-example](https://webstor.ch/demos-example/OpenApi.html#operation/MessageEvent:%20intermediate-message-for-example)
       operationId: postMessage--remove:intermediate-message-for-example--
       requestBody:
         content:
@@ -526,7 +527,7 @@ paths:
       description: |2
 
 
-        See API Doc: [timer-example](No URL defined for demos-example/OpenApi.html#operation/Process:%20timer-example)
+        See API Doc: [timer-example](https://webstor.ch/demos-example/OpenApi.html#operation/Process:%20timer-example)
       operationId: postProcess-definitionKeyTimer-exampleStart
       responses:
         '200':
@@ -539,7 +540,7 @@ paths:
       description: |2
 
 
-        See API Doc: [wait for one day](No URL defined for demos-example/OpenApi.html#operation/TimerEvent:%20wait%20for%20one%20day)
+        See API Doc: [wait for one day](https://webstor.ch/demos-example/OpenApi.html#operation/TimerEvent:%20wait%20for%20one%20day)
       operationId: postJob--remove:wait for one day--
       responses:
         '200':
@@ -552,7 +553,7 @@ paths:
       description: |2
 
 
-        See API Doc: [wait for one day](No URL defined for demos-example/OpenApi.html#operation/TimerEvent:%20wait%20for%20one%20day)
+        See API Doc: [wait for one day](https://webstor.ch/demos-example/OpenApi.html#operation/TimerEvent:%20wait%20for%20one%20day)
       operationId: postJobJobidExecute--remove:wait for one day--
       parameters:
       - name: jobId

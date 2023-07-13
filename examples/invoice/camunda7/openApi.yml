@@ -5,7 +5,7 @@ info:
   summary: |2+
 
 
-    Created at 19/06/2023, 10:53
+    Created at 09/07/2023, 13:44
 
     ****
 
@@ -60,8 +60,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-2787">
-            <img onLoad="openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container: $('#example-invoice-c7-2787'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-22720">
+            <img onLoad="openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container: $('#example-invoice-c7-22720'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -106,8 +106,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-82946">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-82946'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-23171">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-23171'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -230,8 +230,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-review-56175">
-            <img onLoad="openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({ container: $('#example-invoice-c7-review-56175'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-review-7444">
+            <img onLoad="openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({ container: $('#example-invoice-c7-review-7444'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -496,8 +496,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-46045">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-46045'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-17698">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-17698'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 

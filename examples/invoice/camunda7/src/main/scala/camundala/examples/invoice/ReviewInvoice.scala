@@ -2,7 +2,6 @@ package camundala.examples.invoice
 
 import camundala.bpmn.*
 import camundala.domain.*
-import camundala.examples.invoice.InvoiceReceipt.InvoiceCategory
 
 object ReviewInvoice extends BpmnDsl:
   val processName = "example-invoice-c7-review"

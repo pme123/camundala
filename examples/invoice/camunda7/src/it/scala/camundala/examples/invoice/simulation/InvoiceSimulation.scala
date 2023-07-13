@@ -6,7 +6,6 @@ import camundala.examples.invoice.InvoiceReceipt.{
   ApproveInvoiceUT,
   ApproverGroup,
   InvoiceAssignApproverDMN,
-  InvoiceCategory,
   PrepareBankTransferUT
 }
 import camundala.examples.invoice.ReviewInvoice.{
@@ -146,3 +145,6 @@ class InvoiceSimulation extends CustomSimulation:
   private lazy val BadValidationP =
     InvoiceReceipt.example
       .withIn(InvoiceReceipt.In(null))
+
+end InvoiceSimulation
+    

@@ -1,10 +1,7 @@
 package camundala.examples.demos
 
 import camundala.simulation.*
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
 import DecisionResultTypes.*
-import camundala.simulation.custom.CustomSimulation
 
 import scala.concurrent.duration.*
 

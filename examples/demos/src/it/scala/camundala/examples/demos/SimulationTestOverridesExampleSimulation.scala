@@ -2,9 +2,7 @@ package camundala.examples.demos
 
 import camundala.examples.demos.SimulationTestOverridesExample.*
 import camundala.simulation.*
-import camundala.simulation.custom.CustomSimulation
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
+
 
 // exampleDemos/It/testOnly *SimulationTestOverridesExampleSimulation
 class SimulationTestOverridesExampleSimulation extends DemosSimulation:

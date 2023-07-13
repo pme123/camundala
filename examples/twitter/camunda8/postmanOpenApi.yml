@@ -8,7 +8,7 @@ info:
 
 
 
-    Created at 19/06/2023, 11:46
+    Created at 09/07/2023, 13:43
 
     ****
 
@@ -62,7 +62,7 @@ paths:
       description: |
         This runs the Twitter Approvement Process.
 
-        See API Doc: [TwitterDemoP](No URL defined for twitter-example-c8/OpenApi.html#operation/Process:%20TwitterDemoP)
+        See API Doc: [TwitterDemoP](https://webstor.ch/camundala/myCompany/twitter-example-c8/OpenApi.html#operation/Process:%20TwitterDemoP)
       operationId: postProcess-definitionKeyTwitterdemopStart
       requestBody:
         content:
@@ -96,7 +96,7 @@ paths:
       description: |2
 
 
-        See API Doc: [user_task_review_tweet](No URL defined for twitter-example-c8/OpenApi.html#operation/UserTask:%20user_task_review_tweet)
+        See API Doc: [user_task_review_tweet](https://webstor.ch/camundala/myCompany/twitter-example-c8/OpenApi.html#operation/UserTask:%20user_task_review_tweet)
       operationId: postTask--remove:user_task_review_tweet--
       requestBody:
         content:
@@ -120,7 +120,7 @@ paths:
       description: |2
 
 
-        See API Doc: [user_task_review_tweet](No URL defined for twitter-example-c8/OpenApi.html#operation/UserTask:%20user_task_review_tweet)
+        See API Doc: [user_task_review_tweet](https://webstor.ch/camundala/myCompany/twitter-example-c8/OpenApi.html#operation/UserTask:%20user_task_review_tweet)
       operationId: getTaskTaskidForm-variables--remove:user_task_review_tweet--
       parameters:
       - name: taskId
@@ -165,7 +165,7 @@ paths:
       description: |2
 
 
-        See API Doc: [user_task_review_tweet](No URL defined for twitter-example-c8/OpenApi.html#operation/UserTask:%20user_task_review_tweet)
+        See API Doc: [user_task_review_tweet](https://webstor.ch/camundala/myCompany/twitter-example-c8/OpenApi.html#operation/UserTask:%20user_task_review_tweet)
       operationId: postTaskTaskidComplete--remove:user_task_review_tweet--
       parameters:
       - name: taskId

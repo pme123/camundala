@@ -6,8 +6,6 @@ import bpmn.*
 import simulation.*
 import simulation.custom.CustomSimulation
 import camundala.examples.twitter.api.TwitterApi.*
-import io.circe.generic.auto.*
-import sttp.tapir.generic.auto.*
 
 import scala.concurrent.duration.*
 

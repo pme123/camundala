@@ -7,7 +7,7 @@ import sttp.client3.*
 trait BasicSimulationDsl extends CustomSimulation:
   def username = "demo"
   def password = "demo"
-
+    
   override implicit def config
       : SimulationConfig[RequestT[Empty, Either[String, String], Any]] =
     super.config
