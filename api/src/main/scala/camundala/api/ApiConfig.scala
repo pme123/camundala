@@ -4,6 +4,7 @@ package api
 import camundala.bpmn.*
 import os.Path
 import sttp.apispec.openapi.Contact
+import camundala.api.docs.PackageConf
 
 case class ApiConfig(
     // define tenant if you have one
@@ -23,7 +24,7 @@ case class ApiConfig(
     // If you work with JIRA, you can add matchers that will create automatically URLs to JIRA Tasks
     jiraUrls: Map[String, String] = Map.empty,
     // Git Projects: Configure, projects you want to evaluate for dependency resolution
-    gitConfigs: GitConfigs = GitConfigs(os.pwd / os.up),
+    gitConfigs: GitConfigs = GitConfigs(),
     // The URL of your published documentations
     // myProject => s"http://myCompany/bpmnDocs/${myProject}"
     docProjectUrl: String => String = proj => s"No URL defined for $proj",
@@ -93,38 +94,82 @@ case class ApiConfig(
 case class GitConfigs(
     // Path, where the Git Projects are cloned.
     gitDir: os.Path = os.pwd / os.up / "git-temp",
-    gitConfigs: Seq[GitConfig] = Seq.empty,
-    bpmnPath: os.RelPath = os.rel / "src" / "main" / "resources"
+    gitConfigs: Seq[GitConfig] = Seq.empty
 ):
   lazy val isConfigured: Boolean = gitConfigs.nonEmpty
 
-  lazy val init: Seq[(String, Path)] =
-    gitConfigs.flatMap(_.init(gitDir, bpmnPath))
+  def projectCloneUrl(projectName: String): Option[String] =
+    gitConfigs
+      .find(_.containsProject(projectName))
+      .map(_.cloneUrl)
+
+  lazy val init: Unit =
+    gitConfigs.foreach(_.init(gitDir))
   end init
+
+  lazy val projectConfigs = gitConfigs.flatMap(_.projects)
+
+  lazy val colors: Seq[(String, String)] = projectConfigs.map { project =>
+    project.name -> project.color
+  }
+
+  def hasProjectGroup(projectName: String, projectGroup: ProjectGroup): Boolean =
+    println(s"ProjectNAME: $projectName")
+    gitConfigs
+      .flatMap(_.projects)
+      .find(_.name == projectName)
+      .exists(_.group == projectGroup)
 
 end GitConfigs
 
 case class GitConfig(
     cloneUrl: String,
-    projects: Seq[String]
+    projects: Seq[ProjectConfig],
+    // from project String to path
+    // default is s"$cString =>loneUrl/$project.git"
+    groupedProjects: Boolean = false
 ):
 
-  def init(gitDir: os.Path, bpmnPath: os.RelPath): Seq[(String, Path)] =
-    projects.map(initProject(_, gitDir, bpmnPath))
-  end init
+  def init(gitDir: os.Path): Unit =
+    if (groupedProjects)
+      updateProject(gitDir, cloneUrl)
+    else
+      projects.map { project =>
+        val gitRepo = s"$cloneUrl/${project.name}.git"
+        updateProject(project.path, gitRepo)
+      }
 
-  private def initProject(
-      project: String,
-      gitDir: os.Path,
-      bpmnPath: os.RelPath
-  ): (String, os.Path) =
-    val gitProjectDir = gitDir / project
+  end init
+  def containsProject(projectName: String): Boolean =
+    projects.exists(_.name == projectName)
+
+  private def updateProject(gitProjectDir: os.Path, gitRepo: String): Unit =
+    println(s"Git Project Dir: $gitProjectDir")
+    println(s"Git Repo: $gitRepo")
     os.makeDir.all(gitProjectDir)
     if (!(gitProjectDir / ".gitignore").toIO.exists()) {
-      os.proc("git", "clone", s"$cloneUrl/$project.git", gitProjectDir)
+      os.proc("git", "clone", gitRepo, gitProjectDir)
         .callOnConsole(gitProjectDir)
     } else {
-      os.proc("git", "pull").callOnConsole(gitProjectDir)
+      os
+        .proc("git", "checkout", "develop")
+        .callOnConsole(gitProjectDir)
+      os.proc("git", "pull", "origin", "develop")
+        .callOnConsole(gitProjectDir)
     }
-    project -> gitProjectDir / bpmnPath
-  end initProject
+  end updateProject
+end GitConfig
+
+case class ProjectConfig(
+    name: String,
+    // path of project
+    path: os.Path,
+    // path where the BPMNs are - must be relative to the project path
+    bpmnPath: os.RelPath = os.rel / "src" / "main" / "resources",
+    group: ProjectGroup,
+    color: String = "#fff"
+):
+  lazy val absBpmnPath: os.Path = path / bpmnPath
+end ProjectConfig
+
+case class ProjectGroup(name: String, color: String = "#fff")

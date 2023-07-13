@@ -1,13 +1,12 @@
 package camundala
 package api
 
+import domain.*
 import camundala.api.Sample.{SampleOut, descr, name, process, standardSample}
 import camundala.bpmn.BpmnDsl
-import io.circe.generic.auto.*
 import io.circe.{Decoder, Encoder}
 import sttp.model.StatusCode
 import sttp.tapir.Schema.annotations.description
-import sttp.tapir.generic.auto.*
 import sttp.tapir.{Endpoint, Schema, SchemaType}
 
 object TestApiCreator extends DefaultApiCreator, App:
@@ -47,6 +46,10 @@ object Sample extends BpmnDsl:
       country: String = "CH",
       address: Address = Address()
   )
+  object SampleIn:
+    given Schema[SampleIn] = Schema.derived
+    given CirceCodec[SampleIn] = deriveCodec
+  end SampleIn
 
   case class Address(
       street: String = "Merkurstrasse",
@@ -56,12 +59,20 @@ object Sample extends BpmnDsl:
       @description("Country as ISO Code")
       country: String = "CH"
   )
+  object Address:
+    given Schema[Address] = Schema.derived
+    given CirceCodec[Address] = deriveCodec
+  end Address
 
   case class SampleOut(
       @description("Indication if this was a success")
       success: Int = 0,
       outputValue: String = "Just some text"
   )
+  object SampleOut:
+    given Schema[SampleOut] = Schema.derived
+    given CirceCodec[SampleOut] = deriveCodec
+  end SampleOut
 
   lazy val standardSample: SampleIn = SampleIn()
   private val descr =

@@ -18,16 +18,16 @@ trait ProcessReferenceCreator:
   private def docProjectUrl(project: String): String =
     apiConfig.docProjectUrl(project)
 
-  private lazy val projectPaths: Seq[(String, Path)] =
-    apiConfig.gitConfigs.init
+  private lazy val projectPaths: Seq[ProjectConfig] =
+    apiConfig.gitConfigs.projectConfigs
 
   lazy val allBpmns: Seq[(String, Seq[(Path, String)])] =
     projectPaths
-      .map { case project -> p =>
-        project ->
-          (if (os.exists(p)) os.walk(p)
+      .map { case pc@ProjectConfig(name, path, bpmnPath, _, _) =>
+        name ->
+          (if (os.exists(pc.absBpmnPath)) os.walk(pc.absBpmnPath)
            else {
-             println(s"THIS PATH DOES NOT EXIST: $p")
+             println(s"THIS PATH DOES NOT EXIST: $projectName")
              Seq.empty
            })
       }
@@ -207,4 +207,3 @@ trait ProcessReferenceCreator:
       s"Uses $processCount Project(s)"
 
   end UsesReferenceCreator
-
