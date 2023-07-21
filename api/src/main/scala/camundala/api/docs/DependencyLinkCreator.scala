@@ -4,7 +4,6 @@ package docs
 case class DependencyLinkCreator()(implicit
     val apiConfig: ApiConfig,
     val configs: Seq[PackageConf],
-    val releaseConfig: ReleaseConfig
 ) extends DependencyCreator {
 
   def createIndex(dependencyGraph: String): Unit = {
@@ -52,7 +51,7 @@ case class DependencyLinkCreator()(implicit
        |
        |$printColorLegend
        |
-       |${releaseConfig.projectGroups.map { group =>
+       |${apiConfig.projectGroups.map { group =>
       linkGroup(group)
     }}
        |""".stripMargin

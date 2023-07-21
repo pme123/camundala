@@ -12,15 +12,14 @@ import java.time.format.DateTimeFormatter
   * For a Start you can create a Catalog.
   */
 trait CompanyDocCreator extends DependencyCreator:
-  protected implicit def apiConfig: ApiConfig
-  protected def projectPath: String => Path = projectName =>
-    apiConfig.gitConfigs.gitDir / os.RelPath(projectName)
-  protected implicit lazy val releaseConfig: ReleaseConfig
+
+  protected def gitBasePath: os.Path = apiConfig.gitConfigs.gitDir 
   protected implicit lazy val configs: Seq[PackageConf] = setupDependencies()
   lazy val projectConfigs: Seq[ProjectConfig] = apiConfig.gitConfigs.projectConfigs
 
   def prepareDocs(): Unit = {
     println(s"API Config: $apiConfig")
+    apiConfig.gitConfigs.init
     createCatalog()
     createDynamicConf()
     // println(s"Preparing Docs Started")
@@ -35,8 +34,8 @@ trait CompanyDocCreator extends DependencyCreator:
                       |%}
                       |## Catalog
                       |${projectConfigs
-      .map { case ProjectConfig(projectName, projectPath, _, _, _) =>
-        val path = projectPath / catalogFileName
+      .map { case pc @ ProjectConfig(projectName, projectPath, _, _, _) =>
+        val path = pc.absGitPath(gitBasePath) / catalogFileName
         if (os.exists(path))
           os.read(path)
         else
@@ -127,17 +126,19 @@ trait CompanyDocCreator extends DependencyCreator:
 
   private def fetchConf(project: String, version: String, isNew: Boolean) = {
     for {
-      gitPath <- apiConfig.gitConfigs.projectCloneUrl(project)
+      projectCloneUrl <- apiConfig.gitConfigs.projectCloneUrl(project)
       projectConfig <- projectConfigs.find(_.name == project)
-      _ = os.makeDir.all(projectConfig.path)
-      _ = os.proc("git", "fetch", "--tags").callOnConsole(projectConfig.path)
+      projectPath = projectConfig.absGitPath(gitBasePath)
+      _ =  println(s"Project Git Path $projectPath")
+      _ = os.makeDir.all(projectPath)
+      _ = os.proc("git", "fetch", "--tags").callOnConsole(projectPath)
       _ = os
         .proc("git", "checkout", s"tags/v$version")
-        .callOnConsole(projectConfig.path)
-      configPath = projectConfig.absBpmnPath / "package.conf"
+        .callOnConsole(projectPath)
+      configPath = projectPath / "src" / "main" / "resources" / "package.conf" //TODO this must be generic from build.sbt
     } yield PackageConf(
       configPath,
-      os.read.lines(projectConfig.path / "CHANGELOG.md").toSeq,
+      os.read.lines(projectPath / "CHANGELOG.md").toSeq,
       isNew
     )
   }

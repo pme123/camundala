@@ -6,8 +6,7 @@ import os.{pwd, write}
 case class DependencyGraphCreator()(implicit
     val apiConfig: ApiConfig,
     val configs: Seq[PackageConf],
-    val releaseConfig: ReleaseConfig
-) extends DependencyCreator {
+) extends DependencyCreator:
 
   def createIndex: String = {
     create(
@@ -75,7 +74,7 @@ case class DependencyGraphCreator()(implicit
        |""".stripMargin
       }
       .mkString("\n")}
-       |${releaseConfig.projectGroups.map { group =>
+       |${apiConfig.projectGroups.map { group =>
       subgraph(group)
     }}
        |""".stripMargin
@@ -175,10 +174,11 @@ case class DependencyGraphCreator()(implicit
                else ""}
          |    ${packageTree.toPackages.map(_.show).mkString(" & ")}
          |""".stripMargin}
-         |${releaseConfig.projectGroups.map { group =>
-             subgraph(group)
-             }.mkString("\n")
-         }
+         |${apiConfig.projectGroups
+        .map { group =>
+          subgraph(group)
+        }
+        .mkString("\n")}
          |
          |$styles
          |${packageTree.allTrees.map { pT =>
@@ -210,12 +210,10 @@ case class DependencyGraphCreator()(implicit
   }
 
   private def styles =
-    """
-      |   style valiant-projects fill:#ddd,color:purple,stroke:purple;
-      |   style valiant-general fill:#ddd,color:purple,stroke:purple;
-      |   style valiant-general-projects fill:#ddd,color:purple,stroke:purple;
-      |   style finnova fill:#ddd,color:green,stroke:green;
-      |   linkStyle default stroke:#999,color:red;
-      |""".stripMargin
+    apiConfig.projectGroups
+      .map(pg =>
+        s"   style ${pg.name} fill:${pg.fill},color:${pg.color},stroke:${pg.color};"
+      )
+      .mkString("\n")
 
-}
+end DependencyGraphCreator

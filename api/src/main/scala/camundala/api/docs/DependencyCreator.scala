@@ -2,12 +2,13 @@ package camundala.api
 package docs
 
 import scala.collection.immutable.ListMap
+import com.typesafe.config.ConfigFactory
 
 trait DependencyCreator :
 
   protected implicit def apiConfig: ApiConfig
   protected implicit def configs: Seq[PackageConf]
-  protected implicit def releaseConfig: ReleaseConfig
+  protected implicit def releaseConfig: ReleaseConfig = readReleaseConfig
   
 
   case class Package(name: String, minorVersion: String) {
@@ -61,7 +62,23 @@ trait DependencyCreator :
         |""".stripMargin
     else
       ""    
-  end printColorLegend    
+  end printColorLegend 
+
+  protected lazy val readReleaseConfig: ReleaseConfig =
+    val configFile = (apiConfig.basePath / "CONFIG.conf")
+    println(s"Config File: $configFile")
+    val config = ConfigFactory.parseFile(configFile.toIO)
+    val releaseConfig = ReleaseConfig(
+      config.getString("release.tag"),
+      if (config.hasPath("jira.release.url"))
+        Some(config.getString("jira.release.url"))
+      else None,
+      config.getString("release.notes"),
+      config.getBoolean("released")
+    )
+    println(s"Release Config: $releaseConfig")
+    releaseConfig
+  end readReleaseConfig
 
 end DependencyCreator  
 

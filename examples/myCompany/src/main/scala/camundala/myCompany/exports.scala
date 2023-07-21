@@ -31,19 +31,19 @@ private lazy val myCompanyGitConfigs =
 private lazy val myProjects: Seq[ProjectConfig] = Seq(
   ProjectConfig(
     name = "exampleDemos",
-    path = gitDir / "examples" / "demos",
+    path = _ => os.rel / "examples" / "demos",
     group = demos,
     color = "#f4ffcc"
   ),
   ProjectConfig(
     "exampleInvoiceC7Version",
-    gitDir / "examples" / "invoice" / "camunda7",
+    _ => os.rel / "examples" / "invoice" / "camunda7",
     group = invoices,
     color = "#c8feda"
   ),
   ProjectConfig(
     "exampleTwitterC8Version",
-    gitDir / "examples" / "twitter" / "camunda8",
+    _ => os.rel / "examples" / "twitter" / "camunda8",
     group = twitter,
     color = "#f2d9d9"
   )
@@ -53,10 +53,4 @@ private lazy val demos = ProjectGroup("demos", "purple")
 private lazy val invoices = ProjectGroup("demos", "green")
 private lazy val twitter = ProjectGroup("demos", "green")
 
-lazy val myReleaseConfig = ReleaseConfig(
-  releaseTag = "2023-08",
-  jiraReleaseUrl = None,
-  releaseNotes = """- Added a nice Documentation Example""",
-  released = false,
-  projectGroups = Seq(demos, invoices, twitter)
-)
+

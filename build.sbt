@@ -250,18 +250,9 @@ lazy val exampleDemos = project
   .configure(preventPublication)
   .configure(integrationTests)
   .settings(
-    libraryDependencies ++= camundaDependencies,
+    libraryDependencies ++= camundaDependencies
     //   libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % "it",
-    buildInfoKeys := Seq[BuildInfoKey](
-      organization,
-      name,
-      version,
-      scalaVersion,
-      sbtVersion
-    ),
-    buildInfoPackage := "camundala.examples.demos"
   )
-  .enablePlugins(BuildInfoPlugin)
   .dependsOn(dmn, camunda, simulation)
 
 // start company documentation example
@@ -310,9 +301,17 @@ lazy val exampleMyCompany = project
       )
       .site
       .versions(versions)
-      .build
+      .build,
+    buildInfoKeys := Seq[BuildInfoKey](
+      organization,
+      name,
+      version,
+      scalaVersion,
+      sbtVersion
+    ),
+    buildInfoPackage := "camundala.examples.myCompany"
   )
-  .enablePlugins(LaikaPlugin)
+  .enablePlugins(LaikaPlugin, BuildInfoPlugin)
   .configure(preventPublication)
   .dependsOn(api)
 

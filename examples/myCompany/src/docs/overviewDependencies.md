@@ -35,10 +35,6 @@ List(
     subgraph demos}
     
     end
-    , 
-    subgraph demos}
-    
-    end
     )
 
 
@@ -58,9 +54,6 @@ List(
 
 
 List(
-## Dependencies Overview
-
-, 
 ## Dependencies Overview
 
 , 

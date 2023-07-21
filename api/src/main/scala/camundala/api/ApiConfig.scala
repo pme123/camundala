@@ -41,6 +41,10 @@ case class ApiConfig(
 ):
   val catalogPath: Path = basePath / catalogFileName
 
+  lazy val projectGroups = gitConfigs.projectConfigs
+    .map(_.group)
+    .distinct
+
   def withTenantId(tenantId: String): ApiConfig =
     copy(tenantId = Some(tenantId))
 
@@ -113,7 +117,10 @@ case class GitConfigs(
     project.name -> project.color
   }
 
-  def hasProjectGroup(projectName: String, projectGroup: ProjectGroup): Boolean =
+  def hasProjectGroup(
+      projectName: String,
+      projectGroup: ProjectGroup
+  ): Boolean =
     println(s"ProjectNAME: $projectName")
     gitConfigs
       .flatMap(_.projects)
@@ -136,7 +143,7 @@ case class GitConfig(
     else
       projects.map { project =>
         val gitRepo = s"$cloneUrl/${project.name}.git"
-        updateProject(project.path, gitRepo)
+        updateProject(project.absGitPath(gitDir), gitRepo)
       }
 
   end init
@@ -162,14 +169,19 @@ end GitConfig
 
 case class ProjectConfig(
     name: String,
-    // path of project
-    path: os.Path,
+    // path of project (name => gitProjectDir/${os.RelPath})
+    path: String => os.RelPath = name => os.rel / name,
     // path where the BPMNs are - must be relative to the project path
     bpmnPath: os.RelPath = os.rel / "src" / "main" / "resources",
     group: ProjectGroup,
     color: String = "#fff"
 ):
-  lazy val absBpmnPath: os.Path = path / bpmnPath
+  def absGitPath(gitDir: os.Path): os.Path = gitDir / name
+  def absBpmnPath(gitDir: os.Path): os.Path = absGitPath(gitDir) / bpmnPath
 end ProjectConfig
 
-case class ProjectGroup(name: String, color: String = "#fff")
+case class ProjectGroup(
+    name: String,
+    color: String = "purple",
+    fill: String = "#ddd"
+)

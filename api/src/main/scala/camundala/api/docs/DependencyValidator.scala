@@ -4,7 +4,6 @@ package docs
 case class DependencyValidator()(implicit
     val apiConfig: ApiConfig,
     val configs: Seq[PackageConf],
-    val releaseConfig: ReleaseConfig
 ) extends DependencyCreator:
 
   @throws[IllegalStateException]

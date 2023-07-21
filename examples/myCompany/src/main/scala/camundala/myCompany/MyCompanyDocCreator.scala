@@ -11,7 +11,6 @@ For now only the catalog is created.
 */
 object MyCompanyDocCreator extends CompanyDocCreator, App:
   implicit lazy val apiConfig: ApiConfig = myCompanyConfig
-  implicit lazy val releaseConfig: ReleaseConfig = myReleaseConfig
 
   prepareDocs()
 end MyCompanyDocCreator
