@@ -160,7 +160,7 @@ trait SScenarioExtensions extends SStepExtensions:
         for
           given ScenarioData <- scenario.startProcess()
           given ScenarioData <- scenario.runSteps()
-          given ScenarioData <- checkIncident()(summon[ScenarioData])
+          given ScenarioData <- checkIncident()(summon[ScenarioData].withRequestCount(0))
         yield summon[ScenarioData]
       }
 

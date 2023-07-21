@@ -113,8 +113,7 @@ trait SEventExtensions extends SimulationHelper:
             tryOrFail(correlate(), sEvent)
           }
       end correlate
-
-      correlate()(summon[ScenarioData])
+      correlate()(data.withRequestCount(0))
     }
   end extension // SReceiveMessageEvent
 

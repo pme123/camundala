@@ -59,22 +59,6 @@ trait SStepExtensions
         given ScenarioData <- checkVars()
       yield summon[ScenarioData]
     end check
-    /*
-    // checks if a variable has this value.
-    // it tries up to the time defined.
-    def checkRunningVars(
-        variable: String,
-        value: Any
-    ): Seq[ChainBuilder] = {
-      Seq(
-        exec(_.set(variable, null)),
-        retryOrFail(
-          loadVariable(variable),
-          processReadyCondition(variable, value)
-        )
-      )
-    }
-     */
 
     def checkVars()(using data: ScenarioData): ResultType =
       val processInstanceId = data.context.processInstanceId

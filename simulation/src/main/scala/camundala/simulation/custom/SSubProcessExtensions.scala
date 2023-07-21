@@ -46,8 +46,7 @@ trait SSubProcessExtensions extends SimulationHelper:
         )
       }
 
-      given ScenarioData = data.switchToSubProcess()
-      processInstance()(summon[ScenarioData])
+      processInstance()(data.withRequestCount(0).switchToSubProcess())
     end switchToSubProcess
 
     def switchToMainProcess()(using data: ScenarioData): ResultType =
