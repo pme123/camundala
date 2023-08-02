@@ -3,8 +3,6 @@ package camundala.examples.demos
 import camundala.bpmn.*
 import camundala.domain.*
 
-import java.time.LocalDateTime
-
 object SignalMessageExample extends BpmnDsl:
 
   lazy val messageExample = process(

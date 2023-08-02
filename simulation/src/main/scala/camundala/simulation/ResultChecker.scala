@@ -8,7 +8,6 @@ import camundala.domain.*
 import camundala.simulation.TestOverrideType.*
 import io.circe.*
 import io.circe.parser.*
-import io.circe.syntax.*
 
 import scala.collection.mutable.ListBuffer
 

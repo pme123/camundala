@@ -3,9 +3,6 @@ package camundala.dmn
 import os.CommandResult
 import sttp.client3.*
 
-import scala.annotation.tailrec
-import scala.util.*
-
 trait DmnTesterHelpers:
   protected def starterConfig: DmnTesterStarterConfig = DmnTesterStarterConfig()
   protected def projectBasePath: os.Path = os.pwd

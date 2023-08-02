@@ -1,10 +1,8 @@
 package camundala.api
 
-import os.read.lines
 import os.{Path, read}
 
 import java.io.StringReader
-import scala.annotation.tailrec
 import scala.xml.*
 
 /** Checks all BPMNs if a process is used in another process. As result a list

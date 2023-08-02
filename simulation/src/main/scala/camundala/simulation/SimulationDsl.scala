@@ -4,7 +4,6 @@ package simulation
 import camundala.bpmn.*
 import camundala.domain.Optable
 
-import scala.collection.mutable.ListBuffer
 import scala.language.implicitConversions
 
 trait SimulationDsl[T] extends TestOverrideExtensions:

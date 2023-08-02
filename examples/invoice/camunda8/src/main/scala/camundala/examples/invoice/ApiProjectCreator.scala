@@ -5,7 +5,6 @@ import bpmn.*
 
 import camundala.api.*
 import camundala.bpmn.*
-import camundala.domain.*
 
 object ApiProjectCreator extends DefaultApiCreator:
 

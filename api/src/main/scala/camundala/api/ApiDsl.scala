@@ -3,8 +3,6 @@ package api
 
 import camundala.bpmn.*
 import camundala.domain.*
-import sttp.apispec.openapi.*
-import sttp.apispec.openapi.circe.yaml.*
 
 import scala.language.implicitConversions
 import scala.reflect.ClassTag

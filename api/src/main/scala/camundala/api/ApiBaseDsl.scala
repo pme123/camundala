@@ -3,8 +3,6 @@ package api
 
 import domain.*
 import bpmn.*
-import sttp.apispec.openapi.circe.yaml.*
-import sttp.apispec.openapi.*
 
 import scala.reflect.ClassTag
 

@@ -2,18 +2,7 @@ package camundala
 package api
 
 import bpmn.*
-import io.circe.*
-import io.circe.syntax.*
-import sttp.tapir.PublicEndpoint
-import sttp.apispec.openapi.*
 import sttp.tapir.*
-import sttp.apispec.openapi.circe.yaml.*
-import sttp.tapir.EndpointIO.Example
-
-import java.text.SimpleDateFormat
-import java.util.Date
-import scala.reflect.ClassTag
-import scala.util.matching.Regex
 
 trait PostmanApiCreator extends AbstractApiCreator:
 

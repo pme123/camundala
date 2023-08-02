@@ -4,9 +4,7 @@ package api
 import camundala.bpmn.*
 import camundala.domain.*
 import io.circe.syntax.*
-import sttp.model.StatusCode
-import sttp.tapir.*
-import sttp.tapir.EndpointIO.Example
+import sttp.tapir.EndpointIO
 import sttp.tapir.json.circe.*
 
 import scala.annotation.targetName

@@ -1,16 +1,8 @@
 package camundala.camunda
 
-import camundala.bpmn.*
 import camundala.domain.*
-import io.circe.generic.auto.*
-import io.circe.syntax.*
-import org.camunda.bpm.engine.delegate.{BpmnError, DelegateExecution, ExecutionListener}
-import org.camunda.bpm.engine.variable.`type`.{FileValueType, PrimitiveValueType, SerializableValueType}
-import org.camunda.bpm.engine.variable.impl.`type`.PrimitiveValueTypeImpl.StringTypeImpl
-import org.camunda.bpm.engine.variable.impl.value.FileValueImpl
-import org.camunda.bpm.engine.variable.value.TypedValue
-import sttp.tapir.generic.auto.*
-import sttp.tapir.json.circe.*
+import org.camunda.bpm.engine.delegate.{DelegateExecution, ExecutionListener}
+
 
 abstract class InputHandler[T <: Product : CirceCodec]
   extends ExecutionListener, Validator[T], Mocker :

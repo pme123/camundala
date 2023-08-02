@@ -4,7 +4,6 @@ package api
 import camundala.bpmn.*
 import os.Path
 import sttp.apispec.openapi.Contact
-import camundala.api.docs.PackageConf
 
 case class ApiConfig(
     // define tenant if you have one

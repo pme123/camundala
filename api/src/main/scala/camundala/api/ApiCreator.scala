@@ -1,16 +1,8 @@
 package camundala.api
 
-import io.circe.*
-import io.circe.syntax.*
-import os.*
 import sttp.apispec.openapi.*
 import sttp.apispec.openapi.circe.yaml.*
 import sttp.tapir.docs.openapi.{OpenAPIDocsInterpreter, OpenAPIDocsOptions}
-import sttp.tapir.json.circe.*
-import sttp.tapir.{EndpointInput, PublicEndpoint}
-
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util.Date
 import scala.util.matching.Regex
@@ -61,7 +53,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
          |<summary>CHANGELOG.md</summary>
          |<p>
          |
-         |${read
+         |${os.read
         .lines(changeLogFile)
         .tail
         .map(_.replace("##", "###"))
@@ -90,7 +82,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
   protected def createReadme(): String =
     val readme = basePath / "README.md"
     if (readme.toIO.exists())
-      read.lines(readme).tail.mkString("\n")
+      os.read.lines(readme).tail.mkString("\n")
     else
       "There is no README.md in the Project."
 
@@ -117,7 +109,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
                                 |$descr
                                 |""".stripMargin)
 
-  private def writeOpenApi(path: Path, api: OpenAPI, docPath: Path): Unit =
+  private def writeOpenApi(path: os.Path, api: OpenAPI, docPath: os.Path): Unit =
     if (os.exists(path))
       os.remove(path)
     val yaml = api.toYaml

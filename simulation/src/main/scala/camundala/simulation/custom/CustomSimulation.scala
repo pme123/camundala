@@ -1,16 +1,10 @@
 package camundala.simulation.custom
 
-import camundala.api.StartProcessIn
-import camundala.bpmn.*
 import camundala.simulation.*
-import io.circe.*
-import io.circe.parser.*
-import io.circe.syntax.*
-import sttp.client3.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.Try
+
 
 abstract class CustomSimulation
     extends SimulationDsl[Future[Seq[(LogLevel, Seq[ScenarioResult])]]],

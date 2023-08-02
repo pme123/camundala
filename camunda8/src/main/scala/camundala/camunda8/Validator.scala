@@ -2,7 +2,6 @@ package camundala
 package camunda8
 
 import domain.*
-import bpmn.*
 import cats.syntax.show.*
 import io.circe
 import io.circe.DecodingFailure

@@ -2,17 +2,11 @@ package camundala.api
 
 import camundala.bpmn.*
 import io.circe.*
-import io.circe.syntax.*
 import sttp.tapir.EndpointIO.Example
 import sttp.tapir.*
-import sttp.apispec.openapi.*
 import sttp.tapir.json.circe.*
-import sttp.apispec.openapi.circe.yaml.*
 
-import java.text.SimpleDateFormat
-import java.util.Date
-import scala.reflect.ClassTag
-import scala.util.matching.Regex
+
 
 trait CamundaPostmanApiCreator extends PostmanApiCreator:
 

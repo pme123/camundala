@@ -3,9 +3,7 @@ package bpmn
 
 import domain.*
 
-import io.circe.{Json, parser}
 import io.circe.syntax.*
-import scala.deriving.Mirror
 import scala.compiletime.{constValue, constValueTuple}
 
 val camundaVersion = "7.15"

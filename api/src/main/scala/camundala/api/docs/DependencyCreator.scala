@@ -1,7 +1,6 @@
 package camundala.api
 package docs
 
-import scala.collection.immutable.ListMap
 import com.typesafe.config.ConfigFactory
 
 trait DependencyCreator :

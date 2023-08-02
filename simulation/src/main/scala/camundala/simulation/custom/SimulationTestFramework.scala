@@ -1,12 +1,9 @@
 package camundala.simulation
 package custom
 
-import java.util.concurrent.atomic.AtomicReference
-import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
+import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration.*
-import scala.concurrent.{Await, Future}
 
 final class SimulationTestFramework extends sbt.testing.Framework:
 

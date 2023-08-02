@@ -3,11 +3,8 @@ package camundala.examples.demos
 import camundala.simulation.*
 import DecisionResultTypes.*
 
-import scala.concurrent.duration.*
-
 // exampleDemos/It/testOnly *DecisionResultTypesSimulation
 class DecisionResultTypesSimulation extends DemosSimulation:
-  import TestDomain.*
 
   simulate (
     singleEntryDMN,

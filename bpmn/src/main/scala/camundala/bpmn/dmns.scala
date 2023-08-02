@@ -6,10 +6,9 @@ import io.circe
 import io.circe.HCursor
 import io.circe.syntax.*
 import sttp.tapir.*
-import sttp.tapir.SchemaType.{SProduct, SProductField, SchemaWithValue}
+import sttp.tapir.SchemaType.SchemaWithValue
 
 import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
-import java.util.Date
 import scala.reflect.ClassTag
 
 case class Dmns(dmns: Seq[Dmn]):

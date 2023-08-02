@@ -1,32 +1,14 @@
 package camundala.camunda
 
-import camundala.bpmn.*
 import camundala.domain.*
-import io.circe.generic.auto.*
-import io.circe.syntax.*
 import org.camunda.spin.Spin.*
 
-import io.circe.{Json, JsonObject, ParsingFailure, parser}
-import org.camunda.bpm.engine.delegate.{
-  BpmnError,
-  DelegateExecution,
-  ExecutionListener
-}
-import org.camunda.bpm.engine.variable.`type`.{
-  FileValueType,
-  PrimitiveValueType,
-  SerializableValueType,
-  ValueType
-}
-import org.camunda.bpm.engine.variable.impl.`type`.PrimitiveValueTypeImpl.StringTypeImpl
-import org.camunda.bpm.engine.variable.impl.value.FileValueImpl
-import org.camunda.bpm.engine.variable.value.TypedValue
-import sttp.tapir.generic.auto.*
-import sttp.tapir.json.circe.*
+import io.circe.{Json, ParsingFailure, parser}
+import org.camunda.bpm.engine.delegate.DelegateExecution
 
-/**
- * Check, if the variable `outputMock` is set and if it sets its values as process variables.
- */
+/** Check, if the variable `outputMock` is set and if it sets its values as
+  * process variables.
+  */
 trait Mocker:
 
   def mockOrProceed(execution: DelegateExecution): Unit =

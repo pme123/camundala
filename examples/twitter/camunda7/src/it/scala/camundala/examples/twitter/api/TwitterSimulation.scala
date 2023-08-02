@@ -1,13 +1,10 @@
 package camundala
 package examples.twitter.api
 
-import api.*
 import bpmn.*
 import simulation.*
 import simulation.custom.CustomSimulation
 import camundala.examples.twitter.api.TwitterApi.*
-
-import scala.concurrent.duration.*
 
 // exampleTwitterC7/It/testOnly *TwitterSimulation
 class TwitterSimulation extends CustomSimulation:

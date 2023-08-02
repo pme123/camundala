@@ -1,9 +1,7 @@
 package camundala.examples.demos
 
 import camundala.bpmn.*
-import camundala.domain.*
 
-import java.time.LocalDateTime
 
 object BadScenarioExample extends BpmnDsl:
 

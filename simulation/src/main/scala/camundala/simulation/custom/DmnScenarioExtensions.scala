@@ -7,7 +7,6 @@ import io.circe.*
 import io.circe.syntax.*
 import sttp.client3.*
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait DmnScenarioExtensions extends SScenarioExtensions:

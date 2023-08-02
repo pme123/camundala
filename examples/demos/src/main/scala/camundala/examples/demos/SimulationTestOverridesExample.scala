@@ -3,8 +3,6 @@ package camundala.examples.demos
 import camundala.bpmn.*
 import camundala.domain.*
 
-import java.time.LocalDateTime
-
 object SimulationTestOverridesExample extends BpmnDsl:
 
   case class SimpleObject(name: String = "salu", other: Boolean = false)

@@ -1,9 +1,6 @@
 package camundala.simulation
 package custom
 
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
 type ResultType = Either[ScenarioData, ScenarioData]
 
 case class ScenarioData(

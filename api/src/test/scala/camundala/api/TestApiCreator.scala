@@ -2,12 +2,8 @@ package camundala
 package api
 
 import domain.*
-import camundala.api.Sample.{SampleOut, descr, name, process, standardSample}
+import camundala.api.Sample.{SampleOut, process, standardSample}
 import camundala.bpmn.BpmnDsl
-import io.circe.{Decoder, Encoder}
-import sttp.model.StatusCode
-import sttp.tapir.Schema.annotations.description
-import sttp.tapir.{Endpoint, Schema, SchemaType}
 
 object TestApiCreator extends DefaultApiCreator, App:
 

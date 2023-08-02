@@ -12,7 +12,6 @@ import sttp.client3.{
 }
 import sttp.model.StatusCode
 
-import scala.concurrent.duration.*
 import scala.language.dynamics
 import scala.util.Try
 

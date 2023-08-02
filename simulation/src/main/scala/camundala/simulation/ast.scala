@@ -1,10 +1,8 @@
 package camundala
 package simulation
 
-import api.*
 import bpmn.*
 
-import scala.annotation.targetName
 
 case class SSimulation(scenarios: List[SScenario])
 

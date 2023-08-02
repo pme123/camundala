@@ -1,13 +1,11 @@
 package camundala
 package domain
 
-import io.circe.Codec.AsObject.derivedConfigured
 import io.circe.derivation.Configuration
 import io.circe.parser
 import io.circe.syntax.*
 
 import java.util.Base64
-import scala.deriving.Mirror
 import scala.language.implicitConversions
 // circe
 export io.circe.{Codec as CirceCodec, Decoder, Encoder, Json}

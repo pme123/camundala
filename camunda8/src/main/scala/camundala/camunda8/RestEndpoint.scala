@@ -14,7 +14,6 @@ import io.camunda.zeebe.client.api.response.{
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.{HttpStatus, ResponseEntity}
 import io.circe.parser
-import io.circe.syntax.*
 import scala.jdk.CollectionConverters.*
 
 trait RestEndpoint extends Validator:

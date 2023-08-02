@@ -2,13 +2,11 @@ package camundala
 package dmn
 
 import camundala.bpmn.*
-import camundala.domain.*
-import io.circe.syntax.*
 import pme123.camunda.dmn.tester.shared.*
 
 import java.time.LocalDateTime
 import scala.language.{implicitConversions, reflectiveCalls}
-import scala.reflect.{ClassTag, classTag}
+import scala.reflect.ClassTag
 
 trait DmnTesterConfigCreator extends DmnConfigWriter:
 

@@ -1,7 +1,6 @@
 package camundala.examples.demos
 
 import BadScenarioExample.*
-import camundala.examples.demos.SignalMessageExample.*
 import camundala.simulation.*
 import camundala.simulation.custom.CustomSimulation
 

@@ -1,13 +1,7 @@
 package camundala.simulation
 package custom
-
-import camundala.api.*
-import camundala.bpmn.*
-import io.circe.parser.parse
-import io.circe.syntax.*
 import sttp.client3.*
 
-import scala.util.Left
 
 trait SSubProcessExtensions extends SimulationHelper:
 

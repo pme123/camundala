@@ -2,7 +2,6 @@ package camundala.examples.demos.dmn
 
 import camundala.bpmn.*
 import camundala.dmn.*
-import camundala.domain.*
 import camundala.examples.demos.DateExample.*
 import camundala.examples.demos.DecisionResultTypes.*
 import camundala.examples.demos.VariablesExample.VariablesExampleDMN

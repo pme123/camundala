@@ -44,7 +44,8 @@ def projectSettings(projName: String) = Seq(
   scalaVersion := scala3Version,
   version := projectVersion,
   scalacOptions ++= Seq(
-    "-Xmax-inlines:50" // is declared as erased, but is in fact used
+    "-Xmax-inlines:50", // is declared as erased, but is in fact used
+    "-Wunused:imports",
   )
 )
 

@@ -9,8 +9,6 @@ import sttp.model.StatusCode
 import sttp.tapir.{Schema, SchemaType}
 import sttp.tapir.Schema.annotations.description
 
-import java.util.Base64
-import scala.annotation.tailrec
 import scala.collection.immutable
 
 type ExampleName = String

@@ -1,6 +1,6 @@
 package camundala.examples.demos.service
 
-import org.camunda.bpm.engine.delegate.{DelegateExecution, ExecutionListener, JavaDelegate}
+import org.camunda.bpm.engine.delegate.{DelegateExecution, JavaDelegate}
 
 class PrintService extends JavaDelegate :
 

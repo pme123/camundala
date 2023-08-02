@@ -3,17 +3,7 @@ package api
 
 import bpmn.*
 import sttp.tapir.*
-import sttp.tapir.docs.openapi.*
-import sttp.apispec.openapi.*
-import sttp.apispec.openapi.circe.yaml.*
-import io.circe.*
-import io.circe.syntax.*
-import sttp.tapir.json.circe.*
 import sttp.tapir.EndpointIO.Example
-
-import java.text.SimpleDateFormat
-import java.util.Date
-import scala.util.matching.Regex
 
 trait TapirApiCreator extends AbstractApiCreator:
 

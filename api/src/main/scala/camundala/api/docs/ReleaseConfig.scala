@@ -1,8 +1,5 @@
 package camundala.api.docs
 
-import java.awt.Color
-import camundala.api.ProjectGroup
-import com.typesafe.config.ConfigFactory
 
 case class ReleaseConfig(
     releaseTag: String,

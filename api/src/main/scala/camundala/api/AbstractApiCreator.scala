@@ -2,18 +2,9 @@ package camundala
 package api
 
 import camundala.bpmn.*
-import io.circe.*
-import io.circe.syntax.*
-import os.*
-import sttp.tapir.EndpointIO.Example
-import sttp.tapir.json.circe.*
-import sttp.apispec.openapi.*
-import sttp.apispec.openapi.circe.yaml.*
-import sttp.tapir.*
 
-import java.text.SimpleDateFormat
-import java.util.Date
-import scala.util.matching.Regex
+import sttp.apispec.openapi.*
+
 
 trait AbstractApiCreator extends ProcessReferenceCreator:
 
@@ -21,13 +12,15 @@ trait AbstractApiCreator extends ProcessReferenceCreator:
 
   protected implicit def tenantId: Option[String] = apiConfig.tenantId
 
-  protected def basePath: Path = apiConfig.basePath
+  protected def basePath: os.Path = apiConfig.basePath
 
   protected def title: String
 
   protected def version: String
 
-  protected def servers = List(Server(apiConfig.endpoint).description("Local Developer Server"))
+  protected def servers = List(
+    Server(apiConfig.endpoint).description("Local Developer Server")
+  )
 
   protected def info(title: String, description: Option[String]) =
     Info(title, version, description, contact = apiConfig.contact)

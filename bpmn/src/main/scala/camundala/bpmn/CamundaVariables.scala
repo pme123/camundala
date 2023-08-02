@@ -64,8 +64,6 @@ object CamundaVariable:
   given Encoder[CJson] = deriveEncoder
   given Decoder[CJson] = deriveDecoder
 
-  import reflect.Selectable.reflectiveSelectable
-
   def toCamunda[T <: Product: Encoder](
       products: Seq[T]
   ): Seq[Map[String, CamundaVariable]] =

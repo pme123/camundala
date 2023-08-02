@@ -1,14 +1,12 @@
 package camundala
 package dmn
 
-import domain.*
 import pme123.camunda.dmn.tester.shared.*
 import sttp.client3.*
 import sttp.client3.circe.*
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import scala.annotation.tailrec
 
 trait DmnConfigWriter extends DmnTesterHelpers:
   

@@ -1,9 +1,6 @@
 package camundala.myCompany
 
 import camundala.api.*
-import camundala.api.docs.*
-import camundala.bpmn.*
-import camundala.domain.*
 
 lazy val postmanApiConfig = ApiConfig()
   .withEndpoint("http://localhost:9000/public/api")

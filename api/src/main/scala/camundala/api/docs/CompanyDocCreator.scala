@@ -1,7 +1,6 @@
 package camundala.api
 package docs
 
-import com.typesafe.config.ConfigFactory
 import os.Path
 
 import java.time.LocalDate
