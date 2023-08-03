@@ -29,7 +29,7 @@ case class DependencyLinkCreator()(implicit
 
     def linkGroup(projectGroup: ProjectGroup) =
       s"""
-         |## $title
+         |## ${projectGroup.name}
          |${packages
         .filter(p => apiConfig.gitConfigs.hasProjectGroup(p.name, projectGroup))
         .map { co =>
@@ -53,7 +53,7 @@ case class DependencyLinkCreator()(implicit
        |
        |${apiConfig.projectGroups.map { group =>
       linkGroup(group)
-    }}
+    }.mkString("\n")}
        |""".stripMargin
   }
 

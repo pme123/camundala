@@ -5,7 +5,7 @@ import os.{pwd, write}
 
 case class DependencyGraphCreator()(implicit
     val apiConfig: ApiConfig,
-    val configs: Seq[PackageConf],
+    val configs: Seq[PackageConf]
 ) extends DependencyCreator:
 
   def createIndex: String = {
@@ -45,7 +45,7 @@ case class DependencyGraphCreator()(implicit
 
     def subgraph(projectGroup: ProjectGroup) =
       s"""
-         |    subgraph ${projectGroup.name}}
+         |    subgraph ${projectGroup.name}
          |    ${configs
         .filter(p => apiConfig.gitConfigs.hasProjectGroup(p.name, projectGroup))
         .map { co =>
@@ -74,9 +74,12 @@ case class DependencyGraphCreator()(implicit
        |""".stripMargin
       }
       .mkString("\n")}
-       |${apiConfig.projectGroups.map { group =>
-      subgraph(group)
-    }}
+       |${apiConfig.projectGroups
+      .map { group =>
+        subgraph(group)
+      }
+      .mkString("\n\n")}
+       |$groupStyles
        |""".stripMargin
   }
 
@@ -180,7 +183,8 @@ case class DependencyGraphCreator()(implicit
         }
         .mkString("\n")}
          |
-         |$styles
+         |$groupStyles
+         |
          |${packageTree.allTrees.map { pT =>
         val color = colorMap.getOrElse(pT.name, "#fff")
         s"""
@@ -209,11 +213,11 @@ case class DependencyGraphCreator()(implicit
     filteredConfigs
   }
 
-  private def styles =
+  private def groupStyles =
     apiConfig.projectGroups
       .map(pg =>
         s"   style ${pg.name} fill:${pg.fill},color:${pg.color},stroke:${pg.color};"
       )
-      .mkString("\n")
+      .mkString("\n") + "\n   linkStyle default stroke:#999,color:red;"
 
 end DependencyGraphCreator

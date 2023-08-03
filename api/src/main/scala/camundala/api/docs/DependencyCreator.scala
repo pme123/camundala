@@ -1,8 +1,6 @@
 package camundala.api
 package docs
 
-import com.typesafe.config.ConfigFactory
-
 trait DependencyCreator :
 
   protected implicit def apiConfig: ApiConfig
@@ -52,6 +50,7 @@ trait DependencyCreator :
         |  <ul>
         |${
         colors
+        .filterNot(c => c._2 == "white")
           .map(c =>
             s"""<li style="background: ${c._2};">${c._1}: ${c._2}</li>""".stripMargin
           ).mkString("\n")
@@ -63,21 +62,8 @@ trait DependencyCreator :
       ""    
   end printColorLegend 
 
-  protected lazy val readReleaseConfig: ReleaseConfig =
-    val configFile = (apiConfig.basePath / "CONFIG.conf")
-    println(s"Config File: $configFile")
-    val config = ConfigFactory.parseFile(configFile.toIO)
-    val releaseConfig = ReleaseConfig(
-      config.getString("release.tag"),
-      if (config.hasPath("jira.release.url"))
-        Some(config.getString("jira.release.url"))
-      else None,
-      config.getString("release.notes"),
-      config.getBoolean("released")
-    )
-    println(s"Release Config: $releaseConfig")
-    releaseConfig
-  end readReleaseConfig
+  protected def readReleaseConfig: ReleaseConfig =
+    ReleaseConfig.releaseConfig
 
 end DependencyCreator  
 

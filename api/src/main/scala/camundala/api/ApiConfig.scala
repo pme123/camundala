@@ -120,7 +120,6 @@ case class GitConfigs(
       projectName: String,
       projectGroup: ProjectGroup
   ): Boolean =
-    println(s"ProjectNAME: $projectName")
     gitConfigs
       .flatMap(_.projects)
       .find(_.name == projectName)

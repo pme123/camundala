@@ -16,6 +16,8 @@ trait CompanyDocCreator extends DependencyCreator:
   protected implicit lazy val configs: Seq[PackageConf] = setupDependencies()
   lazy val projectConfigs: Seq[ProjectConfig] = apiConfig.gitConfigs.projectConfigs
 
+  protected def upload(releaseTag: String): Unit
+
   def prepareDocs(): Unit = {
     println(s"API Config: $apiConfig")
     apiConfig.gitConfigs.init
@@ -23,6 +25,17 @@ trait CompanyDocCreator extends DependencyCreator:
     createDynamicConf()
     // println(s"Preparing Docs Started")
     createReleasePage()
+  }
+
+  def releaseDocs(): Unit = {
+    createDynamicConf()
+    println(s"Releasing Docs started")
+    os.proc("sbt",
+      "-J-Xmx3G",
+      "clean",
+      "laikaSite" // generate HTML pages from Markup
+    ).callOnConsole()
+    upload(releaseConfig.releaseTag)
   }
 
   protected def createCatalog(): Unit =

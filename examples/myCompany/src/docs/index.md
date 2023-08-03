@@ -27,18 +27,19 @@ _Updated for Release ${release.tag} - created on ${created.day}_
 
 flowchart TB
 
-List(
-    subgraph demos}
+
+    subgraph demos
     
     end
-    , 
-    subgraph demos}
+    
+
+
+    subgraph demos
     
     end
-    )
+    
 
 
-      </div>
 </div>
 
 
