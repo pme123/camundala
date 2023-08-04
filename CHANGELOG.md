@@ -14,6 +14,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## 1.16.0 - 2023-08-04
+### Changed 
+- MAP-7496: Removed dependency to package.conf - see [Commit](https://github.com/pme123/camundala/commit/7ce14fdf57a921de6fbe9e6f1f2647f80fbdb39a)
+- Moved CompanyDocCreator from helper. - see [Commit](https://github.com/pme123/camundala/commit/76b076a5ee1b4cd8fe9009e057b91e720a134e29)
+- Cleanup Imports - see [Commit](https://github.com/pme123/camundala/commit/911b051ed1a5baba2b234825ef0b9283b9217f37)
+- State of work in CompanyDocCreator - see [Commit](https://github.com/pme123/camundala/commit/088ac2e101fc2c0be36f5773ff376127df84f7dd)
+- Fixed counter set to 0 where missing in simulations - see [Commit](https://github.com/pme123/camundala/commit/8b4ba72ead3cc7a8d82b3f8bbd1db48864f6ae83)
+- State of Work - Cleanup - see [Commit](https://github.com/pme123/camundala/commit/5d21a814a924c9ca93df231d4dc89054185fbaac)
+- Start creating Company docs. - see [Commit](https://github.com/pme123/camundala/commit/6d63aa69a849316748c117d564a5178cde7f1b9a)
+- Added some catalog.md for testing - see [Commit](https://github.com/pme123/camundala/commit/83fbe3115cdaafc4c772603295ff01a0b615c259)
+- Changed order in Simulation - error last - easier to scroll to. - see [Commit](https://github.com/pme123/camundala/commit/793d23d08bdbccff8f3a61de3ced351530003b30)
+- Cosmetics. - see [Commit](https://github.com/pme123/camundala/commit/bfbc51ad5eecf4f6f8f96667f1e69ee9078f6e4e)
+
 ## 1.15.17 - 2023-06-22
 ### Changed 
 - MAP-7344: Fix for null values in DMN comparing. - see [Commit](https://github.com/pme123/camundala/commit/d77ebeb72a31b8cdce31e81596c31c387a4071dc)
