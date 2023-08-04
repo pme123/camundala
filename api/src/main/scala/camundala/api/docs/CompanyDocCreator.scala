@@ -135,7 +135,7 @@ trait CompanyDocCreator extends DependencyCreator:
     dependencies
       .map { case p -> v => fetchConf(p, v._1, v._2) }.flatten
   }
-
+  
   private def fetchConf(project: String, version: String, isNew: Boolean) = {
     for {
       projectCloneUrl <- apiConfig.gitConfigs.projectCloneUrl(project)
@@ -147,9 +147,8 @@ trait CompanyDocCreator extends DependencyCreator:
       _ = os
         .proc("git", "checkout", s"tags/v$version")
         .callOnConsole(projectPath)
-      configPath = projectPath / "src" / "main" / "resources" / "package.conf" //TODO this must be generic from build.sbt
     } yield PackageConf(
-      configPath,
+      defaultProjectConfPath,
       os.read.lines(projectPath / "CHANGELOG.md").toSeq,
       isNew
     )
