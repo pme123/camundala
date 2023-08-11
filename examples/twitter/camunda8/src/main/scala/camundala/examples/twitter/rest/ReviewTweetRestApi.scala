@@ -2,7 +2,7 @@ package camundala
 package examples.twitter
 package rest
 
-import camundala.bpmn.*
+import domain.*
 import camundala.camunda8.*
 import camundala.examples.twitter.api.*
 import org.springframework.web.bind.annotation.*

@@ -1,6 +1,7 @@
 package camundala
 package api
 
+import domain.* 
 import bpmn.*
 import sttp.tapir.*
 import sttp.tapir.EndpointIO.Example

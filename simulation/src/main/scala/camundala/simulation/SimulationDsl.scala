@@ -10,8 +10,14 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
 
   def run(sim: SSimulation): T
 
-  def simulate(body: SScenario*): T =
-    run(SSimulation(body.toList)) // runs Scenarios
+  def simulate(body: => SScenario*): Unit =
+    try {
+      run(SSimulation(body.toList)) // runs Scenarios
+    }catch{
+      case err => // there could be errors in the creation of the SScenarios
+        err.printStackTrace()
+    }
+    
 
   def scenario(scen: ProcessScenario): SScenario =
     scenario(scen)()

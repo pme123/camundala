@@ -148,7 +148,7 @@ trait CompanyDocCreator extends DependencyCreator:
         .proc("git", "checkout", s"tags/v$version")
         .callOnConsole(projectPath)
     } yield PackageConf(
-      defaultProjectConfPath,
+      projectPath / defaultProjectConfPath,
       os.read.lines(projectPath / "CHANGELOG.md").toSeq,
       isNew
     )

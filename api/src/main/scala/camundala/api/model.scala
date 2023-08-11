@@ -12,9 +12,6 @@ import sttp.tapir.Schema.annotations.description
 import scala.collection.immutable
 
 type ExampleName = String
-
-trait GenericServiceIn:
-  def serviceName: String
   
 case class RequestErrorOutput(
     statusCode: StatusCode,

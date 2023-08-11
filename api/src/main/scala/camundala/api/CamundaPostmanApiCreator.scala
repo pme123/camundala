@@ -1,7 +1,8 @@
-package camundala.api
+package camundala
+package api
 
-import camundala.bpmn.*
-import io.circe.*
+import domain.*
+import bpmn.*
 import sttp.tapir.EndpointIO.Example
 import sttp.tapir.*
 import sttp.tapir.json.circe.*

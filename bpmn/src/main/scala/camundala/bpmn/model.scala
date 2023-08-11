@@ -177,16 +177,6 @@ object TimerEvent:
     TimerEvent(title, InOutDescr(title, NoInput(), NoOutput()))
 end TimerEvent
 
-case class NoInput()
-object NoInput:
-  given Schema[NoInput] = Schema.derived
-  given CirceCodec[NoInput] = deriveCodec
-
-case class NoOutput()
-object NoOutput:
-  given Schema[NoOutput] = Schema.derived
-  given CirceCodec[NoOutput] = deriveCodec
-
 def valueToJson(value: Any): Json =
   value match
     case v: Int =>

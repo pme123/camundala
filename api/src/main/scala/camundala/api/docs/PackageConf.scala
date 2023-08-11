@@ -17,11 +17,11 @@ case class PackageConf(
   lazy val fullName = s"$org:$name:$version"
 }
 
-lazy val defaultProjectConfPath = os.pwd / "PROJECT.conf"
+lazy val defaultProjectConfPath = os.rel / "PROJECT.conf"
 object PackageConf:
 
   def apply(
-      packageFile: os.Path = defaultProjectConfPath,
+      packageFile: os.Path = os.pwd / defaultProjectConfPath,
       changelog: Seq[String] = Seq.empty,
       isNew: Boolean = false
   ): PackageConf =

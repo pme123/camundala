@@ -1,6 +1,7 @@
 package camundala
 package api
 
+import camundala.domain.*
 import camundala.bpmn.*
 
 import sttp.apispec.openapi.*

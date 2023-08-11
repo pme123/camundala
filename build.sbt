@@ -54,7 +54,9 @@ lazy val domain = project
   .configure(publicationSettings)
   .settings(projectSettings("domain"))
   .settings(
-    libraryDependencies ++= tapirDependencies
+    libraryDependencies ++= (tapirDependencies :+
+            "com.novocode" % "junit-interface" % "0.11" % Test)
+
   )
 
 val osLibDependency = "com.lihaoyi" %% "os-lib" % "0.9.1"
