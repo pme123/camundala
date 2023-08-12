@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 0.17.0 - 2023-08-12
+### Changed 
+- Working MockedHttpResponse implementation - see [Commit](https://github.com/pme123/camundala/commit/74b4e9d63e3a743038cc0cb2ff65519f3217ebe0)
+- Typesafe MockedHttpResponse experiment - see [Commit](https://github.com/pme123/camundala/commit/19f936a2f04cca16b6454d861aa25a6a0870a764)
+- Moved GenericServiceIn to domain. - see [Commit](https://github.com/pme123/camundala/commit/d93ec5650fd98b02dea39d7fd7fa0a6851db9868)
+
 ## 1.16.0 - 2023-08-04
 ### Changed 
 - MAP-7496: Removed dependency to package.conf - see [Commit](https://github.com/pme123/camundala/commit/7ce14fdf57a921de6fbe9e6f1f2647f80fbdb39a)
