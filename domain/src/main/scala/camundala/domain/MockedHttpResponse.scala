@@ -1,10 +1,6 @@
 package camundala.domain
 
-import io.circe.{DecodingFailure, HCursor}
-import io.circe.Decoder.Result
 import io.circe.syntax.*
-
-import java.time.LocalDate
 
 @description(
   "Mocks a REST Service Response (must be handled by the BPF package)."
@@ -53,29 +49,76 @@ object MockedHttpResponse:
       : Schema[MockedHttpResponse[OutS, OutE]] =
     Schema.derived[MockedHttpResponse[OutS, OutE]]
 
+  /*
   implicit def circeCodec[OutS: CirceCodec, OutE: CirceCodec]
       : CirceCodec[MockedHttpResponse[OutS, OutE]] =
-    deriveCodec[MockedHttpResponse[OutS, OutE]]
+    new CirceCodec[MockedHttpResponse[OutS, OutE]] {
 
+      final def apply(c: HCursor): Result[MockedHttpResponse[OutS, OutE]] =
+        for {
+          respStatus <- c.downField("respStatus").as[Int]
+          respBody <- if(respStatus < 300) c.downField("respBody").as[OutS].map(Right(_))
+          else c.downField("respBody").as[OutE].map(Left(_))
+          respHeaders <- c.downField("respHeaders").as[Seq[Seq[String]]]
+        } yield MockedHttpResponse(respStatus, respBody, respHeaders)
+
+      final def apply(mResp: MockedHttpResponse[OutS, OutE]): Json = Json.obj(
+        ("respStatus", mResp.respStatus.asJson),
+        (
+          "respBody",
+          mResp.respBody match
+            case Right(value) => value.asJson
+            case Left(err) => err.asJson
+        ),
+        ("respHeaders", mResp.respHeaders.asJson)
+      )
+    }
+  end circeCodec
+   */
+  implicit def mockedHttpResponseEncoder[OutS: Encoder, OutE: Encoder]
+      : Encoder[MockedHttpResponse[OutS, OutE]] =
+    Encoder.instance { response =>
+      Json.obj(
+        "respStatus" -> Json.fromInt(response.respStatus),
+        "respBody" -> (
+          response.respBody match
+            case Right(value) => value.asJson
+            case Left(err) => err.asJson
+        ),
+        "respHeaders" -> response.respHeaders
+          .map(_.map(Json.fromString))
+          .asJson
+      )
+    }
+  implicit def mockedHttpResponseDecoder[OutS: Decoder, OutE: Decoder]
+      : Decoder[MockedHttpResponse[OutS, OutE]] =
+    Decoder.instance { cursor =>
+      for {
+        respStatus <- cursor.downField("respStatus").as[Int]
+        respBody <-
+          if (respStatus < 300)
+            cursor.downField("respBody").as[OutS].map(Right(_))
+          else cursor.downField("respBody").as[OutE].map(Left(_))
+        respHeaders <- cursor.downField("respHeaders").as[Seq[Seq[String]]]
+      } yield MockedHttpResponse(respStatus, respBody, respHeaders)
+    }
 end MockedHttpResponse
-
+/*
+// needed for mocked Results of Seq
 implicit def seqCodec[T: CirceCodec]: CirceCodec[Seq[T]] =
   new CirceCodec[Seq[T]] {
     final def apply(c: HCursor): Result[Seq[T]] =
-      println(s"HCURSOR: ${c.values}")
       val jsons = c.values.get.toSeq.map(_.as[T])
       val (lefts, rights) = jsons.partition(_.isLeft)
-      if (lefts.nonEmpty) Left(DecodingFailure("Problem decoding Seq", lefts.collect { case Left(t) => t.history }.flatten.toList))
+      if (lefts.nonEmpty)
+        Left(
+          DecodingFailure(
+            "Problem decoding Seq",
+            lefts.collect { case Left(t) => t.history }.flatten.toList
+          )
+        )
       else Right(rights.collect { case Right(a) => a })
     final def apply(a: Seq[T]): Json = Json.arr(a.map(_.asJson): _*)
-  }/*
-implicit def stringCodec: CirceCodec[String] =
-  new CirceCodec[String] {
-
-    final def apply(c: HCursor): Result[String] = c.as[String]
-
-    final def apply(a: String): Json = Json.fromString(a)
   }
+end seqCodec
 */
-//implicit def mySeqCodec[T: CirceCodec]: CirceCodec[Seq[T]] = deriveCodec[Seq[T]]
-

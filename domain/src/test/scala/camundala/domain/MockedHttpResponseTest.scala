@@ -30,17 +30,15 @@ end MockedHttpResponseTest
 
 lazy val seqSuccess = Seq(Success())
 type OutS2 = Seq[Success]
-// lazy val myMockResp =  MockedHttpResponse(122, Json.fromString("hello")) //
+type OutE2 = Seq[Error]
+
 case class TestWithMock(
   myMock: MockedHttpResponse[Success, Error] = MockedHttpResponse.success(122, Success()),
   noOutputMock: MockedHttpResponse[NoOutput, NoOutput] = MockedHttpResponse.success(122, NoOutput()),
-  seqOutputMock: MockedHttpResponse[OutS2, Seq[Error]] = MockedHttpResponse.success200(seqSuccess),
-) extends MockServiceSupport[NoOutput, Seq[Success], Error]:
-  override def outputServiceMock: Option[MockedHttpResponse[OutS2, Error]] = ???
+  @description(outputServiceMockDescr(seqSuccess))
+  seqOutputMock: MockedHttpResponse[OutS2, OutE2] = MockedHttpResponse.success200[OutS2, OutE2](seqSuccess),
+)
 
-  override def outputMock: Option[NoOutput] = ???
-
-  override def servicesMocked: Boolean = ???
 
 object TestWithMock:
     given Schema[TestWithMock] = Schema.derived

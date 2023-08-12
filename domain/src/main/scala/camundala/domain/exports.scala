@@ -123,7 +123,7 @@ def outputMockDescr[Out: CirceCodec, Schema](mock: Out) =
 val servicesMockedDescr =
   "This flag will mock every Service that this Process calls, using the default Mock."
 
-def outputServiceMockDescr[OutS: CirceCodec, Schema](mock: OutS) =
+def outputServiceMockDescr[OutS: Encoder](mock: OutS) =
   s"""You can mock the response variables of this Http Service.
      |
      |Class: `${mock.getClass.getName.replace("$", " > ")}`
