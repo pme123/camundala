@@ -7,6 +7,8 @@ import io.circe.syntax.*
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.client.variable.impl.value.JsonValueImpl
 
+import java.net.URLDecoder
+import java.nio.charset.Charset
 import java.time.LocalDateTime
 
 export sttp.model.{Method, Uri, QueryParams}
@@ -195,18 +197,32 @@ object CamundalaWorkerError:
       errorMsg: String
   ) extends ServiceError
 
+  def requestMsg[InB: Encoder](
+      apiUri: Uri,
+      queryParams: Seq[(String, Seq[String])],
+      requestBody: Option[InB]
+  ): String =
+    s""" - Request URL: ${URLDecoder.decode(apiUri.toString, Charset.defaultCharset())}
+       | - Request Params: ${
+        queryParams
+          .map {
+            case k -> seq if seq.isEmpty =>
+              k
+            case k -> seq => s"$k=${seq.mkString(",")}"
+          }
+          .mkString("&")}
+       | - Request Body: ${requestBody.map(_.asJson).getOrElse("")}""".stripMargin
+
   def serviceErrorMsg[InB: Encoder](
       status: Int,
       errorMsg: String,
       apiUri: Uri,
+      queryParams: Seq[(String, Seq[String])],
       requestBody: Option[InB]
   ): String =
-    s"""
-       |Service Error: $status
+    s"""Service Error: $status
        |ErrorMsg: $errorMsg
-       |Request URL: $apiUri
-       |Request Body: ${requestBody.asJson}
-       |""".stripMargin
+       |${requestMsg(apiUri, queryParams, requestBody)}""".stripMargin
 end CamundalaWorkerError
 
 def niceClassName(clazz: Class[?]) =

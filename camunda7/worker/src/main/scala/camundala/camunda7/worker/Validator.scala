@@ -3,6 +3,7 @@ package camunda7.worker
 
 import domain.*
 import camundala.camunda7.worker.CamundalaWorkerError.ValidaterError
+import io.circe.JsonObject
 import io.circe.syntax.*
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.engine.variable.`type`.ValueType
@@ -48,13 +49,12 @@ trait Validator[In <: Product: CirceCodec] extends CamundaHelper:
 
             )
           )
-    import io.circe.*
+    println("Input Variables for validation:")
     val json: Either[ValidaterError, JsonObject] = jsonResult
       .map(_.foldLeft(JsonObject()) { case (jsonObj, jsonKey -> jsonValue) =>
-        println(s" - $jsonKey: ${jsonValue.getClass} - $jsonValue")
+        println(s" - $jsonKey: ${jsonValue.getClass.getSimpleName} - $jsonValue")
         jsonObj.add(jsonKey, jsonValue.getOrElse(Json.Null))
       })
-    println(s"JSON to validate: $json")
     json
       .flatMap: jsonObj => 
         decodeTo[In](jsonObj.asJson.toString)

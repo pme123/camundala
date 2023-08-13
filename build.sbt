@@ -107,7 +107,7 @@ lazy val camunda7Worker = project
       "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion
     )
   )
-  .dependsOn(api)
+  .dependsOn(bpmn)
 
 lazy val camunda8 = project
   .in(file("./camunda8"))

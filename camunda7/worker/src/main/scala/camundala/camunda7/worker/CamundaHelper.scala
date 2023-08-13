@@ -28,9 +28,7 @@ trait CamundaHelper:
       .map{
         case n: java.lang.Integer =>
           n.asInstanceOf[Int].asInstanceOf[T]
-        case other =>
-          println(s"VAR: $varKey -> $other")
-          other
+        case other => other
       }
 
   def extractedVariableOpt[T](varKey: String | InputParams): HelperContext[Either[BadVariableError, Option[Json]]] =

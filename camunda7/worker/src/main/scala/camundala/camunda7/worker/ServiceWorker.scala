@@ -5,9 +5,7 @@ import domain.*
 import CamundalaWorkerError.*
 import io.circe.syntax.*
 import sttp.client3.*
-
-import java.net.URLDecoder
-import java.nio.charset.Charset
+import sttp.model.Uri
 
 trait ServiceWorker[
     In <: Product: CirceCodec,
@@ -76,11 +74,11 @@ trait ServiceWorker[
       optOutMock: Option[Out]
   ): RunnerOutput =
     for {
-      qParams <- queryParams(inputObject)
       uri <- apiUri(inputObject)
+      qParams <- queryParams(inputObject)
       body <- mapBodyInput(inputObject)
-      optWithServiceMock <- withServiceMock(optOutMock, uri, body)
-      output <- handleMocking(optWithServiceMock, uri, body).getOrElse(
+      optWithServiceMock <- withServiceMock(optOutMock, uri, qParams, body)
+      output <- handleMocking(optWithServiceMock, uri, qParams, body).getOrElse(
         sendRequest(requestMethod(uri, qParams), body)
           .flatMap { case (body, headers) => mapBodyOutput(body, headers) }
       )
@@ -91,6 +89,7 @@ trait ServiceWorker[
   private def withServiceMock(
       optOutMock: Option[Out],
       apiUri: Uri,
+      queryParams: Seq[(String, Seq[String])],
       requestBody: Option[InB]
   ): HelperContext[Either[CamundalaWorkerError, Option[Out]]] =
     val outputServiceMock =
@@ -98,10 +97,9 @@ trait ServiceWorker[
     outputServiceMock
       .flatMap {
         case Some(json) =>
-          println("MOCK: $mock")
           for {
-            mockedResponse <- decodeMock[MockedHttpResponse[OutS, OutE]](json)
-            out <- handleServiceMock(mockedResponse, apiUri, requestBody)
+            mockedResponse <- decodeMock[MockedServiceResponse[OutS]](json)
+            out <- handleServiceMock(mockedResponse, apiUri, queryParams, requestBody)
           } yield out
         case None => Right(optOutMock)
       }
@@ -110,15 +108,13 @@ trait ServiceWorker[
   private def handleMocking(
       optOutMock: Option[Out],
       apiUri: Uri,
+      queryParams: Seq[(String, Seq[String])],
       requestBody: Option[InB]
   ): Option[Either[CamundalaWorkerError, Option[Out]]] =
     optOutMock
       .map { mock =>
-        println(s"""
-           |Mocked Service: ${niceClassName(this.getClass).head}
-           | - apiUri: ${URLDecoder
-          .decode(apiUri.toString, Charset.defaultCharset())}
-           | - requestBody: ${requestBody.getOrElse("No Body")}
+        println(s"""Mocked Service: ${niceClassName(this.getClass)}
+           |${requestMsg(apiUri, queryParams, requestBody)}
            | - mockedResponse: ${mock.asJson}
            |""".stripMargin)
         mock
@@ -127,15 +123,16 @@ trait ServiceWorker[
   end handleMocking
 
   private def handleServiceMock(
-      mockedResponse: Option[MockedHttpResponse[OutS, OutE]],
+      mockedResponse: Option[MockedServiceResponse[OutS]],
       apiUri: Uri,
+      queryParams: Seq[(String, Seq[String])],
       requestBody: Option[InB]
   ): HelperContext[Either[CamundalaWorkerError, Option[Out]]] =
     mockedResponse
       .map {
-        case MockedHttpResponse(_, Right(body), headers) =>
+        case MockedServiceResponse(_, Right(body), headers) =>
           mapBodyOutput(body, headers)
-        case MockedHttpResponse(status, Left(body), _) =>
+        case MockedServiceResponse(status, Left(body), _) =>
           Left(
             ServiceRequestError(
               status,
@@ -143,6 +140,7 @@ trait ServiceWorker[
                 status,
                 s"Mocked Error: ${body.asJson}",
                 apiUri,
+                queryParams,
                 requestBody
               )
             )

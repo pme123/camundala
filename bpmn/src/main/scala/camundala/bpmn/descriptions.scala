@@ -3,15 +3,22 @@ package bpmn
 
 import domain.*
 
-trait ProcessDescr[
-  In <: Product: CirceCodec,
-  Out <: Product: CirceCodec
-]
-
-trait ServiceDescr[
-  In <: Product: CirceCodec,
-  Out <: Product: CirceCodec,
-  InB: CirceCodec, // body of service
-  OutS: CirceCodec, // output of service
-  OutE: CirceCodec // error of service
-] extends ProcessDescr[In, Out]
+// Experiments with Descriptions
+case class ProcessInDescr[In <: Product: CirceCodec, Out <: Product: CirceCodec](
+    @description(handledErrorsDescr)
+    handledErrors: Option[String] = Some("400,404"),
+    @description(regexHandledErrorsDescr)
+    regexHandledErrors: Option[Seq[String]] = None,
+    outputMock: Option[Out] = None,
+    @description(servicesMockedDescr)
+    servicesMocked: Boolean = false
+)
+case class ServiceInDescr[
+    InS <: Product: CirceCodec,
+    OutS <: Product: CirceCodec
+](
+    // @description(serviceNameDescr(serviceName))
+    serviceName: String,
+    defaultServiceMock: OutS,
+    outputServiceMock: Option[MockedServiceResponse[OutS]]
+)

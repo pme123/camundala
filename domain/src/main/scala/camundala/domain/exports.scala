@@ -97,7 +97,7 @@ trait MockServiceSupport[
     OutS, // the body of the HttpResponse
     OutE // the body of the HttpResponse in case of Error
 ] extends MockSupport[Out]:
-  def outputServiceMock: Option[MockedHttpResponse[OutS, OutE]]
+  def outputServiceMock: Option[MockedServiceResponse[OutS]]
 
 // descriptions
 def serviceNameDescr(serviceName: String) =
@@ -146,3 +146,9 @@ val testModeDescr =
   "This flag indicades that this is a test - in the process it can behave accordingly."
 val handledErrorsDescr =
   "A comma separated list of HTTP-Status-Codes, that are modelled in the BPMN as Business-Exceptions - see Outputs. z.B: `404,500`"
+val regexHandledErrorsDescr =
+  """If you specified _handledErrors_, you can specify Regexes that all must match the error messages.
+Otherwise the error is thrown.
+
+Example: `['java.sql.SQLException', '"errorNr":20000']`
+"""

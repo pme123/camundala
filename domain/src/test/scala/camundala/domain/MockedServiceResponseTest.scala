@@ -6,7 +6,7 @@ import org.junit.Assert.*
 import io.circe.syntax.*
 import io.circe.*
 
-class MockedHttpResponseTest:
+class MockedServiceResponseTest:
  
   lazy val myMockResp =  TestWithMock()
 
@@ -16,9 +16,8 @@ class MockedHttpResponseTest:
     assertEquals(myMockResp, json.as[TestWithMock].getOrElse(fail()))
 
   lazy val myMockErrorResp =  TestWithMock(
-    MockedHttpResponse.error(444, Error()),
-    MockedHttpResponse.error(444),
-    MockedHttpResponse.error(444, Seq(Error())),
+    MockedServiceResponse.error(444, "ERROR"),
+    MockedServiceResponse.error(444),
   )
 
   @Test
@@ -26,17 +25,15 @@ class MockedHttpResponseTest:
     val json = myMockErrorResp.asJson
     assertEquals(myMockErrorResp, json.as[TestWithMock].getOrElse(fail()))
 
-end MockedHttpResponseTest
+end MockedServiceResponseTest
 
 lazy val seqSuccess = Seq(Success())
 type OutS2 = Seq[Success]
-type OutE2 = Seq[Error]
 
 case class TestWithMock(
-  myMock: MockedHttpResponse[Success, Error] = MockedHttpResponse.success(122, Success()),
-  noOutputMock: MockedHttpResponse[NoOutput, NoOutput] = MockedHttpResponse.success(122, NoOutput()),
-  @description(outputServiceMockDescr(seqSuccess))
-  seqOutputMock: MockedHttpResponse[OutS2, OutE2] = MockedHttpResponse.success200[OutS2, OutE2](seqSuccess),
+                         myMock: MockedServiceResponse[Success] = MockedServiceResponse.success(122, Success()),
+                         @description(outputServiceMockDescr(seqSuccess))
+                         noOutputMock: MockedServiceResponse[NoOutput] = MockedServiceResponse.success(122, NoOutput()),
 )
 
 

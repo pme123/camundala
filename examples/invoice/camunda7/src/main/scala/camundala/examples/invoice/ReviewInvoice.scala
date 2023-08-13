@@ -3,7 +3,7 @@ package camundala.examples.invoice
 import camundala.bpmn.*
 import camundala.domain.*
 
-object ReviewInvoice extends BpmnDsl:
+object ReviewInvoice extends BpmnDsl, ProcessDescr[ReviewInvoice.In, ReviewInvoice.Out]:
   val processName = "example-invoice-c7-review"
 
   @description("Same Input as _InvoiceReceipt_, only different Mocking")

@@ -26,7 +26,7 @@ trait Mocker[Out <: Product: CirceCodec] extends CamundaHelper:
         handleMock(outputMock)
       case (true, _)
           if isService => // if your process is a Service check if it is mocked
-        println(s"${getClass.getSimpleName}: Mocked - isService is set")
+        println(s"Mocked - isService is set")
         getDefaultMock
       case (_, None) =>
         Right(None)
@@ -36,7 +36,7 @@ trait Mocker[Out <: Product: CirceCodec] extends CamundaHelper:
   private def handleMock(
       outputMock: Any
   ): Either[MockerError | MockedOutput, Option[Out]] =
-    println(s"${getClass.getSimpleName}: Mocked - outputMock is set")
+    println("Mocked - outputMock is set")
     parsedMock(outputMock)
       .flatMap(decodeMock)
 
