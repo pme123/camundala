@@ -95,7 +95,6 @@ trait MockSupport[Out <: Product]:
 trait MockServiceSupport[
     Out <: Product,
     OutS, // the body of the HttpResponse
-    OutE // the body of the HttpResponse in case of Error
 ] extends MockSupport[Out]:
   def outputServiceMock: Option[MockedServiceResponse[OutS]]
 

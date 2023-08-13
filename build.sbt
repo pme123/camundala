@@ -100,7 +100,7 @@ lazy val camunda = project
 lazy val camunda7Worker = project
   .in(file("./camunda7/worker"))
   .configure(publicationSettings)
-  .settings(projectSettings("camunda-camunda7-worker"))
+  .settings(projectSettings("camunda7-worker"))
   .settings(
     libraryDependencies ++= Seq(
       sttpDependency,
