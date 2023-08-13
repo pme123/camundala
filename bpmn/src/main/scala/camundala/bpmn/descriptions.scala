@@ -10,5 +10,8 @@ trait ProcessDescr[
 
 trait ServiceDescr[
   In <: Product: CirceCodec,
-  Out <: Product: CirceCodec
+  Out <: Product: CirceCodec,
+  InB: CirceCodec, // body of service
+  OutS: CirceCodec, // output of service
+  OutE: CirceCodec // error of service
 ] extends ProcessDescr[In, Out]

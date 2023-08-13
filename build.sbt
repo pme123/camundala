@@ -26,6 +26,7 @@ lazy val root = project
     api,
     dmn,
     camunda,
+    camunda7Worker,
     camunda8,
     simulation,
     helper,
@@ -45,7 +46,7 @@ def projectSettings(projName: String) = Seq(
   version := projectVersion,
   scalacOptions ++= Seq(
     "-Xmax-inlines:50", // is declared as erased, but is in fact used
-    "-Wunused:imports",
+    "-Wunused:imports"
   )
 )
 
@@ -55,8 +56,7 @@ lazy val domain = project
   .settings(projectSettings("domain"))
   .settings(
     libraryDependencies ++= (tapirDependencies :+
-            "com.novocode" % "junit-interface" % "0.11" % Test)
-
+      "com.novocode" % "junit-interface" % "0.11" % Test)
   )
 
 val osLibDependency = "com.lihaoyi" %% "os-lib" % "0.9.1"
@@ -96,6 +96,18 @@ lazy val camunda = project
     )
   )
   .dependsOn(bpmn)
+
+lazy val camunda7Worker = project
+  .in(file("./camunda7/worker"))
+  .configure(publicationSettings)
+  .settings(projectSettings("camunda-camunda7-worker"))
+  .settings(
+    libraryDependencies ++= Seq(
+      sttpDependency,
+      "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion
+    )
+  )
+  .dependsOn(api)
 
 lazy val camunda8 = project
   .in(file("./camunda8"))
