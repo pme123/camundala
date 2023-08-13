@@ -12,7 +12,6 @@ trait ServiceWorker[
     Out <: Product: CirceCodec,
     InB: Encoder, // body of service
     OutS: Decoder, // output of service
-    OutE: CirceCodec // error of service
 ] extends CamundalaWorker[In, Out]://,      RestApiClient[InB, OutS]:
 
   type ApiUriType = HelperContext[Either[CamundalaWorkerError, Uri]]
