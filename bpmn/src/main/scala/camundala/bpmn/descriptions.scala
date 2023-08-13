@@ -1,5 +1,14 @@
-package camundala.bpmn
+package camundala
+package bpmn
 
-object descriptions {
+import domain.*
 
-}
+trait ProcessDescr[
+  In <: Product: CirceCodec,
+  Out <: Product: CirceCodec
+]
+
+trait ServiceDescr[
+  In <: Product: CirceCodec,
+  Out <: Product: CirceCodec
+] extends ProcessDescr[In, Out]
