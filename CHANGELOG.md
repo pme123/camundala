@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.18.1 - 2023-08-14
+### Changed 
+- Changed Errors to Json. - see [Commit](https://github.com/pme123/camundala/commit/d5797d1465f3e871cba83de5172bf14b33b0a9b6)
+
 ## 1.18.0 - 2023-08-14
 ### Changed 
 - Fixing Compile error. - see [Commit](https://github.com/pme123/camundala/commit/3661b7a19a66d5bf7ff127117cffd66430cf18ff)
