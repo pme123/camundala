@@ -15,6 +15,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.18.0 - 2023-08-14
+### Changed 
+- Fixing Compile error. - see [Commit](https://github.com/pme123/camundala/commit/3661b7a19a66d5bf7ff127117cffd66430cf18ff)
+- Description Experiments / MockedServiceResponse. - see [Commit](https://github.com/pme123/camundala/commit/44d9d37bce5b8fd75e827cccca4d68e2b9f194df)
+- Description Experiments / MockedServiceResponse. - see [Commit](https://github.com/pme123/camundala/commit/d01c2003b140ffa902840fae63b22f158f9f197f)
+- Added Camunda7 External Worker Support. - see [Commit](https://github.com/pme123/camundala/commit/8ee83d0a53b36a2581ded07f94796ac29c3cde21)
+
 ## 1.17.0 - 2023-08-12
 ### Changed 
 - Working MockedHttpResponse implementation - see [Commit](https://github.com/pme123/camundala/commit/74b4e9d63e3a743038cc0cb2ff65519f3217ebe0)
