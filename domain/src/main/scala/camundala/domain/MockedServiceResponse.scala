@@ -9,7 +9,7 @@ case class MockedServiceResponse[
     OutS // output of service
 ](
     respStatus: Int,
-    respBody: Either[String, OutS],
+    respBody: Either[Option[Json], OutS],
     respHeaders: Seq[Seq[String]] = Seq.empty
 ):
   def withHeader(
@@ -40,8 +40,13 @@ object MockedServiceResponse:
 
   def error[
       OutS
-  ](status: Int, body: String = "No Output"): MockedServiceResponse[OutS] =
-    MockedServiceResponse(status, Left(body))
+  ](status: Int, body: Json): MockedServiceResponse[OutS] =
+    MockedServiceResponse(status, Left(Some(body)))
+
+  def error[
+    OutS
+  ](status: Int): MockedServiceResponse[OutS] =
+    MockedServiceResponse(status, Left(None))
 
   implicit def tapirSchema[OutS: Schema]
       : Schema[MockedServiceResponse[OutS]] =
@@ -55,7 +60,7 @@ object MockedServiceResponse:
         "respBody" -> (
           response.respBody match
             case Right(value) => value.asJson
-            case Left(err) => Json.fromString(err.toString)
+            case Left(err) => err.getOrElse(Json.Null)
         ),
         "respHeaders" -> response.respHeaders
           .map(_.map(Json.fromString))
@@ -70,7 +75,7 @@ object MockedServiceResponse:
         respBody <-
           if (respStatus < 300)
             cursor.downField("respBody").as[OutS].map(Right(_))
-          else cursor.downField("respBody").as[String].map(Left(_))
+          else cursor.downField("respBody").as[Option[Json]].map(Left(_))
         respHeaders <- cursor.downField("respHeaders").as[Seq[Seq[String]]]
       } yield MockedServiceResponse(respStatus, respBody, respHeaders)
     }

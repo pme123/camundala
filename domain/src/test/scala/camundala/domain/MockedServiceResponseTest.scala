@@ -16,7 +16,7 @@ class MockedServiceResponseTest:
     assertEquals(myMockResp, json.as[TestWithMock].getOrElse(fail()))
 
   lazy val myMockErrorResp =  TestWithMock(
-    MockedServiceResponse.error(444, "ERROR"),
+    MockedServiceResponse.error(444, Json.fromString("ERROR")),
     MockedServiceResponse.error(444),
   )
 
