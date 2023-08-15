@@ -112,6 +112,7 @@ enum ErrorCodes:
   case `mapping-error`
   case `service-auth-error`
   case `service-bad-body-error`
+  case `service-unexpected-error`
 end ErrorCodes
 
 enum InputParams:
@@ -191,7 +192,10 @@ object CamundalaWorkerError:
       errorMsg: String,
       errorCode: ErrorCodes = ErrorCodes.`service-bad-body-error`
   ) extends ServiceError
-
+  case class ServiceUnexpectedError(
+      errorMsg: String,
+      errorCode: ErrorCodes = ErrorCodes.`service-unexpected-error`
+  ) extends ServiceError
   case class ServiceRequestError(
       errorCode: Int,
       errorMsg: String
