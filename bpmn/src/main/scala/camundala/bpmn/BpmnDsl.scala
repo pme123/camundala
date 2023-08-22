@@ -21,6 +21,22 @@ trait BpmnDsl:
       InOutDescr(id, in, out, descr.value)
     )
 
+  def serviceProcess[
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema,
+      ServiceOut: Encoder: Decoder
+  ](
+      serviceName: String,
+      in: In = NoInput(),
+      out: Out = NoOutput(),
+      defaultServiceMock: ServiceOut,
+      descr: Optable[String] = None
+  ): ServiceProcess[In, Out, ServiceOut] =
+    ServiceProcess(
+      InOutDescr(serviceName, in, out, descr.value),
+      defaultServiceMock
+    )
+
   // Use result strategy, like _singleEntry_, _collectEntries_, _singleResult_, _resultList_
   private def dmn[
       In <: Product: Encoder: Decoder: Schema,
@@ -189,3 +205,5 @@ trait BpmnDsl:
   private def msgNameDescr(messageName: String, descr: Optable[String]) =
     val msgNameDescr = s"- _messageName_: `$messageName`"
     Some(descr.value.map(_ + s"\n$msgNameDescr").getOrElse(msgNameDescr))
+
+end BpmnDsl

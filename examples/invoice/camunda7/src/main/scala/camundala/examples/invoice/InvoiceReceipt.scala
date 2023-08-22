@@ -135,3 +135,40 @@ object InvoiceReceipt extends BpmnDsl:
   end ApproverGroup
 
 end InvoiceReceipt
+
+// example for service API description
+object ArchiveInvoice extends BpmnDsl:
+
+  val serviceName = "ArchiveInvoiceService"
+  type InB = NoInput
+  type ServiceOut = Seq[String]
+  lazy val serviceMock: ServiceOut = Seq("someIdJustForDemo")
+
+  case class  In(
+                  shouldFail: Boolean = true,
+                )
+  object In:
+    given Schema[In] = Schema.derived
+    given CirceCodec[In] = deriveCodec
+  end In
+
+  case class Out(
+                  archived: Boolean = true,
+                )
+  object Out:
+    given Schema[Out] = Schema.derived
+    given CirceCodec[Out] = deriveCodec
+  end Out
+
+ // given CirceCodec[Seq[String]] = deriveCodec
+
+  lazy val example: ServiceProcess[In, Out, ServiceOut] =
+    serviceProcess(
+      serviceName,
+      descr = "Archives the Receipt.",
+      in = In(),
+      out = Out() ,
+      defaultServiceMock = serviceMock
+    )
+
+end ArchiveInvoice

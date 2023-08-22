@@ -2,6 +2,7 @@ package camundala
 package bpmn
 
 import camundala.domain.*
+import io.circe.syntax.*
 
 import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 import scala.language.implicitConversions
@@ -34,7 +35,7 @@ trait InOut[
   lazy val descr: Option[String] = inOutDescr.descr
   lazy val in: In = inOutDescr.in
   lazy val out: Out = inOutDescr.out
-  lazy val camundaInMap: Map[String, CamundaVariable] =
+  def camundaInMap: Map[String, CamundaVariable] =
     CamundaVariable.toCamunda(in)
   lazy val camundaOutMap: Map[String, CamundaVariable] =
     CamundaVariable.toCamunda(out)
@@ -72,15 +73,31 @@ trait ProcessElement extends Product:
 
 trait ProcessNode extends ProcessElement
 
-// def endpoint: api.ApiEndpoint[In, Out, T]
+trait OutputMock[Out <: Product: Encoder: Decoder: Schema]:
+  def outputMock: Option[Out]
+trait ServicesMocked:
+  def servicesMocked: Boolean
+
+sealed trait ProcessOrService[
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema,
+    T <: InOut[In, Out, T]
+] extends InOut[In, Out, T]:
+  def processName: String
 
 case class Process[
     In <: Product: Encoder: Decoder: Schema,
     Out <: Product: Encoder: Decoder: Schema
 ](
     inOutDescr: InOutDescr[In, Out],
-    elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty
-) extends InOut[In, Out, Process[In, Out]]:
+    elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty,
+    outputMock: Option[Out] = None,
+    mockedSubprocesses: Seq[String] = Seq.empty,
+    servicesMocked: Boolean = false,
+    impersonateUserId: Option[String] = None
+) extends ProcessOrService[In, Out, Process[In, Out]],
+      OutputMock[Out],
+      ServicesMocked:
 
   lazy val processName = inOutDescr.id
 
@@ -95,7 +112,113 @@ case class Process[
       elements: (ProcessNode | InOut[?, ?, ?])*
   ): Process[In, Out] =
     this.copy(elements = elements)
+
+  def withImpersonateUserId(impersonateUserId: String): Process[In, Out] =
+    copy(impersonateUserId = Some(impersonateUserId))
+
+  def mockServices: Process[In, Out] =
+    copy(servicesMocked = true)
+
+  def mockWith(outputMock: Out): Process[In, Out] =
+    copy(outputMock = Some(outputMock))
+
+  def mockSubProcess(processName: String): Process[In, Out] =
+    copy(mockedSubprocesses = mockedSubprocesses :+ processName)
+
+  override def camundaInMap: Map[String, CamundaVariable] =
+    val mock = outputMock.toSeq.map(m =>
+      InputParams.outputMock.toString -> CamundaVariable.valueToCamunda(
+        m.asJson
+      )
+    ) :+
+      InputParams.mockedSubprocesses.toString -> CamundaVariable.valueToCamunda(
+        mockedSubprocesses.asJson
+      )
+    :+
+    InputParams.servicesMocked.toString -> CamundaVariable.valueToCamunda(
+      servicesMocked
+    )
+    super.camundaInMap ++ mock.toMap
 end Process
+
+case class ServiceProcess[
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema,
+    ServiceOut: Encoder: Decoder
+](
+    inOutDescr: InOutDescr[In, Out],
+    defaultServiceMock: ServiceOut,
+    processName: String = GenericServiceProcessName,
+    outputMock: Option[Out] = None,
+    servicesMocked: Boolean = false,
+    impersonateUserId: Option[String] = None,
+    outputServiceMock: Option[MockedServiceResponse[ServiceOut]] = None,
+    handledErrors: Seq[String] = Seq.empty,
+    regexHandledErrors: Seq[String] = Seq.empty
+) extends ProcessOrService[In, Out, ServiceProcess[In, Out, ServiceOut]],
+      OutputMock[Out]:
+
+  lazy val serviceName: String = inOutDescr.id
+
+  def withInOutDescr(
+      descr: InOutDescr[In, Out]
+  ): ServiceProcess[In, Out, ServiceOut] =
+    copy(inOutDescr = descr)
+
+  def withProcessName(
+      processName: String
+  ): ServiceProcess[In, Out, ServiceOut] =
+    copy(processName = processName)
+
+  def withImpersonateUserId(
+      impersonateUserId: String
+  ): ServiceProcess[In, Out, ServiceOut] =
+    copy(impersonateUserId = Some(impersonateUserId))
+
+  def mockWith(outputMock: Out): ServiceProcess[In, Out, ServiceOut] =
+    copy(outputMock = Some(outputMock))
+
+  def mockServices: ServiceProcess[In, Out, ServiceOut] =
+    copy(servicesMocked = true)
+
+  def mockServiceWith(
+      outputServiceMock: MockedServiceResponse[ServiceOut]
+  ): ServiceProcess[In, Out, ServiceOut] =
+    copy(outputServiceMock = Some(outputServiceMock))
+
+  def handleError(
+      errorCode: String
+  ): ServiceProcess[In, Out, ServiceOut] =
+    copy(handledErrors = handledErrors :+ errorCode)
+
+  def handleErrorWithRegex(
+      regex: String
+  ): ServiceProcess[In, Out, ServiceOut] =
+    copy(regexHandledErrors = regexHandledErrors :+ regex)
+
+  override def camundaInMap: Map[String, CamundaVariable] =
+    val serviceMock = outputServiceMock.map(m =>
+      InputParams.outputServiceMock.toString -> CamundaVariable.valueToCamunda(
+        m.asJson
+      )
+    )
+    val mock = outputMock.map(m =>
+      InputParams.outputMock.toString -> CamundaVariable.valueToCamunda(
+        m.asJson
+      )
+    )
+    super.camundaInMap ++ serviceMock.orElse(mock).toMap +
+      (InputParams.servicesMocked.toString -> CamundaVariable.valueToCamunda(
+        servicesMocked
+      )) +
+      (InputParams.handledErrors.toString -> CamundaVariable.valueToCamunda(
+        handledErrors.asJson
+      )) +
+      (InputParams.regexHandledErrors.toString -> CamundaVariable
+        .valueToCamunda(
+          regexHandledErrors.asJson
+        ))
+end ServiceProcess
 
 case class UserTask[
     In <: Product: Encoder: Decoder: Schema,

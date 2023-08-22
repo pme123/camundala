@@ -2,6 +2,7 @@ package camundala
 package camunda7.worker
 
 import domain.*
+import bpmn.*
 import CamundalaWorkerError.*
 import io.circe.syntax.*
 import sttp.client3.*

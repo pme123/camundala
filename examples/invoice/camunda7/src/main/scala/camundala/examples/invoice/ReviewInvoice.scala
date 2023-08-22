@@ -14,8 +14,6 @@ object ReviewInvoice extends BpmnDsl:
       invoiceNumber: String = "I-12345",
       @description("You can let the Archive Service fail for testing.")
       shouldFail: Option[Boolean] = None,
-      @description(outputMockDescr(ReviewInvoice.Out()))
-      outputMock: Option[Out] = None
   )
   object In:
     given Schema[In] = Schema.derived

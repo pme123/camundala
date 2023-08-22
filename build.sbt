@@ -140,7 +140,7 @@ lazy val simulation = project
       "org.scala-sbt" % "test-interface" % "1.0"
     )
   )
-  .dependsOn(api)
+  .dependsOn(bpmn)
 
 lazy val documentation = (project in file("./documentation"))
   .configure(preventPublication)
@@ -224,7 +224,7 @@ lazy val exampleInvoiceC7 = project
     //Test / parallelExecution := false,
     libraryDependencies ++= camundaDependencies
   )
-  .dependsOn(dmn, camunda, simulation)
+  .dependsOn(api, dmn, camunda, simulation)
 
 lazy val exampleInvoiceC8 = project
   .in(file("./examples/invoice/camunda8"))
@@ -268,7 +268,7 @@ lazy val exampleDemos = project
     libraryDependencies ++= camundaDependencies
     //   libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % "it",
   )
-  .dependsOn(dmn, camunda, simulation)
+  .dependsOn(api, dmn, camunda, simulation)
 
 // start company documentation example
 import laika.ast.MessageFilter

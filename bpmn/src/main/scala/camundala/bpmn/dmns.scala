@@ -87,6 +87,37 @@ case class SingleEntry[Out <: DmnValueType: Encoder: Decoder: ClassTag](
 ):
   lazy val toCamunda: CamundaVariable = CamundaVariable.valueToCamunda(result)
   val decisionResultType: DecisionResultType = DecisionResultType.singleEntry
+object SingleEntry:
+  implicit def schemaForSingleEntry[A <: DmnValueType : Encoder : Decoder](implicit
+                                                                           sa: Schema[A]
+                                                                          ): Schema[SingleEntry[A]] =
+    Schema[SingleEntry[A]](
+      SchemaType.SCoproduct(List(sa), None) { case SingleEntry(x) =>
+        Some(SchemaWithValue(sa, x))
+      },
+      for {
+        na <- sa.name
+      } yield Schema.SName("SingleEntry", List(na.show))
+    )
+
+  implicit def SingleEntryCodec[T <: DmnValueType : CirceCodec : ClassTag]
+  : CirceCodec[SingleEntry[T]] =
+    CirceCodec.from(SingleEntryDecoder, SingleEntryEncoder)
+
+  implicit def SingleEntryEncoder[T <: DmnValueType : Encoder]
+  : Encoder[SingleEntry[T]] = new Encoder[SingleEntry[T]] {
+    final def apply(sr: SingleEntry[T]): Json = sr.result.asJson
+  }
+
+  implicit def SingleEntryDecoder[T <: DmnValueType : Encoder : Decoder : ClassTag]
+  : Decoder[SingleEntry[T]] = new Decoder[SingleEntry[T]] {
+    final def apply(c: HCursor): Decoder.Result[SingleEntry[T]] =
+      for result <- c.as[T]
+        yield SingleEntry[T](result)
+
+  }
+
+end SingleEntry
 
 @description(
   "CollectEntry: Output of a DMN Table. This returns a Sequence of `DmnValueType`s."
@@ -105,6 +136,32 @@ object CollectEntries:
   ): CollectEntries[Out] =
     new CollectEntries[Out](result +: results)
 
+  implicit def schemaForCollectEntries[A <: DmnValueType : Encoder : Decoder](
+                                                                               implicit sa: Schema[A]
+                                                                             ): Schema[CollectEntries[A]] =
+    Schema[CollectEntries[A]](
+      SchemaType.SCoproduct(List(sa), None) { case CollectEntries(x) =>
+        x.headOption.map(SchemaWithValue(sa, _))
+      },
+      for {
+        na <- sa.name
+      } yield Schema.SName("CollectEntries", List(na.show))
+    )
+
+  implicit def CollectEntriesEncoder[T <: DmnValueType : Encoder : Decoder]
+  : Encoder[CollectEntries[T]] = new Encoder[CollectEntries[T]] {
+    final def apply(sr: CollectEntries[T]): Json = sr.result.asJson
+  }
+
+  implicit def CollectEntriesDecoder[T <: DmnValueType : Encoder : Decoder : Schema]
+  : Decoder[CollectEntries[T]] = new Decoder[CollectEntries[T]] {
+    final def apply(c: HCursor): Decoder.Result[CollectEntries[T]] =
+      for result <- c.as[Seq[T]]
+        yield CollectEntries[T](result)
+
+  }
+end CollectEntries
+
 @description(
   "SingleResult: Output of a DMN Table. This returns one `Product` (case class) with more than one fields of `DmnValueType`s."
 )
@@ -113,6 +170,32 @@ case class SingleResult[Out <: Product: Encoder: Decoder: Schema](result: Out):
   lazy val toCamunda: Map[String, CamundaVariable] =
     CamundaVariable.toCamunda(result)
   val decisionResultType: DecisionResultType = DecisionResultType.singleResult
+object SingleResult:
+  implicit def schemaForSingleResult[A <: Product : Encoder : Decoder](implicit
+                                                                       sa: Schema[A]
+                                                                      ): Schema[SingleResult[A]] =
+    Schema[SingleResult[A]](
+      SchemaType.SCoproduct(List(sa), None) { case SingleResult(x) =>
+        Some(SchemaWithValue(sa, x))
+      },
+      for {
+        na <- sa.name
+      } yield Schema.SName("SingleResult", List(na.show))
+    )
+
+  implicit def SingleResultEncoder[T <: Product : Encoder : Decoder : Schema]
+  : Encoder[SingleResult[T]] = new Encoder[SingleResult[T]] {
+    final def apply(sr: SingleResult[T]): Json = sr.result.asJson
+  }
+
+  implicit def SingleResultDecoder[T <: Product : Encoder : Decoder : Schema]
+  : Decoder[SingleResult[T]] = new Decoder[SingleResult[T]] {
+    final def apply(c: HCursor): Decoder.Result[SingleResult[T]] =
+      for result <- c.as[T]
+        yield SingleResult[T](result)
+
+  }
+end SingleResult
 
 @description(
   "ResultList: Output of a DMN Table. This returns a Sequence of `Product`s (case classes) with more than one fields of `DmnValueType`s"
@@ -132,105 +215,30 @@ object ResultList:
   ): ResultList[Out] =
     new ResultList[Out](result +: results)
 
-implicit def schemaForSingleEntry[A <: DmnValueType: Encoder: Decoder](implicit
-    sa: Schema[A]
-): Schema[SingleEntry[A]] =
-  Schema[SingleEntry[A]](
-    SchemaType.SCoproduct(List(sa), None) { case SingleEntry(x) =>
-      Some(SchemaWithValue(sa, x))
-    },
-    for {
-      na <- sa.name
-    } yield Schema.SName("SingleEntry", List(na.show))
-  )
+  implicit def schemaForResultList[A <: Product: Encoder: Decoder](implicit
+      sa: Schema[A]
+  ): Schema[ResultList[A]] =
+    Schema[ResultList[A]](
+      SchemaType.SCoproduct(List(sa), None) { case ResultList(x) =>
+        x.headOption.map(SchemaWithValue(sa, _))
+      },
+      for {
+        na <- sa.name
+      } yield Schema.SName("ResultList", List(na.show))
+    )
 
-implicit def SingleEntryCodec[T <: DmnValueType: CirceCodec: ClassTag]
-    : CirceCodec[SingleEntry[T]] =
-  CirceCodec.from(SingleEntryDecoder, SingleEntryEncoder)
+  implicit def ResultListEncoder[T <: Product: Encoder: Decoder: Schema]
+      : Encoder[ResultList[T]] = new Encoder[ResultList[T]] {
+    final def apply(sr: ResultList[T]): Json = sr.result.asJson
+  }
+  implicit def ResultListDecoder[T <: Product: Encoder: Decoder: Schema]
+      : Decoder[ResultList[T]] = new Decoder[ResultList[T]] {
+    final def apply(c: HCursor): Decoder.Result[ResultList[T]] =
+      for result <- c.as[Seq[T]]
+      yield ResultList[T](result)
 
-implicit def SingleEntryEncoder[T <: DmnValueType: Encoder]
-    : Encoder[SingleEntry[T]] = new Encoder[SingleEntry[T]] {
-  final def apply(sr: SingleEntry[T]): Json = sr.result.asJson
-}
-implicit def SingleEntryDecoder[T <: DmnValueType: Encoder: Decoder: ClassTag]
-    : Decoder[SingleEntry[T]] = new Decoder[SingleEntry[T]] {
-  final def apply(c: HCursor): Decoder.Result[SingleEntry[T]] =
-    for result <- c.as[T]
-    yield SingleEntry[T](result)
-
-}
-
-implicit def schemaForCollectEntries[A <: DmnValueType: Encoder: Decoder](
-    implicit sa: Schema[A]
-): Schema[CollectEntries[A]] =
-  Schema[CollectEntries[A]](
-    SchemaType.SCoproduct(List(sa), None) { case CollectEntries(x) =>
-      x.headOption.map(SchemaWithValue(sa, _))
-    },
-    for {
-      na <- sa.name
-    } yield Schema.SName("CollectEntries", List(na.show))
-  )
-
-implicit def CollectEntriesEncoder[T <: DmnValueType: Encoder: Decoder]
-    : Encoder[CollectEntries[T]] = new Encoder[CollectEntries[T]] {
-  final def apply(sr: CollectEntries[T]): Json = sr.result.asJson
-}
-implicit def CollectEntriesDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
-    : Decoder[CollectEntries[T]] = new Decoder[CollectEntries[T]] {
-  final def apply(c: HCursor): Decoder.Result[CollectEntries[T]] =
-    for result <- c.as[Seq[T]]
-    yield CollectEntries[T](result)
-
-}
-
-implicit def schemaForSingleResult[A <: Product: Encoder: Decoder](implicit
-    sa: Schema[A]
-): Schema[SingleResult[A]] =
-  Schema[SingleResult[A]](
-    SchemaType.SCoproduct(List(sa), None) { case SingleResult(x) =>
-      Some(SchemaWithValue(sa, x))
-    },
-    for {
-      na <- sa.name
-    } yield Schema.SName("SingleResult", List(na.show))
-  )
-
-implicit def SingleResultEncoder[T <: Product: Encoder: Decoder: Schema]
-    : Encoder[SingleResult[T]] = new Encoder[SingleResult[T]] {
-  final def apply(sr: SingleResult[T]): Json = sr.result.asJson
-}
-implicit def SingleResultDecoder[T <: Product: Encoder: Decoder: Schema]
-    : Decoder[SingleResult[T]] = new Decoder[SingleResult[T]] {
-  final def apply(c: HCursor): Decoder.Result[SingleResult[T]] =
-    for result <- c.as[T]
-    yield SingleResult[T](result)
-
-}
-
-implicit def schemaForResultList[A <: Product: Encoder: Decoder](implicit
-    sa: Schema[A]
-): Schema[ResultList[A]] =
-  Schema[ResultList[A]](
-    SchemaType.SCoproduct(List(sa), None) { case ResultList(x) =>
-      x.headOption.map(SchemaWithValue(sa, _))
-    },
-    for {
-      na <- sa.name
-    } yield Schema.SName("ResultList", List(na.show))
-  )
-
-implicit def ResultListEncoder[T <: Product: Encoder: Decoder: Schema]
-    : Encoder[ResultList[T]] = new Encoder[ResultList[T]] {
-  final def apply(sr: ResultList[T]): Json = sr.result.asJson
-}
-implicit def ResultListDecoder[T <: Product: Encoder: Decoder: Schema]
-    : Decoder[ResultList[T]] = new Decoder[ResultList[T]] {
-  final def apply(c: HCursor): Decoder.Result[ResultList[T]] =
-    for result <- c.as[Seq[T]]
-    yield ResultList[T](result)
-
-}
+  }
+end ResultList
 
 object DecisionDmn:
 

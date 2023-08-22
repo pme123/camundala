@@ -1,7 +1,6 @@
 package camundala.simulation
 package custom
 
-import camundala.api.*
 import camundala.bpmn.*
 import io.circe.*
 import io.circe.syntax.*

@@ -10,3 +10,6 @@
 - [Process: example-invoice-c7-review](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/example-invoice-c7-review/operation/Process:%20example-invoice-c7-review)
 - [UserTask: AssignReviewerUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/example-invoice-c7-review/operation/UserTask:%20AssignReviewerUT)
 - [UserTask: ReviewInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/example-invoice-c7-review/operation/UserTask:%20ReviewInvoiceUT)
+
+#### [Services](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Services)
+- [ServiceProcess: ArchiveInvoiceService](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Services/operation/ServiceProcess:%20ArchiveInvoiceService)

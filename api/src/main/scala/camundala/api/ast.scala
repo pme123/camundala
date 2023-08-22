@@ -70,20 +70,27 @@ sealed trait InOutApi[
   lazy val variableNamesOut: List[String] =
     inOut.out.productElementNames.toList
 
-  def apiDescription(diagramDownloadPath: Option[String], diagramNameAdjuster: Option[String => String]): String =
+  def apiDescription(
+      diagramDownloadPath: Option[String],
+      diagramNameAdjuster: Option[String => String]
+  ): String =
     s"""$descr
        |
        |- Input:  `${inOut.in.getClass.getName.replace("$", " > ")}`
-       |- Output: `${inOut.out.getClass.getName.replace("$", " > ")}`
-       |""".stripMargin
+       |- Output: `${inOut.out.getClass.getName
+      .replace("$", " > ")}`""".stripMargin
 
   protected def diagramName: Option[String] = None
 
-  protected def diagramFrame(diagramDownloadPath: String, diagramNameAdjuster: Option[String => String]): String =
+  protected def diagramFrame(
+      diagramDownloadPath: String,
+      diagramNameAdjuster: Option[String => String]
+  ): String =
     val postfix = if (typeName == "Process") "bpmn" else "dmn"
     val postfixUpper = postfix.head.toUpper + postfix.tail
     val pureDiagramName = diagramName.getOrElse(id)
-    val name = diagramNameAdjuster.map(_(pureDiagramName)).getOrElse(pureDiagramName)
+    val name =
+      diagramNameAdjuster.map(_(pureDiagramName)).getOrElse(pureDiagramName)
     val fileName = s"$name.$postfix"
     val randomPostfix = Random.nextInt(100000)
     s"""
@@ -117,14 +124,20 @@ case class ProcessApi[
   ): InOutApi[In, Out] =
     copy(apiExamples = examples)
 
-  override def apiDescription(diagramDownloadPath: Option[String], diagramNameAdjuster: Option[String => String]): String =
+  override def apiDescription(
+      diagramDownloadPath: Option[String],
+      diagramNameAdjuster: Option[String => String]
+  ): String =
     s"""${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
        |
        |${inOut.in match
       case _: GenericServiceIn => "" // no diagram if generic
-      case _ => diagramDownloadPath.map(diagramFrame(_, diagramNameAdjuster)).getOrElse("")
+      case _ =>
+        diagramDownloadPath
+          .map(diagramFrame(_, diagramNameAdjuster))
+          .getOrElse("")
     }
-       |""".stripMargin
+       |${generalVariablesDescr(inOut.out, "")}""".stripMargin
 
 object ProcessApi:
   def apply[
@@ -134,6 +147,87 @@ object ProcessApi:
     ProcessApi(name, inOut, ApiExamples(name, inOut))
 
 end ProcessApi
+
+def generalVariablesDescr[Out <: Product: Encoder](
+    out: Out,
+    serviceMock: String
+) =
+  s"""|<p/>
+      |
+      |<details>
+      |<summary>
+      |<b><i>Mocking Examples</i></b>
+      |</summary>
+      |
+      |<p>
+      |
+      |**outputMock**: 
+      |
+      |```json
+      |...
+      |"outputMock": ${out.asJson},
+      |...
+      |```
+      |$serviceMock
+      |</p>
+      |</details>
+      |</p>
+      """.stripMargin
+end generalVariablesDescr
+
+case class ServiceProcessApi[
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema: ClassTag,
+    ServiceOut: Encoder: Decoder: Schema
+](
+    name: String,
+    inOut: ServiceProcess[In, Out, ServiceOut],
+    apiExamples: ApiExamples[In, Out]
+) extends InOutApi[In, Out]:
+
+  def withExamples(
+      examples: ApiExamples[In, Out]
+  ): InOutApi[In, Out] =
+    copy(apiExamples = examples)
+
+  override def apiDescription(
+      diagramDownloadPath: Option[String],
+      diagramNameAdjuster: Option[String => String]
+  ): String =
+    s"""
+       |
+       |${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
+       |- ServiceOut:  `${inOut.defaultServiceMock match
+      case seq: Seq[?] =>
+        s"Seq[${seq.head.getClass.getName.replace("$", " > ")}]"
+      case other => other.getClass.getName.replace("$", " > ")
+    }`
+       |${generalVariablesDescr(
+      inOut.out,
+      s"""
+       |**outputServiceMock**: 
+       |```json
+       |...
+       |"outputServiceMock": ${MockedServiceResponse
+           .success200(inOut.defaultServiceMock)
+           .asJson},
+       |...
+       |```"""
+    )}
+    """.stripMargin
+
+object ServiceProcessApi:
+  def apply[
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema: ClassTag,
+      ServiceOut: Encoder: Decoder: Schema
+  ](
+      name: String,
+      inOut: ServiceProcess[In, Out, ServiceOut]
+  ): ServiceProcessApi[In, Out, ServiceOut] =
+    ServiceProcessApi(name, inOut, ApiExamples(name, inOut))
+
+end ServiceProcessApi
 
 case class DecisionDmnApi[
     In <: Product: Encoder: Decoder: Schema,
@@ -153,10 +247,15 @@ case class DecisionDmnApi[
   def toActivityApi: ActivityApi[In, Out] =
     ActivityApi(name, inOut)
 
-  override def apiDescription(diagramDownloadPath: Option[String], diagramNameAdjuster: Option[String => String]): String =
+  override def apiDescription(
+      diagramDownloadPath: Option[String],
+      diagramNameAdjuster: Option[String => String]
+  ): String =
     s"""${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
        |
-       |${diagramDownloadPath.map(diagramFrame(_, diagramNameAdjuster)).getOrElse("")}
+       |${diagramDownloadPath
+      .map(diagramFrame(_, diagramNameAdjuster))
+      .getOrElse("")}
        |""".stripMargin
 
 object DecisionDmnApi:

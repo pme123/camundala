@@ -2,53 +2,46 @@ openapi: 3.0.3
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: |2+
-
-    **This is for Postman - to have example requests. Be aware the Output is not provided!**
-
-
-
-    Created at 09/07/2023, 13:44
-
-    ****
-
-    > This is the invoice demo application which is shipped with the full distributions.
-
-    See the original [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).
-
-    I bundled it here! Just run `InvoiceServletProcessApplication`.
-
-    This based on this Project: https://github.com/pme123/spring-boot-datakurre-plugins
-
-
-    # Changelog
-
-    <details>
-    <summary>CHANGELOG.md</summary>
-    <p>
-
-
-    All notable changes to this project will be documented in this file.
-
-    * Types of Changes (L3):
-      * Added: new features
-      * Changed: changes in existing functionality
-      * Deprecated: soon-to-be-removed features
-      * Removed: now removed features
-      * Fixed: any bug fixes
-      * Security: in case of vulnerabilities
-
-
-    The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-    and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-    ### Unreleased
-    Initial Version
-
-    </p>
-    </details>
-
-
+  summary: "\n**This is for Postman - to have example requests. Be aware the Output\
+    \ is not provided!**\n\n\n\nCreated at 21/08/2023, 16:33\n\n****\n\n> This is\
+    \ the invoice demo application which is shipped with the full distributions.\n\
+    \nSee the original [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).\n\
+    \nI bundled it here! Just run `InvoiceServletProcessApplication`.\n\nThis based\
+    \ on this Project: https://github.com/pme123/spring-boot-datakurre-plugins\n\n\
+    \n<details>\n<summary>**CHANGELOG.md**</summary>\n<p>\n\n\nAll notable changes\
+    \ to this project will be documented in this file.\n\n* Types of Changes (L3):\n\
+    \  * Added: new features\n  * Changed: changes in existing functionality\n  *\
+    \ Deprecated: soon-to-be-removed features\n  * Removed: now removed features\n\
+    \  * Fixed: any bug fixes\n  * Security: in case of vulnerabilities\n\n\nThe format\
+    \ is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),\nand this\
+    \ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).\n\
+    \n### Unreleased\nInitial Version\n\n</p>\n</details>\n\n\n<p/>\n<details>\n<summary>\n\
+    <b><i>General Variables</i></b>\n</summary>\n\n<p>\n\n### Processes and ServiceProcesses\n\
+    \n**outputMock**:\n\nMock this Service (`Out`) with:\n\n- DSL:\n```scala\nprocess(..)\
+    \ // or serviceProcess(..)\n  .mockWith(outputMock)\n```\n\n- Json (you find examples\
+    \ in each process):\n```json\n...\n\"outputMock\": {..},\n...\n```\n\n**servicesMocked**:\n\
+    \nMock the ServiceProcesses (Workers only) with their default Mock:\n\n- DSL:\n\
+    ```scala\nprocess(..) // or serviceProcess(..)\n  .mockServices\n```\n\n- Json:\n\
+    ```json\n...\n\"servicesMocked\": true,\n...\n```\n\n**impersonateUserId**:\n\n\
+    User-ID of a User that should be taken to authenticate to the services.\nThis\
+    \ must be supported by your implementation. *Be caution: this may be a security\
+    \ issue!*.\nIt is helpful if you have Tokens that expire, but long running Processes.\n\
+    \n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withImpersonateUserId(impersonateUserId)\n\
+    ```\n\n- Json:\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
+    \n### ServiceProcesses\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`).\n\
+    \n- DSL:\n```scala\nserviceProcess(..)\n  .mockServiceWith(MockedServiceResponse\n\
+    \     .success200(inOut.defaultServiceMock))\n```\n\n- Json (you find examples\
+    \ in each process):\n```json\n...\n\"outputServiceMock\": {\n  \"respStatus\"\
+    \ : 200,\n  \"respBody\" : \"Example String Body\",\n  \"respHeaders\" : [\n \
+    \ ]\n},\n...\n```\n\n**handledErrors**:\n\nA list of error codes that are handled\
+    \ (`BpmnError`)\n\n- DSL:\n```scala\nserviceProcess(..)\n  .handleError(\"400\"\
+    )\n  .handleError(\"404\")\n```\n\n- Json\n```json\n...\n\"handledErrors\": Seq[String]\
+    \ = [\"400\", \"404\"],\n...\n```\n\n**regexHandledErrors**:\n\nHandling Errors\
+    \ with the messages that match a list of Regex expressions\n\n- DSL:\n```scala\n\
+    serviceProcess(..)\n  .handleErrorWithRegex(\"SQL exception\")\n  .handleErrorWithRegex(\"\
+    \\\"errorNr\\\":\\\"20000\\\"\")\n```\n\n- Json:\n```json\n...\n\"regexHandledErrors\"\
+    : [\"SQL exception\", \"\\\"errorNr\\\":\\\"20000\\\"\"]\n...\n```\n\n</p>\n</details>\n\
+    <p/>\n        \n\n"
 servers:
 - url: http://localhost:8034/engine-rest
   description: Local Developer Server
@@ -637,6 +630,34 @@ paths:
                     clarified:
                       value: false
                       type: Boolean
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /process-definition/key/ArchiveInvoiceService/start:
+    post:
+      tags:
+      - Services
+      summary: 'ArchiveInvoiceService: StartProcess'
+      description: |
+        Archives the Receipt.
+
+        See API Doc: [ArchiveInvoiceService](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/ServiceProcess:%20ArchiveInvoiceService)
+      operationId: postProcess-definitionKeyArchiveinvoiceserviceStart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              ArchiveInvoiceService:
+                value:
+                  variables:
+                    shouldFail:
+                      value: true
+                      type: Boolean
+                  businessKey: ArchiveInvoiceService
                   withVariablesInReturn: true
         required: true
       responses:

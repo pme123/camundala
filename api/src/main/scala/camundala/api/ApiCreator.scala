@@ -1,8 +1,11 @@
 package camundala.api
 
+import camundala.domain.MockedServiceResponse
+import io.circe.syntax.*
 import sttp.apispec.openapi.*
 import sttp.apispec.openapi.circe.yaml.*
 import sttp.tapir.docs.openapi.{OpenAPIDocsInterpreter, OpenAPIDocsOptions}
+
 import java.text.SimpleDateFormat
 import java.util.Date
 import scala.util.matching.Regex
@@ -47,10 +50,8 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
     val changeLogFile = basePath / "CHANGELOG.md"
     if (changeLogFile.toIO.exists())
       s"""
-         |# Changelog
-         |
          |<details>
-         |<summary>CHANGELOG.md</summary>
+         |<summary>**CHANGELOG.md**</summary>
          |<p>
          |
          |${os.read
@@ -65,7 +66,134 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
          |""".stripMargin
     else
       ""
+  end createChangeLog
 
+  protected def createGeneralVariables(): String =
+    s"""|<p/>
+        |<details>
+        |<summary>
+        |<b><i>General Variables</i></b>
+        |</summary>
+        |
+        |<p>
+        |
+        |### Processes and ServiceProcesses
+        |
+        |**outputMock**:
+        |
+        |Mock this Service (`Out`) with:
+        |
+        |- DSL:
+        |```scala
+        |process(..) // or serviceProcess(..)
+        |  .mockWith(outputMock)
+        |```
+        |
+        |- Json (you find examples in each process):
+        |```json
+        |...
+        |"outputMock": {..},
+        |...
+        |```
+        |
+        |**servicesMocked**:
+        |
+        |Mock the ServiceProcesses (Workers only) with their default Mock:
+        |
+        |- DSL:
+        |```scala
+        |process(..) // or serviceProcess(..)
+        |  .mockServices
+        |```
+        |
+        |- Json:
+        |```json
+        |...
+        |"servicesMocked": true,
+        |...
+        |```
+        |
+        |**impersonateUserId**:
+        |
+        |User-ID of a User that should be taken to authenticate to the services.
+        |This must be supported by your implementation. *Be caution: this may be a security issue!*.
+        |It is helpful if you have Tokens that expire, but long running Processes.
+        |
+        |- DSL:
+        |```scala
+        |process(..) // or serviceProcess(..)
+        |  .withImpersonateUserId(impersonateUserId)
+        |```
+        |
+        |- Json:
+        |```json
+        |...
+        |"impersonateUserId": "myUserName",
+        |...
+        |```
+        |
+        |### ServiceProcesses
+        |**outputServiceMock**:
+        |
+        |Mock the Inner-Service (`MockedServiceResponse[ServiceOut]`).
+        |
+        |- DSL:
+        |```scala
+        |serviceProcess(..)
+        |  .mockServiceWith(MockedServiceResponse
+        |     .success200(inOut.defaultServiceMock))
+        |```
+        |
+        |- Json (you find examples in each process):
+        |```json
+        |...
+        |"outputServiceMock": ${MockedServiceResponse
+      .success200("Example String Body")
+      .asJson},
+        |...
+        |```
+        |
+        |**handledErrors**:
+        |
+        |A list of error codes that are handled (`BpmnError`)
+        |
+        |- DSL:
+        |```scala
+        |serviceProcess(..)
+        |  .handleError("400")
+        |  .handleError("404")
+        |```
+        |
+        |- Json
+        |```json
+        |...
+        |"handledErrors": Seq[String] = ["400", "404"],
+        |...
+        |```
+        |
+        |**regexHandledErrors**:
+        |
+        |Handling Errors with the messages that match a list of Regex expressions
+        |
+        |- DSL:
+        |```scala
+        |serviceProcess(..)
+        |  .handleErrorWithRegex("SQL exception")
+        |  .handleErrorWithRegex("\\"errorNr\\":\\"20000\\"")
+        |```
+        |
+        |- Json:
+        |```json
+        |...
+        |"regexHandledErrors": ["SQL exception", "\\"errorNr\\":\\"20000\\""]
+        |...
+        |```
+        |
+        |</p>
+        |</details>
+        |<p/>
+        """.stripMargin
+  end createGeneralVariables
   protected def replaceJira(
       line: String,
       jiraUrls: Map[String, String]
@@ -100,6 +228,8 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
        |${createReadme()}
        |
        |${createChangeLog()}
+       |
+       |${createGeneralVariables()}
        |""".stripMargin
   )
   protected def postmanDescription: Option[String] =
@@ -109,7 +239,11 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
                                 |$descr
                                 |""".stripMargin)
 
-  private def writeOpenApi(path: os.Path, api: OpenAPI, docPath: os.Path): Unit =
+  private def writeOpenApi(
+      path: os.Path,
+      api: OpenAPI,
+      docPath: os.Path
+  ): Unit =
     if (os.exists(path))
       os.remove(path)
     val yaml = api.toYaml

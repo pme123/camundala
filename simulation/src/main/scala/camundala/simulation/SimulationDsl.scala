@@ -22,6 +22,9 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
   def scenario(scen: ProcessScenario): SScenario =
     scenario(scen)()
 
+  def scenario(scen: ServiceProcessScenario): SScenario =
+    scen
+
   def scenario(scen: DmnScenario): SScenario =
     scen
 
@@ -29,49 +32,54 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     scen.withSteps(body.toList)
 
   inline def badScenario(
-      inline process: Process[_, _],
+      inline process: Process[?, ?],
       status: Int,
       errorMsg: Optable[String] = None
   ): BadScenario =
     BadScenario(nameOfVariable(process), process, status, errorMsg.value)
 
   inline def incidentScenario(
-      inline process: Process[_, _],
+      inline process: Process[?, ?],
       incidentMsg: String
   )(body: SStep*): IncidentScenario =
     IncidentScenario(nameOfVariable(process), process, body.toList, incidentMsg)
 
   inline def incidentScenario(
-      inline process: Process[_, _],
+      inline process: Process[?, ?],
       incidentMsg: String
   ): IncidentScenario =
     incidentScenario(process, incidentMsg)()
 
-  inline def subProcess(inline process: Process[_, _])(
+  inline def subProcess(inline process: Process[?, ?])(
       body: SStep*
   ): SSubProcess =
     SSubProcess(nameOfVariable(process), process, body.toList)
 
   implicit inline def toScenario(
-      inline process: Process[_, _]
+      inline process: Process[?, ?]
   ): ProcessScenario =
     ProcessScenario(nameOfVariable(process), process)
 
   implicit inline def toScenario(
-      inline decisionDmn: DecisionDmn[_, _]
+      inline process: ServiceProcess[?, ?, ?]
+  ): ServiceProcessScenario =
+    ServiceProcessScenario(nameOfVariable(process), process)
+
+  implicit inline def toScenario(
+      inline decisionDmn: DecisionDmn[?, ?]
   ): DmnScenario =
     DmnScenario(nameOfVariable(decisionDmn), decisionDmn)
 
-  implicit inline def toStep(inline inOut: UserTask[_, _]): SUserTask =
+  implicit inline def toStep(inline inOut: UserTask[?, ?]): SUserTask =
     SUserTask(nameOfVariable(inOut), inOut)
-  implicit inline def toStep(inline inOut: MessageEvent[_]): SMessageEvent =
+  implicit inline def toStep(inline inOut: MessageEvent[?]): SMessageEvent =
     SMessageEvent(nameOfVariable(inOut), inOut)
-  implicit inline def toStep(inline inOut: SignalEvent[_]): SSignalEvent =
+  implicit inline def toStep(inline inOut: SignalEvent[?]): SSignalEvent =
     SSignalEvent(nameOfVariable(inOut), inOut)
   implicit inline def toStep(inline inOut: TimerEvent): STimerEvent =
     STimerEvent(nameOfVariable(inOut), inOut)
 
-  extension (event: MessageEvent[_])
+  extension (event: MessageEvent[?])
     def waitFor(readyVariable: String): SMessageEvent =
       event.waitFor(readyVariable, true)
     def waitFor(readyVariable: String, readyValue: Any): SMessageEvent =
@@ -80,7 +88,7 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
       SMessageEvent(event.name, event).start
   end extension
 
-  extension (event: SignalEvent[_])
+  extension (event: SignalEvent[?])
     def waitFor(readyVariable: String): SSignalEvent =
       event.waitFor(readyVariable, true)
     def waitFor(readyVariable: String, readyValue: Any = true): SSignalEvent =

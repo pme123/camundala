@@ -87,7 +87,10 @@ def toJson(json: String): Json =
     case Right(v) => v.deepDropNullValues
     case Left(exc) =>
       throwErr(s"Could not create Json from your String -> $exc")
+val testModeDescr =
+  "This flag indicades that this is a test - in the process it can behave accordingly."
 
+//TODO remove them
 trait MockSupport[Out <: Product]:
   def outputMock: Option[Out]
   def servicesMocked: Boolean
@@ -97,6 +100,7 @@ trait MockServiceSupport[
     OutS, // the body of the HttpResponse
 ] extends MockSupport[Out]:
   def outputServiceMock: Option[MockedServiceResponse[OutS]]
+//TODO move to bpmn
 
 // descriptions
 def serviceNameDescr(serviceName: String) =
@@ -141,13 +145,15 @@ def outputServiceMockDescr[OutS: Encoder](mock: OutS) =
      |- `someSubProcessMock` mocks a sub process
      |""".stripMargin
 
-val testModeDescr =
-  "This flag indicades that this is a test - in the process it can behave accordingly."
 val handledErrorsDescr =
   "A comma separated list of HTTP-Status-Codes, that are modelled in the BPMN as Business-Exceptions - see Outputs. z.B: `404,500`"
 val regexHandledErrorsDescr =
   """If you specified _handledErrors_, you can specify Regexes that all must match the error messages.
 Otherwise the error is thrown.
+  
+You can use a JSON Array of Strings or a comma-separated String.  
 
-Example: `['java.sql.SQLException', '"errorNr":20000']`
+Example: `['java.sql.SQLException', '"errorNr":20000']` or 'java.sql.SQLException,"errorNr":20000'
 """
+//TODO end move to bpmn
+  

@@ -1,7 +1,7 @@
 package camundala.simulation
 package custom
 
-import camundala.api.CamundaProperty
+import camundala.bpmn.*
 import camundala.domain.*
 import sttp.client3.*
 

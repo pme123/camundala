@@ -6,16 +6,16 @@ import io.circe.syntax.*
   "Mocks a REST Service Response (must be handled by the BPF package)."
 )
 case class MockedServiceResponse[
-    OutS // output of service
+    ServiceOut // output of service
 ](
-    respStatus: Int,
-    respBody: Either[Option[Json], OutS],
-    respHeaders: Seq[Seq[String]] = Seq.empty
+   respStatus: Int,
+   respBody: Either[Option[Json], ServiceOut],
+   respHeaders: Seq[Seq[String]] = Seq.empty
 ):
   def withHeader(
       key: String,
       value: String
-  ): MockedServiceResponse[OutS] =
+  ): MockedServiceResponse[ServiceOut] =
     copy(respHeaders = respHeaders :+ Seq(key, value))
 
 object MockedServiceResponse:
@@ -80,4 +80,22 @@ object MockedServiceResponse:
       } yield MockedServiceResponse(respStatus, respBody, respHeaders)
     }
 end MockedServiceResponse
-
+/*
+// needed for mocked Results of Seq
+implicit def seqCodec[T: CirceCodec]: CirceCodec[Seq[T]] =
+  new CirceCodec[Seq[T]] {
+    final def apply(c: HCursor): Result[Seq[T]] =
+      val jsons = c.values.get.toSeq.map(_.as[T])
+      val (lefts, rights) = jsons.partition(_.isLeft)
+      if (lefts.nonEmpty)
+        Left(
+          DecodingFailure(
+            "Problem decoding Seq",
+            lefts.collect { case Left(t) => t.history }.flatten.toList
+          )
+        )
+      else Right(rights.collect { case Right(a) => a })
+    final def apply(a: Seq[T]): Json = Json.arr(a.map(_.asJson): _*)
+  }
+end seqCodec
+*/

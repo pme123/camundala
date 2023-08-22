@@ -19,6 +19,7 @@ abstract class CustomSimulation
         sim.scenarios
           .map {
             case scen: ProcessScenario => scen.run()
+            case scen: ServiceProcessScenario => scen.run()
             case scen: IncidentScenario => scen.run()
             case scen: DmnScenario => scen.run()
             case scen: BadScenario => scen.run()

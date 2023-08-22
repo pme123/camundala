@@ -1,13 +1,11 @@
 package camundala
 package api
 
-import domain.*
-import bpmn.*
-import sttp.tapir.EndpointIO.Example
+import camundala.bpmn.*
+import camundala.domain.*
 import sttp.tapir.*
+import sttp.tapir.EndpointIO.Example
 import sttp.tapir.json.circe.*
-
-
 
 trait CamundaPostmanApiCreator extends PostmanApiCreator:
 
@@ -20,6 +18,13 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
       api.startProcess(tag, isGroup)
     )
 
+  protected def createPostmanForServiceProcess(
+      api: ServiceProcessApi[?, ?, ?],
+      tag: String
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+    Seq(
+      api.startProcess(tag, false)
+    )
   protected def createPostmanForUserTask(
       api: ActivityApi[?, ?],
       tag: String
@@ -52,19 +57,24 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
     )
 
   protected def createPostmanForTimerEvent(
-                                          api: ActivityApi[?, ?],
-                                          tag: String
-                                        ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+      api: ActivityApi[?, ?],
+      tag: String
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     Seq(
       api.getActiveJob(tag),
       api.executeTimer(tag)
     )
 
-  extension (process: ProcessApi[?, ?])
-
-    def startProcess(tag: String, isGroup: Boolean): PublicEndpoint[?, Unit, ?, Any] =
+  extension (process: ProcessApi[?, ?] | ServiceProcessApi[?, ?, ?])
+    def startProcess(
+        tag: String,
+        isGroup: Boolean
+    ): PublicEndpoint[?, Unit, ?, Any] =
       val path =
-        tenantIdPath("process-definition" / "key" / process.endpointPath(isGroup), "start")
+        tenantIdPath(
+          "process-definition" / "key" / process.endpointPath(isGroup),
+          "start"
+        )
       val input =
         process
           .toPostmanInput((example: FormVariables) =>
@@ -222,7 +232,6 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
   end extension
 
   extension (inOutApi: InOutApi[?, ?])
-
     def toPostmanInput[
         T <: Product: Encoder: Decoder: Schema
     ](

@@ -31,3 +31,14 @@ def cawemoDescr(descr: String, cawemoLink: String) =
 
 inline def nameOfVariable(inline x: Any): String = ${ NameFromVariable.nameOfVariable('x) }
 
+enum InputParams:
+  case servicesMocked
+  case outputMock
+  case mockedSubprocesses
+  case outputServiceMock
+  case outputVariables
+  case handledErrors
+  case regexHandledErrors
+end InputParams
+
+val GenericServiceProcessName = "camundala-service-generic"

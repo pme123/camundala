@@ -2,6 +2,7 @@ package camundala.camunda7.worker
 
 import camundala.camunda7.worker.CamundalaWorkerError.*
 import camundala.domain.*
+import camundala.bpmn.*
 import io.circe.*
 import io.circe.syntax.*
 
@@ -48,7 +49,7 @@ trait Mocker[Out <: Product: CirceCodec] extends CamundaHelper:
       .left
       .map(exception =>
         MockerError(errorMsg =
-          s"The mock could not be parsed to Json Object:\n- $outputMock\n- $exception"
+          s"The mock could not be parsed to Json Object:\n- $exception\n- $outputMock"
         )
       )
   end parsedMock

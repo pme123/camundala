@@ -1,7 +1,6 @@
 package camundala.simulation
 package custom
 
-import camundala.api.*
 import camundala.bpmn.*
 import camundala.domain.*
 import io.circe.*
@@ -117,9 +116,9 @@ trait SScenarioExtensions extends SStepExtensions:
       ).asJson.deepDropNullValues.toString
       val uri = config.tenantId match
         case Some(tenantId) =>
-          uri"${config.endpoint}/process-definition/key/${process.id}/tenant-id/$tenantId/start"
+          uri"${config.endpoint}/process-definition/key/${process.processName}/tenant-id/$tenantId/start"
         case None =>
-          uri"${config.endpoint}/process-definition/key/${process.id}/start"
+          uri"${config.endpoint}/process-definition/key/${process.processName}/start"
 
       val request: Request[Either[String, String], Any] = basicRequest
         .auth()
@@ -132,7 +131,7 @@ trait SScenarioExtensions extends SStepExtensions:
 
   extension (scenario: ProcessScenario)
     def run(): Future[ResultType] =
-      println(s"Scenario started ${scenario.name}")
+      println(s"ProcessScenario started ${scenario.name}")
       scenario.logScenario { (data: ScenarioData) =>
         if (scenario.process == null)
           Left(
@@ -147,6 +146,26 @@ trait SScenarioExtensions extends SStepExtensions:
               case ProcessStartType.START => scenario.startProcess()
               case ProcessStartType.MESSAGE => scenario.sendMessage()
             given ScenarioData <- scenario.runSteps()
+            given ScenarioData <- scenario.check()
+          yield summon[ScenarioData]
+      }
+  end extension
+  extension (scenario: ServiceProcessScenario)
+    def run(): Future[ResultType] =
+      println(s"ServiceProcessScenario started ${scenario.name}")
+      scenario.logScenario { (data: ScenarioData) =>
+        if (scenario.process == null)
+          Left(
+            data.error(
+              "The process is null! Check if your variable is LAZY (`lazy val myProcess = ...`)."
+            )
+          )
+        else
+          given ScenarioData = data
+          for
+            given ScenarioData <- scenario.startType match
+              case ProcessStartType.START => scenario.startProcess()
+              case ProcessStartType.MESSAGE => scenario.sendMessage()
             given ScenarioData <- scenario.check()
           yield summon[ScenarioData]
       }

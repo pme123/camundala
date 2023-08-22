@@ -21,7 +21,9 @@ object ProjectApiCreator extends DefaultApiCreator:
   override protected val apiConfig: ApiConfig =
     super.apiConfig
       .withBasePath(pwd / "examples" / "invoice" / "camunda7")
-      .withDocProjectUrl(project => s"https://webstor.ch/camundala/myCompany/$project")
+      .withDocProjectUrl(project =>
+        s"https://webstor.ch/camundala/myCompany/$project"
+      )
       .withPort(8034)
       .withDiagramDownloadPath("diagrams")
 //  .withCawemoFolder("a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala")
@@ -36,6 +38,9 @@ object ProjectApiCreator extends DefaultApiCreator:
       ReviewInvoice.AssignReviewerUT.example,
       ReviewInvoiceUT
     ),
+    group("Services")(
+      api(ArchiveInvoice.example)
+    ),
     group("User Tasks")(
       api(ApproveInvoiceUT), // api( is optional
       InvoiceReceipt.PrepareBankTransferUT.example,
@@ -43,7 +48,7 @@ object ProjectApiCreator extends DefaultApiCreator:
       ReviewInvoiceUT
     ),
     group("DMNs")(
-      api(InvoiceAssignApproverDMN2), // api( is optional)
+      api(InvoiceAssignApproverDMN2) // api( is optional)
       //InvoiceAssignApproverDMN3 // want be shown as only one DMN with the same id is shown in the API.
     )
   )

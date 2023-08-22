@@ -2,6 +2,7 @@ package camundala.camunda7.worker
 
 import camundala.camunda7.worker.CamundalaWorkerError.*
 import camundala.domain.*
+import camundala.bpmn.*
 import org.camunda.bpm.client.task.{ExternalTask, ExternalTaskHandler, ExternalTaskService}
 
 import java.time.LocalDateTime

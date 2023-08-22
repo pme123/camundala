@@ -64,13 +64,13 @@ class InvoiceSimulation extends CustomSimulation:
       "Validation Error: Input is not valid: DecodingFailure at .creditor: Missing required field"
     ),
     // mocking
-    scenario(`Invoice Receipt mocked`) (
+    scenario(`Invoice Receipt mocked invoiceReviewed`) (
       NotApproveInvoiceUT,
     // subProcess not needed because of mocking
     ApproveInvoiceUT, // now approve
     PrepareBankTransferUT),
-    scenario(`Review Invoice mocked`),
-
+    scenario(`Review Invoice mocked`), // mocks itself
+    scenario(`Archive Invoice that fails`) // serviceProcess - does not run as there is no such worker
   )
 
   override implicit def config =
@@ -78,7 +78,7 @@ class InvoiceSimulation extends CustomSimulation:
       .withPort(8034)
 
   private lazy val `Invoice Receipt` = InvoiceReceipt.example
-  private lazy val `Invoice Receipt mocked` = `Invoice Receipt with Review`
+  private lazy val `Invoice Receipt mocked invoiceReviewed` = `Invoice Receipt with Review`
     .withIn(InvoiceReceipt.In(invoiceReviewedMock = Some(ReviewInvoice.Out())))
 
   private lazy val ApproveInvoiceUT = InvoiceReceipt.ApproveInvoiceUT.example
@@ -87,7 +87,7 @@ class InvoiceSimulation extends CustomSimulation:
 
   private lazy val `Review Invoice` = ReviewInvoice.example
   private lazy val `Review Invoice mocked` = ReviewInvoice.example
-    .withIn(ReviewInvoice.In(outputMock = Some(ReviewInvoice.Out())))
+    .mockWith(ReviewInvoice.Out())
   private lazy val AssignReviewerUT = ReviewInvoice.AssignReviewerUT.example
   private lazy val ReviewInvoiceUT = ReviewInvoice.ReviewInvoiceUT.example
 
@@ -145,6 +145,10 @@ class InvoiceSimulation extends CustomSimulation:
   private lazy val BadValidationP =
     InvoiceReceipt.example
       .withIn(InvoiceReceipt.In(null))
+    
+  private lazy val `Archive Invoice that fails` =
+    ArchiveInvoice.example
+      .mockServices
 
 end InvoiceSimulation
     

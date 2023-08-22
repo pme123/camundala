@@ -17,12 +17,20 @@ object TwitterApi extends BpmnDsl:
       email: String = "me@myself.com",
       content: String = "Test Tweet"
   )
+  object CreateTweet:
+    given Schema[CreateTweet] = Schema.derived
+    given CirceCodec[CreateTweet] = deriveCodec
+  end CreateTweet
 
   @description("""Every Tweet has to be accepted by the Boss.""")
   case class ReviewedTweet(
       @description("If true, the Boss accepted the Tweet")
       approved: Boolean = true
   )
+  object ReviewedTweet:
+    given Schema[ReviewedTweet] = Schema.derived
+    given CirceCodec[ReviewedTweet] = deriveCodec
+  end ReviewedTweet
 
   val twitterDemoProcess =
     val processId = "TwitterDemoP"
@@ -43,9 +51,4 @@ object TwitterApi extends BpmnDsl:
     out = ReviewedTweet(false)
   )
 
-  given Schema[CreateTweet] = Schema.derived
-  given Encoder[CreateTweet] = deriveEncoder
-  given Decoder[CreateTweet] = deriveDecoder
-  given Schema[ReviewedTweet] = Schema.derived
-  given Encoder[ReviewedTweet] = deriveEncoder
-  given Decoder[ReviewedTweet] = deriveDecoder
+

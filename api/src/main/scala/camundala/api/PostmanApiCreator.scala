@@ -52,9 +52,11 @@ trait PostmanApiCreator extends AbstractApiCreator:
               createPostmanForSignalEvent(aa, tag)
             case _: TimerEvent =>
               createPostmanForTimerEvent(aa, tag)
-        case pa @ ProcessApi(name, _, _, apis, _)
-            if apis.forall(_.isInstanceOf[ActivityApi[?, ?]]) =>
+        case pa@ProcessApi(name, _, _, apis, _)
+          if apis.forall(_.isInstanceOf[ActivityApi[?, ?]]) =>
           createPostmanForProcess(pa, tag) ++ apis.flatMap(_.createPostman(tag))
+        case spa@ServiceProcessApi(name, _, _) =>
+          createPostmanForServiceProcess(spa, tag)
         case da: DecisionDmnApi[?,?] =>
           createPostmanForDecisionDmn(da.toActivityApi, tag)
         case ga =>
@@ -68,6 +70,11 @@ trait PostmanApiCreator extends AbstractApiCreator:
       api: ProcessApi[?, ?],
       tag: String,
       isGroup: Boolean = false
+  ): Seq[PublicEndpoint[?, Unit, ?, Any]]
+
+  protected def createPostmanForServiceProcess(
+      api: ServiceProcessApi[?, ?, ?],
+      tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]]
 
   protected def createPostmanForUserTask(

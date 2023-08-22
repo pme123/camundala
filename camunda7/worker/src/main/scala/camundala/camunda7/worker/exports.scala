@@ -115,14 +115,6 @@ enum ErrorCodes:
   case `service-unexpected-error`
 end ErrorCodes
 
-enum InputParams:
-  case servicesMocked
-  case outputMock
-  case outputServiceMock
-  case outputVariables
-  case handledErrors
-end InputParams
-
 type HandledErrorCode = ErrorCodes | String | Int
 type HandledErrorCodes = Seq[HandledErrorCode]
 

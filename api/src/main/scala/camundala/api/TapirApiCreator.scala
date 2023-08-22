@@ -35,6 +35,8 @@ trait TapirApiCreator extends AbstractApiCreator:
           aa.createEndpoint(tag)
         case pa @ ProcessApi(name, _, _, apis, _) if apis.isEmpty => //.forall(_.isInstanceOf[ActivityApi[?,?]]) =>
           pa.createEndpoint(tag, pa.additionalDescr) ++ apis.flatMap(_.create(tag))
+        case spa @ ServiceProcessApi(name, _, _) =>
+          spa.createEndpoint(tag, spa.additionalDescr)
         case ga =>
           throw IllegalArgumentException(
             s"Sorry, only one level of GroupedApi is allowed!\n - $ga"
@@ -109,7 +111,7 @@ trait TapirApiCreator extends AbstractApiCreator:
           )
   end extension
 
-  extension (pa: ProcessApi[?, ?])
+  extension (pa: ProcessApi[?, ?] | ServiceProcessApi[?,?,?])
     def processName: String =
       pa.inOut.in match
         case gs: GenericServiceIn =>
