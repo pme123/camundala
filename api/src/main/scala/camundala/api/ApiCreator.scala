@@ -1,5 +1,6 @@
 package camundala.api
 
+import camundala.bpmn.InputParams
 import camundala.domain.MockedServiceResponse
 import io.circe.syntax.*
 import sttp.apispec.openapi.*
@@ -11,6 +12,9 @@ import java.util.Date
 import scala.util.matching.Regex
 
 trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
+
+  def supportedVariables: Seq[InputParams] =
+    InputParams.values.toSeq
 
   def document(apis: CApi*): Unit =
     val apiDoc = ApiDoc(apis.toList)
@@ -51,7 +55,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
     if (changeLogFile.toIO.exists())
       s"""
          |<details>
-         |<summary>**CHANGELOG.md**</summary>
+         |<summary><b><i>CHANGELOG.md</i></b></summary>
          |<p>
          |
          |${os.read
@@ -72,128 +76,135 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
     s"""|<p/>
         |<details>
         |<summary>
-        |<b><i>General Variables</i></b>
+        |<b><i>Supported General Variables</i></b>
         |</summary>
         |
         |<p>
         |
-        |### Processes and ServiceProcesses
-        |
-        |**outputMock**:
-        |
-        |Mock this Service (`Out`) with:
-        |
-        |- DSL:
-        |```scala
-        |process(..) // or serviceProcess(..)
-        |  .mockWith(outputMock)
-        |```
-        |
-        |- Json (you find examples in each process):
-        |```json
-        |...
-        |"outputMock": {..},
-        |...
-        |```
-        |
-        |**servicesMocked**:
-        |
-        |Mock the ServiceProcesses (Workers only) with their default Mock:
-        |
-        |- DSL:
-        |```scala
-        |process(..) // or serviceProcess(..)
-        |  .mockServices
-        |```
-        |
-        |- Json:
-        |```json
-        |...
-        |"servicesMocked": true,
-        |...
-        |```
-        |
-        |**impersonateUserId**:
-        |
-        |User-ID of a User that should be taken to authenticate to the services.
-        |This must be supported by your implementation. *Be caution: this may be a security issue!*.
-        |It is helpful if you have Tokens that expire, but long running Processes.
-        |
-        |- DSL:
-        |```scala
-        |process(..) // or serviceProcess(..)
-        |  .withImpersonateUserId(impersonateUserId)
-        |```
-        |
-        |- Json:
-        |```json
-        |...
-        |"impersonateUserId": "myUserName",
-        |...
-        |```
-        |
-        |### ServiceProcesses
-        |**outputServiceMock**:
-        |
-        |Mock the Inner-Service (`MockedServiceResponse[ServiceOut]`).
-        |
-        |- DSL:
-        |```scala
-        |serviceProcess(..)
-        |  .mockServiceWith(MockedServiceResponse
-        |     .success200(inOut.defaultServiceMock))
-        |```
-        |
-        |- Json (you find examples in each process):
-        |```json
-        |...
-        |"outputServiceMock": ${MockedServiceResponse
-      .success200("Example String Body")
-      .asJson},
-        |...
-        |```
-        |
-        |**handledErrors**:
-        |
-        |A list of error codes that are handled (`BpmnError`)
-        |
-        |- DSL:
-        |```scala
-        |serviceProcess(..)
-        |  .handleError("400")
-        |  .handleError("404")
-        |```
-        |
-        |- Json
-        |```json
-        |...
-        |"handledErrors": Seq[String] = ["400", "404"],
-        |...
-        |```
-        |
-        |**regexHandledErrors**:
-        |
-        |Handling Errors with the messages that match a list of Regex expressions
-        |
-        |- DSL:
-        |```scala
-        |serviceProcess(..)
-        |  .handleErrorWithRegex("SQL exception")
-        |  .handleErrorWithRegex("\\"errorNr\\":\\"20000\\"")
-        |```
-        |
-        |- Json:
-        |```json
-        |...
-        |"regexHandledErrors": ["SQL exception", "\\"errorNr\\":\\"20000\\""]
-        |...
-        |```
-        |
-        |</p>
+        |### Processes
+        |""".stripMargin +
+      createGeneralVariable(
+        InputParams.mockedSubprocesses,
+        """Mock the SubProcesses with their default Mocks.
+          |This is a list of the _SubProcesses processNames_ you want to mock.
+          |""".stripMargin,
+        """process(..)
+          |  .mockSubProcesses("mySubProcess1", "mySubProcess2") // creates a list with SubProcessess
+          |  .mockSubProcess("myOtherSubProcess") // adds a SubProcess""".stripMargin,
+        """"mockedSubprocesses": ["mySubProcess"],"""
+      ) +
+      "### Processes and ServiceProcesses" +
+      createGeneralVariable(
+        InputParams.outputVariables,
+        """You can filter the Output with a list of variable names you are interested in.
+          |""".stripMargin,
+        """process(..) // or serviceProcess(..)
+          |  .withOutputVariables("name", "firstName") // creates a list with outputVariables
+          |  .withOutputVariable("name", "firstName") // adds a outputVariable""".stripMargin,
+        """"outputVariables": ["name", "firstName"],"""
+      ) +
+      createGeneralVariable(
+        InputParams.outputMock,
+        """Mock the Process or Service (`Out`)
+          | - You find an example in every _Process_ and _ServiceProcess_.
+          |""".stripMargin,
+        """process(..) // or serviceProcess(..)
+          |  .mockWith(outputMock)""".stripMargin,
+        """"outputMock": {..},"""
+      ) +
+      createGeneralVariable(
+        InputParams.servicesMocked,
+        "Mock the ServiceProcesses (Workers only) with their default Mock:",
+        "process(..) // or serviceProcess(..)\n  .mockServices",
+        "\"servicesMocked\": true,"
+      ) +
+      createGeneralVariable(
+        InputParams.impersonateUserId,
+        """User-ID of a User that should be taken to authenticate to the services.
+          |This must be supported by your implementation. *Be caution: this may be a security issue!*.
+          |It is helpful if you have Tokens that expire, but long running Processes.""".stripMargin,
+        """process(..) // or serviceProcess(..)
+          |  .withImpersonateUserId(impersonateUserId)""".stripMargin,
+        """"impersonateUserId": "myUserName","""
+      ) +
+      "### ServiceProcesses" +
+      createGeneralVariable(
+        InputParams.outputServiceMock,
+        """Mock the Inner-Service (`MockedServiceResponse[ServiceOut]`)""".stripMargin,
+        """serviceProcess(..)
+          |  .mockServiceWith(MockedServiceResponse
+          |     .success200(inOut.defaultServiceMock))""".stripMargin,
+        """"impersonateUserId": "myUserName","""
+      ) +
+      createGeneralVariable(
+        InputParams.outputServiceMock,
+        """Mock the Inner-Service (`MockedServiceResponse[ServiceOut]`)
+          | - You find an example in every _ServiceProcess_.
+          |""".stripMargin,
+        """serviceProcess(..)
+          |  .mockServiceWith(MockedServiceResponse
+          |     .success200(inOut.defaultServiceMock))""".stripMargin,
+        s""""outputServiceMock": ${MockedServiceResponse
+          .success200("Example String Body")
+          .asJson},""".stripMargin
+      ) +
+      createGeneralVariable(
+        InputParams.handledErrors,
+        """A list of error codes that are handled (`BpmnError`)
+          |Depending on your implementation it is also possible to use a _comma separated_ String,
+          |like `"validation-failed,404"`
+          |""".stripMargin,
+        """serviceProcess(..)
+          |  .handleErrors(ErrorCodes.`validation-failed`, "404") // create a list of handledErrors
+          |  .handleError("404") // add a handledError""".stripMargin,
+        s""""handledErrors": ["validation-failed", "404"],""".stripMargin
+      ) +
+      createGeneralVariable(
+        InputParams.regexHandledErrors,
+        """Handling Errors with the messages that match a list of Regex expressions.
+          |Depending on your implementation it is also possible to use a _comma separated_ String,
+          |like `"SQL exception,\"errorNr\":\"20000\""`
+          |""".stripMargin,
+        """serviceProcess(..)
+          |  .handleErrorWithRegex("SQL exception")
+          |  .handleErrorWithRegex("\"errorNr\":\"20000\"")""".stripMargin,
+        s""""regexHandledErrors": ["SQL exception", "\"errorNr\":\"20000\""],""".stripMargin
+      ) +
+      """</p>
         |</details>
         |<p/>
         """.stripMargin
   end createGeneralVariables
+
+  def createGeneralVariable(
+      key: InputParams,
+      descr: String,
+      scalaExample: String,
+      jsonExample: String
+  ) =
+    if (supportedVariables.contains(key))
+      s"""
+         |**$key**:
+         |
+         |$descr
+         |
+         |- DSL:
+         |```scala
+         |$scalaExample
+         |```
+         |
+         |- Json
+         |```json
+         |...
+         |$jsonExample
+         |...
+         |```
+         |
+         |""".stripMargin
+    else
+      ""
+  end createGeneralVariable
+
   protected def replaceJira(
       line: String,
       jiraUrls: Map[String, String]

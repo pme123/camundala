@@ -2,45 +2,64 @@ openapi: 3.0.3
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: "\n\nCreated at 21/08/2023, 16:33\n\n****\n\n> This is the invoice demo\
+  summary: "\n\nCreated at 22/08/2023, 17:40\n\n****\n\n> This is the invoice demo\
     \ application which is shipped with the full distributions.\n\nSee the original\
     \ [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).\n\
     \nI bundled it here! Just run `InvoiceServletProcessApplication`.\n\nThis based\
     \ on this Project: https://github.com/pme123/spring-boot-datakurre-plugins\n\n\
-    \n<details>\n<summary>**CHANGELOG.md**</summary>\n<p>\n\n\nAll notable changes\
-    \ to this project will be documented in this file.\n\n* Types of Changes (L3):\n\
-    \  * Added: new features\n  * Changed: changes in existing functionality\n  *\
-    \ Deprecated: soon-to-be-removed features\n  * Removed: now removed features\n\
+    \n<details>\n<summary><b><i>CHANGELOG.md</i></b></summary>\n<p>\n\n\nAll notable\
+    \ changes to this project will be documented in this file.\n\n* Types of Changes\
+    \ (L3):\n  * Added: new features\n  * Changed: changes in existing functionality\n\
+    \  * Deprecated: soon-to-be-removed features\n  * Removed: now removed features\n\
     \  * Fixed: any bug fixes\n  * Security: in case of vulnerabilities\n\n\nThe format\
     \ is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),\nand this\
     \ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).\n\
     \n### Unreleased\nInitial Version\n\n</p>\n</details>\n\n\n<p/>\n<details>\n<summary>\n\
-    <b><i>General Variables</i></b>\n</summary>\n\n<p>\n\n### Processes and ServiceProcesses\n\
-    \n**outputMock**:\n\nMock this Service (`Out`) with:\n\n- DSL:\n```scala\nprocess(..)\
-    \ // or serviceProcess(..)\n  .mockWith(outputMock)\n```\n\n- Json (you find examples\
-    \ in each process):\n```json\n...\n\"outputMock\": {..},\n...\n```\n\n**servicesMocked**:\n\
-    \nMock the ServiceProcesses (Workers only) with their default Mock:\n\n- DSL:\n\
-    ```scala\nprocess(..) // or serviceProcess(..)\n  .mockServices\n```\n\n- Json:\n\
-    ```json\n...\n\"servicesMocked\": true,\n...\n```\n\n**impersonateUserId**:\n\n\
-    User-ID of a User that should be taken to authenticate to the services.\nThis\
-    \ must be supported by your implementation. *Be caution: this may be a security\
-    \ issue!*.\nIt is helpful if you have Tokens that expire, but long running Processes.\n\
-    \n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withImpersonateUserId(impersonateUserId)\n\
-    ```\n\n- Json:\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
-    \n### ServiceProcesses\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`).\n\
-    \n- DSL:\n```scala\nserviceProcess(..)\n  .mockServiceWith(MockedServiceResponse\n\
-    \     .success200(inOut.defaultServiceMock))\n```\n\n- Json (you find examples\
-    \ in each process):\n```json\n...\n\"outputServiceMock\": {\n  \"respStatus\"\
-    \ : 200,\n  \"respBody\" : \"Example String Body\",\n  \"respHeaders\" : [\n \
-    \ ]\n},\n...\n```\n\n**handledErrors**:\n\nA list of error codes that are handled\
-    \ (`BpmnError`)\n\n- DSL:\n```scala\nserviceProcess(..)\n  .handleError(\"400\"\
-    )\n  .handleError(\"404\")\n```\n\n- Json\n```json\n...\n\"handledErrors\": Seq[String]\
-    \ = [\"400\", \"404\"],\n...\n```\n\n**regexHandledErrors**:\n\nHandling Errors\
-    \ with the messages that match a list of Regex expressions\n\n- DSL:\n```scala\n\
-    serviceProcess(..)\n  .handleErrorWithRegex(\"SQL exception\")\n  .handleErrorWithRegex(\"\
-    \\\"errorNr\\\":\\\"20000\\\"\")\n```\n\n- Json:\n```json\n...\n\"regexHandledErrors\"\
-    : [\"SQL exception\", \"\\\"errorNr\\\":\\\"20000\\\"\"]\n...\n```\n\n</p>\n</details>\n\
-    <p/>\n        \n"
+    <b><i>Supported General Variables</i></b>\n</summary>\n\n<p>\n\n### Processes\n\
+    \n**mockedSubprocesses**:\n\nMock the SubProcesses with their default Mocks.\n\
+    This is a list of the _SubProcesses processNames_ you want to mock.\n\n\n- DSL:\n\
+    ```scala\nprocess(..)\n  .mockSubProcesses(\"mySubProcess1\", \"mySubProcess2\"\
+    ) // creates a list with SubProcessess\n  .mockSubProcess(\"myOtherSubProcess\"\
+    ) // adds a SubProcess\n```\n\n- Json\n```json\n...\n\"mockedSubprocesses\": [\"\
+    mySubProcess\"],\n...\n```\n\n### Processes and ServiceProcesses\n**outputVariables**:\n\
+    \nYou can filter the Output with a list of variable names you are interested in.\n\
+    \n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withOutputVariables(\"\
+    name\", \"firstName\") // creates a list with outputVariables\n  .withOutputVariable(\"\
+    name\", \"firstName\") // adds a outputVariable\n```\n\n- Json\n```json\n...\n\
+    \"outputVariables\": [\"name\", \"firstName\"],\n...\n```\n\n\n**outputMock**:\n\
+    \nMock the Process or Service (`Out`)\n - You find an example in every _Process_\
+    \ and _ServiceProcess_.\n\n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n\
+    \  .mockWith(outputMock)\n```\n\n- Json\n```json\n...\n\"outputMock\": {..},\n\
+    ...\n```\n\n\n**servicesMocked**:\n\nMock the ServiceProcesses (Workers only)\
+    \ with their default Mock:\n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n\
+    \  .mockServices\n```\n\n- Json\n```json\n...\n\"servicesMocked\": true,\n...\n\
+    ```\n\n\n**impersonateUserId**:\n\nUser-ID of a User that should be taken to authenticate\
+    \ to the services.\nThis must be supported by your implementation. *Be caution:\
+    \ this may be a security issue!*.\nIt is helpful if you have Tokens that expire,\
+    \ but long running Processes.\n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n\
+    \  .withImpersonateUserId(impersonateUserId)\n```\n\n- Json\n```json\n...\n\"\
+    impersonateUserId\": \"myUserName\",\n...\n```\n\n### ServiceProcesses\n**outputServiceMock**:\n\
+    \nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\n- DSL:\n```scala\n\
+    serviceProcess(..)\n  .mockServiceWith(MockedServiceResponse\n     .success200(inOut.defaultServiceMock))\n\
+    ```\n\n- Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
+    \n\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
+    \ - You find an example in every _ServiceProcess_.\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \  .mockServiceWith(MockedServiceResponse\n     .success200(inOut.defaultServiceMock))\n\
+    ```\n\n- Json\n```json\n...\n\"outputServiceMock\": {\n  \"respStatus\" : 200,\n\
+    \  \"respBody\" : \"Example String Body\",\n  \"respHeaders\" : [\n  ]\n},\n...\n\
+    ```\n\n\n**handledErrors**:\n\nA list of error codes that are handled (`BpmnError`)\n\
+    Depending on your implementation it is also possible to use a _comma separated_\
+    \ String,\nlike `\"validation-failed,404\"`\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \  .handleErrors(ErrorCodes.`validation-failed`, \"404\") // create a list of\
+    \ handledErrors\n  .handleError(\"404\") // add a handledError\n```\n\n- Json\n\
+    ```json\n...\n\"handledErrors\": [\"validation-failed\", \"404\"],\n...\n```\n\
+    \n\n**regexHandledErrors**:\n\nHandling Errors with the messages that match a\
+    \ list of Regex expressions.\nDepending on your implementation it is also possible\
+    \ to use a _comma separated_ String,\nlike `\"SQL exception,\\\"errorNr\\\":\\\
+    \"20000\\\"\"`\n\n\n- DSL:\n```scala\nserviceProcess(..)\n  .handleErrorWithRegex(\"\
+    SQL exception\")\n  .handleErrorWithRegex(\"\\\"errorNr\\\":\\\"20000\\\"\")\n\
+    ```\n\n- Json\n```json\n...\n\"regexHandledErrors\": [\"SQL exception\", \"\"\
+    errorNr\":\"20000\"\"],\n...\n```\n\n</p>\n</details>\n<p/>\n        \n"
 paths:
   /process/example-invoice-c7:
     head:
@@ -49,9 +68,9 @@ paths:
       summary: 'Process: example-invoice-c7'
       description: "This starts the Invoice Receipt Process.\n\n- Input:  `camundala.examples.invoice.InvoiceReceipt\
         \ > In`\n- Output: `camundala.examples.invoice.InvoiceReceipt > Out`\n\n\n\
-        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-93288\"\
+        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-56206\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container:\
-        \ $('#example-invoice-c7-93288'), height: '95%', width: '95%' }));\" src=\"\
+        \ $('#example-invoice-c7-56206'), height: '95%', width: '95%' }));\" src=\"\
         data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>Mocking Examples</i></b>\n</summary>\n\
@@ -96,8 +115,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-18202">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-18202'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-21106">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-21106'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -213,9 +232,9 @@ paths:
       summary: 'Process: example-invoice-c7-review'
       description: "This starts the Review Invoice Process.\n\n- Input:  `camundala.examples.invoice.ReviewInvoice\
         \ > In`\n- Output: `camundala.examples.invoice.ReviewInvoice > Out`\n\n\n\
-        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-46083\"\
+        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-73050\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({\
-        \ container: $('#example-invoice-c7-review-46083'), height: '95%', width:\
+        \ container: $('#example-invoice-c7-review-73050'), height: '95%', width:\
         \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>Mocking Examples</i></b>\n</summary>\n\
@@ -514,8 +533,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-81669">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-81669'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-92507">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-92507'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 

@@ -93,6 +93,7 @@ case class Process[
     elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty,
     outputMock: Option[Out] = None,
     mockedSubprocesses: Seq[String] = Seq.empty,
+    outputVariables: Seq[String] = Seq.empty,
     servicesMocked: Boolean = false,
     impersonateUserId: Option[String] = None
 ) extends ProcessOrService[In, Out, Process[In, Out]],
@@ -122,8 +123,17 @@ case class Process[
   def mockWith(outputMock: Out): Process[In, Out] =
     copy(outputMock = Some(outputMock))
 
+  def mockSubProcesses(processNames: String*): Process[In, Out] =
+    copy(mockedSubprocesses = processNames)
+
   def mockSubProcess(processName: String): Process[In, Out] =
     copy(mockedSubprocesses = mockedSubprocesses :+ processName)
+
+  def withOutputVariables(names: String*): Process[In, Out] =
+    copy(outputVariables = names)
+
+  def withOutputVariable(processName: String): Process[In, Out] =
+    copy(outputVariables = outputVariables :+ processName)
 
   override def camundaInMap: Map[String, CamundaVariable] =
     val mock = outputMock.toSeq.map(m =>
@@ -133,11 +143,13 @@ case class Process[
     ) :+
       InputParams.mockedSubprocesses.toString -> CamundaVariable.valueToCamunda(
         mockedSubprocesses.asJson
+      ) :+
+      InputParams.outputVariables.toString -> CamundaVariable.valueToCamunda(
+        outputVariables.asJson
+      ) :+
+      InputParams.servicesMocked.toString -> CamundaVariable.valueToCamunda(
+        servicesMocked
       )
-    :+
-    InputParams.servicesMocked.toString -> CamundaVariable.valueToCamunda(
-      servicesMocked
-    )
     super.camundaInMap ++ mock.toMap
 end Process
 
@@ -149,6 +161,7 @@ case class ServiceProcess[
     inOutDescr: InOutDescr[In, Out],
     defaultServiceMock: ServiceOut,
     processName: String = GenericServiceProcessName,
+    outputVariables: Seq[String] = Seq.empty,
     outputMock: Option[Out] = None,
     servicesMocked: Boolean = false,
     impersonateUserId: Option[String] = None,
@@ -170,6 +183,13 @@ case class ServiceProcess[
   ): ServiceProcess[In, Out, ServiceOut] =
     copy(processName = processName)
 
+
+  def withOutputVariables(names: String*): ServiceProcess[In, Out, ServiceOut] =
+    copy(outputVariables = names)
+
+  def withOutputVariable(processName: String): ServiceProcess[In, Out, ServiceOut] =
+    copy(outputVariables = outputVariables :+ processName)
+
   def withImpersonateUserId(
       impersonateUserId: String
   ): ServiceProcess[In, Out, ServiceOut] =
@@ -186,9 +206,14 @@ case class ServiceProcess[
   ): ServiceProcess[In, Out, ServiceOut] =
     copy(outputServiceMock = Some(outputServiceMock))
 
+  def handleErrors(
+                   errorCodes: String*
+                 ): ServiceProcess[In, Out, ServiceOut] =
+    copy(handledErrors = errorCodes)
+
   def handleError(
-      errorCode: String
-  ): ServiceProcess[In, Out, ServiceOut] =
+                   errorCode: String
+                 ): ServiceProcess[In, Out, ServiceOut] =
     copy(handledErrors = handledErrors :+ errorCode)
 
   def handleErrorWithRegex(
@@ -210,6 +235,9 @@ case class ServiceProcess[
     super.camundaInMap ++ serviceMock.orElse(mock).toMap +
       (InputParams.servicesMocked.toString -> CamundaVariable.valueToCamunda(
         servicesMocked
+      )) +
+      (InputParams.outputVariables.toString -> CamundaVariable.valueToCamunda(
+        outputVariables.asJson
       )) +
       (InputParams.handledErrors.toString -> CamundaVariable.valueToCamunda(
         handledErrors.asJson

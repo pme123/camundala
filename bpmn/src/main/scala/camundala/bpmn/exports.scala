@@ -39,6 +39,20 @@ enum InputParams:
   case outputVariables
   case handledErrors
   case regexHandledErrors
+  case impersonateUserId
 end InputParams
+
+enum ErrorCodes:
+  case `output-mocked` // mocking successful - but the mock is sent as BpmnError to handle in the diagram correctly
+  case `mocking-failed`
+  case `validation-failed`
+  case `error-unexpected`
+  case `running-failed`
+  case `bad-variable`
+  case `mapping-error`
+  case `service-auth-error`
+  case `service-bad-body-error`
+  case `service-unexpected-error`
+end ErrorCodes
 
 val GenericServiceProcessName = "camundala-service-generic"
