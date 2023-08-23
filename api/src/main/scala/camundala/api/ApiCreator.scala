@@ -127,15 +127,6 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
           |  .withImpersonateUserId(impersonateUserId)""".stripMargin,
         """"impersonateUserId": "myUserName","""
       ) +
-      "### ServiceProcesses" +
-      createGeneralVariable(
-        InputParams.outputServiceMock,
-        """Mock the Inner-Service (`MockedServiceResponse[ServiceOut]`)""".stripMargin,
-        """serviceProcess(..)
-          |  .mockServiceWith(MockedServiceResponse
-          |     .success200(inOut.defaultServiceMock))""".stripMargin,
-        """"impersonateUserId": "myUserName","""
-      ) +
       createGeneralVariable(
         InputParams.outputServiceMock,
         """Mock the Inner-Service (`MockedServiceResponse[ServiceOut]`)

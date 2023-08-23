@@ -35,7 +35,7 @@ import camundala.examples.invoice.bpmn.*
 import camundala.examples.invoice.domain.*
 
 // define an object that extends from a common Api Creator
-object ApiCreator extends DefaultApiCreator:
+object ApiProjectCreator extends DefaultApiCreator:
   // technical name of the project
   val projectName = "invoice-example"
   // readable name of the project
@@ -108,7 +108,7 @@ This is required as Open API skips Apis with identical paths.
 #### Responses 200
 The output variables are described in the _200_ (_ok_) response, as a status is required by Open API.
 
-See [Postman Open API] for additional informations.
+See [Postman Open API] for additional information.
 
 ### Configuration
 This is the default Configuration:
@@ -173,6 +173,38 @@ we integrate it automatically in the documentation - as a visible part.
 #### CHANGELOG
 If you have a change log in your base path (`config.basePath / "CHANGELOG.md`), 
 we integrate it automatically in the documentation - as a collapsed part.
+
+#### General Variables
+You can document general variables that are supported in any Process and/or ServiceProcess. 
+By default, the following Variables are supported:
+
+```scala
+enum InputParams:
+  case servicesMocked
+  case outputMock
+  case mockedSubprocesses
+  case outputServiceMock
+  case outputVariables
+  case handledErrors
+  case regexHandledErrors
+  case impersonateUserId
+end InputParams
+```
+That expects that your implementation can handle these variables. 
+In the future we provide for example _Service Workers_, that support these variables.
+
+If you only want to support some of them, you can override them:
+
+```scala
+  override def supportedVariables: Seq[InputParams] = Seq(
+    servicesMocked,
+    outputMock,
+    outputServiceMock,
+    handledErrors,
+    regexHandledErrors,
+    impersonateUserId
+  )
+```
 
 #### Jira Tickets
 We replace configured JIRA Ticket pattern with its URL.

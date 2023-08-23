@@ -2,6 +2,7 @@ package camundala
 package camunda7.worker
 
 import domain.*
+import bpmn.*
 import io.circe.*
 import io.circe.syntax.*
 import org.camunda.bpm.client.task.ExternalTask
