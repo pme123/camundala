@@ -17,7 +17,7 @@ class ArchiveInvoiceWorker extends ServiceWorker[In, Out, ServiceIn, ServiceOut]
     optOutput match
       case Some(out) =>
         Right(Some(out))
-      case None if inputObject.shouldFail =>
+      case None if inputObject.shouldFail.getOrElse(false) =>
         Left(ServiceUnexpectedError("Could not archive invoice..."))
       case _ =>
         Right(Some(Out()))

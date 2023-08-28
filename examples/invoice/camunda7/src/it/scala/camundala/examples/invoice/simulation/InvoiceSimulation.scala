@@ -161,7 +161,7 @@ class InvoiceSimulation extends CustomSimulation:
 
   private lazy val `Archive Invoice` =
     ArchiveInvoice.example
-      .withIn(_.copy(shouldFail = false))
+      .withIn(_.copy(shouldFail = Some(false)))
 
   private lazy val `Archive Invoice handled` =
     ArchiveInvoice.example

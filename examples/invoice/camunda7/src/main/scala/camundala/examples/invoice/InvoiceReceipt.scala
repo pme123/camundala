@@ -145,7 +145,7 @@ object ArchiveInvoice extends BpmnDsl:
   lazy val serviceMock: ServiceOut = Seq("someIdJustForDemo")
 
   case class  In(
-                  shouldFail: Boolean = true,
+                  shouldFail: Option[Boolean] = Some(true),
                 )
   object In:
     given Schema[In] = Schema.derived
