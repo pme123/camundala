@@ -39,7 +39,17 @@ object NoOutput:
   given Schema[NoOutput] = Schema.derived
   given CirceCodec[NoOutput] = deriveCodec
 
-  
+enum NotValidStatus derives ConfiguredEnumCodec:
+  case notValid
+object NotValidStatus:
+  given Schema[NotValidStatus] = Schema.derived
+
+enum CanceledStatus derives ConfiguredEnumCodec:
+  case canceled
+object CanceledStatus:
+  given Schema[CanceledStatus] = Schema.derived
+
+
 trait GenericServiceIn:
   def serviceName: String
 
@@ -97,9 +107,9 @@ trait MockSupport[Out <: Product]:
 
 trait MockServiceSupport[
     Out <: Product,
-    OutS, // the body of the HttpResponse
+    ServiceOut // the body of the HttpResponse
 ] extends MockSupport[Out]:
-  def outputServiceMock: Option[MockedServiceResponse[OutS]]
+  def outputServiceMock: Option[MockedServiceResponse[ServiceOut]]
 //TODO move to bpmn
 
 // descriptions
@@ -126,7 +136,7 @@ def outputMockDescr[Out: CirceCodec, Schema](mock: Out) =
 val servicesMockedDescr =
   "This flag will mock every Service that this Process calls, using the default Mock."
 
-def outputServiceMockDescr[OutS: Encoder](mock: OutS) =
+def outputServiceMockDescr[ServiceOut: Encoder](mock: ServiceOut) =
   s"""You can mock the response variables of this Http Service.
      |
      |Class: `${mock.getClass.getName.replace("$", " > ")}`
@@ -156,4 +166,3 @@ You can use a JSON Array of Strings or a comma-separated String.
 Example: `['java.sql.SQLException', '"errorNr":20000']` or 'java.sql.SQLException,"errorNr":20000'
 """
 //TODO end move to bpmn
-  

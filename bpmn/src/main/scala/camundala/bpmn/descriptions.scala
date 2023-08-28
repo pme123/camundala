@@ -15,10 +15,10 @@ case class ProcessInDescr[In <: Product: CirceCodec, Out <: Product: CirceCodec]
 )
 case class ServiceInDescr[
     InS <: Product: CirceCodec,
-    OutS <: Product: CirceCodec
+    ServiceOut <: Product: CirceCodec
 ](
     // @description(serviceNameDescr(serviceName))
     serviceName: String,
-    defaultServiceMock: OutS,
-    outputServiceMock: Option[MockedServiceResponse[OutS]]
+    defaultServiceMock: ServiceOut,
+    outputServiceMock: Option[MockedServiceResponse[ServiceOut]]
 )

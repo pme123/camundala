@@ -1,17 +1,9 @@
 package camundala.examples.invoice
 package simulation
 
-import camundala.bpmn.CollectEntries
-import camundala.examples.invoice.InvoiceReceipt.{
-  ApproveInvoiceUT,
-  ApproverGroup,
-  InvoiceAssignApproverDMN,
-  PrepareBankTransferUT
-}
-import camundala.examples.invoice.ReviewInvoice.{
-  AssignReviewerUT,
-  ReviewInvoiceUT
-}
+import camundala.bpmn.{CollectEntries, ErrorCodes}
+import camundala.examples.invoice.InvoiceReceipt.{ApproveInvoiceUT, ApproverGroup, InvoiceAssignApproverDMN, PrepareBankTransferUT}
+import camundala.examples.invoice.ReviewInvoice.{AssignReviewerUT, ReviewInvoiceUT}
 import camundala.simulation.*
 import camundala.simulation.custom.CustomSimulation
 
@@ -64,13 +56,31 @@ class InvoiceSimulation extends CustomSimulation:
       "Validation Error: Input is not valid: DecodingFailure at .creditor: Missing required field"
     ),
     // mocking
-    scenario(`Invoice Receipt mocked invoiceReviewed`) (
+    scenario(`Invoice Receipt mocked invoiceReviewed`)(
       NotApproveInvoiceUT,
-    // subProcess not needed because of mocking
-    ApproveInvoiceUT, // now approve
-    PrepareBankTransferUT),
+      // subProcess not needed because of mocking
+      ApproveInvoiceUT, // now approve
+      PrepareBankTransferUT
+    ),
     scenario(`Review Invoice mocked`), // mocks itself
-    scenario(`Archive Invoice that fails`) // serviceProcess - does not run as there is no such worker
+    // ServiceProcess - works only if exampleInvoiceWorkerC7 is running
+    ignore.scenario(
+      `Archive Invoice`
+    ),
+    ignore.scenario(
+      `Archive Invoice handled`
+    ),
+    scenario(
+      `Archive Invoice handled regex matched`
+    ),
+    ignore.incidentScenario(
+      `Archive Invoice handled not matched`,
+      "The error was handled, but did not match the defined 'regexHandledErrors'."
+    ),
+    ignore.incidentScenario(
+      `Archive Invoice that fails`,
+      "Could not archive invoice"
+    )
   )
 
   override implicit def config =
@@ -78,8 +88,11 @@ class InvoiceSimulation extends CustomSimulation:
       .withPort(8034)
 
   private lazy val `Invoice Receipt` = InvoiceReceipt.example
-  private lazy val `Invoice Receipt mocked invoiceReviewed` = `Invoice Receipt with Review`
-    .withIn(InvoiceReceipt.In(invoiceReviewedMock = Some(ReviewInvoice.Out())))
+  private lazy val `Invoice Receipt mocked invoiceReviewed` =
+    `Invoice Receipt with Review`
+      .withIn(
+        InvoiceReceipt.In(invoiceReviewedMock = Some(ReviewInvoice.Out()))
+      )
 
   private lazy val ApproveInvoiceUT = InvoiceReceipt.ApproveInvoiceUT.example
   private lazy val PrepareBankTransferUT =
@@ -145,10 +158,28 @@ class InvoiceSimulation extends CustomSimulation:
   private lazy val BadValidationP =
     InvoiceReceipt.example
       .withIn(InvoiceReceipt.In(null))
-    
+
+  private lazy val `Archive Invoice` =
+    ArchiveInvoice.example
+      .withIn(_.copy(shouldFail = false))
+
+  private lazy val `Archive Invoice handled` =
+    ArchiveInvoice.example
+      .withOut(_.copy(archived = None))
+      .handleError(ErrorCodes.`service-unexpected-error`)
+
+  private lazy val `Archive Invoice handled not matched` =
+    ArchiveInvoice.example
+      .handleError(ErrorCodes.`service-unexpected-error`)
+      .handleErrorWithRegex("Some other error msg")
+
+  private lazy val `Archive Invoice handled regex matched` =
+    ArchiveInvoice.example
+      .withOut(_.copy(archived = None))
+      .handleError(ErrorCodes.`service-unexpected-error`)
+      .handleErrorWithRegex("Could not .* invoice")
+
   private lazy val `Archive Invoice that fails` =
     ArchiveInvoice.example
-      .mockServices
 
 end InvoiceSimulation
-    

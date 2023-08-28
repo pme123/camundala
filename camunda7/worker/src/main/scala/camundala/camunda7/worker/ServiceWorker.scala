@@ -1,9 +1,9 @@
 package camundala
 package camunda7.worker
 
-import domain.*
-import bpmn.*
-import CamundalaWorkerError.*
+import camundala.bpmn.*
+import camundala.camunda7.worker.CamundalaWorkerError.*
+import camundala.domain.*
 import io.circe.syntax.*
 import sttp.client3.*
 import sttp.model.Uri
@@ -11,14 +11,17 @@ import sttp.model.Uri
 trait ServiceWorker[
     In <: Product: CirceCodec,
     Out <: Product: CirceCodec,
-    InB: Encoder, // body of service
-    OutS: Decoder, // output of service
-] extends CamundalaWorker[In, Out]://,      RestApiClient[InB, OutS]:
+    ServiceIn: Encoder, // body of service
+    ServiceOut: Decoder // output of service
+] extends CamundalaWorker[
+      In,
+      Out
+    ]: //,      RestApiClient[ServiceIn, ServiceOut]:
 
   type ApiUriType = HelperContext[Either[CamundalaWorkerError, Uri]]
   type QueryParamsType =
     HelperContext[Either[CamundalaWorkerError, Seq[(String, Seq[String])]]]
-  type BodyType = HelperContext[Either[CamundalaWorkerError, Option[InB]]]
+  type BodyType = HelperContext[Either[CamundalaWorkerError, Option[ServiceIn]]]
   type OutputType = HelperContext[Either[CamundalaWorkerError, Option[Out]]]
 
   protected def httpMethod: Method
@@ -35,24 +38,25 @@ trait ServiceWorker[
   protected def mapBodyInput(inputObject: In): BodyType = Right(None)
   // default is no output
   protected def mapBodyOutput(
-      serviceOutput: OutS,
-      headers: Map[String, String]
+      requestOutput: RequestOutput[ServiceOut]
   ): OutputType = Right(None)
 
   protected def mapBodyOutput(
-      serviceOutput: OutS,
+      serviceOutput: ServiceOut,
       headers: Seq[Seq[String]]
   ): OutputType =
     mapBodyOutput(
-      serviceOutput,
-      // take correct ones and make a map of it
-      headers
-        .map(_.toList)
-        .collect { case key :: value :: _ => key -> value }
-        .toMap
+      RequestOutput(
+        serviceOutput,
+        // take correct ones and make a map of it
+        headers
+          .map(_.toList)
+          .collect { case key :: value :: _ => key -> value }
+          .toMap
+      )
     )
 
-  protected def defaultServiceMock: OutS
+  protected def defaultServiceMock: ServiceOut
   protected def defaultHeaders: Map[String, String] = Map.empty
 
   override protected def defaultMock: Out =
@@ -62,12 +66,16 @@ trait ServiceWorker[
   ) // validation is not handled for services
 
   override protected def getDefaultMock: MockerOutput =
-    mapBodyOutput(defaultServiceMock, defaultHeaders).left.map(err =>
-      MockerError(errorMsg = err.errorMsg)
+    mapBodyOutput(RequestOutput(defaultServiceMock, defaultHeaders)).left.map(
+      err => MockerError(errorMsg = err.errorMsg)
     )
 
   protected val isService: Boolean = true
-  protected def sendRequest(request: Request[Either[String, String], Any], optReqBody: Option[InB]): Either[ServiceError, (OutS, Map[String, String])]
+
+  protected def sendRequest(
+      request: Request[Either[String, String], Any],
+      optReqBody: Option[ServiceIn]
+  ): Either[ServiceError, RequestOutput[ServiceOut]]
 
   override protected def runWork(
       inputObject: In,
@@ -80,7 +88,7 @@ trait ServiceWorker[
       optWithServiceMock <- withServiceMock(optOutMock, uri, qParams, body)
       output <- handleMocking(optWithServiceMock, uri, qParams, body).getOrElse(
         sendRequest(requestMethod(uri, qParams), body)
-          .flatMap { case (body, headers) => mapBodyOutput(body, headers) }
+          .flatMap(mapBodyOutput)
       )
     } yield output
 
@@ -90,7 +98,7 @@ trait ServiceWorker[
       optOutMock: Option[Out],
       apiUri: Uri,
       queryParams: Seq[(String, Seq[String])],
-      requestBody: Option[InB]
+      requestBody: Option[ServiceIn]
   ): HelperContext[Either[CamundalaWorkerError, Option[Out]]] =
     val outputServiceMock =
       extractedVariableOpt(InputParams.outputServiceMock)
@@ -98,8 +106,15 @@ trait ServiceWorker[
       .flatMap {
         case Some(json) =>
           for {
-            mockedResponse <- decodeMock[MockedServiceResponse[OutS]](json)
-            out <- handleServiceMock(mockedResponse, apiUri, queryParams, requestBody)
+            mockedResponse <- decodeMock[MockedServiceResponse[ServiceOut]](
+              json
+            )
+            out <- handleServiceMock(
+              mockedResponse,
+              apiUri,
+              queryParams,
+              requestBody
+            )
           } yield out
         case None => Right(optOutMock)
       }
@@ -109,24 +124,24 @@ trait ServiceWorker[
       optOutMock: Option[Out],
       apiUri: Uri,
       queryParams: Seq[(String, Seq[String])],
-      requestBody: Option[InB]
+      requestBody: Option[ServiceIn]
   ): Option[Either[CamundalaWorkerError, Option[Out]]] =
     optOutMock
       .map { mock =>
         println(s"""Mocked Service: ${niceClassName(this.getClass)}
-           |${requestMsg(apiUri, queryParams, requestBody)}
-           | - mockedResponse: ${mock.asJson}
-           |""".stripMargin)
+                   |${requestMsg(apiUri, queryParams, requestBody)}
+                   | - mockedResponse: ${mock.asJson}
+                   |""".stripMargin)
         mock
       }
       .map(m => Right(Some(m)))
   end handleMocking
 
   private def handleServiceMock(
-      mockedResponse: Option[MockedServiceResponse[OutS]],
+      mockedResponse: Option[MockedServiceResponse[ServiceOut]],
       apiUri: Uri,
       queryParams: Seq[(String, Seq[String])],
-      requestBody: Option[InB]
+      requestBody: Option[ServiceIn]
   ): HelperContext[Either[CamundalaWorkerError, Option[Out]]] =
     mockedResponse
       .map {
@@ -156,3 +171,8 @@ trait ServiceWorker[
       .copy(uri = apiUri.params(QueryParams(qParams)), method = httpMethod)
   end requestMethod
 end ServiceWorker
+
+case class RequestOutput[ServiceOut](
+    outputBody: ServiceOut,
+    headers: Map[String, String]
+)

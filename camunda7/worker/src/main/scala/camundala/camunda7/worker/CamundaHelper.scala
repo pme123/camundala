@@ -1,9 +1,9 @@
 package camundala
 package camunda7.worker
 
-import bpmn.*
-import domain.*
+import camundala.bpmn.*
 import camundala.camunda7.worker.CamundalaWorkerError.*
+import camundala.domain.*
 import io.circe.parser
 import io.circe.syntax.*
 import org.camunda.bpm.client.task.ExternalTask
@@ -15,8 +15,8 @@ import scala.language.implicitConversions
 trait CamundaHelper:
 
   def variableTypedOpt(
-                        varKey: String | InputParams
-                      ): HelperContext[Option[TypedValue]] =
+      varKey: String | InputParams
+  ): HelperContext[Option[TypedValue]] =
     Option(summon[ExternalTask].getVariableTyped(varKey.toString))
 
   /** Returns the Variable in the Bag. If there is none it return `null`. It
@@ -25,13 +25,15 @@ trait CamundaHelper:
     */
   def variableOpt[T](varKey: String | InputParams): HelperContext[Option[T]] =
     Option(summon[ExternalTask].getVariable[T](varKey.toString))
-      .map{
+      .map {
         case n: java.lang.Integer =>
           n.asInstanceOf[Int].asInstanceOf[T]
         case other => other
       }
 
-  def extractedVariableOpt[T](varKey: String | InputParams): HelperContext[Either[BadVariableError, Option[Json]]] =
+  def extractedVariableOpt[T](
+      varKey: String | InputParams
+  ): HelperContext[Either[BadVariableError, Option[Json]]] =
     variableTypedOpt(varKey)
       .map {
         case typedValue if typedValue.getType == ValueType.NULL =>
@@ -39,7 +41,40 @@ trait CamundaHelper:
         case typedValue =>
           extractValue(typedValue)
             .map(v => Some(v))
-      }.getOrElse(Right(None))
+      }
+      .getOrElse(Right(None))
+
+  import camundala.bpmn.*
+  import camundala.domain.*
+
+  // used for input variables you can define with Array of Strings or a comma-separated String
+  // if not set it returns an empty Seq
+  def extractSeqFromArrayOrString(
+      varKey: String | InputParams
+  ): HelperContext[Either[BadVariableError, Seq[String]]] =
+    extractedVariableOpt(varKey)
+      .flatMap {
+        case Some(value) if value.isArray =>
+          value.as[Seq[String]]
+            .map(_.filter(_.trim.nonEmpty))
+            .left.map { error =>
+            error.printStackTrace()
+            BadVariableError(
+              s"Could not extract Seq for an Array or comma-separated String: ${error.getMessage}"
+            )
+          }
+        case Some(value) if value.isString =>
+          value.as[String].map(_.split(",").toSeq.filter(_.trim.nonEmpty)
+          ).left.map { error =>
+            error.printStackTrace()
+            BadVariableError(
+              s"Could not extract Seq for an Array or comma-separated String: ${error.getMessage}"
+            )
+          }
+        case _ =>
+          Right(Seq.empty[String])
+      }
+
 
   /** Analog `variable(String vari)`. You can define a Value that is returned if
     * there is no Variable with this name. Usage: myVar = variable("myVar",
@@ -117,11 +152,17 @@ trait CamundaHelper:
             Right(Json.fromString(en.toString))
           case other =>
             Left(
-              BadVariableError(s"Input is not valid: Unexpected PrimitiveValueType: $other")
+              BadVariableError(
+                s"Input is not valid: Unexpected PrimitiveValueType: $other"
+              )
             )
 
       case other =>
-        Left(BadVariableError(s"Unexpected ValueType - but is ${typedValue.getType}"))
+        Left(
+          BadVariableError(
+            s"Unexpected ValueType - but is ${typedValue.getType}"
+          )
+        )
 
   end extractValue
 end CamundaHelper

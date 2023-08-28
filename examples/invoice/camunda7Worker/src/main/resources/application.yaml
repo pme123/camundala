@@ -1,0 +1,17 @@
+server:
+  port: 8093
+camunda.bpm:
+  job-execution:
+    wait-time-in-millis: 200 # this is for speedup testing
+  client:
+    base-url: ${CAMUNDA_REST_URL:http://localhost:8034/engine-rest}
+    worker-id: ${WORKER_ID:my-worker}
+    disable-backoff-strategy: true # only during testing - faster topic
+    async-response-timeout: 10000
+
+logging:
+  level:
+    root: warn
+    "camundala": info
+    "valiant": info
+    "org.camunda.bpm.client": info

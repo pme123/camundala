@@ -171,7 +171,7 @@ trait SScenarioExtensions extends SStepExtensions:
       }
   end extension
 
-  extension (scenario: IncidentScenario)
+  extension (scenario: IsIncidentScenario)
     def run(): Future[ResultType] =
       scenario.logScenario { (data: ScenarioData) =>
         given ScenarioData = data

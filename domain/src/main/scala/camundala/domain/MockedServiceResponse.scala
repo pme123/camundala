@@ -21,39 +21,39 @@ case class MockedServiceResponse[
 object MockedServiceResponse:
 
   def success[
-      OutS
-  ](status: Int, body: OutS):MockedServiceResponse[OutS] =
+      ServiceOut
+  ](status: Int, body: ServiceOut):MockedServiceResponse[ServiceOut] =
     MockedServiceResponse(status, Right(body))
 
   def success200[
-      OutS
-  ](body: OutS): MockedServiceResponse[OutS] =
+      ServiceOut
+  ](body: ServiceOut): MockedServiceResponse[ServiceOut] =
     success(200, body)
 
   def success201[
-      OutS
-  ](body: OutS): MockedServiceResponse[OutS] =
+      ServiceOut
+  ](body: ServiceOut): MockedServiceResponse[ServiceOut] =
     success(201, body)
 
   lazy val success204: MockedServiceResponse[NoOutput] =
     success(204, NoOutput())
 
   def error[
-      OutS
-  ](status: Int, body: Json): MockedServiceResponse[OutS] =
+      ServiceOut
+  ](status: Int, body: Json): MockedServiceResponse[ServiceOut] =
     MockedServiceResponse(status, Left(Some(body)))
 
   def error[
-    OutS
-  ](status: Int): MockedServiceResponse[OutS] =
+    ServiceOut
+  ](status: Int): MockedServiceResponse[ServiceOut] =
     MockedServiceResponse(status, Left(None))
 
-  implicit def tapirSchema[OutS: Schema]
-      : Schema[MockedServiceResponse[OutS]] =
-    Schema.derived[MockedServiceResponse[OutS]]
+  implicit def tapirSchema[ServiceOut: Schema]
+      : Schema[MockedServiceResponse[ServiceOut]] =
+    Schema.derived[MockedServiceResponse[ServiceOut]]
 
-  implicit def mockedHttpResponseEncoder[OutS: Encoder]
-      : Encoder[MockedServiceResponse[OutS]] =
+  implicit def mockedHttpResponseEncoder[ServiceOut: Encoder]
+      : Encoder[MockedServiceResponse[ServiceOut]] =
     Encoder.instance { response =>
       Json.obj(
         "respStatus" -> Json.fromInt(response.respStatus),
@@ -67,14 +67,14 @@ object MockedServiceResponse:
           .asJson
       )
     }
-  implicit def mockedHttpResponseDecoder[OutS: Decoder]
-      : Decoder[MockedServiceResponse[OutS]] =
+  implicit def mockedHttpResponseDecoder[ServiceOut: Decoder]
+      : Decoder[MockedServiceResponse[ServiceOut]] =
     Decoder.instance { cursor =>
       for {
         respStatus <- cursor.downField("respStatus").as[Int]
         respBody <-
           if (respStatus < 300)
-            cursor.downField("respBody").as[OutS].map(Right(_))
+            cursor.downField("respBody").as[ServiceOut].map(Right(_))
           else cursor.downField("respBody").as[Option[Json]].map(Left(_))
         respHeaders <- cursor.downField("respHeaders").as[Seq[Seq[String]]]
       } yield MockedServiceResponse(respStatus, respBody, respHeaders)

@@ -103,11 +103,10 @@ end decodeTo
 
 type HelperContext[T] = ExternalTask ?=> T
 
-type HandledErrorCode = ErrorCodes | String | Int
-type HandledErrorCodes = Seq[HandledErrorCode]
+type HandledErrorCodes = Seq[ErrorCodeType]
 
 sealed trait CamundalaWorkerError:
-  def errorCode: HandledErrorCode
+  def errorCode: ErrorCodeType
   def errorMsg: String
 
 sealed trait ErrorWithOutput extends CamundalaWorkerError:
@@ -133,8 +132,6 @@ object CamundalaWorkerError:
   case class CustomError(errorCode: String, errorMsg: String)
       extends CamundalaWorkerError
 
-  sealed trait NotHandledError extends CamundalaWorkerError
-
   case class InitializerError(
       errorMsg: String =
         "Problems initialize default variables of the Process.",
@@ -155,6 +152,19 @@ object CamundalaWorkerError:
       errorMsg: String,
       errorCode: ErrorCodes = ErrorCodes.`error-unexpected`
   ) extends CamundalaWorkerError
+
+  case class HandledRegexNotMatchedError(
+      errorMsg: String,
+      errorCode: ErrorCodes = ErrorCodes.`error-handledRegexNotMatched`
+  ) extends CamundalaWorkerError
+
+  object HandledRegexNotMatchedError:
+    def apply(error: CamundalaWorkerError): HandledRegexNotMatchedError =
+      HandledRegexNotMatchedError(
+        s"""The error was handled, but did not match the defined 'regexHandledErrors'.
+          |Original Error: ${error.errorCode} - ${error.errorMsg}
+          |""".stripMargin
+      )
 
   case class BadVariableError(
       errorMsg: String,
@@ -181,10 +191,10 @@ object CamundalaWorkerError:
       errorMsg: String
   ) extends ServiceError
 
-  def requestMsg[InB: Encoder](
+  def requestMsg[ServiceIn: Encoder](
       apiUri: Uri,
       queryParams: Seq[(String, Seq[String])],
-      requestBody: Option[InB]
+      requestBody: Option[ServiceIn]
   ): String =
     s""" - Request URL: ${URLDecoder.decode(apiUri.toString, Charset.defaultCharset())}
        | - Request Params: ${
@@ -197,12 +207,12 @@ object CamundalaWorkerError:
           .mkString("&")}
        | - Request Body: ${requestBody.map(_.asJson).getOrElse("")}""".stripMargin
 
-  def serviceErrorMsg[InB: Encoder](
+  def serviceErrorMsg[ServiceIn: Encoder](
       status: Int,
       errorMsg: String,
       apiUri: Uri,
       queryParams: Seq[(String, Seq[String])],
-      requestBody: Option[InB]
+      requestBody: Option[ServiceIn]
   ): String =
     s"""Service Error: $status
        |ErrorMsg: $errorMsg

@@ -152,7 +152,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
       ) +
       createGeneralVariable(
         InputParams.regexHandledErrors,
-        """Handling Errors with the messages that match a list of Regex expressions.
+        """You can further filter Handled Errors with a list of Regex expressions that the body error message must match.
           |Depending on your implementation it is also possible to use a _comma separated_ String,
           |like `"SQL exception,\"errorNr\":\"20000\""`
           |""".stripMargin,
@@ -221,11 +221,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
        |
        |Created at ${SimpleDateFormat().format(new Date())}
        |
-       |**${//
-    apiConfig.cawemoFolder
-      .map(f => s"[Check Project on Cawemo](https://cawemo.com/folders/$f)")
-      .mkString //
-    }**
+       |**See the [Camundala Documentation](https://pme123.github.io/camundala/)
        |
        |${createReadme()}
        |

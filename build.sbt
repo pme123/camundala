@@ -34,6 +34,7 @@ lazy val root = project
     exampleTwitterC7,
     exampleTwitterC8,
     exampleInvoiceC7,
+    exampleInvoiceWorkerC7,
     exampleInvoiceC8,
     exampleDemos,
     exampleMyCompany
@@ -225,6 +226,12 @@ lazy val exampleInvoiceC7 = project
     libraryDependencies ++= camundaDependencies
   )
   .dependsOn(api, dmn, camunda, simulation)
+
+lazy val exampleInvoiceWorkerC7 = project
+  .in(file("./examples/invoice/camunda7Worker"))
+  .settings(projectSettings("example-invoice-c7"))
+  .configure(preventPublication)
+  .dependsOn(camunda7Worker, exampleInvoiceC7)
 
 lazy val exampleInvoiceC8 = project
   .in(file("./examples/invoice/camunda8"))

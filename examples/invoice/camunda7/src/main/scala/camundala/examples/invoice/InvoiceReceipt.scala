@@ -139,8 +139,8 @@ end InvoiceReceipt
 // example for service API description
 object ArchiveInvoice extends BpmnDsl:
 
-  val serviceName = "ArchiveInvoiceService"
-  type InB = NoInput
+  final val serviceName = "ArchiveInvoiceService"
+  type ServiceIn = NoInput
   type ServiceOut = Seq[String]
   lazy val serviceMock: ServiceOut = Seq("someIdJustForDemo")
 
@@ -153,7 +153,7 @@ object ArchiveInvoice extends BpmnDsl:
   end In
 
   case class Out(
-                  archived: Boolean = true,
+                  archived: Option[Boolean] = Some(true),
                 )
   object Out:
     given Schema[Out] = Schema.derived

@@ -28,7 +28,7 @@ class MockedServiceResponseTest:
 end MockedServiceResponseTest
 
 lazy val seqSuccess = Seq(Success())
-type OutS2 = Seq[Success]
+type ServiceOut2 = Seq[Success]
 
 case class TestWithMock(
                          myMock: MockedServiceResponse[Success] = MockedServiceResponse.success(122, Success()),

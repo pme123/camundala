@@ -158,16 +158,16 @@ case class ServiceProcess[
     Out <: Product: Encoder: Decoder: Schema,
     ServiceOut: Encoder: Decoder
 ](
-    inOutDescr: InOutDescr[In, Out],
-    defaultServiceMock: ServiceOut,
-    processName: String = GenericServiceProcessName,
-    outputVariables: Seq[String] = Seq.empty,
-    outputMock: Option[Out] = None,
-    servicesMocked: Boolean = false,
-    impersonateUserId: Option[String] = None,
-    outputServiceMock: Option[MockedServiceResponse[ServiceOut]] = None,
-    handledErrors: Seq[String] = Seq.empty,
-    regexHandledErrors: Seq[String] = Seq.empty
+   inOutDescr: InOutDescr[In, Out],
+   defaultServiceMock: ServiceOut,
+   processName: String = GenericServiceProcessName,
+   outputVariables: Seq[String] = Seq.empty,
+   outputMock: Option[Out] = None,
+   servicesMocked: Boolean = false,
+   impersonateUserId: Option[String] = None,
+   outputServiceMock: Option[MockedServiceResponse[ServiceOut]] = None,
+   handledErrors: Seq[ErrorCodeType] = Seq.empty,
+   regexHandledErrors: Seq[String] = Seq.empty
 ) extends ProcessOrService[In, Out, ServiceProcess[In, Out, ServiceOut]],
       OutputMock[Out]:
 
@@ -207,12 +207,12 @@ case class ServiceProcess[
     copy(outputServiceMock = Some(outputServiceMock))
 
   def handleErrors(
-                   errorCodes: String*
+                   errorCodes: ErrorCodeType*
                  ): ServiceProcess[In, Out, ServiceOut] =
     copy(handledErrors = errorCodes)
 
   def handleError(
-                   errorCode: String
+                   errorCode: ErrorCodeType
                  ): ServiceProcess[In, Out, ServiceOut] =
     copy(handledErrors = handledErrors :+ errorCode)
 
@@ -240,11 +240,15 @@ case class ServiceProcess[
         outputVariables.asJson
       )) +
       (InputParams.handledErrors.toString -> CamundaVariable.valueToCamunda(
-        handledErrors.asJson
+        handledErrors.map(_.toString).asJson
       )) +
       (InputParams.regexHandledErrors.toString -> CamundaVariable
         .valueToCamunda(
           regexHandledErrors.asJson
+        )) +
+      (InputParams.serviceName.toString -> CamundaVariable
+        .valueToCamunda(
+          serviceName
         ))
 end ServiceProcess
 

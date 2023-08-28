@@ -9,7 +9,7 @@ trait Runner[In <: Product: CirceCodec, Out <: Product: CirceCodec] extends Camu
 
   type RunnerOutput = HelperContext[Either[CamundalaWorkerError, Option[Out]]]
 
-  protected def runWork(inputObject: In, optOutput: Option[Out]) : RunnerOutput = 
+  protected def runWork(inputObject: In, optOutMock: Option[Out]) : RunnerOutput = 
     Right(None)
 
 end Runner
