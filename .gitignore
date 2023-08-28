@@ -30,3 +30,4 @@ meta.json
 /camunda-h2-default/process-engine.mv.db
 /examples/.datakurre/
 /test.json
+/camunda-h2-default/external-worker.mv.db

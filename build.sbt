@@ -169,7 +169,7 @@ lazy val documentation = (project in file("./documentation"))
   )
   .enablePlugins(LaikaPlugin)
 
-val tapirVersion = "1.2.4"
+val tapirVersion = "1.2.10"
 // can be removed when tapir upgraded
 val circeVersion = "0.14.5"
 lazy val tapirDependencies = Seq(
@@ -177,10 +177,10 @@ lazy val tapirDependencies = Seq(
   "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % tapirVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-redoc-bundle" % tapirVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
-  "com.softwaremill.sttp.apispec" %% "openapi-circe-yaml" % "0.3.1",
+  "com.softwaremill.sttp.apispec" %% "openapi-circe-yaml" % "0.3.2",
   "io.circe" %% "circe-generic" % circeVersion
 )
-lazy val sttpDependency = "com.softwaremill.sttp.client3" %% "circe" % "3.8.10"
+lazy val sttpDependency = "com.softwaremill.sttp.client3" %% "circe" % "3.8.13"
 val camundaVersion = "7.19.0"
 /* NOT IN USE
 lazy val camundaTestDependencies = Seq(
@@ -337,7 +337,7 @@ lazy val exampleMyCompany = project
   .configure(preventPublication)
   .dependsOn(api)
 
-val springBootVersion = "2.7.6"
+val springBootVersion = "2.7.15"
 val h2Version = "2.1.214"
 // Twitter
 val twitter4jVersion = "4.1.2"
@@ -349,19 +349,18 @@ val camundaDependencies = Seq(
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
   // json support
   "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
-  "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.17.0",
+  "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.18.1",
   // groovy support
-  "org.codehaus.groovy" % "groovy-jsr223" % "3.0.13",
+  "org.codehaus.groovy" % "groovy-jsr223" % "3.0.16",
   "com.h2database" % "h2" % h2Version
 ) //.map(_.exclude("org.slf4j", "slf4j-api"))
 
-val zeebeVersion = "1.3.4"
+val zeebeVersion = "8.2.12"
 val zeebeDependencies = Seq(
   "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
   "org.springframework.boot" % "spring-boot-starter-webflux" % springBootVersion,
-  "io.camunda" % "spring-zeebe-starter" % zeebeVersion,
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.3"
-  //"io.camunda" % "spring-zeebe-test" % zeebeVersion % Test,
+  "io.camunda" % "zeebe-client-java" % zeebeVersion,
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.14.2"
 ).map(_.exclude("org.slf4j", "slf4j-api"))
 
 lazy val developerList = List(

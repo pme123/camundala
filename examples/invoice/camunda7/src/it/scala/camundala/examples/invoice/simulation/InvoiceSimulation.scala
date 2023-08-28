@@ -64,20 +64,20 @@ class InvoiceSimulation extends CustomSimulation:
     ),
     scenario(`Review Invoice mocked`), // mocks itself
     // ServiceProcess - works only if exampleInvoiceWorkerC7 is running
-    ignore.scenario(
+    scenario(
       `Archive Invoice`
     ),
-    ignore.scenario(
+    scenario(
       `Archive Invoice handled`
     ),
     scenario(
       `Archive Invoice handled regex matched`
     ),
-    ignore.incidentScenario(
+    incidentScenario(
       `Archive Invoice handled not matched`,
       "The error was handled, but did not match the defined 'regexHandledErrors'."
     ),
-    ignore.incidentScenario(
+    incidentScenario(
       `Archive Invoice that fails`,
       "Could not archive invoice"
     )
