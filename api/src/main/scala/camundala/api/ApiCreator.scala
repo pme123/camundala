@@ -85,19 +85,21 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
         |""".stripMargin +
       createGeneralVariable(
         InputParams.mockedSubprocesses,
-        """Mock the SubProcesses with their default Mocks.
+        s"""Mock the SubProcesses with their default Mocks.
           |This is a list of the _SubProcesses processNames_ you want to mock.
+          |${listOfStringsOrCommaSeparated("mySubProcess,myOtherSubProcess")}
           |""".stripMargin,
         """process(..)
           |  .mockSubProcesses("mySubProcess1", "mySubProcess2") // creates a list with SubProcessess
           |  .mockSubProcess("myOtherSubProcess") // adds a SubProcess""".stripMargin,
-        """"mockedSubprocesses": ["mySubProcess"],"""
+        """"mockedSubprocesses": ["mySubProcess", "myOtherSubProcess"],"""
       ) +
       "### Processes and ServiceProcesses" +
       createGeneralVariable(
         InputParams.outputVariables,
-        """You can filter the Output with a list of variable names you are interested in.
-          |""".stripMargin,
+        s"""You can filter the Output with a list of variable names you are interested in.
+           |${listOfStringsOrCommaSeparated("name,firstName")}
+           |""".stripMargin,
         """process(..) // or serviceProcess(..)
           |  .withOutputVariables("name", "firstName") // creates a list with outputVariables
           |  .withOutputVariable("name", "firstName") // adds a outputVariable""".stripMargin,
@@ -141,10 +143,9 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
       ) +
       createGeneralVariable(
         InputParams.handledErrors,
-        """A list of error codes that are handled (`BpmnError`)
-          |Depending on your implementation it is also possible to use a _comma separated_ String,
-          |like `"validation-failed,404"`
-          |""".stripMargin,
+        s"""A list of error codes that are handled (`BpmnError`)
+           |${listOfStringsOrCommaSeparated("validation-failed,404")}
+           |""".stripMargin,
         """serviceProcess(..)
           |  .handleErrors(ErrorCodes.`validation-failed`, "404") // create a list of handledErrors
           |  .handleError("404") // add a handledError""".stripMargin,
@@ -152,10 +153,11 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
       ) +
       createGeneralVariable(
         InputParams.regexHandledErrors,
-        """You can further filter Handled Errors with a list of Regex expressions that the body error message must match.
-          |Depending on your implementation it is also possible to use a _comma separated_ String,
-          |like `"SQL exception,\"errorNr\":\"20000\""`
-          |""".stripMargin,
+        s"""You can further filter Handled Errors with a list of Regex expressions that the body error message must match.
+           |${listOfStringsOrCommaSeparated(
+          "SQL exception,\"errorNr\":\"20000\""
+        )}
+           |""".stripMargin,
         """serviceProcess(..)
           |  .handleErrorWithRegex("SQL exception")
           |  .handleErrorWithRegex("\"errorNr\":\"20000\"")""".stripMargin,
@@ -330,4 +332,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
     s"[$name]($projName/OpenApi.html#$anchor)"
   end createLink
 
+  private def listOfStringsOrCommaSeparated(example: String) =
+    s"""Depending on your implementation it is also possible to use a _comma separated_ String,
+       |like `"$example"`""".stripMargin
 end ApiCreator

@@ -4,7 +4,7 @@ import camundala.bpmn.*
 import camundala.domain.*
 
 object ReviewInvoice extends BpmnDsl:
-  val processName = "example-invoice-c7-review"
+  final val processName = "example-invoice-c7-review"
 
   @description("Same Input as _InvoiceReceipt_, only different Mocking")
   case class In(
@@ -12,8 +12,6 @@ object ReviewInvoice extends BpmnDsl:
       amount: Double = 300.0,
       invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`,
       invoiceNumber: String = "I-12345",
-      @description("You can let the Archive Service fail for testing.")
-      shouldFail: Option[Boolean] = None,
   )
   object In:
     given Schema[In] = Schema.derived

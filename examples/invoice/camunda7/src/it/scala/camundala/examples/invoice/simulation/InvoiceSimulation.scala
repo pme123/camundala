@@ -48,6 +48,12 @@ class InvoiceSimulation extends CustomSimulation:
         ReviewInvoiceNotClarifiedUT // do not clarify
       )
     ),
+    scenario(`Invoice Receipt with Review mocked`)(
+      NotApproveInvoiceUT,
+      // subProcess Mocked - so nothing to do
+      ApproveInvoiceUT, // now approve
+      PrepareBankTransferUT
+    ),
     scenario(InvoiceAssignApproverDMN),
     scenario(InvoiceAssignApproverDMN2),
     badScenario(
@@ -101,6 +107,7 @@ class InvoiceSimulation extends CustomSimulation:
   private lazy val `Review Invoice` = ReviewInvoice.example
   private lazy val `Review Invoice mocked` = ReviewInvoice.example
     .mockWith(ReviewInvoice.Out())
+
   private lazy val AssignReviewerUT = ReviewInvoice.AssignReviewerUT.example
   private lazy val ReviewInvoiceUT = ReviewInvoice.ReviewInvoiceUT.example
 
@@ -149,6 +156,11 @@ class InvoiceSimulation extends CustomSimulation:
   private lazy val `Invoice Receipt with Review` =
     InvoiceReceipt.example
       .withOut(InvoiceReceipt.Out(clarified = Some(true)))
+
+  private lazy val `Invoice Receipt with Review mocked` =
+    InvoiceReceipt.example
+      .withOut(InvoiceReceipt.Out(clarified = Some(true)))
+      .mockSubProcess(ReviewInvoice.processName)
 
   private lazy val `Invoice Receipt with Review failed` =
     InvoiceReceipt.example

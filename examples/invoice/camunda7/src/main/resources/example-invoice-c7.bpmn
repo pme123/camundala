@@ -112,6 +112,7 @@
         <camunda:in source="invoiceDocument" target="invoiceDocument" />
         <camunda:out source="clarified" target="clarified" />
         <camunda:in source="invoiceReviewedMock" target="outputMock" />
+        <camunda:in source="mockedSubprocesses" target="mockedSubprocesses" />
       </extensionElements>
       <incoming>NoSequenceFlow1</incoming>
       <outgoing>sequenceFlow_183__ReviewInvoiceCA__ReviewSuccessfulEG</outgoing>

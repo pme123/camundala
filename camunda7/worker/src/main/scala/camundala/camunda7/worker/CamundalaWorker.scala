@@ -47,7 +47,10 @@ abstract class CamundalaWorker[
           )
           filteredOut <- filteredOutput(allOutputs)
         } yield externalTaskService.handleSuccess(filteredOut) //
-      ).left.map(ex => externalTaskService.handleError(ex))
+      ).left.map{
+        case ex =>
+           externalTaskService.handleError(ex)
+      }
     } catch { // safety net
       case ex: Throwable =>
         ex.printStackTrace()
@@ -64,7 +67,7 @@ abstract class CamundalaWorker[
   protected def defaultHandledErrorCodes =
     Seq(ErrorCodes.`output-mocked`, ErrorCodes.`validation-failed`)
 
-  override protected def getDefaultMock: MockerOutput = Right(Some(defaultMock))
+  override protected def getDefaultMock: MockerOutput = Left(MockedOutput(toCamunda(defaultMock)))
 
   //TODO always set initialized input - for the default values
   private def camundaOutputs(
@@ -94,7 +97,7 @@ abstract class CamundalaWorker[
       (for{
         handledErrors <- extractSeqFromArrayOrString(InputParams.handledErrors)
         regexHandledErrors <- extractSeqFromArrayOrString(InputParams.regexHandledErrors)
-        errorHandled = handledErrors.contains(error.errorCode.toString)
+        errorHandled = error.isMock || handledErrors.contains(error.errorCode.toString)
         errorRegexHandled = errorHandled && regexHandledErrors.forall(regex => error.errorMsg.matches(s".*$regex.*"))
       } yield (errorHandled, errorRegexHandled))
         .flatMap{

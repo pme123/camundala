@@ -1,10 +1,11 @@
 package camundala.camunda7.worker
 
+import camundala.bpmn.*
 import camundala.camunda7.worker.CamundalaWorkerError.*
 import camundala.domain.*
-import camundala.bpmn.*
 import io.circe.*
 import io.circe.syntax.*
+import org.camunda.bpm.client.task.ExternalTask
 
 /** Mocks this - with the following logic:
   *   - if process variable `outputMock` is set - sets its values to the process
@@ -14,24 +15,32 @@ import io.circe.syntax.*
   */
 trait Mocker[Out <: Product: CirceCodec] extends CamundaHelper:
   protected def isService: Boolean
-  protected type MockerOutput = HelperContext[Either[MockerError, Option[Out]]]
+  protected type MockerOutput = HelperContext[Either[MockerError | MockedOutput, Option[Out]]]
   protected def getDefaultMock: MockerOutput
 
   def mockOrProceed(
   ): HelperContext[Either[MockerError | MockedOutput, Option[Out]]] =
-    val servicesMocked = variable(InputParams.servicesMocked, false)
-    val outputMockOpt = variableOpt[String](InputParams.outputMock)
-
-    (servicesMocked, outputMockOpt) match {
-      case (_, Some(outputMock)) => // if the outputMock is set than we mock
-        handleMock(outputMock)
-      case (true, _)
-          if isService => // if your process is a Service check if it is mocked
-        println(s"Mocked - isService is set")
+    (for {
+      servicesMocked <- variable(InputParams.servicesMocked, false)
+      mockedSubprocesses <- variable(
+        InputParams.mockedSubprocesses,
+        Seq.empty[String]
+      )
+      outputMockOpt <- jsonVariableOpt(InputParams.outputMock)
+    } yield (servicesMocked, mockedSubprocesses.contains(topicName), outputMockOpt) match
+      case (_, _, Some(outputMock)) => // if the outputMock is set than we mock
+        decodeMock(outputMock)
+      case (_, true, _)
+          if !isService => // if your process is NOT a Service check if it is mocked
         getDefaultMock
-      case (_, None) =>
+      case (true, _, _)
+          if isService => // if your process is a Service check if it is mocked
+        getDefaultMock
+      case (_, _, None) =>
         Right(None)
-    }
+    ).left.map(err => MockerError(err.errorMsg))
+      .flatten
+
   end mockOrProceed
 
   private def handleMock(

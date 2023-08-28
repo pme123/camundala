@@ -101,7 +101,7 @@ trait ServiceWorker[
       requestBody: Option[ServiceIn]
   ): HelperContext[Either[CamundalaWorkerError, Option[Out]]] =
     val outputServiceMock =
-      extractedVariableOpt(InputParams.outputServiceMock)
+      jsonVariableOpt(InputParams.outputServiceMock)
     outputServiceMock
       .flatMap {
         case Some(json) =>

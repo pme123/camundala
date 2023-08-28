@@ -1,14 +1,15 @@
 package camundala
 package camunda7.worker
 
-import camundala.bpmn.*
-import camundala.camunda7.worker.CamundalaWorkerError.*
-import camundala.domain.*
+import domain.*
+import bpmn.*
+import CamundalaWorkerError.*
 import io.circe.parser
 import io.circe.syntax.*
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.engine.variable.`type`.{PrimitiveValueType, ValueType}
 import org.camunda.bpm.engine.variable.value.TypedValue
+
 
 import scala.language.implicitConversions
 
@@ -23,15 +24,23 @@ trait CamundaHelper:
     * returns whatever datatype the variable contains. Usage: myVar =
     * variableOpt("myVar") println("Say: $myVar")
     */
-  def variableOpt[T](varKey: String | InputParams): HelperContext[Option[T]] =
-    Option(summon[ExternalTask].getVariable[T](varKey.toString))
-      .map {
-        case n: java.lang.Integer =>
-          n.asInstanceOf[Int].asInstanceOf[T]
-        case other => other
-      }
+  def variableOpt[A: Decoder](
+      varKey: String | InputParams
+  ): HelperContext[Either[BadVariableError, Option[A]]] =
+    for {
+      maybeJson <- jsonVariableOpt(varKey)
+      obj <- maybeJson
+        .map(_.as[Option[A]])
+        .getOrElse(Right(None))
+        .left
+        .map(err =>
+          BadVariableError(
+            s"Problem decoding Json to ${nameOfType[A]}: ${err.getMessage}"
+          )
+        )
+    } yield obj
 
-  def extractedVariableOpt[T](
+  def jsonVariableOpt(
       varKey: String | InputParams
   ): HelperContext[Either[BadVariableError, Option[Json]]] =
     variableTypedOpt(varKey)
@@ -52,52 +61,61 @@ trait CamundaHelper:
   def extractSeqFromArrayOrString(
       varKey: String | InputParams
   ): HelperContext[Either[BadVariableError, Seq[String]]] =
-    extractedVariableOpt(varKey)
+    jsonVariableOpt(varKey)
       .flatMap {
         case Some(value) if value.isArray =>
-          value.as[Seq[String]]
+          value
+            .as[Seq[String]]
             .map(_.filter(_.trim.nonEmpty))
-            .left.map { error =>
-            error.printStackTrace()
-            BadVariableError(
-              s"Could not extract Seq for an Array or comma-separated String: ${error.getMessage}"
-            )
-          }
+            .left
+            .map { error =>
+              error.printStackTrace()
+              BadVariableError(
+                s"Could not extract Seq for an Array or comma-separated String: ${error.getMessage}"
+              )
+            }
         case Some(value) if value.isString =>
-          value.as[String].map(_.split(",").toSeq.filter(_.trim.nonEmpty)
-          ).left.map { error =>
-            error.printStackTrace()
-            BadVariableError(
-              s"Could not extract Seq for an Array or comma-separated String: ${error.getMessage}"
-            )
-          }
+          value
+            .as[String]
+            .map(_.split(",").toSeq.filter(_.trim.nonEmpty))
+            .left
+            .map { error =>
+              error.printStackTrace()
+              BadVariableError(
+                s"Could not extract Seq for an Array or comma-separated String: ${error.getMessage}"
+              )
+            }
         case _ =>
           Right(Seq.empty[String])
       }
-
 
   /** Analog `variable(String vari)`. You can define a Value that is returned if
     * there is no Variable with this name. Usage: myVar = variable("myVar",
     * "hello") println("Say: $myVar")
     */
-  def variable[T](
+  def variable[A: Decoder](
       varKey: String | InputParams,
-      defaultObj: T
-  ): HelperContext[T] =
-    variableOpt[T](varKey).getOrElse(defaultObj)
+      defaultObj: A
+  ): HelperContext[Either[BadVariableError, A]] =
+    variableOpt[A](varKey).map(_.getOrElse(defaultObj))
 
   /** Returns the Variable in the Bag. B if there is no Variable with that
     * identifier. Usage: myVar = variable[String]("myVar") println("Say:
     * $myVar")
     */
-  def variable[T](
+  def variable[T: Decoder](
       varKey: String | InputParams
   ): HelperContext[Either[BadVariableError, T]] =
     variableOpt(varKey)
-      .toEither(
-        s"The Variable '$varKey' is required! But does  not exist in your Process"
+      .flatMap(
+        _.toEither(
+          s"The Variable '$varKey' is required! But does  not exist in your Process"
+        )
       )
   end variable
+
+  def topicName: HelperContext[String] =
+    summon[ExternalTask].getTopicName
 
   extension [T](option: Option[T])
 
@@ -160,7 +178,7 @@ trait CamundaHelper:
       case other =>
         Left(
           BadVariableError(
-            s"Unexpected ValueType - but is ${typedValue.getType}"
+            s"Unexpected ValueType ${other.getName} - but is ${typedValue.getType}"
           )
         )
 

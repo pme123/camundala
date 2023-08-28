@@ -106,6 +106,7 @@ type HelperContext[T] = ExternalTask ?=> T
 type HandledErrorCodes = Seq[ErrorCodeType]
 
 sealed trait CamundalaWorkerError:
+  def isMock = false
   def errorCode: ErrorCodeType
   def errorMsg: String
 
@@ -127,7 +128,8 @@ object CamundalaWorkerError:
       mockedOutput: Map[String, Any],
       errorCode: ErrorCodes = ErrorCodes.`output-mocked`,
       errorMsg: String = "Output mocked"
-  ) extends ErrorWithOutput
+  ) extends ErrorWithOutput:
+    override val isMock = true
 
   case class CustomError(errorCode: String, errorMsg: String)
       extends CamundalaWorkerError

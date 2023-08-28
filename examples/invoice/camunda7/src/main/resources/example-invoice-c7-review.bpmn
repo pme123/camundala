@@ -1,94 +1,223 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1k1vca8" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.7.0" camunda:diagramRelationId="ae91fbac-5809-424d-983f-977d8010c5b3">
-  <bpmn:process id="example-invoice-c7-review" name="Review Invoice" processType="None" isClosed="false" isExecutable="true" camunda:isStartableInTasklist="false">
-    <bpmn:startEvent id="StartEvent_1" name="Review">
-      <bpmn:extensionElements>
-        <camunda:executionListener class="camundala.examples.invoice.listener.InvoiceInputHandler" event="end" />
-      </bpmn:extensionElements>
-      <bpmn:outgoing>SequenceFlow_1ggutts</bpmn:outgoing>
-    </bpmn:startEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_1ggutts" sourceRef="StartEvent_1" targetRef="Gateway_1329qp1" />
-    <bpmn:sequenceFlow id="SequenceFlow_144f11w" sourceRef="AssignReviewerUT" targetRef="ReviewInvoiceUT" />
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" id="Definitions_1k1vca8" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.12.0" camunda:diagramRelationId="ae91fbac-5809-424d-983f-977d8010c5b3">
+  <bpmn:error id="Error_0tdcv3y" name="validation-failed" errorCode="validation-failed" camunda:errorMessage="${validationErrors.toString()}" />
+  <bpmn:error id="Error_1rvzdyr" name="output-mocked" errorCode="output-mocked" />
+  <bpmn:error id="Error_0ilyt1j" name="validation-failed" errorCode="validation-failed" camunda:errorMessage="${validationErrors.toString()}" />
+  <bpmn:collaboration id="Collaboration_19iwku0">
+    <bpmn:participant id="Participant_example-invoice-c7-review" name="example-invoice-c7-review" processRef="example-invoice-c7-review" />
+  </bpmn:collaboration>
+  <bpmn:process id="example-invoice-c7-review" name="example-invoice-c7-review" processType="None" isClosed="false" isExecutable="true" camunda:isStartableInTasklist="false">
     <bpmn:endEvent id="InvoiceReviewedEE" name="Invoice Reviewed">
       <bpmn:incoming>SequenceFlow_0vvoxt0</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_0vvoxt0" sourceRef="ReviewInvoiceUT" targetRef="InvoiceReviewedEE" />
-    <bpmn:userTask id="AssignReviewerUT" name="Assign Reviewer" implementation="##unspecified" camunda:formKey="embedded:app:forms/assign-reviewer.html" camunda:assignee="demo">
-      <bpmn:incoming>Flow_1jas7ms</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_144f11w</bpmn:outgoing>
-    </bpmn:userTask>
     <bpmn:userTask id="ReviewInvoiceUT" name="Review Invoice" implementation="##unspecified" camunda:formKey="embedded:app:forms/review-invoice.html" camunda:assignee="${reviewer}" camunda:dueDate="${dateTime().plusDays(2).toDate()}">
       <bpmn:incoming>SequenceFlow_144f11w</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0vvoxt0</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:exclusiveGateway id="Gateway_1329qp1" name="mocked?" default="Flow_1jas7ms">
-      <bpmn:incoming>SequenceFlow_1ggutts</bpmn:incoming>
-      <bpmn:outgoing>Flow_0gq3ija</bpmn:outgoing>
-      <bpmn:outgoing>Flow_1jas7ms</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:endEvent id="Event_13itaa0" name="mocked">
-      <bpmn:incoming>Flow_0gq3ija</bpmn:incoming>
+    <bpmn:userTask id="AssignReviewerUT" name="Assign Reviewer" implementation="##unspecified" camunda:formKey="embedded:app:forms/assign-reviewer.html" camunda:assignee="demo">
+      <bpmn:incoming>Flow_0ldv4ul</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_144f11w</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="ValidateStartMessageTask" name="Validate Start Message" camunda:type="external" camunda:topic="example-invoice-c7-review">
+      <bpmn:incoming>Flow_1051741</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ldv4ul</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:intermediateThrowEvent id="OutputmockedEvent1" name="output-mocked">
+      <bpmn:incoming>Flow_1tnbvod</bpmn:incoming>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_147ix62" name="output-mocked" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateThrowEvent id="ValidationfailedEvent1" name="validation-failed">
+      <bpmn:incoming>Flow_1szk79c</bpmn:incoming>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_0x9gj38" name="validation-failed" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:endEvent id="ValidationfailedThrowErrorEndEvent" name="validation-failed throw Error" camunda:asyncBefore="true">
+      <bpmn:extensionElements>
+        <camunda:executionListener event="end">
+          <camunda:script scriptFormat="Groovy">throw new IllegalArgumentException("Process had not valid inputs - see validationErrors.")</camunda:script>
+        </camunda:executionListener>
+      </bpmn:extensionElements>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_0wkp2uq" errorRef="Error_0tdcv3y" />
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_0gq3ija" name="yes" sourceRef="Gateway_1329qp1" targetRef="Event_13itaa0">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${mocked}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_1jas7ms" sourceRef="Gateway_1329qp1" targetRef="AssignReviewerUT" />
+    <bpmn:intermediateCatchEvent id="ValidationfailedEvent" name="validation-failed">
+      <bpmn:outgoing>Flow_1canyvf</bpmn:outgoing>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_06qnwgi" name="validation-failed" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:endEvent id="OutputmockedEndEvent" name="output-mocked">
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable(&#34;processStatus&#34;, &#34;mocked&#34;)}" event="start" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0vdwlr8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:intermediateCatchEvent id="OutputmockedEvent" name="output-mocked">
+      <bpmn:outgoing>Flow_0vdwlr8</bpmn:outgoing>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_14qnmbh" name="output-mocked" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:endEvent id="ValidationfailedEndEvent" name="validation-failed">
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable(&#34;processStatus&#34;, &#34;notValid&#34;)}" event="start" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1canyvf</bpmn:incoming>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_13gjcnu" errorRef="Error_0tdcv3y" />
+    </bpmn:endEvent>
+    <bpmn:startEvent id="StartEvent_1" name="Review">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="camundala.examples.invoice.listener.InvoiceInputHandler" event="end" />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_1051741</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:boundaryEvent id="MockedBoundaryEvent" attachedToRef="ValidateStartMessageTask">
+      <bpmn:outgoing>Flow_1tnbvod</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_11vypoq" errorRef="Error_1rvzdyr" />
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Event_1roicyw" attachedToRef="ValidateStartMessageTask">
+      <bpmn:outgoing>Flow_1szk79c</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_0ogxnq9" errorRef="Error_0ilyt1j" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0vvoxt0" sourceRef="ReviewInvoiceUT" targetRef="InvoiceReviewedEE" />
+    <bpmn:sequenceFlow id="SequenceFlow_144f11w" sourceRef="AssignReviewerUT" targetRef="ReviewInvoiceUT" />
+    <bpmn:sequenceFlow id="Flow_0ldv4ul" sourceRef="ValidateStartMessageTask" targetRef="AssignReviewerUT" />
+    <bpmn:sequenceFlow id="Flow_1051741" sourceRef="StartEvent_1" targetRef="ValidateStartMessageTask" />
+    <bpmn:sequenceFlow id="Flow_1tnbvod" sourceRef="MockedBoundaryEvent" targetRef="OutputmockedEvent1" />
+    <bpmn:sequenceFlow id="Flow_1szk79c" sourceRef="Event_1roicyw" targetRef="ValidationfailedEvent1" />
+    <bpmn:sequenceFlow id="Flow_1canyvf" sourceRef="ValidationfailedEvent" targetRef="ValidationfailedEndEvent" />
+    <bpmn:sequenceFlow id="Flow_0vdwlr8" sourceRef="OutputmockedEvent" targetRef="OutputmockedEndEvent" />
+    <bpmn:textAnnotation id="TextAnnotation_18e5h89">
+      <bpmn:text>use if you want to stop process with error</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="TextAnnotation_0wfqhe1">
+      <bpmn:text>Use if you want throw a BPMN Error (validation-failed)</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_15mfbx8" sourceRef="ValidationfailedThrowErrorEndEvent" targetRef="TextAnnotation_18e5h89" />
+    <bpmn:association id="Association_02pybh3" sourceRef="ValidationfailedEvent1" targetRef="TextAnnotation_0wfqhe1" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="example-invoice-c7-review">
-      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
-        <dc:Bounds x="179" y="79" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="179" y="122" width="37" height="14" />
-        </bpmndi:BPMNLabel>
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_19iwku0">
+      <bpmndi:BPMNShape id="Participant_1d5wdrv_di" bpmnElement="Participant_example-invoice-c7-review" isHorizontal="true">
+        <dc:Bounds x="160" y="86" width="780" height="334" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_18e5h89_di" bpmnElement="TextAnnotation_18e5h89">
+        <dc:Bounds x="217" y="329" width="143" height="46" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0wfqhe1_di" bpmnElement="TextAnnotation_0wfqhe1">
+        <dc:Bounds x="217" y="252" width="143" height="55" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1og1zom_di" bpmnElement="InvoiceReviewedEE">
-        <dc:Bounds x="682" y="79" width="36" height="36" />
+        <dc:Bounds x="862" y="129" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="657" y="122" width="87" height="14" />
+          <dc:Bounds x="837" y="172" width="87" height="14" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_01n44zw_di" bpmnElement="AssignReviewerUT">
-        <dc:Bounds x="360" y="57" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="UserTask_055nly4_di" bpmnElement="ReviewInvoiceUT">
-        <dc:Bounds x="520" y="57" width="100" height="80" />
+        <dc:Bounds x="710" y="107" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1329qp1_di" bpmnElement="Gateway_1329qp1" isMarkerVisible="true">
-        <dc:Bounds x="245" y="72" width="50" height="50" />
+      <bpmndi:BPMNShape id="UserTask_01n44zw_di" bpmnElement="AssignReviewerUT">
+        <dc:Bounds x="580" y="107" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1luk2dc_di" bpmnElement="ValidateStartMessageTask" bioc:fill="#D5D5D5">
+        <dc:Bounds x="390" y="107" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_084c0k8_di" bpmnElement="OutputmockedEvent1" bioc:fill="#D5D5D5">
+        <dc:Bounds x="472" y="249" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="247" y="48" width="45" height="14" />
+          <dc:Bounds x="454" y="292" width="73" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_13itaa0_di" bpmnElement="Event_13itaa0">
-        <dc:Bounds x="302" y="137" width="36" height="36" />
+      <bpmndi:BPMNShape id="BPMNShape_0uq59s2" bpmnElement="ValidationfailedEvent1" bioc:fill="#D5D5D5">
+        <dc:Bounds x="372" y="249" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="350" y="158" width="39" height="14" />
+          <dc:Bounds x="352" y="292" width="77" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_1ggutts_di" bpmnElement="SequenceFlow_1ggutts">
-        <di:waypoint x="215" y="97" />
-        <di:waypoint x="245" y="97" />
+      <bpmndi:BPMNShape id="Event_1cu5yxh_di" bpmnElement="ValidationfailedThrowErrorEndEvent" bioc:fill="#D5D5D5">
+        <dc:Bounds x="372" y="329" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="352" y="372" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0tt77o7" bpmnElement="ValidationfailedEvent" bioc:fill="#D5D5D5">
+        <dc:Bounds x="742" y="334" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="724" y="377" width="77" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_14l40l6_di" bpmnElement="OutputmockedEndEvent" bioc:fill="#D5D5D5">
+        <dc:Bounds x="860" y="254" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="841" y="300" width="73" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_04w9spg" bpmnElement="OutputmockedEvent" bioc:fill="#D5D5D5">
+        <dc:Bounds x="742" y="254" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="726" y="297" width="73" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ck1zoe_di" bpmnElement="ValidationfailedEndEvent" bioc:fill="#D5D5D5">
+        <dc:Bounds x="860" y="334" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="839" y="380" width="77" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="271" y="129" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="271" y="172" width="37" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_15mfbx8_di" bpmnElement="Association_15mfbx8">
+        <di:waypoint x="372" y="347" />
+        <di:waypoint x="360" y="346" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_02pybh3_di" bpmnElement="Association_02pybh3">
+        <di:waypoint x="372" y="267" />
+        <di:waypoint x="360" y="267" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_047id8n_di" bpmnElement="MockedBoundaryEvent" bioc:fill="#D5D5D5">
+        <dc:Bounds x="472" y="169" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="453" y="193" width="73" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1oeltv5" bpmnElement="Event_1roicyw" bioc:fill="#D5D5D5">
+        <dc:Bounds x="372" y="169" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="252.5" y="193" width="39" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0vvoxt0_di" bpmnElement="SequenceFlow_0vvoxt0">
+        <di:waypoint x="810" y="147" />
+        <di:waypoint x="862" y="147" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_144f11w_di" bpmnElement="SequenceFlow_144f11w">
-        <di:waypoint x="460" y="97" />
-        <di:waypoint x="520" y="97" />
+        <di:waypoint x="680" y="147" />
+        <di:waypoint x="710" y="147" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_0vvoxt0_di" bpmnElement="SequenceFlow_0vvoxt0">
-        <di:waypoint x="620" y="97" />
-        <di:waypoint x="682" y="97" />
+      <bpmndi:BPMNEdge id="Flow_0ldv4ul_di" bpmnElement="Flow_0ldv4ul">
+        <di:waypoint x="490" y="147" />
+        <di:waypoint x="580" y="147" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0gq3ija_di" bpmnElement="Flow_0gq3ija">
-        <di:waypoint x="270" y="122" />
-        <di:waypoint x="270" y="155" />
-        <di:waypoint x="302" y="155" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="281" y="129" width="18" height="14" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNEdge id="Flow_1051741_di" bpmnElement="Flow_1051741">
+        <di:waypoint x="307" y="147" />
+        <di:waypoint x="390" y="147" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1jas7ms_di" bpmnElement="Flow_1jas7ms">
-        <di:waypoint x="295" y="97" />
-        <di:waypoint x="360" y="97" />
+      <bpmndi:BPMNEdge id="Flow_1tnbvod_di" bpmnElement="Flow_1tnbvod">
+        <di:waypoint x="490" y="205" />
+        <di:waypoint x="490" y="249" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1szk79c_di" bpmnElement="Flow_1szk79c">
+        <di:waypoint x="390" y="205" />
+        <di:waypoint x="390" y="249" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_01qpjx7" bpmnElement="Flow_1canyvf">
+        <di:waypoint x="778" y="352" />
+        <di:waypoint x="860" y="352" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vdwlr8_di" bpmnElement="Flow_0vdwlr8">
+        <di:waypoint x="778" y="272" />
+        <di:waypoint x="860" y="272" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

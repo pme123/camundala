@@ -100,18 +100,6 @@ def toJson(json: String): Json =
 val testModeDescr =
   "This flag indicades that this is a test - in the process it can behave accordingly."
 
-//TODO remove them
-trait MockSupport[Out <: Product]:
-  def outputMock: Option[Out]
-  def servicesMocked: Boolean
-
-trait MockServiceSupport[
-    Out <: Product,
-    ServiceOut // the body of the HttpResponse
-] extends MockSupport[Out]:
-  def outputServiceMock: Option[MockedServiceResponse[ServiceOut]]
-//TODO move to bpmn
-
 // descriptions
 def serviceNameDescr(serviceName: String) =
   s"As this uses the generic Service you need to name the Service to '$serviceName'."
