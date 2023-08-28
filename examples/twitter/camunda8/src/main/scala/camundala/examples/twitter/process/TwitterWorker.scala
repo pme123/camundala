@@ -1,9 +1,9 @@
 package camundala.examples.twitter.process
 
-import io.camunda.zeebe.spring.client.annotation.{ZeebeVariablesAsType, ZeebeWorker}
-import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError
 import camundala.examples.twitter.api.ReviewedTweet
 import camundala.examples.twitter.business.{DuplicateTweetException, TwitterService}
+import io.camunda.zeebe.spring.client.annotation.{JobWorker, VariablesAsType}
+import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -13,9 +13,9 @@ class TwitterWorker :
   @Autowired
   private var twitterService: TwitterService = null
 
-  @ZeebeWorker(`type` = "publish-tweet", autoComplete = true)
+  @JobWorker(`type` = "publish-tweet", autoComplete = true)
   @throws[Exception]
-  def handleTweet(@ZeebeVariablesAsType variables: ReviewedTweet): Unit = {
+  def handleTweet(@VariablesAsType variables: ReviewedTweet): Unit = {
     try twitterService.tweet(variables.tweet)
     catch {
       case ex: DuplicateTweetException =>
@@ -23,9 +23,9 @@ class TwitterWorker :
     }
   }
 
-  @ZeebeWorker(`type` = "send-rejection", autoComplete = true)
+  @JobWorker(`type` = "send-rejection", autoComplete = true)
   @throws[Exception]
-  def sendRejection(@ZeebeVariablesAsType variables: ReviewedTweet): Unit = {
+  def sendRejection(@VariablesAsType variables: ReviewedTweet): Unit = {
     // same thing as above, do data transformation and delegate to real business code / service
     println(s"Sorry Tweet ${variables.tweet} rejected")
   }

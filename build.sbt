@@ -48,7 +48,8 @@ def projectSettings(projName: String) = Seq(
   scalacOptions ++= Seq(
     "-Xmax-inlines:50", // is declared as erased, but is in fact used
     "-Wunused:imports"
-  )
+  ),
+ // javacOptions ++= Seq("-target", "17")
 )
 
 lazy val domain = project
@@ -355,11 +356,11 @@ val camundaDependencies = Seq(
   "com.h2database" % "h2" % h2Version
 ) //.map(_.exclude("org.slf4j", "slf4j-api"))
 
-val zeebeVersion = "8.2.12"
+val zeebeVersion = "8.2.4"
 val zeebeDependencies = Seq(
   "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
   "org.springframework.boot" % "spring-boot-starter-webflux" % springBootVersion,
-  "io.camunda" % "zeebe-client-java" % zeebeVersion,
+  "io.camunda.spring" % "spring-boot-starter-camunda" % zeebeVersion,
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.14.2"
 ).map(_.exclude("org.slf4j", "slf4j-api"))
 
