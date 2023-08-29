@@ -149,6 +149,34 @@ Be aware that the description of Input- and Output Objects are not taken into th
 So document them in the process description if needed.
 @:@
 
+### Supported General Variables
+To avoid a lot of boilerplate in your _Input Objects_, we define a list of input variables we handle by default.
+
+- camundala-api:
+  - Creates the documentation of these variables, including example.
+  - For mocking, it will generate a concrete example in each Process or ServiceProcess.
+
+- camundala-simulation: 
+  - Adds them, if defined to call the Camunda's REST API.
+
+- camundala-worker: 
+  - Experimental implementation of them.
+
+You can override the list of variables, you support in your _ApiProjectCreator_, like
+
+```scala
+import camundala.bpmn.InputParams.*
+
+override def supportedVariables: Seq[InputParams] = Seq(
+    servicesMocked,
+    outputMock,
+    outputServiceMock,
+    handledErrors,
+    regexHandledErrors,
+    impersonateUserId
+  )
+```
+
 ### Mocking
 This looks a bit strange, that mocking is at the domain level. 
 However, it turns out that this is quite helpful:
@@ -157,52 +185,10 @@ However, it turns out that this is quite helpful:
 - Simulation: You can simple mock sub processes.
 - Postman Requests: You can manipulate with mocks the path taken in the process (even on production).
 
-#### Mock the process itself
-If you provide the possibility to mock your entire process, you should do this in the following way:
-
-```scala
-  case class In(
-      ...
-      @description(outputMockDescr(ReviewInvoice.Out()))
-      outputMock: Option[Out] = None
-  )
-```
-
-- Use the input parameter `outputMock`.
-- In your process:
-    - validate your input (optional step).
-    - if `outputMock` is set, set all process variables with the values of the `outputMock`.
-    - finish the process
-
 @:callout(info)
-This is a common pattern, that you can implement generic. 
-In the future we will provide this out of the box.
+The mocking can new be done with General Variables - see chapter above.
 @:@
 
-#### Mock a sub process
-If a sub process provides the possibility to mock, you can easily use this in your process.
-
-Here are the steps:
-
-```scala
-  case class In(
-      ...
-    @description(subProcessMockDescr(ReviewInvoice.Out()))
-    invoiceReviewedMock: Option[ReviewInvoice.Out] = None
-  )
-```
-
-- Use an input parameter that indicates the subprocess `invoiceReviewedMock`.
-- In your process:
-    - Map in your BPMN the input parameter to the input parameter of the subprocess: `invoiceReviewedMock` > `outputMock`
-
-#### Mock description
-@:callout(info)
-Through a restriction of Open API you can only have one description for a class.
-As we mock outputs that can not be described directly we should be fine.
-@:@
-
-Use `outputMockDescr(ReviewInvoice.Out())` will create a nice description including an example and the class of the mock.
 
 ### JSON marshalling
 

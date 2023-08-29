@@ -101,9 +101,12 @@ val testModeDescr =
   "This flag indicades that this is a test - in the process it can behave accordingly."
 
 // descriptions
+val deprecatedDescr = "See https://pme123.github.io/camundala/specification.html#supported-general-variables"
+@deprecated("Change to serviceProcess")
 def serviceNameDescr(serviceName: String) =
   s"As this uses the generic Service you need to name the Service to '$serviceName'."
 
+@deprecated(deprecatedDescr)
 def outputMockDescr[Out: CirceCodec, Schema](mock: Out) =
   s"""You can mock the response variables of this (sub)process.
      |
@@ -121,9 +124,11 @@ def outputMockDescr[Out: CirceCodec, Schema](mock: Out) =
      |- `someSubProcessMock` mocks a sub process
      |""".stripMargin
 
+@deprecated(deprecatedDescr)
 val servicesMockedDescr =
   "This flag will mock every Service that this Process calls, using the default Mock."
 
+@deprecated(deprecatedDescr)
 def outputServiceMockDescr[ServiceOut: Encoder](mock: ServiceOut) =
   s"""You can mock the response variables of this Http Service.
      |
@@ -143,6 +148,7 @@ def outputServiceMockDescr[ServiceOut: Encoder](mock: ServiceOut) =
      |- `someSubProcessMock` mocks a sub process
      |""".stripMargin
 
+@deprecated(deprecatedDescr)
 val handledErrorsDescr =
   "A comma separated list of HTTP-Status-Codes, that are modelled in the BPMN as Business-Exceptions - see Outputs. z.B: `404,500`"
 val regexHandledErrorsDescr =
@@ -153,4 +159,4 @@ You can use a JSON Array of Strings or a comma-separated String.
 
 Example: `['java.sql.SQLException', '"errorNr":20000']` or 'java.sql.SQLException,"errorNr":20000'
 """
-//TODO end move to bpmn
+
