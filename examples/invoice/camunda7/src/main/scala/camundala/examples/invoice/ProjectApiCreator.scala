@@ -20,7 +20,7 @@ object ProjectApiCreator extends DefaultApiCreator:
 
   override protected val apiConfig: ApiConfig =
     super.apiConfig
-      .withBasePath(pwd / "examples" / "invoice" / "camunda7")
+      .withBasePath(os.pwd / "examples" / "invoice" / "camunda7")
       .withDocProjectUrl(project =>
         s"https://webstor.ch/camundala/myCompany/$project"
       )

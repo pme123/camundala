@@ -114,7 +114,7 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
 
   case class DmnTesterObject[In <: Product](
       dDmn: DecisionDmn[In, _],
-      dmnPath: Path,
+      dmnPath: os.Path,
       addTestValues: Map[String, List[TesterValue]] = Map.empty,
       _testUnit: Boolean = false,
       _acceptMissingRules: Boolean = false,
@@ -129,7 +129,7 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
 
   extension [In <: Product](dmnTO: DmnTesterObject[In])
 
-    def dmnPath(path: Path): DmnTesterObject[In] =
+    def dmnPath(path: os.Path): DmnTesterObject[In] =
       dmnTO.copy(dmnPath = path)
 
     def dmnPath(dmnName: String): DmnTesterObject[In] =

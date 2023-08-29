@@ -1,9 +1,7 @@
 package camundala.api
 
-import os.{Path, read}
-
 import java.io.StringReader
-import scala.xml.*
+import scala.xml.XML
 
 /** Checks all BPMNs if a process is used in another process. As result a list
   * is created that can be included in the Documentation.
@@ -20,7 +18,7 @@ trait ProcessReferenceCreator:
   private lazy val projectPaths: Seq[ProjectConfig] =
     apiConfig.gitConfigs.projectConfigs
 
-  lazy val allBpmns: Seq[(String, Seq[(Path, String)])] =
+  lazy val allBpmns: Seq[(String, Seq[(os.Path, String)])] =
     projectPaths
       .map { case pc@ProjectConfig(name, path, bpmnPath, _, _) =>
         val absBpmnPath = pc.absBpmnPath(gitBasePath)
@@ -38,7 +36,7 @@ trait ProcessReferenceCreator:
           .filter(_.toString.endsWith(".bpmn"))
           .map(p => {
             println(s"- ${p.last}")
-            p -> read(p)
+            p -> os.read(p)
           })
       }
 
@@ -84,7 +82,7 @@ trait ProcessReferenceCreator:
 
     private def docuPath(
         projectName: String,
-        path: Path,
+        path: os.Path,
         content: String
     ): (String, String) =
       val extractId =
@@ -162,6 +160,7 @@ trait ProcessReferenceCreator:
         }
         .getOrElse("\n**Uses no other Processes.**\n")
 
+    //TODO make it standard Camunda / Worker
     class UsesRef(
         processRef: String,
         serviceName: Option[String] = None,

@@ -13,8 +13,8 @@ object InvoiceDmnTester
       BpmnDsl,
       App:
 
-  override protected val projectBasePath: Path =
-    pwd / "examples" / "invoice" / "camunda7"
+  override protected val projectBasePath: os.Path =
+    os.pwd / "examples" / "invoice" / "camunda7"
 
   override val starterConfig: DmnTesterStarterConfig = DmnTesterStarterConfig(
   )

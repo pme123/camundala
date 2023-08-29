@@ -8,9 +8,6 @@ import scala.compiletime.{constValue, constValueTuple}
 
 val camundaVersion = "7.15"
 
-// os
-export os.{pwd, Path, ResourcePath, read}
-
 // sttp
 export sttp.model.StatusCode
   
@@ -35,8 +32,8 @@ inline def nameOfType[A]: String = ${NameOf.nameOfType[A]}
 enum InputParams:
   case servicesMocked
   case outputMock
-  case mockedSubprocesses
   case outputServiceMock
+  case mockedSubprocesses
   case outputVariables
   case handledErrors
   case regexHandledErrors

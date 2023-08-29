@@ -21,7 +21,7 @@ object TwitterApiCreator extends DefaultApiCreator:
 
   override lazy val apiConfig: ApiConfig =
     super.apiConfig
-      .withBasePath(pwd / "examples" / "twitter" / "camunda7")
+      .withBasePath(os.pwd / "examples" / "twitter" / "camunda7")
       .withPort(8887)
 
   private lazy val `Tweet accepted` = reviewTweetApprovedUT

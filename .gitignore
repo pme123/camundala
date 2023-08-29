@@ -31,3 +31,4 @@ meta.json
 /examples/.datakurre/
 /test.json
 /examples/invoice/camunda7Worker/camunda-h2-default/external-worker.mv.db
+/camunda-h2-default/external-worker.mv.db

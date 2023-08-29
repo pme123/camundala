@@ -18,7 +18,7 @@ case class Dmns(dmns: Seq[Dmn]):
 object Dmns:
   def none: Dmns = Dmns(Nil)
 
-case class Dmn(path: Path, decisions: DecisionDmn[?, ?]*)
+case class Dmn(path: os.Path, decisions: DecisionDmn[?, ?]*)
 
 type DmnValueSimple = String | Boolean | Int | Long | Double | LocalDate |
   LocalDateTime | ZonedDateTime
