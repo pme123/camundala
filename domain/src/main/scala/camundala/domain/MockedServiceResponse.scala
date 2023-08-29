@@ -1,6 +1,5 @@
 package camundala.domain
 
-import io.circe.syntax.*
 
 @description(
   "Mocks a REST Service Response (must be handled by the BPF package)."

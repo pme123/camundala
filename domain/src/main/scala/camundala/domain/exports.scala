@@ -2,32 +2,19 @@ package camundala
 package domain
 
 import io.circe.derivation.Configuration
-import io.circe.parser
-import io.circe.syntax.*
 
 import java.util.Base64
 import scala.language.implicitConversions
 
 // circe
-export io.circe.{Codec as CirceCodec, Decoder, Encoder, Json}
-export io.circe.generic.semiauto.{deriveCodec, deriveDecoder, deriveEncoder}
+export io.circe.{Codec as CirceCodec}
+export sttp.tapir.Schema.annotations.description
 
 // Circe Enum codec
 // used implicit instead of given - so no extra import is needed domain.{*, given}
 implicit val c: Configuration = Configuration.default.withDefaults
   .withDiscriminator("type")
 
-export io.circe.derivation.ConfiguredCodec
-export io.circe.derivation.ConfiguredEnumCodec
-
-// Circe JSON
-export sttp.tapir.json.circe.circeCodec
-export sttp.tapir.json.circe.schemaForCirceJson
-export sttp.tapir.json.circe.schemaForCirceJsonObject
-
-// tapir
-export sttp.tapir.Schema
-export sttp.tapir.Schema.annotations.description
 
 case class NoInput()
 object NoInput:

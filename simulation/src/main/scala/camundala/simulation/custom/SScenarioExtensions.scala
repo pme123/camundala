@@ -4,7 +4,6 @@ package custom
 import camundala.bpmn.*
 import camundala.domain.*
 import io.circe.*
-import io.circe.syntax.*
 import sttp.client3.*
 
 import scala.collection.immutable.Seq

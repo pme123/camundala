@@ -3,7 +3,6 @@ package custom
 
 import camundala.bpmn.*
 import io.circe.*
-import io.circe.syntax.*
 import sttp.client3.*
 
 trait SUserTaskExtensions extends SimulationHelper:

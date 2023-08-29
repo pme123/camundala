@@ -4,7 +4,6 @@ package camunda7.worker
 import camundala.bpmn.*
 import camundala.camunda7.worker.CamundalaWorkerError.*
 import camundala.domain.*
-import io.circe.syntax.*
 import sttp.client3.*
 import sttp.model.Uri
 

@@ -4,7 +4,6 @@ package bpmn
 import camundala.domain.*
 import io.circe.*
 import io.circe.Json.*
-import io.circe.syntax.*
 
 import java.time.LocalDateTime
 import scala.annotation.tailrec

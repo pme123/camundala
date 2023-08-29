@@ -4,8 +4,6 @@ package camunda7.worker
 import domain.*
 import bpmn.*
 import CamundalaWorkerError.*
-import io.circe.parser
-import io.circe.syntax.*
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.engine.variable.`type`.{PrimitiveValueType, ValueType}
 import org.camunda.bpm.engine.variable.value.TypedValue

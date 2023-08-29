@@ -5,7 +5,6 @@ import bpmn.*
 import bpmn.CamundaVariable.*
 import domain.*
 
-import io.circe.syntax.*
 
 case class TestOverride(
     key: Option[String],

@@ -3,7 +3,6 @@ package camundala.domain
 import org.junit.*
 import org.junit.Assert.*
 
-import io.circe.syntax.*
 import io.circe.*
 
 class MockedServiceResponseTest:

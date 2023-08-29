@@ -5,7 +5,6 @@ import bpmn.*
 import domain.*
 import camundala.bpmn.CamundaVariable.CJson
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.circe.syntax.*
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.response.{
   ProcessInstanceEvent,
@@ -13,7 +12,6 @@ import io.camunda.zeebe.client.api.response.{
 }
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.{HttpStatus, ResponseEntity}
-import io.circe.parser
 import scala.jdk.CollectionConverters.*
 
 trait RestEndpoint extends Validator:

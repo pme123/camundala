@@ -1,9 +1,7 @@
 package camundala
 package bpmn
 
-import domain.*
 
-import io.circe.syntax.*
 import scala.compiletime.{constValue, constValueTuple}
 
 val camundaVersion = "7.15"

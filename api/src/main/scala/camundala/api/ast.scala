@@ -3,7 +3,6 @@ package api
 
 import camundala.bpmn.*
 import camundala.domain.*
-import io.circe.syntax.*
 import sttp.tapir.EndpointIO
 import sttp.tapir.json.circe.*
 

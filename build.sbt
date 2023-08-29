@@ -48,15 +48,28 @@ def projectSettings(projName: String) = Seq(
   scalacOptions ++= Seq(
     "-Xmax-inlines:50", // is declared as erased, but is in fact used
     "-Wunused:imports"
-  ),
- // javacOptions ++= Seq("-target", "17")
+  )
 )
+lazy val autoImportSetting =
+  scalacOptions +=
+    Seq(
+      "java.lang",
+      "scala",
+      "scala.Predef",
+      "io.circe",
+      "io.circe.generic.semiauto",
+      "io.circe.derivation",
+      "io.circe.syntax",
+      "sttp.tapir",
+      "sttp.tapir.json.circe"
+    ).mkString(start = "-Yimports:", sep = ",", end = "")
 
 lazy val domain = project
   .in(file("./domain"))
   .configure(publicationSettings)
   .settings(projectSettings("domain"))
   .settings(
+    autoImportSetting,
     libraryDependencies ++= (tapirDependencies :+
       "com.novocode" % "junit-interface" % "0.11" % Test)
   )
@@ -67,6 +80,7 @@ lazy val bpmn = project
   .configure(publicationSettings)
   .settings(projectSettings("bpmn"))
   .settings(
+    autoImportSetting,
     libraryDependencies += osLibDependency
   )
   .dependsOn(domain)
@@ -76,6 +90,7 @@ lazy val api = project
   .configure(publicationSettings)
   .settings(projectSettings("api"))
   .settings(
+    autoImportSetting,
     libraryDependencies ++=
       Seq(
         "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
@@ -90,6 +105,7 @@ lazy val camunda = project
   .configure(publicationSettings)
   .settings(projectSettings("camunda"))
   .settings(
+    autoImportSetting,
     libraryDependencies ++= Seq(
       "org.camunda.bpm" % "camunda-engine" % camundaVersion, // listeners
       "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion,
@@ -104,6 +120,7 @@ lazy val camunda7Worker = project
   .configure(publicationSettings)
   .settings(projectSettings("camunda7-worker"))
   .settings(
+    autoImportSetting,
     libraryDependencies ++= Seq(
       sttpDependency,
       "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion
@@ -116,6 +133,7 @@ lazy val camunda8 = project
   .configure(preventPublication)
   .settings(projectSettings("camunda8"))
   .settings(
+    autoImportSetting,
     libraryDependencies ++= zeebeDependencies
   )
   .dependsOn(bpmn)
@@ -137,6 +155,7 @@ lazy val simulation = project
   .configure(publicationSettings)
   .settings(projectSettings("simulation"))
   .settings(
+    autoImportSetting,
     libraryDependencies ++= Seq(
       sttpDependency,
       "org.scala-sbt" % "test-interface" % "1.0"
@@ -223,6 +242,7 @@ lazy val exampleInvoiceC7 = project
   .configure(preventPublication)
   .configure(integrationTests)
   .settings(
+    autoImportSetting,
     //Test / parallelExecution := false,
     libraryDependencies ++= camundaDependencies
   )
@@ -232,6 +252,7 @@ lazy val exampleInvoiceWorkerC7 = project
   .in(file("./examples/invoice/camunda7Worker"))
   .settings(projectSettings("example-invoice-c7"))
   .configure(preventPublication)
+  .settings(autoImportSetting)
   .dependsOn(camunda7Worker, exampleInvoiceC7)
 
 lazy val exampleInvoiceC8 = project
@@ -240,6 +261,7 @@ lazy val exampleInvoiceC8 = project
   .configure(preventPublication)
   .configure(integrationTests)
   .settings(
+    autoImportSetting,
     Test / parallelExecution := false,
     libraryDependencies ++= zeebeDependencies
   )
@@ -251,6 +273,7 @@ lazy val exampleTwitterC7 = project
   .configure(preventPublication)
   .configure(integrationTests)
   .settings(
+    autoImportSetting,
     libraryDependencies ++= camundaDependencies :+
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
@@ -262,6 +285,7 @@ lazy val exampleTwitterC8 = project
   .configure(preventPublication)
   .configure(integrationTests)
   .settings(
+    autoImportSetting,
     libraryDependencies +=
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
@@ -273,6 +297,7 @@ lazy val exampleDemos = project
   .configure(preventPublication)
   .configure(integrationTests)
   .settings(
+    autoImportSetting,
     libraryDependencies ++= camundaDependencies
     //   libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % "it",
   )

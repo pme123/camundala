@@ -4,7 +4,6 @@ import camundala.bpmn.*
 import camundala.domain.*
 
 import io.circe.generic.auto.*
-import io.circe.syntax.*
 import org.camunda.bpm.engine.delegate. DelegateExecution
 import org.camunda.bpm.engine.variable.`type`.{FileValueType, PrimitiveValueType, SerializableValueType}
 import org.camunda.bpm.engine.variable.impl.value.FileValueImpl

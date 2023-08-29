@@ -2,7 +2,6 @@ package camundala
 package bpmn
 
 import camundala.domain.*
-import io.circe.syntax.*
 
 import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 import scala.language.implicitConversions

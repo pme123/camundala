@@ -2,7 +2,6 @@ package camundala
 package api
 
 import bpmn.*
-import domain.*
 
 import scala.language.implicitConversions
 import scala.reflect.ClassTag

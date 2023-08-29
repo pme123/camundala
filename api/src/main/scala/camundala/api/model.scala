@@ -3,7 +3,6 @@ package api
 
 import bpmn.*
 import domain.*
-import io.circe.syntax.*
 import io.circe.*
 import sttp.model.StatusCode
 import sttp.tapir.{Schema, SchemaType}

@@ -4,7 +4,6 @@ package camunda7.worker
 import domain.*
 import camundala.camunda7.worker.CamundalaWorkerError.ValidaterError
 import io.circe.JsonObject
-import io.circe.syntax.*
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.engine.variable.`type`.ValueType
 import org.camunda.bpm.engine.variable.value.TypedValue

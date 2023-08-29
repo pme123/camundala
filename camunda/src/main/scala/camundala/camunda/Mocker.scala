@@ -1,6 +1,5 @@
 package camundala.camunda
 
-import camundala.domain.*
 import org.camunda.spin.Spin.*
 
 import io.circe.{Json, ParsingFailure, parser}

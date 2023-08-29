@@ -4,7 +4,6 @@ import camundala.bpmn.*
 import camundala.camunda7.worker.CamundalaWorkerError.*
 import camundala.domain.*
 import io.circe.*
-import io.circe.syntax.*
 import org.camunda.bpm.client.task.ExternalTask
 
 /** Mocks this - with the following logic:

@@ -2,7 +2,6 @@ package camundala.api
 
 import camundala.bpmn.InputParams
 import camundala.domain.MockedServiceResponse
-import io.circe.syntax.*
 import sttp.apispec.openapi.*
 import sttp.apispec.openapi.circe.yaml.*
 import sttp.tapir.docs.openapi.{OpenAPIDocsInterpreter, OpenAPIDocsOptions}
