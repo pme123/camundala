@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en-CH">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.1 + Helium Theme" />
+  <title>Technologies</title>
+  
+  
+  <meta name="description" content="camundala-documentation"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="helium/laika-helium.css" />
+  <script src="helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="index.html"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="index.html">Intro</a></li>
+    <li class="level1 nav-leaf"><a href="specification.html">Process &amp; Domain Specification</a></li>
+    <li class="level1 nav-leaf"><a href="bpmnDsl.html">BPMN DSL</a></li>
+    <li class="level1 nav-leaf"><a href="projectSetup.html">Project Setup</a></li>
+    <li class="level1 active nav-leaf"><a href="#">Technologies</a></li>
+    <li class="level1 nav-header">Functional DSLs</li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/apiDoc.html">API Documentation</a></li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/simulation.html">Simulations</a></li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/dmnTester.html">DMN Tester</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Technologies</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-node"><a href="#camundala-domain">camundala-domain</a></li>
+    <li class="level2 nav-leaf"><a href="#tapir">Tapir</a></li>
+    <li class="level2 nav-leaf"><a href="#circe">Circe</a></li>
+    <li class="level1 nav-leaf"><a href="#camundala-bpmn">camundala-bpmn</a></li>
+    <li class="level1 nav-node"><a href="#camundala-api">camundala-api</a></li>
+    <li class="level2 nav-leaf"><a href="#scala-xml">scala-xml</a></li>
+    <li class="level2 nav-leaf"><a href="#typesafe-config">Typesafe Config</a></li>
+    <li class="level1 nav-node"><a href="#camundala-simulation">camundala-simulation</a></li>
+    <li class="level2 nav-leaf"><a href="#sttp-client-1">sttp Client</a></li>
+    <li class="level1 nav-node"><a href="#camundala-dmn">camundala-dmn</a></li>
+    <li class="level2 nav-leaf"><a href="#camunda-dmn-tester">Camunda DMN Tester</a></li>
+    <li class="level2 nav-leaf"><a href="#sttp-client-2">sttp Client</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="technologies" class="title">Technologies</h1>
+        <p>Our goal is to keep the dependencies to a minimum.
+        We group them to our Modules.
+        The following Open Source Projects are great and are worth the extra dependency:</p>
+        
+        <h2 id="camundala-domain" class="section"><a class="anchor-link left" href="#camundala-domain"><i class="icofont-laika link">&#xef71;</i></a>camundala-domain</h2>
+        
+        <h3 id="tapir" class="section"><a class="anchor-link left" href="#tapir"><i class="icofont-laika link">&#xef71;</i></a>Tapir</h3>
+        <p><em>With <a href="https://tapir.softwaremill.com/en/latest/">tapir</a>, you can describe HTTP API endpoints as immutable Scala values.</em> </p>
+        <p>We are using this to describe our domain models. 
+        Tapir allows us to generate the Open API specification from the models.</p>
+        
+        <h3 id="circe" class="section"><a class="anchor-link left" href="#circe"><i class="icofont-laika link">&#xef71;</i></a>Circe</h3>
+        <p><em><a href="https://circe.github.io/circe/">circe</a> (pronounced SUR-see, or KEER-kee in classical Greek, or CHEER-chay in Ecclesiastical Latin) is a JSON library for Scala (and Scala.js).</em></p>
+        <p>We use Circe to encode our domain models to JSON and decode them back.
+        This is used by Tapir to generate the specifications and the Simulations to run 
+        the REST calls.</p>
+        
+        <h2 id="camundala-bpmn" class="section"><a class="anchor-link left" href="#camundala-bpmn"><i class="icofont-laika link">&#xef71;</i></a>camundala-bpmn</h2>
+        <p>Depends on: <em>camundala-domain</em></p>
+        
+        <h3 id="os-lib"><a class="anchor-link left" href="#os-lib"><i class="icofont-laika link">&#xef71;</i></a>OS-Lib</h3>
+        <p><em><a href="https://github.com/com-lihaoyi/os-lib">OS-Lib</a> is a simple Scala interface to common OS filesystem and subprocess APIs. 
+        OS-Lib aims to make working with files and processes in Scala as simple as any scripting language, while still providing the safety, 
+        flexibility and performance you would expect from Scala.</em></p>
+        
+        <h2 id="camundala-api" class="section"><a class="anchor-link left" href="#camundala-api"><i class="icofont-laika link">&#xef71;</i></a>camundala-api</h2>
+        <p>Depends on: <em>camundala-bpmn</em></p>
+        
+        <h3 id="scala-xml" class="section"><a class="anchor-link left" href="#scala-xml"><i class="icofont-laika link">&#xef71;</i></a>scala-xml</h3>
+        <p><em>The standard <a href="https://github.com/scala/scala-xml">Scala XML</a> library.</em> </p>
+        <p>We use it for the reference resolutions in the BPMNs.</p>
+        
+        <h3 id="typesafe-config" class="section"><a class="anchor-link left" href="#typesafe-config"><i class="icofont-laika link">&#xef71;</i></a>Typesafe Config</h3>
+        <p><em><a href="https://github.com/lightbend/config">Configuration library</a> for JVM languages.</em></p>
+        <p>For all configurations, that are not directly in Scala, we use this library. 
+        At the moment this is <em>PROJECT.conf</em> (Project Documentation) and <em>RELEASE.conf</em> (Company Documentation).</p>
+        
+        <h2 id="camundala-simulation" class="section"><a class="anchor-link left" href="#camundala-simulation"><i class="icofont-laika link">&#xef71;</i></a>camundala-simulation</h2>
+        <p>Depends on: <em>camundala-bpmn</em></p>
+        
+        <h3 id="sttp-client-1" class="section"><a class="anchor-link left" href="#sttp-client-1"><i class="icofont-laika link">&#xef71;</i></a>sttp Client</h3>
+        <p><em><a href="https://sttp.softwaremill.com/en/stable/">sttp client</a> is an open-source library which provides a clean, programmer-friendly API to describe HTTP requests and how to handle responses.</em></p>
+        <p>We use it to call the REST API from Camunda</p>
+        
+        <h2 id="camundala-dmn" class="section"><a class="anchor-link left" href="#camundala-dmn"><i class="icofont-laika link">&#xef71;</i></a>camundala-dmn</h2>
+        <p>Depends on: <em>camundala-bpmn</em></p>
+        
+        <h3 id="camunda-dmn-tester" class="section"><a class="anchor-link left" href="#camunda-dmn-tester"><i class="icofont-laika link">&#xef71;</i></a>Camunda DMN Tester</h3>
+        <p><em>A little <a href="https://github.com/camunda-community-hub/camunda-dmn-tester">DMN Table tester</a> with the following Goals:</em></p>
+        <ul>
+          <li><em>As a developer I want to test the DMNs that I get from the Business, even not knowing the concrete rules.</em></li>
+          <li><em>Business people can create their own tests.</em></li>
+          <li><em>They can easily adjust the tests to the dynamic nature of DMN Tables.</em></li>
+        </ul>
+        <p>We generate Dmn Table Tester configurations from a DSL.</p>
+        
+        <h3 id="sttp-client-2" class="section"><a class="anchor-link left" href="#sttp-client-2"><i class="icofont-laika link">&#xef71;</i></a>sttp Client</h3>
+        <p><em>see camundala-simulation</em></p>
+        <p>To use the DmnTester&#39;s REST API.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://planet42.github.io/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

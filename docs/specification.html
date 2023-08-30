@@ -57,6 +57,7 @@
     <li class="level1 active nav-leaf"><a href="#">Process &amp; Domain Specification</a></li>
     <li class="level1 nav-leaf"><a href="bpmnDsl.html">BPMN DSL</a></li>
     <li class="level1 nav-leaf"><a href="projectSetup.html">Project Setup</a></li>
+    <li class="level1 nav-leaf"><a href="technologies.html">Technologies</a></li>
     <li class="level1 nav-header">Functional DSLs</li>
     <li class="level2 nav-leaf"><a href="functionalityDsls/apiDoc.html">API Documentation</a></li>
     <li class="level2 nav-leaf"><a href="functionalityDsls/simulation.html">Simulations</a></li>
@@ -79,6 +80,7 @@
     <li class="level2 nav-leaf"><a href="#hierarchy-enum">Hierarchy Enum</a></li>
     <li class="level2 nav-leaf"><a href="#generic-objects">Generic Objects</a></li>
     <li class="level2 nav-leaf"><a href="#documentation">Documentation</a></li>
+    <li class="level2 nav-leaf"><a href="#supported-general-variables">Supported General Variables</a></li>
     <li class="level2 nav-leaf"><a href="#mocking">Mocking</a></li>
     <li class="level2 nav-leaf"><a href="#json-marshalling">JSON marshalling</a></li>
     <li class="level2 nav-leaf"><a href="#mock-validation-implementation">Mock / Validation implementation</a></li>
@@ -223,6 +225,45 @@
           <p>So document them in the process description if needed.</p>
         </div>
         
+        <h3 id="supported-general-variables" class="section"><a class="anchor-link left" href="#supported-general-variables"><i class="icofont-laika link">&#xef71;</i></a>Supported General Variables</h3>
+        <p>To avoid a lot of boilerplate in your <em>Input Objects</em>, we define a list of input variables we handle by default.</p>
+        <ul>
+          <li>camundala-api:</li>
+        </ul>
+        <ul>
+          <li>Creates the documentation of these variables, including example.</li>
+        </ul>
+        <ul>
+          <li>
+            <p>For mocking, it will generate a concrete example in each Process or ServiceProcess.</p>
+          </li>
+          <li>
+            <p>camundala-simulation: </p>
+          </li>
+        </ul>
+        <ul>
+          <li>
+            <p>Adds them, if defined to call the Camunda&#39;s REST API.</p>
+          </li>
+          <li>
+            <p>camundala-worker: </p>
+          </li>
+        </ul>
+        <ul>
+          <li>Experimental implementation of them.</li>
+        </ul>
+        <p>You can override the list of variables, you support in your <em>ApiProjectCreator</em>, like</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">bpmn</span><span>.</span><span class="type-name">InputParams</span><span>.*
+
+</span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">supportedVariables</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">InputParams</span><span>] = </span><span class="type-name">Seq</span><span>(
+    </span><span class="identifier">servicesMocked</span><span>,
+    </span><span class="identifier">outputMock</span><span>,
+    </span><span class="identifier">outputServiceMock</span><span>,
+    </span><span class="identifier">handledErrors</span><span>,
+    </span><span class="identifier">regexHandledErrors</span><span>,
+    </span><span class="identifier">impersonateUserId</span><span>
+  )</span></code></pre>
+        
         <h3 id="mocking" class="section"><a class="anchor-link left" href="#mocking"><i class="icofont-laika link">&#xef71;</i></a>Mocking</h3>
         <p>This looks a bit strange, that mocking is at the domain level. 
         However, it turns out that this is quite helpful:</p>
@@ -231,56 +272,10 @@
           <li>Simulation: You can simple mock sub processes.</li>
           <li>Postman Requests: You can manipulate with mocks the path taken in the process (even on production).</li>
         </ul>
-        
-        <h4 id="mock-the-process-itself" class="section"><a class="anchor-link left" href="#mock-the-process-itself"><i class="icofont-laika link">&#xef71;</i></a>Mock the process itself</h4>
-        <p>If you provide the possibility to mock your entire process, you should do this in the following way:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">In</span><span>(
-      ...
-      </span><span class="annotation">@description</span><span>(</span><span class="identifier">outputMockDescr</span><span>(</span><span class="type-name">ReviewInvoice</span><span>.</span><span class="type-name">Out</span><span>()))
-      </span><span class="identifier">outputMock</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Out</span><span>] = </span><span class="type-name">None</span><span>
-  )</span></code></pre>
-        <ul>
-          <li>Use the input parameter <code>outputMock</code>.</li>
-          <li>
-            In your process:
-            <ul>
-              <li>validate your input (optional step).</li>
-              <li>if <code>outputMock</code> is set, set all process variables with the values of the <code>outputMock</code>.</li>
-              <li>finish the process</li>
-            </ul>
-          </li>
-        </ul>
         <div class="callout info">
           <i class="icofont-laika info">&#xef4e;</i>
-          <p>This is a common pattern, that you can implement generic. 
-          In the future we will provide this out of the box.</p>
+          <p>The mocking can new be done with General Variables - see chapter above.</p>
         </div>
-        
-        <h4 id="mock-a-sub-process" class="section"><a class="anchor-link left" href="#mock-a-sub-process"><i class="icofont-laika link">&#xef71;</i></a>Mock a sub process</h4>
-        <p>If a sub process provides the possibility to mock, you can easily use this in your process.</p>
-        <p>Here are the steps:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">In</span><span>(
-      ...
-    </span><span class="annotation">@description</span><span>(</span><span class="identifier">subProcessMockDescr</span><span>(</span><span class="type-name">ReviewInvoice</span><span>.</span><span class="type-name">Out</span><span>()))
-    </span><span class="identifier">invoiceReviewedMock</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">ReviewInvoice</span><span>.</span><span class="type-name">Out</span><span>] = </span><span class="type-name">None</span><span>
-  )</span></code></pre>
-        <ul>
-          <li>Use an input parameter that indicates the subprocess <code>invoiceReviewedMock</code>.</li>
-          <li>
-            In your process:
-            <ul>
-              <li>Map in your BPMN the input parameter to the input parameter of the subprocess: <code>invoiceReviewedMock</code> &gt; <code>outputMock</code></li>
-            </ul>
-          </li>
-        </ul>
-        
-        <h4 id="mock-description" class="section"><a class="anchor-link left" href="#mock-description"><i class="icofont-laika link">&#xef71;</i></a>Mock description</h4>
-        <div class="callout info">
-          <i class="icofont-laika info">&#xef4e;</i>
-          <p>Through a restriction of Open API you can only have one description for a class.
-          As we mock outputs that can not be described directly we should be fine.</p>
-        </div>
-        <p>Use <code>outputMockDescr(ReviewInvoice.Out())</code> will create a nice description including an example and the class of the mock.</p>
         
         <h3 id="json-marshalling" class="section"><a class="anchor-link left" href="#json-marshalling"><i class="icofont-laika link">&#xef71;</i></a>JSON marshalling</h3>
         <div class="callout info">
@@ -293,7 +288,7 @@
           <li>
             <p>Case Classes:</p>
             <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">given</span><span> </span><span class="type-name">Schema</span><span>[</span><span class="type-name">InvoiceReceipt</span><span>] = </span><span class="type-name">Schema</span><span>.</span><span class="identifier">derived</span><span>
-</span><span class="identifier">given</span><span> </span><span class="type-name">Codec</span><span>[</span><span class="type-name">InvoiceReceipt</span><span>] = </span><span class="identifier">deriveCodec</span></code></pre>
+</span><span class="identifier">given</span><span> </span><span class="type-name">CirceCodec</span><span>[</span><span class="type-name">InvoiceReceipt</span><span>] = </span><span class="identifier">deriveCodec</span></code></pre>
           </li>
           <li>
             <p>Enumeration:</p>

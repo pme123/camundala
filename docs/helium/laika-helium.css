@@ -177,11 +177,11 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--header-font);
   color: var(--secondary-color);
   margin: var(--block-spacing) 0;
-  line-height: 20px; 
+  line-height: 20px; /* TODO */
 }
 
 h1, h2, h3 {
-  line-height: 40px; 
+  line-height: 40px; /* TODO */
 }
 
 h1 {

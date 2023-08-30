@@ -15,6 +15,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.19.0 - 2023-08-30
+### Changed 
+- Fixing imports / cosmetics. - see [Commit](https://github.com/pme123/camundala/commit/e5c4e0220fa5f3a32141f9741c84ff0eb26df62a)
+- Moving from exports to -Yimports. - see [Commit](https://github.com/pme123/camundala/commit/c071247012c278235f1e5a9101651a2a3b8ac121)
+- Added general variables to documentation. - see [Commit](https://github.com/pme123/camundala/commit/8a2bc0ec18e38b91a709ff3c7b66f504813bc149)
+- Added technologies.md to documentation. - see [Commit](https://github.com/pme123/camundala/commit/5ef0e1386f78889ae13d7316dc60fb6359014991)
+- Added Example of Process Validation Worker - see [Commit](https://github.com/pme123/camundala/commit/0064db8e4d75e20f8bf7b1a3739f177f85595500)
+- Fixed compile errors. - see [Commit](https://github.com/pme123/camundala/commit/4869587996d29c8037606922e85444c7e05c842c)
+- Added Worker to example-invoice-c7. - see [Commit](https://github.com/pme123/camundala/commit/955641017413e4eac55364d31a4ffc3da259ffa1)
+- Updated Versions. - see [Commit](https://github.com/pme123/camundala/commit/21850ef330ee6aa79d7c823f40374e9035ce9fee)
+- Added Worker Example / added Simulations to verify Workers handled Errors. - see [Commit](https://github.com/pme123/camundala/commit/69fabbdaff735a2f0afcaf14f68a6e1016dd7ee6)
+- Documented general variables. - see [Commit](https://github.com/pme123/camundala/commit/959fe2551f6edbbf81f60cbdc3b5c9201261aa86)
+- Added missing general variables. - see [Commit](https://github.com/pme123/camundala/commit/5c641c2332992b2b84047c8806da7bbb2eb4aa85)
+- Introducing ServiceProcess. - see [Commit](https://github.com/pme123/camundala/commit/fd346aacfc5fcd746319e5582fe081b2599bcccc)
+- added generic service process to us with workers - see [Commit](https://github.com/pme123/camundala/commit/3ecba59bcf5ef577931c8481e9136d135990a19c)
+- Added ServiceUnexpectedError - see [Commit](https://github.com/pme123/camundala/commit/e51ef34d3ffa88be5b9978fe7c4af3bfd684e665)
+
 ## 1.18.1 - 2023-08-14
 ### Changed 
 - Changed Errors to Json. - see [Commit](https://github.com/pme123/camundala/commit/d5797d1465f3e871cba83de5172bf14b33b0a9b6)
