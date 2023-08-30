@@ -155,7 +155,7 @@ def generalVariablesDescr[Out <: Product: Encoder](
       |
       |<details>
       |<summary>
-      |<b><i>Mocking Examples</i></b>
+      |<b><i>Mocking Example(s)</i></b>
       |</summary>
       |
       |<p>

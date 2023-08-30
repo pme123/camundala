@@ -25,7 +25,7 @@ object InvoiceReceipt extends BpmnDsl:
                                                      )*/
       @description("You can let the Archive Service fail for testing.")
       shouldFail: Option[Boolean] = None,
-      @description(outputMockDescr(ReviewInvoice.Out()))
+      @description(serviceOrProcessMockDescr(ReviewInvoice.Out()))
       invoiceReviewedMock: Option[ReviewInvoice.Out] = None
   )
   object In:

@@ -1,7 +1,6 @@
 package camundala
 package camunda7.worker
 
-import domain.*
 import bpmn.*
 import CamundalaWorkerError.*
 import org.camunda.bpm.client.task.ExternalTask
@@ -50,9 +49,6 @@ trait CamundaHelper:
             .map(v => Some(v))
       }
       .getOrElse(Right(None))
-
-  import camundala.bpmn.*
-  import camundala.domain.*
 
   // used for input variables you can define with Array of Strings or a comma-separated String
   // if not set it returns an empty Seq

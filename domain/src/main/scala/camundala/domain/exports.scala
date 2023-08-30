@@ -93,8 +93,12 @@ val deprecatedDescr = "See https://pme123.github.io/camundala/specification.html
 def serviceNameDescr(serviceName: String) =
   s"As this uses the generic Service you need to name the Service to '$serviceName'."
 
-@deprecated(deprecatedDescr)
+@deprecated("If you mock another Service or Subprocess - use `serviceOrProcessMockDescr` - otherwise:\n\n" + deprecatedDescr)
 def outputMockDescr[Out: CirceCodec, Schema](mock: Out) =
+  serviceOrProcessMockDescr(mock)
+
+def serviceOrProcessMockDescr[Out: CirceCodec, Schema](mock: Out) =
+
   s"""You can mock the response variables of this (sub)process.
      |
      |Class: `${mock.getClass.getName.replace("$", " > ")}`
