@@ -1,7 +1,6 @@
 package camundala.examples.twitter.api
 
 import camundala.api.*
-import camundala.bpmn.*
 import TwitterApi.*
 
 

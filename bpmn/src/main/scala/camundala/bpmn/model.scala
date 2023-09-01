@@ -149,7 +149,13 @@ case class Process[
       InputParams.servicesMocked.toString -> CamundaVariable.valueToCamunda(
         servicesMocked
       )
-    super.camundaInMap ++ mock.toMap
+    val impersUserId = impersonateUserId.toSeq.map { uiId =>
+      InputParams.impersonateUserId.toString -> CamundaVariable.valueToCamunda(
+        uiId
+      )
+    }
+
+    super.camundaInMap ++ mock.toMap ++ impersUserId.toMap
 end Process
 
 case class ServiceProcess[
@@ -157,16 +163,16 @@ case class ServiceProcess[
     Out <: Product: Encoder: Decoder: Schema,
     ServiceOut: Encoder: Decoder
 ](
-   inOutDescr: InOutDescr[In, Out],
-   defaultServiceMock: ServiceOut,
-   processName: String = GenericServiceProcessName,
-   outputVariables: Seq[String] = Seq.empty,
-   outputMock: Option[Out] = None,
-   servicesMocked: Boolean = false,
-   impersonateUserId: Option[String] = None,
-   outputServiceMock: Option[MockedServiceResponse[ServiceOut]] = None,
-   handledErrors: Seq[ErrorCodeType] = Seq.empty,
-   regexHandledErrors: Seq[String] = Seq.empty
+    inOutDescr: InOutDescr[In, Out],
+    defaultServiceMock: ServiceOut,
+    processName: String = GenericServiceProcessName,
+    outputVariables: Seq[String] = Seq.empty,
+    outputMock: Option[Out] = None,
+    servicesMocked: Boolean = false,
+    impersonateUserId: Option[String] = None,
+    outputServiceMock: Option[MockedServiceResponse[ServiceOut]] = None,
+    handledErrors: Seq[ErrorCodeType] = Seq.empty,
+    regexHandledErrors: Seq[String] = Seq.empty
 ) extends ProcessOrService[In, Out, ServiceProcess[In, Out, ServiceOut]],
       OutputMock[Out]:
 
@@ -182,11 +188,12 @@ case class ServiceProcess[
   ): ServiceProcess[In, Out, ServiceOut] =
     copy(processName = processName)
 
-
   def withOutputVariables(names: String*): ServiceProcess[In, Out, ServiceOut] =
     copy(outputVariables = names)
 
-  def withOutputVariable(processName: String): ServiceProcess[In, Out, ServiceOut] =
+  def withOutputVariable(
+      processName: String
+  ): ServiceProcess[In, Out, ServiceOut] =
     copy(outputVariables = outputVariables :+ processName)
 
   def withImpersonateUserId(
@@ -206,13 +213,13 @@ case class ServiceProcess[
     copy(outputServiceMock = Some(outputServiceMock))
 
   def handleErrors(
-                   errorCodes: ErrorCodeType*
-                 ): ServiceProcess[In, Out, ServiceOut] =
+      errorCodes: ErrorCodeType*
+  ): ServiceProcess[In, Out, ServiceOut] =
     copy(handledErrors = errorCodes)
 
   def handleError(
-                   errorCode: ErrorCodeType
-                 ): ServiceProcess[In, Out, ServiceOut] =
+      errorCode: ErrorCodeType
+  ): ServiceProcess[In, Out, ServiceOut] =
     copy(handledErrors = handledErrors :+ errorCode)
 
   def handleErrorWithRegex(
@@ -231,7 +238,12 @@ case class ServiceProcess[
         m.asJson
       )
     )
-    super.camundaInMap ++ serviceMock.orElse(mock).toMap +
+    val impersUserId = impersonateUserId.toSeq.map { uiId =>
+      InputParams.impersonateUserId.toString -> CamundaVariable.valueToCamunda(
+        uiId
+      )
+    }
+    super.camundaInMap ++ impersUserId.toMap ++ serviceMock.orElse(mock).toMap +
       (InputParams.servicesMocked.toString -> CamundaVariable.valueToCamunda(
         servicesMocked
       )) +
