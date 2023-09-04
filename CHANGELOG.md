@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.19.1 - 2023-09-04
+### Changed 
+- Adjusted Documentation. - see [Commit](https://github.com/pme123/camundala/commit/1b154ac6c5c5f59a40bd9291f380d482e818a56c)
+- Cleanup and configurable PROJECT.conf. - see [Commit](https://github.com/pme123/camundala/commit/58a8a6529206128233fc67243bb09daf4da8cd98)
+- Added impersonateUserId to camundaInMap. - see [Commit](https://github.com/pme123/camundala/commit/d9d07eff4a2fccfd394536ddd53c0288a3ea5f71)
+
 ## 1.19.0 - 2023-08-30
 ### Changed 
 - Fixing imports / cosmetics. - see [Commit](https://github.com/pme123/camundala/commit/e5c4e0220fa5f3a32141f9741c84ff0eb26df62a)
