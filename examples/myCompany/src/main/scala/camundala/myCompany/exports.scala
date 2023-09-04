@@ -8,7 +8,7 @@ lazy val postmanApiConfig = ApiConfig()
 lazy val myCompanyConfig = postmanApiConfig
   .withBasePath(os.pwd / "examples" / "myCompany")
   .withDocProjectUrl(project => s"https://webstor.ch/$project")
-  .withGitConfigs(myCompanyGitConfigs)
+  .withProjectsConfig(myCompanyGitConfigs)
   .withDiagramDownloadPath("diagrams")
 
 private lazy val gitDir = os.pwd / os.up / os.up / "git-temp" / "camundala"

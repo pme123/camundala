@@ -69,7 +69,7 @@ case class ApiConfig(
   def withDiagramDownloadPath(diagramDownloadPath: String): ApiConfig =
     copy(diagramDownloadPath = Some(diagramDownloadPath))
 
-  def withGitConfigs(gitConfigs: ProjectsConfig): ApiConfig =
+  def withProjectsConfig(gitConfigs: ProjectsConfig): ApiConfig =
     copy(projectsConfig = gitConfigs)
 
   def addGitConfig(gitConfig: GroupedProjectConfig): ApiConfig =
