@@ -14,10 +14,10 @@ lazy val myCompanyConfig = postmanApiConfig
 private lazy val gitDir = os.pwd / os.up / os.up / "git-temp" / "camundala"
 
 private lazy val myCompanyGitConfigs =
-  GitConfigs(
+  ProjectsConfig(
     gitDir = gitDir,
-    gitConfigs = Seq(
-      GitConfig(
+    groupedConfigs = Seq(
+      GroupedProjectConfig(
         "https://github.com/pme123/camundala.git",
         myProjects,
         groupedProjects = true

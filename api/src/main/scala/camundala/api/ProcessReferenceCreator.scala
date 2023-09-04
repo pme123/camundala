@@ -10,19 +10,19 @@ trait ProcessReferenceCreator:
 
   protected def projectName: String
   protected def apiConfig: ApiConfig
-  protected def gitBasePath: os.Path =     apiConfig.gitConfigs.gitDir 
+  protected def gitBasePath: os.Path =     apiConfig.projectsConfig.gitDir 
 
   private def docProjectUrl(project: String): String =
     apiConfig.docProjectUrl(project)
 
   private lazy val projectPaths: Seq[ProjectConfig] =
-    apiConfig.gitConfigs.projectConfigs
+    apiConfig.projectsConfig.projectConfigs
 
   lazy val allBpmns: Seq[(String, Seq[(os.Path, String)])] =
     projectPaths
-      .map { case pc@ProjectConfig(name, path, bpmnPath, _, _) =>
+      .map { pc =>
         val absBpmnPath = pc.absBpmnPath(gitBasePath)
-        name ->
+        pc.name ->
           (if (os.exists(absBpmnPath)) os.walk(absBpmnPath)
            else {
              println(s"THIS PATH DOES NOT EXIST: $projectName")

@@ -1,45 +1,44 @@
 package camundala
 package api
 
-import camundala.bpmn.*
 import sttp.apispec.openapi.Contact
 
 case class ApiConfig(
-    // define tenant if you have one
-    tenantId: Option[String] = None,
-    // contact email / phone, if there are questions
-    contact: Option[Contact] = None,
-    // REST endpoint (for testing API)
-    endpoint: String = "http://localhost:8080/engine-rest",
-    // Base Path of your project (if changed - all doc paths will be adjusted)
-    basePath: os.Path = os.pwd,
-    // If your project is on cawemo, add here the Id of the folder of your bpmns.
-    cawemoFolder: Option[String] = None,
-    openApiPath: os.Path = os.pwd / "openApi.yml",
-    postmanOpenApiPath: os.Path = os.pwd / "postmanOpenApi.yml",
-    openApiDocuPath: os.Path = os.pwd / "OpenApi.html",
-    postmanOpenApiDocuPath: os.Path = os.pwd / "PostmanOpenApi.html",
-    // If you work with JIRA, you can add matchers that will create automatically URLs to JIRA Tasks
-    jiraUrls: Map[String, String] = Map.empty,
-    // Git Projects: Configure, projects you want to evaluate for dependency resolution
-    gitConfigs: GitConfigs = GitConfigs(),
-    // The URL of your published documentations
-    // myProject => s"http://myCompany/bpmnDocs/${myProject}"
-    docProjectUrl: String => String = proj => s"No URL defined for $proj",
-    // If you want to integrate your BPMNs and DMNs in your Documentation.
-    // Add the path the diagrams are located on your webserver.
-    // myProject => s"http://myCompany/bpmnDocs/${myProject}/${diagramDownloadPath}"
-    // if you want to have a diagram - you must define this!
-    diagramDownloadPath: Option[String] = None,
-    // if you want to adjust the diagramName
-    diagramNameAdjuster: Option[String => String] = None,
-    // by default the Api are optimized in a way that each Api is listed just ones.
-    // so for example, if you list your DMNs extra, they will be removed from the catalog.md
-    catalogOptimized: Boolean = true
+                      // define tenant if you have one
+                      tenantId: Option[String] = None,
+                      // contact email / phone, if there are questions
+                      contact: Option[Contact] = None,
+                      // REST endpoint (for testing API)
+                      endpoint: String = "http://localhost:8080/engine-rest",
+                      // Base Path of your project (if changed - all doc paths will be adjusted)
+                      basePath: os.Path = os.pwd,
+                      // If your project is on cawemo, add here the Id of the folder of your bpmns.
+                      cawemoFolder: Option[String] = None,
+                      openApiPath: os.Path = os.pwd / "openApi.yml",
+                      postmanOpenApiPath: os.Path = os.pwd / "postmanOpenApi.yml",
+                      openApiDocuPath: os.Path = os.pwd / "OpenApi.html",
+                      postmanOpenApiDocuPath: os.Path = os.pwd / "PostmanOpenApi.html",
+                      // If you work with JIRA, you can add matchers that will create automatically URLs to JIRA Tasks
+                      jiraUrls: Map[String, String] = Map.empty,
+                      // Configure your project setup
+                      projectsConfig: ProjectsConfig = ProjectsConfig(),
+                      // The URL of your published documentations
+                      // myProject => s"http://myCompany/bpmnDocs/${myProject}"
+                      docProjectUrl: String => String = proj => s"No URL defined for $proj",
+                      // If you want to integrate your BPMNs and DMNs in your Documentation.
+                      // Add the path the diagrams are located on your webserver.
+                      // myProject => s"http://myCompany/bpmnDocs/${myProject}/${diagramDownloadPath}"
+                      // if you want to have a diagram - you must define this!
+                      diagramDownloadPath: Option[String] = None,
+                      // if you want to adjust the diagramName
+                      diagramNameAdjuster: Option[String => String] = None,
+                      // by default the Api are optimized in a way that each Api is listed just ones.
+                      // so for example, if you list your DMNs extra, they will be removed from the catalog.md
+                      catalogOptimized: Boolean = true
 ):
   val catalogPath: os.Path = basePath / catalogFileName
 
-  lazy val projectGroups = gitConfigs.projectConfigs
+  lazy val projectGroups: Seq[ProjectGroup] = projectsConfig.projectConfigs
     .map(_.group)
     .distinct
 
@@ -70,12 +69,12 @@ case class ApiConfig(
   def withDiagramDownloadPath(diagramDownloadPath: String): ApiConfig =
     copy(diagramDownloadPath = Some(diagramDownloadPath))
 
-  def withGitConfigs(gitConfigs: GitConfigs): ApiConfig =
-    copy(gitConfigs = gitConfigs)
+  def withGitConfigs(gitConfigs: ProjectsConfig): ApiConfig =
+    copy(projectsConfig = gitConfigs)
 
-  def addGitConfig(gitConfig: GitConfig): ApiConfig =
-    copy(gitConfigs =
-      gitConfigs.copy(gitConfigs = gitConfigs.gitConfigs :+ gitConfig)
+  def addGitConfig(gitConfig: GroupedProjectConfig): ApiConfig =
+    copy(projectsConfig =
+      projectsConfig.copy(groupedConfigs = projectsConfig.groupedConfigs :+ gitConfig)
     )
 
   def withJiraUrls(urls: (String, String)*): ApiConfig =
@@ -87,29 +86,34 @@ case class ApiConfig(
   def withDiagramNameAdjuster(adjuster: String => String): ApiConfig =
     copy(diagramNameAdjuster = Some(adjuster))
 
-  def withCatalogOptimization() =
+  def withCatalogOptimization(): ApiConfig =
     copy(catalogOptimized = true)
 
-  def withoutCatalogOptimization() =
+  def withoutCatalogOptimization(): ApiConfig =
     copy(catalogOptimized = false)
 
-case class GitConfigs(
-    // Path, where the Git Projects are cloned.
-    gitDir: os.Path = os.pwd / os.up / "git-temp",
-    gitConfigs: Seq[GitConfig] = Seq.empty
+case class ProjectsConfig(
+                           // Path, where the Git Projects are cloned.
+                           gitDir: os.Path = os.pwd / os.up / "git-temp",
+                           // Path to your ApiProjectConf
+                           projectConfPath: os.RelPath = os.rel / "PROJECT.conf",
+                           groupedConfigs: Seq[GroupedProjectConfig] = Seq.empty
 ):
-  lazy val isConfigured: Boolean = gitConfigs.nonEmpty
+  lazy val isConfigured: Boolean = groupedConfigs.nonEmpty
+
+  def withProjectConfPath(path: os.RelPath): ProjectsConfig =
+    copy(projectConfPath = path)
 
   def projectCloneUrl(projectName: String): Option[String] =
-    gitConfigs
+    groupedConfigs
       .find(_.containsProject(projectName))
       .map(_.cloneUrl)
 
   lazy val init: Unit =
-    gitConfigs.foreach(_.init(gitDir))
+    groupedConfigs.foreach(_.init(gitDir))
   end init
 
-  lazy val projectConfigs = gitConfigs.flatMap(_.projects)
+  lazy val projectConfigs: Seq[ProjectConfig] = groupedConfigs.flatMap(_.projects)
 
   lazy val colors: Seq[(String, String)] = projectConfigs.map { project =>
     project.name -> project.color
@@ -119,18 +123,16 @@ case class GitConfigs(
       projectName: String,
       projectGroup: ProjectGroup
   ): Boolean =
-    gitConfigs
+    groupedConfigs
       .flatMap(_.projects)
       .find(_.name == projectName)
       .exists(_.group == projectGroup)
 
-end GitConfigs
+end ProjectsConfig
 
-case class GitConfig(
+case class GroupedProjectConfig(
     cloneUrl: String,
     projects: Seq[ProjectConfig],
-    // from project String to path
-    // default is s"$cString =>loneUrl/$project.git"
     groupedProjects: Boolean = false
 ):
 
@@ -138,7 +140,7 @@ case class GitConfig(
     if (groupedProjects)
       updateProject(gitDir, cloneUrl)
     else
-      projects.map { project =>
+      projects.foreach { project =>
         val gitRepo = s"$cloneUrl/${project.name}.git"
         updateProject(project.absGitPath(gitDir), gitRepo)
       }
@@ -162,7 +164,7 @@ case class GitConfig(
         .callOnConsole(gitProjectDir)
     }
   end updateProject
-end GitConfig
+end GroupedProjectConfig
 
 case class ProjectConfig(
     name: String,

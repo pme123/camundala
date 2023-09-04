@@ -5,7 +5,7 @@ import os.{pwd, write}
 
 case class DependencyGraphCreator()(implicit
     val apiConfig: ApiConfig,
-    val configs: Seq[PackageConf]
+    val configs: Seq[ApiProjectConf]
 ) extends DependencyCreator:
 
   def createIndex: String = {
@@ -16,7 +16,7 @@ case class DependencyGraphCreator()(implicit
     )
   }
 
-  def createDependencies(implicit configs: Seq[PackageConf]): String = {
+  def createDependencies(implicit configs: Seq[ApiProjectConf]): String = {
     create(
       configs,
       pack =>
@@ -24,7 +24,7 @@ case class DependencyGraphCreator()(implicit
     )
   }
 
-  def createProjectDependencies(implicit configs: Seq[PackageConf]): Unit = {
+  def createProjectDependencies(implicit configs: Seq[ApiProjectConf]): Unit = {
     val graphsForProjects = treeForEachProjects(configs)
     graphsForProjects.foreach(g =>
       write.over(
@@ -35,8 +35,8 @@ case class DependencyGraphCreator()(implicit
   }
 
   private def create(
-      versionedConfigs: Seq[PackageConf],
-      link: Package => String
+                      versionedConfigs: Seq[ApiProjectConf],
+                      link: Package => String
   ): String = {
     val configs = versionedConfigs
       .groupBy(_.name)
@@ -47,7 +47,7 @@ case class DependencyGraphCreator()(implicit
       s"""
          |    subgraph ${projectGroup.name}
          |    ${configs
-        .filter(p => apiConfig.gitConfigs.hasProjectGroup(p.name, projectGroup))
+        .filter(p => apiConfig.projectsConfig.hasProjectGroup(p.name, projectGroup))
         .map { co =>
           s"${co.name}(${co.name})"
         }
@@ -84,7 +84,7 @@ case class DependencyGraphCreator()(implicit
   }
 
   private def treeForEachProjects(
-      configs: Seq[PackageConf]
+      configs: Seq[ApiProjectConf]
   ): Seq[ProjectTree] = {
     val groupedConfigs = configs.groupBy(_.name)
     groupedConfigs.map { case name -> gConfigs =>
@@ -105,8 +105,8 @@ case class DependencyGraphCreator()(implicit
   case class ProjectTree(name: String, graph: String)
 
   private def toPackageTree(
-      configs: Seq[PackageConf],
-      allConfigs: Seq[PackageConf]
+                             configs: Seq[ApiProjectConf],
+                             allConfigs: Seq[ApiProjectConf]
   ): Seq[PackageTree] = {
     configs.map { c =>
       val mainPackage = Package(c.name, c.minorVersion)
@@ -157,7 +157,7 @@ case class DependencyGraphCreator()(implicit
       s"""
          |    subgraph ${projectGroup.name}
          |    ${packageTree.allTrees.distinct
-        .filter(p => apiConfig.gitConfigs.hasProjectGroup(p.name, projectGroup))
+        .filter(p => apiConfig.projectsConfig.hasProjectGroup(p.name, projectGroup))
         .map { p =>
           p.showRect
         }
@@ -197,8 +197,8 @@ case class DependencyGraphCreator()(implicit
   }
 
   private def getUniqueDependencies(
-      toCheckConfig: PackageConf,
-      configs: Seq[PackageConf]
+                                     toCheckConfig: ApiProjectConf,
+                                     configs: Seq[ApiProjectConf]
   ) = {
     val configsToCheck = configs.filter { c =>
       toCheckConfig.dependencies.exists(_.name == c.name)

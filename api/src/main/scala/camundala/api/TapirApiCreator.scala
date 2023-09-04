@@ -119,7 +119,7 @@ trait TapirApiCreator extends AbstractApiCreator:
         case _ => pa.id
 
     def additionalDescr: Option[String] =
-      if(apiConfig.gitConfigs.isConfigured)
+      if(apiConfig.projectsConfig.isConfigured)
         val usedByDescr = UsedByReferenceCreator(processName).create()
         val usesDescr = UsesReferenceCreator(processName).create()
         Some(s"\n\n${usedByDescr.mkString}${usesDescr.mkString}")
@@ -129,7 +129,7 @@ trait TapirApiCreator extends AbstractApiCreator:
 
   extension (dmn: DecisionDmnApi[?, ?])
     def additionalDescr: Option[String] =
-      if(apiConfig.gitConfigs.isConfigured)
+      if(apiConfig.projectsConfig.isConfigured)
         val usedByDescr = UsedByReferenceCreator(dmn.id).create()
         Some(s"\n\n${usedByDescr.mkString}")
       else

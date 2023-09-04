@@ -2,8 +2,8 @@ package camundala.api
 package docs
 
 case class DependencyLinkCreator()(implicit
-    val apiConfig: ApiConfig,
-    val configs: Seq[PackageConf],
+                                   val apiConfig: ApiConfig,
+                                   val configs: Seq[ApiProjectConf],
 ) extends DependencyCreator {
 
   def createIndex(dependencyGraph: String): Unit = {
@@ -31,7 +31,7 @@ case class DependencyLinkCreator()(implicit
       s"""
          |## ${projectGroup.name}
          |${packages
-        .filter(p => apiConfig.gitConfigs.hasProjectGroup(p.name, projectGroup))
+        .filter(p => apiConfig.projectsConfig.hasProjectGroup(p.name, projectGroup))
         .map { co =>
           s"""- **${co.name}** [API Doc](../${co.name}/OpenApi.html "${co.name} API Documentation") - [Dependencies](./dependencies/${co.name}.html "${co.name} Dependencies")"""
         }

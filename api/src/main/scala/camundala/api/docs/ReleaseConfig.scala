@@ -15,8 +15,8 @@ case class ReleaseConfig(
        |""".stripMargin
 
 object ReleaseConfig :
-  lazy val releaseConfig = 
-    val configFile = (os.pwd / "CONFIG.conf")
+  def releaseConfig(basePath: os.Path) =
+    val configFile = (basePath / "CONFIG.conf")
     val config = ConfigFactory.parseFile(configFile.toIO)
     ReleaseConfig(
       config.getString("release.tag"),

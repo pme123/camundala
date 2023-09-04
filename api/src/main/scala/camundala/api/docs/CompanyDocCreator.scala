@@ -12,15 +12,16 @@ import java.time.format.DateTimeFormatter
   */
 trait CompanyDocCreator extends DependencyCreator:
 
-  protected def gitBasePath: os.Path = apiConfig.gitConfigs.gitDir 
-  protected implicit lazy val configs: Seq[PackageConf] = setupDependencies()
-  lazy val projectConfigs: Seq[ProjectConfig] = apiConfig.gitConfigs.projectConfigs
+  protected def gitBasePath: os.Path = apiConfig.projectsConfig.gitDir
+  protected implicit lazy val configs: Seq[ApiProjectConf] = setupDependencies()
+  lazy val projectConfigs: Seq[ProjectConfig] =
+    apiConfig.projectsConfig.projectConfigs
 
   protected def upload(releaseTag: String): Unit
 
   def prepareDocs(): Unit = {
     println(s"API Config: $apiConfig")
-    apiConfig.gitConfigs.init
+    apiConfig.projectsConfig.init
     createCatalog()
     createDynamicConf()
     // println(s"Preparing Docs Started")
@@ -30,7 +31,8 @@ trait CompanyDocCreator extends DependencyCreator:
   def releaseDocs(): Unit = {
     createDynamicConf()
     println(s"Releasing Docs started")
-    os.proc("sbt",
+    os.proc(
+      "sbt",
       "-J-Xmx3G",
       "clean",
       "laikaSite" // generate HTML pages from Markup
@@ -46,7 +48,7 @@ trait CompanyDocCreator extends DependencyCreator:
                       |%}
                       |## Catalog
                       |${projectConfigs
-      .map { case pc @ ProjectConfig(projectName, projectPath, _, _, _) =>
+      .map { case pc @ ProjectConfig(projectName, _, _, _, _) =>
         val path = pc.absGitPath(gitBasePath) / catalogFileName
         if (os.exists(path))
           os.read(path)
@@ -86,7 +88,7 @@ trait CompanyDocCreator extends DependencyCreator:
   end createDynamicConf
 
   private def createReleasePage(): Unit = {
-    implicit val configs: Seq[PackageConf] = setupDependencies()
+    implicit val configs: Seq[ApiProjectConf] = setupDependencies()
     implicit val releaseC: ReleaseConfig = releaseConfig
     DependencyValidator().validateDependencies
     val indexGraph = DependencyGraphCreator().createIndex
@@ -108,8 +110,8 @@ trait CompanyDocCreator extends DependencyCreator:
          |
          |${releaseNotes}
          """.stripMargin
-    val releasePath = apiConfig.basePath / "src" / "docs" / "releases"     
-    if (!os.exists(releasePath)) os.makeDir(releasePath)     
+    val releasePath = apiConfig.basePath / "src" / "docs" / "releases"
+    if (!os.exists(releasePath)) os.makeDir(releasePath)
     os.write.over(
       releasePath / s"v${releaseConfig.releaseTag}.md",
       table
@@ -117,7 +119,7 @@ trait CompanyDocCreator extends DependencyCreator:
 
   }
 
-  private def setupDependencies(): Seq[PackageConf] = {
+  private def setupDependencies(): Seq[ApiProjectConf] = {
     val packages = os.read.lines(apiConfig.basePath / "VERSIONS.conf")
     val dependencies = packages
       .filter(_.contains("Version"))
@@ -132,29 +134,28 @@ trait CompanyDocCreator extends DependencyCreator:
         val isNew = l.toLowerCase().contains("// new")
         projectName -> (version, isNew)
       }
-    dependencies
-      .map { case p -> v => fetchConf(p, v._1, v._2) }.flatten
+    dependencies.map { case p -> v => fetchConf(p, v._1, v._2) }.flatten
   }
-  
+
   private def fetchConf(project: String, version: String, isNew: Boolean) = {
     for {
-      projectCloneUrl <- apiConfig.gitConfigs.projectCloneUrl(project)
+      projectCloneUrl <- apiConfig.projectsConfig.projectCloneUrl(project)
       projectConfig <- projectConfigs.find(_.name == project)
       projectPath = projectConfig.absGitPath(gitBasePath)
-      _ =  println(s"Project Git Path $projectPath")
+      _ = println(s"Project Git Path $projectPath")
       _ = os.makeDir.all(projectPath)
       _ = os.proc("git", "fetch", "--tags").callOnConsole(projectPath)
       _ = os
         .proc("git", "checkout", s"tags/v$version")
         .callOnConsole(projectPath)
-    } yield PackageConf(
-      projectPath / defaultProjectConfPath,
+    } yield ApiProjectConf(
+      projectPath / apiConfig.projectsConfig.projectConfPath,
       os.read.lines(projectPath / "CHANGELOG.md").toSeq,
       isNew
     )
   }
 
-  private def dependencyTable(configs: Seq[PackageConf]) = {
+  private def dependencyTable(configs: Seq[ApiProjectConf]) = {
     val filteredConfigs =
       configs
         .filter(c =>
@@ -193,7 +194,7 @@ trait CompanyDocCreator extends DependencyCreator:
         .mkString("\n")
   }
 
-  private def setupReleaseNotes(implicit configs: Seq[PackageConf]) = {
+  private def setupReleaseNotes(implicit configs: Seq[ApiProjectConf]) = {
     val projectChangelogs = configs
       .filter(_.isNew) // take only the new ones
       .sortBy(_.name)
@@ -216,7 +217,7 @@ trait CompanyDocCreator extends DependencyCreator:
        |""".stripMargin
   }
 
-  private def extractChangelog(conf: PackageConf) = {
+  private def extractChangelog(conf: ApiProjectConf) = {
     val versionRegex = "## \\d+\\.\\d+\\.\\d+.+"
     val groups = ChangeLogGroup.values
 
@@ -328,4 +329,3 @@ trait CompanyDocCreator extends DependencyCreator:
   )
 
 end CompanyDocCreator
-

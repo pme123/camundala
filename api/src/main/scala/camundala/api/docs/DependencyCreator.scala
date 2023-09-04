@@ -4,7 +4,7 @@ package docs
 trait DependencyCreator :
 
   protected implicit def apiConfig: ApiConfig
-  protected implicit def configs: Seq[PackageConf]
+  protected implicit def configs: Seq[ApiProjectConf]
   protected implicit def releaseConfig: ReleaseConfig = readReleaseConfig
   
 
@@ -15,11 +15,11 @@ trait DependencyCreator :
   }
 
   object Package {
-    def apply(conf: PackageConf): Package =
+    def apply(conf: ApiProjectConf): Package =
       Package(conf.name, conf.minorVersion)
   }
 
-  lazy val colors = apiConfig.gitConfigs.colors
+  lazy val colors = apiConfig.projectsConfig.colors
   lazy val colorMap = colors.toMap
 
   protected def printGraph(dependencyGraph: String): String =
@@ -63,7 +63,7 @@ trait DependencyCreator :
   end printColorLegend 
 
   protected def readReleaseConfig: ReleaseConfig =
-    ReleaseConfig.releaseConfig
+    ReleaseConfig.releaseConfig(apiConfig.basePath)
 
 end DependencyCreator  
 

@@ -5,7 +5,7 @@ import com.typesafe.config.ConfigFactory
 
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
-case class PackageConf(
+case class ApiProjectConf(
     org: String,
     name: String,
     version: String,
@@ -17,14 +17,13 @@ case class PackageConf(
   lazy val fullName = s"$org:$name:$version"
 }
 
-lazy val defaultProjectConfPath = os.rel / "PROJECT.conf"
-object PackageConf:
+object ApiProjectConf:
 
   def apply(
-      packageFile: os.Path = os.pwd / defaultProjectConfPath,
+      packageFile: os.Path,
       changelog: Seq[String] = Seq.empty,
       isNew: Boolean = false
-  ): PackageConf =
+  ): ApiProjectConf =
     val conf = ConfigFactory.parseFile(packageFile.toIO)
     val org = conf.getString("org")
     val name = conf.getString("name")
@@ -35,10 +34,10 @@ object PackageConf:
         .values()
         .asScala
         .map(v => DependencyConf.apply(v.render()))
-    PackageConf(org, name, version, dependencies.toSeq, changelog, isNew)
+    ApiProjectConf(org, name, version, dependencies.toSeq, changelog, isNew)
   end apply
 
-end PackageConf
+end ApiProjectConf
 
 case class DependencyConf(
     org: String,
@@ -48,7 +47,7 @@ case class DependencyConf(
   lazy val minorVersion: String = version.split("\\.").take(2).mkString(".")
   lazy val fullName = s"$org:$name:$version"
 
-  def equalTo(packageConf: PackageConf): Boolean =
+  def equalTo(packageConf: ApiProjectConf): Boolean =
     packageConf.org == org && packageConf.name == name && packageConf.minorVersion == minorVersion
 
 object DependencyConf :

@@ -2,8 +2,8 @@ package camundala.api
 package docs
 
 case class DependencyValidator()(implicit
-    val apiConfig: ApiConfig,
-    val configs: Seq[PackageConf],
+                                 val apiConfig: ApiConfig,
+                                 val configs: Seq[ApiProjectConf],
 ) extends DependencyCreator:
 
   @throws[IllegalStateException]
