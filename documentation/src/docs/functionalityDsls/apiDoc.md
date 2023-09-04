@@ -121,17 +121,17 @@ case class ApiConfig(
     // REST endpoint (for testing API)
     endpoint: String = "http://localhost:8080/engine-rest",
     // Base Path of your project (if changed - all doc paths will be adjusted)
-    basePath: Path = pwd,
+    basePath: os.Path = os.pwd,
     // If your project is on cawemo, add here the Id of the folder of your bpmns.
     cawemoFolder: Option[String] = None,
-    openApiPath: Path = pwd / "openApi.yml",
-    postmanOpenApiPath: Path = pwd / "postmanOpenApi.yml",
-    openApiDocuPath: Path = pwd / "OpenApi.html",
-    postmanOpenApiDocuPath: Path = pwd / "PostmanOpenApi.html",
+    openApiPath: os.Path = os.pwd / "openApi.yml",
+    postmanOpenApiPath: os.Path = os.pwd / "postmanOpenApi.yml",
+    openApiDocuPath: os.Path = os.pwd / "OpenApi.html",
+    postmanOpenApiDocuPath: os.Path = os.pwd / "PostmanOpenApi.html",
     // If you work with JIRA, you can add matchers that will create automatically URLs to JIRA Tasks
     jiraUrls: Map[String, String] = Map.empty,
-    // Git Projects: Configure, projects you want to evaluate for dependency resolution
-    gitConfigs: GitConfigs = GitConfigs(os.pwd / os.up),
+    // Configure your project setup
+    projectsConfig: ProjectsConfig = ProjectsConfig(),
     // The URL of your published documentations
     // myProject => s"http://myCompany/bpmnDocs/${myProject}"
     docProjectUrl: String => String = proj => s"No URL defined for $proj",
