@@ -92,6 +92,7 @@ class InvoiceSimulation extends CustomSimulation:
   override implicit def config =
     super.config
       .withPort(8034)
+      //.withLogLevel(LogLevel.DEBUG)
 
   private lazy val `Invoice Receipt` = InvoiceReceipt.example
   private lazy val `Invoice Receipt mocked invoiceReviewed` =

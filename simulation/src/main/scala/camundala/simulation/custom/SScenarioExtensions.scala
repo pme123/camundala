@@ -178,86 +178,59 @@ trait SScenarioExtensions extends SStepExtensions:
         for
           given ScenarioData <- scenario.startProcess()
           given ScenarioData <- scenario.runSteps()
-          given ScenarioData <- checkIncident()(summon[ScenarioData].withRequestCount(0))
+          given ScenarioData <- checkIncident()(
+            summon[ScenarioData].withRequestCount(0)
+          )
         yield summon[ScenarioData]
       }
 
     def checkIncident(
         rootIncidentId: Option[String] = None
-    )(data: ScenarioData): ResultType = {
-      val processInstanceId = data.context.processInstanceId
-      val uri = rootIncidentId match
-        case Some(incId) =>
-          uri"${config.endpoint}/incident?incidentId=$incId&deserializeValues=false"
-        case None =>
-          uri"${config.endpoint}/incident?processInstanceId=$processInstanceId&deserializeValues=false"
-      val request = basicRequest
-        .auth()
-        .get(uri)
-      given ScenarioData = data
-      runRequest(request, s"Process '${scenario.name}' checkIncident") {
-        (body, data) =>
-          body.hcursor.values
-            .map {
-              case (values: Iterable[Json]) if values.toSeq.nonEmpty =>
-                val arr = body.hcursor.downArray
-                (for
-                  maybeIncMessage <- arr
-                    .downField("incidentMessage")
-                    .as[Option[String]]
-                  id <- arr.downField("id").as[String]
-                  rootCauseIncidentId <- arr
-                    .downField("rootCauseIncidentId")
-                    .as[String]
-                yield (maybeIncMessage, id, rootCauseIncidentId)).left
-                  .map { ex =>
-                    data
-                      .error(
-                        s"Problem extracting incidentMessage from $body\n $ex"
-                      )
-                      .info(request.toCurl)
-                  }
-                  .flatMap {
-                    case (Some(incidentMessage), _, _)
-                        if incidentMessage.contains(scenario.incidentMsg) =>
-                      Right(
-                        data
-                          .info(
-                            s"Process ${scenario.name} has finished with incident (as expected)."
-                          )
-                      )
-                    case (Some(incidentMessage), _, _) =>
-                      Left(
-                        data.error(
-                          "The Incident contains not the expected message." +
-                            s"\nExpected: ${scenario.incidentMsg}\nActual Message: $incidentMessage"
+    )(data: ScenarioData): ResultType =
+      scenario.handleIncident(rootIncidentId)(data) { (body, data) =>
+        body.hcursor.values
+          .map {
+            case (values: Iterable[Json]) if values.toSeq.nonEmpty =>
+              scenario.extractIncidentMsg(body)(data)
+                .flatMap {
+                  case (Some(incidentMessage), _, _)
+                      if incidentMessage.contains(scenario.incidentMsg) =>
+                    Right(
+                      data
+                        .info(
+                          s"Process ${scenario.name} has finished with incident (as expected)."
                         )
+                    )
+                  case (Some(incidentMessage), _, _) =>
+                    Left(
+                      data.error(
+                        "The Incident contains not the expected message." +
+                          s"\nExpected: ${scenario.incidentMsg}\nActual Message: $incidentMessage"
                       )
-                    case (None, id, rootCauseIncidentId)
-                        if id != rootCauseIncidentId =>
-                      checkIncident(Some(rootCauseIncidentId))(
-                        data.info(
-                          s"Incident Message only in Root incident $rootCauseIncidentId"
+                    )
+                  case (None, id, rootCauseIncidentId)
+                      if id != rootCauseIncidentId =>
+                    checkIncident(Some(rootCauseIncidentId))(
+                      data.info(
+                        s"Incident Message only in Root incident $rootCauseIncidentId"
+                      )
+                    )
+                  case _ =>
+                    Left(
+                      data
+                        .error(
+                          "The Incident does not contain any incidentMessage."
                         )
-                      )
-                    case _ =>
-                      Left(
-                        data
-                          .error(
-                            "The Incident does not contain any incidentMessage."
-                          )
-                          .info(request.toCurl)
-                      )
-                  }
-              case _ =>
-                given ScenarioData = data
-                tryOrFail(checkIncident(), scenario)
-            }
-            .getOrElse(
-              Left(data.error("An Array is expected (should not happen)."))
-            )
+                    )
+                }
+            case _ =>
+              given ScenarioData = data
+              tryOrFail(checkIncident(), scenario)
+          }
+          .getOrElse(
+            Left(data.error("An Array is expected (should not happen)."))
+          )
       }
-    }
     end checkIncident
 
   end extension
