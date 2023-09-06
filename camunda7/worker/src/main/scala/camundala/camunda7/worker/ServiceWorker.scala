@@ -35,10 +35,17 @@ trait ServiceWorker[
   protected def queryParams(inputObject: In): QueryParamsType = Right(Seq.empty)
   // default is no body
   protected def mapBodyInput(inputObject: In): BodyType = Right(None)
+
+  // default is no output
+  protected def mapBodyOutput(
+      outputBody: ServiceOut,
+      headers: Map[String, String]
+  ): OutputType = Right(None)
+  
   // default is no output
   protected def mapBodyOutput(
       requestOutput: RequestOutput[ServiceOut]
-  ): OutputType = Right(None)
+  ): OutputType = mapBodyOutput(requestOutput.outputBody, requestOutput.headers)
 
   protected def mapBodyOutput(
       serviceOutput: ServiceOut,

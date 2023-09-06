@@ -131,8 +131,8 @@ case class Process[
   def withOutputVariables(names: String*): Process[In, Out] =
     copy(outputVariables = names)
 
-  def withOutputVariable(processName: String): Process[In, Out] =
-    copy(outputVariables = outputVariables :+ processName)
+  def withOutputVariable(name: String): Process[In, Out] =
+    withOutputVariables(name)
 
   override def camundaInMap: Map[String, CamundaVariable] =
     val mock = outputMock.toSeq.map(m =>

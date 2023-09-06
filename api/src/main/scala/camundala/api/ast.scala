@@ -151,16 +151,25 @@ def generalVariablesDescr[Out <: Product: Encoder](
     out: Out,
     serviceMock: String
 ) =
-  s"""|<p/>
+  s"""<p/>
       |
       |<details>
       |<summary>
-      |<b><i>Mocking Example(s)</i></b>
+      |<b><i>General Variable(s)</i></b>
       |</summary>
       |
       |<p>
       |
-      |**outputMock**: 
+      |**outputVariables**:
+      |
+      |Just take the variable you need in your process!
+      |```json
+      |...
+      |"outputVariables": "${out.productElementNames.mkString(",")}",
+      |...
+      |```
+      |
+      |**outputMock**:
       |
       |```json
       |...

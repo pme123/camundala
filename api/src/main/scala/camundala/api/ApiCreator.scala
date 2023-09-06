@@ -97,11 +97,12 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
       createGeneralVariable(
         InputParams.outputVariables,
         s"""You can filter the Output with a list of variable names you are interested in.
+           |This list may include all variables from the output (`Out`). We included an example for each Process or ServiceProcess.
            |${listOfStringsOrCommaSeparated("name,firstName")}
            |""".stripMargin,
         """process(..) // or serviceProcess(..)
           |  .withOutputVariables("name", "firstName") // creates a list with outputVariables
-          |  .withOutputVariable("name", "firstName") // adds a outputVariable""".stripMargin,
+          |  .withOutputVariable("nickname") // adds a outputVariable""".stripMargin,
         """"outputVariables": ["name", "firstName"],"""
       ) +
       createGeneralVariable(
@@ -128,6 +129,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
           |  .withImpersonateUserId(impersonateUserId)""".stripMargin,
         """"impersonateUserId": "myUserName","""
       ) +
+      "### ServiceProcesses" +
       createGeneralVariable(
         InputParams.outputServiceMock,
         """Mock the Inner-Service (`MockedServiceResponse[ServiceOut]`)

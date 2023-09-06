@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: "\n\nCreated at 04/09/2023, 08:17\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
+  summary: "\n\nCreated at 06/09/2023, 12:58\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
     \n> This is the invoice demo application which is shipped with the full distributions.\n\
     \nSee the original [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).\n\
     \nI bundled it here! Just run `InvoiceServletProcessApplication`.\n\nThis based\
@@ -25,12 +25,13 @@ info:
     ```\n\n- Json\n```json\n...\n\"mockedSubprocesses\": [\"mySubProcess\", \"myOtherSubProcess\"\
     ],\n...\n```\n\n### Processes and ServiceProcesses\n**outputVariables**:\n\nYou\
     \ can filter the Output with a list of variable names you are interested in.\n\
-    Depending on your implementation it is also possible to use a _comma separated_\
-    \ String,\nlike `\"name,firstName\"`\n\n\n- DSL:\n```scala\nprocess(..) // or\
-    \ serviceProcess(..)\n  .withOutputVariables(\"name\", \"firstName\") // creates\
-    \ a list with outputVariables\n  .withOutputVariable(\"name\", \"firstName\")\
-    \ // adds a outputVariable\n```\n\n- Json\n```json\n...\n\"outputVariables\":\
-    \ [\"name\", \"firstName\"],\n...\n```\n\n\n**outputMock**:\n\nMock the Process\
+    This list may include all variables from the output (`Out`). We included an example\
+    \ for each Process or ServiceProcess.\nDepending on your implementation it is\
+    \ also possible to use a _comma separated_ String,\nlike `\"name,firstName\"`\n\
+    \n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withOutputVariables(\"\
+    name\", \"firstName\") // creates a list with outputVariables\n  .withOutputVariable(\"\
+    nickname\") // adds a outputVariable\n```\n\n- Json\n```json\n...\n\"outputVariables\"\
+    : [\"name\", \"firstName\"],\n...\n```\n\n\n**outputMock**:\n\nMock the Process\
     \ or Service (`Out`)\n - You find an example in every _Process_ and _ServiceProcess_.\n\
     \n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .mockWith(outputMock)\n\
     ```\n\n- Json\n```json\n...\n\"outputMock\": {..},\n...\n```\n\n\n**servicesMocked**:\n\
@@ -42,7 +43,7 @@ info:
     \ issue!*.\nIt is helpful if you have Tokens that expire, but long running Processes.\n\
     \n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withImpersonateUserId(impersonateUserId)\n\
     ```\n\n- Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
-    \n\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
+    \n### ServiceProcesses\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
     \ - You find an example in every _ServiceProcess_.\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
     \  .mockServiceWith(MockedServiceResponse\n     .success200(inOut.defaultServiceMock))\n\
     ```\n\n- Json\n```json\n...\n\"outputServiceMock\": {\n  \"respStatus\" : 200,\n\
@@ -69,15 +70,16 @@ paths:
       summary: 'Process: example-invoice-c7'
       description: "This starts the Invoice Receipt Process.\n\n- Input:  `camundala.examples.invoice.InvoiceReceipt\
         \ > In`\n- Output: `camundala.examples.invoice.InvoiceReceipt > Out`\n\n\n\
-        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-63944\"\
+        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-58162\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container:\
-        \ $('#example-invoice-c7-63944'), height: '95%', width: '95%' }));\" src=\"\
+        \ $('#example-invoice-c7-58162'), height: '95%', width: '95%' }));\" src=\"\
         data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)\n\
-        \n<p/>\n\n<details>\n<summary>\n<b><i>Mocking Example(s)</i></b>\n</summary>\n\
-        \n<p>\n\n**outputMock**: \n\n```json\n...\n\"outputMock\": {\n  \"approved\"\
-        \ : true,\n  \"clarified\" : null\n},\n...\n```\n\n</p>\n</details>\n</p>\n\
-        \      "
+        \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
+        \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
+        ```json\n...\n\"outputVariables\": \"approved,clarified\",\n...\n```\n\n**outputMock**:\n\
+        \n```json\n...\n\"outputMock\": {\n  \"approved\" : true,\n  \"clarified\"\
+        \ : null\n},\n...\n```\n\n</p>\n</details>\n</p>\n      "
       operationId: 'Process: example-invoice-c7'
       requestBody:
         content:
@@ -116,8 +118,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-9629">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-9629'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-30621">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-30621'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -233,14 +235,16 @@ paths:
       summary: 'Process: example-invoice-c7-review'
       description: "This starts the Review Invoice Process.\n\n- Input:  `camundala.examples.invoice.ReviewInvoice\
         \ > In`\n- Output: `camundala.examples.invoice.ReviewInvoice > Out`\n\n\n\
-        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-70600\"\
+        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-26466\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({\
-        \ container: $('#example-invoice-c7-review-70600'), height: '95%', width:\
+        \ container: $('#example-invoice-c7-review-26466'), height: '95%', width:\
         \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)\n\
-        \n<p/>\n\n<details>\n<summary>\n<b><i>Mocking Example(s)</i></b>\n</summary>\n\
-        \n<p>\n\n**outputMock**: \n\n```json\n...\n\"outputMock\": {\n  \"clarified\"\
-        \ : true\n},\n...\n```\n\n</p>\n</details>\n</p>\n      "
+        \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
+        \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
+        ```json\n...\n\"outputVariables\": \"clarified\",\n...\n```\n\n**outputMock**:\n\
+        \n```json\n...\n\"outputMock\": {\n  \"clarified\" : true\n},\n...\n```\n\n\
+        </p>\n</details>\n</p>\n      "
       operationId: 'Process: example-invoice-c7-review'
       requestBody:
         content:
@@ -349,12 +353,14 @@ paths:
       summary: 'ServiceProcess: ArchiveInvoiceService'
       description: "\n\nArchives the Receipt.\n\n- Input:  `camundala.examples.invoice.ArchiveInvoice\
         \ > In`\n- Output: `camundala.examples.invoice.ArchiveInvoice > Out`\n- ServiceOut:\
-        \  `Seq[java.lang.String]`\n<p/>\n\n<details>\n<summary>\n<b><i>Mocking Example(s)</i></b>\n\
-        </summary>\n\n<p>\n\n**outputMock**: \n\n```json\n...\n\"outputMock\": {\n\
-        \  \"archived\" : true\n},\n...\n```\n\n**outputServiceMock**: \n```json\n\
-        ...\n\"outputServiceMock\": {\n  \"respStatus\" : 200,\n  \"respBody\" : [\n\
-        \    \"someIdJustForDemo\"\n  ],\n  \"respHeaders\" : [\n  ]\n},\n...\n```\n\
-        </p>\n</details>\n</p>\n      \n    "
+        \  `Seq[java.lang.String]`\n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n\
+        </summary>\n\n<p>\n\n**outputVariables**:\n\nJust take the variable you need\
+        \ in your process!\n```json\n...\n\"outputVariables\": \"archived\",\n...\n\
+        ```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"archived\"\
+        \ : true\n},\n...\n```\n\n**outputServiceMock**: \n```json\n...\n\"outputServiceMock\"\
+        : {\n  \"respStatus\" : 200,\n  \"respBody\" : [\n    \"someIdJustForDemo\"\
+        \n  ],\n  \"respHeaders\" : [\n  ]\n},\n...\n```\n</p>\n</details>\n</p>\n\
+        \      \n    "
       operationId: 'ServiceProcess: ArchiveInvoiceService'
       requestBody:
         content:
@@ -534,8 +540,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-47424">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-47424'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-55021">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-55021'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
