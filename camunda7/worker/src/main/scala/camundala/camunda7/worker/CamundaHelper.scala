@@ -55,6 +55,14 @@ trait CamundaHelper:
   def extractSeqFromArrayOrString(
       varKey: String | InputParams
   ): HelperContext[Either[BadVariableError, Seq[String]]] =
+    extractSeqFromArrayOrString(varKey, Seq.empty)
+
+  // used for input variables you can define with Array of Strings or a comma-separated String
+  // if not set it returns an empty Seq
+  def extractSeqFromArrayOrString(
+                                   varKey: String | InputParams,
+                                   defaultSeq: Seq[String | ErrorCodes]
+                                 ): HelperContext[Either[BadVariableError, Seq[String]]] =
     jsonVariableOpt(varKey)
       .flatMap {
         case Some(value) if value.isArray =>
@@ -80,7 +88,7 @@ trait CamundaHelper:
               )
             }
         case _ =>
-          Right(Seq.empty[String])
+          Right(defaultSeq.map(_.toString))
       }
 
   /** Analog `variable(String vari)`. You can define a Value that is returned if

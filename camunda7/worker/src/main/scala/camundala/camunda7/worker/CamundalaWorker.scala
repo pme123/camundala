@@ -47,8 +47,7 @@ abstract class CamundalaWorker[
           )
           filteredOut <- filteredOutput(allOutputs)
         } yield externalTaskService.handleSuccess(filteredOut) //
-      ).left.map{
-        case ex =>
+      ).left.map{ ex =>
            externalTaskService.handleError(ex)
       }
     } catch { // safety net
@@ -64,7 +63,7 @@ abstract class CamundalaWorker[
   end executeWorker
 
   protected def defaultMock: Out
-  protected def defaultHandledErrorCodes =
+  protected def defaultHandledErrorCodes: Seq[ErrorCodes] =
     Seq(ErrorCodes.`output-mocked`, ErrorCodes.`validation-failed`)
 
   override protected def getDefaultMock: MockerOutput = Left(MockedOutput(toCamunda(defaultMock)))
@@ -95,7 +94,7 @@ abstract class CamundalaWorker[
     ): HelperContext[Unit] =
       import CamundalaWorkerError.*
       (for{
-        handledErrors <- extractSeqFromArrayOrString(InputParams.handledErrors)
+        handledErrors <- extractSeqFromArrayOrString(InputParams.handledErrors, defaultHandledErrorCodes)
         regexHandledErrors <- extractSeqFromArrayOrString(InputParams.regexHandledErrors)
         errorHandled = error.isMock || handledErrors.contains(error.errorCode.toString)
         errorRegexHandled = errorHandled && regexHandledErrors.forall(regex => error.errorMsg.matches(s".*$regex.*"))
@@ -124,7 +123,7 @@ abstract class CamundalaWorker[
           externalTaskService.handleFailure(
             summon[ExternalTask],
             errMessage,
-            s" ${errMessage}\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
+            s" $errMessage\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
             0,
             0
           ) //TODO implement retry mechanism
