@@ -45,7 +45,7 @@ trait SEventExtensions extends SimulationHelper:
             }
             .left
             .flatMap { _ =>
-              tryOrFail(loadVariable(processInstanceId), sEvent)
+              sEvent.tryOrFail(loadVariable(processInstanceId))
             }
         )
       }
@@ -108,7 +108,7 @@ trait SEventExtensions extends SimulationHelper:
           }
           .left
           .flatMap { _ =>
-            tryOrFail(correlate(), sEvent)
+            sEvent.tryOrFail(correlate())
           }
       end correlate
       correlate()(data.withRequestCount(0))
@@ -191,7 +191,7 @@ trait SEventExtensions extends SimulationHelper:
               }
               .left
               .flatMap { _ =>
-                tryOrFail(getJob(processInstanceId), sEvent)
+                sEvent.tryOrFail(getJob(processInstanceId))
               }
           )
       }

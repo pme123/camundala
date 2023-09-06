@@ -225,7 +225,7 @@ trait SScenarioExtensions extends SStepExtensions:
                 }
             case _ =>
               given ScenarioData = data
-              tryOrFail(checkIncident(), scenario)
+              scenario.tryOrFail(checkIncident())
           }
           .getOrElse(
             Left(data.error("An Array is expected (should not happen)."))

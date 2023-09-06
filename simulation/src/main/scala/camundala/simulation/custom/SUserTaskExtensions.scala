@@ -14,7 +14,7 @@ trait SUserTaskExtensions extends SimulationHelper:
       for {
         given ScenarioData <- task()
         given ScenarioData <- checkForm()
-        given ScenarioData <- userTask.waitForSec.map(waitFor).getOrElse(Right(summon[ScenarioData]))
+        given ScenarioData <- userTask.waitForSec.map(userTask.waitFor).getOrElse(Right(summon[ScenarioData]))
         given ScenarioData <- completeTask()
       } yield summon[ScenarioData]
 
@@ -50,7 +50,7 @@ trait SUserTaskExtensions extends SimulationHelper:
               }
               .left
               .flatMap { _ =>
-                tryOrFail(getTask(processInstanceId), userTask)
+                userTask.tryOrFail(getTask(processInstanceId))
               }
           )
       }

@@ -35,7 +35,7 @@ trait SSubProcessExtensions extends SimulationHelper:
               }
               .left
               .flatMap { _ =>
-                tryOrFail(processInstance(), process)
+                process.tryOrFail(processInstance())
               }
         )
       }

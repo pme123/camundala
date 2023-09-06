@@ -2,14 +2,7 @@ package camundala.simulation.custom
 
 import camundala.simulation.*
 import io.circe.*
-import sttp.client3.{
-  Empty,
-  HttpClientSyncBackend,
-  Identity,
-  Request,
-  RequestT,
-  SttpBackend
-}
+import sttp.client3.*
 import sttp.model.StatusCode
 
 import scala.language.dynamics
@@ -73,7 +66,9 @@ trait SimulationHelper extends ResultChecker, Logging:
       response.body.left
         .map(body => handleNon2xxResponse(response.code, body, request.toCurl))
         .flatMap(
-          parser.parse(_).left
+          parser
+            .parse(_)
+            .left
             .map(err =>
               summon[ScenarioData]
                 .error(s"Problem creating body from response.\n$err")
@@ -81,49 +76,135 @@ trait SimulationHelper extends ResultChecker, Logging:
         )
         .flatMap(handleBody(_, summon[ScenarioData]))
 
-  protected def tryOrFail(
-      funct: ScenarioData => ResultType,
-      step: ScenarioOrStep
-  )(using data: ScenarioData): ResultType = {
-    val count = summon[ScenarioData].context.requestCount
-    if (count < config.maxCount) {
-      Try(Thread.sleep(1000)).toEither.left
-        .map(_ =>
+  extension(step: ScenarioOrStep)
+
+    protected def tryOrFail(
+        funct: ScenarioData => ResultType,
+    )(using data: ScenarioData): ResultType = {
+      val count = summon[ScenarioData].context.requestCount
+      if (count < config.maxCount) {
+        Try(Thread.sleep(1000)).toEither.left
+          .map(_ =>
+            summon[ScenarioData]
+              .error(
+                s"Interrupted Exception when waiting for ${step.name} (${step.typeName})."
+              )
+          ).flatMap { _ =>
+            if (!step.isInstanceOf[IsIncidentScenario])
+              checkIfIncidentOccurred(data)
+            else
+              Right(data)
+          }
+          .flatMap { _ =>
+            funct(
+              summon[ScenarioData]
+                .withRequestCount(count + 1)
+                .info(
+                  s"Waiting for ${step.name} (${step.typeName} - count: $count)"
+                )
+            )
+          }
+
+      } else {
+        Left(
           summon[ScenarioData]
             .error(
-              s"Interrupted Exception when waiting for ${step.name} (${step.typeName})."
+              s"Expected ${step.name} (${step.typeName}) was not found! Tried $count times."
             )
         )
-        .flatMap { _ =>
-          funct(
-            summon[ScenarioData]
-              .withRequestCount(count + 1)
-              .info(
-                s"Waiting for ${step.name} (${step.typeName} - count: $count)"
-              )
-          )
-        }
-    } else {
-      Left(
-        summon[ScenarioData]
-          .error(
-            s"Expected ${step.name} (${step.typeName}) was not found! Tried $count times."
-          )
-      )
+      }
     }
-  }
 
-  protected def waitFor(seconds: Int)(using data: ScenarioData): Either[ScenarioData, ScenarioData] =
-    Try(Thread.sleep(seconds * 1000)).toEither
-      .map(_ => data.info(s"Waited for $seconds second(s)."))
-      .left
-      .map(ex =>
-        data
-          .error(
-            s"Problem when waiting for $seconds second(s). ${ex.getMessage}."
+    protected def waitFor(
+        seconds: Int
+    )(using data: ScenarioData): Either[ScenarioData, ScenarioData] =
+      Try(Thread.sleep(seconds * 1000)).toEither
+        .map(_ => data.info(s"Waited for $seconds second(s)."))
+        .left
+        .map(ex =>
+          data
+            .error(
+              s"Problem when waiting for $seconds second(s). ${ex.getMessage}."
+            )
+            .debug(ex.toString)
+        )
+    end waitFor
+
+    protected def checkIfIncidentOccurred(data: ScenarioData): ResultType =
+      handleIncident()(data) { (body, data) =>
+        body.hcursor.values
+          .map {
+            case (values: Iterable[Json]) if values.toSeq.nonEmpty =>
+              extractIncidentMsg(body)(data)
+                .flatMap { case (incidentMessage, _, _) =>
+                  Left(
+                    data.error(
+                      s"There is a NON-EXPECTED error occurred: ${
+                        incidentMessage
+                          .getOrElse("No incident message")
+                      }!"
+                    )
+                  )
+                }
+            case _ =>
+              Right(
+                data
+                  .debug(
+                    s"No incident so far for ${step.name}."
+                  )
+              )
+          }
+          .getOrElse(
+            Left(
+              data.error(
+                "An Array is expected (should not happen)."
+              )
+            )
           )
-          .debug(ex.toString)
-      )
-  end waitFor
+      }
 
+    protected def handleIncident(
+                        rootIncidentId: Option[String] = None
+                      )(data: ScenarioData)(
+                        handleBody: (Json, ScenarioData) => ResultType
+                      ): ResultType =
+      val processInstanceId = data.context.processInstanceId
+      val uri = rootIncidentId match
+        case Some(incId) =>
+          uri"${config.endpoint}/incident?incidentId=$incId&deserializeValues=false"
+        case None =>
+          uri"${config.endpoint}/incident?processInstanceId=$processInstanceId&deserializeValues=false"
+      val request = basicRequest
+        .auth()
+        .get(uri)
+
+      given ScenarioData = data
+
+      runRequest(request, s"Process '${step.name}' checkIncident") {
+        (body, data) => handleBody(body, data)
+      }.left.map(_.info(request.toCurl))
+
+    end handleIncident
+
+    protected def extractIncidentMsg(body: Json)(
+      data: ScenarioData
+    ): Either[ScenarioData, (Option[String], String, String)] =
+      val arr = body.hcursor.downArray
+      (for
+        maybeIncMessage <- arr
+          .downField("incidentMessage")
+          .as[Option[String]]
+        id <- arr.downField("id").as[String]
+        rootCauseIncidentId <- arr
+          .downField("rootCauseIncidentId")
+          .as[String]
+      yield (maybeIncMessage, id, rootCauseIncidentId)).left
+        .map { ex =>
+          data
+            .error(
+              s"Problem extracting incidentMessage from $body\n $ex"
+            )
+        }
+    end extractIncidentMsg
+  end extension
 end SimulationHelper

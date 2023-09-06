@@ -30,7 +30,7 @@ trait SStepExtensions
             given ScenarioData <- sp.switchToMainProcess()
           } yield summon[ScenarioData]
         case SWaitTime(seconds) =>
-          waitFor(seconds)
+          step.waitFor(seconds)
     end run
 
   end extension
@@ -129,86 +129,10 @@ trait SStepExtensions
                 given ScenarioData =
                   data.debug(s"State for ${hasProcessSteps.name} is $state")
 
-                handleIncident()(summon[ScenarioData]) {
-                  (body, data) =>
-                    body.hcursor.values
-                      .map {
-                        case (values: Iterable[Json])
-                            if values.toSeq.nonEmpty =>
-                          extractIncidentMsg(body)(summon[ScenarioData])
-                            .flatMap { case (incidentMessage, _, _) =>
-                              Left(
-                                data.error(
-                                  s"There is a non-expected error occurred: ${incidentMessage
-                                    .getOrElse("No incident message")}!"
-                                )
-                              )
-                            }
-                        case _ =>
-                          Right(
-                            summon[ScenarioData]
-                              .debug(
-                                s"No incident so far for ${hasProcessSteps.name}."
-                              )
-                          )
-                      }
-                      .getOrElse(
-                        Left(
-                          summon[ScenarioData].error(
-                            "An Array is expected (should not happen)."
-                          )
-                        )
-                      )
-                }.flatMap(data =>
-                  tryOrFail(checkFinished(), hasProcessSteps)(using data)
-                )
+                hasProcessSteps.tryOrFail(checkFinished())
             }
       }
     end checkFinished
-
-    def handleIncident(
-        rootIncidentId: Option[String] = None
-    )(data: ScenarioData)(
-        handleBody: (Json, ScenarioData) => ResultType
-    ): ResultType =
-      val processInstanceId = data.context.processInstanceId
-      val uri = rootIncidentId match
-        case Some(incId) =>
-          uri"${config.endpoint}/incident?incidentId=$incId&deserializeValues=false"
-        case None =>
-          uri"${config.endpoint}/incident?processInstanceId=$processInstanceId&deserializeValues=false"
-      val request = basicRequest
-        .auth()
-        .get(uri)
-
-      given ScenarioData = data
-
-      runRequest(request, s"Process '${hasProcessSteps.name}' checkIncident") {
-        (body, data) => handleBody(body, data)
-      }.left.map(_.info(request.toCurl))
-
-    end handleIncident
-
-    def extractIncidentMsg(body: Json)(
-        data: ScenarioData
-    ): Either[ScenarioData, (Option[String], String, String)] =
-      val arr = body.hcursor.downArray
-      (for
-        maybeIncMessage <- arr
-          .downField("incidentMessage")
-          .as[Option[String]]
-        id <- arr.downField("id").as[String]
-        rootCauseIncidentId <- arr
-          .downField("rootCauseIncidentId")
-          .as[String]
-      yield (maybeIncMessage, id, rootCauseIncidentId)).left
-        .map { ex =>
-          data
-            .error(
-              s"Problem extracting incidentMessage from $body\n $ex"
-            )
-        }
-    end extractIncidentMsg
 
   end extension
 
