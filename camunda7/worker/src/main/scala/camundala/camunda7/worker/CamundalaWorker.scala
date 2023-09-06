@@ -23,11 +23,11 @@ abstract class CamundalaWorker[
       externalTaskService: ExternalTaskService
   ): Unit =
     println(
-      s"WORKER ${LocalDateTime.now()} ${externalTask.getTopicName} (${externalTask.getId}) started"
+      s"WORKER ${LocalDateTime.now()} ${externalTask.getTopicName} (${externalTask.getId}) started > ${externalTask.getBusinessKey}"
     )
     executeWorker(externalTaskService)(using externalTask)
     println(
-      s"WORKER ${LocalDateTime.now()} ${externalTask.getTopicName} ended"
+      s"WORKER ${LocalDateTime.now()} ${externalTask.getTopicName} ended > ${externalTask.getBusinessKey}"
     )
   end execute
 
@@ -106,20 +106,22 @@ abstract class CamundalaWorker[
                 error.mockedOutput
               case _ => Map.empty
             filteredOutput(mockedOutput)
-              .map(filtered =>
+              .map { filtered =>
+                println(s"Handled Error: ${error.errorCode}: ${error.errorMsg}")
                 externalTaskService.handleBpmnError(
                   summon[ExternalTask],
                   s"${error.errorCode}",
                   error.errorMsg,
                   filtered.asJava
                 )
-              )
+              }
           case (true, false) =>
             Left(HandledRegexNotMatchedError(error))
           case _ =>
             Left(error)
         }.left.map{ err =>
           val errMessage = s"${err.errorCode}: ${err.errorMsg}"
+          println(s"Unhandled Error: $errMessage")
           externalTaskService.handleFailure(
             summon[ExternalTask],
             errMessage,
