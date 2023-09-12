@@ -81,11 +81,11 @@ trait SimulationHelper extends ResultChecker, Logging:
     protected def tryOrFail(
         funct: ScenarioData => ResultType,
     )(using data: ScenarioData): ResultType = {
-      val count = summon[ScenarioData].context.requestCount
+      val count = data.context.requestCount
       if (count < config.maxCount) {
         Try(Thread.sleep(1000)).toEither.left
           .map(_ =>
-            summon[ScenarioData]
+            data
               .error(
                 s"Interrupted Exception when waiting for ${step.name} (${step.typeName})."
               )
@@ -95,9 +95,9 @@ trait SimulationHelper extends ResultChecker, Logging:
             else
               Right(data)
           }
-          .flatMap { _ =>
+          .flatMap { scenarioData =>
             funct(
-              summon[ScenarioData]
+              scenarioData
                 .withRequestCount(count + 1)
                 .info(
                   s"Waiting for ${step.name} (${step.typeName} - count: $count)"
@@ -107,7 +107,7 @@ trait SimulationHelper extends ResultChecker, Logging:
 
       } else {
         Left(
-          summon[ScenarioData]
+          data
             .error(
               s"Expected ${step.name} (${step.typeName}) was not found! Tried $count times."
             )

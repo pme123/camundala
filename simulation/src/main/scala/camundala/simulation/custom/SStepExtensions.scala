@@ -50,7 +50,7 @@ trait SStepExtensions
         data: ScenarioData
     ): ResultType =
       for
-        given ScenarioData <- checkFinished()(data)
+        given ScenarioData <- checkFinished()(data.withRequestCount(0))
         given ScenarioData <- checkVars()
       yield summon[ScenarioData]
     end check
