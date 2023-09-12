@@ -15,6 +15,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 0.20.0 - 2023-09-12
+### Changed 
+- Added better Logging of Failures. - see [Commit](https://github.com/pme123/camundala/commit/ead889e2902de830d35097268bc92b6dc9ddb169)
+- Added defaultHandledErrorCodes as default for extractSeqFromArrayOrString. - see [Commit](https://github.com/pme123/camundala/commit/f5022982f6a6361a182829c379ba22e9e34f68df)
+- Added check for incidents to tryOrFail in SimulationHelper. - see [Commit](https://github.com/pme123/camundala/commit/e4b037de9ced36ee8343843bb640714ea8a4e89b)
+- Optimized retry if process is finished - checks if there was an incident. - see [Commit](https://github.com/pme123/camundala/commit/ea42abf71d3821a94da4498f30a69f4a505a59ab)
+- added convenience method for mapBodyOutput / cosmetics. - see [Commit](https://github.com/pme123/camundala/commit/b682c18a70e660256c675910eb3ee561c6d046dc)
+- Fix in ApiConfig. - see [Commit](https://github.com/pme123/camundala/commit/de8391bc9aabbfda1cc751321762aa3dad649855)
+
 ## 1.19.1 - 2023-09-04
 ### Changed 
 - Adjusted Documentation. - see [Commit](https://github.com/pme123/camundala/commit/1b154ac6c5c5f59a40bd9291f380d482e818a56c)
