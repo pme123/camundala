@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## 0.20.0 - 2023-09-12
+## 1.20.0 - 2023-09-12
 ### Changed 
 - Added better Logging of Failures. - see [Commit](https://github.com/pme123/camundala/commit/ead889e2902de830d35097268bc92b6dc9ddb169)
 - Added defaultHandledErrorCodes as default for extractSeqFromArrayOrString. - see [Commit](https://github.com/pme123/camundala/commit/f5022982f6a6361a182829c379ba22e9e34f68df)
