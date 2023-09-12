@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.20.1 - 2023-09-12
+### Changed 
+- Fix, set counter to 0 when checking Process is finished. - see [Commit](https://github.com/pme123/camundala/commit/9fd14d27c29b0ec8085f14e10bf89285a13d3975)
+
 ## 1.20.0 - 2023-09-12
 ### Changed 
 - Added better Logging of Failures. - see [Commit](https://github.com/pme123/camundala/commit/ead889e2902de830d35097268bc92b6dc9ddb169)
