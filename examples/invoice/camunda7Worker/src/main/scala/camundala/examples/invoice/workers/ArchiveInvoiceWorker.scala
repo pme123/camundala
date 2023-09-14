@@ -24,7 +24,7 @@ class ArchiveInvoiceWorker extends ServiceWorker[In, Out, ServiceIn, ServiceOut]
 
   protected def httpMethod = Method.GET
 
-  protected def apiUri(inputObject: In): ApiUriType = Right(uri"http://myArchiveService.com")
+  protected def serviceBasePath: String = "http://myArchiveService.com"
 
   protected def sendRequest(request: Request[Either[String, String], Any], optReqBody: Option[ServiceIn]): Either[ServiceError, RequestOutput[ServiceOut]] = ???
 

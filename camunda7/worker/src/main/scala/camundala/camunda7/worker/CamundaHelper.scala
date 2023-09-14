@@ -135,25 +135,6 @@ trait CamundaHelper:
 
   end extension // Option
 
-  /** Returns a Query String from all the Variables found in the Bag.
-    * @param varKeys
-    *   a list with Variable names you want query parameters.
-    *
-    * Usage: myVars = variablesAsQueryParams("myVar", "otherVar", "optionalVar")
-    * myURL = "http://server.ch?$myVars" // myVars=okidoki&otherVar=OK
-    */
-  def variablesAsQueryParams(
-      varKeys: String*
-  ): HelperContext[Seq[(String, Seq[String])]] =
-    varKeys
-      .map(key =>
-        key -> Option(summon[ExternalTask].getVariable(key))
-          .asInstanceOf[Option[Any]]
-      )
-      .collect { case k -> Some(value) =>
-        k -> Seq(s"$value")
-      }
-
   def extractValue(typedValue: TypedValue): Either[BadVariableError, Json] =
     //println(s"typedValue.getType: ${typedValue.getType}")
     typedValue.getType match

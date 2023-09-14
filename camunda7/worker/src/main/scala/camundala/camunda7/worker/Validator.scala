@@ -14,13 +14,15 @@ trait Validator[In <: Product: CirceCodec] extends CamundaHelper:
 
   protected def prototype: In
 
+  type ValidatorType = HelperContext[Either[ValidaterError, In]]
+
   /** If valid -> Right(true) if skipped -> Right(false) if not valid ->
     * Left(String with validation errors)
     *
     * @param getVariableTyped
     * @return
     */
-  protected def validate(): HelperContext[Either[ValidaterError, In]] =
+  protected def validate(): ValidatorType =
     val jsonResult: Either[ValidaterError, Seq[(String, Option[Json])]] =
       prototype.productElementNames.toSeq
         .map(k => k -> variableTypedOpt(k))

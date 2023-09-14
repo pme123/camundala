@@ -17,22 +17,35 @@ trait ServiceWorker[
       Out
     ]: //,      RestApiClient[ServiceIn, ServiceOut]:
 
-  type ApiUriType = HelperContext[Either[CamundalaWorkerError, Uri]]
-  type QueryParamsType =
-    HelperContext[Either[CamundalaWorkerError, Seq[(String, Seq[String])]]]
   type BodyType = HelperContext[Either[CamundalaWorkerError, Option[ServiceIn]]]
   type OutputType = HelperContext[Either[CamundalaWorkerError, Option[Out]]]
 
   protected def httpMethod: Method
 
-  protected def apiUri(inputObject: In): ApiUriType
-  protected def gatewayUrl: String =
-    sys.env.getOrElse("SIF_GATEWAY_URL", "NOT-SET")
-  protected def serviceUri(servicePath: os.RelPath) =
-    uri"$gatewayUrl/$servicePath"
+  protected def serviceBasePath: String
+
+  protected def servicePath(inputObject: In): os.RelPath = os.rel
+
 
   // default is no params
-  protected def queryParams(inputObject: In): QueryParamsType = Right(Seq.empty)
+  // a list with keys or a list with keys and its defaults
+  protected def queryParamKeys: Seq[String | (String, String)] = Seq.empty
+
+  private lazy val defaultsMap = queryParamKeys.map {
+    case k -> v => k -> Some(v)
+    case k => k -> None
+  }.toMap
+
+  private def queryParams(inputObject: In): Seq[(String, Seq[String])] =
+    inputObject.productElementNames.toSeq.zip(inputObject.productIterator.toSeq)
+      .collect{
+        case k -> Some(value) if defaultsMap.contains(k) =>
+          k -> Seq(s"$value")
+
+        case k -> None if defaultsMap.get(k).flatten.isDefined =>
+          k -> Seq(defaultsMap.get(k).flatten.get)
+
+      }
   // default is no body
   protected def mapBodyInput(inputObject: In): BodyType = Right(None)
 
@@ -88,9 +101,10 @@ trait ServiceWorker[
       optOutMock: Option[Out]
   ): RunnerOutput =
     for {
-      uri <- apiUri(inputObject)
-      qParams <- queryParams(inputObject)
       body <- mapBodyInput(inputObject)
+      path = servicePath(inputObject)
+      uri = uri"$serviceBasePath/$path"
+      qParams = queryParams(inputObject)
       optWithServiceMock <- withServiceMock(optOutMock, uri, qParams, body)
       output <- handleMocking(optWithServiceMock, uri, qParams, body).getOrElse(
         sendRequest(requestMethod(uri, qParams), body)
