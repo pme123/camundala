@@ -116,7 +116,7 @@ object CamundalaWorkerError:
 
   case class CamundaBpmnError(errorCode: ErrorCodes, errorMsg: String)
 
-  case class ValidaterError(
+  case class ValidatorError(
       errorMsg: String,
       errorCode: ErrorCodes = ErrorCodes.`validation-failed`
   ) extends ErrorWithOutput:

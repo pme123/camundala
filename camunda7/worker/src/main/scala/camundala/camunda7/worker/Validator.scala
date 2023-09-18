@@ -1,8 +1,8 @@
 package camundala
 package camunda7.worker
 
-import domain.*
-import camundala.camunda7.worker.CamundalaWorkerError.ValidaterError
+import camundala.camunda7.worker.CamundalaWorkerError.ValidatorError
+import camundala.domain.*
 import io.circe.JsonObject
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.engine.variable.`type`.ValueType
@@ -14,16 +14,15 @@ trait Validator[In <: Product: CirceCodec] extends CamundaHelper:
 
   protected def prototype: In
 
-  type ValidatorType = HelperContext[Either[ValidaterError, In]]
+  type ValidatorType = HelperContext[Either[ValidatorError, In]]
 
-  /** If valid -> Right(true) if skipped -> Right(false) if not valid ->
-    * Left(String with validation errors)
-    *
-    * @param getVariableTyped
-    * @return
-    */
+  // by default it does no additional validation
+  protected def validate(in: In): ValidatorType = Right(in)
+
+  // gets the inputs of the process and creates the In object.
+  // if it can not create the object, according messages are created and a ValidaterError created.
   protected def validate(): ValidatorType =
-    val jsonResult: Either[ValidaterError, Seq[(String, Option[Json])]] =
+    val jsonResult: Either[ValidatorError, Seq[(String, Option[Json])]] =
       prototype.productElementNames.toSeq
         .map(k => k -> variableTypedOpt(k))
         .map {
@@ -43,7 +42,7 @@ trait Validator[In <: Product: CirceCodec] extends CamundaHelper:
           )
         case (_, failures) =>
           Left(
-            ValidaterError(
+            ValidatorError(
               failures
                 .collect { case Left(value) => value }
                 .mkString("Validater Error(s):\n - ", " - ", "\n"),
@@ -51,7 +50,7 @@ trait Validator[In <: Product: CirceCodec] extends CamundaHelper:
             )
           )
     println("Input Variables for validation:")
-    val json: Either[ValidaterError, JsonObject] = jsonResult
+    val json: Either[ValidatorError, JsonObject] = jsonResult
       .map(_.foldLeft(JsonObject()) { case (jsonObj, jsonKey -> jsonValue) =>
         println(s" - $jsonKey: ${jsonValue.getClass.getSimpleName} - $jsonValue")
         jsonObj.add(jsonKey, jsonValue.getOrElse(Json.Null))
@@ -61,8 +60,8 @@ trait Validator[In <: Product: CirceCodec] extends CamundaHelper:
         decodeTo[In](jsonObj.asJson.toString)
         .left
           .map(ex =>
-            ValidaterError(errorMsg = ex.errorMsg))
-        
+            ValidatorError(errorMsg = ex.errorMsg))
+          .flatMap(validate)
   end validate
 
 
