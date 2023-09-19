@@ -70,6 +70,23 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
         tag: String,
         isGroup: Boolean
     ): PublicEndpoint[?, Unit, ?, Any] =
+      process match
+        case p: ProcessApi[?,?] =>
+           p.inOut.startEventType match
+             case StartEventType.Message =>
+               correlateMessage(tag)
+             case StartEventType.Signal =>
+               sendSignal(tag)
+             case _ =>
+               startProcessNone(tag, isGroup)
+        case _ =>
+          startProcessNone(tag, isGroup)
+    end startProcess
+
+    private def startProcessNone(
+                      tag: String,
+                      isGroup: Boolean
+                    ): PublicEndpoint[?, Unit, ?, Any] =
       val path =
         tenantIdPath(
           "process-definition" / "key" / process.endpointPath(isGroup),
@@ -87,6 +104,54 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
         .postmanBaseEndpoint(tag, input, "StartProcess")
         .in(path)
         .post
+    end startProcessNone
+
+    private def correlateMessage(tag: String): PublicEndpoint[?, Unit, ?, Any] =
+      val path = "message" / s"--REMOVE:${process.id}--"
+      val input = process
+        .toPostmanInput((example: FormVariables) =>
+          CorrelateMessageIn(
+            process.id,
+            Some(process.name),
+            tenantId = apiConfig.tenantId,
+            processVariables = Some(example)
+          )
+        )
+      val descr =
+        s"""
+           |${process.descr}
+           |
+           |Message:
+           |- _messageName_: `${process.id}`,
+           |""".stripMargin
+      process
+        .postmanBaseEndpoint(tag, input, "CorrelateMessage", Some(descr))
+        .in(path)
+        .post
+    end correlateMessage
+
+    private def sendSignal(tag: String): PublicEndpoint[?, Unit, ?, Any] =
+      val path = "signal" / s"--REMOVE:${process.id}--"
+      val input = process
+        .toPostmanInput((example: FormVariables) =>
+          SendSignalIn(
+            process.id,
+            tenantId = apiConfig.tenantId,
+            variables = Some(example)
+          )
+        )
+      val descr =
+        s"""
+           |${process.descr}
+           |
+           |Signal:
+           |- _messageName_: `${process.id}`,
+           |""".stripMargin
+      process
+        .postmanBaseEndpoint(tag, input, "SendSignal", Some(descr))
+        .in(path)
+        .post
+    end sendSignal
 
   end extension
 

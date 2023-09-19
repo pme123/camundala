@@ -90,6 +90,7 @@ case class Process[
 ](
     inOutDescr: InOutDescr[In, Out],
     elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty,
+    startEventType: StartEventType = StartEventType.None,
     outputMock: Option[Out] = None,
     mockedSubprocesses: Seq[String] = Seq.empty,
     outputVariables: Seq[String] = Seq.empty,
@@ -115,6 +116,9 @@ case class Process[
 
   def withImpersonateUserId(impersonateUserId: String): Process[In, Out] =
     copy(impersonateUserId = Some(impersonateUserId))
+
+  def withStartEventType(startEventType: StartEventType): Process[In, Out] =
+    copy(startEventType = startEventType)
 
   def mockServices: Process[In, Out] =
     copy(servicesMocked = true)
@@ -157,6 +161,12 @@ case class Process[
 
     super.camundaInMap ++ mock.toMap ++ impersUserId.toMap
 end Process
+
+enum StartEventType derives ConfiguredEnumCodec:
+  case None, Message, Signal
+
+object StartEventType:
+  given Schema[StartEventType] = Schema.derived
 
 case class ServiceProcess[
     In <: Product: Encoder: Decoder: Schema,
