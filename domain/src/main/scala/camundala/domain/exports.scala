@@ -37,6 +37,7 @@ object CanceledStatus:
   given Schema[CanceledStatus] = Schema.derived
 
 
+@deprecated
 trait GenericServiceIn:
   def serviceName: String
 
