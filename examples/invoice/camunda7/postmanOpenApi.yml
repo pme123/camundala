@@ -3,7 +3,7 @@ info:
   title: Invoice Example Process API
   version: '1.0'
   summary: "\n**This is for Postman - to have example requests. Be aware the Output\
-    \ is not provided!**\n\n\n\nCreated at 06/09/2023, 12:58\n\n**See the [Camundala\
+    \ is not provided!**\n\n\n\nCreated at 19/09/2023, 13:42\n\n**See the [Camundala\
     \ Documentation](https://pme123.github.io/camundala/)\n\n> This is the invoice\
     \ demo application which is shipped with the full distributions.\n\nSee the original\
     \ [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).\n\
@@ -72,11 +72,11 @@ paths:
     post:
       tags:
       - example-invoice-c7
-      summary: 'example-invoice-c7: StartProcess'
+      summary: 'Process: example-invoice-c7'
       description: |
         This starts the Invoice Receipt Process.
 
-        See API Doc: [example-invoice-c7](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/Process:%20example-invoice-c7)
+        See API Doc: [Process: example-invoice-c7](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/example-invoice-c7/operation/Process:%20example-invoice-c7)
       operationId: postProcess-definitionKeyExample-invoice-c7Start
       requestBody:
         content:
@@ -109,7 +109,7 @@ paths:
     post:
       tags:
       - example-invoice-c7
-      summary: 'example-invoice-c7-assignApprover: EvaluateDecision'
+      summary: 'DecisionDmn: example-invoice-c7-assignApprover'
       description: |2
 
         Decision Table on who must approve the Invoice.
@@ -118,7 +118,7 @@ paths:
         - _decisionDefinitionKey_: `example-invoice-c7-assignApprover`,
 
 
-        See API Doc: [example-invoice-c7-assignApprover](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/DecisionDmn:%20example-invoice-c7-assignApprover)
+        See API Doc: [DecisionDmn: example-invoice-c7-assignApprover](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/example-invoice-c7-assignApprover/operation/DecisionDmn:%20example-invoice-c7-assignApprover)
       operationId: postDecision-definitionKeyKey--remove:example-invoice-c7-assignapprover--Evaluate
       parameters:
       - name: key
@@ -151,11 +151,11 @@ paths:
     post:
       tags:
       - example-invoice-c7
-      summary: 'ApproveInvoiceUT: GetActiveTask'
+      summary: 'UserTask: ApproveInvoiceUT'
       description: |
         Approve the invoice (or not).
 
-        See API Doc: [ApproveInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
+        See API Doc: [UserTask: ApproveInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/ApproveInvoiceUT/operation/UserTask:%20ApproveInvoiceUT)
       operationId: postTask--remove:approveinvoiceut--
       requestBody:
         content:
@@ -175,11 +175,11 @@ paths:
     get:
       tags:
       - example-invoice-c7
-      summary: 'ApproveInvoiceUT: GetTaskFormVariables'
+      summary: 'UserTask: ApproveInvoiceUT'
       description: |
         Approve the invoice (or not).
 
-        See API Doc: [ApproveInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
+        See API Doc: [UserTask: ApproveInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/ApproveInvoiceUT/operation/UserTask:%20ApproveInvoiceUT)
       operationId: getTaskTaskidForm-variables--remove:approveinvoiceut--
       parameters:
       - name: taskId
@@ -220,11 +220,11 @@ paths:
     post:
       tags:
       - example-invoice-c7
-      summary: 'ApproveInvoiceUT: CompleteTask'
+      summary: 'UserTask: ApproveInvoiceUT'
       description: |
         Approve the invoice (or not).
 
-        See API Doc: [ApproveInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
+        See API Doc: [UserTask: ApproveInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/ApproveInvoiceUT/operation/UserTask:%20ApproveInvoiceUT)
       operationId: postTaskTaskidComplete--remove:approveinvoiceut--
       parameters:
       - name: taskId
@@ -277,11 +277,11 @@ paths:
     post:
       tags:
       - example-invoice-c7
-      summary: 'PrepareBankTransferUT: GetActiveTask'
+      summary: 'UserTask: PrepareBankTransferUT'
       description: |
         Prepare the bank transfer in the Financial Accounting System.
 
-        See API Doc: [PrepareBankTransferUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
+        See API Doc: [UserTask: PrepareBankTransferUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/PrepareBankTransferUT/operation/UserTask:%20PrepareBankTransferUT)
       operationId: postTask--remove:preparebanktransferut--
       requestBody:
         content:
@@ -301,11 +301,11 @@ paths:
     get:
       tags:
       - example-invoice-c7
-      summary: 'PrepareBankTransferUT: GetTaskFormVariables'
+      summary: 'UserTask: PrepareBankTransferUT'
       description: |
         Prepare the bank transfer in the Financial Accounting System.
 
-        See API Doc: [PrepareBankTransferUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
+        See API Doc: [UserTask: PrepareBankTransferUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/PrepareBankTransferUT/operation/UserTask:%20PrepareBankTransferUT)
       operationId: getTaskTaskidForm-variables--remove:preparebanktransferut--
       parameters:
       - name: taskId
@@ -346,11 +346,11 @@ paths:
     post:
       tags:
       - example-invoice-c7
-      summary: 'PrepareBankTransferUT: CompleteTask'
+      summary: 'UserTask: PrepareBankTransferUT'
       description: |
         Prepare the bank transfer in the Financial Accounting System.
 
-        See API Doc: [PrepareBankTransferUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
+        See API Doc: [UserTask: PrepareBankTransferUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/PrepareBankTransferUT/operation/UserTask:%20PrepareBankTransferUT)
       operationId: postTaskTaskidComplete--remove:preparebanktransferut--
       parameters:
       - name: taskId
@@ -386,11 +386,11 @@ paths:
     post:
       tags:
       - example-invoice-c7-review
-      summary: 'example-invoice-c7-review: StartProcess'
+      summary: 'Process: example-invoice-c7-review'
       description: |
         This starts the Review Invoice Process.
 
-        See API Doc: [example-invoice-c7-review](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/Process:%20example-invoice-c7-review)
+        See API Doc: [Process: example-invoice-c7-review](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/example-invoice-c7-review/operation/Process:%20example-invoice-c7-review)
       operationId: postProcess-definitionKeyExample-invoice-c7-reviewStart
       requestBody:
         content:
@@ -423,11 +423,11 @@ paths:
     post:
       tags:
       - example-invoice-c7-review
-      summary: 'AssignReviewerUT: GetActiveTask'
+      summary: 'UserTask: AssignReviewerUT'
       description: |
         Select the Reviewer.
 
-        See API Doc: [AssignReviewerUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
+        See API Doc: [UserTask: AssignReviewerUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/AssignReviewerUT/operation/UserTask:%20AssignReviewerUT)
       operationId: postTask--remove:assignreviewerut--
       requestBody:
         content:
@@ -447,11 +447,11 @@ paths:
     get:
       tags:
       - example-invoice-c7-review
-      summary: 'AssignReviewerUT: GetTaskFormVariables'
+      summary: 'UserTask: AssignReviewerUT'
       description: |
         Select the Reviewer.
 
-        See API Doc: [AssignReviewerUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
+        See API Doc: [UserTask: AssignReviewerUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/AssignReviewerUT/operation/UserTask:%20AssignReviewerUT)
       operationId: getTaskTaskidForm-variables--remove:assignreviewerut--
       parameters:
       - name: taskId
@@ -492,11 +492,11 @@ paths:
     post:
       tags:
       - example-invoice-c7-review
-      summary: 'AssignReviewerUT: CompleteTask'
+      summary: 'UserTask: AssignReviewerUT'
       description: |
         Select the Reviewer.
 
-        See API Doc: [AssignReviewerUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
+        See API Doc: [UserTask: AssignReviewerUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/AssignReviewerUT/operation/UserTask:%20AssignReviewerUT)
       operationId: postTaskTaskidComplete--remove:assignreviewerut--
       parameters:
       - name: taskId
@@ -535,11 +535,11 @@ paths:
     post:
       tags:
       - example-invoice-c7-review
-      summary: 'ReviewInvoiceUT: GetActiveTask'
+      summary: 'UserTask: ReviewInvoiceUT'
       description: |
         Review Invoice and approve.
 
-        See API Doc: [ReviewInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
+        See API Doc: [UserTask: ReviewInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/ReviewInvoiceUT/operation/UserTask:%20ReviewInvoiceUT)
       operationId: postTask--remove:reviewinvoiceut--
       requestBody:
         content:
@@ -559,11 +559,11 @@ paths:
     get:
       tags:
       - example-invoice-c7-review
-      summary: 'ReviewInvoiceUT: GetTaskFormVariables'
+      summary: 'UserTask: ReviewInvoiceUT'
       description: |
         Review Invoice and approve.
 
-        See API Doc: [ReviewInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
+        See API Doc: [UserTask: ReviewInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/ReviewInvoiceUT/operation/UserTask:%20ReviewInvoiceUT)
       operationId: getTaskTaskidForm-variables--remove:reviewinvoiceut--
       parameters:
       - name: taskId
@@ -604,11 +604,11 @@ paths:
     post:
       tags:
       - example-invoice-c7-review
-      summary: 'ReviewInvoiceUT: CompleteTask'
+      summary: 'UserTask: ReviewInvoiceUT'
       description: |
         Review Invoice and approve.
 
-        See API Doc: [ReviewInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
+        See API Doc: [UserTask: ReviewInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/ReviewInvoiceUT/operation/UserTask:%20ReviewInvoiceUT)
       operationId: postTaskTaskidComplete--remove:reviewinvoiceut--
       parameters:
       - name: taskId
@@ -657,16 +657,16 @@ paths:
       responses:
         '200':
           description: ''
-  /process-definition/key/ArchiveInvoiceService/start:
+  /process-definition/key/camundala-service-generic/start--REMOVE:ArchiveInvoiceService--:
     post:
       tags:
       - Services
-      summary: 'ArchiveInvoiceService: StartProcess'
+      summary: ArchiveInvoiceService
       description: |
         Archives the Receipt.
 
-        See API Doc: [ArchiveInvoiceService](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#operation/ServiceProcess:%20ArchiveInvoiceService)
-      operationId: postProcess-definitionKeyArchiveinvoiceserviceStart
+        See API Doc: [ArchiveInvoiceService](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/ArchiveInvoiceService/operation/ArchiveInvoiceService)
+      operationId: postProcess-definitionKeyCamundala-service-genericStart--remove:archiveinvoiceservice--
       requestBody:
         content:
           application/json:

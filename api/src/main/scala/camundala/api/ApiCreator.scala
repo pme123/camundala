@@ -320,19 +320,6 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
       .mkString("\n")
   end toCatalog
 
-  private def createLink(
-      name: String,
-      groupAnchor: Option[String] = None
-  ): String =
-    val projName = apiConfig.docProjectUrl(projectName)
-    val anchor = groupAnchor
-      .map(a =>
-        s"tag/${a.replace(" ", "-")}/operation/${name.replace(" ", "%20")}"
-      )
-      .getOrElse(s"tag/${name.replace(" ", "-")}")
-    s"[$name]($projName/OpenApi.html#$anchor)"
-  end createLink
-
   private def listOfStringsOrCommaSeparated(example: String) =
     s"""Depending on your implementation it is also possible to use a _comma separated_ String,
        |like `"$example"`""".stripMargin

@@ -25,11 +25,24 @@ trait AbstractApiCreator extends ProcessReferenceCreator:
   protected def info(title: String, description: Option[String]) =
     Info(title, version, description, contact = apiConfig.contact)
 
+  protected def createLink(
+                            name: String,
+                            groupAnchor: Option[String] = None
+                          ): String =
+    val projName = apiConfig.docProjectUrl(projectName)
+    val anchor = groupAnchor
+      .map(a =>
+        s"tag/${a.replace(" ", "-")}/operation/${name.replace(" ", "%20")}"
+      )
+      .getOrElse(s"tag/${name.replace(" ", "-")}")
+    s"[$name]($projName/OpenApi.html#$anchor)"
+  end createLink
+
   extension (inOutApi: InOutApi[?, ?])
     def endpointType: String = inOutApi.inOut.getClass.getSimpleName
     def endpointName: String = (inOutApi, inOutApi.inOut.in) match
       case (serviceApi: ServiceProcessApi[?,?,?], _) => serviceApi.name
-      case (_, gs: GenericServiceIn) => gs.serviceName 
+      case (_, gs: GenericServiceIn) => gs.serviceName
       case _ => s"$endpointType: ${inOutApi.id}"
 
 end AbstractApiCreator

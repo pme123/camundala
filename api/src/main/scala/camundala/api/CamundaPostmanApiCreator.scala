@@ -23,7 +23,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
       tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     Seq(
-      api.startProcess(tag, false)
+      api.startProcess(tag)
     )
   protected def createPostmanForUserTask(
       api: ActivityApi[?, ?],
@@ -65,22 +65,18 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
       api.executeTimer(tag)
     )
 
-  extension (process: ProcessApi[?, ?] | ServiceProcessApi[?, ?, ?])
+  extension (process: ProcessApi[?, ?])
     def startProcess(
         tag: String,
         isGroup: Boolean
     ): PublicEndpoint[?, Unit, ?, Any] =
-      process match
-        case p: ProcessApi[?,?] =>
-           p.inOut.startEventType match
-             case StartEventType.Message =>
-               correlateMessage(tag)
-             case StartEventType.Signal =>
-               sendSignal(tag)
-             case _ =>
-               startProcessNone(tag, isGroup)
-        case _ =>
-          startProcessNone(tag, isGroup)
+       process.inOut.startEventType match
+         case StartEventType.Message =>
+           correlateMessage(tag)
+         case StartEventType.Signal =>
+           sendSignal(tag)
+         case _ =>
+           startProcessNone(tag, isGroup)
     end startProcess
 
     private def startProcessNone(
@@ -155,6 +151,78 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
 
   end extension
 
+  extension (process: ServiceProcessApi[?, ?, ?])
+
+    def startProcess(
+                                  tag: String,
+                                ): PublicEndpoint[?, Unit, ?, Any] =
+      val path =
+        tenantIdPath(
+          "process-definition" / "key" / process.processName,
+          s"start--REMOVE:${process.id}--"
+        )
+      val input =
+        process
+          .toPostmanInput((example: FormVariables) =>
+            StartProcessIn(
+              example,
+              Some(process.name)
+            )
+          )
+      process
+        .postmanBaseEndpoint(tag, input, "StartProcess")
+        .in(path)
+        .post
+    end startProcess
+
+    private def correlateMessage(tag: String): PublicEndpoint[?, Unit, ?, Any] =
+      val path = "message" / s"--REMOVE:${process.id}--"
+      val input = process
+        .toPostmanInput((example: FormVariables) =>
+          CorrelateMessageIn(
+            process.id,
+            Some(process.name),
+            tenantId = apiConfig.tenantId,
+            processVariables = Some(example)
+          )
+        )
+      val descr =
+        s"""
+           |${process.descr}
+           |
+           |Message:
+           |- _messageName_: `${process.id}`,
+           |""".stripMargin
+      process
+        .postmanBaseEndpoint(tag, input, "CorrelateMessage", Some(descr))
+        .in(path)
+        .post
+    end correlateMessage
+
+    private def sendSignal(tag: String): PublicEndpoint[?, Unit, ?, Any] =
+      val path = "signal" / s"--REMOVE:${process.id}--"
+      val input = process
+        .toPostmanInput((example: FormVariables) =>
+          SendSignalIn(
+            process.id,
+            tenantId = apiConfig.tenantId,
+            variables = Some(example)
+          )
+        )
+      val descr =
+        s"""
+           |${process.descr}
+           |
+           |Signal:
+           |- _messageName_: `${process.id}`,
+           |""".stripMargin
+      process
+        .postmanBaseEndpoint(tag, input, "SendSignal", Some(descr))
+        .in(path)
+        .post
+    end sendSignal
+
+  end extension
   extension (api: ActivityApi[?, ?])
 
     def getActiveTask(tag: String): PublicEndpoint[?, Unit, ?, Any] =

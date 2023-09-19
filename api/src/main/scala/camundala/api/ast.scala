@@ -192,7 +192,7 @@ case class ServiceProcessApi[
     inOut: ServiceProcess[In, Out, ServiceOut],
     apiExamples: ApiExamples[In, Out]
 ) extends InOutApi[In, Out]:
-
+  lazy val processName: String = inOut.processName
   def withExamples(
       examples: ApiExamples[In, Out]
   ): InOutApi[In, Out] =
