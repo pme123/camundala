@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: "\n\nCreated at 19/09/2023, 13:42\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
+  summary: "\n\nCreated at 19/09/2023, 15:56\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
     \n> This is the invoice demo application which is shipped with the full distributions.\n\
     \nSee the original [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).\n\
     \nI bundled it here! Just run `InvoiceServletProcessApplication`.\n\nThis based\
@@ -70,9 +70,9 @@ paths:
       summary: 'Process: example-invoice-c7'
       description: "This starts the Invoice Receipt Process.\n\n- Input:  `camundala.examples.invoice.InvoiceReceipt\
         \ > In`\n- Output: `camundala.examples.invoice.InvoiceReceipt > Out`\n\n\n\
-        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-37207\"\
+        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-94242\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container:\
-        \ $('#example-invoice-c7-37207'), height: '95%', width: '95%' }));\" src=\"\
+        \ $('#example-invoice-c7-94242'), height: '95%', width: '95%' }));\" src=\"\
         data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
@@ -118,8 +118,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-34413">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-34413'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-41949">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-41949'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -235,10 +235,10 @@ paths:
       summary: 'Process: example-invoice-c7-review'
       description: "This starts the Review Invoice Process.\n\n- Input:  `camundala.examples.invoice.ReviewInvoice\
         \ > In`\n- Output: `camundala.examples.invoice.ReviewInvoice > Out`\n\n\n\
-        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-3685\"\
+        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-32365\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({\
-        \ container: $('#example-invoice-c7-review-3685'), height: '95%', width: '95%'\
-        \ }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
+        \ container: $('#example-invoice-c7-review-32365'), height: '95%', width:\
+        \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
         \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
@@ -381,6 +381,43 @@ paths:
                 $ref: '#/components/schemas/Out5'
               examples:
                 ArchiveInvoiceService:
+                  value:
+                    archived: true
+  /serviceprocess/Services/ArchiveInvoiceService2:
+    head:
+      tags:
+      - Services
+      summary: ArchiveInvoiceService2
+      description: "\n\nArchives the Receipt.\n\n- Input:  `camundala.examples.invoice.ArchiveInvoice2\
+        \ > In`\n- Output: `camundala.examples.invoice.ArchiveInvoice2 > Out`\n- ServiceOut:\
+        \  `Seq[java.lang.String]`\n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n\
+        </summary>\n\n<p>\n\n**outputVariables**:\n\nJust take the variable you need\
+        \ in your process!\n```json\n...\n\"outputVariables\": \"archived\",\n...\n\
+        ```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"archived\"\
+        \ : true\n},\n...\n```\n\n**outputServiceMock**: \n```json\n...\n\"outputServiceMock\"\
+        : {\n  \"respStatus\" : 200,\n  \"respBody\" : [\n    \"someIdJustForDemo\"\
+        \n  ],\n  \"respHeaders\" : [\n  ]\n},\n...\n```\n</p>\n</details>\n</p>\n\
+        \      \n    "
+      operationId: ArchiveInvoiceService2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In5'
+            examples:
+              ArchiveInvoiceService2:
+                value:
+                  shouldFail: true
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Out6'
+              examples:
+                ArchiveInvoiceService2:
                   value:
                     archived: true
   /usertask/UserTasks/ApproveInvoiceUT:
@@ -540,8 +577,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-22749">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-22749'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-47782">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-47782'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -662,6 +699,11 @@ components:
       properties:
         shouldFail:
           type: boolean
+    In5:
+      type: object
+      properties:
+        shouldFail:
+          type: boolean
     InvoiceCategory:
       oneOf:
       - $ref: '#/components/schemas/Misc'
@@ -730,6 +772,11 @@ components:
           type: boolean
           description: Flag that is set by the Reviewer
     Out5:
+      type: object
+      properties:
+        archived:
+          type: boolean
+    Out6:
       type: object
       properties:
         archived:

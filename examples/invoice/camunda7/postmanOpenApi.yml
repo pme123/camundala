@@ -3,7 +3,7 @@ info:
   title: Invoice Example Process API
   version: '1.0'
   summary: "\n**This is for Postman - to have example requests. Be aware the Output\
-    \ is not provided!**\n\n\n\nCreated at 19/09/2023, 13:42\n\n**See the [Camundala\
+    \ is not provided!**\n\n\n\nCreated at 19/09/2023, 15:56\n\n**See the [Camundala\
     \ Documentation](https://pme123.github.io/camundala/)\n\n> This is the invoice\
     \ demo application which is shipped with the full distributions.\n\nSee the original\
     \ [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).\n\
@@ -680,6 +680,34 @@ paths:
                       value: true
                       type: Boolean
                   businessKey: ArchiveInvoiceService
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /process-definition/key/camundala-service-generic/start--REMOVE:ArchiveInvoiceService2--:
+    post:
+      tags:
+      - Services
+      summary: ArchiveInvoiceService2
+      description: |
+        Archives the Receipt.
+
+        See API Doc: [ArchiveInvoiceService2](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/ArchiveInvoiceService2/operation/ArchiveInvoiceService2)
+      operationId: postProcess-definitionKeyCamundala-service-genericStart--remove:archiveinvoiceservice2--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              ArchiveInvoiceService2:
+                value:
+                  variables:
+                    shouldFail:
+                      value: true
+                      type: Boolean
+                  businessKey: ArchiveInvoiceService2
                   withVariablesInReturn: true
         required: true
       responses:

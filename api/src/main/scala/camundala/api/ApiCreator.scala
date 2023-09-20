@@ -263,37 +263,24 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
   private def toCatalog(apiDoc: ApiDoc): String =
     val optimizedApis =
       if (apiConfig.catalogOptimized)
-        optimizeApis(apiDoc)
+        collectApis(apiDoc)
       else apiDoc.apis
     s"""### $title
        |${toCatalog(optimizedApis)}
        |""".stripMargin
 
-  private def optimizeApis(apiDoc: ApiDoc): List[CApi] =
+  private def collectApis(apiDoc: ApiDoc): List[CApi] =
     apiDoc.apis.foldLeft(List.empty[CApi]) {
       case (result, groupedApi: GroupedApi) =>
         val filteredApis =
-          groupedApi.apis.flatMap(api => checkApi(api, result).toList)
+          groupedApi.apis
         if (filteredApis.nonEmpty)
           result :+ groupedApi.withApis(filteredApis)
         else result
       case (result, otherApi: CApi) =>
-        result ++ checkApi(otherApi, result).toList
+        result :+ otherApi
     }
 
-  // check if the Api is already listed in the result apis
-  private def checkApi(api: CApi, result: List[CApi]): Option[CApi] =
-    if (
-      result
-        .flatMap {
-          case api: GroupedApi => api.apis
-          case other => Seq(api)
-        }
-        .exists(a => a.name == api.name)
-    )
-      None
-    else
-      Some(api)
 
   private def toCatalog(
       apis: List[CApi],

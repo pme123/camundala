@@ -13,3 +13,4 @@
 
 #### [Services](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Services)
 - [ServiceProcess: ArchiveInvoiceService](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Services/operation/ServiceProcess:%20ArchiveInvoiceService)
+- [ServiceProcess: ArchiveInvoiceService2](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Services/operation/ServiceProcess:%20ArchiveInvoiceService2)
