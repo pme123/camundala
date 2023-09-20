@@ -15,6 +15,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.21.0 - 2023-09-20
+### Changed 
+- Fixed catalog generation. - see [Commit](https://github.com/pme123/camundala/commit/76501d1a7476511b9d24d88af1876a96b19fb338)
+- Added way to start Process as Message or Signal - adjusted CamundaPostmanApiCreator. - see [Commit](https://github.com/pme123/camundala/commit/12598277faf6398cb8510fe82ee2e017164c4046)
+- Fix in naming for ServiceProcessApi. - see [Commit](https://github.com/pme123/camundala/commit/393f76c5721b91fe2efee72872fb4f4f93eec650)
+- Added possibility to start process with Signal- or MessageEvent. - see [Commit](https://github.com/pme123/camundala/commit/83b33afbd50fa9b7bb35956618cf95ce3471f162)
+- Fixed naming ValidaterError to ValidatorError. - see [Commit](https://github.com/pme123/camundala/commit/f662306421c24b5d0e3b33dcc06b94394d321485)
+- Simplified servicePath in worker - see [Commit](https://github.com/pme123/camundala/commit/140b9a59f5fdcada8018b57b5a8b0a59398ef946)
+
 ## 1.20.1 - 2023-09-12
 ### Changed 
 - Fix, set counter to 0 when checking Process is finished. - see [Commit](https://github.com/pme123/camundala/commit/9fd14d27c29b0ec8085f14e10bf89285a13d3975)
