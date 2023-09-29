@@ -1,14 +1,15 @@
-import sbt.url
+import laika.ast.ExternalTarget
 import laika.markdown.github.GitHubFlavor
 import laika.parse.code.SyntaxHighlighting
 import laika.rewrite.link.*
-import laika.ast.ExternalTarget
+import sbt.url
 
 import scala.util.Using
 
 lazy val projectVersion =
   Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
 val scala3Version = "3.3.0"
+val scala212Version = "2.12.18"
 val org = "io.github.pme123"
 val dmnTesterVersion = "0.17.9"
 
@@ -40,28 +41,22 @@ lazy val root = project
     exampleMyCompany
   )
 
-def projectSettings(projName: String) = Seq(
+def projectSettings(projName: String, scalaV: String = scala3Version) = Seq(
   name := s"camundala-$projName",
   organization := org,
-  scalaVersion := scala3Version,
-  version := projectVersion,
+  scalaVersion := scalaV,
+  // version := projectVersion,
   scalacOptions ++= Seq(
-    "-Xmax-inlines:50", // is declared as erased, but is in fact used
-    "-Wunused:imports"
+    //   "-Xmax-inlines:50", // is declared as erased, but is in fact used
+    //   "-Wunused:imports"
   )
 )
 lazy val autoImportSetting =
   scalacOptions +=
     Seq(
-      "java.lang",
-      "scala",
-      "scala.Predef",
-      "io.circe",
-      "io.circe.generic.semiauto",
-      "io.circe.derivation",
-      "io.circe.syntax",
-      "sttp.tapir",
-      "sttp.tapir.json.circe"
+      "java.lang", "scala", "scala.Predef", "io.circe",
+      "io.circe.generic.semiauto", "io.circe.derivation", "io.circe.syntax",
+      "sttp.tapir", "sttp.tapir.json.circe"
     ).mkString(start = "-Yimports:", sep = ",", end = "")
 
 lazy val domain = project
@@ -230,8 +225,9 @@ lazy val camundaTestDependencies = Seq(
 lazy val helper = project
   .in(file("./helper"))
   .configure(publicationSettings)
-  .settings(projectSettings("helper"))
+  .settings(projectSettings("helper", scala212Version))
   .settings(
+    crossScalaVersions := List(scala212Version, scala3Version),
     libraryDependencies += osLibDependency
   )
 
@@ -304,14 +300,13 @@ lazy val exampleDemos = project
   .dependsOn(api, dmn, camunda, simulation)
 
 // start company documentation example
-import laika.ast.MessageFilter
+import com.typesafe.config.ConfigFactory
 import laika.ast.Path.Root
 import laika.helium.Helium
 import laika.helium.config.*
+import laika.rewrite.{Version, Versions}
 import laika.rewrite.link.LinkConfig
-import laika.rewrite.Version
-import laika.rewrite.Versions
-import com.typesafe.config.ConfigFactory
+
 import scala.jdk.CollectionConverters.*
 
 val config = ConfigFactory.parseFile(new File("examples/myCompany/CONFIG.conf"))
@@ -399,16 +394,18 @@ lazy val developerList = List(
 )
 
 lazy val publicationSettings: Project => Project = _.settings(
-  publishMavenStyle := true,
+  // publishMavenStyle := true,
   pomIncludeRepository := { _ => false },
-  publishTo := {
+  sonatypeCredentialHost := "s01.oss.sonatype.org",
+  sonatypeRepository := "https://s01.oss.sonatype.org/service/local",
+  /*  publishTo := {
     val nexus = "https://s01.oss.sonatype.org/"
     if (isSnapshot.value)
       Some("snapshots" at nexus + "content/repositories/snapshots")
     else Some("releases" at nexus + "service/local/staging/deploy/maven2")
   },
   credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credentials"),
-  licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
+   */ licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   homepage := Some(url("https://github.com/pme123/camundala")),
   startYear := Some(2021),
   // logLevel := Level.Debug,

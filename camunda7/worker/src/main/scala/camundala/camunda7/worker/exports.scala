@@ -15,9 +15,6 @@ export sttp.model.{Method, Uri, QueryParams}
 export org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription
 export org.springframework.context.annotation.Configuration
 
-// Camunda automatically creates the type due to the numbers size
-type LongOrInt = Long | Int
-
 def toCamunda[T <: Product: Encoder](
     product: T
 ): Map[String, Any] =
