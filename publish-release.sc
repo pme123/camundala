@@ -35,7 +35,7 @@ def release(version: String): Unit = {
     os.proc("sbt", "-J-Xmx3G", "publishSigned").call()
     os.proc("git", "fetch", "--all").call()
     os.proc("git", "commit", "-a", "-m", s"Released Version $version").call()
-    os.proc("git", "tag", "-a", version, "-m", s"Version $version").call()
+    os.proc("git", "tag", "-a", s"v$version", "-m", s"Version $version").call()
     os.proc("git", "checkout", "master").call()
     os.proc("git", "merge", "develop").call()
     os.proc("git", "push", "--tags").call()

@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.21.1 - 2023-09-29
+### Changed 
+- Added sbt-ci-release plugin. - see [Commit](https://github.com/pme123/camundala/commit/66066dfd5117cb4a8eb07b3b4eb3063d169ed904)
+
 ## 1.21.0 - 2023-09-20
 ### Changed 
 - Fixed catalog generation. - see [Commit](https://github.com/pme123/camundala/commit/76501d1a7476511b9d24d88af1876a96b19fb338)

@@ -9,7 +9,6 @@ import scala.util.Using
 lazy val projectVersion =
   Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
 val scala3Version = "3.3.0"
-val scala212Version = "2.12.18"
 val org = "io.github.pme123"
 val dmnTesterVersion = "0.17.9"
 
@@ -41,10 +40,10 @@ lazy val root = project
     exampleMyCompany
   )
 
-def projectSettings(projName: String, scalaV: String = scala3Version) = Seq(
+def projectSettings(projName: String) = Seq(
   name := s"camundala-$projName",
   organization := org,
-  scalaVersion := scalaV,
+  scalaVersion := scala3Version,
   // version := projectVersion,
   scalacOptions ++= Seq(
     //   "-Xmax-inlines:50", // is declared as erased, but is in fact used
@@ -54,9 +53,15 @@ def projectSettings(projName: String, scalaV: String = scala3Version) = Seq(
 lazy val autoImportSetting =
   scalacOptions +=
     Seq(
-      "java.lang", "scala", "scala.Predef", "io.circe",
-      "io.circe.generic.semiauto", "io.circe.derivation", "io.circe.syntax",
-      "sttp.tapir", "sttp.tapir.json.circe"
+      "java.lang",
+      "scala",
+      "scala.Predef",
+      "io.circe",
+      "io.circe.generic.semiauto",
+      "io.circe.derivation",
+      "io.circe.syntax",
+      "sttp.tapir",
+      "sttp.tapir.json.circe"
     ).mkString(start = "-Yimports:", sep = ",", end = "")
 
 lazy val domain = project
@@ -225,9 +230,8 @@ lazy val camundaTestDependencies = Seq(
 lazy val helper = project
   .in(file("./helper"))
   .configure(publicationSettings)
-  .settings(projectSettings("helper", scala212Version))
+  .settings(projectSettings("helper"))
   .settings(
-    crossScalaVersions := List(scala212Version, scala3Version),
     libraryDependencies += osLibDependency
   )
 
