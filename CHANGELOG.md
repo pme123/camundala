@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.21.7 - 2023-10-02
+### Changed 
+- Fixed sonatypeProfileName := "pme123". - see [Commit](https://github.com/pme123/camundala/commit/76ef1449b8c2bac08bdbf400118ab37571b688ef)
+
 ## 1.21.6 - 2023-10-02
 ### Changed 
 - Changed Sonatype credential Host to ThisBuild. - see [Commit](https://github.com/pme123/camundala/commit/8db4859829e0804aede204aa61c273f5285e2c7e)
