@@ -13,6 +13,7 @@ val org = "io.github.pme123"
 val dmnTesterVersion = "0.17.9"
 
 ThisBuild / versionScheme := Some("early-semver")
+ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
 
 lazy val root = project
   .in(file("."))
@@ -400,7 +401,6 @@ lazy val developerList = List(
 lazy val publicationSettings: Project => Project = _.settings(
   // publishMavenStyle := true,
   pomIncludeRepository := { _ => false },
-  sonatypeCredentialHost := "s01.oss.sonatype.org",
   sonatypeRepository := "https://s01.oss.sonatype.org/service/local",
   /*  publishTo := {
     val nexus = "https://s01.oss.sonatype.org/"
