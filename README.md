@@ -41,15 +41,6 @@ In this project you find two examples that uses the Features.
 ## Releasing
 Just run `amm ./publish-release.sc VERSION`.
 
-Due to problems with the `"org.xerial.sbt" % "sbt-sonatype"` Plugin you have to release manually:
-- [](https://s01.oss.sonatype.org/#stagingRepositories)
-  - login
-  - check Staging Repository
-  - hit _close_ Button (this will take some time)
-  - hit _release_ Button (this will take some time)
-
-> if you do not see any of the buttons or repository hit the _refresh_ Button.
-
 ## Local publish
 
    `sbt publishLocal`

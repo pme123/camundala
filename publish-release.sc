@@ -49,14 +49,6 @@ def release(version: String): Unit = {
     replaceVersion(newVersion)
     os.proc("git", "commit", "-a", "-m", s"Init new Version $newVersion").call()
     os.proc("git", "push", "--all").call()
-    println(
-      """Due to problems with the `"org.xerial.sbt" % "sbt-sonatype"` Plugin you have to release manually:
-        |- https://s01.oss.sonatype.org/#stagingRepositories
-        |  - login
-        |  - check Staging Repository
-        |  - hit _close_ Button (this will take some time)
-        |  - hit _release_ Button (this will take some time)""".stripMargin
-    )
     println(s"Published Version: $version")
   } else
     os.proc("sbt", "-J-Xmx3G", "publishLocal").call()
