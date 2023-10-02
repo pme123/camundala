@@ -19,7 +19,8 @@ lazy val root = project
   .in(file("."))
   .configure(preventPublication)
   .settings(
-    name := "camundala"
+    name := "camundala",
+    sonatypeProfileName := "pme123",
   )
   .aggregate(
     domain,
@@ -49,7 +50,8 @@ def projectSettings(projName: String) = Seq(
   scalacOptions ++= Seq(
     //   "-Xmax-inlines:50", // is declared as erased, but is in fact used
     //   "-Wunused:imports"
-  )
+  ),
+  sonatypeProfileName := "pme123",
 )
 lazy val autoImportSetting =
   scalacOptions +=
@@ -402,7 +404,6 @@ lazy val publicationSettings: Project => Project = _.settings(
   // publishMavenStyle := true,
   pomIncludeRepository := { _ => false },
   sonatypeRepository := "https://s01.oss.sonatype.org/service/local",
-  sonatypeProfileName := "pme123",
   /*  publishTo := {
     val nexus = "https://s01.oss.sonatype.org/"
     if (isSnapshot.value)
