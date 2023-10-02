@@ -402,6 +402,7 @@ lazy val publicationSettings: Project => Project = _.settings(
   // publishMavenStyle := true,
   pomIncludeRepository := { _ => false },
   sonatypeRepository := "https://s01.oss.sonatype.org/service/local",
+  sonatypeProfileName := "pme123",
   /*  publishTo := {
     val nexus = "https://s01.oss.sonatype.org/"
     if (isSnapshot.value)
