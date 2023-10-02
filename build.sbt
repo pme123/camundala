@@ -20,7 +20,7 @@ lazy val root = project
   .configure(preventPublication)
   .settings(
     name := "camundala",
-    sonatypeProfileName := "pme123",
+    organization := org,
   )
   .aggregate(
     domain,
@@ -51,7 +51,6 @@ def projectSettings(projName: String) = Seq(
     //   "-Xmax-inlines:50", // is declared as erased, but is in fact used
     //   "-Wunused:imports"
   ),
-  sonatypeProfileName := "pme123",
 )
 lazy val autoImportSetting =
   scalacOptions +=
