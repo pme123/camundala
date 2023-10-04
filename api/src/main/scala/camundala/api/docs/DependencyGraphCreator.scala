@@ -66,7 +66,7 @@ case class DependencyGraphCreator()(implicit
             s"${config.name} --> ${depConfig
                .map(d => d.name)
                .mkString(" & ")}"
-          else ""
+          else config.name
         s"""
        |   $tree
        |   ${link(Package(config.name, config.minorVersion))}
