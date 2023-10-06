@@ -102,7 +102,7 @@ trait CompanyDocCreator extends DependencyCreator:
       s"""# Release ${releaseConfig.releaseTag}
          | ${releaseConfig.releasedLabel}
          |
-         |[JIRA Release Planing](${releaseConfig.jiraReleaseUrl})
+         |${releaseConfig.jiraReleaseUrl.map(u => s"[JIRA Release Planing]($u)").getOrElse("")}
          |
          |${dependencyTable(configs)}
          |
@@ -199,7 +199,7 @@ trait CompanyDocCreator extends DependencyCreator:
       .filter(_.isNew) // take only the new ones
       .sortBy(_.name)
       .map(c => s"""
-                   |## [${c.name}](${apiConfig.docProjectUrl}/${c.name}/OpenApi.html)
+                   |## [${c.name}](${apiConfig.docProjectUrl(c.name)}/OpenApi.html)
                    |${extractChangelog(c)}
                    |""".stripMargin)
       .mkString("\n")

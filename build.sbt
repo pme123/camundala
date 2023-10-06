@@ -46,7 +46,7 @@ def projectSettings(projName: String) = Seq(
   name := s"camundala-$projName",
   organization := org,
   scalaVersion := scala3Version,
-  // version := projectVersion,
+  version := projectVersion,
   scalacOptions ++= Seq(
     //   "-Xmax-inlines:50", // is declared as erased, but is in fact used
     //   "-Wunused:imports"
