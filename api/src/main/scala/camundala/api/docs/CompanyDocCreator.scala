@@ -23,6 +23,7 @@ trait CompanyDocCreator extends DependencyCreator:
     println(s"API Config: $apiConfig")
     apiConfig.projectsConfig.init
     createCatalog()
+    DevStatisticsCreator(gitBasePath, apiConfig.basePath).create()
     createDynamicConf()
     // println(s"Preparing Docs Started")
     createReleasePage()
@@ -78,6 +79,7 @@ trait CompanyDocCreator extends DependencyCreator:
          |  overviewDependencies.md
          |  pattern.md
          |  statistics.md
+         |  devStatistics.md
          |  catalog.md
          |  contact.md
          |  releases
