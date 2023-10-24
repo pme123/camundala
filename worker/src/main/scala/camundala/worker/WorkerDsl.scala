@@ -18,7 +18,7 @@ trait WorkerDsl :
     Out <: Product : CirceCodec,
   ](process: Process[In, Out]): Worker[?] =
     ProcessWorker(process)
-/*
+
   def worker[
     In <: Product : CirceCodec,
     Out <: Product : CirceCodec,
@@ -27,6 +27,5 @@ trait WorkerDsl :
   ](process: ServiceProcess[In, Out, ServiceIn, ServiceOut]): Worker[?] =
     ServiceProcessWorker(process)
 
- */
 end WorkerDsl
 

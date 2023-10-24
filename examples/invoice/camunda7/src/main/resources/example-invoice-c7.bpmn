@@ -97,7 +97,7 @@
     <endEvent id="InvoiceProcessedEndEvent" name="Invoice&#10;processed" camunda:exclusive="false">
       <incoming>SequenceFlow_3__ArchiveInvoiceST__InvoiceProcessedEE</incoming>
     </endEvent>
-    <serviceTask id="ArchiveInvoiceTask" name="Archive Invoice" camunda:asyncBefore="true" implementation="##WebService" camunda:type="external" camunda:topic="ArchiveInvoiceService">
+    <serviceTask id="ArchiveInvoiceTask" name="Archive Invoice" implementation="##WebService" camunda:type="external" camunda:topic="ArchiveInvoiceService">
       <incoming>SequenceFlow_2__PrepareBankTransferUT__ArchiveInvoiceST</incoming>
       <outgoing>SequenceFlow_3__ArchiveInvoiceST__InvoiceProcessedEE</outgoing>
     </serviceTask>
@@ -160,18 +160,6 @@
       <bpmndi:BPMNShape id="Buchhaltung_119_gui" bpmnElement="AccountantLane" isHorizontal="true">
         <omgdc:Bounds x="190" y="422" width="1180" height="144" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0oe06b4_di" bpmnElement="TextAnnotation_0oe06b4">
-        <omgdc:Bounds x="1163" y="290" width="100" height="30" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_06in9uv_di" bpmnElement="TextAnnotation_06in9uv" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
-        <omgdc:Bounds x="1170" y="440" width="160" height="40" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0q7dqpn_di" bpmnElement="TextAnnotation_0q7dqpn">
-        <omgdc:Bounds x="1195" y="345" width="100" height="55" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_3" bpmnElement="InvoiceReceivedStartEvent">
         <omgdc:Bounds x="256" y="158" width="28" height="28" />
         <bpmndi:BPMNLabel>
@@ -232,18 +220,18 @@
       <bpmndi:BPMNShape id="BPMNShape_1ar981g" bpmnElement="ArchiveInvoiceTask1">
         <omgdc:Bounds x="1050" y="320" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Association_1jdjtn1_di" bpmnElement="Association_1jdjtn1">
-        <omgdi:waypoint x="1150" y="483" />
-        <omgdi:waypoint x="1170" y="475" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_0jh4z92_di" bpmnElement="Association_0jh4z92">
-        <omgdi:waypoint x="1150" y="336" />
-        <omgdi:waypoint x="1182" y="320" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_0xpzck9_di" bpmnElement="Association_0xpzck9">
-        <omgdi:waypoint x="1150" y="360" />
-        <omgdi:waypoint x="1195" y="360" />
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_0oe06b4_di" bpmnElement="TextAnnotation_0oe06b4">
+        <omgdc:Bounds x="1163" y="290" width="100" height="30" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_06in9uv_di" bpmnElement="TextAnnotation_06in9uv" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <omgdc:Bounds x="1170" y="440" width="160" height="40" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0q7dqpn_di" bpmnElement="TextAnnotation_0q7dqpn">
+        <omgdc:Bounds x="1195" y="345" width="100" height="55" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3__ArchiveInvoiceST__InvoiceProcessedEE" sourceElement="_BPMNShape_ServiceTask_2" targetElement="Rechnungseingang_abgearbeitet_174_gui">
         <omgdi:waypoint x="1150" y="503" />
         <omgdi:waypoint x="1199" y="503" />
@@ -332,6 +320,18 @@
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="351" y="204" width="18" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1jdjtn1_di" bpmnElement="Association_1jdjtn1">
+        <omgdi:waypoint x="1150" y="483" />
+        <omgdi:waypoint x="1170" y="475" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0jh4z92_di" bpmnElement="Association_0jh4z92">
+        <omgdi:waypoint x="1150" y="336" />
+        <omgdi:waypoint x="1182" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0xpzck9_di" bpmnElement="Association_0xpzck9">
+        <omgdi:waypoint x="1150" y="360" />
+        <omgdi:waypoint x="1195" y="360" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DataStoreReference_1_gui" bpmnElement="FinancialAccountingSystemDataStoreReference" isHorizontal="true">
         <omgdc:Bounds x="844" y="596" width="63" height="61" />

@@ -3,7 +3,7 @@ package camunda7.worker
 
 import camundala.bpmn.*
 import camundala.domain.*
-import camundala.worker.ProcessWorker
+import camundala.worker.*
 import org.camunda.bpm.client.task.{ExternalTask, ExternalTaskHandler, ExternalTaskService}
 
 /** To avoid Annotations (Camunda Version specific), we extend
@@ -20,14 +20,12 @@ class ProcessWorkerHandler(
 end ProcessWorkerHandler
 
 
-/*
+
 class ServiceProcessWorkerHandler(
-                                   worker: ServiceProcessWorker[?, ?, ?, ?]
-) extends CExternalTaskHandler:
+                                  val worker: ServiceProcessWorker[?, ?, ?, ?]
+) extends CExternalTaskHandler[ServiceProcessWorker[?, ?, ?, ?]]:
   lazy val topic: String = worker.topic
-  protected lazy val prototype: Any = worker.process.in
   println(s"ServiceProcessWorkerHandler: $topic")
 
 
 end ServiceProcessWorkerHandler
-*/

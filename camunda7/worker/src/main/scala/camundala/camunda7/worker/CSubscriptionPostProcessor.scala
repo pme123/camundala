@@ -100,9 +100,8 @@ class CSubscriptionPostProcessor(
       worker match
         case pw: ProcessWorker[?,?] =>
           ProcessWorkerHandler(pw)
-     //   case spw: ServiceProcessWorker[?, ?, ?, ?] =>
-     //     ServiceProcessWorkerHandler(spw)
-//
+        case spw: ServiceProcessWorker[?, ?, ?, ?] =>
+          ServiceProcessWorkerHandler(spw)
 
 object CSubscriptionPostProcessor:
   protected val LOG: SubscriptionLoggerUtil = LoggerUtil.SUBSCRIPTION_LOGGER

@@ -1,19 +1,25 @@
 package camundala
 package camunda7.worker
 
-import worker.*
-import camundala.worker.CamundalaWorkerError.UnexpectedError
-import org.camunda.bpm.client.task.{ExternalTask, ExternalTaskHandler, ExternalTaskService}
+import camundala.bpmn.*
+import camundala.domain.*
+import camundala.worker.*
+import camundala.worker.CamundalaWorkerError.*
+import org.camunda.bpm.client.task.*
 
 import java.time.LocalDateTime
+import scala.jdk.CollectionConverters.*
 
 /**
  * To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
  * parameters.
  */
-trait CExternalTaskHandler[T <: Worker[?]] extends ExternalTaskHandler:
+trait CExternalTaskHandler[T <: Worker[?]] extends ExternalTaskHandler, CamundaHelper:
   def topic: String
   def worker: T
+
+  protected def defaultHandledErrorCodes: Seq[ErrorCodes] =
+    Seq(ErrorCodes.`output-mocked`, ErrorCodes.`validation-failed`)
 
   override def execute(
                         externalTask: ExternalTask,
@@ -36,7 +42,7 @@ trait CExternalTaskHandler[T <: Worker[?]] extends ExternalTaskHandler:
       (for {
         validatedInput <- worker.inValidator.map(InputValidator(_).validate()).getOrElse(Right(worker.in))
 
-      } yield () //
+      } yield (externalTaskService.handleSuccess(Map.empty)) //
         ).left.map { ex =>
         ()// externalTaskService.handleError(ex)
       }
@@ -51,4 +57,91 @@ trait CExternalTaskHandler[T <: Worker[?]] extends ExternalTaskHandler:
     }
   end executeWorker
 
+  extension (externalTaskService: ExternalTaskService)
+
+    private def handleSuccess(
+                               filteredOutput: Map[String, Any]
+                             ): HelperContext[Unit] =
+      externalTaskService.complete(
+        summon[ExternalTask],
+        filteredOutput.asJava,
+        Map.empty.asJava
+      )
+
+    private def handleError(
+                             error: CamundalaWorkerError
+                           ): HelperContext[Unit] =
+      import CamundalaWorkerError.*
+      (for {
+        handledErrors <- extractSeqFromArrayOrString(
+          InputParams.handledErrors,
+          defaultHandledErrorCodes
+        )
+        regexHandledErrors <- extractSeqFromArrayOrString(
+          InputParams.regexHandledErrors
+        )
+        errorHandled = error.isMock || handledErrors.contains(
+          error.errorCode.toString
+        )
+        errorRegexHandled = errorHandled && regexHandledErrors.forall(regex =>
+          error.errorMsg.matches(s".*$regex.*")
+        )
+      } yield (errorHandled, errorRegexHandled))
+        .flatMap {
+          case (true, true) =>
+            val mockedOutput = error match
+              case error: ErrorWithOutput =>
+                error.mockedOutput
+              case _ => Map.empty
+            filteredOutput(mockedOutput)
+              .map { filtered =>
+                println(s"Handled Error: ${error.errorCode}: ${error.errorMsg}")
+                externalTaskService.handleBpmnError(
+                  summon[ExternalTask],
+                  s"${error.errorCode}",
+                  error.errorMsg,
+                  filtered.asJava
+                )
+              }
+          case (true, false) =>
+            Left(HandledRegexNotMatchedError(error))
+          case _ =>
+            Left(error)
+        }
+        .left
+        .map { err =>
+          val errMessage = s"${err.errorCode}: ${err.errorMsg}"
+          println(s"Unhandled Error: $errMessage")
+          externalTaskService.handleFailure(
+            summon[ExternalTask],
+            errMessage,
+            s" $errMessage\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
+            0,
+            0
+          ) //TODO implement retry mechanism
+        }
+    end handleError
+
+  end extension
+
+  private def filteredOutput(
+                              allOutputs: Map[String, Any]
+                            ): HelperContext[Either[BadVariableError, Map[String, Any]]] =
+    extractSeqFromArrayOrString(InputParams.outputVariables)
+      .map {
+        case filter if filter.isEmpty => allOutputs
+        case filter =>
+          allOutputs
+            .filter { case k -> _ => filter.contains(k) }
+      }
+
+  // serviceName is not needed anymore
+  protected def serviceDefaults(
+                                 initVariables: Map[String, Any] = Map.empty
+                               ): Right[Nothing, Map[String, Any]] =
+    Right(
+      initVariables ++ Map(
+        "serviceName" -> "NOT-USED"
+      )
+    )
 end CExternalTaskHandler

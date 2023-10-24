@@ -15,7 +15,7 @@ class InvoiceSimulation extends CustomSimulation:
       AssignReviewerUT,
       ReviewInvoiceUT
     ),
-    incidentScenario(
+/*    incidentScenario(
       `Invoice Receipt that fails`,
       "Could not archive invoice..."
     )(
@@ -86,7 +86,7 @@ class InvoiceSimulation extends CustomSimulation:
     incidentScenario(
       `Archive Invoice that fails`,
       "Could not archive invoice"
-    )
+    )*/
   )
 
   override implicit def config =

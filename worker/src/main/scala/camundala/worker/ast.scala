@@ -20,18 +20,19 @@ case class ProcessWorker[
   lazy val topic: String = process.processName
   lazy val in: In = process.in
 end ProcessWorker
-/*
+
 case class ServiceProcessWorker[
   In <: Product: CirceCodec,
   Out <: Product: CirceCodec,
   ServiceIn <: Product: Encoder,
   ServiceOut : Decoder
-](process: ServiceProcess[In, Out, ServiceIn, ServiceOut]) extends Worker[In]:
+](process: ServiceProcess[In, Out, ServiceIn, ServiceOut],
+  inValidator: Option[InValidator[In]] = None) extends Worker[In]:
   lazy val topic: String = process.serviceName
-  lazy val inValidator: InValidator[In] = InValidator(process.in)
+  lazy val in: In = process.in
 
 end ServiceProcessWorker
-*/
+
 
 case class InValidator[In <: Product: CirceCodec](prototype: In, customValidator: In => Either[ValidatorError, In]):
 

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration
 class ProjectWorkers extends WorkerDsl:
 
   register(
-    worker(InvoiceReceipt.example),
-   // worker(ArchiveInvoice.example)
+    worker(ReviewInvoice.example),
+    worker(ArchiveInvoice.example)
   )
 end ProjectWorkers
