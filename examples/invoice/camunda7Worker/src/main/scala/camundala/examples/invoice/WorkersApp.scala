@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan
 //sbt> exampleInvoiceWorkerC7/run
 @SpringBootApplication
 @ConfigurationPropertiesScan
-@ComponentScan(basePackages = Array("camundala.examples.invoice.workers"))
+@ComponentScan(basePackages = Array("camundala.camunda7.worker", "camundala.examples.invoice.workers"))
 class WorkersApp
 
 object WorkersApp:

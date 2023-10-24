@@ -15,7 +15,7 @@ abstract class CamundalaWorker[
       Initializer[In],
       Mocker[Out],
       Runner[In, Out],
-      ExternalTaskHandler:
+      CExternalTaskHandler:
   worker =>
 
   override def execute(

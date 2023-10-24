@@ -3,14 +3,15 @@ package workers
 
 import camundala.camunda7.worker.*
 import camundala.camunda7.worker.CamundalaWorkerError.*
+import camundala.camunda7.worker.{RequestOutput, ServiceWorker}
 import camundala.domain.*
 import camundala.examples.invoice.ArchiveInvoice.*
 import sttp.client3.*
 
 @Configuration
-@ExternalTaskSubscription(value = serviceName)
 class ArchiveInvoiceWorker extends ServiceWorker[In, Out, ServiceIn, ServiceOut]:
 
+  lazy val topic: String = serviceName
   lazy val defaultServiceMock = serviceMock
 
   override protected def runWork(inputObject: In, optOutput: Option[Out]): RunnerOutput =
