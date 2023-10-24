@@ -8,7 +8,7 @@ import scala.language.implicitConversions
 
 trait SimulationDsl[T] extends TestOverrideExtensions:
 
-  def run(sim: SSimulation): T
+  protected def run(sim: SSimulation): T
 
   def simulate(body: => SScenario*): Unit =
     try {
@@ -51,7 +51,7 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     incidentScenario(process, incidentMsg)()
 
   inline def incidentScenario(
-                               inline process: ServiceProcess[?, ?, ?],
+                               inline process: ServiceProcess[?, ?, ?, ?],
                                incidentMsg: String
                              ): IncidentServiceScenario =
     IncidentServiceScenario(nameOfVariable(process), process, incidentMsg)
@@ -67,7 +67,7 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     ProcessScenario(nameOfVariable(process), process)
 
   implicit inline def toScenario(
-      inline process: ServiceProcess[?, ?, ?]
+      inline process: ServiceProcess[?, ?, ?, ?]
   ): ServiceProcessScenario =
     ServiceProcessScenario(nameOfVariable(process), process)
 

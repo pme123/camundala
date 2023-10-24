@@ -162,7 +162,7 @@ object ArchiveInvoice extends BpmnDsl:
 
  // given CirceCodec[Seq[String]] = deriveCodec
 
-  lazy val example: ServiceProcess[In, Out, ServiceOut] =
+  lazy val example: ServiceProcess[In, Out, ServiceIn, ServiceOut] =
     serviceProcess(
       serviceName,
       descr = "Archives the Receipt.",

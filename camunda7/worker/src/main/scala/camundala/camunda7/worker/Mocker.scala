@@ -1,7 +1,8 @@
 package camundala.camunda7.worker
 
 import camundala.bpmn.*
-import camundala.camunda7.worker.CamundalaWorkerError.*
+import camundala.worker.*
+import camundala.worker.CamundalaWorkerError.*
 import camundala.domain.*
 import io.circe.*
 import org.camunda.bpm.client.task.ExternalTask

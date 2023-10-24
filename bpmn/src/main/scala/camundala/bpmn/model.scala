@@ -171,6 +171,7 @@ object StartEventType:
 case class ServiceProcess[
     In <: Product: Encoder: Decoder: Schema,
     Out <: Product: Encoder: Decoder: Schema,
+    ServiceIn <: Product: Encoder,
     ServiceOut: Encoder: Decoder
 ](
     inOutDescr: InOutDescr[In, Out],
@@ -183,58 +184,58 @@ case class ServiceProcess[
     outputServiceMock: Option[MockedServiceResponse[ServiceOut]] = None,
     handledErrors: Seq[ErrorCodeType] = Seq.empty,
     regexHandledErrors: Seq[String] = Seq.empty
-) extends ProcessOrService[In, Out, ServiceProcess[In, Out, ServiceOut]],
+) extends ProcessOrService[In, Out, ServiceProcess[In, Out, ServiceIn, ServiceOut]],
       OutputMock[Out]:
 
   lazy val serviceName: String = inOutDescr.id
 
   def withInOutDescr(
       descr: InOutDescr[In, Out]
-  ): ServiceProcess[In, Out, ServiceOut] =
+  ): ServiceProcess[In, Out, ServiceIn, ServiceOut] =
     copy(inOutDescr = descr)
 
   def withProcessName(
       processName: String
-  ): ServiceProcess[In, Out, ServiceOut] =
+  ): ServiceProcess[In, Out, ServiceIn, ServiceOut] =
     copy(processName = processName)
 
-  def withOutputVariables(names: String*): ServiceProcess[In, Out, ServiceOut] =
+  def withOutputVariables(names: String*): ServiceProcess[In, Out, ServiceIn, ServiceOut] =
     copy(outputVariables = names)
 
   def withOutputVariable(
       processName: String
-  ): ServiceProcess[In, Out, ServiceOut] =
+  ): ServiceProcess[In, Out, ServiceIn, ServiceOut] =
     copy(outputVariables = outputVariables :+ processName)
 
   def withImpersonateUserId(
       impersonateUserId: String
-  ): ServiceProcess[In, Out, ServiceOut] =
+  ): ServiceProcess[In, Out, ServiceIn, ServiceOut] =
     copy(impersonateUserId = Some(impersonateUserId))
 
-  def mockWith(outputMock: Out): ServiceProcess[In, Out, ServiceOut] =
+  def mockWith(outputMock: Out): ServiceProcess[In, Out, ServiceIn, ServiceOut] =
     copy(outputMock = Some(outputMock))
 
-  def mockServices: ServiceProcess[In, Out, ServiceOut] =
+  def mockServices: ServiceProcess[In, Out, ServiceIn, ServiceOut] =
     copy(servicesMocked = true)
 
   def mockServiceWith(
       outputServiceMock: MockedServiceResponse[ServiceOut]
-  ): ServiceProcess[In, Out, ServiceOut] =
+  ): ServiceProcess[In, Out, ServiceIn, ServiceOut] =
     copy(outputServiceMock = Some(outputServiceMock))
 
   def handleErrors(
       errorCodes: ErrorCodeType*
-  ): ServiceProcess[In, Out, ServiceOut] =
+  ): ServiceProcess[In, Out, ServiceIn, ServiceOut] =
     copy(handledErrors = errorCodes)
 
   def handleError(
       errorCode: ErrorCodeType
-  ): ServiceProcess[In, Out, ServiceOut] =
+  ): ServiceProcess[In, Out, ServiceIn, ServiceOut] =
     copy(handledErrors = handledErrors :+ errorCode)
 
   def handleErrorWithRegex(
       regex: String
-  ): ServiceProcess[In, Out, ServiceOut] =
+  ): ServiceProcess[In, Out, ServiceIn, ServiceOut] =
     copy(regexHandledErrors = regexHandledErrors :+ regex)
 
   override def camundaInMap: Map[String, CamundaVariable] =

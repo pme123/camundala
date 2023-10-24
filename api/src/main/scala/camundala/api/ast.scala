@@ -186,10 +186,11 @@ end generalVariablesDescr
 case class ServiceProcessApi[
     In <: Product: Encoder: Decoder: Schema,
     Out <: Product: Encoder: Decoder: Schema: ClassTag,
+    ServiceIn <: Product: Encoder: Schema,
     ServiceOut: Encoder: Decoder: Schema
 ](
     name: String,
-    inOut: ServiceProcess[In, Out, ServiceOut],
+    inOut: ServiceProcess[In, Out, ServiceIn, ServiceOut],
     apiExamples: ApiExamples[In, Out]
 ) extends InOutApi[In, Out]:
   lazy val processName: String = inOut.processName
@@ -228,11 +229,12 @@ object ServiceProcessApi:
   def apply[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema: ClassTag,
+      ServiceIn <: Product: Encoder: Schema,
       ServiceOut: Encoder: Decoder: Schema
   ](
       name: String,
-      inOut: ServiceProcess[In, Out, ServiceOut]
-  ): ServiceProcessApi[In, Out, ServiceOut] =
+      inOut: ServiceProcess[In, Out, ServiceIn, ServiceOut]
+  ): ServiceProcessApi[In, Out, ServiceIn, ServiceOut] =
     ServiceProcessApi(name, inOut, ApiExamples(name, inOut))
 
 end ServiceProcessApi

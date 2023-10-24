@@ -61,7 +61,7 @@ enum ProcessStartType:
 
 case class ServiceProcessScenario(
     name: String,
-    process: ServiceProcess[?, ?, ?],
+    process: ServiceProcess[?, ?, ?, ?],
     isIgnored: Boolean = false,
     testOverrides: Option[TestOverrides] = None,
     startType: ProcessStartType = ProcessStartType.START
@@ -133,11 +133,11 @@ end IncidentScenario
 
 case class IncidentServiceScenario(
     name: String,
-    process: ServiceProcess[?, ?, ?],
+    process: ServiceProcess[?, ?, ?, ?],
     incidentMsg: String,
     isIgnored: Boolean = false
 ) extends IsIncidentScenario:
-  lazy val inOut: ServiceProcess[?, ?, ?] = process
+  lazy val inOut: ServiceProcess[?, ?, ?, ?] = process
   lazy val steps: List[SStep] = List.empty
 
   def ignored: IncidentServiceScenario = copy(isIgnored = true)

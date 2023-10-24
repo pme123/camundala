@@ -2,9 +2,7 @@ package camundala
 package api
 
 import camundala.domain.*
-
 import sttp.apispec.openapi.*
-
 
 trait AbstractApiCreator extends ProcessReferenceCreator:
 
@@ -26,9 +24,9 @@ trait AbstractApiCreator extends ProcessReferenceCreator:
     Info(title, version, description, contact = apiConfig.contact)
 
   protected def createLink(
-                            name: String,
-                            groupAnchor: Option[String] = None
-                          ): String =
+      name: String,
+      groupAnchor: Option[String] = None
+  ): String =
     val projName = apiConfig.docProjectUrl(projectName)
     val anchor = groupAnchor
       .map(a =>
@@ -41,7 +39,7 @@ trait AbstractApiCreator extends ProcessReferenceCreator:
   extension (inOutApi: InOutApi[?, ?])
     def endpointType: String = inOutApi.inOut.getClass.getSimpleName
     def endpointName: String = (inOutApi, inOutApi.inOut.in) match
-      case (serviceApi: ServiceProcessApi[?,?,?], _) => serviceApi.name
+      case (serviceApi: ServiceProcessApi[?, ?, ?, ?], _) => serviceApi.name
       case (_, gs: GenericServiceIn) => gs.serviceName
       case _ => s"$endpointType: ${inOutApi.id}"
 

@@ -2,7 +2,7 @@ package camundala.examples.invoice
 package workers
 
 import camundala.camunda7.worker.*
-import camundala.camunda7.worker.CamundalaWorkerError.*
+import camundala.worker.CamundalaWorkerError.*
 import camundala.camunda7.worker.{RequestOutput, ServiceWorker}
 import camundala.domain.*
 import camundala.examples.invoice.ArchiveInvoice.*

@@ -19,7 +19,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
     )
 
   protected def createPostmanForServiceProcess(
-      api: ServiceProcessApi[?, ?, ?],
+      api: ServiceProcessApi[?, ?, ?, ?],
       tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     Seq(
@@ -151,7 +151,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
 
   end extension
 
-  extension (process: ServiceProcessApi[?, ?, ?])
+  extension (process: ServiceProcessApi[?, ?, ?, ?])
 
     def startProcess(
                                   tag: String,

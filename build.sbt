@@ -27,6 +27,7 @@ lazy val root = project
     bpmn,
     api,
     dmn,
+    worker,
     camunda,
     camunda7Worker,
     camunda8,
@@ -128,7 +129,7 @@ lazy val camunda7Worker = project
       "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion
     )
   )
-  .dependsOn(bpmn)
+  .dependsOn(worker)
 
 lazy val camunda8 = project
   .in(file("./camunda8"))
@@ -149,6 +150,17 @@ lazy val dmn = project
       sttpDependency,
       "io.github.pme123" %% "camunda-dmn-tester-shared" % dmnTesterVersion
     )
+  )
+  .dependsOn(bpmn)
+
+lazy val worker = project
+  .in(file("./worker"))
+  .configure(publicationSettings)
+  .settings(projectSettings("worker"))
+  .settings(
+    autoImportSetting,
+    libraryDependencies ++= Seq(
+       )
   )
   .dependsOn(bpmn)
 

@@ -1,8 +1,8 @@
 package camundala
 package api
 
-import domain.* 
-import bpmn.*
+import camundala.bpmn.*
+import camundala.domain.*
 import sttp.tapir.*
 import sttp.tapir.EndpointIO.Example
 
@@ -10,7 +10,7 @@ trait TapirApiCreator extends AbstractApiCreator:
 
   protected def create(apiDoc: ApiDoc): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     println(s"Start API: ${apiDoc.apis.size} top level APIs")
-    apiDoc.apis.flatMap{
+    apiDoc.apis.flatMap {
       case groupedApi: GroupedApi => groupedApi.create()
       case cApi: CApi => cApi.create("")
     }
@@ -33,8 +33,11 @@ trait TapirApiCreator extends AbstractApiCreator:
           da.createEndpoint(tag, da.additionalDescr)
         case aa @ ActivityApi(_, _, _) =>
           aa.createEndpoint(tag)
-        case pa @ ProcessApi(name, _, _, apis, _) if apis.isEmpty => //.forall(_.isInstanceOf[ActivityApi[?,?]]) =>
-          pa.createEndpoint(tag, pa.additionalDescr) ++ apis.flatMap(_.create(tag))
+        case pa @ ProcessApi(name, _, _, apis, _)
+            if apis.isEmpty => //.forall(_.isInstanceOf[ActivityApi[?,?]]) =>
+          pa.createEndpoint(tag, pa.additionalDescr) ++ apis.flatMap(
+            _.create(tag)
+          )
         case spa @ ServiceProcessApi(name, _, _) =>
           spa.createEndpoint(tag, spa.additionalDescr)
         case ga =>
@@ -57,13 +60,18 @@ trait TapirApiCreator extends AbstractApiCreator:
           if (inOutApi.name == inOutApi.id)
             inOutApi.endpointType.toLowerCase() / inOutApi.id
           else
-            inOutApi.endpointType.toLowerCase() / inOutApi.id / inOutApi.name.replace(" ", "")
+            inOutApi.endpointType.toLowerCase() / inOutApi.id / inOutApi.name
+              .replace(" ", "")
         case _ =>
           println(s"${inOutApi.name} == ${inOutApi.id}")
           if (inOutApi.name == inOutApi.id)
             inOutApi.endpointType.toLowerCase() / tagPath / inOutApi.id
           else
-            inOutApi.endpointType.toLowerCase() / tagPath / inOutApi.id / inOutApi.name.replace(" ", "")
+            inOutApi.endpointType
+              .toLowerCase() / tagPath / inOutApi.id / inOutApi.name.replace(
+              " ",
+              ""
+            )
 
       Seq(
         endpoint
@@ -71,7 +79,12 @@ trait TapirApiCreator extends AbstractApiCreator:
           .tag(tag)
           .in(path)
           .summary(inOutApi.endpointName)
-          .description(inOutApi.apiDescription(apiConfig.diagramDownloadPath, apiConfig.diagramNameAdjuster) + additionalDescr.getOrElse(""))
+          .description(
+            inOutApi.apiDescription(
+              apiConfig.diagramDownloadPath,
+              apiConfig.diagramNameAdjuster
+            ) + additionalDescr.getOrElse("")
+          )
           .head
       ).map(ep => inOutApi.toInput.map(ep.in).getOrElse(ep))
         .map(ep => inOutApi.toOutput.map(ep.out).getOrElse(ep))
@@ -111,7 +124,7 @@ trait TapirApiCreator extends AbstractApiCreator:
           )
   end extension
 
-  extension (pa: ProcessApi[?, ?] | ServiceProcessApi[?,?,?])
+  extension (pa: ProcessApi[?, ?] | ServiceProcessApi[?, ?, ?, ?])
     def processName: String =
       pa.inOut.in match
         case gs: GenericServiceIn =>
@@ -119,21 +132,19 @@ trait TapirApiCreator extends AbstractApiCreator:
         case _ => pa.id
 
     def additionalDescr: Option[String] =
-      if(apiConfig.projectsConfig.isConfigured)
+      if (apiConfig.projectsConfig.isConfigured)
         val usedByDescr = UsedByReferenceCreator(processName).create()
         val usesDescr = UsesReferenceCreator(processName).create()
         Some(s"\n\n${usedByDescr.mkString}${usesDescr.mkString}")
-      else
-        None
+      else None
   end extension
 
   extension (dmn: DecisionDmnApi[?, ?])
     def additionalDescr: Option[String] =
-      if(apiConfig.projectsConfig.isConfigured)
+      if (apiConfig.projectsConfig.isConfigured)
         val usedByDescr = UsedByReferenceCreator(dmn.id).create()
         Some(s"\n\n${usedByDescr.mkString}")
-      else
-        None
+      else None
   end extension
 
 end TapirApiCreator

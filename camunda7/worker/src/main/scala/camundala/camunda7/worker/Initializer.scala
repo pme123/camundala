@@ -1,6 +1,7 @@
 package camundala.camunda7.worker
 
 import camundala.domain.*
+import camundala.worker.CamundalaWorkerError
 
 /** Allows you to initialize variables of the process with default values
   */

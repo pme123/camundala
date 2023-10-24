@@ -13,7 +13,7 @@ abstract class CustomSimulation
   // needed that it can be called from the Test Framework and check the result
   var simulation: Future[Seq[(LogLevel, Seq[ScenarioResult])]] = _
 
-  def run(sim: SSimulation): Future[Seq[(LogLevel, Seq[ScenarioResult])]] =
+  protected def run(sim: SSimulation): Future[Seq[(LogLevel, Seq[ScenarioResult])]] =
     simulation = Future
       .sequence(
         sim.scenarios

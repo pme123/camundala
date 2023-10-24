@@ -1,8 +1,9 @@
 package camundala.camunda7.worker
 
 import camundala.bpmn.*
-import camundala.camunda7.worker.CamundalaWorkerError.*
 import camundala.domain.*
+import camundala.worker.*
+import camundala.worker.CamundalaWorkerError.*
 import org.camunda.bpm.client.task.{ExternalTask, ExternalTaskHandler, ExternalTaskService}
 
 import java.time.LocalDateTime
@@ -15,7 +16,7 @@ abstract class CamundalaWorker[
       Initializer[In],
       Mocker[Out],
       Runner[In, Out],
-      CExternalTaskHandler:
+      ExternalTaskHandler:
   worker =>
 
   override def execute(
@@ -47,8 +48,8 @@ abstract class CamundalaWorker[
           )
           filteredOut <- filteredOutput(allOutputs)
         } yield externalTaskService.handleSuccess(filteredOut) //
-      ).left.map{ ex =>
-           externalTaskService.handleError(ex)
+      ).left.map { ex =>
+        externalTaskService.handleError(ex)
       }
     } catch { // safety net
       case ex: Throwable =>
@@ -66,7 +67,9 @@ abstract class CamundalaWorker[
   protected def defaultHandledErrorCodes: Seq[ErrorCodes] =
     Seq(ErrorCodes.`output-mocked`, ErrorCodes.`validation-failed`)
 
-  override protected def getDefaultMock: MockerOutput = Left(MockedOutput(toCamunda(defaultMock)))
+  override protected def getDefaultMock: MockerOutput = Left(
+    MockedOutput(toCamunda(defaultMock))
+  )
 
   //TODO always set initialized input - for the default values
   private def camundaOutputs(
@@ -93,13 +96,22 @@ abstract class CamundalaWorker[
         error: CamundalaWorkerError
     ): HelperContext[Unit] =
       import CamundalaWorkerError.*
-      (for{
-        handledErrors <- extractSeqFromArrayOrString(InputParams.handledErrors, defaultHandledErrorCodes)
-        regexHandledErrors <- extractSeqFromArrayOrString(InputParams.regexHandledErrors)
-        errorHandled = error.isMock || handledErrors.contains(error.errorCode.toString)
-        errorRegexHandled = errorHandled && regexHandledErrors.forall(regex => error.errorMsg.matches(s".*$regex.*"))
+      (for {
+        handledErrors <- extractSeqFromArrayOrString(
+          InputParams.handledErrors,
+          defaultHandledErrorCodes
+        )
+        regexHandledErrors <- extractSeqFromArrayOrString(
+          InputParams.regexHandledErrors
+        )
+        errorHandled = error.isMock || handledErrors.contains(
+          error.errorCode.toString
+        )
+        errorRegexHandled = errorHandled && regexHandledErrors.forall(regex =>
+          error.errorMsg.matches(s".*$regex.*")
+        )
       } yield (errorHandled, errorRegexHandled))
-        .flatMap{
+        .flatMap {
           case (true, true) =>
             val mockedOutput = error match
               case error: ErrorWithOutput =>
@@ -119,7 +131,9 @@ abstract class CamundalaWorker[
             Left(HandledRegexNotMatchedError(error))
           case _ =>
             Left(error)
-        }.left.map{ err =>
+        }
+        .left
+        .map { err =>
           val errMessage = s"${err.errorCode}: ${err.errorMsg}"
           println(s"Unhandled Error: $errMessage")
           externalTaskService.handleFailure(
@@ -135,8 +149,8 @@ abstract class CamundalaWorker[
   end extension
 
   private def filteredOutput(
-                              allOutputs: Map[String, Any]
-                            ): HelperContext[Either[BadVariableError, Map[String, Any]]] =
+      allOutputs: Map[String, Any]
+  ): HelperContext[Either[BadVariableError, Map[String, Any]]] =
     extractSeqFromArrayOrString(InputParams.outputVariables)
       .map {
         case filter if filter.isEmpty => allOutputs

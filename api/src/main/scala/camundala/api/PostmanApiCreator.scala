@@ -73,7 +73,7 @@ trait PostmanApiCreator extends AbstractApiCreator:
   ): Seq[PublicEndpoint[?, Unit, ?, Any]]
 
   protected def createPostmanForServiceProcess(
-      api: ServiceProcessApi[?, ?, ?],
+      api: ServiceProcessApi[?, ?, ?, ?],
       tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]]
 

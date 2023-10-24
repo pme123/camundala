@@ -2,11 +2,11 @@ package camundala
 package camunda7.worker
 
 import bpmn.*
-import CamundalaWorkerError.*
+import camundala.worker.*
+import worker.CamundalaWorkerError.*
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.engine.variable.`type`.{PrimitiveValueType, ValueType}
 import org.camunda.bpm.engine.variable.value.TypedValue
-
 
 import scala.language.implicitConversions
 

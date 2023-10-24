@@ -24,6 +24,7 @@ trait BpmnDsl:
   def serviceProcess[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema,
+      ServiceIn <: Product: Encoder: Decoder: Schema,
       ServiceOut: Encoder: Decoder
   ](
       serviceName: String,
@@ -31,7 +32,7 @@ trait BpmnDsl:
       out: Out = NoOutput(),
       defaultServiceMock: ServiceOut,
       descr: Optable[String] = None
-  ): ServiceProcess[In, Out, ServiceOut] =
+  ): ServiceProcess[In, Out, ServiceIn, ServiceOut] =
     ServiceProcess(
       InOutDescr(serviceName, in, out, descr.value),
       defaultServiceMock

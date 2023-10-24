@@ -1,7 +1,8 @@
 package camundala
 package camunda7.worker
 
-import camundala.camunda7.worker.CamundalaWorkerError.ValidatorError
+import camundala.worker.*
+import camundala.worker.CamundalaWorkerError.ValidatorError
 import camundala.domain.*
 import io.circe.JsonObject
 import org.camunda.bpm.client.task.ExternalTask

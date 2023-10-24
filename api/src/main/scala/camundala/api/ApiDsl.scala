@@ -20,8 +20,11 @@ trait ApiDsl extends ApiBaseDsl:
   implicit def toApi[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema: ClassTag,
-    ServiceOut: Encoder : Decoder : Schema
-  ](process: ServiceProcess[In, Out, ServiceOut]): ServiceProcessApi[In, Out, ServiceOut] =
+      ServiceIn <: Product: Encoder: Schema,
+      ServiceOut: Encoder: Decoder: Schema
+  ](
+      process: ServiceProcess[In, Out, ServiceIn, ServiceOut]
+  ): ServiceProcessApi[In, Out, ServiceIn, ServiceOut] =
     ServiceProcessApi(nameOfVariable(process), process)
 
   implicit def toApi[

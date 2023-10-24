@@ -1,7 +1,10 @@
 package camundala.camunda7.worker
 
+import camundala.worker.WorkerDsl
 import org.camunda.bpm.client.spring.impl.subscription.SpringTopicSubscriptionImpl
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.{Bean, Configuration}
+import org.springframework.stereotype.Component
 
 
 /**
