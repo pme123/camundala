@@ -74,8 +74,7 @@ class CSubscriptionPostProcessor(
     subConfig.setTopicName(handler.topic)
     subConfig.setAutoOpen(true)
     subConfig.setLockDuration(null)
-    //TODO from input object: val variableNames: Array[String] = config.variableNames
-    subConfig.setVariableNames(null)
+    subConfig.setVariableNames(handler.variableNames.asJava)
     subConfig.setLocalVariables(false)
     subConfig.setBusinessKey(null)
     subConfig.setProcessDefinitionId(null)

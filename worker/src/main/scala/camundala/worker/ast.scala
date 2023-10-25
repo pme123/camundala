@@ -10,7 +10,7 @@ case class Workers(workers: Seq[Worker[?,?]])
 sealed trait Worker[In <: Product: CirceCodec, T <: Worker[In, ?]]:
   def topic: String
   def in: In
-  def inValidator: Option[InValidator[In]]
+  def inValidator: InValidator[In]
   def withCustomValidator(customValidator: In => Either[ValidatorError, In]): T
 end Worker
 
@@ -22,7 +22,7 @@ case class ProcessWorker[
                          ) extends Worker[In, ProcessWorker[In, Out]]:
   lazy val topic: String = process.processName
   lazy val in: In = process.in
-  def inValidator: Option[InValidator[In]] = Some(InValidator(process.in, customValidator))
+  def inValidator: InValidator[In] = InValidator(process.in, customValidator)
 
   def withCustomValidator(validator: In => Either[ValidatorError, In]): ProcessWorker[In, Out] =
     copy(customValidator = Some(validator))
@@ -39,7 +39,7 @@ case class ServiceWorker[
                                 ) extends Worker[In, ServiceWorker[In,Out,ServiceIn, ServiceOut]]:
   lazy val topic: String = process.serviceName
   lazy val in: In = process.in
-  def inValidator: Option[InValidator[In]] = Some(InValidator(process.in, customValidator))
+  def inValidator: InValidator[In] = InValidator(process.in, customValidator)
 
   def withCustomValidator(validator: In => Either[ValidatorError, In]): ServiceWorker[In,Out,ServiceIn, ServiceOut] =
     copy(customValidator = Some(validator))
@@ -48,7 +48,7 @@ end ServiceWorker
 
 case class InValidator[In <: Product: CirceCodec](prototype: In, customValidator: Option[In => Either[ValidatorError, In]] = None):
 
-  def inElementNames: Seq[String] = prototype.productElementNames.toSeq
+  def variableNames: Seq[String] = prototype.productElementNames.toSeq
 
   def validate(inputParamsAsJson: Seq[Either[Any, (String, Option[Json])]]) =
     val jsonResult: Either[ValidatorError, Seq[(String, Option[Json])]] = inputParamsAsJson

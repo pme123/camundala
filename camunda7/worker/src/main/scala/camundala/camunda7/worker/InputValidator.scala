@@ -18,7 +18,7 @@ case class InputValidator(inputValidator: InValidator[?]) extends CamundaHelper:
   // gets the inputs of the process and creates the In object.
   // if it can not create the object, according messages are created and a ValidaterError created.
   def validate(): ValidatorType =
-    val jsons: Seq[Either[Any, (String, Option[Json])]] = inputValidator.inElementNames
+    val jsons: Seq[Either[Any, (String, Option[Json])]] = inputValidator.variableNames
       .map(k => k -> variableTypedOpt(k))
       .map {
         case k -> Some(typedValue) if typedValue.getType == ValueType.NULL =>

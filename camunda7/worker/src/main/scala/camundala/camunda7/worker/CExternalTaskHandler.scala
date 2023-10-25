@@ -17,6 +17,7 @@ import scala.jdk.CollectionConverters.*
 trait CExternalTaskHandler[T <: Worker[?,?]] extends ExternalTaskHandler, CamundaHelper:
   def topic: String
   def worker: T
+  def variableNames: Seq[String] = worker.inValidator.variableNames
 
   protected def defaultHandledErrorCodes: Seq[ErrorCodes] =
     Seq(ErrorCodes.`output-mocked`, ErrorCodes.`validation-failed`)
@@ -40,7 +41,7 @@ trait CExternalTaskHandler[T <: Worker[?,?]] extends ExternalTaskHandler, Camund
     println(s"Worker ${summon[ExternalTask].getTopicName} running")
     try {
       (for {
-        validatedInput <- worker.inValidator.map(InputValidator(_).validate()).getOrElse(Right(worker.in))
+        validatedInput <- InputValidator(worker.inValidator).validate()
         _ = println(s"VALIDATED INPUT: $validatedInput")
       } yield (externalTaskService.handleSuccess(Map.empty)) //
         ).left.map { ex =>
@@ -124,6 +125,7 @@ trait CExternalTaskHandler[T <: Worker[?,?]] extends ExternalTaskHandler, Camund
 
   end extension
 
+
   private def filteredOutput(
                               allOutputs: Map[String, Any]
                             ): HelperContext[Either[BadVariableError, Map[String, Any]]] =
@@ -134,6 +136,7 @@ trait CExternalTaskHandler[T <: Worker[?,?]] extends ExternalTaskHandler, Camund
           allOutputs
             .filter { case k -> _ => filter.contains(k) }
       }
+  end filteredOutput
 
   // serviceName is not needed anymore
   protected def serviceDefaults(
@@ -144,4 +147,6 @@ trait CExternalTaskHandler[T <: Worker[?,?]] extends ExternalTaskHandler, Camund
         "serviceName" -> "NOT-USED"
       )
     )
+  end serviceDefaults
+
 end CExternalTaskHandler
