@@ -351,24 +351,24 @@ scenario(PROCESS.startWithMsg)(
 All that is needed is to postfix the process with `.startWithMsg`.
 
 ### Ignore a Scenario
-You can ignore a scenario by just prefix your Scenario with `ignore.`.
+You can ignore a scenario by just prefix your Scenario with `ignore`.
 
 #### Examples:
 ```scala
 simulate (
-    ignore.scenario(`Review Invoice`)(
+    ignore scenario(`Review Invoice`)(
       AssignReviewerUT,
       ReviewInvoiceUT
     ),
-    ignore.incidentScenario(
+    ignore incidentScenario(
       `Invoice Receipt that fails`,
       "Could not archive invoice..."
     )(
       ApproveInvoiceUT,
       PrepareBankTransferUT
     ),
-    ignore.scenario(InvoiceAssignApproverDMN),
-    ignore.badScenario(
+    ignore scenario(InvoiceAssignApproverDMN),
+    ignore badScenario(
       BadValidationP,
       500,
         "Validation Error: Input is not valid: DecodingFailure(Missing required field, List(DownField(creditor)))"
@@ -384,7 +384,7 @@ An ignored Scenario will create a Warning in the output Log, like this:
 If you want to ignore all the Scenarios you can 'ignore' the Simulation like:
 
 ```scala
-  ignore.simulate(
+  ignore simulate(
     scenario(...),
     scenario(...),
   )
