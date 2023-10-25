@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class ProjectWorkers extends WorkerDsl:
 
-  register(
+  workers(
     process(ReviewInvoice.example)
       .withCustomValidator(ReviewInvoiceWorker.customValidator)
       .withInitVariables(ReviewInvoiceWorker.initVariables),

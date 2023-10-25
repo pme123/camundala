@@ -12,9 +12,9 @@ trait WorkerDsl :
   // needed that it can be called from CSubscriptionPostProcessor
   var workers: Workers = _
 
-  def register(body: => Worker[?, ?]*): Unit =
+  def workers(body: => Worker[?, ?]*): Unit =
     workers = Workers(body)
-  end register
+  end workers
 
   def process[
     In <: Product : CirceCodec: ClassTag,
