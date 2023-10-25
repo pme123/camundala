@@ -1,8 +1,8 @@
 package camundala
 package camunda7.worker
 
-import domain.*
-import worker.*
+import camundala.domain.*
+import camundala.worker.*
 import org.camunda.bpm.client.spring.SpringTopicSubscription
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription
 import org.camunda.bpm.client.spring.impl.client.util.ClientLoggerUtil
@@ -95,7 +95,7 @@ class CSubscriptionPostProcessor(
   ): Unit = {}
 
 
-  def workerHandler(worker: Worker[?, ?]) =
+  def workerHandler(worker: Worker[?, ?,?]) =
       worker match
         case pw: ProcessWorker[?,?] =>
           ProcessWorkerHandler(pw)

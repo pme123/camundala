@@ -2,31 +2,38 @@ package camundala
 package worker
 
 import camundala.bpmn.*
+import camundala.bpmn.CamundaVariable.toCamunda
 import camundala.domain.*
-import camundala.worker.CamundalaWorkerError.{InitializerError, ValidatorError}
+import camundala.worker.CamundalaWorkerError.*
 
 import scala.reflect.ClassTag
 
-case class Workers(workers: Seq[Worker[?,?]])
+case class Workers(workers: Seq[Worker[?,?,?]])
 
-sealed trait Worker[In <: Product: CirceCodec : ClassTag, T <: Worker[In, ?]]:
+sealed trait Worker[In <: Product: CirceCodec : ClassTag, Out <: Product: CirceCodec, T <: Worker[In, Out, ?]]:
   def topic: String
   def in: In
+  def out: Out
   def inValidator: InValidator[In]
 
+  def defaultMock: Either[MockerError | MockedOutput, Option[Out]]
 
-  protected def variablesInit: Option[In => Either[InitializerError, Map[String, Any]]]
   def withCustomValidator(customValidator: In => Either[ValidatorError, In]): T
   def withInitVariables(init: In => Either[InitializerError, Map[String, Any]]): T
 
+  protected def variablesInit: Option[In => Either[InitializerError, Map[String, Any]]]
 
-  //TODO move functions to WorkerHandler
-  def executeWorker(processVariables: Seq[Either[ValidatorError, (String, Option[Json])]]) =
+//TODO move functions to WorkerHandler
+  def executeWorker(
+                     processVariables: Seq[Either[BadVariableError, (String, Option[Json])]],
+                     generalVariables: GeneralVariables,
+                     jsonToCamunda: Json => Any,
+                   ) =
     for {
       validatedInput <- inValidator.validate(processVariables)
       initializedInput <- initVariables(validatedInput)
-
-    } yield initializedInput
+      proceedOrMocked <- OutMocker(this).mockOrProceed(generalVariables, jsonToCamunda)
+    } yield proceedOrMocked
 
   private val defaultVariables = Map(
     "serviceName" -> "NOT-USED" // serviceName is not needed anymore
@@ -43,9 +50,10 @@ case class ProcessWorker[
 ](process: Process[In, Out],
   customValidator: Option[In => Either[ValidatorError, In]] = None,
   variablesInit: Option[In => Either[InitializerError, Map[String, Any]]] = None,
-                         ) extends Worker[In, ProcessWorker[In, Out]]:
+                         ) extends Worker[In, Out, ProcessWorker[In, Out]]:
   lazy val topic: String = process.processName
   lazy val in: In = process.in
+  lazy val out: Out = process.out
   def inValidator: InValidator[In] = InValidator(process.in, customValidator)
 
   def withCustomValidator(validator: In => Either[ValidatorError, In]): ProcessWorker[In, Out] =
@@ -53,6 +61,10 @@ case class ProcessWorker[
 
   def withInitVariables(init: In => Either[InitializerError, Map[String, Any]]): ProcessWorker[In, Out] =
       copy(variablesInit = Some(init))
+
+  def defaultMock: Either[MockerError | MockedOutput, Option[Out]] = Left(
+    MockedOutput(toCamunda(out))
+  )
 
 end ProcessWorker
 
@@ -62,11 +74,17 @@ case class ServiceWorker[
   ServiceIn <: Product: Encoder,
   ServiceOut : Decoder
 ](process: ServiceProcess[In, Out, ServiceIn, ServiceOut],
+    // default is no output
+  defaultServiceMock: Option[ServiceOut] = None,
+  defaultHeaders:  Map[String, String] = Map.empty,
+    // default is no output
+  bodyOutputMapper: RequestOutput[ServiceOut] => Either[CamundalaWorkerError, Option[Out]] = (_:RequestOutput[ServiceOut]) => Right(None),
   customValidator: Option[In => Either[ValidatorError, In]] = None,
   variablesInit: Option[In => Either[InitializerError, Map[String, Any]]] = None,
-                         ) extends Worker[In, ServiceWorker[In,Out,ServiceIn, ServiceOut]]:
+                         ) extends Worker[In, Out, ServiceWorker[In,Out,ServiceIn, ServiceOut]]:
   lazy val topic: String = process.serviceName
   lazy val in: In = process.in
+  lazy val out: Out = process.out
   def inValidator: InValidator[In] = InValidator(process.in, customValidator)
 
   def withCustomValidator(validator: In => Either[ValidatorError, In]): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
@@ -74,6 +92,26 @@ case class ServiceWorker[
 
   def withInitVariables(init: In => Either[InitializerError, Map[String, Any]]): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     copy(variablesInit = Some(init))
+
+  def defaultMock: Either[MockerError | MockedOutput, Option[Out]] =
+    bodyOutputMapper(RequestOutput(defaultServiceMock, defaultHeaders)).left.map(
+      err => MockerError(errorMsg = err.errorMsg)
+    )
+
+  def mapBodyOutput(
+                               serviceOutputOpt: Option[ServiceOut],
+                               headers: Seq[Seq[String]]
+                             ) =
+    bodyOutputMapper(
+      RequestOutput(
+        serviceOutputOpt,
+        // take correct ones and make a map of it
+        headers
+          .map(_.toList)
+          .collect { case key :: value :: _ => key -> value }
+          .toMap
+      )
+    )
 end ServiceWorker
 
 
@@ -103,16 +141,87 @@ case class InValidator[In <: Product: CirceCodec](prototype: In, customValidator
         jsonObj.add(jsonKey, jsonValue.getOrElse(Json.Null))
       })
     json
-      .flatMap: jsonObj =>
+      .flatMap (jsonObj =>
         decodeTo[In](jsonObj.asJson.toString)
           .left
           .map(ex =>
             ValidatorError(errorMsg = ex.errorMsg))
           .flatMap(in => customValidator.map(v => v(in)).getOrElse(Right(in)))
-
+      )
   end validate
 
 end InValidator
 
+// ApiCreator that describes these variables
+case class GeneralVariables(
+                          servicesMocked: Boolean,
+                          outputMockOpt: Option[Json],
+                          outputServiceMockOpt: Option[Json],
+                          mockedSubprocesses: Seq[String],
+                          outputVariables: Seq[String],
+                          handledErrors: Seq[String],
+                          regexHandledErrors: Seq[String],
+                          impersonateUserIdOpt: Option[String],
+                          serviceNameOpt: Option[String]
+                        ):
+  def isMocked(workerTopicName: String): Boolean =
+     mockedSubprocesses.contains(workerTopicName)
 
-case class VariablesInit[In <: Product: CirceCodec](init: In => Either[InitializerError, Map[String, Any]])
+end GeneralVariables
+
+case class OutMocker[Out <: Product: Decoder](worker: Worker[?,Out, ?]):
+
+  def mockOrProceed(
+      generalVariables: GeneralVariables,
+      jsonToCamunda: Json => Any
+                   ): Either[MockerError | MockedOutput, Option[Out]] =
+    ((generalVariables.servicesMocked, generalVariables.isMocked(worker.topic), generalVariables.outputMockOpt) match
+      case (_, _, Some(outputMock)) => // if the outputMock is set than we mock
+        decodeMock(outputMock, jsonToCamunda)
+      case (_, true, _)
+        if !isService => // if your process is NOT a Service check if it is mocked
+        worker.defaultMock
+      case (true, _, _)
+        if isService => // if your process is a Service check if it is mocked
+        worker.defaultMock
+      case (_, _, None) =>
+        Right(None)
+      ).left.map(err => MockerError(err.errorMsg))
+
+  end mockOrProceed
+
+  private lazy val isService =  worker.isInstanceOf[ServiceWorker[?,?,?,?]]
+
+  private def decodeMock[A <: Product : Decoder](
+                                                    json: Json,
+                                                    jsonToCamunda: Json => Any
+                                                  ): Either[MockerError | MockedOutput, Option[A]] =
+    (json.isObject, isService) match
+      case (true, true) =>
+        decodeTo(json.asJson.toString)
+          .map(Some(_))
+          .left
+          .map(ex => MockerError(errorMsg = ex.errorMsg))
+      case (true, _) =>
+        Left(
+          MockedOutput(mockedOutput =
+            json.asObject.get.toMap
+              .map { case k -> json =>
+                k -> jsonToCamunda(json)
+              }
+          )
+        )
+      case _ =>
+        Left(
+          MockerError(errorMsg =
+            s"The mock must be a Json Object:\n- $json\n- ${json.getClass}"
+          )
+        )
+  end decodeMock
+
+end OutMocker
+
+case class RequestOutput[ServiceOut](
+                                      outputBodyOpt: Option[ServiceOut],
+                                      headers: Map[String, String]
+                                    )

@@ -28,7 +28,7 @@ def toCamunda(
     variables: Map[String, Json]
 ): Map[String, Any] =
   variables
-    .map { case (k, v) => k -> camundaVariable(v) }
+    .map { case (k, v) => k -> jsonToCamunda(v) }
 
 def objectToCamunda[T <: Product: Encoder](
     product: T,
@@ -42,7 +42,7 @@ def objectToCamunda[T <: Product: Encoder](
       product.asJson.deepDropNullValues.hcursor
         .downField(key)
         .as[Json] match {
-        case Right(v) => camundaVariable(v)
+        case Right(v) => jsonToCamunda(v)
         case Left(ex) =>
           throwErr(s"$key of $v could NOT be Parsed to a JSON!\n$ex")
       }
@@ -59,14 +59,14 @@ def valueToCamunda(value: Any): Any =
     case other if other == null =>
       null
     case v: Json =>
-      camundaVariable(v)
+      jsonToCamunda(v)
     case other =>
       other
 
-def camundaVariable[A <: Product: CirceCodec](variable: A): Any =
+def domainObjToCamunda[A <: Product: CirceCodec](variable: A): Any =
   new JsonValueImpl(variable.asJson.toString)
 
-def camundaVariable(json: Json): Any =
+def jsonToCamunda(json: Json): Any =
   json match
     case j if j.isNull    => null
     case j if j.isNumber  => j.asNumber.get.toBigDecimal.get
@@ -75,6 +75,6 @@ def camundaVariable(json: Json): Any =
     case j =>
       new JsonValueImpl(j.toString)
 
-end camundaVariable
+end jsonToCamunda
 
 type HelperContext[T] = ExternalTask ?=> T

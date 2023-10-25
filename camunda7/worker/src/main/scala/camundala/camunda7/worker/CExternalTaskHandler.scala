@@ -14,13 +14,10 @@ import scala.jdk.CollectionConverters.*
  * To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
  * parameters.
  */
-trait CExternalTaskHandler[T <: Worker[?,?]] extends ExternalTaskHandler, CamundaHelper:
+trait CExternalTaskHandler[T <: Worker[?,?,?]] extends ExternalTaskHandler, CamundaHelper:
   def topic: String
   def worker: T
   def variableNames: Seq[String] = worker.inValidator.variableNames
-
-  protected def defaultHandledErrorCodes: Seq[ErrorCodes] =
-    Seq(ErrorCodes.`output-mocked`, ErrorCodes.`validation-failed`)
 
   override def execute(
                         externalTask: ExternalTask,
@@ -40,13 +37,15 @@ trait CExternalTaskHandler[T <: Worker[?,?]] extends ExternalTaskHandler, Camund
                            ): HelperContext[Unit] =
     println(s"Worker ${summon[ExternalTask].getTopicName} running")
     val processVariables = ProcessVariablesExtractor.extract(variableNames)
+    val tryGeneralVariables = ProcessVariablesExtractor.extractGeneral()
     try {
       (for {
-        initializedInput <- worker.executeWorker(processVariables)
+        generalVariables <- tryGeneralVariables
+        initializedInput <- worker.executeWorker(processVariables, generalVariables, jsonToCamunda)
         _ = println(s"EXECUTE WORKER: $initializedInput")
       } yield (externalTaskService.handleSuccess(Map.empty)) //
         ).left.map { ex =>
-        ()// externalTaskService.handleError(ex)
+        ()// externalTaskService.handleError(ex, tryGeneralVariables)
       }
     } catch { // safety net
       case ex: Throwable =>
@@ -71,41 +70,34 @@ trait CExternalTaskHandler[T <: Worker[?,?]] extends ExternalTaskHandler, Camund
       )
 
     private def handleError(
-                             error: CamundalaWorkerError
+                             error: CamundalaWorkerError,
+                             tryGeneralVariables: Either[BadVariableError, GeneralVariables]
                            ): HelperContext[Unit] =
       import CamundalaWorkerError.*
       (for {
-        handledErrors <- extractSeqFromArrayOrString(
-          InputParams.handledErrors,
-          defaultHandledErrorCodes
-        )
-        regexHandledErrors <- extractSeqFromArrayOrString(
-          InputParams.regexHandledErrors
-        )
-        errorHandled = error.isMock || handledErrors.contains(
+        generalVariables <- tryGeneralVariables
+        errorHandled = error.isMock || generalVariables.handledErrors.contains(
           error.errorCode.toString
         )
-        errorRegexHandled = errorHandled && regexHandledErrors.forall(regex =>
+        errorRegexHandled = errorHandled && generalVariables.regexHandledErrors.forall(regex =>
           error.errorMsg.matches(s".*$regex.*")
         )
-      } yield (errorHandled, errorRegexHandled))
-        .flatMap {
-          case (true, true) =>
+      } yield (errorHandled, errorRegexHandled, generalVariables))
+        .map {
+          case (true, true, generalVariables) =>
             val mockedOutput = error match
               case error: ErrorWithOutput =>
                 error.mockedOutput
               case _ => Map.empty
-            filteredOutput(mockedOutput)
-              .map { filtered =>
-                println(s"Handled Error: ${error.errorCode}: ${error.errorMsg}")
-                externalTaskService.handleBpmnError(
-                  summon[ExternalTask],
-                  s"${error.errorCode}",
-                  error.errorMsg,
-                  filtered.asJava
-                )
-              }
-          case (true, false) =>
+            val filtered = filteredOutput(generalVariables.outputVariables, mockedOutput)
+            println(s"Handled Error: ${error.errorCode}: ${error.errorMsg}")
+            externalTaskService.handleBpmnError(
+              summon[ExternalTask],
+              s"${error.errorCode}",
+              error.errorMsg,
+              filtered.asJava
+            )
+          case (true, false, _) =>
             Left(HandledRegexNotMatchedError(error))
           case _ =>
             Left(error)
@@ -128,15 +120,15 @@ trait CExternalTaskHandler[T <: Worker[?,?]] extends ExternalTaskHandler, Camund
 
 
   private def filteredOutput(
+                              outputVariables: Seq[String],
                               allOutputs: Map[String, Any]
-                            ): HelperContext[Either[BadVariableError, Map[String, Any]]] =
-    extractSeqFromArrayOrString(InputParams.outputVariables)
-      .map {
+                            ): Map[String, Any] =
+    outputVariables match
         case filter if filter.isEmpty => allOutputs
         case filter =>
           allOutputs
             .filter { case k -> _ => filter.contains(k) }
-      }
+
   end filteredOutput
 
 end CExternalTaskHandler

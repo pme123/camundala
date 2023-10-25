@@ -12,7 +12,7 @@ trait WorkerDsl :
   // needed that it can be called from CSubscriptionPostProcessor
   var workers: Workers = _
 
-  def workers(body: => Worker[?, ?]*): Unit =
+  def workers(body: => Worker[?, ?, ?]*): Unit =
     workers = Workers(body)
   end workers
 
