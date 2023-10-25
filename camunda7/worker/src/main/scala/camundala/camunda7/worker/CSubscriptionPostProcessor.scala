@@ -96,11 +96,11 @@ class CSubscriptionPostProcessor(
   ): Unit = {}
 
 
-  def workerHandler(worker: Worker[?]) =
+  def workerHandler(worker: Worker[?, ?]) =
       worker match
         case pw: ProcessWorker[?,?] =>
           ProcessWorkerHandler(pw)
-        case spw: ServiceProcessWorker[?, ?, ?, ?] =>
+        case spw: ServiceWorker[?, ?, ?, ?] =>
           ServiceProcessWorkerHandler(spw)
 
 object CSubscriptionPostProcessor:

@@ -14,7 +14,7 @@ import scala.jdk.CollectionConverters.*
  * To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
  * parameters.
  */
-trait CExternalTaskHandler[T <: Worker[?]] extends ExternalTaskHandler, CamundaHelper:
+trait CExternalTaskHandler[T <: Worker[?,?]] extends ExternalTaskHandler, CamundaHelper:
   def topic: String
   def worker: T
 
@@ -41,7 +41,7 @@ trait CExternalTaskHandler[T <: Worker[?]] extends ExternalTaskHandler, CamundaH
     try {
       (for {
         validatedInput <- worker.inValidator.map(InputValidator(_).validate()).getOrElse(Right(worker.in))
-
+        _ = println(s"VALIDATED INPUT: $validatedInput")
       } yield (externalTaskService.handleSuccess(Map.empty)) //
         ).left.map { ex =>
         ()// externalTaskService.handleError(ex)

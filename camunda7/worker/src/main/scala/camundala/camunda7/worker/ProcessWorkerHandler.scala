@@ -22,8 +22,8 @@ end ProcessWorkerHandler
 
 
 class ServiceProcessWorkerHandler(
-                                  val worker: ServiceProcessWorker[?, ?, ?, ?]
-) extends CExternalTaskHandler[ServiceProcessWorker[?, ?, ?, ?]]:
+                                  val worker: ServiceWorker[?, ?, ?, ?]
+) extends CExternalTaskHandler[ServiceWorker[?, ?, ?, ?]]:
   lazy val topic: String = worker.topic
   println(s"ServiceProcessWorkerHandler: $topic")
 

@@ -5,36 +5,48 @@ import camundala.bpmn.*
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.ValidatorError
 
-case class Workers(workers: Seq[Worker[?]])
+case class Workers(workers: Seq[Worker[?,?]])
 
-sealed trait Worker[In <: Product: CirceCodec]:
+sealed trait Worker[In <: Product: CirceCodec, T <: Worker[In, ?]]:
   def topic: String
   def in: In
   def inValidator: Option[InValidator[In]]
+  def withCustomValidator(customValidator: In => Either[ValidatorError, In]): T
+end Worker
 
 case class ProcessWorker[
   In <: Product: CirceCodec,
   Out <: Product: CirceCodec
 ](process: Process[In, Out],
-  inValidator: Option[InValidator[In]] = None ) extends Worker[In]:
+  customValidator: Option[In => Either[ValidatorError, In]] = None
+                         ) extends Worker[In, ProcessWorker[In, Out]]:
   lazy val topic: String = process.processName
   lazy val in: In = process.in
+  def inValidator: Option[InValidator[In]] = Some(InValidator(process.in, customValidator))
+
+  def withCustomValidator(validator: In => Either[ValidatorError, In]): ProcessWorker[In, Out] =
+    copy(customValidator = Some(validator))
+
 end ProcessWorker
 
-case class ServiceProcessWorker[
+case class ServiceWorker[
   In <: Product: CirceCodec,
   Out <: Product: CirceCodec,
   ServiceIn <: Product: Encoder,
   ServiceOut : Decoder
 ](process: ServiceProcess[In, Out, ServiceIn, ServiceOut],
-  inValidator: Option[InValidator[In]] = None) extends Worker[In]:
+  customValidator: Option[In => Either[ValidatorError, In]] = None
+                                ) extends Worker[In, ServiceWorker[In,Out,ServiceIn, ServiceOut]]:
   lazy val topic: String = process.serviceName
   lazy val in: In = process.in
+  def inValidator: Option[InValidator[In]] = Some(InValidator(process.in, customValidator))
 
-end ServiceProcessWorker
+  def withCustomValidator(validator: In => Either[ValidatorError, In]): ServiceWorker[In,Out,ServiceIn, ServiceOut] =
+    copy(customValidator = Some(validator))
+end ServiceWorker
 
 
-case class InValidator[In <: Product: CirceCodec](prototype: In, customValidator: In => Either[ValidatorError, In]):
+case class InValidator[In <: Product: CirceCodec](prototype: In, customValidator: Option[In => Either[ValidatorError, In]] = None):
 
   def inElementNames: Seq[String] = prototype.productElementNames.toSeq
 
@@ -65,7 +77,7 @@ case class InValidator[In <: Product: CirceCodec](prototype: In, customValidator
           .left
           .map(ex =>
             ValidatorError(errorMsg = ex.errorMsg))
-        //  .flatMap(validate)
+          .flatMap(in => customValidator.map(v => v(in)).getOrElse(Right(in)))
 
   end validate
 
