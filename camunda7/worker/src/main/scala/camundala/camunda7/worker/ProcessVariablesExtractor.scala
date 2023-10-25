@@ -11,14 +11,13 @@ import org.camunda.bpm.engine.variable.value.TypedValue
 
 /** Validator to validate the input variables automatically.
   */
-case class InputValidator(inputValidator: InValidator[?]) extends CamundaHelper:
+object ProcessVariablesExtractor extends CamundaHelper:
 
-  type ValidatorType = HelperContext[Either[ValidatorError, ?]]
+  type ValidatorType = HelperContext[Seq[Either[ValidatorError, (String, Option[Json])]]]
 
-  // gets the inputs of the process and creates the In object.
-  // if it can not create the object, according messages are created and a ValidaterError created.
-  def validate(): ValidatorType =
-    val jsons: Seq[Either[Any, (String, Option[Json])]] = inputValidator.variableNames
+  // gets the input variables of the process as Optional Jsons.
+  def extract(variableNames: Seq[String]): ValidatorType =
+    variableNames
       .map(k => k -> variableTypedOpt(k))
       .map {
         case k -> Some(typedValue) if typedValue.getType == ValueType.NULL =>
@@ -26,11 +25,14 @@ case class InputValidator(inputValidator: InValidator[?]) extends CamundaHelper:
         case k -> Some(typedValue) =>
           extractValue(typedValue)
             .map(v => k -> Some(v))
+            .left
+            .map(ex => ValidatorError(s"Problem extracting Process Variable $k: ${ex.errorMsg}"))
         case k -> None =>
           Right(k -> None) // k -> null as Camunda Expressions need them
-
       }
-    inputValidator.validate(jsons)
-  end validate
+  end extract
+  
+end ProcessVariablesExtractor
+
 
 

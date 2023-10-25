@@ -5,6 +5,8 @@ import bpmn.*
 import camundala.worker.CamundalaWorkerError.ValidatorError
 import domain.*
 
+import scala.reflect.ClassTag
+
 trait WorkerDsl :
 
   // needed that it can be called from CSubscriptionPostProcessor
@@ -15,13 +17,13 @@ trait WorkerDsl :
   end register
 
   def process[
-    In <: Product : CirceCodec,
+    In <: Product : CirceCodec: ClassTag,
     Out <: Product : CirceCodec,
   ](process: Process[In, Out]): ProcessWorker[In, Out] =
     ProcessWorker(process)
 
   def service[
-    In <: Product : CirceCodec,
+    In <: Product : CirceCodec: ClassTag,
     Out <: Product : CirceCodec,
     ServiceIn <: Product : Encoder,
     ServiceOut : Decoder,

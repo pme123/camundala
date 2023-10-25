@@ -39,10 +39,11 @@ trait CExternalTaskHandler[T <: Worker[?,?]] extends ExternalTaskHandler, Camund
                              externalTaskService: ExternalTaskService
                            ): HelperContext[Unit] =
     println(s"Worker ${summon[ExternalTask].getTopicName} running")
+    val processVariables = ProcessVariablesExtractor.extract(variableNames)
     try {
       (for {
-        validatedInput <- InputValidator(worker.inValidator).validate()
-        _ = println(s"VALIDATED INPUT: $validatedInput")
+        initializedInput <- worker.executeWorker(processVariables)
+        _ = println(s"EXECUTE WORKER: $initializedInput")
       } yield (externalTaskService.handleSuccess(Map.empty)) //
         ).left.map { ex =>
         ()// externalTaskService.handleError(ex)
@@ -137,16 +138,5 @@ trait CExternalTaskHandler[T <: Worker[?,?]] extends ExternalTaskHandler, Camund
             .filter { case k -> _ => filter.contains(k) }
       }
   end filteredOutput
-
-  // serviceName is not needed anymore
-  protected def serviceDefaults(
-                                 initVariables: Map[String, Any] = Map.empty
-                               ): Right[Nothing, Map[String, Any]] =
-    Right(
-      initVariables ++ Map(
-        "serviceName" -> "NOT-USED"
-      )
-    )
-  end serviceDefaults
 
 end CExternalTaskHandler
