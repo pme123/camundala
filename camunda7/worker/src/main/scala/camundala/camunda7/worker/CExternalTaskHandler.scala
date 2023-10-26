@@ -17,7 +17,7 @@ import scala.jdk.CollectionConverters.*
 trait CExternalTaskHandler[T <: Worker[?,?,?]] extends ExternalTaskHandler, CamundaHelper:
   def topic: String
   def worker: T
-  def variableNames: Seq[String] = worker.inValidator.variableNames
+  def variableNames: Seq[String] = worker.inValidator.variableNames ++ GeneralVariables().productElementNames
 
   override def execute(
                         externalTask: ExternalTask,
@@ -41,20 +41,21 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends ExternalTaskHandler, Camu
     try {
       (for {
         generalVariables <- tryGeneralVariables
-        initializedInput <- worker.executeWorker(processVariables, generalVariables, jsonToCamunda)
-        _ = println(s"EXECUTE WORKER: $initializedInput")
+        executedWorker <- worker.executeWorker(processVariables, generalVariables, jsonToCamunda)
+        _ = println(s"EXECUTE WORKER: $executedWorker")
       } yield (externalTaskService.handleSuccess(Map.empty)) //
         ).left.map { ex =>
-        ()// externalTaskService.handleError(ex, tryGeneralVariables)
+        externalTaskService.handleError(ex, tryGeneralVariables)
       }
     } catch { // safety net
       case ex: Throwable =>
         ex.printStackTrace()
-       /* externalTaskService.handleError(
+       externalTaskService.handleError(
           UnexpectedError(errorMsg =
             s"We caught an UnhandledException: ${ex.getMessage}\n - check the Workers Log."
-          )
-        )*/
+          ),
+         tryGeneralVariables
+        )
     }
   end executeWorker
 

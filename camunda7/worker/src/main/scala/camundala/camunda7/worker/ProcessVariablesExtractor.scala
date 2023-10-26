@@ -43,7 +43,7 @@ object ProcessVariablesExtractor extends CamundaHelper:
       outputMockOpt <- jsonVariableOpt(InputParams.outputMock)
       outputServiceMockOpt <- jsonVariableOpt(InputParams.outputServiceMock)
       mockedSubprocesses <- extractSeqFromArrayOrString(InputParams.mockedSubprocesses, Seq.empty)
-      outputVariables <- extractSeqFromArrayOrString(InputParams.mockedSubprocesses, Seq.empty)
+      outputVariables <- extractSeqFromArrayOrString(InputParams.outputVariables, Seq.empty)
       handledErrors <- extractSeqFromArrayOrString(InputParams.handledErrors, defaultHandledErrorCodes)
       regexHandledErrors <- extractSeqFromArrayOrString(InputParams.regexHandledErrors, Seq.empty)
       impersonateUserIdOpt <- variableOpt[String](InputParams.impersonateUserId)

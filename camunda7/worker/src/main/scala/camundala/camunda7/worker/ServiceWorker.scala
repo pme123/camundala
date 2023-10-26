@@ -59,7 +59,7 @@ trait ServiceWorker[
   // default is no output
   protected def mapBodyOutput(
       requestOutput: RequestOutput[ServiceOut]
-  ): OutputType = mapBodyOutput(requestOutput.outputBodyOpt.get, requestOutput.headers)
+  ): OutputType = mapBodyOutput(requestOutput.outputBody, requestOutput.headers)
 
   protected def mapBodyOutput(
       serviceOutput: ServiceOut,
@@ -67,7 +67,7 @@ trait ServiceWorker[
   ): OutputType =
     mapBodyOutput(
       RequestOutput(
-        Some(serviceOutput),
+        serviceOutput,
         // take correct ones and make a map of it
         headers
           .map(_.toList)
@@ -86,7 +86,7 @@ trait ServiceWorker[
   ) // validation is not handled for services
 
   override protected def getDefaultMock: MockerOutput =
-    mapBodyOutput(RequestOutput(Some(defaultServiceMock), defaultHeaders)).left.map(
+    mapBodyOutput(RequestOutput(defaultServiceMock, defaultHeaders)).left.map(
       err => MockerError(errorMsg = err.errorMsg)
     )
 

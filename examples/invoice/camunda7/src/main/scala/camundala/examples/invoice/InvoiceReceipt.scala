@@ -146,6 +146,7 @@ object ArchiveInvoice extends BpmnDsl:
 
   case class  In(
                   shouldFail: Option[Boolean] = Some(true),
+                  outputMock: Option[Out] = None
                 )
   object In:
     given Schema[In] = Schema.derived

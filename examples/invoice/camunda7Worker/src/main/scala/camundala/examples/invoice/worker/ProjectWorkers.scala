@@ -1,8 +1,9 @@
 package camundala.examples.invoice
 package worker
 
+import camundala.domain.NoOutput
 import camundala.worker.CamundalaWorkerError.{InitializerError, ValidatorError}
-import camundala.worker.WorkerDsl
+import camundala.worker.{RequestOutput, WorkerDsl}
 import org.springframework.context.annotation.Configuration
 
 @Configuration
@@ -13,6 +14,8 @@ class ProjectWorkers extends WorkerDsl:
       .withCustomValidator(ReviewInvoiceWorker.customValidator)
       .withInitVariables(ReviewInvoiceWorker.initVariables),
     service(ArchiveInvoice.example)
+      .withDefaultHeaders(ArchiveInvoiceWorker.defaultHeaders)
+      .withBodyOutputMapper(ArchiveInvoiceWorker.bodyOutputMapper)
   )
 
   object ReviewInvoiceWorker:
@@ -28,5 +31,12 @@ class ProjectWorkers extends WorkerDsl:
     end initVariables
 
   end ReviewInvoiceWorker
+  object ArchiveInvoiceWorker:
+    import ArchiveInvoice.*
+    lazy val defaultHeaders: Map[String, String] = Map("crazy-header" -> "just-to-test")
+    def bodyOutputMapper(requestOut: RequestOutput[ServiceOut]): Right[Nothing, Some[Out]] =
+      println("Do some crazy output mapping...")
+      Right(Some(Out(Some(requestOut.outputBody.nonEmpty))))
+  end ArchiveInvoiceWorker
 
 end ProjectWorkers

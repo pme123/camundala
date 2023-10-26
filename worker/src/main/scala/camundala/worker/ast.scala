@@ -5,6 +5,7 @@ import camundala.bpmn.*
 import camundala.bpmn.CamundaVariable.toCamunda
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
+import sttp.tapir.EndpointIO.Headers
 
 import scala.reflect.ClassTag
 
@@ -74,11 +75,9 @@ case class ServiceWorker[
   ServiceIn <: Product: Encoder,
   ServiceOut : Decoder
 ](process: ServiceProcess[In, Out, ServiceIn, ServiceOut],
-    // default is no output
-  defaultServiceMock: Option[ServiceOut] = None,
   defaultHeaders:  Map[String, String] = Map.empty,
     // default is no output
-  bodyOutputMapper: RequestOutput[ServiceOut] => Either[CamundalaWorkerError, Option[Out]] = (_:RequestOutput[ServiceOut]) => Right(None),
+  bodyOutputMapper: RequestOutput[ServiceOut] => Either[MappingError, Option[Out]] = (_:RequestOutput[ServiceOut]) => Right(None),
   customValidator: Option[In => Either[ValidatorError, In]] = None,
   variablesInit: Option[In => Either[InitializerError, Map[String, Any]]] = None,
                          ) extends Worker[In, Out, ServiceWorker[In,Out,ServiceIn, ServiceOut]]:
@@ -89,22 +88,25 @@ case class ServiceWorker[
 
   def withCustomValidator(validator: In => Either[ValidatorError, In]): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     copy(customValidator = Some(validator))
-
   def withInitVariables(init: In => Either[InitializerError, Map[String, Any]]): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     copy(variablesInit = Some(init))
+  def withDefaultHeaders(headers: Map[String, String]): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
+    copy(defaultHeaders = headers)
+  def withBodyOutputMapper(mapper: RequestOutput[ServiceOut] => Either[MappingError, Option[Out]]): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
+    copy(bodyOutputMapper = mapper)
 
   def defaultMock: Either[MockerError | MockedOutput, Option[Out]] =
-    bodyOutputMapper(RequestOutput(defaultServiceMock, defaultHeaders)).left.map(
+    bodyOutputMapper(RequestOutput(process.defaultServiceMock, defaultHeaders)).left.map(
       err => MockerError(errorMsg = err.errorMsg)
     )
 
   def mapBodyOutput(
-                               serviceOutputOpt: Option[ServiceOut],
+                               serviceOutput: ServiceOut,
                                headers: Seq[Seq[String]]
                              ) =
     bodyOutputMapper(
       RequestOutput(
-        serviceOutputOpt,
+        serviceOutput,
         // take correct ones and make a map of it
         headers
           .map(_.toList)
@@ -154,15 +156,15 @@ end InValidator
 
 // ApiCreator that describes these variables
 case class GeneralVariables(
-                          servicesMocked: Boolean,
-                          outputMockOpt: Option[Json],
-                          outputServiceMockOpt: Option[Json],
-                          mockedSubprocesses: Seq[String],
-                          outputVariables: Seq[String],
-                          handledErrors: Seq[String],
-                          regexHandledErrors: Seq[String],
-                          impersonateUserIdOpt: Option[String],
-                          serviceNameOpt: Option[String]
+                          servicesMocked: Boolean = false,
+                          outputMockOpt: Option[Json] = None,
+                          outputServiceMockOpt: Option[Json] = None,
+                          mockedSubprocesses: Seq[String] = Seq.empty,
+                          outputVariables: Seq[String] = Seq.empty,
+                          handledErrors: Seq[String] = Seq.empty,
+                          regexHandledErrors: Seq[String] = Seq.empty,
+                          impersonateUserIdOpt: Option[String] = None,
+                          serviceNameOpt: Option[String] = None
                         ):
   def isMocked(workerTopicName: String): Boolean =
      mockedSubprocesses.contains(workerTopicName)
@@ -222,6 +224,6 @@ case class OutMocker[Out <: Product: Decoder](worker: Worker[?,Out, ?]):
 end OutMocker
 
 case class RequestOutput[ServiceOut](
-                                      outputBodyOpt: Option[ServiceOut],
+                                      outputBody: ServiceOut,
                                       headers: Map[String, String]
                                     )
