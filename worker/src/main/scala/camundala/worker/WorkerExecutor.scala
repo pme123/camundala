@@ -18,10 +18,11 @@ case class WorkerExecutor[
   ) =
     for {
       validatedInput <- InputValidator.validate(processVariables)
-      initializedInput <- Initializer.initVariables(validatedInput)
+      initializedOutput <- Initializer.initVariables(validatedInput)
       proceedOrMocked <- OutMocker.mockOrProceed(
         generalVariables,
       )
+      output <- worker.runWork(validatedInput, proceedOrMocked)
     } yield proceedOrMocked
 
   object InputValidator:

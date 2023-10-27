@@ -1,22 +1,16 @@
 package camundala
 package camunda7.worker
 
-import camundala.domain.*
 import camundala.worker.*
 import org.camunda.bpm.client.spring.SpringTopicSubscription
-import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription
-import org.camunda.bpm.client.spring.impl.client.util.ClientLoggerUtil
 import org.camunda.bpm.client.spring.impl.subscription.SubscriptionConfiguration
 import org.camunda.bpm.client.spring.impl.subscription.util.SubscriptionLoggerUtil
-import org.camunda.bpm.client.spring.impl.util.{AnnotationUtil, LoggerUtil}
-import org.camunda.bpm.client.task.ExternalTaskHandler
+import org.camunda.bpm.client.spring.impl.util.LoggerUtil
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.ListableBeanFactory
-import org.springframework.beans.factory.annotation.{AnnotatedBeanDefinition, Autowired}
 import org.springframework.beans.factory.config.{BeanDefinition, ConfigurableListableBeanFactory}
 import org.springframework.beans.factory.support.{BeanDefinitionBuilder, BeanDefinitionRegistry, BeanDefinitionRegistryPostProcessor}
 import org.springframework.core
-import org.springframework.core.`type`.{AnnotatedTypeMetadata, MethodMetadata}
 
 import scala.jdk.CollectionConverters.*
 
@@ -35,7 +29,7 @@ class CSubscriptionPostProcessor(
   ): Unit =
 
     val listableBeanFactory = registry.asInstanceOf[ListableBeanFactory]
-    val workerDsl = listableBeanFactory.getBean(classOf[WorkerDsl])
+    val workerDsl = listableBeanFactory.getBean(classOf[EngineWorkerDsl])
     println(s"WORKERDSL: ${workerDsl.workers}")
     val handlerBeans = workerDsl.workers.workers.map(w => w.topic -> workerHandler(w))
 

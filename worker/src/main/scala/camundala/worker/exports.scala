@@ -101,7 +101,9 @@ object CamundalaWorkerError:
       errorCode: ErrorCodes = ErrorCodes.`bad-variable`
   ) extends CamundalaWorkerError
 
-  trait ServiceError extends CamundalaWorkerError
+  trait RunnerError extends CamundalaWorkerError
+  
+  trait ServiceError extends RunnerError
 
   case class ServiceAuthError(
       errorMsg: String,

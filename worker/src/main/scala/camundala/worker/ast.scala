@@ -19,8 +19,8 @@ sealed trait Worker[In <: Product: CirceCodec : ClassTag, Out <: Product: CirceC
   def defaultMock(using EngineContext): Either[MockerError | MockedOutput, Option[Out]]
   def variablesInit: Option[In => Either[InitializerError, Map[String, Any]]]
 
-  def executer:WorkerExecutor[In, Out, T]
-
+  def executor:WorkerExecutor[In, Out, T]
+  def runWork: (In, Option[Out])  => Either[RunnerError, Option[Out]]
 end Worker
 
 case class ProcessWorker[
@@ -45,8 +45,8 @@ case class ProcessWorker[
       context.toEngineObject(out)
   ))
 
-  def executer: WorkerExecutor[In, Out, ProcessWorker[In, Out]] = WorkerExecutor(this)
-
+  def executor: WorkerExecutor[In, Out, ProcessWorker[In, Out]] = WorkerExecutor(this)
+  def runWork: (In, Option[Out])  => Either[RunnerError, Option[Out]] = (_, _) => Right(None)
 end ProcessWorker
 
 case class ServiceWorker[
@@ -60,6 +60,7 @@ case class ServiceWorker[
   bodyOutputMapper: RequestOutput[ServiceOut] => Either[MappingError, Option[Out]] = (_:RequestOutput[ServiceOut]) => Right(None),
   customValidator: Option[In => Either[ValidatorError, In]] = None,
   variablesInit: Option[In => Either[InitializerError, Map[String, Any]]] = None,
+  workRunner: Option[(In, Option[Out])  => Either[RunnerError, Option[Out]]] = None
                          )(using context: EngineContext) extends Worker[In, Out, ServiceWorker[In,Out,ServiceIn, ServiceOut]]:
   lazy val topic: String = process.serviceName
   lazy val in: In = process.in
@@ -73,6 +74,8 @@ case class ServiceWorker[
     copy(defaultHeaders = headers)
   def withBodyOutputMapper(mapper: RequestOutput[ServiceOut] => Either[MappingError, Option[Out]]): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     copy(bodyOutputMapper = mapper)
+  def withWorkRunner(workRunner: (In, Option[Out])  => Either[RunnerError, Option[Out]]): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
+    copy(workRunner = Some(workRunner))
 
   def defaultMock(using context:EngineContext): Either[MockerError | MockedOutput, Option[Out]] =
     bodyOutputMapper(RequestOutput(process.defaultServiceMock, defaultHeaders)).left.map(
@@ -94,7 +97,9 @@ case class ServiceWorker[
       )
     )
 
-  def executer: WorkerExecutor[In, Out, ServiceWorker[In,Out,ServiceIn, ServiceOut]]  = WorkerExecutor(this)
+  def executor: WorkerExecutor[In, Out, ServiceWorker[In,Out,ServiceIn, ServiceOut]]  = WorkerExecutor(this)
+  def runWork: (In, Option[Out])  => Either[RunnerError, Option[Out]] =
+    workRunner.getOrElse((_,_) => Right(None))
 
 end ServiceWorker
 

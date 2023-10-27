@@ -2,8 +2,8 @@ package camundala.examples.invoice
 package worker
 
 import camundala.domain.NoOutput
-import camundala.worker.CamundalaWorkerError.{InitializerError, ValidatorError}
-import camundala.worker.{RequestOutput, EngineWorkerDsl}
+import camundala.worker.CamundalaWorkerError.{InitializerError, ServiceUnexpectedError, ValidatorError}
+import camundala.worker.{EngineWorkerDsl, RequestOutput}
 import org.springframework.context.annotation.Configuration
 
 @Configuration
@@ -16,6 +16,7 @@ class ProjectWorkers extends EngineWorkerDsl:
     service(ArchiveInvoice.example)
       .withDefaultHeaders(ArchiveInvoiceWorker.defaultHeaders)
       .withBodyOutputMapper(ArchiveInvoiceWorker.bodyOutputMapper)
+      .withWorkRunner(ArchiveInvoiceWorker.runWork)
   )
 
   object ReviewInvoiceWorker:
@@ -36,9 +37,21 @@ class ProjectWorkers extends EngineWorkerDsl:
   object ArchiveInvoiceWorker:
     import ArchiveInvoice.*
     lazy val defaultHeaders: Map[String, String] = Map("crazy-header" -> "just-to-test")
+
     def bodyOutputMapper(requestOut: RequestOutput[ServiceOut]): Right[Nothing, Some[Out]] =
       println("Do some crazy output mapping...")
       Right(Some(Out(Some(requestOut.outputBody.nonEmpty))))
+
+    def runWork(inputObject: In, optOutput: Option[Out]): Either[ServiceUnexpectedError, Option[Out]] =
+      println("Do some crazy things running work...")
+      optOutput match
+        case Some(out) =>
+          Right(Some(out))
+        case None if inputObject.shouldFail.getOrElse(false) =>
+          Left(ServiceUnexpectedError("Could not archive invoice..."))
+        case _ =>
+          Right(Some(Out()))
+
   end ArchiveInvoiceWorker
 
 end ProjectWorkers
