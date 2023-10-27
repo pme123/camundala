@@ -1,6 +1,9 @@
 package camundala
 package worker
 
+import java.time.LocalDateTime
+
+import camundala.domain.*
 import camundala.bpmn.*
 import io.circe.*
 import sttp.model.Uri
@@ -36,7 +39,7 @@ sealed trait CamundalaWorkerError:
   def errorMsg: String
 
 sealed trait ErrorWithOutput extends CamundalaWorkerError:
-  def mockedOutput: Map[String, Any]
+  def output: Map[String, Any]
 
 object CamundalaWorkerError:
 
@@ -46,13 +49,13 @@ object CamundalaWorkerError:
       errorMsg: String,
       errorCode: ErrorCodes = ErrorCodes.`validation-failed`
   ) extends ErrorWithOutput:
-    def mockedOutput: Map[String, Any] =
+    def output: Map[String, Any] =
       Map("validationErrors" -> errorMsg)
 
   case class MockedOutput(
-      mockedOutput: Map[String, Any],
-      errorCode: ErrorCodes = ErrorCodes.`output-mocked`,
-      errorMsg: String = "Output mocked"
+                           output: Map[String, Any],
+                           errorCode: ErrorCodes = ErrorCodes.`output-mocked`,
+                           errorMsg: String = "Output mocked"
   ) extends ErrorWithOutput:
     override val isMock = true
 
@@ -148,3 +151,4 @@ end CamundalaWorkerError
 
 def niceClassName(clazz: Class[?]) =
   clazz.getName.split("""\$""").head
+

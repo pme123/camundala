@@ -11,11 +11,11 @@ import camundala.simulation.custom.CustomSimulation
 class InvoiceSimulation extends CustomSimulation:
 
   simulate(
-    ignore.scenario(`Review Invoice`)(
+    scenario(`Review Invoice`)(
       AssignReviewerUT,
       ReviewInvoiceUT
     ),
-    ignore.incidentScenario(
+    incidentScenario(
       `Invoice Receipt that fails`,
       "Could not archive invoice..."
     )(
@@ -23,16 +23,16 @@ class InvoiceSimulation extends CustomSimulation:
         .waitForSec(1), // tests wait function for UserTasks
       PrepareBankTransferUT
     ),
-    ignore.scenario(`Invoice Receipt`)(
+    scenario(`Invoice Receipt`)(
       waitFor(1),
       ApproveInvoiceUT,
       PrepareBankTransferUT
     ),
-    ignore.scenario(WithOverrideScenario)(
+    scenario(WithOverrideScenario)(
       `ApproveInvoiceUT with Override`,
       PrepareBankTransferUT
     ),
-    ignore.scenario(`Invoice Receipt with Review`)(
+    scenario(`Invoice Receipt with Review`)(
       NotApproveInvoiceUT,
       subProcess(`Review Invoice`)(
         AssignReviewerUT,
@@ -41,49 +41,49 @@ class InvoiceSimulation extends CustomSimulation:
       ApproveInvoiceUT, // now approve
       PrepareBankTransferUT
     ),
-    ignore.scenario(`Invoice Receipt with Review failed`)(
+    scenario(`Invoice Receipt with Review failed`)(
       NotApproveInvoiceUT, // do not approve
       subProcess(`Review Invoice not clarified`)(
         AssignReviewerUT,
         ReviewInvoiceNotClarifiedUT // do not clarify
       )
     ),
-    ignore.scenario(`Invoice Receipt with Review mocked`)(
+    scenario(`Invoice Receipt with Review mocked`)(
       NotApproveInvoiceUT,
       // subProcess Mocked - so nothing to do
       ApproveInvoiceUT, // now approve
       PrepareBankTransferUT
     ),
-    ignore.scenario(InvoiceAssignApproverDMN),
-    ignore.scenario(InvoiceAssignApproverDMN2),
-    ignore.badScenario(
+    scenario(InvoiceAssignApproverDMN),
+    scenario(InvoiceAssignApproverDMN2),
+    badScenario(
       BadValidationP,
       500,
       "Validation Error: Input is not valid: DecodingFailure at .creditor: Missing required field"
     ),
     // mocking
-    ignore.scenario(`Invoice Receipt mocked invoiceReviewed`)(
+    scenario(`Invoice Receipt mocked invoiceReviewed`)(
       NotApproveInvoiceUT,
       // subProcess not needed because of mocking
       ApproveInvoiceUT, // now approve
       PrepareBankTransferUT
     ),
-    ignore.scenario(`Review Invoice mocked`), // mocks itself
+    scenario(`Review Invoice mocked`), // mocks itself
     // ServiceProcess - works only if exampleInvoiceWorkerC7 is running
-    ignore.scenario(
+    scenario(
       `Archive Invoice`
     ),
-    ignore.scenario(
+    scenario(
       `Archive Invoice handled`
     ),
-    ignore.scenario(
+    scenario(
       `Archive Invoice handled regex matched`
     ),
-    ignore.incidentScenario(
+    incidentScenario(
       `Archive Invoice handled not matched`,
       "The error was handled, but did not match the defined 'regexHandledErrors'."
     ),
-    ignore.incidentScenario(
+    incidentScenario(
       `Archive Invoice that fails`,
       "Could not archive invoice"
     ),

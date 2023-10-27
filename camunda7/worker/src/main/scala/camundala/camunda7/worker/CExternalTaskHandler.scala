@@ -17,7 +17,7 @@ import scala.jdk.CollectionConverters.*
 trait CExternalTaskHandler[T <: Worker[?,?,?]] extends ExternalTaskHandler, CamundaHelper:
   def topic: String
   def worker: T
-  def variableNames: Seq[String] = worker.inValidator.variableNames ++ GeneralVariables().productElementNames
+  def variableNames: Seq[String] = worker.variableNames ++ GeneralVariables().productElementNames
 
   override def execute(
                         externalTask: ExternalTask,
@@ -41,7 +41,7 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends ExternalTaskHandler, Camu
     try {
       (for {
         generalVariables <- tryGeneralVariables
-        executedWorker <- worker.executeWorker(processVariables, generalVariables, jsonToCamunda)
+        executedWorker <- worker.executer.execute(processVariables, generalVariables)
         _ = println(s"EXECUTE WORKER: $executedWorker")
       } yield (externalTaskService.handleSuccess(Map.empty)) //
         ).left.map { ex =>
@@ -84,20 +84,20 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends ExternalTaskHandler, Camu
           error.errorMsg.matches(s".*$regex.*")
         )
       } yield (errorHandled, errorRegexHandled, generalVariables))
-        .map {
+        .flatMap {
           case (true, true, generalVariables) =>
             val mockedOutput = error match
               case error: ErrorWithOutput =>
-                error.mockedOutput
+                error.output
               case _ => Map.empty
             val filtered = filteredOutput(generalVariables.outputVariables, mockedOutput)
             println(s"Handled Error: ${error.errorCode}: ${error.errorMsg}")
-            externalTaskService.handleBpmnError(
+            Right(externalTaskService.handleBpmnError(
               summon[ExternalTask],
               s"${error.errorCode}",
               error.errorMsg,
               filtered.asJava
-            )
+            ))
           case (true, false, _) =>
             Left(HandledRegexNotMatchedError(error))
           case _ =>

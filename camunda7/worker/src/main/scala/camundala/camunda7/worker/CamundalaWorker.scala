@@ -115,7 +115,7 @@ abstract class CamundalaWorker[
           case (true, true) =>
             val mockedOutput = error match
               case error: ErrorWithOutput =>
-                error.mockedOutput
+                error.output
               case _ => Map.empty
             filteredOutput(mockedOutput)
               .map { filtered =>

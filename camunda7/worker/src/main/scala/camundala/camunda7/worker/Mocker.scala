@@ -74,10 +74,10 @@ trait Mocker[Out <: Product: CirceCodec] extends CamundaHelper:
           .map(ex => MockerError(errorMsg = ex.errorMsg))
       case (true, _) =>
         Left(
-          MockedOutput(mockedOutput =
+          MockedOutput(output =
             json.asObject.get.toMap
               .map { case k -> json =>
-                k -> jsonToCamunda(json)
+                k -> json //TODO remove mocker jsonToCamunda(json)
               }
           )
         )

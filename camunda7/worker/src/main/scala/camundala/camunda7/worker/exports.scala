@@ -15,6 +15,7 @@ export sttp.model.{Method, Uri, QueryParams}
 export org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription
 export org.springframework.context.annotation.Configuration
 
+//TODO REMOVE
 def toCamunda[T <: Product: Encoder](
     product: T
 ): Map[String, Any] =
@@ -78,3 +79,4 @@ def jsonToCamunda(json: Json): Any =
 end jsonToCamunda
 
 type HelperContext[T] = ExternalTask ?=> T
+// end REMOVE

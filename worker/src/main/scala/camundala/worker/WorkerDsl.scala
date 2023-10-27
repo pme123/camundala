@@ -7,7 +7,7 @@ import domain.*
 
 import scala.reflect.ClassTag
 
-trait WorkerDsl :
+private[worker] trait WorkerDsl :
 
   // needed that it can be called from CSubscriptionPostProcessor
   var workers: Workers = _
@@ -19,7 +19,7 @@ trait WorkerDsl :
   def process[
     In <: Product : CirceCodec: ClassTag,
     Out <: Product : CirceCodec,
-  ](process: Process[In, Out]): ProcessWorker[In, Out] =
+  ](process: Process[In, Out])(using context: EngineContext): ProcessWorker[In, Out] =
     ProcessWorker(process)
 
   def service[
@@ -27,7 +27,7 @@ trait WorkerDsl :
     Out <: Product : CirceCodec,
     ServiceIn <: Product : Encoder,
     ServiceOut : Decoder,
-  ](process: ServiceProcess[In, Out, ServiceIn, ServiceOut]): ServiceWorker[In,Out,ServiceIn, ServiceOut] =
+  ](process: ServiceProcess[In, Out, ServiceIn, ServiceOut])(using context: EngineContext): ServiceWorker[In,Out,ServiceIn, ServiceOut] =
     ServiceWorker(process)
 
 end WorkerDsl

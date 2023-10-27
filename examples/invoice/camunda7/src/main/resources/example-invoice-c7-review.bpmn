@@ -60,9 +60,7 @@
       <bpmn:errorEventDefinition id="ErrorEventDefinition_13gjcnu" errorRef="Error_0tdcv3y" />
     </bpmn:endEvent>
     <bpmn:startEvent id="StartEvent_1" name="Review">
-      <bpmn:extensionElements>
-        <camunda:executionListener class="camundala.examples.invoice.listener.InvoiceInputHandler" event="end" />
-      </bpmn:extensionElements>
+      <bpmn:extensionElements />
       <bpmn:outgoing>Flow_1051741</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:boundaryEvent id="MockedBoundaryEvent" attachedToRef="ValidateStartMessageTask">
@@ -94,14 +92,6 @@
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_19iwku0">
       <bpmndi:BPMNShape id="Participant_1d5wdrv_di" bpmnElement="Participant_example-invoice-c7-review" isHorizontal="true">
         <dc:Bounds x="160" y="86" width="780" height="334" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_18e5h89_di" bpmnElement="TextAnnotation_18e5h89">
-        <dc:Bounds x="217" y="329" width="143" height="46" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0wfqhe1_di" bpmnElement="TextAnnotation_0wfqhe1">
-        <dc:Bounds x="217" y="252" width="143" height="55" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1og1zom_di" bpmnElement="InvoiceReviewedEE">
@@ -167,24 +157,24 @@
           <dc:Bounds x="271" y="172" width="37" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Association_15mfbx8_di" bpmnElement="Association_15mfbx8">
-        <di:waypoint x="372" y="347" />
-        <di:waypoint x="360" y="346" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_02pybh3_di" bpmnElement="Association_02pybh3">
-        <di:waypoint x="372" y="267" />
-        <di:waypoint x="360" y="267" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Event_047id8n_di" bpmnElement="MockedBoundaryEvent" bioc:fill="#D5D5D5">
-        <dc:Bounds x="472" y="169" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="453" y="193" width="73" height="14" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="TextAnnotation_18e5h89_di" bpmnElement="TextAnnotation_18e5h89">
+        <dc:Bounds x="217" y="329" width="143" height="46" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0wfqhe1_di" bpmnElement="TextAnnotation_0wfqhe1">
+        <dc:Bounds x="217" y="252" width="143" height="55" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1oeltv5" bpmnElement="Event_1roicyw" bioc:fill="#D5D5D5">
         <dc:Bounds x="372" y="169" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="252.5" y="193" width="39" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_047id8n_di" bpmnElement="MockedBoundaryEvent" bioc:fill="#D5D5D5">
+        <dc:Bounds x="472" y="169" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="453" y="193" width="73" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0vvoxt0_di" bpmnElement="SequenceFlow_0vvoxt0">
@@ -218,6 +208,14 @@
       <bpmndi:BPMNEdge id="Flow_0vdwlr8_di" bpmnElement="Flow_0vdwlr8">
         <di:waypoint x="778" y="272" />
         <di:waypoint x="860" y="272" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_15mfbx8_di" bpmnElement="Association_15mfbx8">
+        <di:waypoint x="372" y="347" />
+        <di:waypoint x="360" y="346" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_02pybh3_di" bpmnElement="Association_02pybh3">
+        <di:waypoint x="372" y="267" />
+        <di:waypoint x="360" y="267" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
