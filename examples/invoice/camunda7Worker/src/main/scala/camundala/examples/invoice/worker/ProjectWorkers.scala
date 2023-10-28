@@ -3,8 +3,8 @@ package worker
 
 import camundala.camunda7.worker.DefaultRestApiClient
 import camundala.domain.*
-import camundala.worker.CamundalaWorkerError.{InitializerError, MappingError, ServiceUnexpectedError, ValidatorError}
-import camundala.worker.{EngineWorkerDsl, RequestHandler, RequestOutput, ValidationHandler}
+import camundala.worker.CamundalaWorkerError.*
+import camundala.worker.*
 import org.springframework.context.annotation.Configuration
 import sttp.client3.UriContext
 import sttp.model.Method
@@ -13,7 +13,8 @@ import sttp.model.Method
 class ProjectWorkers extends EngineWorkerDsl:
   workers(
     initProcess(ReviewInvoice.example)
-      .withValidation(ReviewInvoiceWorker.customValidator)
+      //.withValidation(ReviewInvoiceWorker.customValidator)
+      .withValidation(ReviewInvoiceWorker.validate) // implicit conversion
       .withInitVariables(ReviewInvoiceWorker.initVariables),
     service(StarWarsRestApi.example)
       .withRequestHandler(StarWarsRestApiWorker.requestHandler)
@@ -30,9 +31,7 @@ class ProjectWorkers extends EngineWorkerDsl:
 
   object ReviewInvoiceWorker:
     import ReviewInvoice.*
-    lazy val customValidator = ValidationHandler[In](
-      validate
-    )
+    lazy val customValidator = ValidationHandler(validate)
     def validate(in: In): Either[ValidatorError, In] =
       println("Do some custom validation...")
       // Left(ValidatorError("bad val test"))
