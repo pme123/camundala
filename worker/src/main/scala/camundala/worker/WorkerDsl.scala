@@ -3,7 +3,7 @@ package worker
 
 import camundala.bpmn.*
 import camundala.domain.*
-import camundala.worker.CamundalaWorkerError.ValidatorError
+import camundala.worker.CamundalaWorkerError.{InitProcessError, ValidatorError}
 
 import scala.language.implicitConversions
 
@@ -36,6 +36,9 @@ private[worker] trait WorkerDsl:
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     ServiceWorker(process)
 
-  implicit def convert[In <: Product : CirceCodec](validateFunct: In => Either[ValidatorError, In]): ValidationHandler[In] =
-    ValidationHandler(validateFunct)
+  implicit def convert[In <: Product : CirceCodec](funct: In => Either[ValidatorError, In]): ValidationHandler[In] =
+    ValidationHandler(funct)
+  implicit def init[In <: Product : CirceCodec](funct: In => Either[InitProcessError, Map[String, Any]]): InitProcessHandler[In] =
+    InitProcessHandler(funct)
+
 end WorkerDsl

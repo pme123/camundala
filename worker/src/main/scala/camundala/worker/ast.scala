@@ -18,12 +18,15 @@ sealed trait Worker[
   def inOut: InOut[In, Out, ?]
   lazy val in: In = inOut.in
   lazy val out: Out = inOut.out
-  def validationHandler: Option[ValidationHandler[In]]
+  // handler
+  def validationHandler: Option[ValidationHandler[In]] = None
+  def initProcessHandler: Option[InitProcessHandler[In]] = None
+
+  // helper
   def variableNames: Seq[String] = in.productElementNames.toSeq
   def defaultMock(using
       EngineContext
   ): Either[MockerError | MockedOutput, Option[Out]]
-  def variablesInit: Option[In => Either[InitializerError, Map[String, Any]]]
 
   def executor(using context: EngineContext): WorkerExecutor[In, Out, T]
   def workRunner: Option[WorkRunner[In, Out]]
@@ -34,22 +37,20 @@ case class InitProcessWorker[
     Out <: Product: CirceCodec
 ](
     inOut: Process[In, Out],
-    validationHandler: Option[ValidationHandler[In]] = None,
-    variablesInit: Option[In => Either[InitializerError, Map[String, Any]]] =
-      None
-)
-    extends Worker[In, Out, InitProcessWorker[In, Out]]:
+    override val validationHandler: Option[ValidationHandler[In]] = None,
+    override val initProcessHandler: Option[InitProcessHandler[In]] = None
+) extends Worker[In, Out, InitProcessWorker[In, Out]]:
   lazy val topic: String = inOut.processName
 
-  def withValidation(
+  def validation(
       validator: ValidationHandler[In]
   ): InitProcessWorker[In, Out] =
     copy(validationHandler = Some(validator))
 
-  def withInitVariables(
-      init: In => Either[InitializerError, Map[String, Any]]
+  def initProcess(
+      init: InitProcessHandler[In]
   ): InitProcessWorker[In, Out] =
-    copy(variablesInit = Some(init))
+    copy(initProcessHandler = Some(init))
 
   def defaultMock(using
       context: EngineContext
@@ -59,7 +60,9 @@ case class InitProcessWorker[
     )
   )
 
-  def executor(using context: EngineContext): WorkerExecutor[In, Out, InitProcessWorker[In, Out]] =
+  def executor(using
+      context: EngineContext
+  ): WorkerExecutor[In, Out, InitProcessWorker[In, Out]] =
     WorkerExecutor(this)
   def workRunner: Option[WorkRunner[In, Out]] = None
 
@@ -72,7 +75,7 @@ case class ServiceWorker[
     ServiceOut: CirceCodec
 ](
     inOut: ServiceProcess[In, Out, ServiceIn, ServiceOut],
-    validationHandler: Option[ValidationHandler[In]] = None,
+    override val validationHandler: Option[ValidationHandler[In]] = None,
     workRunner: Option[ServiceRunner[In, Out, ServiceIn, ServiceOut]] = None
 )(using context: EngineContext)
     extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
@@ -110,12 +113,10 @@ case class ServiceWorker[
         )
       )
 
-  def executor(using context: EngineContext)
-      : WorkerExecutor[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]] =
+  def executor(using
+      context: EngineContext
+  ): WorkerExecutor[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]] =
     WorkerExecutor(this)
-
-  lazy val variablesInit
-      : Option[In => Either[InitializerError, Map[String, Any]]] = None
 
 end ServiceWorker
 

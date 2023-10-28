@@ -14,8 +14,8 @@ class ProjectWorkers extends EngineWorkerDsl:
   workers(
     initProcess(ReviewInvoice.example)
       //.withValidation(ReviewInvoiceWorker.customValidator)
-      .withValidation(ReviewInvoiceWorker.validate) // implicit conversion
-      .withInitVariables(ReviewInvoiceWorker.initVariables),
+      .validation(ReviewInvoiceWorker.validate) // implicit conversion
+      .initProcess(ReviewInvoiceWorker.initVariables),
     service(StarWarsRestApi.example)
       .withRequestHandler(StarWarsRestApiWorker.requestHandler)
     /*
@@ -37,7 +37,7 @@ class ProjectWorkers extends EngineWorkerDsl:
       // Left(ValidatorError("bad val test"))
       Right(in)
 
-    def initVariables(in: In): Either[InitializerError, Map[String, Any]] =
+    def initVariables(in: In): Either[InitProcessError, Map[String, Any]] =
       println("Do some variable initialization...")
       Right(Map("justToTestInit" -> true))
     end initVariables

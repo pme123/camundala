@@ -84,7 +84,7 @@ object CamundalaWorkerError:
   case class CustomError(errorCode: String, errorMsg: String)
       extends CamundalaWorkerError
 
-  case class InitializerError(
+  case class InitProcessError(
       errorMsg: String =
         "Problems initialize default variables of the Process.",
       errorCode: ErrorCodes = ErrorCodes.`error-unexpected`

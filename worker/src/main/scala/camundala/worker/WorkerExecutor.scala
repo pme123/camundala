@@ -78,9 +78,9 @@ case class WorkerExecutor[
 
     def initVariables(
         validatedInput: In
-    ): Either[InitializerError, Map[String, Any]] = worker.variablesInit
+    ): Either[InitProcessError, Map[String, Any]] = worker.initProcessHandler
       .map { vi =>
-        vi(validatedInput).map(_ ++ defaultVariables)
+        vi.init(validatedInput).map(_ ++ defaultVariables)
       }
       .getOrElse(Right(defaultVariables))
   end Initializer
