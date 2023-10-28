@@ -13,20 +13,14 @@ case class WorkerExecutor[
 )(using context: EngineContext):
 
   def execute(
-      processVariables: Seq[Either[BadVariableError, (String, Option[Json])]],
+      processVariables: Seq[Either[BadVariableError, (String, Option[Json])]]
   ) =
     for {
       validatedInput <- InputValidator.validate(processVariables)
       initializedOutput <- Initializer.initVariables(validatedInput)
       proceedOrMocked <- OutMocker.mockOrProceed()
-      output <- worker.workRunner
-        .map(_.runWork(validatedInput, proceedOrMocked))
-        .getOrElse(Right(None))
-      allOutputs = camundaOutputs(
-        validatedInput,
-        initializedOutput,
-        output
-      )
+      output <- WorkRunner.run(validatedInput, proceedOrMocked)
+      allOutputs = camundaOutputs(validatedInput, initializedOutput, output)
       filteredOut = filteredOutput(allOutputs)
     } yield filteredOut
 
@@ -97,11 +91,9 @@ case class WorkerExecutor[
               Some(outputMock)
             ) => // if the outputMock is set than we mock
           decodeMock(isService, outputMock)
-        case (_, true, _)
-            if !isService => // if your process is NOT a Service check if it is mocked
+        case (_, true, _) if !isService => // if your process is NOT a Service check if it is mocked
           worker.defaultMock
-        case (true, _, _)
-            if isService => // if your process is a Service check if it is mocked
+        case (true, _, _) if isService => // if your process is a Service check if it is mocked
           worker.defaultMock
         case (_, _, None) =>
           Right(None)
@@ -113,8 +105,11 @@ case class WorkerExecutor[
   end OutMocker
 
   object WorkRunner:
-    def run() =
-      worker.workRunner
+    def run(inputObject: In, optOutMock: Option[Out]) =
+      worker.runWorkHandler
+        .map(_.runWork(inputObject, optOutMock))
+        .getOrElse(Right(None))
+
   end WorkRunner
 
   private def camundaOutputs(

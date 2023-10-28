@@ -22,7 +22,7 @@ sealed trait Worker[
   def validationHandler: Option[ValidationHandler[In]] = None
   def initProcessHandler: Option[InitProcessHandler[In]] = None
   // no handler for mocking - all done from the InOut Object
-
+  def runWorkHandler: Option[RunWorkHandler[In, Out]] = None
   // helper
   def variableNames: Seq[String] = in.productElementNames.toSeq
   def defaultMock(using
@@ -30,7 +30,6 @@ sealed trait Worker[
   ): Either[MockerError | MockedOutput, Option[Out]]
 
   def executor(using context: EngineContext): WorkerExecutor[In, Out, T]
-  def workRunner: Option[WorkRunner[In, Out]]
 end Worker
 
 case class InitProcessWorker[
@@ -65,7 +64,6 @@ case class InitProcessWorker[
       context: EngineContext
   ): WorkerExecutor[In, Out, InitProcessWorker[In, Out]] =
     WorkerExecutor(this)
-  def workRunner: Option[WorkRunner[In, Out]] = None
 
 end InitProcessWorker
 
@@ -77,7 +75,7 @@ case class ServiceWorker[
 ](
     inOut: ServiceProcess[In, Out, ServiceIn, ServiceOut],
     override val validationHandler: Option[ValidationHandler[In]] = None,
-    workRunner: Option[ServiceRunner[In, Out, ServiceIn, ServiceOut]] = None
+    override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None,
 )(using context: EngineContext)
     extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
   lazy val topic: String = inOut.serviceName
@@ -87,22 +85,21 @@ case class ServiceWorker[
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     copy(validationHandler = Some(validation))
 
-  def withRequestHandler(
-      requestHandler: ServiceHandler[In, Out, ServiceIn, ServiceOut]
+  def runWork(
+      serviceHandler: ServiceHandler[In, Out, ServiceIn, ServiceOut]
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
-    copy(workRunner = Some(ServiceRunner(this, requestHandler)))
+    copy(runWorkHandler = Some(serviceHandler))
 
   def defaultMock(using
       context: EngineContext
   ): Either[MockerError | MockedOutput, Option[Out]] =
-    workRunner
-      .map(_.requestHandler)
-      .map(requestHandler =>
-        requestHandler
+    runWorkHandler
+      .map(handler =>
+        handler
           .outputMapper(
             RequestOutput(
               inOut.defaultServiceMock,
-              requestHandler.defaultHeaders
+              handler.defaultHeaders
             )
           )
           .left

@@ -17,7 +17,7 @@ class ProjectWorkers extends EngineWorkerDsl:
       .validation(ReviewInvoiceWorker.validate) // implicit conversion
       .initProcess(ReviewInvoiceWorker.initVariables),
     service(StarWarsRestApi.example)
-      .withRequestHandler(StarWarsRestApiWorker.requestHandler)
+      .runWork(StarWarsRestApiWorker.requestHandler)
     /*
     service(ArchiveInvoice.example,
       ArchiveInvoiceWorker.requestHandler
