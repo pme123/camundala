@@ -1,8 +1,8 @@
 package camundala.examples.invoice
 package worker
 
-import camundala.domain.*
 import camundala.camunda7.worker.DefaultRestApiClient
+import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.{InitializerError, MappingError, ServiceUnexpectedError, ValidatorError}
 import camundala.worker.{EngineWorkerDsl, RequestHandler, RequestOutput}
 import org.springframework.context.annotation.Configuration
@@ -11,14 +11,12 @@ import sttp.model.Method
 
 @Configuration
 class ProjectWorkers extends EngineWorkerDsl:
-  import ArchiveInvoice.given
   workers(
-    process(ReviewInvoice.example)
+    initProcess(ReviewInvoice.example)
       .withCustomValidator(ReviewInvoiceWorker.customValidator)
       .withInitVariables(ReviewInvoiceWorker.initVariables),
-    service(StarWarsRestApi.example,
-      StarWarsRestApiWorker.requestHandler
-    )
+    service(StarWarsRestApi.example)
+      .withRequestHandler(StarWarsRestApiWorker.requestHandler)
     /*
     service(ArchiveInvoice.example,
       ArchiveInvoiceWorker.requestHandler
@@ -48,13 +46,20 @@ class ProjectWorkers extends EngineWorkerDsl:
   object ArchiveInvoiceWorker:
     import ArchiveInvoice.*
 
-    lazy val defaultHeaders: Map[String, String] = Map("crazy-header" -> "just-to-test")
+    lazy val defaultHeaders: Map[String, String] = Map(
+      "crazy-header" -> "just-to-test"
+    )
 
-    def bodyOutputMapper(requestOut: RequestOutput[ServiceOut]): Right[Nothing, Some[Out]] =
+    def bodyOutputMapper(
+        requestOut: RequestOutput[ServiceOut]
+    ): Right[Nothing, Some[Out]] =
       println("Do some crazy output mapping...")
       Right(Some(Out(Some(requestOut.outputBody.nonEmpty))))
 
-    def runWork(inputObject: In, optOutput: Option[Out]): Either[ServiceUnexpectedError, Option[Out]] =
+    def runWork(
+        inputObject: In,
+        optOutput: Option[Out]
+    ): Either[ServiceUnexpectedError, Option[Out]] =
       println("Do some crazy things running work...")
       optOutput match
         case Some(out) =>
@@ -70,13 +75,16 @@ class ProjectWorkers extends EngineWorkerDsl:
 
     import StarWarsRestApi.*
 
-    lazy val requestHandler: RequestHandler[In, Out, ServiceIn, ServiceOut] = RequestHandler(
-      httpMethod = Method.GET,
-      apiUri = uri"https://swapi.dev/api/people/1",
-      sendRequest = DefaultRestApiClient.sendRequest,
-      outputMapper = outputMapper
-    )
-    private def outputMapper(out: RequestOutput [ServiceOut]): Either[MappingError, Option[Out]] =
+    lazy val requestHandler: RequestHandler[In, Out, ServiceIn, ServiceOut] =
+      RequestHandler(
+        httpMethod = Method.GET,
+        apiUri = uri"https://swapi.dev/api/people/1",
+        sendRequest = DefaultRestApiClient.sendRequest,
+        outputMapper = outputMapper
+      )
+    private def outputMapper(
+        out: RequestOutput[ServiceOut]
+    ): Either[MappingError, Option[Out]] =
       Right(Some(Out(out.outputBody)))
 
   end StarWarsRestApiWorker

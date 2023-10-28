@@ -13,13 +13,13 @@ private[worker] trait WorkerDsl:
     workers = Workers(body)
   end workers
 
-  def process[
+  def initProcess[
       In <: Product: CirceCodec,
       Out <: Product: CirceCodec
   ](process: Process[In, Out])(using
       context: EngineContext
-  ): ProcessWorker[In, Out] =
-    ProcessWorker(process)
+  ): InitProcessWorker[In, Out] =
+    InitProcessWorker(process)
 
   def service[
       In <: Product: CirceCodec,
@@ -28,11 +28,9 @@ private[worker] trait WorkerDsl:
       ServiceOut: CirceCodec
   ](
       process: ServiceProcess[In, Out, ServiceIn, ServiceOut],
-      requestHandler: RequestHandler[In, Out, ServiceIn, ServiceOut]
   )(using
       context: EngineContext
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
-    ServiceWorker(process, requestHandler)
-      .withWorkRunner(ServiceRunner(_))
+    ServiceWorker(process)
 
 end WorkerDsl

@@ -15,8 +15,9 @@ sealed trait Worker[
 ]:
 
   def topic: String
-  def in: In
-  def out: Out
+  def inOut: InOut[In, Out, ?]
+  lazy val in: In = inOut.in
+  lazy val out: Out = inOut.out
   def customValidator: Option[In => Either[ValidatorError, In]]
   def variableNames: Seq[String] = in.productElementNames.toSeq
   def defaultMock(using
@@ -28,7 +29,7 @@ sealed trait Worker[
   def workRunner: Option[WorkRunner[In, Out]]
 end Worker
 
-case class ProcessWorker[
+case class InitProcessWorker[
     In <: Product: CirceCodec,
     Out <: Product: CirceCodec
 ](
@@ -37,19 +38,18 @@ case class ProcessWorker[
     variablesInit: Option[In => Either[InitializerError, Map[String, Any]]] =
       None
 )(using context: EngineContext)
-    extends Worker[In, Out, ProcessWorker[In, Out]]:
+    extends Worker[In, Out, InitProcessWorker[In, Out]]:
   lazy val topic: String = process.processName
-  lazy val in: In = process.in
-  lazy val out: Out = process.out
+  lazy val inOut: Process[In, Out] = process
 
   def withCustomValidator(
       validator: In => Either[ValidatorError, In]
-  ): ProcessWorker[In, Out] =
+  ): InitProcessWorker[In, Out] =
     copy(customValidator = Some(validator))
 
   def withInitVariables(
       init: In => Either[InitializerError, Map[String, Any]]
-  ): ProcessWorker[In, Out] =
+  ): InitProcessWorker[In, Out] =
     copy(variablesInit = Some(init))
 
   def defaultMock(using
@@ -60,11 +60,11 @@ case class ProcessWorker[
     )
   )
 
-  def executor: WorkerExecutor[In, Out, ProcessWorker[In, Out]] =
+  def executor: WorkerExecutor[In, Out, InitProcessWorker[In, Out]] =
     WorkerExecutor(this)
   def workRunner: Option[WorkRunner[In, Out]] = None
 
-end ProcessWorker
+end InitProcessWorker
 
 case class ServiceWorker[
     In <: Product: CirceCodec,
@@ -73,72 +73,42 @@ case class ServiceWorker[
     ServiceOut: CirceCodec
 ](
     process: ServiceProcess[In, Out, ServiceIn, ServiceOut],
-    requestHandler: RequestHandler[In, Out, ServiceIn, ServiceOut],
     defaultHeaders: Map[String, String] = Map.empty,
-    // default is no output
-    bodyOutputMapper: RequestOutput[ServiceOut] => Either[MappingError, Option[
-      Out
-    ]] = (_: RequestOutput[ServiceOut]) => Right(None),
     customValidator: Option[In => Either[ValidatorError, In]] = None,
-    variablesInit: Option[In => Either[InitializerError, Map[String, Any]]] =
-      None,
     workRunner: Option[ServiceRunner[In, Out, ServiceIn, ServiceOut]] = None
 )(using context: EngineContext)
     extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
   lazy val topic: String = process.serviceName
-  lazy val in: In = process.in
-  lazy val out: Out = process.out
+  lazy val inOut: ServiceProcess[In, Out, ServiceIn, ServiceOut] = process
 
   def withCustomValidator(
       validator: In => Either[ValidatorError, In]
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     copy(customValidator = Some(validator))
-  def withInitVariables(
-      init: In => Either[InitializerError, Map[String, Any]]
-  ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
-    copy(variablesInit = Some(init))
   def withDefaultHeaders(
       headers: Map[String, String]
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     copy(defaultHeaders = headers)
-  def withBodyOutputMapper(
-      mapper: RequestOutput[ServiceOut] => Either[MappingError, Option[Out]]
+
+  def withRequestHandler(
+      requestHandler: RequestHandler[In, Out, ServiceIn, ServiceOut]
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
-    copy(bodyOutputMapper = mapper)
-  def withWorkRunner(
-      workRunner: ServiceWorker[In, Out, ServiceIn, ServiceOut] => ServiceRunner[In, Out, ServiceIn, ServiceOut]
-  ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
-    copy(workRunner = Some(workRunner(this)))
-  def withRequestInput(
-      requestInput: RequestHandler[In, Out, ServiceIn, ServiceOut]
-  ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
-    copy(requestHandler = requestInput)
+    copy(workRunner = Some(ServiceRunner(this, requestHandler)))
 
   def defaultMock(using
-      context: EngineContext
-  ): Either[MockerError | MockedOutput, Option[Out]] =
-    bodyOutputMapper(
+                  context: EngineContext
+                 ): Either[MockerError | MockedOutput, Option[Out]] =
+    workRunner.map(_.requestHandler.outputMapper(
       RequestOutput(process.defaultServiceMock, defaultHeaders)
     ).left.map(err => MockerError(errorMsg = err.errorMsg))
-
-  def mapBodyOutput(
-      serviceOutput: ServiceOut,
-      headers: Seq[Seq[String]]
-  ) =
-    bodyOutputMapper(
-      RequestOutput(
-        serviceOutput,
-        // take correct ones and make a map of it
-        headers
-          .map(_.toList)
-          .collect { case key :: value :: _ => key -> value }
-          .toMap
-      )
-    )
+    ).getOrElse(Left(MockerError(s"There is no ServiceRunner defined for Worker: $topic")))
 
   def executor
       : WorkerExecutor[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]] =
     WorkerExecutor(this)
+
+  lazy val variablesInit
+      : Option[In => Either[InitializerError, Map[String, Any]]] = None
 
 end ServiceWorker
 

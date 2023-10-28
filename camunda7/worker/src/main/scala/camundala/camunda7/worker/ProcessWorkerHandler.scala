@@ -10,8 +10,8 @@ import org.camunda.bpm.client.task.{ExternalTask, ExternalTaskHandler, ExternalT
   * ExternalTaskHandler for required parameters.
   */
 class ProcessWorkerHandler(
-                           val worker: ProcessWorker[?,?]
-) extends CExternalTaskHandler[ProcessWorker[?,?]] :
+                           val worker: InitProcessWorker[?,?]
+) extends CExternalTaskHandler[InitProcessWorker[?,?]] :
   lazy val topic: String = worker.topic
 
   println(s"ProcessWorkerHandler: $topic")

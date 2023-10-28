@@ -91,7 +91,7 @@ class CSubscriptionPostProcessor(
 
   def workerHandler(worker: Worker[?, ?,?]) =
       worker match
-        case pw: ProcessWorker[?,?] =>
+        case pw: InitProcessWorker[?,?] =>
           ProcessWorkerHandler(pw)
         case spw: ServiceWorker[?, ?, ?, ?] =>
           ServiceProcessWorkerHandler(spw)

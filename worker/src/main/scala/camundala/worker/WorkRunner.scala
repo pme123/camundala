@@ -2,7 +2,6 @@ package camundala.worker
 
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.{ServiceRequestError, requestMsg, serviceErrorMsg}
-import sttp.model.Uri
 
 trait WorkRunner[
     In <: Product: CirceCodec,
@@ -34,14 +33,14 @@ case class ServiceRunner[
     ServiceOut: CirceCodec
 ](
     worker: ServiceWorker[In, Out, ServiceIn, ServiceOut],
-)(using context: EngineContext)
+    requestHandler: RequestHandler[In, Out, ServiceIn, ServiceOut],
+                         )(using context: EngineContext)
     extends WorkRunner[In, Out]:
 
   def runWork(
       inputObject: In,
       optOutMock: Option[Out]
   ): RunnerOutput =
-    val requestHandler = worker.requestHandler
     val runnableRequest = RunnableRequest(inputObject, requestHandler)
     for {
       optWithServiceMock <- withServiceMock(optOutMock, runnableRequest)
@@ -95,7 +94,7 @@ case class ServiceRunner[
     mockedResponse
       .map {
         case MockedServiceResponse(_, Right(body), headers) =>
-          worker.mapBodyOutput(body, headers)
+          mapBodyOutput(body, headers)
         case MockedServiceResponse(status, Left(body), _) =>
           Left(
             ServiceRequestError(
@@ -109,5 +108,20 @@ case class ServiceRunner[
           )
       }
       .getOrElse(Right(None))
+
+  def mapBodyOutput(
+                     serviceOutput: ServiceOut,
+                     headers: Seq[Seq[String]]
+                   ) =
+    requestHandler.outputMapper(
+      RequestOutput(
+        serviceOutput,
+        // take correct ones and make a map of it
+        headers
+          .map(_.toList)
+          .collect { case key :: value :: _ => key -> value }
+          .toMap
+      )
+    )
 
 end ServiceRunner
