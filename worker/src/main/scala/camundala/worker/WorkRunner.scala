@@ -32,8 +32,8 @@ case class ServiceRunner[
     ServiceIn <: Product: CirceCodec,
     ServiceOut: CirceCodec
 ](
-    worker: ServiceWorker[In, Out, ServiceIn, ServiceOut],
-    requestHandler: RequestHandler[In, Out, ServiceIn, ServiceOut],
+   worker: ServiceWorker[In, Out, ServiceIn, ServiceOut],
+   requestHandler: ServiceHandler[In, Out, ServiceIn, ServiceOut],
                          )(using context: EngineContext)
     extends WorkRunner[In, Out]:
 

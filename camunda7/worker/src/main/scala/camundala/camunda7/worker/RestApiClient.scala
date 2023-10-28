@@ -1,6 +1,7 @@
 package camundala
 package camunda7.worker
 
+import camundala.domain.*
 import camundala.bpmn.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
@@ -37,7 +38,7 @@ trait RestApiClient:
         statusCode = response.code
         body <- readBody(statusCode, response, req)
         headers = response.headers.map(h => h.name -> h.value).toMap
-        out <- decodeResponse(body)
+        out <- decodeResponse[ServiceOut](body)
       } yield RequestOutput(out, headers)
     } catch {
       case ex: Throwable =>

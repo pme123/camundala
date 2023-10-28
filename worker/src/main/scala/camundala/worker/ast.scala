@@ -21,6 +21,7 @@ sealed trait Worker[
   // handler
   def validationHandler: Option[ValidationHandler[In]] = None
   def initProcessHandler: Option[InitProcessHandler[In]] = None
+  // no handler for mocking - all done from the InOut Object
 
   // helper
   def variableNames: Seq[String] = in.productElementNames.toSeq
@@ -81,13 +82,13 @@ case class ServiceWorker[
     extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
   lazy val topic: String = inOut.serviceName
 
-  def withValidation(
+  def validation(
       validation: ValidationHandler[In]
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     copy(validationHandler = Some(validation))
 
   def withRequestHandler(
-      requestHandler: RequestHandler[In, Out, ServiceIn, ServiceOut]
+      requestHandler: ServiceHandler[In, Out, ServiceIn, ServiceOut]
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     copy(workRunner = Some(ServiceRunner(this, requestHandler)))
 
@@ -137,29 +138,7 @@ case class GeneralVariables(
 
 end GeneralVariables
 
-case class RequestHandler[
-    In <: Product: CirceCodec,
-    Out <: Product: CirceCodec,
-    ServiceIn <: Product: Encoder,
-    ServiceOut: Decoder
-](
-    httpMethod: Method,
-    apiUri: Uri,
-    defaultHeaders: Map[String, String] = Map.empty,
-    sendRequest: RunnableRequest[ServiceIn] => Either[
-      ServiceError,
-      RequestOutput[ServiceOut]
-    ],
-    queryParamKeys: Seq[String | (String, String)] = Seq.empty,
-    inputMapper: Option[In => ServiceIn] = None,
-    outputMapper: RequestOutput[ServiceOut] => Either[MappingError, Option[
-      Out
-    ]] = (_: RequestOutput[ServiceOut]) => Right(None)
-):
-
-end RequestHandler
-
-case class RunnableRequest[ServiceIn](
+case class RunnableRequest[ServiceIn: Encoder](
     httpMethod: Method,
     apiUri: Uri,
     queryParams: Seq[(String, Seq[String])],
@@ -168,11 +147,12 @@ case class RunnableRequest[ServiceIn](
 
 object RunnableRequest:
 
-  def apply[In <: Product: CirceCodec, ServiceIn <: Product: CirceCodec](
+  def apply[In <: Product: CirceCodec, ServiceIn : Encoder](
       inputObject: In,
-      requestInput: RequestHandler[In, ?, ServiceIn, ?]
+      requestHandler: ServiceHandler[In, ?, ServiceIn, ?]
   ): RunnableRequest[ServiceIn] =
-    val defaultsMap = requestInput.queryParamKeys.map {
+
+    val defaultsMap = requestHandler.queryParamKeys.map {
       case k -> v => k -> Some(v)
       case k => k -> None
     }.toMap
@@ -189,10 +169,10 @@ object RunnableRequest:
 
         }
     new RunnableRequest[ServiceIn](
-      requestInput.httpMethod,
-      requestInput.apiUri,
+      requestHandler.httpMethod,
+      requestHandler.apiUri,
       queryParams,
-      requestInput.inputMapper.map(m => m(inputObject))
+      requestHandler.inputMapper.map(m => m(inputObject))
     )
   end apply
 end RunnableRequest

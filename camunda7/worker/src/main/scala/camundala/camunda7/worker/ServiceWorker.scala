@@ -11,8 +11,8 @@ import sttp.model.Uri
 trait ServiceWorker[
     In <: Product: CirceCodec,
     Out <: Product: CirceCodec,
-    ServiceIn: Encoder, // body of service
-    ServiceOut: Decoder // output of service
+    ServiceIn <: Product: CirceCodec, // body of service
+    ServiceOut: CirceCodec // output of service
 ] extends CamundalaWorker[
       In,
       Out
@@ -102,7 +102,7 @@ trait ServiceWorker[
       optOutMock: Option[Out]
   ): RunnerOutput =
     for {
-      body <- mapBodyInput(inputObject)
+      body: Option[ServiceIn] <- mapBodyInput(inputObject)
       path = servicePath(inputObject)
       uri = uri"$serviceBasePath/$path"
       qParams = queryParams(inputObject)

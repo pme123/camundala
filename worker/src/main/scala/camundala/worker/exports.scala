@@ -1,10 +1,10 @@
 package camundala
 package worker
 
+import camundala.domain.*
 import camundala.bpmn.*
 import camundala.worker.CamundalaWorkerError.*
 import io.circe.*
-import sttp.model.Uri
 
 import java.net.URLDecoder
 import java.nio.charset.Charset
@@ -27,9 +27,7 @@ private def decodeMock[Out: Decoder](
       )
     case _ =>
       Left(
-        MockerError(errorMsg =
-          s"The mock must be a Json Object:\n- $json\n- ${json.getClass}"
-        )
+        MockerError(errorMsg = s"The mock must be a Json Object:\n- $json\n- ${json.getClass}")
       )
 end decodeMock
 
@@ -81,12 +79,10 @@ object CamundalaWorkerError:
   ) extends ErrorWithOutput:
     override val isMock = true
 
-  case class CustomError(errorCode: String, errorMsg: String)
-      extends CamundalaWorkerError
+  case class CustomError(errorCode: String, errorMsg: String) extends CamundalaWorkerError
 
   case class InitProcessError(
-      errorMsg: String =
-        "Problems initialize default variables of the Process.",
+      errorMsg: String = "Problems initialize default variables of the Process.",
       errorCode: ErrorCodes = ErrorCodes.`error-unexpected`
   ) extends CamundalaWorkerError
 
@@ -145,7 +141,7 @@ object CamundalaWorkerError:
       errorMsg: String
   ) extends ServiceError
 
-  def requestMsg[ServiceIn: Encoder](
+  def requestMsg[ServiceIn : Encoder](
       runnableRequest: RunnableRequest[ServiceIn]
   ): String =
     s""" - Request URL: ${URLDecoder.decode(
@@ -163,7 +159,7 @@ object CamundalaWorkerError:
         .map(_.asJson)
         .getOrElse("")}""".stripMargin
 
-  def serviceErrorMsg[ServiceIn: Encoder](
+  def serviceErrorMsg[ServiceIn  : Encoder](
       status: Int,
       errorMsg: String,
       runnableRequest: RunnableRequest[ServiceIn]

@@ -18,9 +18,7 @@ case class WorkerExecutor[
     for {
       validatedInput <- InputValidator.validate(processVariables)
       initializedOutput <- Initializer.initVariables(validatedInput)
-      proceedOrMocked <- OutMocker.mockOrProceed(
-        context.generalVariables
-      )
+      proceedOrMocked <- OutMocker.mockOrProceed()
       output <- worker.workRunner
         .map(_.runWork(validatedInput, proceedOrMocked))
         .getOrElse(Right(None))
@@ -87,13 +85,11 @@ case class WorkerExecutor[
 
   object OutMocker:
 
-    def mockOrProceed(
-        generalVariables: GeneralVariables
-    ): Either[MockerError | MockedOutput, Option[Out]] =
-      ((
-        generalVariables.servicesMocked,
-        generalVariables.isMocked(worker.topic),
-        generalVariables.outputMockOpt
+    def mockOrProceed(): Either[MockerError | MockedOutput, Option[Out]] =
+      (
+        context.generalVariables.servicesMocked,
+        context.generalVariables.isMocked(worker.topic),
+        context.generalVariables.outputMockOpt
       ) match
         case (
               _,
@@ -109,7 +105,6 @@ case class WorkerExecutor[
           worker.defaultMock
         case (_, _, None) =>
           Right(None)
-      )
 
     end mockOrProceed
 

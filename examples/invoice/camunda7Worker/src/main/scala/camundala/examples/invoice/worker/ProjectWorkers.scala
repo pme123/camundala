@@ -76,14 +76,14 @@ class ProjectWorkers extends EngineWorkerDsl:
 
     import StarWarsRestApi.*
 
-    lazy val requestHandler: RequestHandler[In, Out, ServiceIn, ServiceOut] =
-      RequestHandler(
+    lazy val requestHandler: ServiceHandler[In, Out, NoInput, ServiceOut] =
+      ServiceHandler(
         httpMethod = Method.GET,
         apiUri = uri"https://swapi.dev/api/people/1",
         defaultHeaders = Map(
           "crazy-header" -> "just-to-test"
         ),
-        sendRequest = DefaultRestApiClient.sendRequest,
+        sendRequest = DefaultRestApiClient.sendRequest[ServiceIn, ServiceOut],
         outputMapper = outputMapper
       )
     private def outputMapper(

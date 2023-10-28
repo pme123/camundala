@@ -36,6 +36,7 @@ private[worker] trait WorkerDsl:
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     ServiceWorker(process)
 
+  // implicit Converters
   implicit def convert[In <: Product : CirceCodec](funct: In => Either[ValidatorError, In]): ValidationHandler[In] =
     ValidationHandler(funct)
   implicit def init[In <: Product : CirceCodec](funct: In => Either[InitProcessError, Map[String, Any]]): InitProcessHandler[In] =
