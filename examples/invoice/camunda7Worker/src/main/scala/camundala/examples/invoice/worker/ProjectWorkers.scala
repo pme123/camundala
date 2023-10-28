@@ -79,6 +79,9 @@ class ProjectWorkers extends EngineWorkerDsl:
       RequestHandler(
         httpMethod = Method.GET,
         apiUri = uri"https://swapi.dev/api/people/1",
+        defaultHeaders = Map(
+          "crazy-header" -> "just-to-test"
+        ),
         sendRequest = DefaultRestApiClient.sendRequest,
         outputMapper = outputMapper
       )

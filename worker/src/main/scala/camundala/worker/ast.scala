@@ -33,14 +33,13 @@ case class InitProcessWorker[
     In <: Product: CirceCodec,
     Out <: Product: CirceCodec
 ](
-    process: Process[In, Out],
+                               inOut: Process[In, Out],
     customValidator: Option[In => Either[ValidatorError, In]] = None,
     variablesInit: Option[In => Either[InitializerError, Map[String, Any]]] =
       None
 )(using context: EngineContext)
     extends Worker[In, Out, InitProcessWorker[In, Out]]:
-  lazy val topic: String = process.processName
-  lazy val inOut: Process[In, Out] = process
+  lazy val topic: String = inOut.processName
 
   def withCustomValidator(
       validator: In => Either[ValidatorError, In]
@@ -72,23 +71,17 @@ case class ServiceWorker[
     ServiceIn <: Product: CirceCodec,
     ServiceOut: CirceCodec
 ](
-    process: ServiceProcess[In, Out, ServiceIn, ServiceOut],
-    defaultHeaders: Map[String, String] = Map.empty,
+    inOut: ServiceProcess[In, Out, ServiceIn, ServiceOut],
     customValidator: Option[In => Either[ValidatorError, In]] = None,
     workRunner: Option[ServiceRunner[In, Out, ServiceIn, ServiceOut]] = None
 )(using context: EngineContext)
     extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
-  lazy val topic: String = process.serviceName
-  lazy val inOut: ServiceProcess[In, Out, ServiceIn, ServiceOut] = process
+  lazy val topic: String = inOut.serviceName
 
   def withCustomValidator(
       validator: In => Either[ValidatorError, In]
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     copy(customValidator = Some(validator))
-  def withDefaultHeaders(
-      headers: Map[String, String]
-  ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
-    copy(defaultHeaders = headers)
 
   def withRequestHandler(
       requestHandler: RequestHandler[In, Out, ServiceIn, ServiceOut]
@@ -98,8 +91,8 @@ case class ServiceWorker[
   def defaultMock(using
                   context: EngineContext
                  ): Either[MockerError | MockedOutput, Option[Out]] =
-    workRunner.map(_.requestHandler.outputMapper(
-      RequestOutput(process.defaultServiceMock, defaultHeaders)
+    workRunner.map(_.requestHandler).map(requestHandler => requestHandler.outputMapper(
+      RequestOutput(inOut.defaultServiceMock, requestHandler.defaultHeaders)
     ).left.map(err => MockerError(errorMsg = err.errorMsg))
     ).getOrElse(Left(MockerError(s"There is no ServiceRunner defined for Worker: $topic")))
 
@@ -137,6 +130,7 @@ case class RequestHandler[
 ](
     httpMethod: Method,
     apiUri: Uri,
+    defaultHeaders: Map[String, String] = Map.empty,
     sendRequest: RunnableRequest[ServiceIn] => Either[
       ServiceError,
       RequestOutput[ServiceOut]
