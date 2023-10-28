@@ -1,7 +1,6 @@
 package camundala
 package worker
 
-import camundala.bpmn.InputParams
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 
@@ -15,13 +14,12 @@ case class WorkerExecutor[
 
   def execute(
       processVariables: Seq[Either[BadVariableError, (String, Option[Json])]],
-      generalVariables: GeneralVariables
   ) =
     for {
       validatedInput <- InputValidator.validate(processVariables)
       initializedOutput <- Initializer.initVariables(validatedInput)
       proceedOrMocked <- OutMocker.mockOrProceed(
-        generalVariables
+        context.generalVariables
       )
       output <- worker.workRunner
         .map(_.runWork(validatedInput, proceedOrMocked))
@@ -36,7 +34,7 @@ case class WorkerExecutor[
 
   object InputValidator:
     lazy val prototype = worker.in
-    lazy val customValidator = worker.customValidator
+    lazy val validationHandler = worker.validationHandler
 
     def validate(
         inputParamsAsJson: Seq[Either[Any, (String, Option[Json])]]
@@ -67,7 +65,7 @@ case class WorkerExecutor[
         .flatMap(jsonObj =>
           decodeTo[In](jsonObj.asJson.toString).left
             .map(ex => ValidatorError(errorMsg = ex.errorMsg))
-            .flatMap(in => customValidator.map(v => v(in)).getOrElse(Right(in)))
+            .flatMap(in => validationHandler.map(h => h.validate(in)).getOrElse(Right(in)))
         )
     end validate
 

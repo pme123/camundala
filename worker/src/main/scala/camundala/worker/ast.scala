@@ -18,14 +18,14 @@ sealed trait Worker[
   def inOut: InOut[In, Out, ?]
   lazy val in: In = inOut.in
   lazy val out: Out = inOut.out
-  def customValidator: Option[In => Either[ValidatorError, In]]
+  def validationHandler: Option[ValidationHandler[In]]
   def variableNames: Seq[String] = in.productElementNames.toSeq
   def defaultMock(using
       EngineContext
   ): Either[MockerError | MockedOutput, Option[Out]]
   def variablesInit: Option[In => Either[InitializerError, Map[String, Any]]]
 
-  def executor: WorkerExecutor[In, Out, T]
+  def executor(using context: EngineContext): WorkerExecutor[In, Out, T]
   def workRunner: Option[WorkRunner[In, Out]]
 end Worker
 
@@ -33,18 +33,18 @@ case class InitProcessWorker[
     In <: Product: CirceCodec,
     Out <: Product: CirceCodec
 ](
-                               inOut: Process[In, Out],
-    customValidator: Option[In => Either[ValidatorError, In]] = None,
+    inOut: Process[In, Out],
+    validationHandler: Option[ValidationHandler[In]] = None,
     variablesInit: Option[In => Either[InitializerError, Map[String, Any]]] =
       None
-)(using context: EngineContext)
+)
     extends Worker[In, Out, InitProcessWorker[In, Out]]:
   lazy val topic: String = inOut.processName
 
-  def withCustomValidator(
-      validator: In => Either[ValidatorError, In]
+  def withValidation(
+      validator: ValidationHandler[In]
   ): InitProcessWorker[In, Out] =
-    copy(customValidator = Some(validator))
+    copy(validationHandler = Some(validator))
 
   def withInitVariables(
       init: In => Either[InitializerError, Map[String, Any]]
@@ -59,7 +59,7 @@ case class InitProcessWorker[
     )
   )
 
-  def executor: WorkerExecutor[In, Out, InitProcessWorker[In, Out]] =
+  def executor(using context: EngineContext): WorkerExecutor[In, Out, InitProcessWorker[In, Out]] =
     WorkerExecutor(this)
   def workRunner: Option[WorkRunner[In, Out]] = None
 
@@ -72,16 +72,16 @@ case class ServiceWorker[
     ServiceOut: CirceCodec
 ](
     inOut: ServiceProcess[In, Out, ServiceIn, ServiceOut],
-    customValidator: Option[In => Either[ValidatorError, In]] = None,
+    validationHandler: Option[ValidationHandler[In]] = None,
     workRunner: Option[ServiceRunner[In, Out, ServiceIn, ServiceOut]] = None
 )(using context: EngineContext)
     extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
   lazy val topic: String = inOut.serviceName
 
-  def withCustomValidator(
-      validator: In => Either[ValidatorError, In]
+  def withValidation(
+      validation: ValidationHandler[In]
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
-    copy(customValidator = Some(validator))
+    copy(validationHandler = Some(validation))
 
   def withRequestHandler(
       requestHandler: RequestHandler[In, Out, ServiceIn, ServiceOut]
@@ -89,14 +89,28 @@ case class ServiceWorker[
     copy(workRunner = Some(ServiceRunner(this, requestHandler)))
 
   def defaultMock(using
-                  context: EngineContext
-                 ): Either[MockerError | MockedOutput, Option[Out]] =
-    workRunner.map(_.requestHandler).map(requestHandler => requestHandler.outputMapper(
-      RequestOutput(inOut.defaultServiceMock, requestHandler.defaultHeaders)
-    ).left.map(err => MockerError(errorMsg = err.errorMsg))
-    ).getOrElse(Left(MockerError(s"There is no ServiceRunner defined for Worker: $topic")))
+      context: EngineContext
+  ): Either[MockerError | MockedOutput, Option[Out]] =
+    workRunner
+      .map(_.requestHandler)
+      .map(requestHandler =>
+        requestHandler
+          .outputMapper(
+            RequestOutput(
+              inOut.defaultServiceMock,
+              requestHandler.defaultHeaders
+            )
+          )
+          .left
+          .map(err => MockerError(errorMsg = err.errorMsg))
+      )
+      .getOrElse(
+        Left(
+          MockerError(s"There is no ServiceRunner defined for Worker: $topic")
+        )
+      )
 
-  def executor
+  def executor(using context: EngineContext)
       : WorkerExecutor[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]] =
     WorkerExecutor(this)
 

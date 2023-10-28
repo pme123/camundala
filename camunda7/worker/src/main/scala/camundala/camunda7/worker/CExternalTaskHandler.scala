@@ -42,7 +42,7 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends ExternalTaskHandler, Camu
       (for {
         generalVariables <- tryGeneralVariables
         context = Camunda7Context(generalVariables)
-        filteredOut <- worker.executor.execute(processVariables, generalVariables)
+        filteredOut <- worker.executor(using context).execute(processVariables)
         _ = println(s"EXECUTE WORKER: $filteredOut")
       } yield externalTaskService.handleSuccess(filteredOut) //
         ).left.map { ex =>
