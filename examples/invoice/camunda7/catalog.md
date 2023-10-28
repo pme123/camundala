@@ -11,6 +11,15 @@
 - [UserTask: AssignReviewerUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/example-invoice-c7-review/operation/UserTask:%20AssignReviewerUT)
 - [UserTask: ReviewInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/example-invoice-c7-review/operation/UserTask:%20ReviewInvoiceUT)
 
-#### [Services](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Services)
-- [ServiceProcess: ArchiveInvoiceService](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Services/operation/ServiceProcess:%20ArchiveInvoiceService)
-- [ServiceProcess: ArchiveInvoiceService2](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Services/operation/ServiceProcess:%20ArchiveInvoiceService2)
+#### [Workers](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Workers)
+- [ServiceProcess: star-wars-api-people-detail](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Workers/operation/ServiceProcess:%20star-wars-api-people-detail)
+- [ServiceProcess: ArchiveInvoiceService](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Workers/operation/ServiceProcess:%20ArchiveInvoiceService)
+
+#### [User Tasks](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/User-Tasks)
+- [UserTask: ApproveInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/User-Tasks/operation/UserTask:%20ApproveInvoiceUT)
+- [UserTask: PrepareBankTransferUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/User-Tasks/operation/UserTask:%20PrepareBankTransferUT)
+- [UserTask: AssignReviewerUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/User-Tasks/operation/UserTask:%20AssignReviewerUT)
+- [UserTask: ReviewInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/User-Tasks/operation/UserTask:%20ReviewInvoiceUT)
+
+#### [DMNs](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/DMNs)
+- [DecisionDmn: example-invoice-c7-assignApprover](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/DMNs/operation/DecisionDmn:%20example-invoice-c7-assignApprover)

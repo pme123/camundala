@@ -18,16 +18,6 @@ object ProjectApiCreator extends DefaultApiCreator:
   // version of your project
   protected val version = "1.0"
 
-  override protected val apiConfig: ApiConfig =
-    super.apiConfig
-      .withBasePath(os.pwd / "examples" / "invoice" / "camunda7")
-      .withDocProjectUrl(project =>
-        s"https://webstor.ch/camundala/myCompany/$project"
-      )
-      .withPort(8034)
-      .withDiagramDownloadPath("diagrams")
-//  .withCawemoFolder("a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala")
-
   document(
     api(InvoiceReceipt.example)(
       InvoiceAssignApproverDMN1,
@@ -38,7 +28,8 @@ object ProjectApiCreator extends DefaultApiCreator:
       ReviewInvoice.AssignReviewerUT.example,
       ReviewInvoiceUT
     ),
-    group("Services")(
+    group("Workers")(
+      StarWarsRestApi.example,
       api(ArchiveInvoice.example)
     ),
     group("User Tasks")(
@@ -52,6 +43,17 @@ object ProjectApiCreator extends DefaultApiCreator:
       //InvoiceAssignApproverDMN3 // want be shown as only one DMN with the same id is shown in the API.
     )
   )
+
+  override protected lazy val apiConfig: ApiConfig =
+    super.apiConfig
+      .withBasePath(os.pwd / "examples" / "invoice" / "camunda7")
+      .withDocProjectUrl(project =>
+        s"https://webstor.ch/camundala/myCompany/$project"
+      )
+      .withPort(8034)
+      .withDiagramDownloadPath("diagrams")
+//  .withCawemoFolder("a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala")
+
 
   private lazy val ApproveInvoiceUT =
     InvoiceReceipt.ApproveInvoiceUT.example

@@ -1,22 +1,33 @@
 package camundala.examples.invoice
 package worker
 
-import camundala.domain.NoOutput
-import camundala.worker.CamundalaWorkerError.{InitializerError, ServiceUnexpectedError, ValidatorError}
-import camundala.worker.{EngineWorkerDsl, RequestOutput}
+import camundala.domain.*
+import camundala.camunda7.worker.DefaultRestApiClient
+import camundala.worker.CamundalaWorkerError.{InitializerError, MappingError, ServiceUnexpectedError, ValidatorError}
+import camundala.worker.{EngineWorkerDsl, RequestHandler, RequestOutput}
 import org.springframework.context.annotation.Configuration
+import sttp.client3.UriContext
+import sttp.model.Method
 
 @Configuration
 class ProjectWorkers extends EngineWorkerDsl:
-
+  import ArchiveInvoice.given
   workers(
     process(ReviewInvoice.example)
       .withCustomValidator(ReviewInvoiceWorker.customValidator)
       .withInitVariables(ReviewInvoiceWorker.initVariables),
-    service(ArchiveInvoice.example)
+    service(StarWarsRestApi.example,
+      StarWarsRestApiWorker.requestHandler
+    )
+    /*
+    service(ArchiveInvoice.example,
+      ArchiveInvoiceWorker.requestHandler
+    )
       .withDefaultHeaders(ArchiveInvoiceWorker.defaultHeaders)
       .withBodyOutputMapper(ArchiveInvoiceWorker.bodyOutputMapper)
-      .withWorkRunner(ArchiveInvoiceWorker.runWork)
+     // .withWorkRunner(ArchiveInvoiceWorker.runWork)
+     */
+
   )
 
   object ReviewInvoiceWorker:
@@ -36,6 +47,7 @@ class ProjectWorkers extends EngineWorkerDsl:
 
   object ArchiveInvoiceWorker:
     import ArchiveInvoice.*
+
     lazy val defaultHeaders: Map[String, String] = Map("crazy-header" -> "just-to-test")
 
     def bodyOutputMapper(requestOut: RequestOutput[ServiceOut]): Right[Nothing, Some[Out]] =
@@ -53,5 +65,20 @@ class ProjectWorkers extends EngineWorkerDsl:
           Right(Some(Out()))
 
   end ArchiveInvoiceWorker
+
+  object StarWarsRestApiWorker:
+
+    import StarWarsRestApi.*
+
+    lazy val requestHandler: RequestHandler[In, Out, ServiceIn, ServiceOut] = RequestHandler(
+      httpMethod = Method.GET,
+      apiUri = uri"https://swapi.dev/api/people/1",
+      sendRequest = DefaultRestApiClient.sendRequest,
+      outputMapper = outputMapper
+    )
+    private def outputMapper(out: RequestOutput [ServiceOut]): Either[MappingError, Option[Out]] =
+      Right(Some(Out(out.outputBody)))
+
+  end StarWarsRestApiWorker
 
 end ProjectWorkers

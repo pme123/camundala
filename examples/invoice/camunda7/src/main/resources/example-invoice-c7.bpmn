@@ -33,7 +33,7 @@
       <outgoing>Flow_0nql7w6</outgoing>
     </startEvent>
     <sequenceFlow id="SequenceFlow_3__ArchiveInvoiceST__InvoiceProcessedEE" name="" sourceRef="ArchiveInvoiceTask" targetRef="InvoiceProcessedEndEvent" />
-    <sequenceFlow id="SequenceFlow_2__PrepareBankTransferUT__ArchiveInvoiceST" name="" sourceRef="PrepareBankTransferTask" targetRef="ArchiveInvoiceTask" />
+    <sequenceFlow id="SequenceFlow_2__PrepareBankTransferUT__ArchiveInvoiceST" name="" sourceRef="PrepareBankTransferTask" targetRef="ArchiveInvoiceTask1" />
     <sequenceFlow id="sequenceFlow_178__AssignApproverGroupBRT__ApproveInvoiceUT" isImmediate="true" sourceRef="AssignApproverGroupTask" targetRef="ApproveInvoiceTask" />
     <sequenceFlow id="YesSequenceFlow" name="yes" isImmediate="true" sourceRef="ReviewSuccessfulGateway" targetRef="ApproveInvoiceTask">
       <conditionExpression id="conditionExpression_2047b6fc-90c6-4082-b5c7-5af0ba920b20">${clarified}</conditionExpression>
@@ -87,9 +87,9 @@
     </businessRuleTask>
     <endEvent id="InvoiceProcessedEndEvent" name="Invoice&#10;processed" camunda:exclusive="false">
       <incoming>SequenceFlow_3__ArchiveInvoiceST__InvoiceProcessedEE</incoming>
+      <incoming>Flow_1bvxsac</incoming>
     </endEvent>
     <serviceTask id="ArchiveInvoiceTask" name="Archive Invoice" implementation="##WebService" camunda:type="external" camunda:topic="ArchiveInvoiceService">
-      <incoming>SequenceFlow_2__PrepareBankTransferUT__ArchiveInvoiceST</incoming>
       <outgoing>SequenceFlow_3__ArchiveInvoiceST__InvoiceProcessedEE</outgoing>
     </serviceTask>
     <callActivity id="ReviewInvoiceCallActivity" name="Review Invoice" calledElement="example-invoice-c7-review">
@@ -111,12 +111,16 @@
     <endEvent id="InvoiceNotProcessedEndEvent" name="Invoice not&#10;processed" camunda:exclusive="false">
       <incoming>NoSequenceFlow</incoming>
     </endEvent>
-    <serviceTask id="ArchiveInvoiceTask1" name="Archive Invoice" camunda:asyncBefore="true" implementation="##WebService" camunda:class="org.camunda.bpm.example.invoice.service.ArchiveInvoiceService" />
+    <serviceTask id="ArchiveInvoiceTask1" name="Archive Invoice" camunda:asyncBefore="true" implementation="##WebService" camunda:class="org.camunda.bpm.example.invoice.service.ArchiveInvoiceService">
+      <incoming>SequenceFlow_2__PrepareBankTransferUT__ArchiveInvoiceST</incoming>
+      <outgoing>Flow_1bvxsac</outgoing>
+    </serviceTask>
     <exclusiveGateway id="ReviewSuccessfulGateway" name="Review&#10;successful?" gatewayDirection="Diverging" camunda:exclusive="false">
       <incoming>sequenceFlow_183__ReviewInvoiceCA__ReviewSuccessfulEG</incoming>
       <outgoing>NoSequenceFlow</outgoing>
       <outgoing>YesSequenceFlow</outgoing>
     </exclusiveGateway>
+    <sequenceFlow id="Flow_1bvxsac" sourceRef="ArchiveInvoiceTask1" targetRef="InvoiceProcessedEndEvent" />
     <textAnnotation id="TextAnnotation_0oe06b4">
       <text>JAVA Delegate</text>
     </textAnnotation>
@@ -223,9 +227,11 @@
           <omgdc:Bounds x="913" y="423" width="6" height="6" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_2__PrepareBankTransferUT__ArchiveInvoiceST" sourceElement="zberweisung_vorbereiten_169_gui" targetElement="_BPMNShape_ServiceTask_2">
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_2__PrepareBankTransferUT__ArchiveInvoiceST" sourceElement="zberweisung_vorbereiten_169_gui" targetElement="BPMNShape_1ar981g">
         <omgdi:waypoint x="1078" y="503" />
-        <omgdi:waypoint x="1120" y="503" />
+        <omgdi:waypoint x="1099" y="503" />
+        <omgdi:waypoint x="1099" y="360" />
+        <omgdi:waypoint x="1120" y="360" />
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="745" y="423" width="6" height="6" />
         </bpmndi:BPMNLabel>
@@ -289,6 +295,12 @@
       <bpmndi:BPMNEdge id="Flow_0nql7w6_di" bpmnElement="Flow_0nql7w6">
         <omgdi:waypoint x="284" y="172" />
         <omgdi:waypoint x="520" y="172" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1bvxsac_di" bpmnElement="Flow_1bvxsac">
+        <omgdi:waypoint x="1220" y="360" />
+        <omgdi:waypoint x="1245" y="360" />
+        <omgdi:waypoint x="1245" y="503" />
+        <omgdi:waypoint x="1269" y="503" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DataStoreReference_1_gui" bpmnElement="FinancialAccountingSystemDataStoreReference" isHorizontal="true">
         <omgdc:Bounds x="914" y="596" width="63" height="61" />

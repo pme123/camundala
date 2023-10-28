@@ -1,13 +1,15 @@
 package camundala
 package worker
 
+import camundala.worker.CamundalaWorkerError.ServiceError
 import domain.*
 
 import java.time.LocalDateTime
+import scala.util.Either
 
 trait EngineContext :
   protected def toEngineObject: Json => Any
-
+  def generalVariables: GeneralVariables
 
   def toEngineObject[T <: Product : Encoder](
                                          product: T

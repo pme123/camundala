@@ -1,15 +1,37 @@
 package camundala
 package worker
 
-import java.time.LocalDateTime
-
-import camundala.domain.*
 import camundala.bpmn.*
+import camundala.worker.CamundalaWorkerError.*
 import io.circe.*
 import sttp.model.Uri
 
 import java.net.URLDecoder
 import java.nio.charset.Charset
+
+private def decodeMock[Out: Decoder](
+    isService: Boolean,
+    json: Json
+)(using
+    context: EngineContext
+): Either[MockerError | MockedOutput, Option[Out]] =
+  (json.isObject, isService) match
+    case (true, true) =>
+      decodeTo[Out](json.asJson.toString)
+        .map(Some(_))
+        .left
+        .map(ex => MockerError(errorMsg = ex.errorMsg))
+    case (true, _) =>
+      Left(
+        MockedOutput(output = context.toEngineObject(json))
+      )
+    case _ =>
+      Left(
+        MockerError(errorMsg =
+          s"The mock must be a Json Object:\n- $json\n- ${json.getClass}"
+        )
+      )
+end decodeMock
 
 def decodeTo[A: Decoder](
     jsonStr: String
@@ -53,9 +75,9 @@ object CamundalaWorkerError:
       Map("validationErrors" -> errorMsg)
 
   case class MockedOutput(
-                           output: Map[String, Any],
-                           errorCode: ErrorCodes = ErrorCodes.`output-mocked`,
-                           errorMsg: String = "Output mocked"
+      output: Map[String, Any],
+      errorCode: ErrorCodes = ErrorCodes.`output-mocked`,
+      errorMsg: String = "Output mocked"
   ) extends ErrorWithOutput:
     override val isMock = true
 
@@ -92,8 +114,8 @@ object CamundalaWorkerError:
     def apply(error: CamundalaWorkerError): HandledRegexNotMatchedError =
       HandledRegexNotMatchedError(
         s"""The error was handled, but did not match the defined 'regexHandledErrors'.
-          |Original Error: ${error.errorCode} - ${error.errorMsg}
-          |""".stripMargin
+           |Original Error: ${error.errorCode} - ${error.errorMsg}
+           |""".stripMargin
       )
 
   case class BadVariableError(
@@ -102,7 +124,7 @@ object CamundalaWorkerError:
   ) extends CamundalaWorkerError
 
   trait RunnerError extends CamundalaWorkerError
-  
+
   trait ServiceError extends RunnerError
 
   case class ServiceAuthError(
@@ -124,33 +146,32 @@ object CamundalaWorkerError:
   ) extends ServiceError
 
   def requestMsg[ServiceIn: Encoder](
-      apiUri: Uri,
-      queryParams: Seq[(String, Seq[String])],
-      requestBody: Option[ServiceIn]
+      runnableRequest: RunnableRequest[ServiceIn]
   ): String =
-    s""" - Request URL: ${URLDecoder.decode(apiUri.toString, Charset.defaultCharset())}
-       | - Request Params: ${
-        queryParams
-          .map {
-            case k -> seq if seq.isEmpty =>
-              k
-            case k -> seq => s"$k=${seq.mkString(",")}"
-          }
-          .mkString("&")}
-       | - Request Body: ${requestBody.map(_.asJson).getOrElse("")}""".stripMargin
+    s""" - Request URL: ${URLDecoder.decode(
+        runnableRequest.apiUri.toString,
+        Charset.defaultCharset()
+      )}
+       | - Request Params: ${runnableRequest.queryParams
+        .map {
+          case k -> seq if seq.isEmpty =>
+            k
+          case k -> seq => s"$k=${seq.mkString(",")}"
+        }
+        .mkString("&")}
+       | - Request Body: ${runnableRequest.requestBodyOpt
+        .map(_.asJson)
+        .getOrElse("")}""".stripMargin
 
   def serviceErrorMsg[ServiceIn: Encoder](
       status: Int,
       errorMsg: String,
-      apiUri: Uri,
-      queryParams: Seq[(String, Seq[String])],
-      requestBody: Option[ServiceIn]
+      runnableRequest: RunnableRequest[ServiceIn]
   ): String =
     s"""Service Error: $status
        |ErrorMsg: $errorMsg
-       |${requestMsg(apiUri, queryParams, requestBody)}""".stripMargin
+       |${requestMsg(runnableRequest)}""".stripMargin
 end CamundalaWorkerError
 
 def niceClassName(clazz: Class[?]) =
   clazz.getName.split("""\$""").head
-

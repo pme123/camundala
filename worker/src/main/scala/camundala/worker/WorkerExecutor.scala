@@ -1,6 +1,7 @@
 package camundala
 package worker
 
+import camundala.bpmn.InputParams
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 
@@ -14,22 +15,32 @@ case class WorkerExecutor[
 
   def execute(
       processVariables: Seq[Either[BadVariableError, (String, Option[Json])]],
-      generalVariables: GeneralVariables,
+      generalVariables: GeneralVariables
   ) =
     for {
       validatedInput <- InputValidator.validate(processVariables)
       initializedOutput <- Initializer.initVariables(validatedInput)
       proceedOrMocked <- OutMocker.mockOrProceed(
-        generalVariables,
+        generalVariables
       )
-      output <- worker.runWork(validatedInput, proceedOrMocked)
-    } yield proceedOrMocked
+      output <- worker.workRunner
+        .map(_.runWork(validatedInput, proceedOrMocked))
+        .getOrElse(Right(None))
+      allOutputs = camundaOutputs(
+        validatedInput,
+        initializedOutput,
+        output
+      )
+      filteredOut = filteredOutput(allOutputs)
+    } yield filteredOut
 
   object InputValidator:
     lazy val prototype = worker.in
     lazy val customValidator = worker.customValidator
 
-    def validate(inputParamsAsJson: Seq[Either[Any, (String, Option[Json])]]): Either[ValidatorError, In] =
+    def validate(
+        inputParamsAsJson: Seq[Either[Any, (String, Option[Json])]]
+    ): Either[ValidatorError, In] =
       val jsonResult: Either[ValidatorError, Seq[(String, Option[Json])]] =
         inputParamsAsJson
           .partition(_.isRight) match
@@ -79,48 +90,57 @@ case class WorkerExecutor[
   object OutMocker:
 
     def mockOrProceed(
-                       generalVariables: GeneralVariables,
-                     ): Either[MockerError | MockedOutput, Option[Out]] =
-      ((generalVariables.servicesMocked, generalVariables.isMocked(worker.topic), generalVariables.outputMockOpt) match
-        case (_, _, Some(outputMock)) => // if the outputMock is set than we mock
-          decodeMock(outputMock)
+        generalVariables: GeneralVariables
+    ): Either[MockerError | MockedOutput, Option[Out]] =
+      ((
+        generalVariables.servicesMocked,
+        generalVariables.isMocked(worker.topic),
+        generalVariables.outputMockOpt
+      ) match
+        case (
+              _,
+              _,
+              Some(outputMock)
+            ) => // if the outputMock is set than we mock
+          decodeMock(isService, outputMock)
         case (_, true, _)
-          if !isService => // if your process is NOT a Service check if it is mocked
+            if !isService => // if your process is NOT a Service check if it is mocked
           worker.defaultMock
         case (true, _, _)
-          if isService => // if your process is a Service check if it is mocked
+            if isService => // if your process is a Service check if it is mocked
           worker.defaultMock
         case (_, _, None) =>
           Right(None)
-        )
+      )
 
     end mockOrProceed
 
     private lazy val isService = worker.isInstanceOf[ServiceWorker[?, ?, ?, ?]]
 
-    private def decodeMock(
-                                                    json: Json,
-                                                  ): Either[MockerError | MockedOutput, Option[Out]] =
-      (json.isObject, isService) match
-        case (true, true) =>
-          decodeTo[Out](json.asJson.toString)
-            .map(Some(_))
-            .left
-            .map(ex => MockerError(errorMsg = ex.errorMsg))
-        case (true, _) =>
-          Left(
-            MockedOutput(output =
-              context.toEngineObject(json)
-            )
-          )
-        case _ =>
-          Left(
-            MockerError(errorMsg =
-              s"The mock must be a Json Object:\n- $json\n- ${json.getClass}"
-            )
-          )
-    end decodeMock
-
   end OutMocker
+
+  object WorkRunner:
+    def run() =
+      worker.workRunner
+  end WorkRunner
+
+  private def camundaOutputs(
+      initializedInput: In,
+      internalVariables: Map[String, Any],
+      output: Option[Out]
+  ): Map[String, Any] =
+    context.toEngineObject(initializedInput) ++ internalVariables ++ output
+      .map(context.toEngineObject)
+      .getOrElse(Map.empty)
+
+  private def filteredOutput(
+      allOutputs: Map[String, Any]
+  ): Map[String, Any] =
+    val filter = context.generalVariables.outputVariables
+    if (filter.isEmpty)
+      allOutputs
+    else
+      allOutputs
+        .filter { case k -> _ => filter.contains(k) }
 
 end WorkerExecutor

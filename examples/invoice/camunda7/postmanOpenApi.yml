@@ -3,7 +3,7 @@ info:
   title: Invoice Example Process API
   version: '1.0'
   summary: "\n**This is for Postman - to have example requests. Be aware the Output\
-    \ is not provided!**\n\n\n\nCreated at 19/09/2023, 15:56\n\n**See the [Camundala\
+    \ is not provided!**\n\n\n\nCreated at 28/10/2023, 09:15\n\n**See the [Camundala\
     \ Documentation](https://pme123.github.io/camundala/)\n\n> This is the invoice\
     \ demo application which is shipped with the full distributions.\n\nSee the original\
     \ [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).\n\
@@ -657,10 +657,38 @@ paths:
       responses:
         '200':
           description: ''
+  /process-definition/key/camundala-service-generic/start--REMOVE:star-wars-api-people-detail--:
+    post:
+      tags:
+      - Workers
+      summary: star-wars-api-people-detail
+      description: |
+        Get People Details from StarWars API
+
+        See API Doc: [star-wars-api-people-detail](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/star-wars-api-people-detail/operation/star-wars-api-people-detail)
+      operationId: postProcess-definitionKeyCamundala-service-genericStart--remove:star-wars-api-people-detail--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              star-wars-api-people-detail:
+                value:
+                  variables:
+                    id:
+                      value: 1
+                      type: Integer
+                  businessKey: star-wars-api-people-detail
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
   /process-definition/key/camundala-service-generic/start--REMOVE:ArchiveInvoiceService--:
     post:
       tags:
-      - Services
+      - Workers
       summary: ArchiveInvoiceService
       description: |
         Archives the Receipt.
@@ -680,34 +708,6 @@ paths:
                       value: true
                       type: Boolean
                   businessKey: ArchiveInvoiceService
-                  withVariablesInReturn: true
-        required: true
-      responses:
-        '200':
-          description: ''
-  /process-definition/key/camundala-service-generic/start--REMOVE:ArchiveInvoiceService2--:
-    post:
-      tags:
-      - Services
-      summary: ArchiveInvoiceService2
-      description: |
-        Archives the Receipt.
-
-        See API Doc: [ArchiveInvoiceService2](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/ArchiveInvoiceService2/operation/ArchiveInvoiceService2)
-      operationId: postProcess-definitionKeyCamundala-service-genericStart--remove:archiveinvoiceservice2--
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/StartProcessIn'
-            examples:
-              ArchiveInvoiceService2:
-                value:
-                  variables:
-                    shouldFail:
-                      value: true
-                      type: Boolean
-                  businessKey: ArchiveInvoiceService2
                   withVariablesInReturn: true
         required: true
       responses:

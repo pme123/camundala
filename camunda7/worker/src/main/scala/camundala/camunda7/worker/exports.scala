@@ -6,6 +6,7 @@ import bpmn.*
 import io.circe.*
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.client.variable.impl.value.JsonValueImpl
+import sttp.client3.{HttpClientSyncBackend, Identity, SttpBackend}
 
 import java.net.URLDecoder
 import java.nio.charset.Charset
@@ -14,6 +15,8 @@ import java.time.LocalDateTime
 export sttp.model.{Method, Uri, QueryParams}
 export org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription
 export org.springframework.context.annotation.Configuration
+
+lazy val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
 
 //TODO REMOVE
 def toCamunda[T <: Product: Encoder](
