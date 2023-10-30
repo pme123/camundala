@@ -101,13 +101,9 @@ case class ServiceHandler[
 ](
     httpMethod: Method,
     apiUri: Uri,
-    pathKeys: Seq[String] = Seq.empty,
     queryParamKeys: Seq[String | (String, String)] = Seq.empty,
+    // mocking out from outService and headers
     defaultHeaders: Map[String, String] = Map.empty,
-    sendRequest: RunnableRequest[ServiceIn] => Either[
-      ServiceError,
-      RequestOutput[ServiceOut]
-    ],
     inputMapper: Option[In => ServiceIn] = None,
     outputMapper: RequestOutput[ServiceOut] => Either[ServiceMappingError, Option[Out]] =
       (_: RequestOutput[ServiceOut]) => Right(None),
@@ -124,7 +120,7 @@ case class ServiceHandler[
       runnableRequest = RunnableRequest(httpMethod, apiUriWithParams, qParams, body)
       optWithServiceMock <- withServiceMock(runnableRequest)
       output <- handleMocking(optWithServiceMock, runnableRequest).getOrElse(
-        sendRequest(runnableRequest)
+        summon[EngineContext].sendRequest(runnableRequest)
           .flatMap(outputMapper)
       )
     } yield output)

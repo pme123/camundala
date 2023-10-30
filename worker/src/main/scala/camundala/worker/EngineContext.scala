@@ -1,25 +1,28 @@
 package camundala
 package worker
 
+import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.ServiceError
-import domain.*
 
 import java.time.LocalDateTime
-import scala.util.Either
 
-trait EngineContext :
+trait EngineContext:
   protected def toEngineObject: Json => Any
   def generalVariables: GeneralVariables
 
+  def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
+      request: RunnableRequest[ServiceIn]
+  ): Either[ServiceError, RequestOutput[ServiceOut]]
+
   def jsonObjectToEngineObject(
-                                              json: JsonObject
-                                            ): Map[String, Any] =
+      json: JsonObject
+  ): Map[String, Any] =
     json.toMap
       .map { case (k, v) => k -> jsonToEngineValue(v) }
-    
-  def toEngineObject[T <: Product : Encoder](
-                                         product: T
-                                       ): Map[String, Any] =
+
+  def toEngineObject[T <: Product: Encoder](
+      product: T
+  ): Map[String, Any] =
     product.productElementNames
       .zip(product.productIterator)
       // .filterNot { case _ -> v => v.isInstanceOf[None.type] } // don't send null
@@ -27,16 +30,16 @@ trait EngineContext :
       .toMap
 
   def toEngineObject(
-                 variables: Map[String, Json]
-               ): Map[String, Any] =
+      variables: Map[String, Json]
+  ): Map[String, Any] =
     variables
       .map { case (k, v) => k -> jsonToEngineValue(v) }
 
-  def objectToEngineObject[T <: Product : Encoder](
-                                               product: T,
-                                               key: String,
-                                               value: Any
-                                             ): Any =
+  def objectToEngineObject[T <: Product: Encoder](
+      product: T,
+      key: String,
+      value: Any
+  ): Any =
     value match
       case None | null => null
       case Some(v) => objectToEngineObject(product, key, v)
@@ -65,7 +68,7 @@ trait EngineContext :
       case other =>
         other
 
-  def domainObjToEngineObject[A <: Product : CirceCodec](variable: A): Any =
+  def domainObjToEngineObject[A <: Product: CirceCodec](variable: A): Any =
     toEngineObject(variable.asJson)
 
   def jsonToEngineValue(json: Json): Any =
@@ -80,4 +83,3 @@ trait EngineContext :
   end jsonToEngineValue
 
 end EngineContext
-
