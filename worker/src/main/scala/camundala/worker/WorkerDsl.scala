@@ -3,7 +3,7 @@ package worker
 
 import camundala.bpmn.*
 import camundala.domain.*
-import camundala.worker.CamundalaWorkerError.{InitProcessError, ValidatorError}
+import camundala.worker.CamundalaWorkerError.{CustomError, InitProcessError, ValidatorError}
 
 import scala.language.implicitConversions
 
@@ -30,16 +30,34 @@ private[worker] trait WorkerDsl:
       ServiceIn <: Product: CirceCodec,
       ServiceOut: CirceCodec
   ](
-      process: ServiceProcess[In, Out, ServiceIn, ServiceOut],
+      service: ServiceTask[In, Out, ServiceIn, ServiceOut]
   )(using
       context: EngineContext
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
-    ServiceWorker(process)
+    ServiceWorker(service)
+
+  def custom[
+      In <: Product: CirceCodec,
+      Out <: Product: CirceCodec
+  ](
+      service: CustomTask[In, Out]
+  )(using EngineContext): CustomWorker[In, Out] =
+    CustomWorker(service)
 
   // implicit Converters
-  implicit def convert[In <: Product : CirceCodec](funct: In => Either[ValidatorError, In]): ValidationHandler[In] =
+  implicit def convert[In <: Product: CirceCodec](
+      funct: In => Either[ValidatorError, In]
+  ): ValidationHandler[In] =
     ValidationHandler(funct)
-  implicit def init[In <: Product : CirceCodec](funct: In => Either[InitProcessError, Map[String, Any]]): InitProcessHandler[In] =
+
+  implicit def init[In <: Product: CirceCodec](
+      funct: In => Either[InitProcessError, Map[String, Any]]
+  ): InitProcessHandler[In] =
     InitProcessHandler(funct)
+
+  implicit def customx[In <: Product : CirceCodec, Out <: Product : CirceCodec ](
+                                                 funct: (In, Option[Out]) => Either[CustomError, Option[Out]]
+                                               ): CustomHandler[In, Out] =
+    CustomHandler(funct)
 
 end WorkerDsl

@@ -22,7 +22,7 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
   def scenario(scen: ProcessScenario): SScenario =
     scenario(scen)()
 
-  def scenario(scen: ServiceProcessScenario): SScenario =
+  def scenario(scen: ExternalTaskScenario): SScenario =
     scen
 
   def scenario(scen: DmnScenario): SScenario =
@@ -51,7 +51,7 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     incidentScenario(process, incidentMsg)()
 
   inline def incidentScenario(
-                               inline process: ServiceProcess[?, ?, ?, ?],
+                               inline process: ExternalTask[?, ?, ?],
                                incidentMsg: String
                              ): IncidentServiceScenario =
     IncidentServiceScenario(nameOfVariable(process), process, incidentMsg)
@@ -67,9 +67,14 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     ProcessScenario(nameOfVariable(process), process)
 
   implicit inline def toScenario(
-      inline process: ServiceProcess[?, ?, ?, ?]
-  ): ServiceProcessScenario =
-    ServiceProcessScenario(nameOfVariable(process), process)
+      inline task: ServiceTask[?, ?, ?, ?]
+  ): ExternalTaskScenario =
+    ExternalTaskScenario(nameOfVariable(task), task)
+
+  implicit inline def toScenario(
+      inline task: CustomTask[?, ?]
+  ): ExternalTaskScenario =
+    ExternalTaskScenario(nameOfVariable(task), task)
 
   implicit inline def toScenario(
       inline decisionDmn: DecisionDmn[?, ?]

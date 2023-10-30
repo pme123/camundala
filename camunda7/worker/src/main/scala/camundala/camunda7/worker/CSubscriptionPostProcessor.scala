@@ -1,6 +1,7 @@
 package camundala
 package camunda7.worker
 
+import camundala.bpmn.InputParams
 import camundala.worker.*
 import org.camunda.bpm.client.spring.SpringTopicSubscription
 import org.camunda.bpm.client.spring.impl.subscription.SubscriptionConfiguration
@@ -68,7 +69,7 @@ class CSubscriptionPostProcessor(
     subConfig.setTopicName(handler.topic)
     subConfig.setAutoOpen(true)
     subConfig.setLockDuration(null)
-    subConfig.setVariableNames(handler.variableNames.asJava)
+    subConfig.setVariableNames((handler.variableNames ++ InputParams.values.map(_.toString)).asJava)
     subConfig.setLocalVariables(false)
     subConfig.setBusinessKey(null)
     subConfig.setProcessDefinitionId(null)
@@ -91,10 +92,12 @@ class CSubscriptionPostProcessor(
 
   def workerHandler(worker: Worker[?, ?,?]) =
       worker match
-        case pw: InitProcessWorker[?,?] =>
-          ProcessWorkerHandler(pw)
+        case pw: InitProcessWorker[?, ?] =>
+          InitProcessWorkerHandler(pw)
+        case cw: CustomWorker[?, ?] =>
+          CustomWorkerHandler(cw)
         case spw: ServiceWorker[?, ?, ?, ?] =>
-          ServiceProcessWorkerHandler(spw)
+          ServiceWorkerHandler(spw)
 
 object CSubscriptionPostProcessor:
   protected val LOG: SubscriptionLoggerUtil = LoggerUtil.SUBSCRIPTION_LOGGER

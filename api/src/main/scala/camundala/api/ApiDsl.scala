@@ -11,6 +11,7 @@ trait ApiDsl extends ApiBaseDsl:
   protected def nameOfVariable(inOut: InOut[?, ?, ?]): String =
     inOut.id
 
+  // converters
   implicit def toApi[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
@@ -23,9 +24,17 @@ trait ApiDsl extends ApiBaseDsl:
       ServiceIn <: Product: Encoder: Schema,
       ServiceOut: Encoder: Decoder: Schema
   ](
-      process: ServiceProcess[In, Out, ServiceIn, ServiceOut]
-  ): ServiceProcessApi[In, Out, ServiceIn, ServiceOut] =
-    ServiceProcessApi(nameOfVariable(process), process)
+      process: ServiceTask[In, Out, ServiceIn, ServiceOut]
+  ): ServiceWorkerApi[In, Out, ServiceIn, ServiceOut] =
+    ServiceWorkerApi(nameOfVariable(process), process)
+
+  implicit def toApi[
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema: ClassTag
+  ](
+      task: CustomTask[In, Out]
+  ): CustomWorkerApi[In, Out] =
+    CustomWorkerApi(nameOfVariable(task), task)
 
   implicit def toApi[
       In <: Product: Encoder: Decoder: Schema,

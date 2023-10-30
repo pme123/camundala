@@ -1,13 +1,12 @@
 package camundala
 package examples.invoice
 
-import camundala.bpmn.ServiceProcess
-import camundala.examples.invoice.ArchiveInvoice.{In, Out, ServiceIn, ServiceOut, serviceMock, serviceName, serviceProcess}
+import camundala.bpmn.*
 import domain.*
 
-object StarWarsRestApi:
+object StarWarsRestApi extends BpmnDsl:
 
-  final val serviceName = "star-wars-api-people-detail"
+  final val topicName = "star-wars-api-people-detail"
   type ServiceIn = NoInput
   type ServiceOut = People
   lazy val serviceMock: ServiceOut = People()
@@ -44,9 +43,9 @@ object StarWarsRestApi:
     given CirceCodec[People] = deriveCodec
   end People
 
-  lazy val example: ServiceProcess[In, Out, ServiceIn, ServiceOut] =
-    serviceProcess(
-      serviceName,
+  lazy val example: ServiceTask[In, Out, ServiceIn, ServiceOut] =
+    serviceTask(
+      topicName,
       descr = "Get People Details from StarWars API",
       in = In(),
       out = Out(),

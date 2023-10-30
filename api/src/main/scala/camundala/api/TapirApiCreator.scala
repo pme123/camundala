@@ -38,7 +38,7 @@ trait TapirApiCreator extends AbstractApiCreator:
           pa.createEndpoint(tag, pa.additionalDescr) ++ apis.flatMap(
             _.create(tag)
           )
-        case spa @ ServiceProcessApi(name, _, _) =>
+        case spa : ExternalTaskApi[?,?] =>
           spa.createEndpoint(tag, spa.additionalDescr)
         case ga =>
           throw IllegalArgumentException(
@@ -124,7 +124,7 @@ trait TapirApiCreator extends AbstractApiCreator:
           )
   end extension
 
-  extension (pa: ProcessApi[?, ?] | ServiceProcessApi[?, ?, ?, ?])
+  extension (pa: ProcessApi[?, ?] | ExternalTaskApi[?, ?])
     def processName: String =
       pa.inOut.in match
         case gs: GenericServiceIn =>

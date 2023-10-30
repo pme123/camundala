@@ -80,16 +80,13 @@ case class WorkerExecutor[
   object OutMocker:
 
     def mockOrProceed(): Either[MockerError | MockedOutput, Option[Out]] =
+      println(s"CONTEXT: $context")
       (
         context.generalVariables.servicesMocked,
         context.generalVariables.isMocked(worker.topic),
         context.generalVariables.outputMockOpt
       ) match
-        case (
-              _,
-              _,
-              Some(outputMock)
-            ) => // if the outputMock is set than we mock
+        case (_, _, Some(outputMock)) => // if the outputMock is set than we mock
           decodeMock(isService, outputMock)
         case (_, true, _) if !isService => // if your process is NOT a Service check if it is mocked
           worker.defaultMock
@@ -97,7 +94,6 @@ case class WorkerExecutor[
           worker.defaultMock
         case (_, _, None) =>
           Right(None)
-
     end mockOrProceed
 
     private lazy val isService = worker.isInstanceOf[ServiceWorker[?, ?, ?, ?]]

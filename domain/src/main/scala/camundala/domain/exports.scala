@@ -90,7 +90,7 @@ val testModeDescr =
 
 // descriptions
 val deprecatedDescr = "See https://pme123.github.io/camundala/specification.html#supported-general-variables"
-@deprecated("Change to serviceProcess")
+@deprecated("Change to serviceTask")
 def serviceNameDescr(serviceName: String) =
   s"As this uses the generic Service you need to name the Service to '$serviceName'."
 

@@ -14,8 +14,8 @@ sealed trait Worker[
     T <: Worker[In, Out, ?]
 ]:
 
-  def topic: String
   def inOut: InOut[In, Out, ?]
+  def topic: String
   lazy val in: In = inOut.in
   lazy val out: Out = inOut.out
   // handler
@@ -67,18 +67,53 @@ case class InitProcessWorker[
 
 end InitProcessWorker
 
+case class CustomWorker[
+  In <: Product: CirceCodec,
+  Out <: Product: CirceCodec
+](
+   inOut: CustomTask[In, Out],
+   override val validationHandler: Option[ValidationHandler[In]] = None,
+   override val runWorkHandler: Option[RunWorkHandler[In, Out]] = None,
+ ) extends Worker[In, Out, CustomWorker[In, Out]]:
+  lazy val topic: String = inOut.topicName
+
+  def validation(
+                  validator: ValidationHandler[In]
+                ): CustomWorker[In, Out] =
+    copy(validationHandler = Some(validator))
+
+  def runWork(
+               serviceHandler: CustomHandler[In, Out]
+             ): CustomWorker[In, Out] =
+    copy(runWorkHandler = Some(serviceHandler))
+
+  def defaultMock(using
+                  context: EngineContext
+                 ): Either[MockerError | MockedOutput, Option[Out]] = Left(
+    MockedOutput(
+      context.toEngineObject(out)
+    )
+  )
+
+  def executor(using
+               context: EngineContext
+              ): WorkerExecutor[In, Out, CustomWorker[In, Out]] =
+    WorkerExecutor(this)
+
+end CustomWorker
+
 case class ServiceWorker[
     In <: Product: CirceCodec,
     Out <: Product: CirceCodec,
     ServiceIn <: Product: CirceCodec,
     ServiceOut: CirceCodec
 ](
-    inOut: ServiceProcess[In, Out, ServiceIn, ServiceOut],
-    override val validationHandler: Option[ValidationHandler[In]] = None,
-    override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None,
+   inOut: ServiceTask[In, Out, ServiceIn, ServiceOut],
+   override val validationHandler: Option[ValidationHandler[In]] = None,
+   override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None,
 )(using context: EngineContext)
     extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
-  lazy val topic: String = inOut.serviceName
+  lazy val topic: String = inOut.topicName
 
   def validation(
       validation: ValidationHandler[In]
@@ -128,7 +163,6 @@ case class GeneralVariables(
     handledErrors: Seq[String] = Seq.empty,
     regexHandledErrors: Seq[String] = Seq.empty,
     impersonateUserIdOpt: Option[String] = None,
-    serviceNameOpt: Option[String] = None
 ):
   def isMocked(workerTopicName: String): Boolean =
     mockedSubprocesses.contains(workerTopicName)

@@ -55,8 +55,10 @@ trait PostmanApiCreator extends AbstractApiCreator:
         case pa@ProcessApi(name, _, _, apis, _)
           if apis.forall(_.isInstanceOf[ActivityApi[?, ?]]) =>
           createPostmanForProcess(pa, tag) ++ apis.flatMap(_.createPostman(tag))
-        case spa@ServiceProcessApi(name, _, _) =>
-          createPostmanForServiceProcess(spa, tag)
+        case api@ServiceWorkerApi(_, _, _) =>
+          createPostmanForExternalTask(api, tag)
+        case api@CustomWorkerApi(_, _, _) =>
+          createPostmanForExternalTask(api, tag)
         case da: DecisionDmnApi[?,?] =>
           createPostmanForDecisionDmn(da.toActivityApi, tag)
         case ga =>
@@ -72,9 +74,9 @@ trait PostmanApiCreator extends AbstractApiCreator:
       isGroup: Boolean = false
   ): Seq[PublicEndpoint[?, Unit, ?, Any]]
 
-  protected def createPostmanForServiceProcess(
-      api: ServiceProcessApi[?, ?, ?, ?],
-      tag: String
+  protected def createPostmanForExternalTask(
+                                                api: ExternalTaskApi[?, ?],
+                                                tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]]
 
   protected def createPostmanForUserTask(

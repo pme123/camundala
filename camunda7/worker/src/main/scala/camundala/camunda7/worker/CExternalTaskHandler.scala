@@ -5,7 +5,7 @@ import camundala.bpmn.*
 import camundala.domain.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
-import org.camunda.bpm.client.task.*
+import org.camunda.bpm.client.{task as camuda}
 
 import java.time.LocalDateTime
 import scala.jdk.CollectionConverters.*
@@ -14,14 +14,14 @@ import scala.jdk.CollectionConverters.*
  * To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
  * parameters.
  */
-trait CExternalTaskHandler[T <: Worker[?,?,?]] extends ExternalTaskHandler, CamundaHelper:
+trait CExternalTaskHandler[T <: Worker[?,?,?]] extends camuda.ExternalTaskHandler, CamundaHelper:
   def topic: String
   def worker: T
-  def variableNames: Seq[String] = worker.variableNames ++ GeneralVariables().productElementNames
+  def variableNames: Seq[String] = worker.variableNames
 
   override def execute(
-                        externalTask: ExternalTask,
-                        externalTaskService: ExternalTaskService
+                        externalTask: camuda.ExternalTask,
+                        externalTaskService: camuda.ExternalTaskService
                       ): Unit =
     println(
       s"WORKER ${LocalDateTime.now()} ${externalTask.getTopicName} (${externalTask.getId}) started > ${externalTask.getBusinessKey}"
@@ -33,16 +33,16 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends ExternalTaskHandler, Camu
   end execute
 
   private def executeWorker(
-                             externalTaskService: ExternalTaskService
+                             externalTaskService: camuda.ExternalTaskService
                            ): HelperContext[Unit] =
-    println(s"Worker ${summon[ExternalTask].getTopicName} running")
-    val processVariables = ProcessVariablesExtractor.extract(variableNames)
+    println(s"Worker ${summon[camuda.ExternalTask].getTopicName} running")
+    val tryProcessVariables = ProcessVariablesExtractor.extract(variableNames)
     val tryGeneralVariables = ProcessVariablesExtractor.extractGeneral()
     try {
       (for {
         generalVariables <- tryGeneralVariables
         context = Camunda7Context(generalVariables)
-        filteredOut <- worker.executor(using context).execute(processVariables)
+        filteredOut <- worker.executor(using context).execute(tryProcessVariables)
         _ = println(s"EXECUTE WORKER: $filteredOut")
       } yield externalTaskService.handleSuccess(filteredOut) //
         ).left.map { ex =>
@@ -60,13 +60,13 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends ExternalTaskHandler, Camu
     }
   end executeWorker
 
-  extension (externalTaskService: ExternalTaskService)
+  extension (externalTaskService: camuda.ExternalTaskService)
 
     private def handleSuccess(
                                filteredOutput: Map[String, Any]
                              ): HelperContext[Unit] =
       externalTaskService.complete(
-        summon[ExternalTask],
+        summon[camuda.ExternalTask],
         filteredOutput.asJava,
         Map.empty.asJava
       )
@@ -92,9 +92,9 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends ExternalTaskHandler, Camu
                 error.output
               case _ => Map.empty
             val filtered = filteredOutput(generalVariables.outputVariables, mockedOutput)
-            println(s"Handled Error: ${error.errorCode}: ${error.errorMsg}")
+            println(s"Handled Error: ${error.errorCode}: ${error.errorMsg}\n- Output: $filtered")
             Right(externalTaskService.handleBpmnError(
-              summon[ExternalTask],
+              summon[camuda.ExternalTask],
               s"${error.errorCode}",
               error.errorMsg,
               filtered.asJava
@@ -109,7 +109,7 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends ExternalTaskHandler, Camu
           val errMessage = s"${err.errorCode}: ${err.errorMsg}"
           println(s"Unhandled Error: $errMessage")
           externalTaskService.handleFailure(
-            summon[ExternalTask],
+            summon[camuda.ExternalTask],
             errMessage,
             s" $errMessage\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
             0,

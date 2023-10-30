@@ -1,10 +1,9 @@
 package camundala.camunda7.worker
 
-import camundala.bpmn.ErrorCodes
+import camundala.bpmn.*
+import camundala.domain.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.{BadVariableError, ValidatorError}
-import camundala.domain.*
-import camundala.bpmn.*
 import io.circe.JsonObject
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.engine.variable.`type`.ValueType
@@ -44,10 +43,12 @@ object ProcessVariablesExtractor extends CamundaHelper:
       outputServiceMockOpt <- jsonVariableOpt(InputParams.outputServiceMock)
       mockedSubprocesses <- extractSeqFromArrayOrString(InputParams.mockedSubprocesses, Seq.empty)
       outputVariables <- extractSeqFromArrayOrString(InputParams.outputVariables, Seq.empty)
-      handledErrors <- extractSeqFromArrayOrString(InputParams.handledErrors, defaultHandledErrorCodes)
+      handledErrors <- extractSeqFromArrayOrString(
+        InputParams.handledErrors,
+        defaultHandledErrorCodes
+      )
       regexHandledErrors <- extractSeqFromArrayOrString(InputParams.regexHandledErrors, Seq.empty)
       impersonateUserIdOpt <- variableOpt[String](InputParams.impersonateUserId)
-      serviceNameOpt <- variableOpt[String](InputParams.serviceName)
     } yield GeneralVariables(
       servicesMocked = servicesMocked,
       outputMockOpt = outputMockOpt,
@@ -56,11 +57,7 @@ object ProcessVariablesExtractor extends CamundaHelper:
       outputVariables = outputVariables,
       handledErrors = handledErrors,
       regexHandledErrors = regexHandledErrors,
-      impersonateUserIdOpt = impersonateUserIdOpt,
-      serviceNameOpt: Option[String]
+      impersonateUserIdOpt = impersonateUserIdOpt
     )
   end extractGeneral
 end ProcessVariablesExtractor
-
-
-

@@ -139,10 +139,7 @@ end InvoiceReceipt
 // example for service API description
 object ArchiveInvoice extends BpmnDsl:
 
-  final val serviceName = "ArchiveInvoiceService"
-  type ServiceIn = NoInput
-  type ServiceOut = List[String]
-  lazy val serviceMock: ServiceOut = List("someIdJustForDemo")
+  final val topicName = "ArchiveInvoiceService"
 
   case class  In(
                   shouldFail: Option[Boolean] = Some(true),
@@ -163,13 +160,12 @@ object ArchiveInvoice extends BpmnDsl:
 
   given CirceCodec[List[String]] = deriveCodec
 
-  lazy val example: ServiceProcess[In, Out, ServiceIn, ServiceOut] =
-    serviceProcess(
-      serviceName,
-      descr = "Archives the Receipt.",
+  lazy val example: CustomTask[In, Out] =
+    customTask(
+      topicName,
       in = In(),
       out = Out() ,
-      defaultServiceMock = serviceMock,
+      descr = "Archives the Receipt.",
     )
 
 end ArchiveInvoice

@@ -29,7 +29,7 @@ sealed trait SScenario extends ScenarioOrStep:
   def withSteps(steps: List[SStep]): SScenario
 
 sealed trait HasProcessSteps extends ScenarioOrStep:
-  def process: ProcessOrService[?, ?, ?]
+  def process: ProcessOrExternalTask[?, ?, ?]
   def steps: List[SStep]
 
 sealed trait IsProcessScenario extends HasProcessSteps, SScenario
@@ -59,27 +59,27 @@ end ProcessScenario
 enum ProcessStartType:
   case START, MESSAGE
 
-case class ServiceProcessScenario(
+case class ExternalTaskScenario(
     name: String,
-    process: ServiceProcess[?, ?, ?, ?],
+    process: ExternalTask[?, ?, ?],
     isIgnored: Boolean = false,
     testOverrides: Option[TestOverrides] = None,
     startType: ProcessStartType = ProcessStartType.START
 ) extends IsProcessScenario,
-      WithTestOverrides[ServiceProcessScenario]:
+      WithTestOverrides[ExternalTaskScenario]:
 
   lazy val steps: List[SStep] = List.empty
   def inOut: InOut[?, ?, ?] = process
 
-  def add(testOverride: TestOverride): ServiceProcessScenario =
+  def add(testOverride: TestOverride): ExternalTaskScenario =
     copy(testOverrides = addOverride(testOverride))
 
-  def ignored: ServiceProcessScenario = copy(isIgnored = true)
+  def ignored: ExternalTaskScenario = copy(isIgnored = true)
 
   def withSteps(steps: List[SStep]): SScenario =
     this
 
-end ServiceProcessScenario
+end ExternalTaskScenario
 
 case class DmnScenario(
     name: String,
@@ -112,7 +112,7 @@ case class BadScenario(
     this
 end BadScenario
 
-trait IsIncidentScenario extends IsProcessScenario:
+trait IsIncidentScenario extends IsProcessScenario, HasProcessSteps:
   def incidentMsg: String
 
 case class IncidentScenario(
@@ -121,7 +121,8 @@ case class IncidentScenario(
     steps: List[SStep] = List.empty,
     incidentMsg: String,
     isIgnored: Boolean = false
-) extends IsIncidentScenario:
+) extends IsIncidentScenario,
+      HasProcessSteps:
   lazy val inOut: Process[?, ?] = process
 
   def ignored: IncidentScenario = copy(isIgnored = true)
@@ -133,11 +134,11 @@ end IncidentScenario
 
 case class IncidentServiceScenario(
     name: String,
-    process: ServiceProcess[?, ?, ?, ?],
+    process: ExternalTask[?, ?, ?],
     incidentMsg: String,
     isIgnored: Boolean = false
 ) extends IsIncidentScenario:
-  lazy val inOut: ServiceProcess[?, ?, ?, ?] = process
+  lazy val inOut: ExternalTask[?, ?, ?] = process
   lazy val steps: List[SStep] = List.empty
 
   def ignored: IncidentServiceScenario = copy(isIgnored = true)

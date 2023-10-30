@@ -15,7 +15,7 @@ class InvoiceSimulation extends CustomSimulation:
       AssignReviewerUT,
       ReviewInvoiceUT
     ),
-    ignore.incidentScenario(
+    incidentScenario(
       `Invoice Receipt that fails`,
       "Could not archive invoice..."
     )(
@@ -28,11 +28,11 @@ class InvoiceSimulation extends CustomSimulation:
       ApproveInvoiceUT,
       PrepareBankTransferUT
     ),
-    ignore.scenario(WithOverrideScenario)(
+    scenario(WithOverrideScenario)(
       `ApproveInvoiceUT with Override`,
       PrepareBankTransferUT
     ),
-    ignore.scenario(`Invoice Receipt with Review`)(
+    scenario(`Invoice Receipt with Review`)(
       NotApproveInvoiceUT,
       subProcess(`Review Invoice`)(
         AssignReviewerUT,
@@ -41,53 +41,52 @@ class InvoiceSimulation extends CustomSimulation:
       ApproveInvoiceUT, // now approve
       PrepareBankTransferUT
     ),
-    ignore.scenario(`Invoice Receipt with Review failed`)(
+    scenario(`Invoice Receipt with Review failed`)(
       NotApproveInvoiceUT, // do not approve
       subProcess(`Review Invoice not clarified`)(
         AssignReviewerUT,
         ReviewInvoiceNotClarifiedUT // do not clarify
       )
     ),
-    ignore.scenario(`Invoice Receipt with Review mocked`)(
+    scenario(`Invoice Receipt with Review mocked`)(
       NotApproveInvoiceUT,
       // subProcess Mocked - so nothing to do
       ApproveInvoiceUT, // now approve
       PrepareBankTransferUT
     ),
-    ignore.scenario(InvoiceAssignApproverDMN),
-    ignore.scenario(InvoiceAssignApproverDMN2),
-    ignore.badScenario(
+    scenario(InvoiceAssignApproverDMN),
+    scenario(InvoiceAssignApproverDMN2),
+    incidentScenario(
       BadValidationP,
-      500,
-      "Validation Error: Input is not valid: DecodingFailure at .creditor: Missing required field"
+      "DecodingFailure at .creditor: Got value 'null' with wrong type, expecting string"
     ),
     // mocking
-    ignore.scenario(`Invoice Receipt mocked invoiceReviewed`)(
+    scenario(`Invoice Receipt mocked invoiceReviewed`)(
       NotApproveInvoiceUT,
       // subProcess not needed because of mocking
       ApproveInvoiceUT, // now approve
       PrepareBankTransferUT
     ),
-    ignore.scenario(`Review Invoice mocked`), // mocks itself
+    scenario(`Review Invoice mocked`), // mocks itself
     // ServiceProcess - works only if exampleInvoiceWorkerC7 is running
-    ignore.scenario(
+    scenario(
       `Archive Invoice`
     ),
-    ignore.scenario(
+    scenario(
       `Archive Invoice handled`
     ),
-    ignore.scenario(
+    scenario(
       `Archive Invoice handled regex matched`
     ),
-    ignore.incidentScenario(
+    incidentScenario(
       `Archive Invoice handled not matched`,
       "The error was handled, but did not match the defined 'regexHandledErrors'."
     ),
-    ignore.incidentScenario(
+    incidentScenario(
       `Archive Invoice that fails`,
       "Could not archive invoice"
     ),
-    ignore.scenario(`Archive Invoice mocked output`),
+    scenario(`Archive Invoice mocked output`),
     scenario(
       `Star Wars Api People Detail`
     )
@@ -183,17 +182,17 @@ class InvoiceSimulation extends CustomSimulation:
   private lazy val `Archive Invoice handled` =
     ArchiveInvoice.example
       .withOut(_.copy(archived = None))
-      .handleError(ErrorCodes.`service-unexpected-error`)
+      .handleError(ErrorCodes.`custom-run-error`)
 
   private lazy val `Archive Invoice handled not matched` =
     ArchiveInvoice.example
-      .handleError(ErrorCodes.`service-unexpected-error`)
+      .handleError(ErrorCodes.`custom-run-error`)
       .handleErrorWithRegex("Some other error msg")
 
   private lazy val `Archive Invoice handled regex matched` =
     ArchiveInvoice.example
       .withOut(_.copy(archived = None))
-      .handleError(ErrorCodes.`service-unexpected-error`)
+      .handleError(ErrorCodes.`custom-run-error`)
       .handleErrorWithRegex("Could not .* invoice")
 
   private lazy val `Archive Invoice that fails` =

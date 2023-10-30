@@ -12,20 +12,16 @@ import sttp.model.Method
 @Configuration
 class ProjectWorkers extends EngineWorkerDsl:
   workers(
+    initProcess(InvoiceReceipt.example),
     initProcess(ReviewInvoice.example)
       //.withValidation(ReviewInvoiceWorker.customValidator)
       .validation(ReviewInvoiceWorker.validate) // implicit conversion
       .initProcess(ReviewInvoiceWorker.initVariables),
     service(StarWarsRestApi.example)
-      .runWork(StarWarsRestApiWorker.requestHandler)
-    /*
-    service(ArchiveInvoice.example,
-      ArchiveInvoiceWorker.requestHandler
-    )
-      .withDefaultHeaders(ArchiveInvoiceWorker.defaultHeaders)
-      .withBodyOutputMapper(ArchiveInvoiceWorker.bodyOutputMapper)
-     // .withWorkRunner(ArchiveInvoiceWorker.runWork)
-     */
+      .runWork(StarWarsRestApiWorker.requestHandler),
+    custom(ArchiveInvoice.example)
+      .runWork(ArchiveInvoiceWorker.runWork)
+
 
   )
 
@@ -51,24 +47,18 @@ class ProjectWorkers extends EngineWorkerDsl:
       "crazy-header" -> "just-to-test"
     )
 
-    def bodyOutputMapper(
-        requestOut: RequestOutput[ServiceOut]
-    ): Right[Nothing, Some[Out]] =
-      println("Do some crazy output mapping...")
-      Right(Some(Out(Some(requestOut.outputBody.nonEmpty))))
-
     def runWork(
         inputObject: In,
         optOutput: Option[Out]
-    ): Either[ServiceUnexpectedError, Option[Out]] =
+    ): Either[CustomError, Option[Out]] =
       println("Do some crazy things running work...")
-      optOutput match
-        case Some(out) =>
-          Right(Some(out))
-        case None if inputObject.shouldFail.getOrElse(false) =>
-          Left(ServiceUnexpectedError("Could not archive invoice..."))
+      inputObject.shouldFail match
+        case Some(false) =>
+          Right(Some(Out(Some(true))))
+        case Some(true) =>
+          Left(CustomError("Could not archive invoice..."))
         case _ =>
-          Right(Some(Out()))
+          Right(Some(Out(Some(false))))
 
   end ArchiveInvoiceWorker
 
@@ -88,7 +78,7 @@ class ProjectWorkers extends EngineWorkerDsl:
       )
     private def outputMapper(
         out: RequestOutput[ServiceOut]
-    ): Either[MappingError, Option[Out]] =
+    ): Either[ServiceMappingError, Option[Out]] =
       Right(Some(Out(out.outputBody)))
 
   end StarWarsRestApiWorker

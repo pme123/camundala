@@ -36,7 +36,8 @@ enum InputParams:
   case handledErrors
   case regexHandledErrors
   case impersonateUserId
-  case serviceName
+  // special case
+  case topicName
 end InputParams
 
 type ErrorCodeType = ErrorCodes | String | Int
@@ -50,6 +51,8 @@ enum ErrorCodes:
   case `running-failed`
   case `bad-variable`
   case `mapping-error`
+  case `custom-run-error`
+  case `service-mapping-error`
   case `service-auth-error`
   case `service-bad-body-error`
   case `service-unexpected-error`

@@ -183,17 +183,37 @@ def generalVariablesDescr[Out <: Product: Encoder](
       """.stripMargin
 end generalVariablesDescr
 
-case class ServiceProcessApi[
+sealed trait ExternalTaskApi[
+  In <: Product: Encoder: Decoder: Schema,
+  Out <: Product: Encoder: Decoder: Schema: ClassTag,
+] extends InOutApi[In, Out]:
+  def inOut: ExternalTask[In, Out, ?]
+
+  def processName: String = inOut.processName
+  lazy val topicName =  inOut.topicName
+
+  override def apiDescription(
+                               diagramDownloadPath: Option[String],
+                               diagramNameAdjuster: Option[String => String]
+                             ): String =
+    s"""
+       |
+       |${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
+       |
+       |Topic: `$topicName`
+       |""".stripMargin
+
+case class ServiceWorkerApi[
     In <: Product: Encoder: Decoder: Schema,
     Out <: Product: Encoder: Decoder: Schema: ClassTag,
     ServiceIn <: Product: Encoder: Schema,
     ServiceOut: Encoder: Decoder: Schema
 ](
-    name: String,
-    inOut: ServiceProcess[In, Out, ServiceIn, ServiceOut],
-    apiExamples: ApiExamples[In, Out]
-) extends InOutApi[In, Out]:
-  lazy val processName: String = inOut.processName
+   name: String,
+   inOut: ServiceTask[In, Out, ServiceIn, ServiceOut],
+   apiExamples: ApiExamples[In, Out]
+) extends ExternalTaskApi[In, Out]:
+
   def withExamples(
       examples: ApiExamples[In, Out]
   ): InOutApi[In, Out] =
@@ -214,7 +234,7 @@ case class ServiceProcessApi[
        |${generalVariablesDescr(
       inOut.out,
       s"""
-       |**outputServiceMock**: 
+       |**outputServiceMock**:
        |```json
        |...
        |"outputServiceMock": ${MockedServiceResponse
@@ -225,7 +245,7 @@ case class ServiceProcessApi[
     )}
     """.stripMargin
 
-object ServiceProcessApi:
+object ServiceWorkerApi:
   def apply[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema: ClassTag,
@@ -233,11 +253,39 @@ object ServiceProcessApi:
       ServiceOut: Encoder: Decoder: Schema
   ](
       name: String,
-      inOut: ServiceProcess[In, Out, ServiceIn, ServiceOut]
-  ): ServiceProcessApi[In, Out, ServiceIn, ServiceOut] =
-    ServiceProcessApi(name, inOut, ApiExamples(name, inOut))
+      inOut: ServiceTask[In, Out, ServiceIn, ServiceOut]
+  ): ServiceWorkerApi[In, Out, ServiceIn, ServiceOut] =
+    ServiceWorkerApi(name, inOut, ApiExamples(name, inOut))
 
-end ServiceProcessApi
+end ServiceWorkerApi
+
+case class CustomWorkerApi[
+  In <: Product: Encoder: Decoder: Schema,
+  Out <: Product: Encoder: Decoder: Schema: ClassTag,
+](
+   name: String,
+   inOut: CustomTask[In, Out],
+   apiExamples: ApiExamples[In, Out]
+ ) extends ExternalTaskApi[In, Out]:
+
+  def withExamples(
+                    examples: ApiExamples[In, Out]
+                  ): InOutApi[In, Out] =
+    copy(apiExamples = examples)
+
+
+
+object CustomWorkerApi:
+  def apply[
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema: ClassTag,
+  ](
+     name: String,
+     inOut: CustomTask[In, Out]
+   ): CustomWorkerApi[In, Out] =
+    CustomWorkerApi(name, inOut, ApiExamples(name, inOut))
+
+end CustomWorkerApi
 
 case class DecisionDmnApi[
     In <: Product: Encoder: Decoder: Schema,

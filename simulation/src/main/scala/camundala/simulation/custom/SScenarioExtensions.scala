@@ -149,7 +149,7 @@ trait SScenarioExtensions extends SStepExtensions:
           yield summon[ScenarioData]
       }
   end extension
-  extension (scenario: ServiceProcessScenario)
+  extension (scenario: ExternalTaskScenario)
     def run(): Future[ResultType] =
       println(s"ServiceProcessScenario started ${scenario.name}")
       scenario.logScenario { (data: ScenarioData) =>

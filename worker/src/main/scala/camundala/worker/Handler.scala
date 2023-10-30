@@ -86,7 +86,7 @@ trait RunWorkHandler[
     Out <: Product: CirceCodec
 ]:
   type RunnerOutput =
-    EngineContext ?=> Either[CamundalaWorkerError, Option[Out]]
+    EngineContext ?=> Either[RunWorkError, Option[Out]]
 
   def runWork(
       inputObject: In,
@@ -96,7 +96,7 @@ trait RunWorkHandler[
 case class ServiceHandler[
     In <: Product: CirceCodec,
     Out <: Product: CirceCodec,
-    ServiceIn : Encoder,
+    ServiceIn: Encoder,
     ServiceOut: Decoder
 ](
     httpMethod: Method,
@@ -109,10 +109,8 @@ case class ServiceHandler[
       RequestOutput[ServiceOut]
     ],
     inputMapper: Option[In => ServiceIn] = None,
-    outputMapper: RequestOutput[ServiceOut] => Either[MappingError, Option[Out]] =
+    outputMapper: RequestOutput[ServiceOut] => Either[ServiceMappingError, Option[Out]] =
       (_: RequestOutput[ServiceOut]) => Right(None),
-  //  toRunnable: (In, ServiceHandler[In, Out,ServiceIn, ServiceOut]) => RunnableRequest[ServiceIn] =
-  //  (in:In, handler: ServiceHandler[In, Out,ServiceIn, ServiceOut]) => RunnableRequest(in, handler)
 ) extends RunWorkHandler[In, Out]:
 
   def runWork(
@@ -122,17 +120,17 @@ case class ServiceHandler[
     val body = inputMapper.map(m => m(inputObject))
     val qParams = queryParams(inputObject)
     val runnableRequest = RunnableRequest(httpMethod, apiUri, qParams, body)
-    for {
+    (for {
       optWithServiceMock <- withServiceMock(runnableRequest)
       output <- handleMocking(optWithServiceMock, runnableRequest).getOrElse(
         sendRequest(runnableRequest)
           .flatMap(outputMapper)
       )
-    } yield output
+    } yield output)
 
   private def withServiceMock(
       runnableRequest: RunnableRequest[ServiceIn]
-  )(using context: EngineContext): Either[CamundalaWorkerError, Option[Out]] =
+  )(using context: EngineContext): Either[ServiceError, Option[Out]] =
     context.generalVariables.outputServiceMockOpt
       .map { json =>
         for {
@@ -148,12 +146,14 @@ case class ServiceHandler[
 
       }
       .getOrElse(Right(None))
+      .left
+      .map(e => ServiceUnexpectedError(s"There was an Error creating Service Mock: $e"))
   end withServiceMock
 
   private def handleMocking(
       optOutMock: Option[Out],
       runnableRequest: RunnableRequest[ServiceIn]
-  ): Option[Either[CamundalaWorkerError, Option[Out]]] =
+  ): Option[Either[ServiceError, Option[Out]]] =
     optOutMock
       .map { mock =>
         println(s"""Mocked Service: ${niceClassName(this.getClass)}
@@ -168,7 +168,7 @@ case class ServiceHandler[
   private def handleServiceMock(
       mockedResponse: Option[MockedServiceResponse[ServiceOut]],
       runnableRequest: RunnableRequest[ServiceIn]
-  ): Either[CamundalaWorkerError, Option[Out]] =
+  ): Either[ServiceError, Option[Out]] =
     mockedResponse
       .map {
         case MockedServiceResponse(_, Right(body), headers) =>
@@ -186,6 +186,8 @@ case class ServiceHandler[
           )
       }
       .getOrElse(Right(None))
+      .left
+      .map(e => ServiceUnexpectedError(s"There was an Error handling Service Mock: $e"))
 
   def mapBodyOutput(
       serviceOutput: ServiceOut,
@@ -219,3 +221,24 @@ case class ServiceHandler[
 
       }
 end ServiceHandler
+
+trait CustomHandler[
+    In <: Product: CirceCodec,
+    Out <: Product: CirceCodec
+] extends RunWorkHandler[In, Out]:
+
+end CustomHandler
+
+object CustomHandler:
+  def apply[
+      In <: Product: CirceCodec,
+      Out <: Product: CirceCodec
+  ](funct: (In, Option[Out]) => Either[CustomError, Option[Out]]): CustomHandler[In, Out] =
+    
+    new CustomHandler[In, Out] {
+      override def runWork(
+          inputObject: In,
+          optOutMock: Option[Out]
+      ): RunnerOutput =
+        funct(inputObject, optOutMock)
+    }

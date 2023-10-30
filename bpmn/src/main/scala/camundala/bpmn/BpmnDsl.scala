@@ -21,21 +21,34 @@ trait BpmnDsl:
       InOutDescr(id, in, out, descr.value)
     )
 
-  def serviceProcess[
+  def serviceTask[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema,
       ServiceIn <: Product: Encoder: Decoder: Schema,
       ServiceOut: Encoder: Decoder
   ](
-      serviceName: String,
+      topicName: String,
       in: In = NoInput(),
       out: Out = NoOutput(),
       defaultServiceMock: ServiceOut,
       descr: Optable[String] = None
-  ): ServiceProcess[In, Out, ServiceIn, ServiceOut] =
-    ServiceProcess(
-      InOutDescr(serviceName, in, out, descr.value),
+  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+    ServiceTask(
+      InOutDescr(topicName, in, out, descr.value),
       defaultServiceMock
+    )
+
+  def customTask[
+    In <: Product : Encoder : Decoder : Schema,
+    Out <: Product : Encoder : Decoder : Schema
+  ](
+     topicName: String,
+     in: In = NoInput(),
+     out: Out = NoOutput(),
+     descr: Optable[String] = None
+   ): CustomTask[In, Out] =
+    CustomTask(
+      InOutDescr(topicName, in, out, descr.value),
     )
 
   // Use result strategy, like _singleEntry_, _collectEntries_, _singleResult_, _resultList_

@@ -9,12 +9,13 @@ import io.circe.*
 import java.net.URLDecoder
 import java.nio.charset.Charset
 
-private def decodeMock[Out: Decoder](
+def decodeMock[Out: Decoder](
     isService: Boolean,
     json: Json
 )(using
     context: EngineContext
 ): Either[MockerError | MockedOutput, Option[Out]] =
+  println(s"JSON: $json - ${json.isObject}, $isService")
   (json.isObject, isService) match
     case (true, true) =>
       decodeTo[Out](json.asJson.toString)
@@ -23,7 +24,7 @@ private def decodeMock[Out: Decoder](
         .map(ex => MockerError(errorMsg = ex.errorMsg))
     case (true, _) =>
       Left(
-        MockedOutput(output = context.toEngineObject(json))
+        MockedOutput(output = context.jsonObjectToEngineObject(json.asObject.get))
       )
     case _ =>
       Left(
@@ -79,8 +80,6 @@ object CamundalaWorkerError:
   ) extends ErrorWithOutput:
     override val isMock = true
 
-  case class CustomError(errorCode: String, errorMsg: String) extends CamundalaWorkerError
-
   case class InitProcessError(
       errorMsg: String = "Problems initialize default variables of the Process.",
       errorCode: ErrorCodes = ErrorCodes.`error-unexpected`
@@ -119,9 +118,18 @@ object CamundalaWorkerError:
       errorCode: ErrorCodes = ErrorCodes.`bad-variable`
   ) extends CamundalaWorkerError
 
-  trait RunnerError extends CamundalaWorkerError
+  sealed trait RunWorkError extends CamundalaWorkerError
 
-  trait ServiceError extends RunnerError
+  case class CustomError(
+                         errorMsg: String,
+                         errorCode: ErrorCodes = ErrorCodes.`custom-run-error`) extends RunWorkError
+
+  trait ServiceError extends RunWorkError
+
+  case class ServiceMappingError(
+      errorMsg: String,
+      errorCode: ErrorCodes = ErrorCodes.`service-mapping-error`
+  ) extends ServiceError
 
   case class ServiceAuthError(
       errorMsg: String,

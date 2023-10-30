@@ -23,7 +23,6 @@
       <bpmn:outgoing>Flow_0ldv4ul</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:intermediateThrowEvent id="OutputmockedEvent1" name="output-mocked">
-      <bpmn:incoming>Flow_1tnbvod</bpmn:incoming>
       <bpmn:linkEventDefinition id="LinkEventDefinition_147ix62" name="output-mocked" />
     </bpmn:intermediateThrowEvent>
     <bpmn:intermediateThrowEvent id="ValidationfailedEvent1" name="validation-failed">
@@ -47,6 +46,7 @@
         <camunda:executionListener expression="${execution.setVariable(&#34;processStatus&#34;, &#34;mocked&#34;)}" event="start" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0vdwlr8</bpmn:incoming>
+      <bpmn:incoming>Flow_1tnbvod</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:intermediateCatchEvent id="OutputmockedEvent" name="output-mocked">
       <bpmn:outgoing>Flow_0vdwlr8</bpmn:outgoing>
@@ -75,7 +75,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_144f11w" sourceRef="AssignReviewerUT" targetRef="ReviewInvoiceUT" />
     <bpmn:sequenceFlow id="Flow_0ldv4ul" sourceRef="ValidateStartMessageTask" targetRef="AssignReviewerUT" />
     <bpmn:sequenceFlow id="Flow_1051741" sourceRef="StartEvent_1" targetRef="ValidateStartMessageTask" />
-    <bpmn:sequenceFlow id="Flow_1tnbvod" sourceRef="MockedBoundaryEvent" targetRef="OutputmockedEvent1" />
+    <bpmn:sequenceFlow id="Flow_1tnbvod" sourceRef="MockedBoundaryEvent" targetRef="OutputmockedEndEvent" />
     <bpmn:sequenceFlow id="Flow_1szk79c" sourceRef="Event_1roicyw" targetRef="ValidationfailedEvent1" />
     <bpmn:sequenceFlow id="Flow_1canyvf" sourceRef="ValidationfailedEvent" targetRef="ValidationfailedEndEvent" />
     <bpmn:sequenceFlow id="Flow_0vdwlr8" sourceRef="OutputmockedEvent" targetRef="OutputmockedEndEvent" />
@@ -195,7 +195,8 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1tnbvod_di" bpmnElement="Flow_1tnbvod">
         <di:waypoint x="490" y="205" />
-        <di:waypoint x="490" y="249" />
+        <di:waypoint x="490" y="260" />
+        <di:waypoint x="865" y="260" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1szk79c_di" bpmnElement="Flow_1szk79c">
         <di:waypoint x="390" y="205" />

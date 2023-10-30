@@ -3,7 +3,7 @@ info:
   title: Invoice Example Process API
   version: '1.0'
   summary: "\n**This is for Postman - to have example requests. Be aware the Output\
-    \ is not provided!**\n\n\n\nCreated at 28/10/2023, 09:15\n\n**See the [Camundala\
+    \ is not provided!**\n\n\n\nCreated at 30/10/2023, 07:48\n\n**See the [Camundala\
     \ Documentation](https://pme123.github.io/camundala/)\n\n> This is the invoice\
     \ demo application which is shipped with the full distributions.\n\nSee the original\
     \ [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).\n\
@@ -689,11 +689,11 @@ paths:
     post:
       tags:
       - Workers
-      summary: ArchiveInvoiceService
+      summary: 'CustomTask: ArchiveInvoiceService'
       description: |
         Archives the Receipt.
 
-        See API Doc: [ArchiveInvoiceService](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/ArchiveInvoiceService/operation/ArchiveInvoiceService)
+        See API Doc: [CustomTask: ArchiveInvoiceService](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/ArchiveInvoiceService/operation/CustomTask:%20ArchiveInvoiceService)
       operationId: postProcess-definitionKeyCamundala-service-genericStart--remove:archiveinvoiceservice--
       requestBody:
         content:

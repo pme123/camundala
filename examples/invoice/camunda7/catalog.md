@@ -12,8 +12,8 @@
 - [UserTask: ReviewInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/example-invoice-c7-review/operation/UserTask:%20ReviewInvoiceUT)
 
 #### [Workers](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Workers)
-- [ServiceProcess: star-wars-api-people-detail](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Workers/operation/ServiceProcess:%20star-wars-api-people-detail)
-- [ServiceProcess: ArchiveInvoiceService](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Workers/operation/ServiceProcess:%20ArchiveInvoiceService)
+- [ServiceTask: star-wars-api-people-detail](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Workers/operation/ServiceTask:%20star-wars-api-people-detail)
+- [CustomTask: ArchiveInvoiceService](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/Workers/operation/CustomTask:%20ArchiveInvoiceService)
 
 #### [User Tasks](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/User-Tasks)
 - [UserTask: ApproveInvoiceUT](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/User-Tasks/operation/UserTask:%20ApproveInvoiceUT)

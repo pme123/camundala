@@ -3,9 +3,9 @@ package api
 
 import camundala.bpmn.*
 import camundala.domain.*
-import sttp.tapir.*
 import sttp.tapir.EndpointIO.Example
 import sttp.tapir.json.circe.*
+import sttp.tapir.{PublicEndpoint, *}
 
 trait CamundaPostmanApiCreator extends PostmanApiCreator:
 
@@ -18,13 +18,15 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
       api.startProcess(tag, isGroup)
     )
 
-  protected def createPostmanForServiceProcess(
-      api: ServiceProcessApi[?, ?, ?, ?],
+  protected def createPostmanForExternalTask(
+      api: ExternalTaskApi[?, ?],
       tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     Seq(
       api.startProcess(tag)
     )
+  end createPostmanForExternalTask
+
   protected def createPostmanForUserTask(
       api: ActivityApi[?, ?],
       tag: String
@@ -70,19 +72,19 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
         tag: String,
         isGroup: Boolean
     ): PublicEndpoint[?, Unit, ?, Any] =
-       process.inOut.startEventType match
-         case StartEventType.Message =>
-           correlateMessage(tag)
-         case StartEventType.Signal =>
-           sendSignal(tag)
-         case _ =>
-           startProcessNone(tag, isGroup)
+      process.inOut.startEventType match
+        case StartEventType.Message =>
+          correlateMessage(tag)
+        case StartEventType.Signal =>
+          sendSignal(tag)
+        case _ =>
+          startProcessNone(tag, isGroup)
     end startProcess
 
     private def startProcessNone(
-                      tag: String,
-                      isGroup: Boolean
-                    ): PublicEndpoint[?, Unit, ?, Any] =
+        tag: String,
+        isGroup: Boolean
+    ): PublicEndpoint[?, Unit, ?, Any] =
       val path =
         tenantIdPath(
           "process-definition" / "key" / process.endpointPath(isGroup),
@@ -151,72 +153,72 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
 
   end extension
 
-  extension (process: ServiceProcessApi[?, ?, ?, ?])
+  extension (externalTaskApi: ExternalTaskApi[?, ?])
 
     def startProcess(
-                                  tag: String,
-                                ): PublicEndpoint[?, Unit, ?, Any] =
+        tag: String
+    ): PublicEndpoint[?, Unit, ?, Any] =
       val path =
         tenantIdPath(
-          "process-definition" / "key" / process.processName,
-          s"start--REMOVE:${process.id}--"
+          "process-definition" / "key" / externalTaskApi.processName,
+          s"start--REMOVE:${externalTaskApi.id}--"
         )
       val input =
-        process
+        externalTaskApi
           .toPostmanInput((example: FormVariables) =>
             StartProcessIn(
               example,
-              Some(process.name)
+              Some(externalTaskApi.name)
             )
           )
-      process
+      externalTaskApi
         .postmanBaseEndpoint(tag, input, "StartProcess")
         .in(path)
         .post
     end startProcess
 
     private def correlateMessage(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val path = "message" / s"--REMOVE:${process.id}--"
-      val input = process
+      val path = "message" / s"--REMOVE:${externalTaskApi.id}--"
+      val input = externalTaskApi
         .toPostmanInput((example: FormVariables) =>
           CorrelateMessageIn(
-            process.id,
-            Some(process.name),
+            externalTaskApi.id,
+            Some(externalTaskApi.name),
             tenantId = apiConfig.tenantId,
             processVariables = Some(example)
           )
         )
       val descr =
         s"""
-           |${process.descr}
+           |${externalTaskApi.descr}
            |
            |Message:
-           |- _messageName_: `${process.id}`,
+           |- _messageName_: `${externalTaskApi.id}`,
            |""".stripMargin
-      process
+      externalTaskApi
         .postmanBaseEndpoint(tag, input, "CorrelateMessage", Some(descr))
         .in(path)
         .post
     end correlateMessage
 
     private def sendSignal(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val path = "signal" / s"--REMOVE:${process.id}--"
-      val input = process
+      val path = "signal" / s"--REMOVE:${externalTaskApi.id}--"
+      val input = externalTaskApi
         .toPostmanInput((example: FormVariables) =>
           SendSignalIn(
-            process.id,
+            externalTaskApi.id,
             tenantId = apiConfig.tenantId,
             variables = Some(example)
           )
         )
       val descr =
         s"""
-           |${process.descr}
+           |${externalTaskApi.descr}
            |
            |Signal:
-           |- _messageName_: `${process.id}`,
+           |- _messageName_: `${externalTaskApi.id}`,
            |""".stripMargin
-      process
+      externalTaskApi
         .postmanBaseEndpoint(tag, input, "SendSignal", Some(descr))
         .in(path)
         .post
@@ -369,8 +371,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
         T <: Product: Encoder: Decoder: Schema
     ](
         wrapper: FormVariables => T,
-        examples: Seq[InOutExample[?]] =
-          inOutApi.apiExamples.inputExamples.fetchExamples
+        examples: Seq[InOutExample[?]] = inOutApi.apiExamples.inputExamples.fetchExamples
     ): Option[EndpointInput[T]] =
       inOutApi.inOut.in match
         case _: NoInput =>
