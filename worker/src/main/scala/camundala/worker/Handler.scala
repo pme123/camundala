@@ -119,8 +119,9 @@ case class ServiceHandler[
   ): RunnerOutput =
     val body = inputMapper.map(m => m(inputObject))
     val qParams = queryParams(inputObject)
-    val runnableRequest = RunnableRequest(httpMethod, apiUri, qParams, body)
     (for {
+      apiUriWithParams <- pathWithParams(inputObject, apiUri)
+      runnableRequest = RunnableRequest(httpMethod, apiUriWithParams, qParams, body)
       optWithServiceMock <- withServiceMock(runnableRequest)
       output <- handleMocking(optWithServiceMock, runnableRequest).getOrElse(
         sendRequest(runnableRequest)
@@ -209,7 +210,44 @@ case class ServiceHandler[
     case k => k -> None
   }.toMap
 
-  def queryParams(inputObject: In): Seq[(String, Seq[String])] =
+  private def pathWithParams(inputObject: In, apiUri: Uri): Either[ServiceBadPathError, Uri] =
+    val params = inputObject.productElementNames
+      .zip(inputObject.productIterator)
+      .toMap
+
+    val Uri(
+      scheme,
+      authority,
+      pathSegments,
+      querySegments,
+      fragmentSegment
+    ) = apiUri
+    val newSegments = pathSegments.segments.map { ps =>
+      val value: String = ps.v.toString
+      value match
+        case v if v.startsWith("{") && v.endsWith("}") =>
+          params
+            .get(v.drop(1).dropRight(1))
+            .map(pathValue => Right(pathValue.toString))
+            .getOrElse(Left(s"There is no Path Element '$v' in your In-Object: $inputObject"))
+        case _ =>
+          Right(value)
+    }
+    val (errors, successes) = newSegments.partition(_.isLeft)
+    if (errors.isEmpty)
+      Right(
+        Uri(
+          scheme,
+          authority,
+          Uri.PathSegments.absoluteOrEmptyS(successes.map(_.getOrElse("-")).toSeq),
+          querySegments,
+          fragmentSegment
+        )
+      )
+    else
+      Left(ServiceBadPathError(errors.map(_.swap.getOrElse("-")).mkString("\n")))
+
+  private def queryParams(inputObject: In): Seq[(String, Seq[String])] =
     inputObject.productElementNames.toSeq
       .zip(inputObject.productIterator.toSeq)
       .collect {
@@ -220,6 +258,7 @@ case class ServiceHandler[
           k -> Seq(defaultsMap.get(k).flatten.get)
 
       }
+
 end ServiceHandler
 
 trait CustomHandler[
@@ -234,7 +273,6 @@ object CustomHandler:
       In <: Product: CirceCodec,
       Out <: Product: CirceCodec
   ](funct: (In, Option[Out]) => Either[CustomError, Option[Out]]): CustomHandler[In, Out] =
-    
     new CustomHandler[In, Out] {
       override def runWork(
           inputObject: In,

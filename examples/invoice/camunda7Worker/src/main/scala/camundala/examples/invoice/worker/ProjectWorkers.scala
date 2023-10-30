@@ -21,8 +21,6 @@ class ProjectWorkers extends EngineWorkerDsl:
       .runWork(StarWarsRestApiWorker.requestHandler),
     custom(ArchiveInvoice.example)
       .runWork(ArchiveInvoiceWorker.runWork)
-
-
   )
 
   object ReviewInvoiceWorker:
@@ -69,7 +67,7 @@ class ProjectWorkers extends EngineWorkerDsl:
     lazy val requestHandler: ServiceHandler[In, Out, NoInput, ServiceOut] =
       ServiceHandler(
         httpMethod = Method.GET,
-        apiUri = uri"https://swapi.dev/api/people/1",
+        apiUri = uri"https://swapi.dev/api/people/{id}",
         defaultHeaders = Map(
           "crazy-header" -> "just-to-test"
         ),
