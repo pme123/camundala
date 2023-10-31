@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class ProjectWorkers extends EngineWorkerDsl:
-
+  lazy val logger = engineContext.getLogger(getClass)
   workers(
     initProcess(InvoiceReceipt.example),
     initProcess(ReviewInvoice.example)
@@ -25,12 +25,12 @@ class ProjectWorkers extends EngineWorkerDsl:
     import ReviewInvoice.*
     lazy val customValidator = ValidationHandler(validate)
     def validate(in: In): Either[ValidatorError, In] =
-      println("Do some custom validation...")
+      logger.info("Do some custom validation...")
       // Left(ValidatorError("bad val test"))
       Right(in)
 
     def initVariables(in: In): Either[InitProcessError, Map[String, Any]] =
-      println("Do some variable initialization...")
+      logger.info("Do some variable initialization...")
       Right(Map("justToTestInit" -> true))
     end initVariables
 
@@ -43,12 +43,14 @@ class ProjectWorkers extends EngineWorkerDsl:
         inputObject: In,
         optOutput: Option[Out]
     ): Either[CustomError, Option[Out]] =
-      println("Do some crazy things running work...")
+      logger.info("Do some crazy things running work...")
       inputObject.shouldFail match
         case Some(false) =>
           Right(Some(Out(Some(true))))
         case Some(true) =>
-          Left(CustomError("Could not archive invoice..."))
+          val err = CustomError("Could not archive invoice...")
+          logger.error(err)
+          Left(err)
         case _ =>
           Right(Some(Out(Some(false))))
 

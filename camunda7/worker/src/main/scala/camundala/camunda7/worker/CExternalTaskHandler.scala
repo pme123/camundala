@@ -1,14 +1,10 @@
 package camundala
 package camunda7.worker
 
-import camundala.bpmn.*
-import camundala.domain.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
 import org.camunda.bpm.client.task as camunda
-import org.springframework.beans.factory.annotation.Autowired
 
-import java.time.LocalDateTime
 import scala.jdk.CollectionConverters.*
 
 /**
@@ -26,19 +22,18 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends camunda.ExternalTaskHandl
                         externalTask: camunda.ExternalTask,
                         externalTaskService: camunda.ExternalTaskService
                       ): Unit =
-    println(
-      s"WORKER ${LocalDateTime.now()} ${externalTask.getTopicName} (${externalTask.getId}) started > ${externalTask.getBusinessKey}"
+    logger.info(
+      s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) started > ${externalTask.getBusinessKey}"
     )
     executeWorker(externalTaskService)(using externalTask)
-    println(
-      s"WORKER ${LocalDateTime.now()} ${externalTask.getTopicName} (${externalTask.getId}) ended   > ${externalTask.getBusinessKey}"
+    logger.info(
+      s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) ended   > ${externalTask.getBusinessKey}"
     )
   end execute
 
   private def executeWorker(
                              externalTaskService: camunda.ExternalTaskService
                            ): HelperContext[Unit] =
-    println(s"Worker ${summon[camunda.ExternalTask].getTopicName} running")
     val tryProcessVariables = ProcessVariablesExtractor.extract(variableNames)
     val tryGeneralVariables = ProcessVariablesExtractor.extractGeneral()
     try {
@@ -94,7 +89,6 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends camunda.ExternalTaskHandl
                 error.output
               case _ => Map.empty
             val filtered = filteredOutput(generalVariables.outputVariables, mockedOutput)
-            println(s"Handled Error: ${error.errorCode}: ${error.errorMsg}\n- Output: $filtered")
             Right(externalTaskService.handleBpmnError(
               summon[camunda.ExternalTask],
               s"${error.errorCode}",
@@ -109,7 +103,6 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends camunda.ExternalTaskHandl
         .left
         .map { err =>
           val errMessage = s"${err.errorCode}: ${err.errorMsg}"
-          println(s"Unhandled Error: $errMessage")
           externalTaskService.handleFailure(
             summon[camunda.ExternalTask],
             errMessage,
@@ -134,5 +127,7 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends camunda.ExternalTaskHandl
             .filter { case k -> _ => filter.contains(k) }
 
   end filteredOutput
+
+  protected lazy val logger: WorkerLogger = engineContext.getLogger(getClass)
 
 end CExternalTaskHandler

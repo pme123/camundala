@@ -150,10 +150,10 @@ case class ServiceHandler[
   private def handleMocking(
       optOutMock: Option[Out],
       runnableRequest: RunnableRequest[ServiceIn]
-  ): Option[Either[ServiceError, Option[Out]]] =
+  )(using context:EngineRunContext) : Option[Either[ServiceError, Option[Out]]] =
     optOutMock
       .map { mock =>
-        println(s"""Mocked Service: ${niceClassName(this.getClass)}
+        context.getLogger(getClass).info(s"""Mocked Service: ${niceClassName(this.getClass)}
                    |${requestMsg(runnableRequest)}
                    | - mockedResponse: ${mock.asJson}
                    |""".stripMargin)

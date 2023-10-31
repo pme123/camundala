@@ -48,9 +48,6 @@ case class WorkerExecutor[
             )
       val json: Either[ValidatorError, JsonObject] = jsonResult
         .map(_.foldLeft(JsonObject()) { case (jsonObj, jsonKey -> jsonValue) =>
-          println(
-            s" - $jsonKey: ${jsonValue.getClass.getSimpleName} - $jsonValue"
-          )
           jsonObj.add(jsonKey, jsonValue.getOrElse(Json.Null))
         })
       json
@@ -80,7 +77,6 @@ case class WorkerExecutor[
   object OutMocker:
 
     def mockOrProceed(): Either[MockerError | MockedOutput, Option[Out]] =
-      println(s"CONTEXT: $context")
       (
         context.generalVariables.servicesMocked,
         context.generalVariables.isMocked(worker.topic),

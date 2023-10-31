@@ -11,9 +11,7 @@ class InitProcessWorkerHandler(
     val engineContext: EngineContext
 ) extends CExternalTaskHandler[InitProcessWorker[?, ?]]:
   lazy val topic: String = worker.topic
-
-  println(s"ProcessWorkerHandler: $topic")
-
+  
 end InitProcessWorkerHandler
 
 class CustomWorkerHandler(
@@ -21,9 +19,7 @@ class CustomWorkerHandler(
     val engineContext: EngineContext
 )extends CExternalTaskHandler[CustomWorker[?, ?]]:
   lazy val topic: String = worker.topic
-
-  println(s"CustomWorkerHandler: $topic")
-
+  
 end CustomWorkerHandler
 
 class ServiceWorkerHandler(
@@ -31,6 +27,5 @@ class ServiceWorkerHandler(
     val engineContext: EngineContext
 ) extends CExternalTaskHandler[ServiceWorker[?, ?, ?, ?]]:
   lazy val topic: String = worker.topic
-  println(s"ServiceWorkerHandler: $topic")
 
 end ServiceWorkerHandler

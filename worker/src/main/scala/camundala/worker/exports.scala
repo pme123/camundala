@@ -1,8 +1,8 @@
 package camundala
 package worker
 
-import camundala.domain.*
 import camundala.bpmn.*
+import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 import io.circe.*
 
@@ -10,16 +10,12 @@ export sttp.model.Uri.UriContext
 export sttp.model.Method
 export sttp.model.Uri
 
-import java.net.URLDecoder
-import java.nio.charset.Charset
-
 def decodeMock[Out: Decoder](
     isService: Boolean,
     json: Json
 )(using
     context: EngineRunContext
 ): Either[MockerError | MockedOutput, Option[Out]] =
-  println(s"JSON: $json - ${json.isObject}, $isService")
   (json.isObject, isService) match
     case (true, true) =>
       decodeTo[Out](json.asJson.toString)

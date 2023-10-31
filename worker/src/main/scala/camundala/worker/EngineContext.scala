@@ -7,21 +7,29 @@ import camundala.worker.CamundalaWorkerError.ServiceError
 import java.time.LocalDateTime
 
 trait EngineContext:
+  def getLogger(clazz: Class[?]): WorkerLogger
   def toEngineObject: Json => Any
 
   def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
   ): Either[ServiceError, RequestOutput[ServiceOut]]
 
+trait WorkerLogger:
+  def debug(message: String): Unit
+  def info(message: String): Unit
+  def warn(message: String): Unit
+  def error(err: CamundalaWorkerError): Unit
+end WorkerLogger
+
 final case class EngineRunContext(engineContext: EngineContext, generalVariables: GeneralVariables):
 
-  private def toEngineObject: Json => Any = engineContext.toEngineObject
-
+  def getLogger(clazz: Class[?]): WorkerLogger = engineContext.getLogger(clazz)
+  
   def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
-                                                            request: RunnableRequest[ServiceIn]
-                                                          ): Either[ServiceError, RequestOutput[ServiceOut]] =
+      request: RunnableRequest[ServiceIn]
+  ): Either[ServiceError, RequestOutput[ServiceOut]] =
     engineContext.sendRequest(request)
-   
+
   def jsonObjectToEngineObject(
       json: JsonObject
   ): Map[String, Any] =
@@ -89,6 +97,7 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
         toEngineObject(j)
 
   end jsonToEngineValue
+  
+  private def toEngineObject: Json => Any = engineContext.toEngineObject
 
 end EngineRunContext
-
