@@ -25,11 +25,9 @@ sealed trait Worker[
   def runWorkHandler: Option[RunWorkHandler[In, Out]] = None
   // helper
   def variableNames: Seq[String] = in.productElementNames.toSeq
-  def defaultMock(using
-      EngineContext
-  ): Either[MockerError | MockedOutput, Option[Out]]
+  def defaultMock(using                  EngineRunContext): Either[MockerError | MockedOutput, Option[Out]]
 
-  def executor(using context: EngineContext): WorkerExecutor[In, Out, T]
+  def executor(using context: EngineRunContext): WorkerExecutor[In, Out, T]
 end Worker
 
 case class InitProcessWorker[
@@ -53,7 +51,7 @@ case class InitProcessWorker[
     copy(initProcessHandler = Some(init))
 
   def defaultMock(using
-      context: EngineContext
+      context: EngineRunContext
   ): Either[MockerError | MockedOutput, Option[Out]] = Left(
     MockedOutput(
       context.toEngineObject(out)
@@ -61,7 +59,7 @@ case class InitProcessWorker[
   )
 
   def executor(using
-      context: EngineContext
+      context: EngineRunContext
   ): WorkerExecutor[In, Out, InitProcessWorker[In, Out]] =
     WorkerExecutor(this)
 
@@ -88,7 +86,7 @@ case class CustomWorker[
     copy(runWorkHandler = Some(serviceHandler))
 
   def defaultMock(using
-                  context: EngineContext
+                  context: EngineRunContext
                  ): Either[MockerError | MockedOutput, Option[Out]] = Left(
     MockedOutput(
       context.toEngineObject(out)
@@ -96,7 +94,7 @@ case class CustomWorker[
   )
 
   def executor(using
-               context: EngineContext
+               context: EngineRunContext
               ): WorkerExecutor[In, Out, CustomWorker[In, Out]] =
     WorkerExecutor(this)
 
@@ -111,7 +109,7 @@ case class ServiceWorker[
    inOut: ServiceTask[In, Out, ServiceIn, ServiceOut],
    override val validationHandler: Option[ValidationHandler[In]] = None,
    override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None,
-)(using context: EngineContext)
+)
     extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
   lazy val topic: String = inOut.topicName
 
@@ -126,7 +124,7 @@ case class ServiceWorker[
     copy(runWorkHandler = Some(serviceHandler))
 
   def defaultMock(using
-      context: EngineContext
+      context: EngineRunContext
   ): Either[MockerError | MockedOutput, Option[Out]] =
     runWorkHandler
       .map(handler =>
@@ -147,7 +145,7 @@ case class ServiceWorker[
       )
 
   def executor(using
-      context: EngineContext
+      context: EngineRunContext
   ): WorkerExecutor[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]] =
     WorkerExecutor(this)
 

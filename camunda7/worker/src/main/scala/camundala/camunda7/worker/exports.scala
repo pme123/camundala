@@ -3,6 +3,7 @@ package camunda7.worker
 
 import domain.*
 import bpmn.*
+import camundala.worker.EngineContext
 import io.circe.*
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.client.variable.impl.value.JsonValueImpl

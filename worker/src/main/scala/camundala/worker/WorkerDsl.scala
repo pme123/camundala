@@ -7,8 +7,10 @@ import camundala.worker.CamundalaWorkerError.{CustomError, InitProcessError, Val
 
 import scala.language.implicitConversions
 
-private[worker] trait WorkerDsl:
+trait WorkerDsl:
 
+  def engineContext: EngineContext
+  
   // needed that it can be called from CSubscriptionPostProcessor
   var workers: Workers = _
 
@@ -19,9 +21,7 @@ private[worker] trait WorkerDsl:
   def initProcess[
       In <: Product: CirceCodec,
       Out <: Product: CirceCodec
-  ](process: Process[In, Out])(using
-      context: EngineContext
-  ): InitProcessWorker[In, Out] =
+  ](process: Process[In, Out]): InitProcessWorker[In, Out] =
     InitProcessWorker(process)
 
   def service[
@@ -31,8 +31,6 @@ private[worker] trait WorkerDsl:
       ServiceOut: CirceCodec
   ](
       service: ServiceTask[In, Out, ServiceIn, ServiceOut]
-  )(using
-      context: EngineContext
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     ServiceWorker(service)
 
@@ -41,7 +39,7 @@ private[worker] trait WorkerDsl:
       Out <: Product: CirceCodec
   ](
       service: CustomTask[In, Out]
-  )(using EngineContext): CustomWorker[In, Out] =
+  ): CustomWorker[In, Out] =
     CustomWorker(service)
 
   // implicit Converters

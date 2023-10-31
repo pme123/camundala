@@ -86,7 +86,7 @@ trait RunWorkHandler[
     Out <: Product: CirceCodec
 ]:
   type RunnerOutput =
-    EngineContext ?=> Either[RunWorkError, Option[Out]]
+    EngineRunContext ?=> Either[RunWorkError, Option[Out]]
 
   def runWork(
       inputObject: In,
@@ -120,14 +120,14 @@ case class ServiceHandler[
       runnableRequest = RunnableRequest(httpMethod, apiUriWithParams, qParams, body)
       optWithServiceMock <- withServiceMock(runnableRequest)
       output <- handleMocking(optWithServiceMock, runnableRequest).getOrElse(
-        summon[EngineContext].sendRequest(runnableRequest)
+        summon[EngineRunContext].sendRequest(runnableRequest)
           .flatMap(outputMapper)
       )
     } yield output)
 
   private def withServiceMock(
       runnableRequest: RunnableRequest[ServiceIn]
-  )(using context: EngineContext): Either[ServiceError, Option[Out]] =
+  )(using context: EngineRunContext): Either[ServiceError, Option[Out]] =
     context.generalVariables.outputServiceMockOpt
       .map { json =>
         for {
@@ -219,7 +219,7 @@ case class ServiceHandler[
       fragmentSegment
     ) = apiUri
     val newSegments = pathSegments.segments.map { ps =>
-      val value: String = ps.v.toString
+      val value: String = ps.v
       value match
         case v if v.startsWith("{") && v.endsWith("}") =>
           params

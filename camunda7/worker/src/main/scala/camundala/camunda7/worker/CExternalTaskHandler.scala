@@ -5,7 +5,8 @@ import camundala.bpmn.*
 import camundala.domain.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
-import org.camunda.bpm.client.{task as camuda}
+import org.camunda.bpm.client.task as camunda
+import org.springframework.beans.factory.annotation.Autowired
 
 import java.time.LocalDateTime
 import scala.jdk.CollectionConverters.*
@@ -14,14 +15,16 @@ import scala.jdk.CollectionConverters.*
  * To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
  * parameters.
  */
-trait CExternalTaskHandler[T <: Worker[?,?,?]] extends camuda.ExternalTaskHandler, CamundaHelper:
+trait CExternalTaskHandler[T <: Worker[?,?,?]] extends camunda.ExternalTaskHandler, CamundaHelper:
+
+  def engineContext: EngineContext
   def topic: String
   def worker: T
   def variableNames: Seq[String] = worker.variableNames
 
   override def execute(
-                        externalTask: camuda.ExternalTask,
-                        externalTaskService: camuda.ExternalTaskService
+                        externalTask: camunda.ExternalTask,
+                        externalTaskService: camunda.ExternalTaskService
                       ): Unit =
     println(
       s"WORKER ${LocalDateTime.now()} ${externalTask.getTopicName} (${externalTask.getId}) started > ${externalTask.getBusinessKey}"
@@ -33,17 +36,16 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends camuda.ExternalTaskHandle
   end execute
 
   private def executeWorker(
-                             externalTaskService: camuda.ExternalTaskService
+                             externalTaskService: camunda.ExternalTaskService
                            ): HelperContext[Unit] =
-    println(s"Worker ${summon[camuda.ExternalTask].getTopicName} running")
+    println(s"Worker ${summon[camunda.ExternalTask].getTopicName} running")
     val tryProcessVariables = ProcessVariablesExtractor.extract(variableNames)
     val tryGeneralVariables = ProcessVariablesExtractor.extractGeneral()
     try {
       (for {
         generalVariables <- tryGeneralVariables
-        context = Camunda7Context(generalVariables)
+        context = EngineRunContext(engineContext, generalVariables)
         filteredOut <- worker.executor(using context).execute(tryProcessVariables)
-        _ = println(s"EXECUTE WORKER: $filteredOut")
       } yield externalTaskService.handleSuccess(filteredOut) //
         ).left.map { ex =>
         externalTaskService.handleError(ex, tryGeneralVariables)
@@ -60,13 +62,13 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends camuda.ExternalTaskHandle
     }
   end executeWorker
 
-  extension (externalTaskService: camuda.ExternalTaskService)
+  extension (externalTaskService: camunda.ExternalTaskService)
 
     private def handleSuccess(
                                filteredOutput: Map[String, Any]
                              ): HelperContext[Unit] =
       externalTaskService.complete(
-        summon[camuda.ExternalTask],
+        summon[camunda.ExternalTask],
         filteredOutput.asJava,
         Map.empty.asJava
       )
@@ -94,7 +96,7 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends camuda.ExternalTaskHandle
             val filtered = filteredOutput(generalVariables.outputVariables, mockedOutput)
             println(s"Handled Error: ${error.errorCode}: ${error.errorMsg}\n- Output: $filtered")
             Right(externalTaskService.handleBpmnError(
-              summon[camuda.ExternalTask],
+              summon[camunda.ExternalTask],
               s"${error.errorCode}",
               error.errorMsg,
               filtered.asJava
@@ -109,7 +111,7 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends camuda.ExternalTaskHandle
           val errMessage = s"${err.errorCode}: ${err.errorMsg}"
           println(s"Unhandled Error: $errMessage")
           externalTaskService.handleFailure(
-            summon[camuda.ExternalTask],
+            summon[camunda.ExternalTask],
             errMessage,
             s" $errMessage\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
             0,

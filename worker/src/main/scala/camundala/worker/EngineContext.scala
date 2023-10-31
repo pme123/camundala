@@ -7,13 +7,21 @@ import camundala.worker.CamundalaWorkerError.ServiceError
 import java.time.LocalDateTime
 
 trait EngineContext:
-  protected def toEngineObject: Json => Any
-  def generalVariables: GeneralVariables
+  def toEngineObject: Json => Any
 
   def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
   ): Either[ServiceError, RequestOutput[ServiceOut]]
 
+final case class EngineRunContext(engineContext: EngineContext, generalVariables: GeneralVariables):
+
+  private def toEngineObject: Json => Any = engineContext.toEngineObject
+
+  def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
+                                                            request: RunnableRequest[ServiceIn]
+                                                          ): Either[ServiceError, RequestOutput[ServiceOut]] =
+    engineContext.sendRequest(request)
+   
   def jsonObjectToEngineObject(
       json: JsonObject
   ): Map[String, Any] =
@@ -82,4 +90,5 @@ trait EngineContext:
 
   end jsonToEngineValue
 
-end EngineContext
+end EngineRunContext
+

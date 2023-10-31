@@ -10,7 +10,7 @@ case class WorkerExecutor[
     T <: Worker[In, Out, ?]
 ](
     worker: T
-)(using context: EngineContext):
+)(using context: EngineRunContext):
 
   def execute(
       processVariables: Seq[Either[BadVariableError, (String, Option[Json])]]

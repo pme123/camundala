@@ -1,6 +1,7 @@
 package camundala
 package camunda7.worker
 
+import camundala.domain.prettyString
 import camundala.bpmn.InputParams
 import camundala.worker.*
 import org.camunda.bpm.client.spring.SpringTopicSubscription
@@ -9,9 +10,11 @@ import org.camunda.bpm.client.spring.impl.subscription.util.SubscriptionLoggerUt
 import org.camunda.bpm.client.spring.impl.util.LoggerUtil
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.ListableBeanFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.config.{BeanDefinition, ConfigurableListableBeanFactory}
 import org.springframework.beans.factory.support.{BeanDefinitionBuilder, BeanDefinitionRegistry, BeanDefinitionRegistryPostProcessor}
 import org.springframework.core
+import org.springframework.stereotype.Component
 
 import scala.jdk.CollectionConverters.*
 
@@ -30,9 +33,9 @@ class CSubscriptionPostProcessor(
   ): Unit =
 
     val listableBeanFactory = registry.asInstanceOf[ListableBeanFactory]
-    val workerDsl = listableBeanFactory.getBean(classOf[EngineWorkerDsl])
-    println(s"WORKERDSL: ${workerDsl.workers}")
-    val handlerBeans = workerDsl.workers.workers.map(w => w.topic -> workerHandler(w))
+    val workerDsl = listableBeanFactory.getBean(classOf[WorkerDsl])
+    println(s"WORKERDSL: ${prettyString(workerDsl.workers.workers)}")
+    val handlerBeans = workerDsl.workers.workers.map(w => w.topic -> workerHandler(w, workerDsl.engineContext))
 
     for (handlerBean <- handlerBeans) {
       val (handlerBeanName -> handler) = handlerBean
@@ -90,14 +93,14 @@ class CSubscriptionPostProcessor(
   ): Unit = {}
 
 
-  def workerHandler(worker: Worker[?, ?,?]) =
+  def workerHandler(worker: Worker[?, ?,?], engineContext: EngineContext) =
       worker match
         case pw: InitProcessWorker[?, ?] =>
-          InitProcessWorkerHandler(pw)
+          InitProcessWorkerHandler(pw, engineContext)
         case cw: CustomWorker[?, ?] =>
-          CustomWorkerHandler(cw)
+          CustomWorkerHandler(cw, engineContext)
         case spw: ServiceWorker[?, ?, ?, ?] =>
-          ServiceWorkerHandler(spw)
+          ServiceWorkerHandler(spw, engineContext)
 
 object CSubscriptionPostProcessor:
   protected val LOG: SubscriptionLoggerUtil = LoggerUtil.SUBSCRIPTION_LOGGER

@@ -6,6 +6,10 @@ import camundala.bpmn.*
 import camundala.worker.CamundalaWorkerError.*
 import io.circe.*
 
+export sttp.model.Uri.UriContext
+export sttp.model.Method
+export sttp.model.Uri
+
 import java.net.URLDecoder
 import java.nio.charset.Charset
 
@@ -13,7 +17,7 @@ def decodeMock[Out: Decoder](
     isService: Boolean,
     json: Json
 )(using
-    context: EngineContext
+    context: EngineRunContext
 ): Either[MockerError | MockedOutput, Option[Out]] =
   println(s"JSON: $json - ${json.isObject}, $isService")
   (json.isObject, isService) match
@@ -156,10 +160,8 @@ object CamundalaWorkerError:
   def requestMsg[ServiceIn : Encoder](
       runnableRequest: RunnableRequest[ServiceIn]
   ): String =
-    s""" - Request URL: ${URLDecoder.decode(
-        runnableRequest.apiUri.toString,
-        Charset.defaultCharset()
-      )}
+    s""" - Request URL: ${
+      prettyUriString(runnableRequest.apiUri)}
        | - Request Params: ${runnableRequest.queryParams
         .map {
           case k -> seq if seq.isEmpty =>

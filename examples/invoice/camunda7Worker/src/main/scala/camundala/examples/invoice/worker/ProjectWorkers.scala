@@ -1,20 +1,18 @@
 package camundala.examples.invoice
 package worker
 
-import camundala.camunda7.worker.DefaultRestApiClient
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 import camundala.worker.*
 import org.springframework.context.annotation.Configuration
-import sttp.client3.UriContext
-import sttp.model.Method
 
 @Configuration
 class ProjectWorkers extends EngineWorkerDsl:
+
   workers(
     initProcess(InvoiceReceipt.example),
     initProcess(ReviewInvoice.example)
-      //.withValidation(ReviewInvoiceWorker.customValidator)
+      //.validation(ReviewInvoiceWorker.customValidator)
       .validation(ReviewInvoiceWorker.validate) // implicit conversion
       .initProcess(ReviewInvoiceWorker.initVariables),
     service(StarWarsRestApi.example)
@@ -40,10 +38,6 @@ class ProjectWorkers extends EngineWorkerDsl:
 
   object ArchiveInvoiceWorker:
     import ArchiveInvoice.*
-
-    lazy val defaultHeaders: Map[String, String] = Map(
-      "crazy-header" -> "just-to-test"
-    )
 
     def runWork(
         inputObject: In,

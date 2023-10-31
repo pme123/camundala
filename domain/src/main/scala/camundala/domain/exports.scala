@@ -2,7 +2,10 @@ package camundala
 package domain
 
 import io.circe.derivation.Configuration
+import sttp.model.Uri
 
+import java.net.URLDecoder
+import java.nio.charset.Charset
 import java.util.Base64
 import scala.language.implicitConversions
 
@@ -14,7 +17,6 @@ export sttp.tapir.Schema.annotations.description
 // used implicit instead of given - so no extra import is needed domain.{*, given}
 implicit val c: Configuration = Configuration.default.withDefaults
   .withDiscriminator("type")
-
 
 case class NoInput()
 object NoInput:
@@ -35,7 +37,6 @@ enum CanceledStatus derives ConfiguredEnumCodec:
   case canceled
 object CanceledStatus:
   given Schema[CanceledStatus] = Schema.derived
-
 
 @deprecated
 trait GenericServiceIn:
@@ -89,17 +90,19 @@ val testModeDescr =
   "This flag indicades that this is a test - in the process it can behave accordingly."
 
 // descriptions
-val deprecatedDescr = "See https://pme123.github.io/camundala/specification.html#supported-general-variables"
+val deprecatedDescr =
+  "See https://pme123.github.io/camundala/specification.html#supported-general-variables"
 @deprecated("Change to serviceTask")
 def serviceNameDescr(serviceName: String) =
   s"As this uses the generic Service you need to name the Service to '$serviceName'."
 
-@deprecated("If you mock another Service or Subprocess - use `serviceOrProcessMockDescr` - otherwise:\n\n" + deprecatedDescr)
+@deprecated(
+  "If you mock another Service or Subprocess - use `serviceOrProcessMockDescr` - otherwise:\n\n" + deprecatedDescr
+)
 def outputMockDescr[Out: CirceCodec, Schema](mock: Out) =
   serviceOrProcessMockDescr(mock)
 
 def serviceOrProcessMockDescr[Out: CirceCodec, Schema](mock: Out) =
-
   s"""You can mock the response variables of this (sub)process.
      |
      |Class: `${mock.getClass.getName.replace("$", " > ")}`
@@ -152,3 +155,33 @@ You can use a JSON Array of Strings or a comma-separated String.
 Example: `['java.sql.SQLException', '"errorNr":20000']` or 'java.sql.SQLException,"errorNr":20000'
 """
 
+def prettyUriString(uri: Uri) =
+  URLDecoder.decode(
+    uri.toString,
+    Charset.defaultCharset()
+  )
+def prettyString(obj: Any, depth: Int = 0, paramName: Option[String] = None): String = {
+  val indent = "  " * depth
+  val prettyName = paramName.fold("")(x => s"$x: ")
+  val ptype = obj match {
+    case _: Iterable[Any] => ""
+    case obj: Product => obj.productPrefix
+    case _ => obj.toString
+  }
+  val nameWithType = s"\n$indent$prettyName$ptype"
+
+  obj match {
+    case None => ""
+    case Some(value) => s"${prettyString(value, depth, paramName)}"
+    case uri: Uri => s"\n$indent$prettyName${prettyUriString(uri)}"
+    case seq: Iterable[Any] =>
+      val seqStr = seq.map(prettyString(_, depth + 1))
+      if (seqStr.isEmpty) "" else s"$nameWithType[${seqStr.mkString}\n$indent]"
+    case obj: Product =>
+      val objStr = (obj.productIterator zip obj.productElementNames)
+        .map { case (subObj, paramName) => prettyString(subObj, depth + 1, Some(paramName)) }
+      if (objStr.isEmpty) s"$nameWithType" else s"$nameWithType{${objStr.mkString}\n$indent}"
+    case _ =>
+      s"$nameWithType"
+  }
+}
