@@ -7,8 +7,7 @@ import org.camunda.bpm.client.variable.impl.value.JsonValueImpl
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.context.annotation.Configuration
 
-@Configuration
-class Camunda7Context extends EngineContext:
+trait Camunda7Context extends EngineContext:
 
   def getLogger(clazz: Class[?]): WorkerLogger =
     Camunda7WorkerLogger(LoggerFactory.getLogger(clazz))
@@ -42,3 +41,6 @@ class Camunda7Context extends EngineContext:
   end Camunda7WorkerLogger
 
 end Camunda7Context
+
+@Configuration
+class DefaultCamunda7Context extends Camunda7Context

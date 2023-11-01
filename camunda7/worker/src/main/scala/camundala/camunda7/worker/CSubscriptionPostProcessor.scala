@@ -31,7 +31,22 @@ class CSubscriptionPostProcessor(
   ): Unit =
 
     val listableBeanFactory = registry.asInstanceOf[ListableBeanFactory]
-    val workerDsl = listableBeanFactory.getBean(classOf[WorkerDsl])
+    val workerDsls = listableBeanFactory.getBeansOfType(classOf[WorkerDsl])
+    workerDsls.values().forEach(subscribeWorker(_, registry))
+
+  end postProcessBeanDefinitionRegistry
+
+  protected def getBeanDefinition(
+                                   externalTaskHandler: CExternalTaskHandler[?],
+      subscriptionConfiguration: SubscriptionConfiguration
+  ): BeanDefinition = BeanDefinitionBuilder
+    .genericBeanDefinition(springTopicSubscription)
+    .addPropertyValue("externalTaskHandler", externalTaskHandler)
+    .addPropertyValue("subscriptionConfiguration", subscriptionConfiguration)
+    .setDestroyMethodName("closeInternally")
+    .getBeanDefinition
+
+  private def subscribeWorker(workerDsl: WorkerDsl,registry: BeanDefinitionRegistry)=
     workerDsl.engineContext.getLogger(this.getClass)
       .info(s"Workers: ${prettyString(workerDsl.workers.workers)}")
     val handlerBeans = workerDsl.workers.workers.map(w => w.topic -> workerHandler(w, workerDsl.engineContext))
@@ -51,18 +66,6 @@ class CSubscriptionPostProcessor(
         handlerBeanName
       )
     }
-  end postProcessBeanDefinitionRegistry
-
-  protected def getBeanDefinition(
-                                   externalTaskHandler: CExternalTaskHandler[?],
-      subscriptionConfiguration: SubscriptionConfiguration
-  ): BeanDefinition = BeanDefinitionBuilder
-    .genericBeanDefinition(springTopicSubscription)
-    .addPropertyValue("externalTaskHandler", externalTaskHandler)
-    .addPropertyValue("subscriptionConfiguration", subscriptionConfiguration)
-    .setDestroyMethodName("closeInternally")
-    .getBeanDefinition
-
   /**
    * setup the SubscriptionConfiguration from the handler itself (not the annotation)
    */

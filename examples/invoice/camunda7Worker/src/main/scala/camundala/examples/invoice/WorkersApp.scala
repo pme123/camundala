@@ -12,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan
 class WorkersApp
 
 object WorkersApp:
-
+  
   def main(args: Array[String]): Unit =
     SpringApplication.run(classOf[WorkersApp], args: _*)
 end WorkersApp

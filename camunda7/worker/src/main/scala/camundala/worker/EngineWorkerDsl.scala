@@ -1,8 +1,8 @@
 package camundala.worker
 
-import camundala.camunda7.worker.Camunda7Context
+import camundala.camunda7.worker.DefaultCamunda7Context
 
 class EngineWorkerDsl extends WorkerDsl :
-  given engineContext: EngineContext = Camunda7Context()
+  lazy val engineContext: EngineContext = DefaultCamunda7Context()
 end EngineWorkerDsl
 

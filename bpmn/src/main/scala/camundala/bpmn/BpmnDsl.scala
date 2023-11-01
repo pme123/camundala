@@ -24,7 +24,7 @@ trait BpmnDsl:
   def serviceTask[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema,
-      ServiceIn <: Product: Encoder: Decoder: Schema,
+      ServiceIn <: Product: Encoder: Decoder,
       ServiceOut: Encoder: Decoder
   ](
       topicName: String,

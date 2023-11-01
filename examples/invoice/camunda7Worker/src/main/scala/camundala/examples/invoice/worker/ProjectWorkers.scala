@@ -15,8 +15,6 @@ class ProjectWorkers extends EngineWorkerDsl:
       //.validation(ReviewInvoiceWorker.customValidator)
       .validation(ReviewInvoiceWorker.validate) // implicit conversion
       .initProcess(ReviewInvoiceWorker.initVariables),
-    service(StarWarsRestApi.example)
-      .runWork(StarWarsRestApiWorker.requestHandler),
     custom(ArchiveInvoice.example)
       .runWork(ArchiveInvoiceWorker.runWork)
   )
@@ -55,25 +53,5 @@ class ProjectWorkers extends EngineWorkerDsl:
           Right(Some(Out(Some(false))))
 
   end ArchiveInvoiceWorker
-
-  object StarWarsRestApiWorker:
-
-    import StarWarsRestApi.*
-
-    lazy val requestHandler: ServiceHandler[In, Out, NoInput, ServiceOut] =
-      ServiceHandler(
-        httpMethod = Method.GET,
-        apiUri = uri"https://swapi.dev/api/people/{id}",
-        defaultHeaders = Map(
-          "crazy-header" -> "just-to-test"
-        ),
-        outputMapper = outputMapper
-      )
-    private def outputMapper(
-        out: RequestOutput[ServiceOut]
-    ): Either[ServiceMappingError, Option[Out]] =
-      Right(Some(Out(out.outputBody)))
-
-  end StarWarsRestApiWorker
-
+  
 end ProjectWorkers

@@ -1,7 +1,6 @@
 package camundala
 package camunda7.worker
 
-import camundala.domain.*
 import camundala.bpmn.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
@@ -18,22 +17,12 @@ trait RestApiClient:
       ServiceIn: Encoder, // body of service
       ServiceOut: Decoder // output of service
   ](
-                    runnableRequest: RunnableRequest[ServiceIn]
+      runnableRequest: RunnableRequest[ServiceIn]
   ): Either[ServiceError, RequestOutput[ServiceOut]] =
-
-    val request = requestMethod(runnableRequest.httpMethod, runnableRequest.apiUri, runnableRequest.queryParams)
-    lazy val requestWithOptBody =
-      Try(runnableRequest.requestBodyOpt.map(b => request.body(b)).getOrElse(request)).toEither.left
-        .map(err =>
-          ServiceBadBodyError(errorMsg =
-            s"Problem creating body for request.\n$err"
-          )
-        )
-
     try {
       for {
-        requWithOptBody <- requestWithOptBody
-        req <- auth(requWithOptBody)
+        reqWithOptBody <- requestWithOptBody(runnableRequest)
+        req <- auth(reqWithOptBody)
         response = req.send(backend)
         statusCode = response.code
         body <- readBody(statusCode, response, req)
@@ -76,15 +65,21 @@ trait RestApiClient:
       .decodeAccumulating[ServiceOut](body)
       .toEither
       .left
-      .map(err =>
-        ServiceBadBodyError(s"Problem creating body from response.\n$err")
-      )
+      .map(err => ServiceBadBodyError(s"Problem creating body from response.\n$err"))
+
+  protected def requestWithOptBody[ServiceIn: Encoder](
+      runnableRequest: RunnableRequest[ServiceIn]
+  ) =
+    val request =
+      requestMethod(runnableRequest.httpMethod, runnableRequest.apiUri, runnableRequest.queryParams)
+    Try(runnableRequest.requestBodyOpt.map(b => request.body(b)).getOrElse(request)).toEither.left
+      .map(err => ServiceBadBodyError(errorMsg = s"Problem creating body for request.\n$err"))
 
   private def requestMethod(
-                             httpMethod: Method,
-                             apiUri: Uri,
-                             qParams: Seq[(String, Seq[String])],
-                           ): Request[Either[String, String], Any] =
+      httpMethod: Method,
+      apiUri: Uri,
+      qParams: Seq[(String, Seq[String])]
+  ): Request[Either[String, String], Any] =
     basicRequest
       .copy(uri = apiUri.params(QueryParams(qParams)), method = httpMethod)
   end requestMethod
