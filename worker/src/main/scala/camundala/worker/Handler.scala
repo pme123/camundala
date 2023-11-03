@@ -99,13 +99,13 @@ case class ServiceHandler[
     ServiceIn: Encoder,
     ServiceOut: Decoder
 ](
-    httpMethod: Method,
-    apiUri: Uri,
-    queryParamKeys: Seq[String | (String, String)] = Seq.empty,
-    // mocking out from outService and headers
-    defaultHeaders: Map[String, String] = Map.empty,
-    inputMapper: Option[In => ServiceIn] = None,
-    outputMapper: RequestOutput[ServiceOut] => Either[ServiceMappingError, Option[Out]] =
+   httpMethod: Method,
+   apiUri: Uri,
+   queryParamKeys: Seq[String | (String, String)] = Seq.empty,
+   // mocking out from outService and headers
+   defaultHeaders: Map[String, String] = Map.empty,
+   inputMapper: In => Option[ServiceIn] =  (* : In) => None,
+   outputMapper: RequestOutput[ServiceOut] => Either[ServiceMappingError, Option[Out]] =
       (_: RequestOutput[ServiceOut]) => Right(None),
 ) extends RunWorkHandler[In, Out]:
 
@@ -113,7 +113,7 @@ case class ServiceHandler[
       inputObject: In,
       optOutMock: Option[Out]
   ): RunnerOutput =
-    val body = inputMapper.map(m => m(inputObject))
+    val body = inputMapper(inputObject)
     val qParams = queryParams(inputObject)
     (for {
       apiUriWithParams <- pathWithParams(inputObject, apiUri)

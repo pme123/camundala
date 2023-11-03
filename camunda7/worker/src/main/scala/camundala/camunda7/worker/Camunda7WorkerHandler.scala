@@ -2,7 +2,7 @@ package camundala
 package camunda7.worker
 
 import camundala.worker.*
-
+/*
 /** To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
   * parameters.
   */
@@ -29,3 +29,4 @@ class ServiceWorkerHandler(
   lazy val topic: String = worker.topic
 
 end ServiceWorkerHandler
+*/

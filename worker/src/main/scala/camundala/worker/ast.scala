@@ -200,7 +200,7 @@ object RunnableRequest:
       requestHandler.httpMethod,
       requestHandler.apiUri,
       queryParams,
-      requestHandler.inputMapper.map(m => m(inputObject))
+      requestHandler.inputMapper(inputObject)
     )
   end apply
 end RunnableRequest

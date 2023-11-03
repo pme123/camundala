@@ -24,7 +24,7 @@ end WorkerLogger
 final case class EngineRunContext(engineContext: EngineContext, generalVariables: GeneralVariables):
 
   def getLogger(clazz: Class[?]): WorkerLogger = engineContext.getLogger(clazz)
-  
+
   def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
   ): Either[ServiceError, RequestOutput[ServiceOut]] =

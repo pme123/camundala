@@ -20,27 +20,28 @@ trait Camunda7Context extends EngineContext:
   ): Either[ServiceError, RequestOutput[ServiceOut]] =
     DefaultRestApiClient.sendRequest(request)
 
-  case class Camunda7WorkerLogger(private val delegateLogger: Logger) extends WorkerLogger:
-
-    def debug(message: String): Unit =
-      if (delegateLogger.isDebugEnabled)
-        delegateLogger.debug(message)
-
-    def info(message: String): Unit =
-      if (delegateLogger.isInfoEnabled)
-        delegateLogger.info(message)
-
-    def warn(message: String): Unit =
-      if (delegateLogger.isWarnEnabled)
-        delegateLogger.warn(message)
-
-    def error(err: CamundalaWorkerError): Unit =
-      if(delegateLogger.isErrorEnabled)
-        delegateLogger.error(s"Error ${err.errorCode}: ${err.errorMsg}")
-
-  end Camunda7WorkerLogger
 
 end Camunda7Context
 
 @Configuration
 class DefaultCamunda7Context extends Camunda7Context
+
+case class Camunda7WorkerLogger(private val delegateLogger: Logger) extends WorkerLogger:
+
+  def debug(message: String): Unit =
+    if (delegateLogger.isDebugEnabled)
+      delegateLogger.debug(message)
+
+  def info(message: String): Unit =
+    if (delegateLogger.isInfoEnabled)
+      delegateLogger.info(message)
+
+  def warn(message: String): Unit =
+    if (delegateLogger.isWarnEnabled)
+      delegateLogger.warn(message)
+
+  def error(err: CamundalaWorkerError): Unit =
+    if (delegateLogger.isErrorEnabled)
+      delegateLogger.error(s"Error ${err.errorCode}: ${err.errorMsg}")
+
+end Camunda7WorkerLogger

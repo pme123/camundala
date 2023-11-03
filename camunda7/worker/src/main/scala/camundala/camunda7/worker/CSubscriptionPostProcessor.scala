@@ -2,20 +2,18 @@ package camundala
 package camunda7.worker
 
 import camundala.bpmn.InputParams
+import camundala.camunda7.worker.CSubscriptionPostProcessor.LOG
 import camundala.domain.prettyString
 import camundala.worker.*
 import org.camunda.bpm.client.spring.SpringTopicSubscription
 import org.camunda.bpm.client.spring.impl.subscription.SubscriptionConfiguration
 import org.camunda.bpm.client.spring.impl.subscription.util.SubscriptionLoggerUtil
 import org.camunda.bpm.client.spring.impl.util.LoggerUtil
+import org.slf4j.LoggerFactory
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.ListableBeanFactory
 import org.springframework.beans.factory.config.{BeanDefinition, ConfigurableListableBeanFactory}
-import org.springframework.beans.factory.support.{
-  BeanDefinitionBuilder,
-  BeanDefinitionRegistry,
-  BeanDefinitionRegistryPostProcessor
-}
+import org.springframework.beans.factory.support.{BeanDefinitionBuilder, BeanDefinitionRegistry, BeanDefinitionRegistryPostProcessor}
 
 import scala.jdk.CollectionConverters.*
 
@@ -33,48 +31,49 @@ class CSubscriptionPostProcessor(
   ): Unit =
 
     val listableBeanFactory = registry.asInstanceOf[ListableBeanFactory]
-    val workerDsls = listableBeanFactory.getBeansOfType(classOf[WorkerDsl])
-    workerDsls.values().forEach(subscribeWorker(_, registry))
+    val workerDsls = listableBeanFactory.getBeanNamesForType(classOf[CExternalTaskHandler])
+    workerDsls.foreach(w => subscribeWorker(w, registry))
 
   end postProcessBeanDefinitionRegistry
 
-  protected def getBeanDefinition(
-      externalTaskHandler: CExternalTaskHandler[?],
-      subscriptionConfiguration: SubscriptionConfiguration
-  ): BeanDefinition = BeanDefinitionBuilder
-    .genericBeanDefinition(springTopicSubscription)
-    .addPropertyValue("externalTaskHandler", externalTaskHandler)
-    .addPropertyValue("subscriptionConfiguration", subscriptionConfiguration)
-    .setDestroyMethodName("closeInternally")
-    .getBeanDefinition
-
-  private def subscribeWorker(workerDsl: WorkerDsl, registry: BeanDefinitionRegistry) =
-    workerDsl.engineContext
-      .getLogger(this.getClass)
-      .info(s"Workers: ${prettyString(workerDsl.worker)}")
-    val handlerBeanName = workerDsl.worker.topic
-    val handler = workerHandler(workerDsl.worker, workerDsl.engineContext)
-    val subscriptionConfiguration = fromHandler(handler)
+  private def subscribeWorker(beanName: String, registry: BeanDefinitionRegistry) =
+  //  logger.info(s"Workers: ${prettyString(worker)}")
+//    val handler = workerHandler(workerDsl.worker, workerDsl.engineContext)
+    val subscriptionConfiguration = fromHandler()
     val subscriptionBeanDefinition =
-      getBeanDefinition(handler, subscriptionConfiguration)
-    val subscriptionBeanName = handlerBeanName + "Subscription"
+      getBeanDefinition(beanName, subscriptionConfiguration)
+    val subscriptionBeanName = beanName + "Subscription"
     registry.registerBeanDefinition(
       subscriptionBeanName,
       subscriptionBeanDefinition
     )
-    CSubscriptionPostProcessor.LOG.beanRegistered(
+    LOG.beanRegistered(
       subscriptionBeanName,
-      handlerBeanName
+      beanName
     )
+  end subscribeWorker
+
+  protected def getBeanDefinition(
+                                                    beanName: String,
+                                                    subscriptionConfiguration: SubscriptionConfiguration
+                                                  ): BeanDefinition =
+    BeanDefinitionBuilder
+    .genericBeanDefinition(springTopicSubscription)
+    .addPropertyReference("externalTaskHandler", beanName)
+    //.addPropertyValue("externalTaskHandler", externalTaskHandler)
+    .addPropertyValue("subscriptionConfiguration", subscriptionConfiguration)
+    .setDestroyMethodName("closeInternally")
+    .getBeanDefinition
+  end getBeanDefinition
 
   /** setup the SubscriptionConfiguration from the handler itself (not the annotation)
     */
-  private def fromHandler(handler: CExternalTaskHandler[?]): SubscriptionConfiguration =
+  private def fromHandler(): SubscriptionConfiguration =
     val subConfig = new SubscriptionConfiguration
-    subConfig.setTopicName(handler.topic)
+    subConfig.setTopicName("star-wars-api-people-detail") //worker.topic)
     subConfig.setAutoOpen(true)
     subConfig.setLockDuration(null)
-    subConfig.setVariableNames((handler.variableNames ++ InputParams.values.map(_.toString)).asJava)
+   // subConfig.setVariableNames((worker.variableNames ++ InputParams.values.map(_.toString)).asJava)
     subConfig.setLocalVariables(false)
     subConfig.setBusinessKey(null)
     subConfig.setProcessDefinitionId(null)
@@ -94,15 +93,7 @@ class CSubscriptionPostProcessor(
       beanFactory: ConfigurableListableBeanFactory
   ): Unit = {}
 
-  private def workerHandler(worker: Worker[?, ?, ?], engineContext: EngineContext) =
-    worker match
-      case pw: InitProcessWorker[?, ?] =>
-        InitProcessWorkerHandler(pw, engineContext)
-      case cw: CustomWorker[?, ?] =>
-        CustomWorkerHandler(cw, engineContext)
-      case spw: ServiceWorker[?, ?, ?, ?] =>
-        ServiceWorkerHandler(spw, engineContext)
-
+  private lazy val logger = LoggerFactory.getLogger(getClass)
 object CSubscriptionPostProcessor:
   protected val LOG: SubscriptionLoggerUtil = LoggerUtil.SUBSCRIPTION_LOGGER
 end CSubscriptionPostProcessor

@@ -4,6 +4,7 @@ package camunda7.worker
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
 import org.camunda.bpm.client.task as camunda
+import org.slf4j.LoggerFactory
 
 import scala.jdk.CollectionConverters.*
 
@@ -11,11 +12,11 @@ import scala.jdk.CollectionConverters.*
  * To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
  * parameters.
  */
-trait CExternalTaskHandler[T <: Worker[?,?,?]] extends camunda.ExternalTaskHandler, CamundaHelper:
+trait CExternalTaskHandler extends camunda.ExternalTaskHandler, CamundaHelper:
 
   def engineContext: EngineContext
   def topic: String
-  def worker: T
+  def worker: Worker[?,?,?]
   def variableNames: Seq[String] = worker.variableNames
 
   override def execute(
@@ -39,6 +40,7 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends camunda.ExternalTaskHandl
     try {
       (for {
         generalVariables <- tryGeneralVariables
+        c = engineContext
         context = EngineRunContext(engineContext, generalVariables)
         filteredOut <- worker.executor(using context).execute(tryProcessVariables)
       } yield externalTaskService.handleSuccess(filteredOut) //
@@ -128,6 +130,7 @@ trait CExternalTaskHandler[T <: Worker[?,?,?]] extends camunda.ExternalTaskHandl
 
   end filteredOutput
 
-  protected lazy val logger: WorkerLogger = engineContext.getLogger(getClass)
+  protected lazy val logger: WorkerLogger =
+    Camunda7WorkerLogger(LoggerFactory.getLogger(getClass))
 
 end CExternalTaskHandler

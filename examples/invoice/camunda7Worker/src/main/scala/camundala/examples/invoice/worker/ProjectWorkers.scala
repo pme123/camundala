@@ -1,51 +1,51 @@
 package camundala.examples.invoice
 package worker
 
+import camundala.examples.invoice.InvoiceReceipt
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
 import org.springframework.context.annotation.Configuration
-
+/*
 @Configuration
-class InvoiceReceiptWorker extends EngineWorkerDsl:
+class InvoiceReceiptWorker
+    extends EngineWorkerDsl,
+      InitProcessWorkerDsl[InvoiceReceipt.In, InvoiceReceipt.Out]:
 
-  lazy val worker =
-    initProcess(InvoiceReceipt.example)
+  initProcess(InvoiceReceipt.example)
 
 end InvoiceReceiptWorker
 
 @Configuration
-class ReviewInvoiceWorker extends EngineWorkerDsl:
+class ReviewInvoiceWorker
+    extends EngineWorkerDsl,
+      InitProcessWorkerDsl[ReviewInvoice.In, ReviewInvoice.Out]:
   import ReviewInvoice.*
 
-  lazy val worker =
-    initProcess(ReviewInvoice.example)
-      // .validation(ReviewInvoiceWorker.customValidator)
-      .validation(validate) // implicit conversion
-      .initProcess(initVariables)
+  initProcess(ReviewInvoice.example)
 
-  lazy val customValidator = ValidationHandler(validate)
-
-  def validate(in: In): Either[ValidatorError, In] =
+  override def validate(in: In): Either[ValidatorError, In] =
     logger.info("Do some custom validation...")
     // Left(ValidatorError("bad val test"))
     Right(in)
   end validate
 
-  def initVariables(in: In): Either[InitProcessError, Map[String, Any]] =
-    //logger.info("Do some variable initialization...")
+  override def initProcess(in: In): Either[InitProcessError, Map[String, Any]] =
+    // logger.info("Do some variable initialization...")
     Right(Map("justToTestInit" -> in.amount))
-  end initVariables
+  end initProcess
+
 end ReviewInvoiceWorker
 
 @Configuration
-class ArchiveInvoiceWorker extends EngineWorkerDsl:
+class ArchiveInvoiceWorker
+    extends CustomWorkerDsl[ArchiveInvoice.In, ArchiveInvoice.Out],
+      EngineWorkerDsl:
+
   import ArchiveInvoice.*
 
-  lazy val worker =
-    custom(example)
-      .runWork(runWork)
+  custom(example)
 
-  private def runWork(
+  override def runWork(
       inputObject: In,
       optOutput: Option[Out]
   ): Either[CustomError, Option[Out]] =
@@ -61,3 +61,4 @@ class ArchiveInvoiceWorker extends EngineWorkerDsl:
         Right(Some(Out(Some(false))))
 
 end ArchiveInvoiceWorker
+*/
