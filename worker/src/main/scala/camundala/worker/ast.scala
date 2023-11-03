@@ -25,7 +25,7 @@ sealed trait Worker[
   def runWorkHandler: Option[RunWorkHandler[In, Out]] = None
   // helper
   def variableNames: Seq[String] = in.productElementNames.toSeq
-  def defaultMock(using                  EngineRunContext): Either[MockerError | MockedOutput, Option[Out]]
+  def defaultMock(using EngineRunContext): Either[MockerError | MockedOutput, Option[Out]]
 
   def executor(using context: EngineRunContext): WorkerExecutor[In, Out, T]
 end Worker
@@ -66,36 +66,36 @@ case class InitProcessWorker[
 end InitProcessWorker
 
 case class CustomWorker[
-  In <: Product: CirceCodec,
-  Out <: Product: CirceCodec
+    In <: Product: CirceCodec,
+    Out <: Product: CirceCodec
 ](
-   inOut: CustomTask[In, Out],
-   override val validationHandler: Option[ValidationHandler[In]] = None,
-   override val runWorkHandler: Option[RunWorkHandler[In, Out]] = None,
- ) extends Worker[In, Out, CustomWorker[In, Out]]:
+    inOut: CustomTask[In, Out],
+    override val validationHandler: Option[ValidationHandler[In]] = None,
+    override val runWorkHandler: Option[RunWorkHandler[In, Out]] = None
+) extends Worker[In, Out, CustomWorker[In, Out]]:
   lazy val topic: String = inOut.topicName
 
   def validation(
-                  validator: ValidationHandler[In]
-                ): CustomWorker[In, Out] =
+      validator: ValidationHandler[In]
+  ): CustomWorker[In, Out] =
     copy(validationHandler = Some(validator))
 
   def runWork(
-               serviceHandler: CustomHandler[In, Out]
-             ): CustomWorker[In, Out] =
+      serviceHandler: CustomHandler[In, Out]
+  ): CustomWorker[In, Out] =
     copy(runWorkHandler = Some(serviceHandler))
 
   def defaultMock(using
-                  context: EngineRunContext
-                 ): Either[MockerError | MockedOutput, Option[Out]] = Left(
+      context: EngineRunContext
+  ): Either[MockerError | MockedOutput, Option[Out]] = Left(
     MockedOutput(
       context.toEngineObject(out)
     )
   )
 
   def executor(using
-               context: EngineRunContext
-              ): WorkerExecutor[In, Out, CustomWorker[In, Out]] =
+      context: EngineRunContext
+  ): WorkerExecutor[In, Out, CustomWorker[In, Out]] =
     WorkerExecutor(this)
 
 end CustomWorker
@@ -106,11 +106,10 @@ case class ServiceWorker[
     ServiceIn <: Product: CirceCodec,
     ServiceOut: CirceCodec
 ](
-   inOut: ServiceTask[In, Out, ServiceIn, ServiceOut],
-   override val validationHandler: Option[ValidationHandler[In]] = None,
-   override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None,
-)
-    extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
+    inOut: ServiceTask[In, Out, ServiceIn, ServiceOut],
+    override val validationHandler: Option[ValidationHandler[In]] = None,
+    override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None
+) extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
   lazy val topic: String = inOut.topicName
 
   def validation(
@@ -160,7 +159,7 @@ case class GeneralVariables(
     outputVariables: Seq[String] = Seq.empty,
     handledErrors: Seq[String] = Seq.empty,
     regexHandledErrors: Seq[String] = Seq.empty,
-    impersonateUserIdOpt: Option[String] = None,
+    impersonateUserIdOpt: Option[String] = None
 ):
   def isMocked(workerTopicName: String): Boolean =
     mockedSubprocesses.contains(workerTopicName)
@@ -176,7 +175,7 @@ case class RunnableRequest[ServiceIn: Encoder](
 
 object RunnableRequest:
 
-  def apply[In <: Product: CirceCodec, ServiceIn : Encoder](
+  def apply[In <: Product: CirceCodec, ServiceIn: Encoder](
       inputObject: In,
       requestHandler: ServiceHandler[In, ?, ServiceIn, ?]
   ): RunnableRequest[ServiceIn] =

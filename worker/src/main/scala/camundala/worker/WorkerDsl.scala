@@ -12,11 +12,8 @@ trait WorkerDsl:
   def engineContext: EngineContext
   
   // needed that it can be called from CSubscriptionPostProcessor
-  var workers: Workers = _
-
-  def workers(body: => Worker[?, ?, ?]*): Unit =
-    workers = Workers(body)
-  end workers
+  def worker: Worker[?,?,?]
+  
 
   def initProcess[
       In <: Product: CirceCodec,

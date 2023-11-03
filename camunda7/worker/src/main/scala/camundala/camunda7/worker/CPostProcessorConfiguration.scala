@@ -10,8 +10,12 @@ import org.springframework.context.annotation.{Bean, Configuration}
  * Adjusted from _org.camunda.bpm.client.spring.impl.PostProcessorConfiguration_
  */
 @Configuration
-class CPostProcessorConfiguration :
+class CPostProcessorConfiguration
+
+object CPostProcessorConfiguration:
+
+
   @Bean
-  def cSubscriptionPostprocessor = new CSubscriptionPostProcessor(classOf[SpringTopicSubscriptionImpl])
+  def cSubscriptionPostprocessor: CSubscriptionPostProcessor = new CSubscriptionPostProcessor(classOf[SpringTopicSubscriptionImpl])
 
 end CPostProcessorConfiguration
