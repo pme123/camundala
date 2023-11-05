@@ -11,7 +11,7 @@ import camundala.simulation.custom.CustomSimulation
 class InvoiceSimulation extends CustomSimulation:
 
   simulate(
-    ignore.scenario(`Review Invoice`)(
+    scenario(`Review Invoice`)(
       AssignReviewerUT,
       ReviewInvoiceUT
     ),
@@ -69,7 +69,7 @@ class InvoiceSimulation extends CustomSimulation:
     ),
     ignore.scenario(`Review Invoice mocked`), // mocks itself
     // ServiceProcess - works only if exampleInvoiceWorkerC7 is running
-    ignore.scenario(
+    scenario(
       `Archive Invoice`
     ),
     ignore.scenario(

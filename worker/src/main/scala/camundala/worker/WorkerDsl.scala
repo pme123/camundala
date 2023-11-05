@@ -16,7 +16,9 @@ trait WorkerDsl:
   // needed that it can be called from CSubscriptionPostProcessor
   def worker: Worker[?, ?, ?]
 
-  lazy val topic: String = worker.topic
+  def topic: String =
+    println(s"TOPIC: $getClass: ${worker}")
+    worker.topic
 
 end WorkerDsl
 
@@ -29,8 +31,8 @@ trait InitProcessWorkerDsl[
 
   var worker: InitProcessWorker[In, Out] = _
 
-  def initProcess(process: Process[In, Out]): InitProcessWorker[In, Out] =
-    InitProcessWorker(process)
+  def initProcess(process: Process[In, Out]): Unit =
+    worker = InitProcessWorker(process)
       .validation(ValidationHandler(validate))
       .initProcess(InitProcessHandler(initProcess))
 

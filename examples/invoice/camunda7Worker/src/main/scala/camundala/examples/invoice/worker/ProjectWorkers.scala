@@ -1,11 +1,12 @@
 package camundala.examples.invoice
 package worker
 
+import camundala.camunda7.worker.EngineWorkerDsl
 import camundala.examples.invoice.InvoiceReceipt
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
 import org.springframework.context.annotation.Configuration
-/*
+
 @Configuration
 class InvoiceReceiptWorker
     extends EngineWorkerDsl,
@@ -61,4 +62,3 @@ class ArchiveInvoiceWorker
         Right(Some(Out(Some(false))))
 
 end ArchiveInvoiceWorker
-*/

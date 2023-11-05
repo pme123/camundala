@@ -19,6 +19,14 @@ export org.springframework.context.annotation.Configuration
 
 lazy val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
 
+case class WorkerConfig(
+                         backoffInitTimeInMs: Int = 100,
+                         backoffLockFactor: Int = 2,
+                         backoffLockMaxTimeInMs: Int = 1000,
+                         workerLockDurationInMs: Int = 5000,
+                         processEngineRestUrl: String =  "http://localhost:8034/engine-rest/"
+                       )
+
 //TODO REMOVE
 def toCamunda[T <: Product: Encoder](
     product: T

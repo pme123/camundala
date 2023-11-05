@@ -13,10 +13,10 @@ import scala.jdk.CollectionConverters.*
  * parameters.
  */
 trait CExternalTaskHandler extends camunda.ExternalTaskHandler, CamundaHelper:
-
   def engineContext: EngineContext
   def worker: Worker[?,?,?]
-
+  def topic: String
+  
   override def execute(
                         externalTask: camunda.ExternalTask,
                         externalTaskService: camunda.ExternalTaskService
@@ -38,7 +38,6 @@ trait CExternalTaskHandler extends camunda.ExternalTaskHandler, CamundaHelper:
     try {
       (for {
         generalVariables <- tryGeneralVariables
-        c = engineContext
         context = EngineRunContext(engineContext, generalVariables)
         filteredOut <- worker.executor(using context).execute(tryProcessVariables)
       } yield externalTaskService.handleSuccess(filteredOut) //
@@ -129,6 +128,6 @@ trait CExternalTaskHandler extends camunda.ExternalTaskHandler, CamundaHelper:
   end filteredOutput
 
   protected lazy val logger: WorkerLogger =
-    Camunda7WorkerLogger(LoggerFactory.getLogger(getClass))
+    engineContext.getLogger(getClass)
 
 end CExternalTaskHandler

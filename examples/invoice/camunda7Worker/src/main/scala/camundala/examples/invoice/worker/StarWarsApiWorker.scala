@@ -17,8 +17,8 @@ import sttp.model.Uri
 import javax.annotation.PostConstruct
 
 @Configuration
-//@WorkerSubscription(example.topicDefinition)
-class StarWarsApiWorker extends EngineWorkerDsl, ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]:
+class StarWarsApiWorker extends EngineWorkerDsl,
+  ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]:
 
   serviceGET(example)
 
@@ -35,30 +35,6 @@ class StarWarsApiWorker extends EngineWorkerDsl, ServiceWorkerDsl[In, Out, Servi
 
   println("INITIALIZED: StarWarsApiWorker")
 
-  private val BACKOFF_INIT_TIME = 500L
-  private val BACKOFF_LOCK_FACTOR = 2L
-  private val BACKOFF_LOCK_MAX_TIME = 600L
-  private val WORKER_LOCK_DURATION = 2000L
-  private val PROCESS_ENGINE_REST_URL = "http://localhost:8034/engine-rest/"
 
-  private lazy val backoffStrategy =
-     new ExponentialBackoffStrategy(BACKOFF_INIT_TIME, BACKOFF_LOCK_FACTOR, BACKOFF_LOCK_MAX_TIME)
-
-  private lazy val externalTaskClient: ExternalTaskClient =
-    new ExternalTaskClientBuilderImpl()
-      .baseUrl(PROCESS_ENGINE_REST_URL)
-      .backoffStrategy(backoffStrategy)
-      .lockDuration(WORKER_LOCK_DURATION)
-      .workerId(s"$topic-worker")
-      .build
-
-  @PostConstruct
-  def registerHandler(): Unit =
-    externalTaskClient
-      .subscribe(topic)
-      .handler(this)
-      .open()
-    println(s"registerHandler: $engineContext")
-  end registerHandler
 
 end StarWarsApiWorker
