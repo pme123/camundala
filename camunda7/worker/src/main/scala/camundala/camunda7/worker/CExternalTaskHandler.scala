@@ -15,9 +15,7 @@ import scala.jdk.CollectionConverters.*
 trait CExternalTaskHandler extends camunda.ExternalTaskHandler, CamundaHelper:
 
   def engineContext: EngineContext
-  def topic: String
   def worker: Worker[?,?,?]
-  def variableNames: Seq[String] = worker.variableNames
 
   override def execute(
                         externalTask: camunda.ExternalTask,
@@ -35,7 +33,7 @@ trait CExternalTaskHandler extends camunda.ExternalTaskHandler, CamundaHelper:
   private def executeWorker(
                              externalTaskService: camunda.ExternalTaskService
                            ): HelperContext[Unit] =
-    val tryProcessVariables = ProcessVariablesExtractor.extract(variableNames)
+    val tryProcessVariables = ProcessVariablesExtractor.extract(worker.variableNames)
     val tryGeneralVariables = ProcessVariablesExtractor.extractGeneral()
     try {
       (for {

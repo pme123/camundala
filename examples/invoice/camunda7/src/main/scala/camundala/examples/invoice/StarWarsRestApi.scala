@@ -43,7 +43,7 @@ object StarWarsRestApi extends BpmnDsl:
     given CirceCodec[People] = deriveCodec
   end People
 
-  lazy val example: ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  final lazy val example: ServiceTask[In, Out, ServiceIn, ServiceOut] =
     serviceTask(
       topicName,
       descr = "Get People Details from StarWars API",
@@ -51,4 +51,5 @@ object StarWarsRestApi extends BpmnDsl:
       out = Out(),
       defaultServiceMock = serviceMock,
     )
+
 end StarWarsRestApi

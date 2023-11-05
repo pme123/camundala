@@ -120,9 +120,8 @@ object CamundalaWorkerError:
 
   sealed trait RunWorkError extends CamundalaWorkerError
 
-  case class CustomError(
-                         errorMsg: String,
-                         errorCode: ErrorCodes = ErrorCodes.`custom-run-error`) extends RunWorkError
+  case class CustomError(errorMsg: String, errorCode: ErrorCodes = ErrorCodes.`custom-run-error`)
+      extends RunWorkError
 
   trait ServiceError extends RunWorkError
 
@@ -153,11 +152,10 @@ object CamundalaWorkerError:
       errorMsg: String
   ) extends ServiceError
 
-  def requestMsg[ServiceIn : Encoder](
+  def requestMsg[ServiceIn: Encoder](
       runnableRequest: RunnableRequest[ServiceIn]
   ): String =
-    s""" - Request URL: ${
-      prettyUriString(runnableRequest.apiUri)}
+    s""" - Request URL: ${prettyUriString(runnableRequest.apiUri)}
        | - Request Params: ${runnableRequest.queryParams
         .map {
           case k -> seq if seq.isEmpty =>
@@ -169,7 +167,7 @@ object CamundalaWorkerError:
         .map(_.asJson)
         .getOrElse("")}""".stripMargin
 
-  def serviceErrorMsg[ServiceIn  : Encoder](
+  def serviceErrorMsg[ServiceIn: Encoder](
       status: Int,
       errorMsg: String,
       runnableRequest: RunnableRequest[ServiceIn]

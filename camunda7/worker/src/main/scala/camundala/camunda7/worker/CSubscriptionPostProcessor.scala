@@ -1,7 +1,7 @@
 package camundala
 package camunda7.worker
 
-import camundala.bpmn.InputParams
+import camundala.bpmn.{InputParams}
 import camundala.camunda7.worker.CSubscriptionPostProcessor.LOG
 import camundala.domain.prettyString
 import camundala.worker.*
@@ -31,8 +31,9 @@ class CSubscriptionPostProcessor(
   ): Unit =
 
     val listableBeanFactory = registry.asInstanceOf[ListableBeanFactory]
-    val workerDsls = listableBeanFactory.getBeanNamesForType(classOf[CExternalTaskHandler])
-    workerDsls.foreach(w => subscribeWorker(w, registry))
+
+  //  val workerDsls = listableBeanFactory.getBeanNamesForType(classOf[CExternalTaskHandler])
+  //  workerDsls.foreach(w => subscribeWorker(w, registry))
 
   end postProcessBeanDefinitionRegistry
 

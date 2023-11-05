@@ -79,10 +79,14 @@ sealed trait ProcessOrExternalTask[
 ] extends InOut[In, Out, T]:
   def processName: String
 
+  def topicName: String = processName
+  final val topicDefinition: String = s"$topicName::"//$inputVariableNames"
   def servicesMocked: Boolean
   def outputMock: Option[Out]
   def outputVariables: Seq[String]
   def impersonateUserId: Option[String]
+
+  lazy val inputVariableNames: Seq[String] = in.productElementNames.toSeq
 
   override def camundaInMap: Map[String, CamundaVariable] =
     val camundaOutputMock: Map[String, CamundaVariable] = outputMock
@@ -183,7 +187,7 @@ sealed trait ExternalTask[
     Out <: Product: Encoder: Decoder: Schema,
     T <: ExternalTask[In, Out, T]
 ] extends ProcessOrExternalTask[In, Out, T]:
-  def topicName: String = inOutDescr.id
+  override final def topicName: String = inOutDescr.id
   def handledErrors: Seq[ErrorCodeType]
   def regexHandledErrors: Seq[String]
 

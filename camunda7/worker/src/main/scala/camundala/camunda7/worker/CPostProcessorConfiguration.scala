@@ -1,6 +1,7 @@
 package camundala.camunda7.worker
 
 import org.camunda.bpm.client.spring.impl.subscription.SpringTopicSubscriptionImpl
+import org.camunda.bpm.client.topic.TopicSubscription
 import org.springframework.context.annotation.{Bean, Configuration}
 
 
@@ -14,8 +15,7 @@ class CPostProcessorConfiguration
 
 object CPostProcessorConfiguration:
 
-
-  @Bean
+  // @Bean
   def cSubscriptionPostprocessor: CSubscriptionPostProcessor = new CSubscriptionPostProcessor(classOf[SpringTopicSubscriptionImpl])
 
 end CPostProcessorConfiguration
