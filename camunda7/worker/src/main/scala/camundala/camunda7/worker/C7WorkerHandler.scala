@@ -1,34 +1,37 @@
 package camundala
 package camunda7.worker
 
+import camundala.domain.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
 import org.camunda.bpm.client.backoff.ExponentialBackoffStrategy
 import org.camunda.bpm.client.impl.ExternalTaskClientBuilderImpl
 import org.camunda.bpm.client.{ExternalTaskClient, task as camunda}
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 
 import javax.annotation.PostConstruct
 import scala.jdk.CollectionConverters.*
 
-/**
- * To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
- * parameters.
- */
-trait WorkerHandler extends camunda.ExternalTaskHandler, CamundaHelper:
+/** To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
+  * parameters.
+  */
+trait C7WorkerHandler extends camunda.ExternalTaskHandler, CamundaHelper:
 
   @Autowired()
   protected var engineContext: EngineContext = _
-  protected def workerConfig: WorkerConfig = WorkerConfig()
 
-  def worker: Worker[?,?,?]
+  @Autowired
+  protected var externalTaskClient: ExternalTaskClient = _
+
+  protected var workerConfig: WorkerConfig = WorkerConfig()
+
+  def worker: Worker[?, ?, ?]
   def topic: String
-  
+
   override def execute(
-                        externalTask: camunda.ExternalTask,
-                        externalTaskService: camunda.ExternalTaskService
-                      ): Unit =
+      externalTask: camunda.ExternalTask,
+      externalTaskService: camunda.ExternalTaskService
+  ): Unit =
     logger.info(
       s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) started > ${externalTask.getBusinessKey}"
     )
@@ -44,31 +47,32 @@ trait WorkerHandler extends camunda.ExternalTaskHandler, CamundaHelper:
       .subscribe(topic)
       .handler(this)
       .open()
-    println(s"registerHandler: $engineContext")
+    logger.info(s"Worker registered: $topic -> ${prettyString(worker)}")
+    logger.debug(s"Worker Config: $topic -> ${prettyString(workerConfig)}")
   end registerHandler
 
   private def executeWorker(
-                             externalTaskService: camunda.ExternalTaskService
-                           ): HelperContext[Unit] =
+      externalTaskService: camunda.ExternalTaskService
+  ): HelperContext[Unit] =
     val tryProcessVariables = ProcessVariablesExtractor.extract(worker.variableNames)
     val tryGeneralVariables = ProcessVariablesExtractor.extractGeneral()
     try {
       (for {
-        generalVariables <- tryGeneralVariables
-        context = EngineRunContext(engineContext, generalVariables)
-        filteredOut <- worker.executor(using context).execute(tryProcessVariables)
-      } yield externalTaskService.handleSuccess(filteredOut) //
-        ).left.map { ex =>
+          generalVariables <- tryGeneralVariables
+          context = EngineRunContext(engineContext, generalVariables)
+          filteredOut <- worker.executor(using context).execute(tryProcessVariables)
+        } yield externalTaskService.handleSuccess(filteredOut) //
+      ).left.map { ex =>
         externalTaskService.handleError(ex, tryGeneralVariables)
       }
     } catch { // safety net
       case ex: Throwable =>
         ex.printStackTrace()
-       externalTaskService.handleError(
+        externalTaskService.handleError(
           UnexpectedError(errorMsg =
             s"We caught an UnhandledException: ${ex.getMessage}\n - check the Workers Log."
           ),
-         tryGeneralVariables
+          tryGeneralVariables
         )
     }
   end executeWorker
@@ -76,8 +80,8 @@ trait WorkerHandler extends camunda.ExternalTaskHandler, CamundaHelper:
   extension (externalTaskService: camunda.ExternalTaskService)
 
     private def handleSuccess(
-                               filteredOutput: Map[String, Any]
-                             ): HelperContext[Unit] =
+        filteredOutput: Map[String, Any]
+    ): HelperContext[Unit] =
       externalTaskService.complete(
         summon[camunda.ExternalTask],
         filteredOutput.asJava,
@@ -85,9 +89,9 @@ trait WorkerHandler extends camunda.ExternalTaskHandler, CamundaHelper:
       )
 
     private def handleError(
-                             error: CamundalaWorkerError,
-                             tryGeneralVariables: Either[BadVariableError, GeneralVariables]
-                           ): HelperContext[Unit] =
+        error: CamundalaWorkerError,
+        tryGeneralVariables: Either[BadVariableError, GeneralVariables]
+    ): HelperContext[Unit] =
       import CamundalaWorkerError.*
       (for {
         generalVariables <- tryGeneralVariables
@@ -105,12 +109,14 @@ trait WorkerHandler extends camunda.ExternalTaskHandler, CamundaHelper:
                 error.output
               case _ => Map.empty
             val filtered = filteredOutput(generalVariables.outputVariables, mockedOutput)
-            Right(externalTaskService.handleBpmnError(
-              summon[camunda.ExternalTask],
-              s"${error.errorCode}",
-              error.errorMsg,
-              filtered.asJava
-            ))
+            Right(
+              externalTaskService.handleBpmnError(
+                summon[camunda.ExternalTask],
+                s"${error.errorCode}",
+                error.errorMsg,
+                filtered.asJava
+              )
+            )
           case (true, false, _) =>
             Left(HandledRegexNotMatchedError(error))
           case _ =>
@@ -125,22 +131,21 @@ trait WorkerHandler extends camunda.ExternalTaskHandler, CamundaHelper:
             s" $errMessage\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
             0,
             0
-          ) //TODO implement retry mechanism
+          ) // TODO implement retry mechanism
         }
     end handleError
 
   end extension
 
-
   private def filteredOutput(
-                              outputVariables: Seq[String],
-                              allOutputs: Map[String, Any]
-                            ): Map[String, Any] =
+      outputVariables: Seq[String],
+      allOutputs: Map[String, Any]
+  ): Map[String, Any] =
     outputVariables match
-        case filter if filter.isEmpty => allOutputs
-        case filter =>
-          allOutputs
-            .filter { case k -> _ => filter.contains(k) }
+      case filter if filter.isEmpty => allOutputs
+      case filter =>
+        allOutputs
+          .filter { case k -> _ => filter.contains(k) }
 
   end filteredOutput
 
@@ -151,8 +156,9 @@ trait WorkerHandler extends camunda.ExternalTaskHandler, CamundaHelper:
     new ExponentialBackoffStrategy(
       workerConfig.backoffInitTimeInMs,
       workerConfig.backoffLockFactor,
-      workerConfig.backoffLockMaxTimeInMs)
-
+      workerConfig.backoffLockMaxTimeInMs
+    )
+/*
   private lazy val externalTaskClient: ExternalTaskClient =
     new ExternalTaskClientBuilderImpl()
       .baseUrl(workerConfig.processEngineRestUrl)
@@ -160,5 +166,5 @@ trait WorkerHandler extends camunda.ExternalTaskHandler, CamundaHelper:
       .lockDuration(workerConfig.workerLockDurationInMs)
       .workerId(s"$topic-worker")
       .build
-
-end WorkerHandler
+*/
+end C7WorkerHandler

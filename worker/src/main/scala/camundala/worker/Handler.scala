@@ -105,8 +105,8 @@ case class ServiceHandler[
    // mocking out from outService and headers
    defaultHeaders: Map[String, String] = Map.empty,
    inputMapper: In => Option[ServiceIn] =  (* : In) => None,
-   outputMapper: RequestOutput[ServiceOut] => Either[ServiceMappingError, Option[Out]] =
-      (_: RequestOutput[ServiceOut]) => Right(None),
+   outputMapper: ServiceResponse[ServiceOut] => Either[ServiceMappingError, Option[Out]] =
+      (_: ServiceResponse[ServiceOut]) => Right(None),
 ) extends RunWorkHandler[In, Out]:
 
   def runWork(
@@ -191,7 +191,7 @@ case class ServiceHandler[
       headers: Seq[Seq[String]]
   ) =
     outputMapper(
-      RequestOutput(
+      ServiceResponse(
         serviceOutput,
         // take correct ones and make a map of it
         headers

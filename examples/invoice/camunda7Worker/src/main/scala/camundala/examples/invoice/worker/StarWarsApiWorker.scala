@@ -1,7 +1,6 @@
 package camundala.examples.invoice.worker
 
 import camundala.bpmn.ServiceTask
-import camundala.camunda7.worker.WorkerHandler
 import camundala.domain.*
 import camundala.examples.invoice.StarWarsRestApi.*
 import camundala.worker.*
@@ -18,8 +17,7 @@ import sttp.model.Uri
 import javax.annotation.PostConstruct
 
 @Configuration
-class StarWarsApiWorker extends WorkerHandler,
-  ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]:
+class StarWarsApiWorker extends WorkerHandler, ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]:
 
   lazy val serviceTask = example
 
@@ -30,10 +28,8 @@ class StarWarsApiWorker extends WorkerHandler,
   )
 
   override def outputMapper(
-      out: RequestOutput[ServiceOut]
+      out: ServiceResponse[ServiceOut]
   ): Either[ServiceMappingError, Option[Out]] =
     Right(Some(Out(out.outputBody)))
-
-  println("INITIALIZED: StarWarsApiWorker")
-
+  
 end StarWarsApiWorker

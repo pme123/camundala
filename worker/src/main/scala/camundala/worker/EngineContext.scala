@@ -12,7 +12,7 @@ trait EngineContext:
 
   def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
-  ): Either[ServiceError, RequestOutput[ServiceOut]]
+  ): Either[ServiceError, ServiceResponse[ServiceOut]]
 
 trait WorkerLogger:
   def debug(message: String): Unit
@@ -27,7 +27,7 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
 
   def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
-  ): Either[ServiceError, RequestOutput[ServiceOut]] =
+  ): Either[ServiceError, ServiceResponse[ServiceOut]] =
     engineContext.sendRequest(request)
 
   def jsonObjectToEngineObject(

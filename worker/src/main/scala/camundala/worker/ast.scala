@@ -75,7 +75,7 @@ case class CustomWorker[
 ) extends Worker[In, Out, CustomWorker[In, Out]]:
   lazy val topic: String = inOut.topicName
 
-  def validation(
+  def validate(
       validator: ValidationHandler[In]
   ): CustomWorker[In, Out] =
     copy(validationHandler = Some(validator))
@@ -112,7 +112,7 @@ case class ServiceWorker[
 ) extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
   lazy val topic: String = inOut.topicName
 
-  def validation(
+  def validate(
       validation: ValidationHandler[In]
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     copy(validationHandler = Some(validation))
@@ -129,7 +129,7 @@ case class ServiceWorker[
       .map(handler =>
         handler
           .outputMapper(
-            RequestOutput(
+            ServiceResponse(
               inOut.defaultServiceMock,
               handler.defaultHeaders
             )
@@ -205,7 +205,7 @@ object RunnableRequest:
   end apply
 end RunnableRequest
 
-case class RequestOutput[ServiceOut](
+case class ServiceResponse[ServiceOut](
     outputBody: ServiceOut,
     headers: Map[String, String]
 )

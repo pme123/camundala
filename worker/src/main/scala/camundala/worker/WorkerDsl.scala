@@ -16,9 +16,7 @@ trait WorkerDsl:
   // needed that it can be called from CSubscriptionPostProcessor
   def worker: Worker[?, ?, ?]
 
-  def topic: String =
-    println(s"TOPIC: $getClass: ${worker}")
-    worker.topic
+  def topic: String = worker.topic
 
 end WorkerDsl
 
@@ -33,7 +31,7 @@ trait InitProcessWorkerDsl[
     .validation(ValidationHandler(validate))
     .initProcess(InitProcessHandler(initProcess))
 
-  def process: Process[In, Out]
+  protected def process: Process[In, Out]
 
 end InitProcessWorkerDsl
 
@@ -44,11 +42,11 @@ trait CustomWorkerDsl[
       ValidateDsl[In],
       RunWorkDsl[In, Out]:
 
-  def customTask: CustomTask[In, Out]
+  protected def customTask: CustomTask[In, Out]
 
   lazy val worker: CustomWorker[In, Out] =
     CustomWorker(customTask)
-      .validation(ValidationHandler(validate))
+      .validate(ValidationHandler(validate))
       .runWork(CustomHandler(runWork))
 
 end CustomWorkerDsl
@@ -61,12 +59,10 @@ trait ServiceWorkerDsl[
 ] extends WorkerDsl,
       ValidateDsl[In],
       RunWorkDsl[In, Out]:
-
-  def serviceTask: ServiceTask[In, Out, ServiceIn, ServiceOut]
-
+  
   lazy val worker: ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     ServiceWorker(serviceTask)
-      .validation(ValidationHandler(validate))
+      .validate(ValidationHandler(validate))
       .runWork(
         ServiceHandler(
           method,
@@ -77,15 +73,18 @@ trait ServiceWorkerDsl[
           outputMapper
         )
       )
-
-  protected def method: Method = Method.GET
+    
+  // required  
+  protected def serviceTask: ServiceTask[In, Out, ServiceIn, ServiceOut]
   protected def apiUri: Uri
+  // optional
+  protected def method: Method = Method.GET
   protected def queryParamKeys: Seq[String | (String, String)] = Seq.empty
   // mocking out from outService and headers
   protected def defaultHeaders: Map[String, String] = Map.empty
   protected def inputMapper(in: In): Option[ServiceIn] = None
   protected def outputMapper(
-      out: RequestOutput[ServiceOut]
+      out: ServiceResponse[ServiceOut]
   ): Either[ServiceMappingError, Option[Out]] = Right(None)
 
 end ServiceWorkerDsl

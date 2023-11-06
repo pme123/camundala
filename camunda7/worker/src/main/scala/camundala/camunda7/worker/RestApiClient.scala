@@ -18,7 +18,7 @@ trait RestApiClient:
       ServiceOut: Decoder // output of service
   ](
       runnableRequest: RunnableRequest[ServiceIn]
-  ): Either[ServiceError, RequestOutput[ServiceOut]] =
+  ): Either[ServiceError, ServiceResponse[ServiceOut]] =
     try {
       for {
         reqWithOptBody <- requestWithOptBody(runnableRequest)
@@ -28,7 +28,7 @@ trait RestApiClient:
         body <- readBody(statusCode, response, req)
         headers = response.headers.map(h => h.name -> h.value).toMap
         out <- decodeResponse[ServiceOut](body)
-      } yield RequestOutput(out, headers)
+      } yield ServiceResponse(out, headers)
     } catch {
       case ex: Throwable =>
         ex.printStackTrace()

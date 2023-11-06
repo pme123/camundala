@@ -9,8 +9,7 @@ import org.springframework.context.annotation.ComponentScan
 @SpringBootApplication
 @ConfigurationPropertiesScan
 @ComponentScan(basePackages = Array(
-  "org.camunda.bpm.client.spring.boot.starter.impl",
-  "camundala.camunda7.worker",
+  "camundala.camunda7.worker", // for context
   "camundala.examples.invoice.worker"))
 class WorkersApp
 

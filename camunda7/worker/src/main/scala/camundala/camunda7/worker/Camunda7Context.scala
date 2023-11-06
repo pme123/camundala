@@ -17,7 +17,7 @@ trait Camunda7Context extends EngineContext:
 
   def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
-  ): Either[ServiceError, RequestOutput[ServiceOut]] =
+  ): Either[ServiceError, ServiceResponse[ServiceOut]] =
     DefaultRestApiClient.sendRequest(request)
 
 
