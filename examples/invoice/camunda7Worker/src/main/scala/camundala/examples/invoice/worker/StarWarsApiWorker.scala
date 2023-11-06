@@ -1,7 +1,7 @@
 package camundala.examples.invoice.worker
 
 import camundala.bpmn.ServiceTask
-import camundala.camunda7.worker.EngineWorkerDsl
+import camundala.camunda7.worker.WorkerHandler
 import camundala.domain.*
 import camundala.examples.invoice.StarWarsRestApi.*
 import camundala.worker.*
@@ -18,7 +18,7 @@ import sttp.model.Uri
 import javax.annotation.PostConstruct
 
 @Configuration
-class StarWarsApiWorker extends EngineWorkerDsl,
+class StarWarsApiWorker extends WorkerHandler,
   ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]:
 
   lazy val serviceTask = example

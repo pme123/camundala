@@ -1,7 +1,7 @@
 package camundala.examples.invoice.worker
 
 import camundala.bpmn
-import camundala.camunda7.worker.EngineWorkerDsl
+import camundala.camunda7.worker.WorkerHandler
 import camundala.examples.invoice.ReviewInvoice.*
 import camundala.worker.CamundalaWorkerError.{InitProcessError, ValidatorError}
 import camundala.worker.InitProcessWorkerDsl
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class ReviewInvoiceWorker
-  extends EngineWorkerDsl,
+  extends WorkerHandler,
     InitProcessWorkerDsl[In, Out]:
 
   lazy val process: bpmn.Process[In, Out] = example

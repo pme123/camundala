@@ -11,7 +11,7 @@ trait WorkerDsl:
 
   protected def engineContext: EngineContext
 
-  protected def getLogger(clazz: Class[?]): WorkerLogger
+  protected def logger: WorkerLogger
 
   // needed that it can be called from CSubscriptionPostProcessor
   def worker: Worker[?, ?, ?]

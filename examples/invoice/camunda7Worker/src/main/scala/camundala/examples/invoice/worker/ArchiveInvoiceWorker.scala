@@ -1,7 +1,7 @@
 package camundala.examples.invoice.worker
 
 import camundala.bpmn.CustomTask
-import camundala.camunda7.worker.EngineWorkerDsl
+import camundala.camunda7.worker.WorkerHandler
 import camundala.examples.invoice.ArchiveInvoice.*
 import camundala.worker.CamundalaWorkerError.CustomError
 import camundala.worker.CustomWorkerDsl
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class ArchiveInvoiceWorker
   extends CustomWorkerDsl[In, Out],
-    EngineWorkerDsl:
+    WorkerHandler:
 
   lazy val customTask: CustomTask[In, Out] = example
 
