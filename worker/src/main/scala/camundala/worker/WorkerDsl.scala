@@ -9,9 +9,9 @@ import scala.language.implicitConversions
 
 trait WorkerDsl:
 
-  def engineContext: EngineContext
+  protected def engineContext: EngineContext
 
-  def getLogger(clazz: Class[?]): WorkerLogger
+  protected def getLogger(clazz: Class[?]): WorkerLogger
 
   // needed that it can be called from CSubscriptionPostProcessor
   def worker: Worker[?, ?, ?]
@@ -29,12 +29,11 @@ trait InitProcessWorkerDsl[
       ValidateDsl[In],
       InitProcessDsl[In]:
 
-  var worker: InitProcessWorker[In, Out] = _
+  lazy val worker: InitProcessWorker[In, Out] = InitProcessWorker(process)
+    .validation(ValidationHandler(validate))
+    .initProcess(InitProcessHandler(initProcess))
 
-  def initProcess(process: Process[In, Out]): Unit =
-    worker = InitProcessWorker(process)
-      .validation(ValidationHandler(validate))
-      .initProcess(InitProcessHandler(initProcess))
+  def process: Process[In, Out]
 
 end InitProcessWorkerDsl
 
@@ -45,15 +44,12 @@ trait CustomWorkerDsl[
       ValidateDsl[In],
       RunWorkDsl[In, Out]:
 
-  var worker: CustomWorker[In, Out] = _
+  def customTask: CustomTask[In, Out]
 
-  def custom(
-      service: CustomTask[In, Out]
-  ): Unit =
-    worker = CustomWorker(service)
+  lazy val worker: CustomWorker[In, Out] =
+    CustomWorker(customTask)
       .validation(ValidationHandler(validate))
       .runWork(CustomHandler(runWork))
-  end custom
 
 end CustomWorkerDsl
 
@@ -66,13 +62,10 @@ trait ServiceWorkerDsl[
       ValidateDsl[In],
       RunWorkDsl[In, Out]:
 
-  var worker: ServiceWorker[In, Out, ServiceIn, ServiceOut] = _
+  def serviceTask: ServiceTask[In, Out, ServiceIn, ServiceOut]
 
-  protected def service(
-      service: ServiceTask[In, Out, ServiceIn, ServiceOut],
-      method: Method
-  ): Unit =
-    worker = ServiceWorker(service)
+  lazy val worker: ServiceWorker[In, Out, ServiceIn, ServiceOut] =
+    ServiceWorker(serviceTask)
       .validation(ValidationHandler(validate))
       .runWork(
         ServiceHandler(
@@ -85,14 +78,7 @@ trait ServiceWorkerDsl[
         )
       )
 
-  end service
-
-  protected def serviceGET(
-      task: ServiceTask[In, Out, ServiceIn, ServiceOut]
-  ): Unit =
-    service(task, Method.GET)
-  end serviceGET
-
+  protected def method: Method = Method.GET
   protected def apiUri: Uri
   protected def queryParamKeys: Seq[String | (String, String)] = Seq.empty
   // mocking out from outService and headers

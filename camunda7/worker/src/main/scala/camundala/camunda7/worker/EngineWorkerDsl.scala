@@ -1,7 +1,7 @@
 package camundala.camunda7.worker
 
-import camundala.camunda7.worker.{CExternalTaskHandler, DefaultCamunda7Context}
-import camundala.worker.{EngineContext, WorkerLogger}
+import camundala.camunda7.worker.*
+import camundala.worker.*
 import org.camunda.bpm.client.ExternalTaskClient
 import org.camunda.bpm.client.backoff.ExponentialBackoffStrategy
 import org.camunda.bpm.client.impl.ExternalTaskClientBuilderImpl
@@ -10,16 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired
 
 import javax.annotation.PostConstruct
 
-trait EngineWorkerDsl extends CExternalTaskHandler:
+trait EngineWorkerDsl extends WorkerDsl, CExternalTaskHandler:
 
-  def getLogger(clazz: Class[?]): WorkerLogger =
+  protected def workerConfig: WorkerConfig = WorkerConfig()
+
+  protected def getLogger(clazz: Class[?]): WorkerLogger =
     engineContext.getLogger(clazz)
 
   @Autowired()
-  var engineContext: EngineContext = _
+  protected var engineContext: EngineContext = _
 
-  lazy val workerConfig: WorkerConfig = WorkerConfig()
-  //TODO do this configurable
   private lazy val backoffStrategy =
     new ExponentialBackoffStrategy(
       workerConfig.backoffInitTimeInMs,
@@ -42,6 +42,16 @@ trait EngineWorkerDsl extends CExternalTaskHandler:
       .open()
     println(s"registerHandler: $engineContext")
   end registerHandler
+
+  def workerHandler(worker: Worker[?, ?, ?]) =
+    worker match
+      case pw: InitProcessWorker[?, ?] =>
+        InitProcessWorkerHandler(pw, engineContext)
+      case cw: CustomWorker[?, ?] =>
+        CustomWorkerHandler(cw, engineContext)
+      case spw: ServiceWorker[?, ?, ?, ?] =>
+        ServiceWorkerHandler(spw, engineContext)
+  end workerHandler
 
 end EngineWorkerDsl
 

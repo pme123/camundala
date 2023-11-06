@@ -1,5 +1,6 @@
 package camundala.examples.invoice.worker
 
+import camundala.bpmn.ServiceTask
 import camundala.camunda7.worker.EngineWorkerDsl
 import camundala.domain.*
 import camundala.examples.invoice.StarWarsRestApi.*
@@ -20,21 +21,19 @@ import javax.annotation.PostConstruct
 class StarWarsApiWorker extends EngineWorkerDsl,
   ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]:
 
-  serviceGET(example)
+  lazy val serviceTask = example
 
   lazy val apiUri: Uri = uri"https://swapi.dev/api/people/{id}"
 
-  override protected def defaultHeaders: Map[String, String] = Map(
+  override def defaultHeaders: Map[String, String] = Map(
     "justForTestHeader" -> "it works!"
   )
 
-  override protected def outputMapper(
+  override def outputMapper(
       out: RequestOutput[ServiceOut]
   ): Either[ServiceMappingError, Option[Out]] =
     Right(Some(Out(out.outputBody)))
 
   println("INITIALIZED: StarWarsApiWorker")
-
-
 
 end StarWarsApiWorker

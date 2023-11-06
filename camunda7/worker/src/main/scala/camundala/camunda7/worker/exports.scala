@@ -1,9 +1,9 @@
 package camundala
 package camunda7.worker
 
-import domain.*
-import bpmn.*
-import camundala.worker.EngineContext
+import camundala.bpmn.*
+import camundala.domain.*
+import camundala.worker.*
 import io.circe.*
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.client.variable.impl.value.JsonValueImpl
@@ -20,12 +20,12 @@ export org.springframework.context.annotation.Configuration
 lazy val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
 
 case class WorkerConfig(
-                         backoffInitTimeInMs: Int = 100,
-                         backoffLockFactor: Int = 2,
-                         backoffLockMaxTimeInMs: Int = 1000,
-                         workerLockDurationInMs: Int = 5000,
-                         processEngineRestUrl: String =  "http://localhost:8034/engine-rest/"
-                       )
+    backoffInitTimeInMs: Int = 100,
+    backoffLockFactor: Int = 2,
+    backoffLockMaxTimeInMs: Int = 1000,
+    workerLockDurationInMs: Int = 5000,
+    processEngineRestUrl: String = "http://localhost:8034/engine-rest/"
+)
 
 //TODO REMOVE
 def toCamunda[T <: Product: Encoder](
@@ -50,7 +50,7 @@ def objectToCamunda[T <: Product: Encoder](
 ): Any =
   value match
     case None | null => null
-    case Some(v)     => objectToCamunda(product, key, v)
+    case Some(v) => objectToCamunda(product, key, v)
     case v: (Product | Iterable[?] | Map[?, ?]) =>
       product.asJson.deepDropNullValues.hcursor
         .downField(key)
@@ -81,10 +81,10 @@ def domainObjToCamunda[A <: Product: CirceCodec](variable: A): Any =
 
 def jsonToCamunda(json: Json): Any =
   json match
-    case j if j.isNull    => null
-    case j if j.isNumber  => j.asNumber.get.toBigDecimal.get
+    case j if j.isNull => null
+    case j if j.isNumber => j.asNumber.get.toBigDecimal.get
     case j if j.isBoolean => j.asBoolean.get
-    case j if j.isString  => j.asString.get
+    case j if j.isString => j.asString.get
     case j =>
       new JsonValueImpl(j.toString)
 

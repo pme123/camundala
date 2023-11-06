@@ -13,7 +13,7 @@ import scala.jdk.CollectionConverters.*
  * parameters.
  */
 trait CExternalTaskHandler extends camunda.ExternalTaskHandler, CamundaHelper:
-  def engineContext: EngineContext
+  protected def engineContext: EngineContext
   def worker: Worker[?,?,?]
   def topic: String
   
