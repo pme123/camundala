@@ -3,7 +3,7 @@ package camunda7.worker
 
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.ServiceError
-import org.camunda.bpm.client.variable.impl.value.JsonValueImpl
+import org.camunda.bpm.client.variable.ClientValues
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.context.annotation.Configuration
 
@@ -13,7 +13,7 @@ trait Camunda7Context extends EngineContext:
     Camunda7WorkerLogger(LoggerFactory.getLogger(clazz))
 
   lazy val toEngineObject: Json => Any =
-    json => new JsonValueImpl(json.toString)
+    json => ClientValues.jsonValue(json.toString)
 
   def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]

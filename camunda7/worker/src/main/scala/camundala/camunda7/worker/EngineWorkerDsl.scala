@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 import javax.annotation.PostConstruct
 
-trait EngineWorkerDsl extends WorkerDsl, CExternalTaskHandler:
+trait EngineWorkerDsl extends CExternalTaskHandler:
 
   protected def workerConfig: WorkerConfig = WorkerConfig()
 
