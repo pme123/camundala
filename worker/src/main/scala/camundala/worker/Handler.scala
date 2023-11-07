@@ -99,7 +99,7 @@ case class ServiceHandler[
     ServiceOut: Decoder
 ](
     httpMethod: Method,
-    apiUri: Uri,
+    apiUri: In => Uri,
     queryParamKeys: Seq[String | (String, String)] = Seq.empty,
     // mocking out from outService and headers
     defaultHeaders: Map[String, String] = Map.empty,
@@ -111,23 +111,23 @@ case class ServiceHandler[
   def runWork(
       inputObject: In,
   ): RunnerOutput =
+    val rRequest = runnableRequest(inputObject)
     for {
-      runnableRequest <- runnableRequest(inputObject)
-      optWithServiceMock <- withServiceMock(runnableRequest)
-      output <- handleMocking(optWithServiceMock, runnableRequest).getOrElse(
+      optWithServiceMock <- withServiceMock(rRequest)
+      output <- handleMocking(optWithServiceMock, rRequest).getOrElse(
         summon[EngineRunContext]
-          .sendRequest(runnableRequest)
+          .sendRequest(rRequest)
           .flatMap(outputMapper)
       )
     } yield output
 
   private def runnableRequest(
       inputObject: In
-  ): Either[ServiceBadPathError, RunnableRequest[ServiceIn]] =
+  ): RunnableRequest[ServiceIn] =
     val body = inputMapper(inputObject)
+    val uri = apiUri(inputObject)
     val qParams = queryParams(inputObject)
-    pathWithParams(inputObject, apiUri)
-      .map(p => RunnableRequest(httpMethod, p, qParams, body))
+    RunnableRequest(httpMethod, uri, qParams, body)
 
   private def withServiceMock(
       runnableRequest: RunnableRequest[ServiceIn]
@@ -213,43 +213,6 @@ case class ServiceHandler[
     case k -> v => k -> Some(v)
     case k => k -> None
   }.toMap
-
-  private def pathWithParams(inputObject: In, apiUri: Uri): Either[ServiceBadPathError, Uri] =
-    val params = inputObject.productElementNames
-      .zip(inputObject.productIterator)
-      .toMap
-
-    val Uri(
-      scheme,
-      authority,
-      pathSegments,
-      querySegments,
-      fragmentSegment
-    ) = apiUri
-    val newSegments = pathSegments.segments.map { ps =>
-      val value: String = ps.v
-      value match
-        case v if v.startsWith("{") && v.endsWith("}") =>
-          params
-            .get(v.drop(1).dropRight(1))
-            .map(pathValue => Right(pathValue.toString))
-            .getOrElse(Left(s"There is no Path Element '$v' in your In-Object: $inputObject"))
-        case _ =>
-          Right(value)
-    }
-    val (errors, successes) = newSegments.partition(_.isLeft)
-    if (errors.isEmpty)
-      Right(
-        Uri(
-          scheme,
-          authority,
-          Uri.PathSegments.absoluteOrEmptyS(successes.map(_.getOrElse("-")).toSeq),
-          querySegments,
-          fragmentSegment
-        )
-      )
-    else
-      Left(ServiceBadPathError(errors.map(_.swap.getOrElse("-")).mkString("\n")))
 
   private def queryParams(inputObject: In): Seq[(String, Seq[String])] =
     inputObject.productElementNames.toSeq

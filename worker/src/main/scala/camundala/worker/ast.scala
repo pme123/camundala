@@ -188,7 +188,7 @@ object RunnableRequest:
         }
     new RunnableRequest[ServiceIn](
       requestHandler.httpMethod,
-      requestHandler.apiUri,
+      requestHandler.apiUri(inputObject),
       queryParams,
       requestHandler.inputMapper(inputObject)
     )

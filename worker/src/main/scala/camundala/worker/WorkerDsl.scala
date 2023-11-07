@@ -76,7 +76,7 @@ trait ServiceWorkerDsl[
     
   // required  
   protected def serviceTask: ServiceTask[In, Out, ServiceIn, ServiceOut]
-  protected def apiUri: Uri
+  protected def apiUri(in: In): Uri
   // optional
   protected def method: Method = Method.GET
   protected def queryParamKeys: Seq[String | (String, String)] = Seq.empty

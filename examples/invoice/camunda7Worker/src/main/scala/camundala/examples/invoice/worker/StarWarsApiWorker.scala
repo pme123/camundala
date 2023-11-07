@@ -21,7 +21,7 @@ class StarWarsApiWorker extends InvoiceWorkerHandler, ServiceWorkerDsl[In, Out, 
 
   lazy val serviceTask = example
 
-  lazy val apiUri: Uri = uri"https://swapi.dev/api/people/{id}"
+  def apiUri(in: In): Uri = uri"https://swapi.dev/api/people/${in.id}"
 
   override def defaultHeaders: Map[String, String] = Map(
     "justForTestHeader" -> "it works!"
