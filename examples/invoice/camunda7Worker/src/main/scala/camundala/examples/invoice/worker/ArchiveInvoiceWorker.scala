@@ -13,9 +13,8 @@ class ArchiveInvoiceWorker
 
   lazy val customTask = example
 
-  override def runWork(
+  def runWork(
       inputObject: In,
-      optOutput: Option[Out]
   ): Either[CustomError, Option[Out]] =
     logger.info("Do some crazy things running work...")
     inputObject.shouldFail match

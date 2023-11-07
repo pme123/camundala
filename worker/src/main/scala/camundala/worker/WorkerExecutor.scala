@@ -18,8 +18,8 @@ case class WorkerExecutor[
     for {
       validatedInput <- InputValidator.validate(processVariables)
       initializedOutput <- Initializer.initVariables(validatedInput)
-      proceedOrMocked <- OutMocker.mockOrProceed()
-      output <- WorkRunner.run(validatedInput, proceedOrMocked)
+      _ <- OutMocker.mockOrProceed()
+      output <- WorkRunner.run(validatedInput)
       allOutputs = camundaOutputs(validatedInput, initializedOutput, output)
       filteredOut = filteredOutput(allOutputs)
     } yield filteredOut
@@ -109,9 +109,9 @@ case class WorkerExecutor[
   end OutMocker
 
   object WorkRunner:
-    def run(inputObject: In, optOutMock: Option[Out]) =
+    def run(inputObject: In) =
       worker.runWorkHandler
-        .map(_.runWork(inputObject, optOutMock))
+        .map(_.runWork(inputObject))
         .getOrElse(Right(None))
 
   end WorkRunner

@@ -90,7 +90,6 @@ trait RunWorkHandler[
 
   def runWork(
       inputObject: In,
-      optOutMock: Option[Out]
   ): RunnerOutput
 
 case class ServiceHandler[
@@ -111,7 +110,6 @@ case class ServiceHandler[
 
   def runWork(
       inputObject: In,
-      optOutMock: Option[Out]
   ): RunnerOutput =
     for {
       runnableRequest <- runnableRequest(inputObject)
@@ -278,11 +276,10 @@ object CustomHandler:
   def apply[
       In <: Product: CirceCodec,
       Out <: Product: CirceCodec
-  ](funct: (In, Option[Out]) => Either[CustomError, Option[Out]]): CustomHandler[In, Out] =
+  ](funct: In => Either[CustomError, Option[Out]]): CustomHandler[In, Out] =
     new CustomHandler[In, Out] {
       override def runWork(
           inputObject: In,
-          optOutMock: Option[Out]
       ): RunnerOutput =
-        funct(inputObject, optOutMock)
+        funct(inputObject)
     }

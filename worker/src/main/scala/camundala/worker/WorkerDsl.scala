@@ -87,6 +87,14 @@ trait ServiceWorkerDsl[
       out: ServiceResponse[ServiceOut]
   ): Either[ServiceMappingError, Option[Out]] = Right(None)
 
+  /**
+   * Run the Work is done by the handler.
+   * If you want a different behavior, you need to use the CustomWorkerDsl
+   */
+  final def runWork(
+               inputObject: In,
+             ): Either[CustomError, Option[Out]] = Right(None)
+  
 end ServiceWorkerDsl
 
 private trait ValidateDsl[
@@ -109,10 +117,9 @@ private trait RunWorkDsl[
     In <: Product: CirceCodec,
     Out <: Product: CirceCodec
 ]:
-
+  
   def runWork(
       inputObject: In,
-      optOutput: Option[Out]
-  ): Either[CustomError, Option[Out]] = Right(optOutput)
+  ): Either[CustomError, Option[Out]]
 
 end RunWorkDsl
