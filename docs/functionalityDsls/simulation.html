@@ -417,23 +417,23 @@
         <p>All that is needed is to postfix the process with <code>.startWithMsg</code>.</p>
         
         <h3 id="ignore-a-scenario" class="section"><a class="anchor-link left" href="#ignore-a-scenario"><i class="icofont-laika link">&#xef71;</i></a>Ignore a Scenario</h3>
-        <p>You can ignore a scenario by just prefix your Scenario with <code>ignore.</code>.</p>
+        <p>You can ignore a scenario by just prefix your Scenario with <code>ignore</code>.</p>
         
         <h4 id="examples" class="section"><a class="anchor-link left" href="#examples"><i class="icofont-laika link">&#xef71;</i></a>Examples:</h4>
         <pre><code class="nohighlight"><span class="identifier">simulate</span><span> (
-    </span><span class="identifier">ignore</span><span>.</span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
+    </span><span class="identifier">ignore</span><span> </span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
       </span><span class="type-name">AssignReviewerUT</span><span>,
       </span><span class="type-name">ReviewInvoiceUT</span><span>
     ),
-    </span><span class="identifier">ignore</span><span>.</span><span class="identifier">incidentScenario</span><span>(
+    </span><span class="identifier">ignore</span><span> </span><span class="identifier">incidentScenario</span><span>(
       </span><span class="identifier">`Invoice Receipt that fails`</span><span>,
       </span><span class="string-literal">&quot;Could not archive invoice...&quot;</span><span>
     )(
       </span><span class="type-name">ApproveInvoiceUT</span><span>,
       </span><span class="type-name">PrepareBankTransferUT</span><span>
     ),
-    </span><span class="identifier">ignore</span><span>.</span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>),
-    </span><span class="identifier">ignore</span><span>.</span><span class="identifier">badScenario</span><span>(
+    </span><span class="identifier">ignore</span><span> </span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>),
+    </span><span class="identifier">ignore</span><span> </span><span class="identifier">badScenario</span><span>(
       </span><span class="type-name">BadValidationP</span><span>,
       </span><span class="number-literal">500</span><span>,
         </span><span class="string-literal">&quot;Validation Error: Input is not valid: DecodingFailure(Missing required field, List(DownField(creditor)))&quot;</span><span>
@@ -444,7 +444,7 @@
         
         <h3 id="ignore-all-scenarios" class="section"><a class="anchor-link left" href="#ignore-all-scenarios"><i class="icofont-laika link">&#xef71;</i></a>Ignore all Scenarios</h3>
         <p>If you want to ignore all the Scenarios you can &#39;ignore&#39; the Simulation like:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="identifier">ignore</span><span>.</span><span class="identifier">simulate</span><span>(
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="identifier">ignore</span><span> </span><span class="identifier">simulate</span><span>(
     </span><span class="identifier">scenario</span><span>(...),
     </span><span class="identifier">scenario</span><span>(...),
   )</span></code></pre>

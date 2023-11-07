@@ -15,6 +15,48 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.22.0 - 2023-11-07
+### Changed 
+- Renamed ServiceProcess to ExternalTask - see [Commit](https://github.com/pme123/camundala/commit/a64a5b33dbe47927fac36648e4056ce4b7bb2988)
+- Removed not needed output from proceedMocking. - see [Commit](https://github.com/pme123/camundala/commit/2cee4b5c19a9ba8bc2938365ca79bfa8a1f2b318)
+- Fixed default outputMock for services. - see [Commit](https://github.com/pme123/camundala/commit/039b488188697b016c63c0d6d8abba4239fe6a4b)
+- Fixed default serviceMock. - see [Commit](https://github.com/pme123/camundala/commit/1f999fa55e8bd539edb695c8559bfc928fa420d0)
+- Working Workers. - see [Commit](https://github.com/pme123/camundala/commit/3276075435d7c85d987b2bb580ab4f855e793a25)
+- Removed EngineWorker. - see [Commit](https://github.com/pme123/camundala/commit/0adf224ef924d49ae6856fc780034d9826a2a529)
+- Cleanup toCamunda Values. - see [Commit](https://github.com/pme123/camundala/commit/e2995f0755d5592b3b6dc01debbc65ccf6862890)
+- Worker as Typesafe types. - see [Commit](https://github.com/pme123/camundala/commit/a064723b2d3f7e7481fa2f0833346ec1e8f34ea6)
+- Working example. - see [Commit](https://github.com/pme123/camundala/commit/bbf1d5e637e51f826269773cf6aef09988b7f68f)
+- State of work. - see [Commit](https://github.com/pme123/camundala/commit/a60fc6c91fa8b3c39954cd7910cd7bcd61816cc3)
+- State of work. - see [Commit](https://github.com/pme123/camundala/commit/be7c5231883b467690448286d6c35dd77305cc2e)
+- Support unique Workers. - see [Commit](https://github.com/pme123/camundala/commit/d9a95a5b3ce5830183eaffcfd59aa28c86eb55a4)
+- Support multiple Workers. - see [Commit](https://github.com/pme123/camundala/commit/cbe94e1c3cab6b5c2f182308a5fbb8caa49dd440)
+- Added simple Logging in EngineContext. - see [Commit](https://github.com/pme123/camundala/commit/7cf64773829ed00246d0d5c6020801863f66dd5f)
+- Separated between EngineContext and EngineRunContext. - see [Commit](https://github.com/pme123/camundala/commit/61ed4c800365b244cf1b0246c164e1ab86d7e266)
+- Moved sendRequest from ServiceHandler to EngineContext. - see [Commit](https://github.com/pme123/camundala/commit/8ecc62ca16bff1d779a7f30162b33c1df052afa5)
+- Added Path Variables - see [Commit](https://github.com/pme123/camundala/commit/ffc24c64d36add76b94264a6ea3708d3cf843739)
+- Fixing InvoiceSimulation. - see [Commit](https://github.com/pme123/camundala/commit/937e8938c73caccc0275cf9c1f8fb751d32e98c4)
+- Adjusted ServiceHandler. - see [Commit](https://github.com/pme123/camundala/commit/99f36a1d42de4e187915adea6800de2de9814779)
+- Added ServiceHandler. - see [Commit](https://github.com/pme123/camundala/commit/2e7ae362162c162347b60e0be3ddc6a515fbd165)
+- Added InitProcessHandler. - see [Commit](https://github.com/pme123/camundala/commit/403d102473d0c999f59e122db3be0e2f3c47fbea)
+- Adjusted ValidationHandler. - see [Commit](https://github.com/pme123/camundala/commit/ea6b9a9f8ef4f870de4827751be07a9799c1aad1)
+- Added ValidationHandler. - see [Commit](https://github.com/pme123/camundala/commit/db94ed4b2a80ff0026e92f49889615ac75a05909)
+- Cleanup Worker. - see [Commit](https://github.com/pme123/camundala/commit/fcfa752497c1b8b30f04460d0b796517df472db2)
+- Cleanup Service Worker. - see [Commit](https://github.com/pme123/camundala/commit/66031ad2ec7a3659314c56d3db28856f7a84f739)
+- Working RestService Worker. - see [Commit](https://github.com/pme123/camundala/commit/d2e1d027f5fa36c9a4c4a265a0cea247834e396f)
+- Added Runner to WorkerExecutor. - see [Commit](https://github.com/pme123/camundala/commit/2436c907d22ccfe3c2e43930e67aa6608b30c445)
+- Added WorkerExecutor and EngineContext. - see [Commit](https://github.com/pme123/camundala/commit/13655769eec62ff712680f17fa4216cf263b3bc4)
+- Fixing mockedOrProceed. - see [Commit](https://github.com/pme123/camundala/commit/92122c13c963f0098be38a8ba9fd9012f7066c32)
+- Added mockOrProceed. - see [Commit](https://github.com/pme123/camundala/commit/7bd6a580ca9d0cc356df4d997c0fac422fd174da)
+- Adjusted simulation.md that ignore does not need a `.`. - see [Commit](https://github.com/pme123/camundala/commit/7341efd816787ae3b3d79e57826dbcd1a7e27efc)
+- Changed register to workers in WorkerDsl. - see [Commit](https://github.com/pme123/camundala/commit/9ef203c61f64bf8b1060ad181026997efdd24b5b)
+- Added initVaraibles to Workers. - see [Commit](https://github.com/pme123/camundala/commit/772d5816d9103f627f1ad6875e3e9f950c3470fd)
+- Added variableNames as filter to register Worker - simulation work. - see [Commit](https://github.com/pme123/camundala/commit/3460ccc5b40aab586cb16e5ee3b2e9f7eb924cc1)
+- Added customValidator to Workers - simulation work. - see [Commit](https://github.com/pme123/camundala/commit/e361c595732fffec718ef5fa71ef17465fd677fc)
+- Fixed Problem topics not executed. - see [Commit](https://github.com/pme123/camundala/commit/7be3ca1984758930bab24f2dea71340c54cdae9e)
+- Fixed Problem topics not executed. - see [Commit](https://github.com/pme123/camundala/commit/aef15b983cbd0e0a5f83c3210317e759a2ee649d)
+- State of work Workers from DSL - Problem: topics are not executed. - see [Commit](https://github.com/pme123/camundala/commit/958671ca859f6024ff4846814baafbbebfbc899b)
+- Changed to non-Annotated Workers. - see [Commit](https://github.com/pme123/camundala/commit/e4c2f762882f346a182b8f8b710708644a91f5be)
+
 ## 1.21.11 - 2023-10-06
 ### Changed 
 - Added DevStatisticsCreator to CompanyDocCreator. - see [Commit](https://github.com/pme123/camundala/commit/054454b55c85b3a40cfe4cd1f8485cfffa8dbb59)
