@@ -7,7 +7,7 @@ import camundala.worker.InitProcessWorkerDsl
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class ReviewInvoiceWorker extends WorkerHandler, InitProcessWorkerDsl[In, Out]:
+class ReviewInvoiceWorker extends InvoiceWorkerHandler, InitProcessWorkerDsl[In, Out]:
 
   lazy val process: bpmn.Process[In, Out] = example
 

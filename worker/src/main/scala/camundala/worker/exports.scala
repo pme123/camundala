@@ -58,6 +58,8 @@ sealed trait CamundalaWorkerError:
   def isMock = false
   def errorCode: ErrorCodeType
   def errorMsg: String
+  
+  def causeMsg = s"$errorCode: $errorMsg"
 
 sealed trait ErrorWithOutput extends CamundalaWorkerError:
   def output: Map[String, Any]

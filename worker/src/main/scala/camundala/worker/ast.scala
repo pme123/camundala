@@ -25,7 +25,13 @@ sealed trait Worker[
   def runWorkHandler: Option[RunWorkHandler[In, Out]] = None
   // helper
   def variableNames: Seq[String] = in.productElementNames.toSeq
-  def defaultMock(using EngineRunContext): Either[MockerError | MockedOutput, Option[Out]]
+
+  def defaultMock(using
+                  context: EngineRunContext
+                 ): MockerError | MockedOutput =
+    MockedOutput(
+      context.toEngineObject(out)
+    )
 
   def executor(using context: EngineRunContext): WorkerExecutor[In, Out, T]
 end Worker
@@ -40,7 +46,7 @@ case class InitProcessWorker[
 ) extends Worker[In, Out, InitProcessWorker[In, Out]]:
   lazy val topic: String = inOut.processName
 
-  def validation(
+  def validate(
       validator: ValidationHandler[In]
   ): InitProcessWorker[In, Out] =
     copy(validationHandler = Some(validator))
@@ -49,14 +55,6 @@ case class InitProcessWorker[
       init: InitProcessHandler[In]
   ): InitProcessWorker[In, Out] =
     copy(initProcessHandler = Some(init))
-
-  def defaultMock(using
-      context: EngineRunContext
-  ): Either[MockerError | MockedOutput, Option[Out]] = Left(
-    MockedOutput(
-      context.toEngineObject(out)
-    )
-  )
 
   def executor(using
       context: EngineRunContext
@@ -85,14 +83,6 @@ case class CustomWorker[
   ): CustomWorker[In, Out] =
     copy(runWorkHandler = Some(serviceHandler))
 
-  def defaultMock(using
-      context: EngineRunContext
-  ): Either[MockerError | MockedOutput, Option[Out]] = Left(
-    MockedOutput(
-      context.toEngineObject(out)
-    )
-  )
-
   def executor(using
       context: EngineRunContext
   ): WorkerExecutor[In, Out, CustomWorker[In, Out]] =
@@ -113,19 +103,20 @@ case class ServiceWorker[
   lazy val topic: String = inOut.topicName
 
   def validate(
-      validation: ValidationHandler[In]
+                handler: ValidationHandler[In]
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
-    copy(validationHandler = Some(validation))
+    copy(validationHandler = Some(handler))
 
   def runWork(
-      serviceHandler: ServiceHandler[In, Out, ServiceIn, ServiceOut]
+               handler: ServiceHandler[In, Out, ServiceIn, ServiceOut]
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
-    copy(runWorkHandler = Some(serviceHandler))
+    copy(runWorkHandler = Some(handler))
 
-  def defaultMock(using
+  override def defaultMock(using
       context: EngineRunContext
-  ): Either[MockerError | MockedOutput, Option[Out]] =
-    runWorkHandler
+  ): MockerError | MockedOutput =
+    val mocked: Option[MockerError | MockedOutput] = // needed for Uniion Type
+      runWorkHandler
       .map(handler =>
         handler
           .outputMapper(
@@ -133,14 +124,13 @@ case class ServiceWorker[
               inOut.defaultServiceMock,
               handler.defaultHeaders
             )
-          )
-          .left
-          .map(err => MockerError(errorMsg = err.errorMsg))
+          ) match
+          case Right(Some(out)) => MockedOutput(context.toEngineObject(out))
+          case Right(None) => MockedOutput(Map.empty)
+          case Left(err) => MockerError(errorMsg = err.causeMsg)
       )
-      .getOrElse(
-        Left(
+    mocked.getOrElse(
           MockerError(s"There is no ServiceRunner defined for Worker: $topic")
-        )
       )
 
   def executor(using

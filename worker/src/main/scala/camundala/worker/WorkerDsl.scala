@@ -28,7 +28,7 @@ trait InitProcessWorkerDsl[
       InitProcessDsl[In]:
 
   lazy val worker: InitProcessWorker[In, Out] = InitProcessWorker(process)
-    .validation(ValidationHandler(validate))
+    .validate(ValidationHandler(validate))
     .initProcess(InitProcessHandler(initProcess))
 
   protected def process: Process[In, Out]

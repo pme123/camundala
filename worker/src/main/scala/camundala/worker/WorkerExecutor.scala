@@ -85,9 +85,9 @@ case class WorkerExecutor[
         case (_, _, Some(outputMock)) => // if the outputMock is set than we mock
           decodeMock(isService, outputMock)
         case (_, true, _) if !isService => // if your process is NOT a Service check if it is mocked
-          worker.defaultMock
+          Left(worker.defaultMock)
         case (true, _, _) if isService => // if your process is a Service check if it is mocked
-          worker.defaultMock
+          Left(worker.defaultMock)
         case (_, _, None) =>
           Right(None)
     end mockOrProceed

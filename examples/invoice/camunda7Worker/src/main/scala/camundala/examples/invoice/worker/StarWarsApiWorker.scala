@@ -17,7 +17,7 @@ import sttp.model.Uri
 import javax.annotation.PostConstruct
 
 @Configuration
-class StarWarsApiWorker extends WorkerHandler, ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]:
+class StarWarsApiWorker extends InvoiceWorkerHandler, ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]:
 
   lazy val serviceTask = example
 

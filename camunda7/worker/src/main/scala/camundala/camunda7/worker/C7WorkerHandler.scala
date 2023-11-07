@@ -22,9 +22,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler, CamundaHelper:
 
   @Autowired
   protected var externalTaskClient: ExternalTaskClient = _
-
-  protected var workerConfig: WorkerConfig = WorkerConfig()
-
+  
   def worker: Worker[?, ?, ?]
   def topic: String
 
@@ -48,7 +46,6 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler, CamundaHelper:
       .handler(this)
       .open()
     logger.info(s"Worker registered: $topic -> ${prettyString(worker)}")
-    logger.debug(s"Worker Config: $topic -> ${prettyString(workerConfig)}")
   end registerHandler
 
   private def executeWorker(
@@ -152,19 +149,4 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler, CamundaHelper:
   protected lazy val logger: WorkerLogger =
     engineContext.getLogger(getClass)
 
-  private lazy val backoffStrategy =
-    new ExponentialBackoffStrategy(
-      workerConfig.backoffInitTimeInMs,
-      workerConfig.backoffLockFactor,
-      workerConfig.backoffLockMaxTimeInMs
-    )
-/*
-  private lazy val externalTaskClient: ExternalTaskClient =
-    new ExternalTaskClientBuilderImpl()
-      .baseUrl(workerConfig.processEngineRestUrl)
-      .backoffStrategy(backoffStrategy)
-      .lockDuration(workerConfig.workerLockDurationInMs)
-      .workerId(s"$topic-worker")
-      .build
-*/
 end C7WorkerHandler

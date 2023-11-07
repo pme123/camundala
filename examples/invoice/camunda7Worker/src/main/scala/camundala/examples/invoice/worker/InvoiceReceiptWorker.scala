@@ -6,7 +6,7 @@ import camundala.worker.InitProcessWorkerDsl
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class InvoiceReceiptWorker extends WorkerHandler, InitProcessWorkerDsl[In, Out]:
+class InvoiceReceiptWorker extends InvoiceWorkerHandler, InitProcessWorkerDsl[In, Out]:
 
   lazy val process = example
 

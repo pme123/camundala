@@ -113,17 +113,19 @@ case class ServiceHandler[
       inputObject: In,
       optOutMock: Option[Out]
   ): RunnerOutput =
-    val body = inputMapper(inputObject)
-    val qParams = queryParams(inputObject)
-    (for {
-      apiUriWithParams <- pathWithParams(inputObject, apiUri)
-      runnableRequest = RunnableRequest(httpMethod, apiUriWithParams, qParams, body)
+    for {
+      runnableRequest <- runnableRequest(inputObject)
       optWithServiceMock <- withServiceMock(runnableRequest)
       output <- handleMocking(optWithServiceMock, runnableRequest).getOrElse(
         summon[EngineRunContext].sendRequest(runnableRequest)
-          .flatMap(outputMapper)
-      )
-    } yield output)
+          .flatMap(outputMapper))
+    } yield output
+
+  private def runnableRequest(inputObject: In): Either[ServiceBadPathError, RunnableRequest[ServiceIn]] =
+    val body = inputMapper(inputObject)
+    val qParams = queryParams(inputObject)
+    pathWithParams(inputObject, apiUri)
+      .map(p => RunnableRequest(httpMethod, p, qParams, body))
 
   private def withServiceMock(
       runnableRequest: RunnableRequest[ServiceIn]
