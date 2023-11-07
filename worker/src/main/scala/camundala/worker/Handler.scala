@@ -99,13 +99,13 @@ case class ServiceHandler[
     ServiceIn: Encoder,
     ServiceOut: Decoder
 ](
-   httpMethod: Method,
-   apiUri: Uri,
-   queryParamKeys: Seq[String | (String, String)] = Seq.empty,
-   // mocking out from outService and headers
-   defaultHeaders: Map[String, String] = Map.empty,
-   inputMapper: In => Option[ServiceIn] =  (* : In) => None,
-   outputMapper: ServiceResponse[ServiceOut] => Either[ServiceMappingError, Option[Out]] =
+    httpMethod: Method,
+    apiUri: Uri,
+    queryParamKeys: Seq[String | (String, String)] = Seq.empty,
+    // mocking out from outService and headers
+    defaultHeaders: Map[String, String] = Map.empty,
+    inputMapper: In => Option[ServiceIn] = (* : In) => None,
+    outputMapper: ServiceResponse[ServiceOut] => Either[ServiceMappingError, Option[Out]] =
       (_: ServiceResponse[ServiceOut]) => Right(None),
 ) extends RunWorkHandler[In, Out]:
 
@@ -117,11 +117,15 @@ case class ServiceHandler[
       runnableRequest <- runnableRequest(inputObject)
       optWithServiceMock <- withServiceMock(runnableRequest)
       output <- handleMocking(optWithServiceMock, runnableRequest).getOrElse(
-        summon[EngineRunContext].sendRequest(runnableRequest)
-          .flatMap(outputMapper))
+        summon[EngineRunContext]
+          .sendRequest(runnableRequest)
+          .flatMap(outputMapper)
+      )
     } yield output
 
-  private def runnableRequest(inputObject: In): Either[ServiceBadPathError, RunnableRequest[ServiceIn]] =
+  private def runnableRequest(
+      inputObject: In
+  ): Either[ServiceBadPathError, RunnableRequest[ServiceIn]] =
     val body = inputMapper(inputObject)
     val qParams = queryParams(inputObject)
     pathWithParams(inputObject, apiUri)
@@ -133,29 +137,33 @@ case class ServiceHandler[
     context.generalVariables.outputServiceMockOpt
       .map { json =>
         for {
-          mockedResponse <- decodeMock[MockedServiceResponse[ServiceOut]](
-            true,
-            json
-          )
-          out <- handleServiceMock(
-            mockedResponse,
-            runnableRequest
-          )
+          mockedResponse <- decodeMock[MockedServiceResponse[ServiceOut]](json)
+          out <- handleServiceMock(mockedResponse, runnableRequest)
         } yield out
-
       }
       .getOrElse(Right(None))
       .left
       .map(e => ServiceUnexpectedError(s"There was an Error creating Service Mock: $e"))
   end withServiceMock
 
+  private def decodeMock[Out: Decoder](
+      json: Json
+  )(using EngineRunContext): Either[MockerError | MockedOutput, Option[Out]] =
+    decodeTo[Out](json.asJson.toString)
+      .map(Some(_))
+      .left
+      .map(ex => MockerError(errorMsg = ex.errorMsg))
+  end decodeMock
+
   private def handleMocking(
       optOutMock: Option[Out],
       runnableRequest: RunnableRequest[ServiceIn]
-  )(using context:EngineRunContext) : Option[Either[ServiceError, Option[Out]]] =
+  )(using context: EngineRunContext): Option[Either[ServiceError, Option[Out]]] =
     optOutMock
       .map { mock =>
-        context.getLogger(getClass).info(s"""Mocked Service: ${niceClassName(this.getClass)}
+        context
+          .getLogger(getClass)
+          .info(s"""Mocked Service: ${niceClassName(this.getClass)}
                    |${requestMsg(runnableRequest)}
                    | - mockedResponse: ${mock.asJson}
                    |""".stripMargin)

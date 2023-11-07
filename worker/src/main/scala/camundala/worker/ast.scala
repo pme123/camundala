@@ -151,7 +151,7 @@ case class GeneralVariables(
     regexHandledErrors: Seq[String] = Seq.empty,
     impersonateUserIdOpt: Option[String] = None
 ):
-  def isMocked(workerTopicName: String): Boolean =
+  def isMockedSubprocess(workerTopicName: String): Boolean =
     mockedSubprocesses.contains(workerTopicName)
 
 end GeneralVariables

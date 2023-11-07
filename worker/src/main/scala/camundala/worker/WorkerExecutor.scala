@@ -79,12 +79,12 @@ case class WorkerExecutor[
     def mockOrProceed(): Either[MockerError | MockedOutput, Option[Out]] =
       (
         context.generalVariables.servicesMocked,
-        context.generalVariables.isMocked(worker.topic),
+        context.generalVariables.isMockedSubprocess(worker.topic),
         context.generalVariables.outputMockOpt
       ) match
         case (_, _, Some(outputMock)) => // if the outputMock is set than we mock
-          decodeMock(isService, outputMock)
-        case (_, true, _) if !isService => // if your process is NOT a Service check if it is mocked
+          Left(decodeMock(outputMock))
+        case (_, true, _) => // if your process is a SubProcess check if it is mocked
           Left(worker.defaultMock)
         case (true, _, _) if isService => // if your process is a Service check if it is mocked
           Left(worker.defaultMock)
@@ -93,6 +93,18 @@ case class WorkerExecutor[
     end mockOrProceed
 
     private lazy val isService = worker.isInstanceOf[ServiceWorker[?, ?, ?, ?]]
+
+    private def decodeMock(
+        json: Json
+    )(using
+        context: EngineRunContext
+    ): MockerError | MockedOutput =
+      json.isObject match
+        case true =>
+          MockedOutput(output = context.jsonObjectToEngineObject(json.asObject.get))
+        case _ =>
+          MockerError(errorMsg = s"The mock must be a Json Object:\n- $json\n- ${json.getClass}")
+    end decodeMock
 
   end OutMocker
 

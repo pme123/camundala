@@ -10,28 +10,6 @@ export sttp.model.Uri.UriContext
 export sttp.model.Method
 export sttp.model.Uri
 
-def decodeMock[Out: Decoder](
-    isService: Boolean,
-    json: Json
-)(using
-    context: EngineRunContext
-): Either[MockerError | MockedOutput, Option[Out]] =
-  (json.isObject, isService) match
-    case (true, true) =>
-      decodeTo[Out](json.asJson.toString)
-        .map(Some(_))
-        .left
-        .map(ex => MockerError(errorMsg = ex.errorMsg))
-    case (true, _) =>
-      Left(
-        MockedOutput(output = context.jsonObjectToEngineObject(json.asObject.get))
-      )
-    case _ =>
-      Left(
-        MockerError(errorMsg = s"The mock must be a Json Object:\n- $json\n- ${json.getClass}")
-      )
-end decodeMock
-
 def decodeTo[A: Decoder](
     jsonStr: String
 ): Either[CamundalaWorkerError.UnexpectedError, A] =
