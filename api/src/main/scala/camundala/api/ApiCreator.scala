@@ -93,11 +93,11 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
           |  .mockSubProcess("myOtherSubProcess") // adds a SubProcess""".stripMargin,
         """"mockedSubprocesses": ["mySubProcess", "myOtherSubProcess"],"""
       ) +
-      "### Processes and ServiceProcesses" +
+      "### Processes and ExternalTasks" +
       createGeneralVariable(
         InputParams.outputVariables,
         s"""You can filter the Output with a list of variable names you are interested in.
-           |This list may include all variables from the output (`Out`). We included an example for each Process or ServiceProcess.
+           |This list may include all variables from the output (`Out`). We included an example for each Process or ExternalTask.
            |${listOfStringsOrCommaSeparated("name,firstName")}
            |""".stripMargin,
         """process(..) // or serviceProcess(..)
@@ -107,8 +107,8 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
       ) +
       createGeneralVariable(
         InputParams.outputMock,
-        """Mock the Process or Service (`Out`)
-          | - You find an example in every _Process_ and _ServiceProcess_.
+        """Mock the Process or ExternalTask (`Out`)
+          | - You find an example in every _Process_ and _ExternalTask_.
           |""".stripMargin,
         """process(..) // or serviceProcess(..)
           |  .mockWith(outputMock)""".stripMargin,
@@ -116,7 +116,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
       ) +
       createGeneralVariable(
         InputParams.servicesMocked,
-        "Mock the ServiceProcesses (Workers only) with their default Mock:",
+        "Mock the ExternalTasks (Workers only) with their default Mock:",
         "process(..) // or serviceProcess(..)\n  .mockServices",
         "\"servicesMocked\": true,"
       ) +
@@ -129,11 +129,11 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
           |  .withImpersonateUserId(impersonateUserId)""".stripMargin,
         """"impersonateUserId": "myUserName","""
       ) +
-      "### ServiceProcesses" +
+      "### ExternalTasks" +
       createGeneralVariable(
         InputParams.outputServiceMock,
         """Mock the Inner-Service (`MockedServiceResponse[ServiceOut]`)
-          | - You find an example in every _ServiceProcess_.
+          | - You find an example in every _ExternalTask_.
           |""".stripMargin,
         """serviceProcess(..)
           |  .mockServiceWith(MockedServiceResponse

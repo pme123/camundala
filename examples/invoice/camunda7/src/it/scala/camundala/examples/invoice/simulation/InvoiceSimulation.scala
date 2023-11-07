@@ -68,7 +68,7 @@ class InvoiceSimulation extends CustomSimulation:
       PrepareBankTransferUT
     ),
     scenario(`Review Invoice mocked`), // mocks itself
-    // ServiceProcess - works only if exampleInvoiceWorkerC7 is running
+    // ExternalTask - works only if exampleInvoiceWorkerC7 is running
     scenario(
       `Archive Invoice`
     ),

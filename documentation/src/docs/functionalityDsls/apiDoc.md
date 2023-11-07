@@ -175,7 +175,7 @@ If you have a change log in your base path (`config.basePath / "CHANGELOG.md`),
 we integrate it automatically in the documentation - as a collapsed part.
 
 #### General Variables
-You can document general variables that are supported in any Process and/or ServiceProcess. 
+You can document general variables that are supported in any Process- and/or ExternalTask-Worker. 
 By default, the following Variables are supported:
 
 ```scala
@@ -605,7 +605,7 @@ Correct 1-2 Levels:
       AssignReviewerUT,
       ReviewInvoiceUT
     ),
-    OtherServiceProcess,
+    OtherExternalTask,
     group("DMNs")(
       InvoiceAssignApproverDMN
     ),

@@ -191,7 +191,7 @@ sealed trait ExternalTask[
   def handledErrors: Seq[ErrorCodeType]
   def regexHandledErrors: Seq[String]
 
-  def processName: String = GenericServiceProcessName
+  def processName: String = GenericExternalTaskProcessName
 
   override def camundaInMap: Map[String, CamundaVariable] =
     super.camundaInMap +
@@ -216,8 +216,8 @@ case class ServiceTask[
 ](
     inOutDescr: InOutDescr[In, Out],
     defaultServiceMock: ServiceOut,
-    @deprecated("Default is _GenericServiceProcessName_ - in future only used as External Task")
-    override val processName: String = GenericServiceProcessName,
+    @deprecated("Default is _GenericExternalTaskProcessName_ - in future only used as External Task")
+    override val processName: String = GenericExternalTaskProcessName,
     outputVariables: Seq[String] = Seq.empty,
     outputMock: Option[Out] = None,
     servicesMocked: Boolean = false,
