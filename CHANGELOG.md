@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.22.2 - 2023-11-08
+### Changed 
+- MAP-7439: Renamed camundala-service-generic to camundala-externalTask-generic. - see [Commit](https://github.com/pme123/camundala/commit/384f7d2db94318b30780fd245be5ae7311725e25)
+
 ## 1.22.1 - 2023-11-08
 ### Changed 
 - MAP-7439: Added helper Option.toEither / decoupled CamundaHelper. - see [Commit](https://github.com/pme123/camundala/commit/f4c8a38130d395bc4c329751b6d57d390c06a763)
