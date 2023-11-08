@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.22.1 - 2023-11-08
+### Changed 
+- MAP-7439: Added helper Option.toEither / decoupled CamundaHelper. - see [Commit](https://github.com/pme123/camundala/commit/f4c8a38130d395bc4c329751b6d57d390c06a763)
+- Made apiUrl in ServiceHandler type-safe in worker. - see [Commit](https://github.com/pme123/camundala/commit/0e4f1067bd189c4be7367a86af69579e646cff2d)
+
 ## 1.22.0 - 2023-11-07
 ### Changed 
 - Renamed ServiceProcess to ExternalTask - see [Commit](https://github.com/pme123/camundala/commit/a64a5b33dbe47927fac36648e4056ce4b7bb2988)
