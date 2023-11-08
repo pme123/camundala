@@ -96,6 +96,11 @@
       <errorEventDefinition id="ErrorEventDefinition_0ogxnq9" errorRef="Error_0ilyt1j" />
     </boundaryEvent>
     <serviceTask id="ValidateStartMessageTask" name="Validate Start Message" camunda:type="external" camunda:topic="example-invoice-c7">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="handledErrors">output-mocked, validation-failed</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
       <incoming>Flow_0nql7w6</incoming>
       <outgoing>Flow_1kts9b5</outgoing>
     </serviceTask>
@@ -188,30 +193,14 @@
       <bpmndi:BPMNShape id="Process_Engine_1_gui" bpmnElement="InvoiceReceiptParticipant" isHorizontal="true">
         <omgdc:Bounds x="160" y="80" width="1360" height="556" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Team-Assistenz_110_gui" bpmnElement="TeamAssistantLane" isHorizontal="true">
-        <omgdc:Bounds x="190" y="80" width="1330" height="253" />
+      <bpmndi:BPMNShape id="Buchhaltung_119_gui" bpmnElement="AccountantLane" isHorizontal="true">
+        <omgdc:Bounds x="190" y="492" width="1330" height="144" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Freigebender_105_gui" bpmnElement="ApproverLane" isHorizontal="true">
         <omgdc:Bounds x="190" y="332" width="1330" height="161" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Buchhaltung_119_gui" bpmnElement="AccountantLane" isHorizontal="true">
-        <omgdc:Bounds x="190" y="492" width="1330" height="144" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0oe06b4_di" bpmnElement="TextAnnotation_0oe06b4">
-        <omgdc:Bounds x="1313" y="360" width="100" height="30" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_06in9uv_di" bpmnElement="TextAnnotation_06in9uv" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
-        <omgdc:Bounds x="1320" y="510" width="160" height="40" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0q7dqpn_di" bpmnElement="TextAnnotation_0q7dqpn">
-        <omgdc:Bounds x="1345" y="415" width="100" height="55" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_18e5h89_di" bpmnElement="TextAnnotation_18e5h89">
-        <omgdc:Bounds x="240" y="260" width="143" height="46" />
-        <bpmndi:BPMNLabel />
+      <bpmndi:BPMNShape id="Team-Assistenz_110_gui" bpmnElement="TeamAssistantLane" isHorizontal="true">
+        <omgdc:Bounds x="190" y="80" width="1330" height="253" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_3" bpmnElement="InvoiceReceivedStartEvent">
         <omgdc:Bounds x="256" y="158" width="28" height="28" />
@@ -288,22 +277,22 @@
           <omgdc:Bounds x="1331" y="311" width="73" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Association_1jdjtn1_di" bpmnElement="Association_1jdjtn1">
-        <omgdi:waypoint x="1300" y="553" />
-        <omgdi:waypoint x="1320" y="545" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_0jh4z92_di" bpmnElement="Association_0jh4z92">
-        <omgdi:waypoint x="1300" y="406" />
-        <omgdi:waypoint x="1332" y="390" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_0xpzck9_di" bpmnElement="Association_0xpzck9">
-        <omgdi:waypoint x="1300" y="430" />
-        <omgdi:waypoint x="1345" y="430" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_15mfbx8_di" bpmnElement="Association_15mfbx8">
-        <omgdi:waypoint x="412" y="277" />
-        <omgdi:waypoint x="383" y="277" />
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_0oe06b4_di" bpmnElement="TextAnnotation_0oe06b4">
+        <omgdc:Bounds x="1313" y="360" width="100" height="30" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_06in9uv_di" bpmnElement="TextAnnotation_06in9uv" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <omgdc:Bounds x="1320" y="510" width="160" height="40" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0q7dqpn_di" bpmnElement="TextAnnotation_0q7dqpn">
+        <omgdc:Bounds x="1345" y="415" width="100" height="55" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_18e5h89_di" bpmnElement="TextAnnotation_18e5h89">
+        <omgdc:Bounds x="240" y="260" width="143" height="46" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1oeltv5" bpmnElement="Event_1roicyw" bioc:fill="#D5D5D5">
         <omgdc:Bounds x="412" y="194" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -405,6 +394,22 @@
       <bpmndi:BPMNEdge id="Flow_0vdwlr8_di" bpmnElement="Flow_0vdwlr8">
         <omgdi:waypoint x="1268" y="283" />
         <omgdi:waypoint x="1350" y="283" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1jdjtn1_di" bpmnElement="Association_1jdjtn1">
+        <omgdi:waypoint x="1300" y="553" />
+        <omgdi:waypoint x="1320" y="545" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0jh4z92_di" bpmnElement="Association_0jh4z92">
+        <omgdi:waypoint x="1300" y="406" />
+        <omgdi:waypoint x="1332" y="390" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0xpzck9_di" bpmnElement="Association_0xpzck9">
+        <omgdi:waypoint x="1300" y="430" />
+        <omgdi:waypoint x="1345" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_15mfbx8_di" bpmnElement="Association_15mfbx8">
+        <omgdi:waypoint x="412" y="277" />
+        <omgdi:waypoint x="383" y="277" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DataStoreReference_1_gui" bpmnElement="FinancialAccountingSystemDataStoreReference" isHorizontal="true">
         <omgdc:Bounds x="994" y="666" width="63" height="61" />

@@ -4,6 +4,7 @@ package camunda7.worker
 import camundala.bpmn.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
+import io.circe.Decoder.Result
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.engine.variable.`type`.{PrimitiveValueType, ValueType}
 import org.camunda.bpm.engine.variable.value.TypedValue
@@ -65,27 +66,16 @@ object CamundaHelper:
     jsonVariableOpt(varKey)
       .flatMap {
         case Some(value) if value.isArray =>
-          value
-            .as[Seq[String]]
-            .map(_.filter(_.trim.nonEmpty))
-            .left
-            .map { error =>
-              error.printStackTrace()
-              BadVariableError(
-                s"Could not extract Seq for an Array or comma-separated String: ${error.getMessage}"
-              )
-            }
+          extractFromSeq(
+            value
+              .as[Seq[String]]
+          )
         case Some(value) if value.isString =>
-          value
-            .as[String]
-            .map(_.split(",").toSeq.filter(_.trim.nonEmpty))
-            .left
-            .map { error =>
-              error.printStackTrace()
-              BadVariableError(
-                s"Could not extract Seq for an Array or comma-separated String: ${error.getMessage}"
-              )
-            }
+          extractFromSeq(
+            value
+              .as[String]
+              .map(_.split(",").toSeq)
+          )
         case _ =>
           Right(defaultSeq.map(_.toString))
       }
@@ -161,5 +151,18 @@ object CamundaHelper:
         )
 
   end extractValue
-end CamundaHelper
 
+  private def extractFromSeq(
+      variableKeys: Result[Seq[String]]
+  ): HelperContext[Either[BadVariableError, Seq[String]]] =
+    variableKeys
+      .map(_.map(_.trim).filter(_.nonEmpty))
+      .left
+      .map { error =>
+        error.printStackTrace()
+        BadVariableError(
+          s"Could not extract Seq for an Array or comma-separated String: ${error.getMessage}"
+        )
+      }
+
+end CamundaHelper

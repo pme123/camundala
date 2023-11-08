@@ -4,8 +4,6 @@ package camunda7.worker
 import camundala.domain.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
-import org.camunda.bpm.client.backoff.ExponentialBackoffStrategy
-import org.camunda.bpm.client.impl.ExternalTaskClientBuilderImpl
 import org.camunda.bpm.client.{ExternalTaskClient, task as camunda}
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -22,7 +20,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
 
   @Autowired
   protected var externalTaskClient: ExternalTaskClient = _
-  
+
   def worker: Worker[?, ?, ?]
   def topic: String
 
@@ -45,7 +43,8 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
       .subscribe(topic)
       .handler(this)
       .open()
-    logger.info(s"Worker registered: $topic -> ${prettyString(worker)}")
+    logger.info(s"Worker registered: $topic -> ${worker.getClass.getSimpleName}")
+    logger.debug(prettyString(worker))
   end registerHandler
 
   private def executeWorker(
@@ -107,12 +106,19 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
               case _ => Map.empty
             val filtered = filteredOutput(generalVariables.outputVariables, mockedOutput)
             Right(
-              externalTaskService.handleBpmnError(
-                summon[camunda.ExternalTask],
-                s"${error.errorCode}",
-                error.errorMsg,
-                filtered.asJava
+              if (
+                error.isMock && !generalVariables.handledErrors.contains(
+                  error.errorCode.toString
+                )
               )
+                handleSuccess(filtered)
+              else
+                externalTaskService.handleBpmnError(
+                  summon[camunda.ExternalTask],
+                  s"${error.errorCode}",
+                  error.errorMsg,
+                  filtered.asJava
+                )
             )
           case (true, false, _) =>
             Left(HandledRegexNotMatchedError(error))

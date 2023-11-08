@@ -11,7 +11,7 @@ import org.camunda.bpm.engine.variable.value.TypedValue
 /** Validator to validate the input variables automatically.
   */
 object ProcessVariablesExtractor:
-  
+
   type VariableType = HelperContext[Seq[Either[BadVariableError, (String, Option[Json])]]]
   type GeneralVariableType = HelperContext[Either[BadVariableError, GeneralVariables]]
 
@@ -32,9 +32,6 @@ object ProcessVariablesExtractor:
       }
   end extract
 
-  private def defaultHandledErrorCodes: Seq[ErrorCodes] =
-    Seq(ErrorCodes.`output-mocked`, ErrorCodes.`validation-failed`)
-
   def extractGeneral(): GeneralVariableType =
     for {
       servicesMocked <- variable(InputParams.servicesMocked, false)
@@ -42,10 +39,7 @@ object ProcessVariablesExtractor:
       outputServiceMockOpt <- jsonVariableOpt(InputParams.outputServiceMock)
       mockedSubprocesses <- extractSeqFromArrayOrString(InputParams.mockedSubprocesses, Seq.empty)
       outputVariables <- extractSeqFromArrayOrString(InputParams.outputVariables, Seq.empty)
-      handledErrors <- extractSeqFromArrayOrString(
-        InputParams.handledErrors,
-        defaultHandledErrorCodes
-      )
+      handledErrors <- extractSeqFromArrayOrString(InputParams.handledErrors, Seq.empty)
       regexHandledErrors <- extractSeqFromArrayOrString(InputParams.regexHandledErrors, Seq.empty)
       impersonateUserIdOpt <- variableOpt[String](InputParams.impersonateUserId)
     } yield GeneralVariables(
