@@ -60,4 +60,4 @@ enum ErrorCodes:
 end ErrorCodes
 
 
-val GenericExternalTaskProcessName = "camundala-service-generic"
+val GenericExternalTaskProcessName = "camundala-externalTask-generic"

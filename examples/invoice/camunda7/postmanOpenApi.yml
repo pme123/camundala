@@ -657,7 +657,7 @@ paths:
       responses:
         '200':
           description: ''
-  /process-definition/key/camundala-service-generic/start--REMOVE:star-wars-api-people-detail--:
+  /process-definition/key/camundala-externalTask-generic/start--REMOVE:star-wars-api-people-detail--:
     post:
       tags:
       - Workers
@@ -685,7 +685,7 @@ paths:
       responses:
         '200':
           description: ''
-  /process-definition/key/camundala-service-generic/start--REMOVE:ArchiveInvoiceService--:
+  /process-definition/key/camundala-externalTask-generic/start--REMOVE:ArchiveInvoiceService--:
     post:
       tags:
       - Workers
