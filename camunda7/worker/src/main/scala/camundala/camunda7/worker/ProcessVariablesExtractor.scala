@@ -1,18 +1,17 @@
 package camundala.camunda7.worker
 
 import camundala.bpmn.*
-import camundala.domain.*
+import camundala.camunda7.worker.CamundaHelper.*
 import camundala.worker.*
-import camundala.worker.CamundalaWorkerError.{BadVariableError, ValidatorError}
-import io.circe.JsonObject
+import camundala.worker.CamundalaWorkerError.BadVariableError
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.engine.variable.`type`.ValueType
 import org.camunda.bpm.engine.variable.value.TypedValue
 
 /** Validator to validate the input variables automatically.
   */
-object ProcessVariablesExtractor extends CamundaHelper:
-
+object ProcessVariablesExtractor:
+  
   type VariableType = HelperContext[Seq[Either[BadVariableError, (String, Option[Json])]]]
   type GeneralVariableType = HelperContext[Either[BadVariableError, GeneralVariables]]
 

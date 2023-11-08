@@ -18,6 +18,17 @@ trait WorkerDsl:
 
   def topic: String = worker.topic
 
+  extension [T](option: Option[T])
+    def toEither[E <: CamundalaWorkerError](
+        error: E
+    ): Either[E, T] =
+      option
+        .map(Right(_))
+        .getOrElse(
+          Left(error)
+        )
+  end extension // Option
+
 end WorkerDsl
 
 trait InitProcessWorkerDsl[
@@ -59,7 +70,7 @@ trait ServiceWorkerDsl[
 ] extends WorkerDsl,
       ValidateDsl[In],
       RunWorkDsl[In, Out]:
-  
+
   lazy val worker: ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     ServiceWorker(serviceTask)
       .validate(ValidationHandler(validate))
@@ -73,8 +84,8 @@ trait ServiceWorkerDsl[
           outputMapper
         )
       )
-    
-  // required  
+
+  // required
   protected def serviceTask: ServiceTask[In, Out, ServiceIn, ServiceOut]
   protected def apiUri(in: In): Uri
   // optional
@@ -87,14 +98,13 @@ trait ServiceWorkerDsl[
       out: ServiceResponse[ServiceOut]
   ): Either[ServiceMappingError, Option[Out]] = Right(None)
 
-  /**
-   * Run the Work is done by the handler.
-   * If you want a different behavior, you need to use the CustomWorkerDsl
-   */
+  /** Run the Work is done by the handler. If you want a different behavior, you need to use the
+    * CustomWorkerDsl
+    */
   final def runWork(
-               inputObject: In,
-             ): Either[CustomError, Option[Out]] = Right(None)
-  
+      inputObject: In
+  ): Either[CustomError, Option[Out]] = Right(None)
+
 end ServiceWorkerDsl
 
 private trait ValidateDsl[
@@ -117,9 +127,9 @@ private trait RunWorkDsl[
     In <: Product: CirceCodec,
     Out <: Product: CirceCodec
 ]:
-  
+
   def runWork(
-      inputObject: In,
+      inputObject: In
   ): Either[CustomError, Option[Out]]
 
 end RunWorkDsl

@@ -15,7 +15,7 @@ import scala.jdk.CollectionConverters.*
 /** To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
   * parameters.
   */
-trait C7WorkerHandler extends camunda.ExternalTaskHandler, CamundaHelper:
+trait C7WorkerHandler extends camunda.ExternalTaskHandler:
 
   @Autowired()
   protected var engineContext: EngineContext = _

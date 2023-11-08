@@ -10,7 +10,7 @@ import org.camunda.bpm.engine.variable.value.TypedValue
 
 import scala.language.implicitConversions
 
-trait CamundaHelper:
+object CamundaHelper:
 
   def variableTypedOpt(
       varKey: String | InputParams
