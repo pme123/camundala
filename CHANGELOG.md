@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.22.3 - 2023-11-09
+### Changed 
+- MAP-7439: Fixing / Cleanup MockedServiceResponse. - see [Commit](https://github.com/pme123/camundala/commit/1628fc2dab4b6c012a3d6e67706f6c1b5e9dfd28)
+- MAP-7439: Adjusting validation failure and output-mocking. - see [Commit](https://github.com/pme123/camundala/commit/1e40d3d3e297ab8da4f344c55654a2cf06645e84)
+
 ## 1.22.2 - 2023-11-08
 ### Changed 
 - MAP-7439: Renamed camundala-service-generic to camundala-externalTask-generic. - see [Commit](https://github.com/pme123/camundala/commit/384f7d2db94318b30780fd245be5ae7311725e25)
