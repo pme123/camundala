@@ -281,10 +281,11 @@ case class ServiceTask[
 
   override def camundaInMap: Map[String, CamundaVariable] =
     val camundaOutputServiceMock = outputServiceMock
-      .map(m =>
+      .map(m => {
         InputParams.outputServiceMock.toString -> CamundaVariable.valueToCamunda(
           m.asJson
-        )
+
+        )}
       )
       .toMap
     super.camundaInMap ++ camundaOutputServiceMock

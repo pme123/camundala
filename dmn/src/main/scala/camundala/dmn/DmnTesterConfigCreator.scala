@@ -18,7 +18,6 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
   protected def defaultDmnPath(dmnName: String): os.Path = dmnBasePath / s"$dmnName.dmn"
 
   protected def createDmnConfigs(dmnTesterObjects: DmnTesterObject[?]*): Unit =
-    println(s"createDmnConfigs: $dmnConfigPath")
     dmnConfigs(dmnTesterObjects)
       .foreach(updateConfig(_, dmnConfigPath))
     println("Check it on http://localhost:8883")

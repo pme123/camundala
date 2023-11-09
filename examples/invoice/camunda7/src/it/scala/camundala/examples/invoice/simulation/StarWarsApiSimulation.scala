@@ -21,6 +21,10 @@ class StarWarsApiSimulation extends CustomSimulation:
     ),
     scenario(
       `Star Wars Api People Detail outputServiceMock`
+    ),
+    incidentScenario(
+      `Star Wars Api People Detail outputServiceMock failure`,
+      "People Not found"
     )
   )
 
@@ -39,8 +43,13 @@ class StarWarsApiSimulation extends CustomSimulation:
       .withOut(Out(People("Pascal Starrider")))
   private lazy val `Star Wars Api People Detail outputServiceMock` =
     StarWarsRestApi.example
-      .mockServiceWith(MockedServiceResponse.success200(People("Pascal Starrider")))
-      .withOut(Out(People("Pascal Starrider")))
+      .mockServiceWith(MockedServiceResponse.success200(People("Peter Starrider")).withHeader("testKey", "headerValue"))
+      .withOut(Out(People("Peter Starrider")))
+
+  private lazy val `Star Wars Api People Detail outputServiceMock failure` =
+    StarWarsRestApi.example
+      .mockServices
+      .mockServiceWith(MockedServiceResponse.error(404, Json.fromString("People Not found")))
 
 
 end StarWarsApiSimulation

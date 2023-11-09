@@ -12,7 +12,6 @@ trait DmnConfigWriter extends DmnTesterHelpers:
   
   def updateConfig(dmnConfig: DmnConfig, configPath: os.Path): Unit =
     val encodedPath = URLEncoder.encode(configPath.relativeTo(projectBasePath).toString, StandardCharsets.UTF_8)
-    println(s"updateConfig: ${dmnConfig.decisionId}")
     client.send(
       basicRequest
         .contentType("application/json")

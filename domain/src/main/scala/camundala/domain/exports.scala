@@ -78,7 +78,6 @@ object Optable {
 
 //json
 def throwErr(err: String) =
-  println(s"ERROR: $err")
   throw new IllegalArgumentException(err)
 
 def toJson(json: String): Json =

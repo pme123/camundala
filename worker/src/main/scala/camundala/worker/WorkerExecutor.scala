@@ -80,15 +80,16 @@ case class WorkerExecutor[
       (
         context.generalVariables.servicesMocked,
         context.generalVariables.isMockedSubprocess(worker.topic),
-        context.generalVariables.outputMockOpt
+        context.generalVariables.outputMockOpt,
+        context.generalVariables.outputServiceMockOpt
       ) match
-        case (_, _, Some(outputMock)) => // if the outputMock is set than we mock
+        case (_, _, Some(outputMock), _) => // if the outputMock is set than we mock
           Left(decodeMock(outputMock))
-        case (_, true, _) => // if your process is a SubProcess check if it is mocked
+        case (_, true, _, None) => // if your process is a SubProcess check if it is mocked
           Left(worker.defaultMock)
-        case (true, _, _) if isService => // if your process is a Service check if it is mocked
+        case (true, _, _, None) if isService => // if your process is a Service check if it is mocked
           Left(worker.defaultMock)
-        case (_, _, None) =>
+        case (_, _, None, _) =>
           Right(None)
     end mockOrProceed
 

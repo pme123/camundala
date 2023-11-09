@@ -93,8 +93,8 @@ end CustomWorker
 case class ServiceWorker[
     In <: Product: CirceCodec,
     Out <: Product: CirceCodec,
-    ServiceIn <: Product: CirceCodec,
-    ServiceOut: CirceCodec
+    ServiceIn <: Product: Encoder,
+    ServiceOut: Decoder
 ](
     inOut: ServiceTask[In, Out, ServiceIn, ServiceOut],
     override val validationHandler: Option[ValidationHandler[In]] = None,

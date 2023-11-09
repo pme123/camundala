@@ -140,17 +140,16 @@ case class ServiceHandler[
         } yield out
       }
       .getOrElse(Right(None))
-      .left
-      .map(e => ServiceUnexpectedError(s"There was an Error creating Service Mock: $e"))
+
   end withServiceMock
 
   private def decodeMock[Out: Decoder](
       json: Json
-  )(using EngineRunContext): Either[MockerError | MockedOutput, Option[Out]] =
+  ): Either[ServiceMockingError, Option[Out]] =
     decodeTo[Out](json.asJson.toString)
       .map(Some(_))
       .left
-      .map(ex => MockerError(errorMsg = ex.errorMsg))
+      .map(ex => ServiceMockingError(errorMsg = ex.causeMsg))
   end decodeMock
 
   private def handleMocking(
@@ -191,8 +190,6 @@ case class ServiceHandler[
           )
       }
       .getOrElse(Right(None))
-      .left
-      .map(e => ServiceUnexpectedError(s"There was an Error handling Service Mock: $e"))
 
   def mapBodyOutput(
       serviceOutput: ServiceOut,

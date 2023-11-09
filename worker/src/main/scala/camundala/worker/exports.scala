@@ -109,6 +109,10 @@ object CamundalaWorkerError:
       errorMsg: String,
       errorCode: ErrorCodes = ErrorCodes.`service-mapping-error`
   ) extends ServiceError
+  case class ServiceMockingError(
+      errorMsg: String,
+      errorCode: ErrorCodes = ErrorCodes.`service-mocking-error`
+  ) extends ServiceError
   case class ServiceBadPathError(
       errorMsg: String,
       errorCode: ErrorCodes = ErrorCodes.`service-bad-path-error`

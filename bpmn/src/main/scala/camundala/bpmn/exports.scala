@@ -53,6 +53,7 @@ enum ErrorCodes:
   case `mapping-error`
   case `custom-run-error`
   case `service-mapping-error`
+  case `service-mocking-error`
   case `service-bad-path-error`
   case `service-auth-error`
   case `service-bad-body-error`

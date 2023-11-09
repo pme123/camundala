@@ -22,7 +22,6 @@ trait Validator[T <: Product : CirceCodec] :
       .map { k =>
         val typedValue: TypedValue = execution.getVariableTyped(k)
         if (typedValue == null)
-          println(s"NOT SET: $k")
           "NOT_SET"
         else
           val value = extractValue(typedValue)

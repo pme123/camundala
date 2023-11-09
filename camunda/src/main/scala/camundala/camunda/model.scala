@@ -37,11 +37,9 @@ case class BpmnInOut[
   lazy val id: String = inOut.id
 
   def withOutMapper(pathMapper: PathMapper): BpmnInOut[In, Out] =
-    println(s"OUTPUT: $pathMapper")
     copy(outMappers = outMappers :+ pathMapper)
 
   def withInMapper(pathMapper: PathMapper): BpmnInOut[In, Out] =
-    println(s"INPUT: $pathMapper")
     copy(inMappers = inMappers :+ pathMapper)
 
 case class PathMapper(
@@ -97,7 +95,6 @@ enum MapType(val expr: String):
 
 object MapType:
   def apply(className: String): MapType =
-    println(s"CLASSNAME: $className")
     className match {
       case n if n.contains("Boolean") => MapType.Boolean
       case n if n.contains("Int") => MapType.Int

@@ -15,7 +15,7 @@ import sttp.client3.UriContext
 import sttp.model.Uri
 
 import javax.annotation.PostConstruct
-
+import camundala.examples.invoice.StarWarsRestApi.given
 @Configuration
 class StarWarsApiWorker extends InvoiceWorkerHandler, ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]:
 

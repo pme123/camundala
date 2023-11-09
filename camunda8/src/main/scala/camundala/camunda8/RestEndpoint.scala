@@ -65,7 +65,6 @@ trait RestEndpoint extends Validator:
             .map(_.getName)
             .toList
             .asJava
-          println(s"fetchedVariables: $fetchedVariables")
           command
             .withResult()
             .fetchVariables(fetchedVariables)

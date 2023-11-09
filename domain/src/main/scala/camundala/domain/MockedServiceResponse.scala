@@ -1,15 +1,14 @@
 package camundala.domain
 
-
 @description(
   "Mocks a REST Service Response (must be handled by the BPF package)."
 )
 case class MockedServiceResponse[
     ServiceOut // output of service
 ](
-   respStatus: Int,
-   respBody: Either[Option[Json], ServiceOut],
-   respHeaders: Seq[Seq[String]] = Seq.empty
+    respStatus: Int,
+    respBody: Either[Option[Json], ServiceOut],
+    respHeaders: Seq[Seq[String]] = Seq.empty
 ):
   def withHeader(
       key: String,
@@ -21,7 +20,7 @@ object MockedServiceResponse:
 
   def success[
       ServiceOut
-  ](status: Int, body: ServiceOut):MockedServiceResponse[ServiceOut] =
+  ](status: Int, body: ServiceOut): MockedServiceResponse[ServiceOut] =
     MockedServiceResponse(status, Right(body))
 
   def success200[
@@ -43,12 +42,11 @@ object MockedServiceResponse:
     MockedServiceResponse(status, Left(Some(body)))
 
   def error[
-    ServiceOut
+      ServiceOut
   ](status: Int): MockedServiceResponse[ServiceOut] =
     MockedServiceResponse(status, Left(None))
 
-  implicit def tapirSchema[ServiceOut: Schema]
-      : Schema[MockedServiceResponse[ServiceOut]] =
+  implicit def tapirSchema[ServiceOut: Schema]: Schema[MockedServiceResponse[ServiceOut]] =
     Schema.derived[MockedServiceResponse[ServiceOut]]
 
   implicit def mockedHttpResponseEncoder[ServiceOut: Encoder]
@@ -97,4 +95,4 @@ implicit def seqCodec[T: CirceCodec]: CirceCodec[Seq[T]] =
     final def apply(a: Seq[T]): Json = Json.arr(a.map(_.asJson): _*)
   }
 end seqCodec
-*/
+ */
