@@ -3,7 +3,7 @@ info:
   title: Invoice Example Process API
   version: '1.0'
   summary: "\n**This is for Postman - to have example requests. Be aware the Output\
-    \ is not provided!**\n\n\n\nCreated at 30/10/2023, 07:48\n\n**See the [Camundala\
+    \ is not provided!**\n\n\n\nCreated at 11/11/2023, 10:24\n\n**See the [Camundala\
     \ Documentation](https://pme123.github.io/camundala/)\n\n> This is the invoice\
     \ demo application which is shipped with the full distributions.\n\nSee the original\
     \ [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).\n\
@@ -25,28 +25,28 @@ info:
     \  .mockSubProcesses(\"mySubProcess1\", \"mySubProcess2\") // creates a list with\
     \ SubProcessess\n  .mockSubProcess(\"myOtherSubProcess\") // adds a SubProcess\n\
     ```\n\n- Json\n```json\n...\n\"mockedSubprocesses\": [\"mySubProcess\", \"myOtherSubProcess\"\
-    ],\n...\n```\n\n### Processes and ServiceProcesses\n**outputVariables**:\n\nYou\
-    \ can filter the Output with a list of variable names you are interested in.\n\
-    This list may include all variables from the output (`Out`). We included an example\
-    \ for each Process or ServiceProcess.\nDepending on your implementation it is\
-    \ also possible to use a _comma separated_ String,\nlike `\"name,firstName\"`\n\
-    \n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withOutputVariables(\"\
+    ],\n...\n```\n\n### Processes and ExternalTasks\n**outputVariables**:\n\nYou can\
+    \ filter the Output with a list of variable names you are interested in.\nThis\
+    \ list may include all variables from the output (`Out`). We included an example\
+    \ for each Process or ExternalTask.\nDepending on your implementation it is also\
+    \ possible to use a _comma separated_ String,\nlike `\"name,firstName\"`\n\n\n\
+    - DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withOutputVariables(\"\
     name\", \"firstName\") // creates a list with outputVariables\n  .withOutputVariable(\"\
     nickname\") // adds a outputVariable\n```\n\n- Json\n```json\n...\n\"outputVariables\"\
     : [\"name\", \"firstName\"],\n...\n```\n\n\n**outputMock**:\n\nMock the Process\
-    \ or Service (`Out`)\n - You find an example in every _Process_ and _ServiceProcess_.\n\
+    \ or ExternalTask (`Out`)\n - You find an example in every _Process_ and _ExternalTask_.\n\
     \n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .mockWith(outputMock)\n\
     ```\n\n- Json\n```json\n...\n\"outputMock\": {..},\n...\n```\n\n\n**servicesMocked**:\n\
-    \nMock the ServiceProcesses (Workers only) with their default Mock:\n\n- DSL:\n\
-    ```scala\nprocess(..) // or serviceProcess(..)\n  .mockServices\n```\n\n- Json\n\
-    ```json\n...\n\"servicesMocked\": true,\n...\n```\n\n\n**impersonateUserId**:\n\
-    \nUser-ID of a User that should be taken to authenticate to the services.\nThis\
-    \ must be supported by your implementation. *Be caution: this may be a security\
-    \ issue!*.\nIt is helpful if you have Tokens that expire, but long running Processes.\n\
-    \n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withImpersonateUserId(impersonateUserId)\n\
+    \nMock the ExternalTasks (Workers only) with their default Mock:\n\n- DSL:\n```scala\n\
+    process(..) // or serviceProcess(..)\n  .mockServices\n```\n\n- Json\n```json\n\
+    ...\n\"servicesMocked\": true,\n...\n```\n\n\n**impersonateUserId**:\n\nUser-ID\
+    \ of a User that should be taken to authenticate to the services.\nThis must be\
+    \ supported by your implementation. *Be caution: this may be a security issue!*.\n\
+    It is helpful if you have Tokens that expire, but long running Processes.\n\n\
+    - DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withImpersonateUserId(impersonateUserId)\n\
     ```\n\n- Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
-    \n### ServiceProcesses\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
-    \ - You find an example in every _ServiceProcess_.\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \n### ExternalTasks\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
+    \ - You find an example in every _ExternalTask_.\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
     \  .mockServiceWith(MockedServiceResponse\n     .success200(inOut.defaultServiceMock))\n\
     ```\n\n- Json\n```json\n...\n\"outputServiceMock\": {\n  \"respStatus\" : 200,\n\
     \  \"respBody\" : \"Example String Body\",\n  \"respHeaders\" : [\n  ]\n},\n...\n\
@@ -666,7 +666,7 @@ paths:
         Get People Details from StarWars API
 
         See API Doc: [star-wars-api-people-detail](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/star-wars-api-people-detail/operation/star-wars-api-people-detail)
-      operationId: postProcess-definitionKeyCamundala-service-genericStart--remove:star-wars-api-people-detail--
+      operationId: postProcess-definitionKeyCamundala-externaltask-genericStart--remove:star-wars-api-people-detail--
       requestBody:
         content:
           application/json:
@@ -694,7 +694,7 @@ paths:
         Archives the Receipt.
 
         See API Doc: [CustomTask: ArchiveInvoiceService](https://webstor.ch/camundala/myCompany/invoice-example/OpenApi.html#tag/ArchiveInvoiceService/operation/CustomTask:%20ArchiveInvoiceService)
-      operationId: postProcess-definitionKeyCamundala-service-genericStart--remove:archiveinvoiceservice--
+      operationId: postProcess-definitionKeyCamundala-externaltask-genericStart--remove:archiveinvoiceservice--
       requestBody:
         content:
           application/json:

@@ -37,16 +37,12 @@ sealed trait InOutApi[
 
   def addInExample(label: String, example: In): InOutApi[In, Out] =
     withExamples(
-      apiExamples.copy(inputExamples =
-        apiExamples.inputExamples :+ (label, example)
-      )
+      apiExamples.copy(inputExamples = apiExamples.inputExamples :+ (label, example))
     )
 
   def addOutExample(label: String, example: Out): InOutApi[In, Out] =
     withExamples(
-      apiExamples.copy(outputExamples =
-        apiExamples.outputExamples :+ (label, example)
-      )
+      apiExamples.copy(outputExamples = apiExamples.outputExamples :+ (label, example))
     )
 
   // this function needs to be here as circe does not find the Encoder in the extension method
@@ -77,7 +73,7 @@ sealed trait InOutApi[
        |
        |- Input:  `${inOut.in.getClass.getName.replace("$", " > ")}`
        |- Output: `${inOut.out.getClass.getName
-      .replace("$", " > ")}`""".stripMargin
+        .replace("$", " > ")}`""".stripMargin
 
   protected def diagramName: Option[String] = None
 
@@ -130,12 +126,12 @@ case class ProcessApi[
     s"""${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
        |
        |${inOut.in match
-      case _: GenericServiceIn => "" // no diagram if generic
-      case _ =>
-        diagramDownloadPath
-          .map(diagramFrame(_, diagramNameAdjuster))
-          .getOrElse("")
-    }
+        case _: GenericServiceIn => "" // no diagram if generic
+        case _ =>
+          diagramDownloadPath
+            .map(diagramFrame(_, diagramNameAdjuster))
+            .getOrElse("")
+      }
        |${generalVariablesDescr(inOut.out, "")}""".stripMargin
 
 object ProcessApi:
@@ -152,55 +148,56 @@ def generalVariablesDescr[Out <: Product: Encoder](
     serviceMock: String
 ) =
   s"""<p/>
-      |
-      |<details>
-      |<summary>
-      |<b><i>General Variable(s)</i></b>
-      |</summary>
-      |
-      |<p>
-      |
-      |**outputVariables**:
-      |
-      |Just take the variable you need in your process!
-      |```json
-      |...
-      |"outputVariables": "${out.productElementNames.mkString(",")}",
-      |...
-      |```
-      |
-      |**outputMock**:
-      |
-      |```json
-      |...
-      |"outputMock": ${out.asJson},
-      |...
-      |```
-      |$serviceMock
-      |</p>
-      |</details>
-      |</p>
+     |
+     |<details>
+     |<summary>
+     |<b><i>General Variable(s)</i></b>
+     |</summary>
+     |
+     |<p>
+     |
+     |**outputVariables**:
+     |
+     |Just take the variable you need in your process!
+     |```json
+     |...
+     |"outputVariables": "${out.productElementNames.mkString(",")}",
+     |...
+     |```
+     |
+     |**outputMock**:
+     |
+     |```json
+     |...
+     |"outputMock": ${out.asJson},
+     |...
+     |```
+     |$serviceMock
+     |</p>
+     |</details>
+     |</p>
       """.stripMargin
 end generalVariablesDescr
 
 sealed trait ExternalTaskApi[
-  In <: Product: Encoder: Decoder: Schema,
-  Out <: Product: Encoder: Decoder: Schema: ClassTag,
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema: ClassTag
 ] extends InOutApi[In, Out]:
   def inOut: ExternalTask[In, Out, ?]
 
   def processName: String = inOut.processName
-  lazy val topicName =  inOut.topicName
+  lazy val topicName = inOut.topicName
 
   override def apiDescription(
-                               diagramDownloadPath: Option[String],
-                               diagramNameAdjuster: Option[String => String]
-                             ): String =
+      diagramDownloadPath: Option[String],
+      diagramNameAdjuster: Option[String => String]
+  ): String =
     s"""
+       |**Topic:** `$topicName` (to define in the _**Topic**_ of the _**External Task**_ > _Service Task_ of type _External_)
        |
        |${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
        |
-       |Topic: `$topicName`
+       |You can test this worker using the generic process _**$GenericExternalTaskProcessName**_ (e.g. with Postman).
        |""".stripMargin
 
 case class ServiceWorkerApi[
@@ -209,9 +206,9 @@ case class ServiceWorkerApi[
     ServiceIn <: Product: Encoder: Schema,
     ServiceOut: Encoder: Decoder: Schema
 ](
-   name: String,
-   inOut: ServiceTask[In, Out, ServiceIn, ServiceOut],
-   apiExamples: ApiExamples[In, Out]
+    name: String,
+    inOut: ServiceTask[In, Out, ServiceIn, ServiceOut],
+    apiExamples: ApiExamples[In, Out]
 ) extends ExternalTaskApi[In, Out]:
 
   def withExamples(
@@ -226,24 +223,26 @@ case class ServiceWorkerApi[
     s"""
        |
        |${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
-       |- ServiceOut:  `${inOut.defaultServiceMock match
-      case seq: Seq[?] =>
-        s"Seq[${seq.head.getClass.getName.replace("$", " > ")}]"
-      case other => other.getClass.getName.replace("$", " > ")
-    }`
+       |- ServiceOut:  `$serviceOutDescr`
        |${generalVariablesDescr(
-      inOut.out,
-      s"""
+        inOut.out,
+        s"""
        |**outputServiceMock**:
        |```json
        |...
        |"outputServiceMock": ${MockedServiceResponse
-           .success200(inOut.defaultServiceMock)
-           .asJson},
+            .success200(inOut.defaultServiceMock)
+            .asJson},
        |...
        |```"""
-    )}
+      )}
     """.stripMargin
+
+  private def serviceOutDescr =
+    inOut.defaultServiceMock match
+      case seq: Seq[?] =>
+        s"Seq[${seq.head.getClass.getName.replace("$", " > ")}]"
+      case other => other.getClass.getName.replace("$", " > ")
 
 object ServiceWorkerApi:
   def apply[
@@ -260,29 +259,27 @@ object ServiceWorkerApi:
 end ServiceWorkerApi
 
 case class CustomWorkerApi[
-  In <: Product: Encoder: Decoder: Schema,
-  Out <: Product: Encoder: Decoder: Schema: ClassTag,
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema: ClassTag
 ](
-   name: String,
-   inOut: CustomTask[In, Out],
-   apiExamples: ApiExamples[In, Out]
- ) extends ExternalTaskApi[In, Out]:
+    name: String,
+    inOut: CustomTask[In, Out],
+    apiExamples: ApiExamples[In, Out]
+) extends ExternalTaskApi[In, Out]:
 
   def withExamples(
-                    examples: ApiExamples[In, Out]
-                  ): InOutApi[In, Out] =
+      examples: ApiExamples[In, Out]
+  ): InOutApi[In, Out] =
     copy(apiExamples = examples)
-
-
 
 object CustomWorkerApi:
   def apply[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema: ClassTag,
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema: ClassTag
   ](
-     name: String,
-     inOut: CustomTask[In, Out]
-   ): CustomWorkerApi[In, Out] =
+      name: String,
+      inOut: CustomTask[In, Out]
+  ): CustomWorkerApi[In, Out] =
     CustomWorkerApi(name, inOut, ApiExamples(name, inOut))
 
 end CustomWorkerApi
@@ -312,8 +309,8 @@ case class DecisionDmnApi[
     s"""${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
        |
        |${diagramDownloadPath
-      .map(diagramFrame(_, diagramNameAdjuster))
-      .getOrElse("")}
+        .map(diagramFrame(_, diagramNameAdjuster))
+        .getOrElse("")}
        |""".stripMargin
 
 object DecisionDmnApi:

@@ -98,10 +98,10 @@ def serviceNameDescr(serviceName: String) =
 @deprecated(
   "If you mock another Service or Subprocess - use `serviceOrProcessMockDescr` - otherwise:\n\n" + deprecatedDescr
 )
-def outputMockDescr[Out: CirceCodec, Schema](mock: Out) =
+def outputMockDescr[Out: Encoder](mock: Out) =
   serviceOrProcessMockDescr(mock)
 
-def serviceOrProcessMockDescr[Out: CirceCodec, Schema](mock: Out) =
+def serviceOrProcessMockDescr[Out: Encoder](mock: Out) =
   s"""You can mock the response variables of this (sub)process.
      |
      |Class: `${mock.getClass.getName.replace("$", " > ")}`

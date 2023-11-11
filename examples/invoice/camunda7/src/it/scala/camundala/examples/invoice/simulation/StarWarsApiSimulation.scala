@@ -11,16 +11,22 @@ class StarWarsApiSimulation extends CustomSimulation:
 
   simulate(
     scenario(
-      `Star Wars Api People Detail`
+      `Star Wars Api People Detail real`
+    ),
+    serviceScenario(
+      `Star Wars Api People Detail`,
+      Out(People("Pascal Starrider")),
+      People("Pascal Starrider"),
+      Map("fromHeader" -> "okidoki")
     ),
     scenario(
-      `Star Wars Api People Detail defaultMock`
+      `Star Wars Api People Detail defaultMock 2`
     ),
     scenario(
-      `Star Wars Api People Detail outputMock`
+      `Star Wars Api People Detail outputMock 2`
     ),
     scenario(
-      `Star Wars Api People Detail outputServiceMock`
+      `Star Wars Api People Detail outputServiceMock 2`
     ),
     incidentScenario(
       `Star Wars Api People Detail outputServiceMock failure`,
@@ -34,16 +40,19 @@ class StarWarsApiSimulation extends CustomSimulation:
   //.withLogLevel(LogLevel.DEBUG)
 
   private lazy val `Star Wars Api People Detail` = example
-  private lazy val `Star Wars Api People Detail defaultMock` =
+
+  private lazy val `Star Wars Api People Detail real` = example
+    .withOut(_.copy(fromHeader = "---")) // no header
+  private lazy val `Star Wars Api People Detail defaultMock 2` =
     StarWarsRestApi.example
       .mockServices
-  private lazy val `Star Wars Api People Detail outputMock` =
+  private lazy val `Star Wars Api People Detail outputMock 2` =
     StarWarsRestApi.example
       .mockWith(Out(People("Pascal Starrider")))
       .withOut(Out(People("Pascal Starrider")))
-  private lazy val `Star Wars Api People Detail outputServiceMock` =
+  private lazy val `Star Wars Api People Detail outputServiceMock 2` =
     StarWarsRestApi.example
-      .mockServiceWith(MockedServiceResponse.success200(People("Peter Starrider")).withHeader("testKey", "headerValue"))
+      .mockServiceWith(MockedServiceResponse.success200(People("Peter Starrider")).withHeader("fromHeader", "okidoki"))
       .withOut(Out(People("Peter Starrider")))
 
   private lazy val `Star Wars Api People Detail outputServiceMock failure` =

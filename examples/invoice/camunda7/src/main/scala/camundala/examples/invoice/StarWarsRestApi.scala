@@ -2,7 +2,8 @@ package camundala
 package examples.invoice
 
 import camundala.bpmn.*
-import domain.*
+import camundala.domain.*
+import sttp.tapir.Schema.annotations.description
 
 object StarWarsRestApi extends BpmnDsl:
 
@@ -10,7 +11,7 @@ object StarWarsRestApi extends BpmnDsl:
   type ServiceIn = NoInput
   type ServiceOut = People
   lazy val serviceMock: ServiceOut = People()
-  
+
   @description("Same Input as _InvoiceReceipt_, only different Mocking")
   case class In(
       id: Int = 1
@@ -22,14 +23,15 @@ object StarWarsRestApi extends BpmnDsl:
   end In
 
   case class Out(
-      people: People = People()
+      people: People = People(),
+      fromHeader: String = "okidoki"
   )
 
   object Out:
     given Schema[Out] = Schema.derived
     given CirceCodec[Out] = deriveCodec
   end Out
-  
+
   case class People(
       name: String = "Luke Skywalker",
       height: String = "172",
@@ -49,7 +51,7 @@ object StarWarsRestApi extends BpmnDsl:
       descr = "Get People Details from StarWars API",
       in = In(),
       out = Out(),
-      defaultServiceMock = serviceMock,
+      defaultServiceMock = serviceMock
     )
 
 end StarWarsRestApi

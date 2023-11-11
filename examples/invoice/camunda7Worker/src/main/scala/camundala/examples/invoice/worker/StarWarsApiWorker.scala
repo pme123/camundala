@@ -24,12 +24,12 @@ class StarWarsApiWorker extends InvoiceWorkerHandler, ServiceWorkerDsl[In, Out, 
   def apiUri(in: In): Uri = uri"https://swapi.dev/api/people/${in.id}"
 
   override def defaultHeaders: Map[String, String] = Map(
-    "justForTestHeader" -> "it works!"
+    "fromHeader" -> "okidoki"
   )
 
   override def outputMapper(
       out: ServiceResponse[ServiceOut]
   ): Either[ServiceMappingError, Option[Out]] =
-    Right(Some(Out(out.outputBody)))
+    Right(Some(Out(out.outputBody, out.headers.getOrElse("fromHeader", "---"))))
   
 end StarWarsApiWorker

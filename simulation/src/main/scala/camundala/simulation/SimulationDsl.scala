@@ -2,7 +2,7 @@ package camundala
 package simulation
 
 import camundala.bpmn.*
-import camundala.domain.Optable
+import camundala.domain.{MockedServiceResponse, Optable}
 
 import scala.language.implicitConversions
 
@@ -10,20 +10,48 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
 
   protected def run(sim: SSimulation): T
 
-  def simulate(body: => SScenario*): Unit =
+  def simulate(body: => (Seq[SScenario] | SScenario)*): Unit =
     try {
-      run(SSimulation(body.toList)) // runs Scenarios
-    }catch{
+      val scenarios = body.flatMap:
+        case s: Seq[?] => s.collect { case ss: SScenario => ss }
+        case s: SScenario => Seq(s)
+
+      run(SSimulation(scenarios.toList)) // runs Scenarios
+    } catch {
       case err => // there could be errors in the creation of the SScenarios
         err.printStackTrace()
     }
-    
 
   def scenario(scen: ProcessScenario): SScenario =
     scenario(scen)()
 
   def scenario(scen: ExternalTaskScenario): SScenario =
     scen
+
+  inline def serviceScenario[
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema,
+      ServiceIn <: Product: Encoder,
+      ServiceOut: Encoder: Decoder
+  ](
+      task: ServiceTask[In, Out, ServiceIn, ServiceOut],
+      outputMock: Out,
+      outputServiceMock: ServiceOut,
+      respHeaders: Map[String, String] = Map.empty
+  ): Seq[ExternalTaskScenario] =
+    val withDefaultMock = task.mockServices
+    val withOutputMock = task
+      .mockWith(outputMock)
+      .withOut(outputMock)
+    val withServiceOutputMock = task
+      .mockServiceWith(MockedServiceResponse.success200(outputServiceMock).withHeaders(respHeaders))
+      .withOut(outputMock)
+
+    Seq(
+      ExternalTaskScenario(nameOfVariable(task) + " defaultMock", withDefaultMock),
+      ExternalTaskScenario(nameOfVariable(task) + " outputMock", withOutputMock),
+      ExternalTaskScenario(nameOfVariable(task) + " outputServiceMock", withServiceOutputMock)
+    )
 
   def scenario(scen: DmnScenario): SScenario =
     scen
@@ -51,9 +79,9 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     incidentScenario(process, incidentMsg)()
 
   inline def incidentScenario(
-                               inline process: ExternalTask[?, ?, ?],
-                               incidentMsg: String
-                             ): IncidentServiceScenario =
+      inline process: ExternalTask[?, ?, ?],
+      incidentMsg: String
+  ): IncidentServiceScenario =
     IncidentServiceScenario(nameOfVariable(process), process, incidentMsg)
 
   inline def subProcess(inline process: Process[?, ?])(

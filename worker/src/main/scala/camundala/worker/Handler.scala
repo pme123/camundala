@@ -95,7 +95,7 @@ trait RunWorkHandler[
 case class ServiceHandler[
     In <: Product: CirceCodec,
     Out <: Product: CirceCodec,
-    ServiceIn: Encoder,
+    ServiceIn <: Product : Encoder,
     ServiceOut: Decoder
 ](
     httpMethod: Method,

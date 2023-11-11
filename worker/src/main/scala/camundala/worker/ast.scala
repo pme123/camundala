@@ -165,7 +165,7 @@ case class RunnableRequest[ServiceIn: Encoder](
 
 object RunnableRequest:
 
-  def apply[In <: Product: CirceCodec, ServiceIn: Encoder](
+  def apply[In <: Product: CirceCodec, ServiceIn <: Product : Encoder](
       inputObject: In,
       requestHandler: ServiceHandler[In, ?, ServiceIn, ?]
   ): RunnableRequest[ServiceIn] =

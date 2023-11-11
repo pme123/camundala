@@ -264,6 +264,12 @@ case class ServiceTask[
   ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(outputServiceMock = Some(outputServiceMock))
 
+  // shortcut for success case
+  def mockServiceWith(
+      outputServiceMock: ServiceOut
+  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+    copy(outputServiceMock = Some(MockedServiceResponse.success200(outputServiceMock)))
+
   def handleErrors(
       errorCodes: ErrorCodeType*
   ): ServiceTask[In, Out, ServiceIn, ServiceOut] =

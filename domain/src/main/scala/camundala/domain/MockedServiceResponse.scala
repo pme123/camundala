@@ -16,6 +16,13 @@ case class MockedServiceResponse[
   ): MockedServiceResponse[ServiceOut] =
     copy(respHeaders = respHeaders :+ Seq(key, value))
 
+  def withHeaders(
+                  headers: Map[String,String]
+                ): MockedServiceResponse[ServiceOut] =
+    copy(respHeaders = respHeaders ++ headers.toSeq.map {
+      case k -> v => Seq(k,v)
+    })
+
 object MockedServiceResponse:
 
   def success[

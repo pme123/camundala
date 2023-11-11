@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: "\n\nCreated at 30/10/2023, 07:48\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
+  summary: "\n\nCreated at 11/11/2023, 10:24\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
     \n> This is the invoice demo application which is shipped with the full distributions.\n\
     \nSee the original [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).\n\
     \nI bundled it here! Just run `InvoiceServletProcessApplication`.\n\nThis based\
@@ -23,28 +23,28 @@ info:
     \  .mockSubProcesses(\"mySubProcess1\", \"mySubProcess2\") // creates a list with\
     \ SubProcessess\n  .mockSubProcess(\"myOtherSubProcess\") // adds a SubProcess\n\
     ```\n\n- Json\n```json\n...\n\"mockedSubprocesses\": [\"mySubProcess\", \"myOtherSubProcess\"\
-    ],\n...\n```\n\n### Processes and ServiceProcesses\n**outputVariables**:\n\nYou\
-    \ can filter the Output with a list of variable names you are interested in.\n\
-    This list may include all variables from the output (`Out`). We included an example\
-    \ for each Process or ServiceProcess.\nDepending on your implementation it is\
-    \ also possible to use a _comma separated_ String,\nlike `\"name,firstName\"`\n\
-    \n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withOutputVariables(\"\
+    ],\n...\n```\n\n### Processes and ExternalTasks\n**outputVariables**:\n\nYou can\
+    \ filter the Output with a list of variable names you are interested in.\nThis\
+    \ list may include all variables from the output (`Out`). We included an example\
+    \ for each Process or ExternalTask.\nDepending on your implementation it is also\
+    \ possible to use a _comma separated_ String,\nlike `\"name,firstName\"`\n\n\n\
+    - DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withOutputVariables(\"\
     name\", \"firstName\") // creates a list with outputVariables\n  .withOutputVariable(\"\
     nickname\") // adds a outputVariable\n```\n\n- Json\n```json\n...\n\"outputVariables\"\
     : [\"name\", \"firstName\"],\n...\n```\n\n\n**outputMock**:\n\nMock the Process\
-    \ or Service (`Out`)\n - You find an example in every _Process_ and _ServiceProcess_.\n\
+    \ or ExternalTask (`Out`)\n - You find an example in every _Process_ and _ExternalTask_.\n\
     \n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .mockWith(outputMock)\n\
     ```\n\n- Json\n```json\n...\n\"outputMock\": {..},\n...\n```\n\n\n**servicesMocked**:\n\
-    \nMock the ServiceProcesses (Workers only) with their default Mock:\n\n- DSL:\n\
-    ```scala\nprocess(..) // or serviceProcess(..)\n  .mockServices\n```\n\n- Json\n\
-    ```json\n...\n\"servicesMocked\": true,\n...\n```\n\n\n**impersonateUserId**:\n\
-    \nUser-ID of a User that should be taken to authenticate to the services.\nThis\
-    \ must be supported by your implementation. *Be caution: this may be a security\
-    \ issue!*.\nIt is helpful if you have Tokens that expire, but long running Processes.\n\
-    \n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withImpersonateUserId(impersonateUserId)\n\
+    \nMock the ExternalTasks (Workers only) with their default Mock:\n\n- DSL:\n```scala\n\
+    process(..) // or serviceProcess(..)\n  .mockServices\n```\n\n- Json\n```json\n\
+    ...\n\"servicesMocked\": true,\n...\n```\n\n\n**impersonateUserId**:\n\nUser-ID\
+    \ of a User that should be taken to authenticate to the services.\nThis must be\
+    \ supported by your implementation. *Be caution: this may be a security issue!*.\n\
+    It is helpful if you have Tokens that expire, but long running Processes.\n\n\
+    - DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withImpersonateUserId(impersonateUserId)\n\
     ```\n\n- Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
-    \n### ServiceProcesses\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
-    \ - You find an example in every _ServiceProcess_.\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \n### ExternalTasks\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
+    \ - You find an example in every _ExternalTask_.\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
     \  .mockServiceWith(MockedServiceResponse\n     .success200(inOut.defaultServiceMock))\n\
     ```\n\n- Json\n```json\n...\n\"outputServiceMock\": {\n  \"respStatus\" : 200,\n\
     \  \"respBody\" : \"Example String Body\",\n  \"respHeaders\" : [\n  ]\n},\n...\n\
@@ -70,9 +70,9 @@ paths:
       summary: 'Process: example-invoice-c7'
       description: "This starts the Invoice Receipt Process.\n\n- Input:  `camundala.examples.invoice.InvoiceReceipt\
         \ > In`\n- Output: `camundala.examples.invoice.InvoiceReceipt > Out`\n\n\n\
-        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-59406\"\
+        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-81414\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container:\
-        \ $('#example-invoice-c7-59406'), height: '95%', width: '95%' }));\" src=\"\
+        \ $('#example-invoice-c7-81414'), height: '95%', width: '95%' }));\" src=\"\
         data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
@@ -118,8 +118,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-6496">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-6496'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-95355">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-95355'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -235,10 +235,10 @@ paths:
       summary: 'Process: example-invoice-c7-review'
       description: "This starts the Review Invoice Process.\n\n- Input:  `camundala.examples.invoice.ReviewInvoice\
         \ > In`\n- Output: `camundala.examples.invoice.ReviewInvoice > Out`\n\n\n\
-        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-96213\"\
+        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-7531\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({\
-        \ container: $('#example-invoice-c7-review-96213'), height: '95%', width:\
-        \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
+        \ container: $('#example-invoice-c7-review-7531'), height: '95%', width: '95%'\
+        \ }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
         \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
@@ -351,21 +351,25 @@ paths:
       tags:
       - Workers
       summary: star-wars-api-people-detail
-      description: "\n\n\n\nGet People Details from StarWars API\n\n- Input:  `camundala.examples.invoice.StarWarsRestApi\
+      description: "\n\n\n**Topic:** `star-wars-api-people-detail` (to define in the\
+        \ _**Topic**_ of the _**External Task**_ > _Service Task_ of type _External_)\n\
+        \nGet People Details from StarWars API\n\n- Input:  `camundala.examples.invoice.StarWarsRestApi\
         \ > In`\n- Output: `camundala.examples.invoice.StarWarsRestApi > Out`\n\n\
-        Topic: `star-wars-api-people-detail`\n\n- ServiceOut:  `camundala.examples.invoice.StarWarsRestApi\
+        You can test this worker using the generic process _**camundala-externalTask-generic**_\
+        \ (e.g. with Postman).\n\n- ServiceOut:  `camundala.examples.invoice.StarWarsRestApi\
         \ > People`\n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n\
         </summary>\n\n<p>\n\n**outputVariables**:\n\nJust take the variable you need\
-        \ in your process!\n```json\n...\n\"outputVariables\": \"people\",\n...\n\
-        ```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"people\" :\
-        \ {\n    \"name\" : \"Luke Skywalker\",\n    \"height\" : \"172\",\n    \"\
-        mass\" : \"77\",\n    \"hair_color\" : \"blond\",\n    \"skin_color\" : \"\
-        fair\",\n    \"eye_color\" : \"blue\"\n  }\n},\n...\n```\n\n**outputServiceMock**:\n\
-        ```json\n...\n\"outputServiceMock\": {\n  \"respStatus\" : 200,\n  \"respBody\"\
+        \ in your process!\n```json\n...\n\"outputVariables\": \"people,fromHeader\"\
+        ,\n...\n```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"people\"\
         \ : {\n    \"name\" : \"Luke Skywalker\",\n    \"height\" : \"172\",\n   \
         \ \"mass\" : \"77\",\n    \"hair_color\" : \"blond\",\n    \"skin_color\"\
-        \ : \"fair\",\n    \"eye_color\" : \"blue\"\n  },\n  \"respHeaders\" : [\n\
-        \  ]\n},\n...\n```\n</p>\n</details>\n</p>\n      \n    "
+        \ : \"fair\",\n    \"eye_color\" : \"blue\"\n  },\n  \"fromHeader\" : \"okidoki\"\
+        \n},\n...\n```\n\n**outputServiceMock**:\n```json\n...\n\"outputServiceMock\"\
+        : {\n  \"respStatus\" : 200,\n  \"respBody\" : {\n    \"name\" : \"Luke Skywalker\"\
+        ,\n    \"height\" : \"172\",\n    \"mass\" : \"77\",\n    \"hair_color\" :\
+        \ \"blond\",\n    \"skin_color\" : \"fair\",\n    \"eye_color\" : \"blue\"\
+        \n  },\n  \"respHeaders\" : [\n  ]\n},\n...\n```\n</p>\n</details>\n</p>\n\
+        \      \n    "
       operationId: star-wars-api-people-detail
       requestBody:
         content:
@@ -394,6 +398,7 @@ paths:
                       hair_color: blond
                       skin_color: fair
                       eye_color: blue
+                    fromHeader: okidoki
   /customtask/Workers/ArchiveInvoiceService:
     head:
       tags:
@@ -401,13 +406,14 @@ paths:
       summary: 'CustomTask: ArchiveInvoiceService'
       description: |2
 
+        **Topic:** `ArchiveInvoiceService` (to define in the _**Topic**_ of the _**External Task**_ > _Service Task_ of type _External_)
 
         Archives the Receipt.
 
         - Input:  `camundala.examples.invoice.ArchiveInvoice > In`
         - Output: `camundala.examples.invoice.ArchiveInvoice > Out`
 
-        Topic: `ArchiveInvoiceService`
+        You can test this worker using the generic process _**camundala-externalTask-generic**_ (e.g. with Postman).
       operationId: 'CustomTask: ArchiveInvoiceService'
       requestBody:
         content:
@@ -587,8 +593,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-3693">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-3693'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-52511">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-52511'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -718,8 +724,6 @@ components:
       properties:
         shouldFail:
           type: boolean
-        outputMock:
-          $ref: '#/components/schemas/Out6'
     InvoiceCategory:
       oneOf:
       - $ref: '#/components/schemas/Misc'
@@ -790,10 +794,13 @@ components:
     Out5:
       required:
       - people
+      - fromHeader
       type: object
       properties:
         people:
           $ref: '#/components/schemas/People'
+        fromHeader:
+          type: string
     Out6:
       type: object
       properties:
