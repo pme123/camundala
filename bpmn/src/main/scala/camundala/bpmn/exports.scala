@@ -1,7 +1,7 @@
 package camundala
 package bpmn
 
-
+import camundala.domain.*
 import scala.compiletime.{constValue, constValueTuple}
 
 val camundaVersion = "7.15"
@@ -62,3 +62,10 @@ end ErrorCodes
 
 
 val GenericExternalTaskProcessName = "camundala-externalTask-generic"
+
+object GenericExternalTask:
+  enum ProcessStatus derives ConfiguredEnumCodec:
+    case succeeded, `404`, `400`, `output-mocked`, `validation-failed`
+  object ProcessStatus:
+    given Schema[ProcessStatus] = Schema.derived
+end GenericExternalTask

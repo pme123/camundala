@@ -3,46 +3,154 @@
   <bpmn:error id="Error_1rvzdyr" name="output-mocked" errorCode="output-mocked" />
   <bpmn:error id="Error_0tdcv3y" name="validation-failed" errorCode="validation-failed" camunda:errorMessage="${validationErrors.toString()}" />
   <bpmn:collaboration id="Collaboration_056504p">
-    <bpmn:participant id="CamundalaservicegenericParticipant" name="camundala-externalTask-generic" processRef="camundala-externalTask-generic" />
+    <bpmn:participant id="CamundalaexternalTaskgenericParticipant" name="camundala-externalTask-generic" processRef="camundala-externalTask-generic" />
   </bpmn:collaboration>
   <bpmn:process id="camundala-externalTask-generic" name="camundala-externalTask-generic" isExecutable="true">
     <bpmn:serviceTask id="CallExternalTaskTopicNameTask" name="Call External Task ${topicName}" camunda:type="external" camunda:topic="${topicName}">
-      <bpmn:extensionElements />
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="handledErrors">${handledErrors}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_14mczfv</bpmn:incoming>
       <bpmn:outgoing>Flow_0qgyrqy</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:endEvent id="DoneEndEvent" name="done">
+    <bpmn:endEvent id="SucceededEndEvent" name="succeeded">
       <bpmn:extensionElements>
-        <camunda:executionListener expression="${execution.setVariable(&#34;processStatus&#34;, &#34;done&#34;)}" event="start" />
+        <camunda:executionListener expression="${execution.setVariable(&#34;processStatus&#34;, &#34;succeeded&#34;)}" event="start" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0qgyrqy</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_14mczfv" sourceRef="CamundalaservicegenericStartEvent" targetRef="CallExternalTaskTopicNameTask" />
-    <bpmn:sequenceFlow id="Flow_0qgyrqy" sourceRef="CallExternalTaskTopicNameTask" targetRef="DoneEndEvent" />
-    <bpmn:startEvent id="CamundalaservicegenericStartEvent" name="camundala-externalTask-generic">
+    <bpmn:sequenceFlow id="Flow_14mczfv" sourceRef="CamundalaexternalTaskgenericStartEvent" targetRef="CallExternalTaskTopicNameTask" />
+    <bpmn:sequenceFlow id="Flow_0qgyrqy" sourceRef="CallExternalTaskTopicNameTask" targetRef="SucceededEndEvent" />
+    <bpmn:startEvent id="CamundalaexternalTaskgenericStartEvent" name="camundala-externalTask-generic">
+      <bpmn:extensionElements>
+        <camunda:executionListener event="end">
+          <camunda:script scriptFormat="groovy">println("handledErrors: $handledErrors")
+println("handledErrors: ${handledErrors.getClass()}")
+
+if(handledErrors != null &amp;&amp; !handledErrors.elements().isEmpty())
+  execution.setVariable("handledError" ,handledErrors.elements()[0].stringValue())</camunda:script>
+        </camunda:executionListener>
+      </bpmn:extensionElements>
       <bpmn:outgoing>Flow_14mczfv</bpmn:outgoing>
     </bpmn:startEvent>
+    <bpmn:boundaryEvent id="HandledErrorBoundaryEvent" attachedToRef="CallExternalTaskTopicNameTask">
+      <bpmn:outgoing>Flow_0rez82z</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_162g46y" errorRef="Error_0blmisz" camunda:errorCodeVariable="404" />
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="FailedEndEvent" name="404">
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable(&#34;processStatus&#34;, &#34;404&#34;)}" event="start" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0rez82z</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0rez82z" sourceRef="HandledErrorBoundaryEvent" targetRef="FailedEndEvent" />
+    <bpmn:sequenceFlow id="Flow_1u38tjv" sourceRef="Event_0dm2ydu" targetRef="Event_19cgqcl" />
+    <bpmn:endEvent id="Event_19cgqcl" name="400">
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable(&#34;processStatus&#34;, &#34;400&#34;)}" event="start" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1u38tjv</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="OutputmockedEndEvent" name="output-mocked">
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable(&#34;processStatus&#34;, &#34;output-mocked&#34;)}" event="start" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0xtoz11</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="ValidationfailedEndEvent" name="validation-failed">
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${execution.setVariable(&#34;processStatus&#34;, &#34;validation-failed&#34;)}" event="start" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_14rqldz</bpmn:incoming>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_13gjcnu" errorRef="Error_0tdcv3y" />
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0xtoz11" sourceRef="MockedBoundaryEvent" targetRef="OutputmockedEndEvent" />
+    <bpmn:boundaryEvent id="Event_0dm2ydu" attachedToRef="CallExternalTaskTopicNameTask">
+      <bpmn:outgoing>Flow_1u38tjv</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_19bqzqw" errorRef="Error_0zjbq5k" />
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="MockedBoundaryEvent" attachedToRef="CallExternalTaskTopicNameTask">
+      <bpmn:outgoing>Flow_0xtoz11</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_11vypoq" errorRef="Error_1rvzdyr" />
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Event_1roicyw" attachedToRef="CallExternalTaskTopicNameTask">
+      <bpmn:outgoing>Flow_14rqldz</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_0ogxnq9" errorRef="Error_0tdcv3y" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_14rqldz" sourceRef="Event_1roicyw" targetRef="ValidationfailedEndEvent" />
   </bpmn:process>
+  <bpmn:error id="Error_0blmisz" name="404" errorCode="404" />
+  <bpmn:error id="Error_0zjbq5k" name="400" errorCode="400" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_056504p">
-      <bpmndi:BPMNShape id="Participant_11hsz4j_di" bpmnElement="CamundalaservicegenericParticipant" isHorizontal="true">
-        <dc:Bounds x="160" y="80" width="500" height="210" />
+      <bpmndi:BPMNShape id="Participant_11hsz4j_di" bpmnElement="CamundalaexternalTaskgenericParticipant" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="500" height="488" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1luk2dc_di" bpmnElement="CallExternalTaskTopicNameTask" bioc:fill="#D5D5D5">
         <dc:Bounds x="353" y="150" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0m2fqbd_di" bpmnElement="DoneEndEvent">
+      <bpmndi:BPMNShape id="Event_0m2fqbd_di" bpmnElement="SucceededEndEvent">
         <dc:Bounds x="552" y="172" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="558" y="215" width="25" height="14" />
+          <dc:Bounds x="544" y="215" width="54" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_09h3wtj_di" bpmnElement="CamundalaservicegenericStartEvent">
+      <bpmndi:BPMNShape id="Event_09h3wtj_di" bpmnElement="CamundalaexternalTaskgenericStartEvent">
         <dc:Bounds x="222" y="172" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="203" y="215" width="75" height="27" />
+          <dc:Bounds x="208" y="215" width="66" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0zywize_di" bpmnElement="FailedEndEvent">
+        <dc:Bounds x="552" y="262" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="560" y="303" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_013fm3u" bpmnElement="Event_19cgqcl">
+        <dc:Bounds x="552" y="322" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="560" y="363" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_14l40l6_di" bpmnElement="OutputmockedEndEvent" bioc:fill="#D5D5D5">
+        <dc:Bounds x="552" y="392" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="533" y="438" width="73" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ck1zoe_di" bpmnElement="ValidationfailedEndEvent" bioc:fill="#D5D5D5">
+        <dc:Bounds x="552" y="472" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="531" y="518" width="77" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1kv1u3y_di" bpmnElement="HandledErrorBoundaryEvent">
+        <dc:Bounds x="435" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="470" y="255" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0kdzx8u_di" bpmnElement="Event_0dm2ydu">
+        <dc:Bounds x="402" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="390" y="255" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_047id8n_di" bpmnElement="MockedBoundaryEvent" bioc:fill="#D5D5D5">
+        <dc:Bounds x="372" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="453" y="193" width="73" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1oeltv5" bpmnElement="Event_1roicyw" bioc:fill="#D5D5D5">
+        <dc:Bounds x="335" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="252.5" y="193" width="39" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_14mczfv_di" bpmnElement="Flow_14mczfv">
@@ -52,6 +160,26 @@
       <bpmndi:BPMNEdge id="Flow_0qgyrqy_di" bpmnElement="Flow_0qgyrqy">
         <di:waypoint x="453" y="190" />
         <di:waypoint x="552" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rez82z_di" bpmnElement="Flow_0rez82z">
+        <di:waypoint x="453" y="248" />
+        <di:waypoint x="453" y="280" />
+        <di:waypoint x="552" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1u38tjv_di" bpmnElement="Flow_1u38tjv">
+        <di:waypoint x="420" y="248" />
+        <di:waypoint x="420" y="330" />
+        <di:waypoint x="555" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0xtoz11_di" bpmnElement="Flow_0xtoz11">
+        <di:waypoint x="390" y="248" />
+        <di:waypoint x="390" y="410" />
+        <di:waypoint x="552" y="410" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14rqldz_di" bpmnElement="Flow_14rqldz">
+        <di:waypoint x="353" y="248" />
+        <di:waypoint x="353" y="490" />
+        <di:waypoint x="552" y="490" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

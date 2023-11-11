@@ -27,9 +27,15 @@ class StarWarsApiWorker extends InvoiceWorkerHandler, ServiceWorkerDsl[In, Out, 
     "fromHeader" -> "okidoki"
   )
 
+  override def validate(in: In): Either[ValidatorError, In] =
+    if(in.id <= 0)
+      Left(ValidatorError("The search id for People must be > 0!"))
+    else
+      super.validate(in)
+
   override def outputMapper(
       out: ServiceResponse[ServiceOut]
   ): Either[ServiceMappingError, Option[Out]] =
-    Right(Some(Out(out.outputBody, out.headers.getOrElse("fromHeader", "---"))))
+    Right(Some(Out.Success(out.outputBody, out.headers.getOrElse("fromHeader", "---"))))
   
 end StarWarsApiWorker

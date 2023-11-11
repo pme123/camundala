@@ -2,6 +2,7 @@ package camundala
 package examples.invoice
 
 import camundala.bpmn.*
+import camundala.bpmn.GenericExternalTask.ProcessStatus
 import camundala.domain.*
 import sttp.tapir.Schema.annotations.description
 
@@ -22,14 +23,16 @@ object StarWarsRestApi extends BpmnDsl:
     given CirceCodec[In] = deriveCodec
   end In
 
-  case class Out(
+  enum Out derives ConfiguredCodec:
+    case Success(
       people: People = People(),
-      fromHeader: String = "okidoki"
-  )
+      fromHeader: String = "okidoki",
+      val processStatus: ProcessStatus =  ProcessStatus.succeeded
+    )
+    case Failure(val processStatus: ProcessStatus =  ProcessStatus.`404`)
 
   object Out:
     given Schema[Out] = Schema.derived
-    given CirceCodec[Out] = deriveCodec
   end Out
 
   case class People(
@@ -50,7 +53,7 @@ object StarWarsRestApi extends BpmnDsl:
       topicName,
       descr = "Get People Details from StarWars API",
       in = In(),
-      out = Out(),
+      out = Out.Success(),
       defaultServiceMock = serviceMock
     )
 

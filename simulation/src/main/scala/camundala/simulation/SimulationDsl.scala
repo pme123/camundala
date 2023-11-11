@@ -166,6 +166,19 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     def scenario(scen: SScenario)(body: SStep*): SScenario =
       scen.ignored
 
+    inline def serviceScenario[
+      In <: Product : Encoder : Decoder : Schema,
+      Out <: Product : Encoder : Decoder : Schema,
+      ServiceIn <: Product : Encoder,
+      ServiceOut: Encoder : Decoder
+    ](
+       task: ServiceTask[In, Out, ServiceIn, ServiceOut],
+       outputMock: Out,
+       outputServiceMock: ServiceOut,
+       respHeaders: Map[String, String] = Map.empty
+     ): SScenario =
+      ExternalTaskScenario(nameOfVariable(task) + " defaultMock", task).ignored
+
     def badScenario(
         scen: SScenario,
         status: Int,
