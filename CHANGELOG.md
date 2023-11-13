@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.22.4 - 2023-11-13
+### Changed 
+- MAP-7439: Added ProcessStatus for camundala-externalTask-generic / added Simulations for handling Errors. - see [Commit](https://github.com/pme123/camundala/commit/d6407992c6c3bd13c4a7213d795ff7287d8cf02a)
+- MAP-7439: Adjusted Worker description / added convenience functions - serviceScenario. - see [Commit](https://github.com/pme123/camundala/commit/54da132ee76978d377264858760b68b9375b2c43)
+
 ## 1.22.3 - 2023-11-09
 ### Changed 
 - MAP-7439: Fixing / Cleanup MockedServiceResponse. - see [Commit](https://github.com/pme123/camundala/commit/1628fc2dab4b6c012a3d6e67706f6c1b5e9dfd28)
