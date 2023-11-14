@@ -34,10 +34,10 @@ info:
     : [\"name\", \"firstName\"],\n...\n```\n\n\n**outputMock**:\n\nMock the Process\
     \ or ExternalTask (`Out`)\n - You find an example in every _Process_ and _ExternalTask_.\n\
     \n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .mockWith(outputMock)\n\
-    ```\n\n- Json\n```json\n...\n\"outputMock\": {..},\n...\n```\n\n\n**servicesMocked**:\n\
+    ```\n\n- Json\n```json\n...\n\"outputMock\": {..},\n...\n```\n\n\n**defaultMocked**:\n\
     \nMock the ExternalTasks (Workers only) with their default Mock:\n\n- DSL:\n```scala\n\
     process(..) // or serviceProcess(..)\n  .mockServices\n```\n\n- Json\n```json\n\
-    ...\n\"servicesMocked\": true,\n...\n```\n\n\n**impersonateUserId**:\n\nUser-ID\
+    ...\n\"defaultMocked\": true,\n...\n```\n\n\n**impersonateUserId**:\n\nUser-ID\
     \ of a User that should be taken to authenticate to the services.\nThis must be\
     \ supported by your implementation. *Be caution: this may be a security issue!*.\n\
     It is helpful if you have Tokens that expire, but long running Processes.\n\n\

@@ -28,7 +28,7 @@ inline def nameOfVariable(inline x: Any): String = ${ NameOf.nameOfVariable('x) 
 inline def nameOfType[A]: String = ${NameOf.nameOfType[A]}
 
 enum InputParams:
-  case servicesMocked
+  case defaultMocked
   case outputMock
   case outputServiceMock
   case mockedSubprocesses

@@ -34,7 +34,7 @@ object ProcessVariablesExtractor:
 
   def extractGeneral(): GeneralVariableType =
     for {
-      servicesMocked <- variable(InputParams.servicesMocked, false)
+      defaultMocked <- variable(InputParams.defaultMocked, false)
       outputMockOpt <- jsonVariableOpt(InputParams.outputMock)
       outputServiceMockOpt <- jsonVariableOpt(InputParams.outputServiceMock)
       mockedSubprocesses <- extractSeqFromArrayOrString(InputParams.mockedSubprocesses, Seq.empty)
@@ -43,7 +43,7 @@ object ProcessVariablesExtractor:
       regexHandledErrors <- extractSeqFromArrayOrString(InputParams.regexHandledErrors, Seq.empty)
       impersonateUserIdOpt <- variableOpt[String](InputParams.impersonateUserId)
     } yield GeneralVariables(
-      servicesMocked = servicesMocked,
+      defaultMocked = defaultMocked,
       outputMockOpt = outputMockOpt,
       outputServiceMockOpt = outputServiceMockOpt,
       mockedSubprocesses = mockedSubprocesses,

@@ -78,7 +78,7 @@ case class WorkerExecutor[
 
     def mockOrProceed(): Either[MockerError | MockedOutput, Option[Out]] =
       (
-        context.generalVariables.servicesMocked,
+        context.generalVariables.defaultMocked,
         context.generalVariables.isMockedSubprocess(worker.topic),
         context.generalVariables.outputMockOpt,
         context.generalVariables.outputServiceMockOpt

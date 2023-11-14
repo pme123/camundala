@@ -168,7 +168,7 @@ You can override the list of variables, you support in your _ApiProjectCreator_,
 import camundala.bpmn.InputParams.*
 
 override def supportedVariables: Seq[InputParams] = Seq(
-    servicesMocked,
+    defaultMocked,
     outputMock,
     outputServiceMock,
     handledErrors,

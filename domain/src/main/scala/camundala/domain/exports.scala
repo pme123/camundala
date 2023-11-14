@@ -119,7 +119,7 @@ def serviceOrProcessMockDescr[Out: Encoder](mock: Out) =
      |""".stripMargin
 
 @deprecated(deprecatedDescr)
-val servicesMockedDescr =
+val defaultMockedDescr =
   "This flag will mock every Service that this Process calls, using the default Mock."
 
 @deprecated(deprecatedDescr)

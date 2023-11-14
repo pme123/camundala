@@ -180,7 +180,7 @@ By default, the following Variables are supported:
 
 ```scala
 enum InputParams:
-  case servicesMocked
+  case defaultMocked
   case outputMock
   case mockedSubprocesses
   case outputServiceMock
@@ -197,7 +197,7 @@ If you only want to support some of them, you can override them:
 
 ```scala
   override def supportedVariables: Seq[InputParams] = Seq(
-    servicesMocked,
+    defaultMocked,
     outputMock,
     outputServiceMock,
     handledErrors,

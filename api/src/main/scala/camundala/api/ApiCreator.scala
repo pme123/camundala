@@ -115,10 +115,10 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
         """"outputMock": {..},"""
       ) +
       createGeneralVariable(
-        InputParams.servicesMocked,
+        InputParams.defaultMocked,
         "Mock the ExternalTasks (Workers only) with their default Mock:",
         "process(..) // or serviceProcess(..)\n  .mockServices",
-        "\"servicesMocked\": true,"
+        "\"defaultMocked\": true,"
       ) +
       createGeneralVariable(
         InputParams.impersonateUserId,

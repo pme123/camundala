@@ -81,7 +81,7 @@ sealed trait ProcessOrExternalTask[
 
   def topicName: String = processName
   final val topicDefinition: String = s"$topicName::"//$inputVariableNames"
-  def servicesMocked: Boolean
+  def defaultMocked: Boolean
   def outputMock: Option[Out]
   def outputVariables: Seq[String]
   def impersonateUserId: Option[String]
@@ -98,8 +98,8 @@ sealed trait ProcessOrExternalTask[
       .toMap
 
     val camundaServicesMocked: (String, CamundaVariable) =
-      InputParams.servicesMocked.toString -> CamundaVariable.valueToCamunda(
-        servicesMocked
+      InputParams.defaultMocked.toString -> CamundaVariable.valueToCamunda(
+        defaultMocked
       )
     val camundaOutputVariables: (String, CamundaVariable) =
       InputParams.outputVariables.toString -> CamundaVariable.valueToCamunda(
@@ -123,7 +123,7 @@ case class Process[
     outputMock: Option[Out] = None,
     mockedSubprocesses: Seq[String] = Seq.empty,
     outputVariables: Seq[String] = Seq.empty,
-    servicesMocked: Boolean = false,
+    defaultMocked: Boolean = false,
     impersonateUserId: Option[String] = None
 ) extends ProcessOrExternalTask[In, Out, Process[In, Out]]:
 
@@ -148,7 +148,7 @@ case class Process[
     copy(startEventType = startEventType)
 
   def mockServices: Process[In, Out] =
-    copy(servicesMocked = true)
+    copy(defaultMocked = true)
 
   def mockWith(outputMock: Out): Process[In, Out] =
     copy(outputMock = Some(outputMock))
@@ -220,7 +220,7 @@ case class ServiceTask[
     override val processName: String = GenericExternalTaskProcessName,
     outputVariables: Seq[String] = Seq.empty,
     outputMock: Option[Out] = None,
-    servicesMocked: Boolean = false,
+    defaultMocked: Boolean = false,
     impersonateUserId: Option[String] = None,
     outputServiceMock: Option[MockedServiceResponse[ServiceOut]] = None,
     handledErrors: Seq[ErrorCodeType] = Seq.empty,
@@ -257,7 +257,7 @@ case class ServiceTask[
     copy(outputMock = Some(outputMock))
 
   def mockServices: ServiceTask[In, Out, ServiceIn, ServiceOut] =
-    copy(servicesMocked = true)
+    copy(defaultMocked = true)
 
   def mockServiceWith(
       outputServiceMock: MockedServiceResponse[ServiceOut]
@@ -306,7 +306,7 @@ case class CustomTask[
     inOutDescr: InOutDescr[In, Out],
     outputMock: Option[Out] = None,
     outputVariables: Seq[String] = Seq.empty,
-    servicesMocked: Boolean = false,
+    defaultMocked: Boolean = false,
     impersonateUserId: Option[String] = None,
     handledErrors: Seq[ErrorCodeType] = Seq.empty,
     regexHandledErrors: Seq[String] = Seq.empty
@@ -319,7 +319,7 @@ case class CustomTask[
     copy(impersonateUserId = Some(impersonateUserId))
 
   def mockServices: CustomTask[In, Out] =
-    copy(servicesMocked = true)
+    copy(defaultMocked = true)
 
   def mockWith(outputMock: Out): CustomTask[In, Out] =
     copy(outputMock = Some(outputMock))

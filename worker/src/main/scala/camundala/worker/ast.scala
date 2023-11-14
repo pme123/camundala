@@ -142,7 +142,7 @@ end ServiceWorker
 
 // ApiCreator that describes these variables
 case class GeneralVariables(
-    servicesMocked: Boolean = false,
+    defaultMocked: Boolean = false,
     outputMockOpt: Option[Json] = None,
     outputServiceMockOpt: Option[Json] = None,
     mockedSubprocesses: Seq[String] = Seq.empty,
