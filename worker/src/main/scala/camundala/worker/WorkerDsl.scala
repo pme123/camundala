@@ -82,6 +82,7 @@ trait ServiceWorkerDsl[
           queryParamKeys,
           defaultHeaders,
           inputMapper,
+          inputHeaders,
           outputMapper
         )
       )
@@ -95,6 +96,7 @@ trait ServiceWorkerDsl[
   // mocking out from outService and headers
   protected def defaultHeaders: Map[String, String] = Map.empty
   protected def inputMapper(in: In): Option[ServiceIn] = None
+  protected def inputHeaders(in: In):Map[String, String] = Map.empty
   protected def outputMapper(
       out: ServiceResponse[ServiceOut]
   ): Either[ServiceMappingError, Option[Out]] = Right(None)

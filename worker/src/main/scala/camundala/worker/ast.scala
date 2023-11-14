@@ -160,7 +160,8 @@ case class RunnableRequest[ServiceIn: Encoder](
     httpMethod: Method,
     apiUri: Uri,
     queryParams: Seq[(String, Seq[String])],
-    requestBodyOpt: Option[ServiceIn]
+    requestBodyOpt: Option[ServiceIn],
+    headers: Map[String,String],
 )
 
 object RunnableRequest:
@@ -190,7 +191,8 @@ object RunnableRequest:
       requestHandler.httpMethod,
       requestHandler.apiUri(inputObject),
       queryParams,
-      requestHandler.inputMapper(inputObject)
+      requestHandler.inputMapper(inputObject),
+      requestHandler.inputHeaders(inputObject)
     )
   end apply
 end RunnableRequest

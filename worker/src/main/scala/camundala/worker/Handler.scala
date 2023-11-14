@@ -104,6 +104,7 @@ case class ServiceHandler[
     // mocking out from outService and headers
     defaultHeaders: Map[String, String] = Map.empty,
     inputMapper: In => Option[ServiceIn] = (* : In) => None,
+    inputHeaders: In => Map[String,String] = (* : In) => Map.empty,
     outputMapper: ServiceResponse[ServiceOut] => Either[ServiceMappingError, Option[Out]] =
       (_: ServiceResponse[ServiceOut]) => Right(None),
 ) extends RunWorkHandler[In, Out]:
@@ -127,7 +128,8 @@ case class ServiceHandler[
     val body = inputMapper(inputObject)
     val uri = apiUri(inputObject)
     val qParams = queryParams(inputObject)
-    RunnableRequest(httpMethod, uri, qParams, body)
+    val headers = inputHeaders(inputObject)
+    RunnableRequest(httpMethod, uri, qParams, body, headers)
 
   private def withServiceMock(
       runnableRequest: RunnableRequest[ServiceIn]

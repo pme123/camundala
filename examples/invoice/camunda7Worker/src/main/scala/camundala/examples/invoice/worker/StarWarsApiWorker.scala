@@ -37,5 +37,8 @@ class StarWarsApiWorker extends InvoiceWorkerHandler, ServiceWorkerDsl[In, Out, 
       out: ServiceResponse[ServiceOut]
   ): Either[ServiceMappingError, Option[Out]] =
     Right(Some(Out.Success(out.outputBody, out.headers.getOrElse("fromHeader", "---"))))
-  
+
+  override protected def inputHeaders(in: In): Map[String, String] =
+    Map("test-db-id" -> in.id.toString)
+    
 end StarWarsApiWorker

@@ -144,12 +144,13 @@ object CamundalaWorkerError:
         .map {
           case k -> seq if seq.isEmpty =>
             k
-          case k -> seq => s"$k=${seq.mkString(",")}"
+          case k -> seq => s"$k=${seq.mkString(", ")}"
         }
         .mkString("&")}
        | - Request Body: ${runnableRequest.requestBodyOpt
         .map(_.asJson)
-        .getOrElse("")}""".stripMargin
+        .getOrElse("")}
+        | - Request Header: ${runnableRequest.headers.map{case k -> v => s"$k -> $v"}.mkString(", ")}""".stripMargin
 
   def serviceErrorMsg[ServiceIn: Encoder](
       status: Int,
