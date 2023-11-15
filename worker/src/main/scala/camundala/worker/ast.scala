@@ -121,12 +121,11 @@ case class ServiceWorker[
         handler
           .outputMapper(
             ServiceResponse(
-              inOut.defaultServiceMock,
-              handler.defaultHeaders
+              inOut.defaultServiceOutMock.unsafeBody,
+              inOut.defaultServiceOutMock.headersAsMap
             )
           ) match
-          case Right(Some(out)) => MockedOutput(context.toEngineObject(out))
-          case Right(None) => MockedOutput(Map.empty)
+          case Right(out) => MockedOutput(context.toEngineObject(out))
           case Left(err) => MockerError(errorMsg = err.causeMsg)
       )
     mocked.getOrElse(

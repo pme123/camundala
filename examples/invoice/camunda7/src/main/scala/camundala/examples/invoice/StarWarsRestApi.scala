@@ -11,7 +11,7 @@ object StarWarsRestApi extends BpmnDsl:
   final val topicName = "star-wars-api-people-detail"
   type ServiceIn = NoInput
   type ServiceOut = People
-  lazy val serviceMock: ServiceOut = People()
+  lazy val serviceMock: MockedServiceResponse[ServiceOut] = MockedServiceResponse.success200(People(), Map("fromHeader" -> "okidoki"))
 
   @description("Same Input as _InvoiceReceipt_, only different Mocking")
   case class In(
@@ -54,7 +54,7 @@ object StarWarsRestApi extends BpmnDsl:
       descr = "Get People Details from StarWars API",
       in = In(),
       out = Out.Success(),
-      defaultServiceMock = serviceMock
+      defaultServiceOutMock = serviceMock,
     )
 
 end StarWarsRestApi

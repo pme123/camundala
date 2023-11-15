@@ -80,7 +80,7 @@ sealed trait ProcessOrExternalTask[
   def processName: String
 
   def topicName: String = processName
-  final val topicDefinition: String = s"$topicName::"//$inputVariableNames"
+  final val topicDefinition: String = s"$topicName::" // $inputVariableNames"
   def defaultMocked: Boolean
   def outputMock: Option[Out]
   def outputVariables: Seq[String]
@@ -215,8 +215,10 @@ case class ServiceTask[
     ServiceOut: Encoder: Decoder
 ](
     inOutDescr: InOutDescr[In, Out],
-    defaultServiceMock: ServiceOut,
-    @deprecated("Default is _GenericExternalTaskProcessName_ - in future only used as External Task")
+    defaultServiceOutMock: MockedServiceResponse[ServiceOut],
+    @deprecated(
+      "Default is _GenericExternalTaskProcessName_ - in future only used as External Task"
+    )
     override val processName: String = GenericExternalTaskProcessName,
     outputVariables: Seq[String] = Seq.empty,
     outputMock: Option[Out] = None,
@@ -256,7 +258,7 @@ case class ServiceTask[
   def mockWith(outputMock: Out): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(outputMock = Some(outputMock))
 
-  def mockServices: ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  def mockWithDefault: ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(defaultMocked = true)
 
   def mockServiceWith(
@@ -290,9 +292,8 @@ case class ServiceTask[
       .map(m => {
         InputParams.outputServiceMock.toString -> CamundaVariable.valueToCamunda(
           m.asJson
-
-        )}
-      )
+        )
+      })
       .toMap
     super.camundaInMap ++ camundaOutputServiceMock
   end camundaInMap

@@ -80,10 +80,10 @@ trait ServiceWorkerDsl[
           method,
           apiUri,
           queryParamKeys,
-          defaultHeaders,
           inputMapper,
           inputHeaders,
-          outputMapper
+          outputMapper,
+          serviceTask.defaultServiceOutMock
         )
       )
 
@@ -94,20 +94,25 @@ trait ServiceWorkerDsl[
   protected def method: Method = Method.GET
   protected def queryParamKeys: Seq[String | (String, String)] = Seq.empty
   // mocking out from outService and headers
-  protected def defaultHeaders: Map[String, String] = Map.empty
   protected def inputMapper(in: In): Option[ServiceIn] = None
   protected def inputHeaders(in: In):Map[String, String] = Map.empty
   protected def outputMapper(
-      out: ServiceResponse[ServiceOut]
-  ): Either[ServiceMappingError, Option[Out]] = Right(None)
+                              serviceOut: ServiceResponse[ServiceOut]
+  ): Either[ServiceMappingError, Out] = defaultOutMapper(serviceOut)
 
   /** Run the Work is done by the handler. If you want a different behavior, you need to use the
     * CustomWorkerDsl
     */
   final def runWork(
       inputObject: In
-  ): Either[CustomError, Option[Out]] = Right(None)
+  ): Either[CustomError, Out] = Right(serviceTask.out)
 
+  private def defaultOutMapper(serviceResponse: ServiceResponse[ServiceOut]): Either[ServiceMappingError, Out] =
+    serviceResponse.outputBody match
+      case _: NoOutput => Right(serviceTask.out)
+      case _ =>
+        Left(ServiceMappingError(s"There is an outputMapper missing for '${getClass.getName}'."))
+  end defaultOutMapper
 end ServiceWorkerDsl
 
 private trait ValidateDsl[
@@ -133,6 +138,6 @@ private trait RunWorkDsl[
 
   def runWork(
       inputObject: In
-  ): Either[CustomError, Option[Out]]
+  ): Either[CustomError, Out]
 
 end RunWorkDsl

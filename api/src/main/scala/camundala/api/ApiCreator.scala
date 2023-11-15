@@ -137,7 +137,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
           |""".stripMargin,
         """serviceProcess(..)
           |  .mockServiceWith(MockedServiceResponse
-          |     .success200(inOut.defaultServiceMock))""".stripMargin,
+          |     .success200(inOut.defaultServiceOutMock))""".stripMargin,
         s""""outputServiceMock": ${MockedServiceResponse
           .success200("Example String Body")
           .asJson},""".stripMargin

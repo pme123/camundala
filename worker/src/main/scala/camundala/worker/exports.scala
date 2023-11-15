@@ -164,3 +164,7 @@ end CamundalaWorkerError
 
 def niceClassName(clazz: Class[?]) =
   clazz.getName.split("""\$""").head
+
+
+
+

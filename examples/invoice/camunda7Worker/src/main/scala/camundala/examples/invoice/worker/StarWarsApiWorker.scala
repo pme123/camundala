@@ -23,10 +23,6 @@ class StarWarsApiWorker extends InvoiceWorkerHandler, ServiceWorkerDsl[In, Out, 
 
   def apiUri(in: In): Uri = uri"https://swapi.dev/api/people/${in.id}"
 
-  override def defaultHeaders: Map[String, String] = Map(
-    "fromHeader" -> "okidoki"
-  )
-
   override def validate(in: In): Either[ValidatorError, In] =
     if(in.id <= 0)
       Left(ValidatorError("The search id for People must be > 0!"))
@@ -34,11 +30,11 @@ class StarWarsApiWorker extends InvoiceWorkerHandler, ServiceWorkerDsl[In, Out, 
       super.validate(in)
 
   override def outputMapper(
-      out: ServiceResponse[ServiceOut]
-  ): Either[ServiceMappingError, Option[Out]] =
-    Right(Some(Out.Success(out.outputBody, out.headers.getOrElse("fromHeader", "---"))))
+                             serviceOut: ServiceResponse[ServiceOut]
+  ): Either[ServiceMappingError, Out] =
+    Right(Out.Success(serviceOut.outputBody, serviceOut.headers.getOrElse("fromHeader", "---")))
 
   override protected def inputHeaders(in: In): Map[String, String] =
     Map("test-db-id" -> in.id.toString)
-    
+
 end StarWarsApiWorker

@@ -17,28 +17,36 @@ case class MockedServiceResponse[
     copy(respHeaders = respHeaders :+ Seq(key, value))
 
   def withHeaders(
-                  headers: Map[String,String]
-                ): MockedServiceResponse[ServiceOut] =
-    copy(respHeaders = respHeaders ++ headers.toSeq.map {
-      case k -> v => Seq(k,v)
+      headers: Map[String, String]
+  ): MockedServiceResponse[ServiceOut] =
+    copy(respHeaders = respHeaders ++ headers.toSeq.map { case k -> v =>
+      Seq(k, v)
     })
+
+  // be sure ServiceOut is set!
+  def unsafeBody: ServiceOut = respBody.toOption.get
+  def headersAsMap: Map[String, String] =
+    respHeaders
+      .map(_.toList)
+      .collect { case key :: value :: _ => key -> value }
+      .toMap
 
 object MockedServiceResponse:
 
   def success[
       ServiceOut
-  ](status: Int, body: ServiceOut): MockedServiceResponse[ServiceOut] =
-    MockedServiceResponse(status, Right(body))
+  ](status: Int, body: ServiceOut, headers: Map[String, String] = Map.empty): MockedServiceResponse[ServiceOut] =
+    MockedServiceResponse(status, Right(body), headers.toHeaders)
 
   def success200[
       ServiceOut
-  ](body: ServiceOut): MockedServiceResponse[ServiceOut] =
-    success(200, body)
+  ](body: ServiceOut, headers: Map[String, String] = Map.empty): MockedServiceResponse[ServiceOut] =
+    success(200, body, headers)
 
   def success201[
       ServiceOut
-  ](body: ServiceOut): MockedServiceResponse[ServiceOut] =
-    success(201, body)
+  ](body: ServiceOut, headers: Map[String, String] = Map.empty): MockedServiceResponse[ServiceOut] =
+    success(201, body, headers)
 
   lazy val success204: MockedServiceResponse[NoOutput] =
     success(204, NoOutput())
@@ -84,6 +92,13 @@ object MockedServiceResponse:
       } yield MockedServiceResponse(respStatus, respBody, respHeaders)
     }
 end MockedServiceResponse
+
+extension(headers: Map[String, String])
+  def toHeaders: Seq[Seq[String]] = headers.map {
+    case k ->v=> Seq(k,v)
+  }.toSeq
+end extension
+
 /*
 // needed for mocked Results of Seq
 implicit def seqCodec[T: CirceCodec]: CirceCodec[Seq[T]] =

@@ -231,7 +231,7 @@ case class ServiceWorkerApi[
        |```json
        |...
        |"outputServiceMock": ${MockedServiceResponse
-            .success200(inOut.defaultServiceMock)
+            .success200(inOut.defaultServiceOutMock)
             .asJson},
        |...
        |```"""
@@ -239,7 +239,7 @@ case class ServiceWorkerApi[
     """.stripMargin
 
   private def serviceOutDescr =
-    inOut.defaultServiceMock match
+    inOut.defaultServiceOutMock match
       case seq: Seq[?] =>
         s"Seq[${seq.head.getClass.getName.replace("$", " > ")}]"
       case other => other.getClass.getName.replace("$", " > ")

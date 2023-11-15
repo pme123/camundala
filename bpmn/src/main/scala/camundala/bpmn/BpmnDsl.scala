@@ -30,12 +30,12 @@ trait BpmnDsl:
       topicName: String,
       in: In = NoInput(),
       out: Out = NoOutput(),
-      defaultServiceMock: ServiceOut,
+      defaultServiceOutMock: MockedServiceResponse[ServiceOut],
       descr: Optable[String] = None
   ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     ServiceTask(
       InOutDescr(topicName, in, out, descr.value),
-      defaultServiceMock
+      defaultServiceOutMock
     )
 
   def customTask[

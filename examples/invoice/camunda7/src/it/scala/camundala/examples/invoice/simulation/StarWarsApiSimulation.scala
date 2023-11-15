@@ -57,7 +57,7 @@ class StarWarsApiSimulation extends CustomSimulation:
   private lazy val `Star Wars Api People Detail real failed` = example
     .withIn(In(90923))
   private lazy val `Star Wars Api People Detail defaultMock 2` =
-    StarWarsRestApi.example.mockServices
+    StarWarsRestApi.example.mockWithDefault
   private lazy val `Star Wars Api People Detail outputMock 2` =
     StarWarsRestApi.example
       .mockWith(Out.Success(People("Pascal Starrider")))
@@ -96,7 +96,7 @@ class StarWarsApiSimulation extends CustomSimulation:
       .withOut(Out.Failure(ProcessStatus.`validation-failed`))
 
   private lazy val `Star Wars Api People Detail outputServiceMock failure` =
-    StarWarsRestApi.example.mockServices
+    StarWarsRestApi.example.mockWithDefault
       .mockServiceWith(MockedServiceResponse.error(404, Json.fromString("People Not found")))
 
   private lazy val `Star Wars Api People Detail outputServiceMock handled 404` =

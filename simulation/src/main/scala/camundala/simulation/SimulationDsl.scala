@@ -29,6 +29,30 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     scen
 
   inline def serviceScenario[
+    In <: Product : Encoder : Decoder : Schema,
+    Out <: Product : Encoder : Decoder : Schema,
+    ServiceIn <: Product : Encoder,
+    ServiceOut: Encoder : Decoder
+  ](
+     task: ServiceTask[In, Out, ServiceIn, ServiceOut],
+     outputMock: Out,
+     outputServiceMock: MockedServiceResponse[ServiceOut],
+   ): Seq[ExternalTaskScenario] =
+    val withDefaultMock = task.mockWithDefault
+    val withOutputMock = task
+      .mockWith(outputMock)
+      .withOut(outputMock)
+    val withServiceOutputMock = task
+      .mockServiceWith(outputServiceMock)
+      .withOut(outputMock)
+
+    Seq(
+      ExternalTaskScenario(nameOfVariable(task) + " defaultMock", withDefaultMock),
+      ExternalTaskScenario(nameOfVariable(task) + " outputMock", withOutputMock),
+      ExternalTaskScenario(nameOfVariable(task) + " outputServiceMock", withServiceOutputMock)
+    )
+
+  inline def serviceScenario[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema,
       ServiceIn <: Product: Encoder,
@@ -39,19 +63,18 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
       outputServiceMock: ServiceOut,
       respHeaders: Map[String, String] = Map.empty
   ): Seq[ExternalTaskScenario] =
-    val withDefaultMock = task.mockServices
-    val withOutputMock = task
-      .mockWith(outputMock)
-      .withOut(outputMock)
-    val withServiceOutputMock = task
-      .mockServiceWith(MockedServiceResponse.success200(outputServiceMock).withHeaders(respHeaders))
-      .withOut(outputMock)
+    serviceScenario(task, outputMock,
+      MockedServiceResponse.success200(outputServiceMock).withHeaders(respHeaders))
 
-    Seq(
-      ExternalTaskScenario(nameOfVariable(task) + " defaultMock", withDefaultMock),
-      ExternalTaskScenario(nameOfVariable(task) + " outputMock", withOutputMock),
-      ExternalTaskScenario(nameOfVariable(task) + " outputServiceMock", withServiceOutputMock)
-    )
+  inline def serviceScenario[
+    In <: Product : Encoder : Decoder : Schema,
+    Out <: Product : Encoder : Decoder : Schema,
+    ServiceIn <: Product : Encoder,
+    ServiceOut: Encoder : Decoder
+  ](
+     task: ServiceTask[In, Out, ServiceIn, ServiceOut],
+   ): Seq[ExternalTaskScenario] =
+    serviceScenario(task, task.out, task.defaultServiceOutMock)
 
   def scenario(scen: DmnScenario): SScenario =
     scen

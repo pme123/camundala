@@ -15,16 +15,16 @@ class ArchiveInvoiceWorker
 
   def runWork(
       inputObject: In,
-  ): Either[CustomError, Option[Out]] =
+  ): Either[CustomError, Out] =
     logger.info("Do some crazy things running work...")
     inputObject.shouldFail match
       case Some(false) =>
-        Right(Some(Out(Some(true))))
+        Right(Out(Some(true)))
       case Some(true) =>
         val err = CustomError("Could not archive invoice...")
         logger.error(err)
         Left(err)
       case _ =>
-        Right(Some(Out(Some(false))))
+        Right(Out(Some(false)))
 
 end ArchiveInvoiceWorker

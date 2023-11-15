@@ -45,10 +45,10 @@ info:
     It is helpful if you have Tokens that expire, but long running Processes.\n\n\
     - DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withImpersonateUserId(impersonateUserId)\n\
     ```\n\n- Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
-    \n### ExternalTasks\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
+    \n### ExternalTasks\n**defaultServiceOutMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
     \ - You find an example in every _ExternalTask_.\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
-    \  .mockServiceWith(MockedServiceResponse\n     .success200(inOut.defaultServiceMock))\n\
-    ```\n\n- Json\n```json\n...\n\"outputServiceMock\": {\n  \"respStatus\" : 200,\n\
+    \  .mockServiceWith(MockedServiceResponse\n     .success200(inOut.defaultServiceOutMock))\n\
+    ```\n\n- Json\n```json\n...\n\"defaultServiceOutMock\": {\n  \"respStatus\" : 200,\n\
     \  \"respBody\" : \"Example String Body\",\n  \"respHeaders\" : [\n  ]\n},\n...\n\
     ```\n\n\n**handledErrors**:\n\nA list of error codes that are handled (`BpmnError`)\n\
     Depending on your implementation it is also possible to use a _comma separated_\

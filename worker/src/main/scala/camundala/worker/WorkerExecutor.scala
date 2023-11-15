@@ -87,7 +87,8 @@ case class WorkerExecutor[
           Left(decodeMock(outputMock))
         case (_, true, _, None) => // if your process is a SubProcess check if it is mocked
           Left(worker.defaultMock)
-        case (true, _, _, None) if isService => // if your process is a Service check if it is mocked
+        case (true, _, _, None)
+            if !isService => // if your process is a Service check if it is mocked
           Left(worker.defaultMock)
         case (_, _, None, _) =>
           Right(None)
@@ -110,22 +111,23 @@ case class WorkerExecutor[
   end OutMocker
 
   object WorkRunner:
-    def run(inputObject: In) =
+    def run(inputObject: In): Either[RunWorkError, Out | NoOutput] =
       worker.runWorkHandler
         .map(_.runWork(inputObject))
-        .getOrElse(Right(None))
-
+        .getOrElse(Right(NoOutput()))
   end WorkRunner
 
   private def camundaOutputs(
       initializedInput: In,
       internalVariables: Map[String, Any],
-      output: Option[Out]
+      output: Out | NoOutput
   ): Map[String, Any] =
-    context.toEngineObject(initializedInput) ++ internalVariables ++ output
-      .map(context.toEngineObject)
-      .getOrElse(Map.empty)
-
+    context.toEngineObject(initializedInput) ++ internalVariables ++ (output match
+      case o: NoOutput =>
+        context.toEngineObject(o)
+      case o: Out =>
+        context.toEngineObject(o)
+    )
   private def filteredOutput(
       allOutputs: Map[String, Any]
   ): Map[String, Any] =

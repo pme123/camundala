@@ -86,31 +86,27 @@ trait RunWorkHandler[
     Out <: Product: CirceCodec
 ]:
   type RunnerOutput =
-    EngineRunContext ?=> Either[RunWorkError, Option[Out]]
+    EngineRunContext ?=> Either[RunWorkError, Out]
 
-  def runWork(
-      inputObject: In,
-  ): RunnerOutput
+  def runWork(inputObject: In): RunnerOutput
 
 case class ServiceHandler[
     In <: Product: CirceCodec,
     Out <: Product: CirceCodec,
-    ServiceIn <: Product : Encoder,
+    ServiceIn <: Product: Encoder,
     ServiceOut: Decoder
 ](
     httpMethod: Method,
     apiUri: In => Uri,
-    queryParamKeys: Seq[String | (String, String)] = Seq.empty,
-    // mocking out from outService and headers
-    defaultHeaders: Map[String, String] = Map.empty,
-    inputMapper: In => Option[ServiceIn] = (* : In) => None,
-    inputHeaders: In => Map[String,String] = (* : In) => Map.empty,
-    outputMapper: ServiceResponse[ServiceOut] => Either[ServiceMappingError, Option[Out]] =
-      (_: ServiceResponse[ServiceOut]) => Right(None),
+    queryParamKeys: Seq[String | (String, String)],
+    inputMapper: In => Option[ServiceIn],
+    inputHeaders: In => Map[String, String],
+    outputMapper: ServiceResponse[ServiceOut] => Either[ServiceMappingError, Out],
+    defaultServiceOutMock: MockedServiceResponse[ServiceOut]
 ) extends RunWorkHandler[In, Out]:
 
   def runWork(
-      inputObject: In,
+      inputObject: In
   ): RunnerOutput =
     val rRequest = runnableRequest(inputObject)
     for {
@@ -134,30 +130,35 @@ case class ServiceHandler[
   private def withServiceMock(
       runnableRequest: RunnableRequest[ServiceIn]
   )(using context: EngineRunContext): Either[ServiceError, Option[Out]] =
-    context.generalVariables.outputServiceMockOpt
-      .map { json =>
-        for {
+    (
+      context.generalVariables.defaultMocked,
+      context.generalVariables.outputServiceMockOpt
+    ) match
+      case (_, Some(json)) =>
+        (for {
           mockedResponse <- decodeMock[MockedServiceResponse[ServiceOut]](json)
           out <- handleServiceMock(mockedResponse, runnableRequest)
-        } yield out
-      }
-      .getOrElse(Right(None))
+        } yield out)
+          .map(Some.apply)
+      case (true, _) =>
+        handleServiceMock(defaultServiceOutMock, runnableRequest)
+          .map(Some.apply)
+      case _ =>
+        Right(None)
 
   end withServiceMock
 
   private def decodeMock[Out: Decoder](
       json: Json
-  ): Either[ServiceMockingError, Option[Out]] =
-    decodeTo[Out](json.asJson.toString)
-      .map(Some(_))
-      .left
+  ): Either[ServiceMockingError, Out] =
+    decodeTo[Out](json.asJson.toString).left
       .map(ex => ServiceMockingError(errorMsg = ex.causeMsg))
   end decodeMock
 
   private def handleMocking(
       optOutMock: Option[Out],
       runnableRequest: RunnableRequest[ServiceIn]
-  )(using context: EngineRunContext): Option[Either[ServiceError, Option[Out]]] =
+  )(using context: EngineRunContext): Option[Either[ServiceError, Out]] =
     optOutMock
       .map { mock =>
         context
@@ -168,30 +169,28 @@ case class ServiceHandler[
                    |""".stripMargin)
         mock
       }
-      .map(m => Right(Some(m)))
+      .map(m => Right(m))
   end handleMocking
 
   private def handleServiceMock(
-      mockedResponse: Option[MockedServiceResponse[ServiceOut]],
+      mockedResponse: MockedServiceResponse[ServiceOut],
       runnableRequest: RunnableRequest[ServiceIn]
-  ): Either[ServiceError, Option[Out]] =
-    mockedResponse
-      .map {
-        case MockedServiceResponse(_, Right(body), headers) =>
-          mapBodyOutput(body, headers)
-        case MockedServiceResponse(status, Left(body), _) =>
-          Left(
-            ServiceRequestError(
+  ): Either[ServiceError, Out] =
+    mockedResponse match {
+      case MockedServiceResponse(_, Right(body), headers) =>
+        mapBodyOutput(body, headers)
+      case MockedServiceResponse(status, Left(body), _) =>
+        Left(
+          ServiceRequestError(
+            status,
+            serviceErrorMsg(
               status,
-              serviceErrorMsg(
-                status,
-                s"Mocked Error: ${body.asJson}",
-                runnableRequest
-              )
+              s"Mocked Error: ${body.asJson}",
+              runnableRequest
             )
           )
-      }
-      .getOrElse(Right(None))
+        )
+    }
 
   def mapBodyOutput(
       serviceOutput: ServiceOut,
@@ -224,7 +223,6 @@ case class ServiceHandler[
           k -> Seq(defaultsMap.get(k).flatten.get)
 
       }
-
 end ServiceHandler
 
 trait CustomHandler[
@@ -238,10 +236,8 @@ object CustomHandler:
   def apply[
       In <: Product: CirceCodec,
       Out <: Product: CirceCodec
-  ](funct: In => Either[CustomError, Option[Out]]): CustomHandler[In, Out] =
+  ](funct: In => Either[CustomError, Out]): CustomHandler[In, Out] =
     new CustomHandler[In, Out] {
-      override def runWork(
-          inputObject: In,
-      ): RunnerOutput =
+      override def runWork(inputObject: In): RunnerOutput =
         funct(inputObject)
     }
