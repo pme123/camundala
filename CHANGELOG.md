@@ -15,6 +15,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.23.0 - 2023-11-15
+### Changed 
+- Removed ServiceIn type from BPMN of ServiceTask. - see [Commit](https://github.com/pme123/camundala/commit/3f546bab6f617789b809c5e8ca70723e58ae436f)
+- Fixed Service Mocking without body / made Out not Optional in outMapping / runWork. - see [Commit](https://github.com/pme123/camundala/commit/fd635fc97a40fbac81cce6ccb0b53055ce50af1f)
+- MAP-7439: Added header from input in RunWorkHandler. - see [Commit](https://github.com/pme123/camundala/commit/c7393c42a0a66b88f9430145968c6401d6ef502f)
+- MAP-7439: Changed servicesMocked to defaultMocked. - see [Commit](https://github.com/pme123/camundala/commit/67471313e158c2f870c20aa39a55eb778f9d01f6)
+
 ## 1.22.4 - 2023-11-13
 ### Changed 
 - MAP-7439: Added ProcessStatus for camundala-externalTask-generic / added Simulations for handling Errors. - see [Commit](https://github.com/pme123/camundala/commit/d6407992c6c3bd13c4a7213d795ff7287d8cf02a)
