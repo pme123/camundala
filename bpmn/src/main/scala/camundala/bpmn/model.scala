@@ -211,7 +211,6 @@ end ExternalTask
 case class ServiceTask[
     In <: Product: Encoder: Decoder: Schema,
     Out <: Product: Encoder: Decoder: Schema,
-    ServiceIn <: Product: Encoder,
     ServiceOut: Encoder: Decoder
 ](
     inOutDescr: InOutDescr[In, Out],
@@ -227,64 +226,64 @@ case class ServiceTask[
     outputServiceMock: Option[MockedServiceResponse[ServiceOut]] = None,
     handledErrors: Seq[ErrorCodeType] = Seq.empty,
     regexHandledErrors: Seq[String] = Seq.empty
-) extends ExternalTask[In, Out, ServiceTask[In, Out, ServiceIn, ServiceOut]]:
+) extends ExternalTask[In, Out, ServiceTask[In, Out, ServiceOut]]:
 
   @deprecated("Use _topicName_")
   lazy val serviceName: String = inOutDescr.id
 
   def withInOutDescr(
       descr: InOutDescr[In, Out]
-  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  ): ServiceTask[In, Out, ServiceOut] =
     copy(inOutDescr = descr)
 
   def withProcessName(
       processName: String
-  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  ): ServiceTask[In, Out, ServiceOut] =
     copy(processName = processName)
 
-  def withOutputVariables(names: String*): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  def withOutputVariables(names: String*): ServiceTask[In, Out, ServiceOut] =
     copy(outputVariables = names)
 
   def withOutputVariable(
       processName: String
-  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  ): ServiceTask[In, Out, ServiceOut] =
     copy(outputVariables = outputVariables :+ processName)
 
   def withImpersonateUserId(
       impersonateUserId: String
-  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  ): ServiceTask[In, Out, ServiceOut] =
     copy(impersonateUserId = Some(impersonateUserId))
 
-  def mockWith(outputMock: Out): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  def mockWith(outputMock: Out): ServiceTask[In, Out, ServiceOut] =
     copy(outputMock = Some(outputMock))
 
-  def mockWithDefault: ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  def mockWithDefault: ServiceTask[In, Out, ServiceOut] =
     copy(defaultMocked = true)
 
   def mockServiceWith(
       outputServiceMock: MockedServiceResponse[ServiceOut]
-  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  ): ServiceTask[In, Out, ServiceOut] =
     copy(outputServiceMock = Some(outputServiceMock))
 
   // shortcut for success case
   def mockServiceWith(
       outputServiceMock: ServiceOut
-  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  ): ServiceTask[In, Out, ServiceOut] =
     copy(outputServiceMock = Some(MockedServiceResponse.success200(outputServiceMock)))
 
   def handleErrors(
       errorCodes: ErrorCodeType*
-  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  ): ServiceTask[In, Out, ServiceOut] =
     copy(handledErrors = errorCodes)
 
   def handleError(
       errorCode: ErrorCodeType
-  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  ): ServiceTask[In, Out, ServiceOut] =
     copy(handledErrors = handledErrors :+ errorCode)
 
   def handleErrorWithRegex(
       regex: String
-  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  ): ServiceTask[In, Out, ServiceOut] =
     copy(regexHandledErrors = regexHandledErrors :+ regex)
 
   override def camundaInMap: Map[String, CamundaVariable] =

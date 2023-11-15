@@ -17,7 +17,7 @@ import sttp.model.*
 import javax.annotation.PostConstruct
 
 @Configuration
-class ServiceMethodDeleteWorker extends InvoiceWorkerHandler, ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]:
+class ServiceMethodDeleteWorker extends InvoiceWorkerHandler, ServiceWorkerDsl[In, Out, NoInput, ServiceOut]:
 
   lazy val serviceTask = example
 

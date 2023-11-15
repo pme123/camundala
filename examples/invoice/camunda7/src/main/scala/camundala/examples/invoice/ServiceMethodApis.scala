@@ -8,7 +8,6 @@ import sttp.tapir.Schema.annotations.description
 object ServiceMethodDeleteApi extends BpmnDsl:
 
   final val topicName = "service-method-delete"
-  type ServiceIn = NoInput
   type ServiceOut = NoOutput
   lazy val serviceMock = MockedServiceResponse.success204
 
@@ -39,7 +38,7 @@ object ServiceMethodDeleteApi extends BpmnDsl:
     given CirceCodec[Dummy] = deriveCodec
   end Dummy
 
-  final lazy val example: ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  final lazy val example: ServiceTask[In, Out, ServiceOut] =
     serviceTask(
       topicName,
       descr = "Delete Dummy - mocking test",

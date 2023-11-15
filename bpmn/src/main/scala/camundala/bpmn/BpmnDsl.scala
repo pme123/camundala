@@ -24,7 +24,6 @@ trait BpmnDsl:
   def serviceTask[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema,
-      ServiceIn <: Product: Encoder: Decoder,
       ServiceOut: Encoder: Decoder
   ](
       topicName: String,
@@ -32,7 +31,7 @@ trait BpmnDsl:
       out: Out = NoOutput(),
       defaultServiceOutMock: MockedServiceResponse[ServiceOut],
       descr: Optable[String] = None
-  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  ): ServiceTask[In, Out, ServiceOut] =
     ServiceTask(
       InOutDescr(topicName, in, out, descr.value),
       defaultServiceOutMock

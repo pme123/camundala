@@ -96,7 +96,7 @@ case class ServiceWorker[
     ServiceIn <: Product: Encoder,
     ServiceOut: Decoder
 ](
-    inOut: ServiceTask[In, Out, ServiceIn, ServiceOut],
+    inOut: ServiceTask[In, Out, ServiceOut],
     override val validationHandler: Option[ValidationHandler[In]] = None,
     override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None
 ) extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:

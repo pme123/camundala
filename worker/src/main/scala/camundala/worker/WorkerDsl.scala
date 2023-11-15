@@ -73,7 +73,7 @@ trait ServiceWorkerDsl[
       RunWorkDsl[In, Out]:
 
   lazy val worker: ServiceWorker[In, Out, ServiceIn, ServiceOut] =
-    ServiceWorker(serviceTask)
+    ServiceWorker[In, Out, ServiceIn, ServiceOut](serviceTask)
       .validate(ValidationHandler(validate))
       .runWork(
         ServiceHandler(
@@ -88,7 +88,7 @@ trait ServiceWorkerDsl[
       )
 
   // required
-  protected def serviceTask: ServiceTask[In, Out, ServiceIn, ServiceOut]
+  protected def serviceTask: ServiceTask[In, Out, ServiceOut]
   protected def apiUri(in: In): Uri
   // optional
   protected def method: Method = Method.GET

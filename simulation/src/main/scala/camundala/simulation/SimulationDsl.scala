@@ -31,10 +31,9 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
   inline def serviceScenario[
     In <: Product : Encoder : Decoder : Schema,
     Out <: Product : Encoder : Decoder : Schema,
-    ServiceIn <: Product : Encoder,
     ServiceOut: Encoder : Decoder
   ](
-     task: ServiceTask[In, Out, ServiceIn, ServiceOut],
+     task: ServiceTask[In, Out, ServiceOut],
      outputMock: Out,
      outputServiceMock: MockedServiceResponse[ServiceOut],
    ): Seq[ExternalTaskScenario] =
@@ -55,10 +54,9 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
   inline def serviceScenario[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema,
-      ServiceIn <: Product: Encoder,
       ServiceOut: Encoder: Decoder
   ](
-      task: ServiceTask[In, Out, ServiceIn, ServiceOut],
+      task: ServiceTask[In, Out, ServiceOut],
       outputMock: Out,
       outputServiceMock: ServiceOut,
       respHeaders: Map[String, String] = Map.empty
@@ -69,10 +67,9 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
   inline def serviceScenario[
     In <: Product : Encoder : Decoder : Schema,
     Out <: Product : Encoder : Decoder : Schema,
-    ServiceIn <: Product : Encoder,
     ServiceOut: Encoder : Decoder
   ](
-     task: ServiceTask[In, Out, ServiceIn, ServiceOut],
+     task: ServiceTask[In, Out, ServiceOut],
    ): Seq[ExternalTaskScenario] =
     serviceScenario(task, task.out, task.defaultServiceOutMock)
 
@@ -118,7 +115,7 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     ProcessScenario(nameOfVariable(process), process)
 
   implicit inline def toScenario(
-      inline task: ServiceTask[?, ?, ?, ?]
+      inline task: ServiceTask[?, ?, ?]
   ): ExternalTaskScenario =
     ExternalTaskScenario(nameOfVariable(task), task)
 
@@ -192,15 +189,35 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     inline def serviceScenario[
       In <: Product : Encoder : Decoder : Schema,
       Out <: Product : Encoder : Decoder : Schema,
-      ServiceIn <: Product : Encoder,
       ServiceOut: Encoder : Decoder
     ](
-       task: ServiceTask[In, Out, ServiceIn, ServiceOut],
+       task: ServiceTask[In, Out, ServiceOut],
+       outputMock: Out,
+       outputServiceMock: MockedServiceResponse[ServiceOut],
+     ): Seq[ExternalTaskScenario] =
+      Seq(ExternalTaskScenario(nameOfVariable(task) + " defaultMock", task).ignored)
+
+    inline def serviceScenario[
+      In <: Product : Encoder : Decoder : Schema,
+      Out <: Product : Encoder : Decoder : Schema,
+      ServiceOut: Encoder : Decoder
+    ](
+       task: ServiceTask[In, Out, ServiceOut],
        outputMock: Out,
        outputServiceMock: ServiceOut,
        respHeaders: Map[String, String] = Map.empty
-     ): SScenario =
-      ExternalTaskScenario(nameOfVariable(task) + " defaultMock", task).ignored
+     ): Seq[ExternalTaskScenario] =
+      serviceScenario(task, outputMock,
+        MockedServiceResponse.success200(outputServiceMock).withHeaders(respHeaders))
+
+    inline def serviceScenario[
+      In <: Product : Encoder : Decoder : Schema,
+      Out <: Product : Encoder : Decoder : Schema,
+      ServiceOut: Encoder : Decoder
+    ](
+       task: ServiceTask[In, Out, ServiceOut],
+     ): Seq[ExternalTaskScenario] =
+      serviceScenario(task, task.out, task.defaultServiceOutMock)
 
     def badScenario(
         scen: SScenario,

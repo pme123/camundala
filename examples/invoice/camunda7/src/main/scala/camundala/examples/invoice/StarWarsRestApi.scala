@@ -9,7 +9,6 @@ import sttp.tapir.Schema.annotations.description
 object StarWarsRestApi extends BpmnDsl:
 
   final val topicName = "star-wars-api-people-detail"
-  type ServiceIn = NoInput
   type ServiceOut = People
   lazy val serviceMock: MockedServiceResponse[ServiceOut] = MockedServiceResponse.success200(People(), Map("fromHeader" -> "okidoki"))
 
@@ -48,7 +47,7 @@ object StarWarsRestApi extends BpmnDsl:
     given CirceCodec[People] = deriveCodec
   end People
 
-  final lazy val example: ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  final lazy val example: ServiceTask[In, Out, ServiceOut] =
     serviceTask(
       topicName,
       descr = "Get People Details from StarWars API",

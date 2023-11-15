@@ -203,11 +203,10 @@ sealed trait ExternalTaskApi[
 case class ServiceWorkerApi[
     In <: Product: Encoder: Decoder: Schema,
     Out <: Product: Encoder: Decoder: Schema: ClassTag,
-    ServiceIn <: Product: Encoder: Schema,
     ServiceOut: Encoder: Decoder: Schema
 ](
     name: String,
-    inOut: ServiceTask[In, Out, ServiceIn, ServiceOut],
+    inOut: ServiceTask[In, Out, ServiceOut],
     apiExamples: ApiExamples[In, Out]
 ) extends ExternalTaskApi[In, Out]:
 
@@ -248,12 +247,11 @@ object ServiceWorkerApi:
   def apply[
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema: ClassTag,
-      ServiceIn <: Product: Encoder: Schema,
       ServiceOut: Encoder: Decoder: Schema
   ](
       name: String,
-      inOut: ServiceTask[In, Out, ServiceIn, ServiceOut]
-  ): ServiceWorkerApi[In, Out, ServiceIn, ServiceOut] =
+      inOut: ServiceTask[In, Out, ServiceOut]
+  ): ServiceWorkerApi[In, Out, ServiceOut] =
     ServiceWorkerApi(name, inOut, ApiExamples(name, inOut))
 
 end ServiceWorkerApi
