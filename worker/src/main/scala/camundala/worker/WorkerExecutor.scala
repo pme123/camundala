@@ -88,13 +88,13 @@ case class WorkerExecutor[
         case (_, true, _, None) => // if your process is a SubProcess check if it is mocked
           Left(worker.defaultMock)
         case (true, _, _, None)
-            if !isService => // if your process is a Service check if it is mocked
+            if defaultMocksAllowed => // if your process is a ExternalTask check if it is mocked
           Left(worker.defaultMock)
         case (_, _, None, _) =>
           Right(None)
     end mockOrProceed
 
-    private lazy val isService = worker.isInstanceOf[ServiceWorker[?, ?, ?, ?]]
+    private lazy val defaultMocksAllowed = worker.isInstanceOf[CustomWorker[?, ?]]
 
     private def decodeMock(
         json: Json
