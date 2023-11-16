@@ -32,8 +32,8 @@ More infos will follow.
 
 ## Examples
 In this project you find two examples that uses the Features.
-- [Twitter Example](examples/twitter/README.md)
-- [Invoice Example](examples/invoice/README.md)
+- [Twitter Example](05-examples/twitter/README.md)
+- [Invoice Example](05-examples/invoice/README.md)
 
 
 # Development

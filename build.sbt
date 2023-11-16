@@ -28,9 +28,9 @@ lazy val root = project
     api,
     dmn,
     worker,
-    camunda,
+    camunda, // not in use
     camunda7Worker,
-    camunda8,
+    camunda8, // not in use
     simulation,
     helper,
     documentation,
@@ -42,6 +42,148 @@ lazy val root = project
     exampleDemos,
     exampleMyCompany
   )
+
+// general independent
+lazy val documentation =
+  (project in file("./00-documentation"))
+    .configure(preventPublication)
+    .settings(projectSettings("documentation"))
+    .settings(
+      laikaConfig := LaikaConfig.defaults
+        .withConfigValue(
+          LinkConfig(
+            targets = Seq(
+              TargetDefinition(
+                "bpmn specification",
+                ExternalTarget("https://www.bpmn.org")
+              ),
+              TargetDefinition("camunda", ExternalTarget("https://camunda.com"))
+            )
+          )
+        )
+        //  .withConfigValue(LinkConfig(excludeFromValidation = Seq(Root)))
+        .withRawContent
+      //  .failOnMessages(MessageFilter.None)
+      //  .renderMessages(MessageFilter.None)
+      ,
+      laikaSite / target := baseDirectory.value / ".." / "docs",
+      laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting)
+    )
+    .enablePlugins(LaikaPlugin)
+
+// layer 01
+lazy val domain = project
+  .in(file("./01-domain"))
+  .configure(publicationSettings)
+  .settings(projectSettings("domain"))
+  .settings(
+    autoImportSetting,
+    libraryDependencies ++= (tapirDependencies :+
+      "com.novocode" % "junit-interface" % "0.11" % Test)
+  )
+// layer 02
+val osLibDependency = "com.lihaoyi" %% "os-lib" % "0.9.1"
+lazy val bpmn = project
+  .in(file("./02-bpmn"))
+  .configure(publicationSettings)
+  .settings(projectSettings("bpmn"))
+  .settings(
+    autoImportSetting,
+    libraryDependencies += osLibDependency
+  )
+  .dependsOn(domain)
+// layer 03
+lazy val api = project
+  .in(file("./03-api"))
+  .configure(publicationSettings)
+  .settings(projectSettings("api"))
+  .settings(
+    autoImportSetting,
+    libraryDependencies ++=
+      Seq(
+        "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
+        "com.typesafe" % "config" % "1.4.2",
+        "com.novocode" % "junit-interface" % "0.11" % Test
+      )
+  )
+  .dependsOn(bpmn)
+
+lazy val dmn = project
+  .in(file("./03-dmn"))
+  .configure(publicationSettings)
+  .settings(projectSettings("dmn"))
+  .settings(
+    libraryDependencies ++= Seq(
+      sttpDependency,
+      "io.github.pme123" %% "camunda-dmn-tester-shared" % dmnTesterVersion
+    )
+  )
+  .dependsOn(bpmn)
+
+lazy val worker = project
+  .in(file("./03-worker"))
+  .configure(publicationSettings)
+  .settings(projectSettings("worker"))
+  .settings(
+    autoImportSetting,
+    libraryDependencies ++= Seq(
+    )
+  )
+  .dependsOn(bpmn)
+
+lazy val simulation = project
+  .in(file("./03-simulation"))
+  .configure(publicationSettings)
+  .settings(projectSettings("simulation"))
+  .settings(
+    autoImportSetting,
+    libraryDependencies ++= Seq(
+      sttpDependency,
+      "org.scala-sbt" % "test-interface" % "1.0"
+    )
+  )
+  .dependsOn(bpmn)
+
+// layer 04
+lazy val camunda7Worker = project
+  .in(file("./04-worker-c7spring"))
+  .configure(publicationSettings)
+  .settings(projectSettings("camunda7-worker"))
+  .settings(
+    autoImportSetting,
+    libraryDependencies ++= Seq(
+      sttpDependency,
+      "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion
+    )
+  )
+  .dependsOn(worker)
+
+// just demo
+lazy val camunda = project
+  .in(file("./04-c7-spring"))
+  .configure(publicationSettings)
+  .settings(projectSettings("camunda"))
+  .settings(
+    autoImportSetting,
+    libraryDependencies ++= Seq(
+      "org.camunda.bpm" % "camunda-engine" % camundaVersion, // listeners
+      "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion,
+      "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
+      "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.18.1"
+    )
+  )
+  .dependsOn(bpmn)
+
+lazy val camunda8 = project
+  .in(file("./04-c8-spring"))
+  .configure(preventPublication)
+  .settings(projectSettings("camunda8"))
+  .settings(
+    autoImportSetting,
+    libraryDependencies ++= zeebeDependencies
+  )
+  .dependsOn(bpmn)
+// end not in use
 
 def projectSettings(projName: String) = Seq(
   name := s"camundala-$projName",
@@ -66,142 +208,6 @@ lazy val autoImportSetting =
       "sttp.tapir",
       "sttp.tapir.json.circe"
     ).mkString(start = "-Yimports:", sep = ",", end = "")
-
-lazy val domain = project
-  .in(file("./01-c-domain"))
-  .configure(publicationSettings)
-  .settings(projectSettings("domain"))
-  .settings(
-    autoImportSetting,
-    libraryDependencies ++= (tapirDependencies :+
-      "com.novocode" % "junit-interface" % "0.11" % Test)
-  )
-
-val osLibDependency = "com.lihaoyi" %% "os-lib" % "0.9.1"
-lazy val bpmn = project
-  .in(file("./bpmn"))
-  .configure(publicationSettings)
-  .settings(projectSettings("bpmn"))
-  .settings(
-    autoImportSetting,
-    libraryDependencies += osLibDependency
-  )
-  .dependsOn(domain)
-
-lazy val api = project
-  .in(file("./api"))
-  .configure(publicationSettings)
-  .settings(projectSettings("api"))
-  .settings(
-    autoImportSetting,
-    libraryDependencies ++=
-      Seq(
-        "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
-        "com.typesafe" % "config" % "1.4.2",
-        "com.novocode" % "junit-interface" % "0.11" % Test
-      )
-  )
-  .dependsOn(bpmn)
-
-lazy val camunda = project
-  .in(file("./camunda"))
-  .configure(publicationSettings)
-  .settings(projectSettings("camunda"))
-  .settings(
-    autoImportSetting,
-    libraryDependencies ++= Seq(
-      "org.camunda.bpm" % "camunda-engine" % camundaVersion, // listeners
-      "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion,
-      "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
-      "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.18.1"
-    )
-  )
-  .dependsOn(bpmn)
-
-lazy val camunda7Worker = project
-  .in(file("./camunda7/worker"))
-  .configure(publicationSettings)
-  .settings(projectSettings("camunda7-worker"))
-  .settings(
-    autoImportSetting,
-    libraryDependencies ++= Seq(
-      sttpDependency,
-      "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion
-    )
-  )
-  .dependsOn(worker)
-
-lazy val camunda8 = project
-  .in(file("./camunda8"))
-  .configure(preventPublication)
-  .settings(projectSettings("camunda8"))
-  .settings(
-    autoImportSetting,
-    libraryDependencies ++= zeebeDependencies
-  )
-  .dependsOn(bpmn)
-
-lazy val dmn = project
-  .in(file("./dmn"))
-  .configure(publicationSettings)
-  .settings(projectSettings("dmn"))
-  .settings(
-    libraryDependencies ++= Seq(
-      sttpDependency,
-      "io.github.pme123" %% "camunda-dmn-tester-shared" % dmnTesterVersion
-    )
-  )
-  .dependsOn(bpmn)
-
-lazy val worker = project
-  .in(file("./worker"))
-  .configure(publicationSettings)
-  .settings(projectSettings("worker"))
-  .settings(
-    autoImportSetting,
-    libraryDependencies ++= Seq(
-       )
-  )
-  .dependsOn(bpmn)
-
-lazy val simulation = project
-  .in(file("./simulation"))
-  .configure(publicationSettings)
-  .settings(projectSettings("simulation"))
-  .settings(
-    autoImportSetting,
-    libraryDependencies ++= Seq(
-      sttpDependency,
-      "org.scala-sbt" % "test-interface" % "1.0"
-    )
-  )
-  .dependsOn(bpmn)
-
-lazy val documentation = (project in file("./documentation"))
-  .configure(preventPublication)
-  .settings(projectSettings("documentation"))
-  .settings(
-    laikaConfig := LaikaConfig.defaults
-      .withConfigValue(
-        LinkConfig(
-          targets = Seq(
-            TargetDefinition(
-              "bpmn specification",
-              ExternalTarget("https://www.bpmn.org")
-            ),
-            TargetDefinition("camunda", ExternalTarget("https://camunda.com"))
-          )
-        )
-      )
-      //  .withConfigValue(LinkConfig(excludeFromValidation = Seq(Root)))
-      .withRawContent
-    //  .failOnMessages(MessageFilter.None)
-    //  .renderMessages(MessageFilter.None)
-    ,
-    laikaSite / target := baseDirectory.value / ".." / "docs",
-    laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting)
-  )
-  .enablePlugins(LaikaPlugin)
 
 val tapirVersion = "1.2.10"
 // can be removed when tapir upgraded
@@ -244,7 +250,7 @@ lazy val camundaTestDependencies = Seq(
  */
 
 lazy val helper = project
-  .in(file("./helper"))
+  .in(file("./00-helper"))
   .configure(publicationSettings)
   .settings(projectSettings("helper"))
   .settings(
@@ -253,7 +259,7 @@ lazy val helper = project
 
 // EXAMPLES
 lazy val exampleInvoiceC7 = project
-  .in(file("./examples/invoice/camunda7"))
+  .in(file("./05-examples/invoice/camunda7"))
   .settings(projectSettings("example-invoice-c7"))
   .configure(preventPublication)
   .configure(integrationTests)
@@ -265,14 +271,14 @@ lazy val exampleInvoiceC7 = project
   .dependsOn(api, dmn, camunda, simulation)
 
 lazy val exampleInvoiceWorkerC7 = project
-  .in(file("./examples/invoice/camunda7Worker"))
+  .in(file("./05-examples/invoice/camunda7Worker"))
   .settings(projectSettings("example-invoice-c7"))
   .configure(preventPublication)
   .settings(autoImportSetting)
   .dependsOn(camunda7Worker, exampleInvoiceC7)
 
 lazy val exampleInvoiceC8 = project
-  .in(file("./examples/invoice/camunda8"))
+  .in(file("./05-examples/invoice/camunda8"))
   .settings(projectSettings("example-invoice-c8"))
   .configure(preventPublication)
   .configure(integrationTests)
@@ -284,7 +290,7 @@ lazy val exampleInvoiceC8 = project
   .dependsOn(camunda8, api, simulation)
 
 lazy val exampleTwitterC7 = project
-  .in(file("./examples/twitter/camunda7"))
+  .in(file("./05-examples/twitter/camunda7"))
   .settings(projectSettings("example-twitter-c7"))
   .configure(preventPublication)
   .configure(integrationTests)
@@ -296,7 +302,7 @@ lazy val exampleTwitterC7 = project
   .dependsOn(api, simulation)
 
 lazy val exampleTwitterC8 = project
-  .in(file("./examples/twitter/camunda8"))
+  .in(file("./05-examples/twitter/camunda8"))
   .settings(projectSettings("example-twitter-c8"))
   .configure(preventPublication)
   .configure(integrationTests)
@@ -308,7 +314,7 @@ lazy val exampleTwitterC8 = project
   .dependsOn(camunda8, api, simulation)
 
 lazy val exampleDemos = project
-  .in(file("./examples/demos"))
+  .in(file("./05-examples/demos"))
   .settings(projectSettings("example-demos"))
   .configure(preventPublication)
   .configure(integrationTests)
@@ -329,7 +335,7 @@ import laika.rewrite.link.LinkConfig
 
 import scala.jdk.CollectionConverters.*
 
-val config = ConfigFactory.parseFile(new File("examples/myCompany/CONFIG.conf"))
+val config = ConfigFactory.parseFile(new File("05-examples/myCompany/CONFIG.conf"))
 val currentVersion = config.getString("release.tag")
 val released = config.getBoolean("released")
 val olderVersions = config.getList("releases.older").asScala
@@ -344,7 +350,7 @@ val versions = Versions(
   newerVersions = Seq()
 )
 lazy val exampleMyCompany = project
-  .in(file("./examples/myCompany"))
+  .in(file("./05-examples/myCompany"))
   .settings(projectSettings("example-exampleDemos"))
   .settings(
     laikaConfig := LaikaConfig.defaults
