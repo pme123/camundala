@@ -4,7 +4,13 @@ package examples.invoice
 import camundala.bpmn.*
 import camundala.bpmn.GenericExternalTask.ProcessStatus
 import camundala.domain.*
+import io.github.iltotore.iron.constraint.string.Alphanumeric
 import sttp.tapir.Schema.annotations.description
+
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
+import io.github.iltotore.iron.circe.given
+import sttp.tapir.codec.iron.given
 
 object StarWarsRestApi extends BpmnDsl:
 
@@ -35,12 +41,12 @@ object StarWarsRestApi extends BpmnDsl:
   end Out
 
   case class People(
-      name: String = "Luke Skywalker",
-      height: String = "172",
-      mass: String = "77",
-      hair_color: String = "blond",
-      skin_color: String = "fair",
-      eye_color: String = "blue"
+                     name: String = "Luke Skywalker",
+                     height: String = "172",
+                     mass: String = "77",
+                     hair_color: String :| Alphanumeric = "blond",
+                     skin_color: String = "fair",
+                     eye_color: String = "blue"
   )
   object People:
     given Schema[People] = Schema.derived

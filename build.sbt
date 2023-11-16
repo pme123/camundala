@@ -210,9 +210,11 @@ lazy val tapirDependencies = Seq(
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % tapirVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-redoc-bundle" % tapirVersion,
-  "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
+
   "com.softwaremill.sttp.apispec" %% "openapi-circe-yaml" % "0.3.2",
-  "io.circe" %% "circe-generic" % circeVersion
+  "io.circe" %% "circe-generic" % circeVersion,
+  "io.github.iltotore" %% "iron-circe" % "2.3.0",
+  "com.softwaremill.sttp.tapir" %% "tapir-iron" % "1.9.0",
 )
 lazy val sttpDependency = "com.softwaremill.sttp.client3" %% "circe" % "3.8.13"
 val camundaVersion = "7.19.0"
