@@ -15,6 +15,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.23.1 - 2023-11-16
+### Changed 
+- Moved project to layered naming. - see [Commit](https://github.com/pme123/camundala/commit/6940896b96b0f113d580fbf6a45184fd8e3f72d7)
+- Moved domain to layered naming. - see [Commit](https://github.com/pme123/camundala/commit/809127a1bb23ee58f5c48cf1fa37e3ab703c514e)
+- Added Refined Types (iron) to domain. - see [Commit](https://github.com/pme123/camundala/commit/d9441b8903330390ae76f846ce693659fb7cd8a0)
+- Only defaultMocking for Custom- and ServiceWorker. - see [Commit](https://github.com/pme123/camundala/commit/773eaf0452cb65b75f0b2699cb96fb8ef9ed114f)
+
 ## 1.23.0 - 2023-11-15
 ### Changed 
 - Removed ServiceIn type from BPMN of ServiceTask. - see [Commit](https://github.com/pme123/camundala/commit/3f546bab6f617789b809c5e8ca70723e58ae436f)
