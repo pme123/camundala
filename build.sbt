@@ -68,7 +68,7 @@ lazy val autoImportSetting =
     ).mkString(start = "-Yimports:", sep = ",", end = "")
 
 lazy val domain = project
-  .in(file("./domain"))
+  .in(file("./01-c-domain"))
   .configure(publicationSettings)
   .settings(projectSettings("domain"))
   .settings(
