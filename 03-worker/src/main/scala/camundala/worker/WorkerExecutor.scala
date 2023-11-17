@@ -94,7 +94,8 @@ case class WorkerExecutor[
           Right(None)
     end mockOrProceed
 
-    private lazy val defaultMocksAllowed = worker.isInstanceOf[CustomWorker[?, ?]]
+    //TODO default mocking only for ServiceWorker possible - subprocesses and customworkers only with mockedSubprocesses possible and that is a bad name
+    private lazy val defaultMocksAllowed = false //  worker.isInstanceOf[CustomWorker[?, ?]]
 
     private def decodeMock(
         json: Json
