@@ -1,7 +1,8 @@
-import laika.ast.ExternalTarget
-import laika.markdown.github.GitHubFlavor
-import laika.parse.code.SyntaxHighlighting
-import laika.rewrite.link.*
+import laika.ast.Path.Root
+import laika.config.*
+import laika.format.Markdown.GitHubFlavor
+import laika.helium.Helium
+import laika.helium.config.{Favicon, HeliumIcon, IconLink}
 import sbt.url
 
 import scala.util.Using
@@ -20,7 +21,7 @@ lazy val root = project
   .configure(preventPublication)
   .settings(
     name := "camundala",
-    organization := org,
+    organization := org
   )
   .aggregate(
     domain,
@@ -50,18 +51,15 @@ lazy val documentation =
     .settings(projectSettings("documentation"))
     .settings(
       laikaConfig := LaikaConfig.defaults
+        .withConfigValue(LaikaKeys.excludeFromNavigation, Seq(Root))
+        .withConfigValue("projectVersion", projectVersion)
         .withConfigValue(
-          LinkConfig(
-            targets = Seq(
-              TargetDefinition(
-                "bpmn specification",
-                ExternalTarget("https://www.bpmn.org")
-              ),
-              TargetDefinition("camunda", ExternalTarget("https://camunda.com"))
+          LinkConfig.empty
+            .addTargets(
+              TargetDefinition.external("bpmn specification", "https://www.bpmn.org"),
+              TargetDefinition.external("camunda", "https://camunda.com")
             )
-          )
         )
-        //  .withConfigValue(LinkConfig(excludeFromValidation = Seq(Root)))
         .withRawContent
       //  .failOnMessages(MessageFilter.None)
       //  .renderMessages(MessageFilter.None)
@@ -193,20 +191,13 @@ def projectSettings(projName: String) = Seq(
   scalacOptions ++= Seq(
     //   "-Xmax-inlines:50", // is declared as erased, but is in fact used
     //   "-Wunused:imports"
-  ),
+  )
 )
 lazy val autoImportSetting =
   scalacOptions +=
     Seq(
-      "java.lang",
-      "scala",
-      "scala.Predef",
-      "io.circe",
-      "io.circe.generic.semiauto",
-      "io.circe.derivation",
-      "io.circe.syntax",
-      "sttp.tapir",
-      "sttp.tapir.json.circe"
+      "java.lang", "scala", "scala.Predef", "io.circe", "io.circe.generic.semiauto",
+      "io.circe.derivation", "io.circe.syntax", "sttp.tapir", "sttp.tapir.json.circe"
     ).mkString(start = "-Yimports:", sep = ",", end = "")
 
 val tapirVersion = "1.2.10"
@@ -216,11 +207,10 @@ lazy val tapirDependencies = Seq(
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % tapirVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-redoc-bundle" % tapirVersion,
-
   "com.softwaremill.sttp.apispec" %% "openapi-circe-yaml" % "0.3.2",
   "io.circe" %% "circe-generic" % circeVersion,
   "io.github.iltotore" %% "iron-circe" % "2.3.0",
-  "com.softwaremill.sttp.tapir" %% "tapir-iron" % "1.9.0",
+  "com.softwaremill.sttp.tapir" %% "tapir-iron" % "1.9.0"
 )
 lazy val sttpDependency = "com.softwaremill.sttp.client3" %% "circe" % "3.8.13"
 val camundaVersion = "7.19.0"
@@ -265,7 +255,7 @@ lazy val exampleInvoiceC7 = project
   .configure(integrationTests)
   .settings(
     autoImportSetting,
-    //Test / parallelExecution := false,
+    // Test / parallelExecution := false,
     libraryDependencies ++= camundaDependencies
   )
   .dependsOn(api, dmn, camunda, simulation)
@@ -327,11 +317,6 @@ lazy val exampleDemos = project
 
 // start company documentation example
 import com.typesafe.config.ConfigFactory
-import laika.ast.Path.Root
-import laika.helium.Helium
-import laika.helium.config.*
-import laika.rewrite.{Version, Versions}
-import laika.rewrite.link.LinkConfig
 
 import scala.jdk.CollectionConverters.*
 
@@ -339,22 +324,16 @@ val config = ConfigFactory.parseFile(new File("05-examples/myCompany/CONFIG.conf
 val currentVersion = config.getString("release.tag")
 val released = config.getBoolean("released")
 val olderVersions = config.getList("releases.older").asScala
-val versions = Versions(
-  currentVersion = Version(
-    currentVersion,
-    currentVersion,
-    label = Some(if (released) "Stable" else "Dev")
-  ),
-  olderVersions =
-    olderVersions.map(_.unwrapped().toString).map(v => Version(v, v)),
-  newerVersions = Seq()
-)
+val versions = Versions
+.forCurrentVersion(Version(currentVersion, currentVersion)
+  .withLabel(if (released) "Stable" else "Dev")
+).withOlderVersions(olderVersions.map(_.unwrapped().toString).map(v => Version(v, v)) *)
 lazy val exampleMyCompany = project
   .in(file("./05-examples/myCompany"))
   .settings(projectSettings("example-exampleDemos"))
   .settings(
     laikaConfig := LaikaConfig.defaults
-      .withConfigValue(LinkConfig(excludeFromValidation = Seq(Root)))
+      .withConfigValue(LaikaKeys.excludeFromNavigation, Seq(Root))
       .withRawContent
     //  .failOnMessages(MessageFilter.None)
     //  .renderMessages(MessageFilter.None)

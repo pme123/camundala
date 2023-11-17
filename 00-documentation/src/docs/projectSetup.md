@@ -33,7 +33,7 @@ build.sbt // dependencies etc. - see below
 ### build.sbt
 Here you define the dependencies.
 ```scala
-val camundalaVersion = "0.12.0"
+val camundalaVersion = "${projectVersion}."
 lazy val camundalaDependencies = Seq(
   "io.github.pme123" %% "camundala-api" % camundalaVersion,
   "io.github.pme123" %% "camundala-simulation" % camundalaVersion % IntegrationTest
