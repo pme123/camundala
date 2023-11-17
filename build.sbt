@@ -58,10 +58,12 @@ lazy val documentation =
             .addTargets(
               TargetDefinition.external("bpmn specification", "https://www.bpmn.org"),
               TargetDefinition.external("camunda", "https://camunda.com")
+            ).addSourceLinks(
+              SourceLinks(baseUri = "https://github.com/pme123/camundala/tree/master/05-examples/invoice/camunda7/src/main/scala/", suffix = "scala")
             )
         )
         .withRawContent
-      //  .failOnMessages(MessageFilter.None)
+        //.failOnMessages(MessageFilter.None)
       //  .renderMessages(MessageFilter.None)
       ,
       laikaSite / target := baseDirectory.value / ".." / "docs",

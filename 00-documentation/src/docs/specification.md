@@ -78,7 +78,7 @@ You see here the following elements:
 * `enum InvoiceCategory..` this is how you define an enumeration. `..derives ConfiguredEnumCodec..` is for JSON marshalling.
 * `` `Travel Expenses`, `` if you have names with spaces you need to use Back-Ticks.
 
-Checkout the whole Domain Description on [**Github**](https://github.com/pme123/camundala/blob/develop/examples/invoice/camunda8/src/main/scala/camundala/examples/invoice/domain.scala).
+Checkout the Domain Description of @:source(camundala.examples.invoice.InvoiceReceipt).
 
 There are 2 things you have to care for that is not purely your domain.
 
