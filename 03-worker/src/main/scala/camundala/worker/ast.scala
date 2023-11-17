@@ -36,32 +36,32 @@ sealed trait Worker[
   def executor(using context: EngineRunContext): WorkerExecutor[In, Out, T]
 end Worker
 
-case class InitProcessWorker[
+case class InitWorker[
     In <: Product: CirceCodec,
     Out <: Product: CirceCodec
 ](
-    inOut: Process[In, Out],
+    inOut: InOut[In, Out, ?],
     override val validationHandler: Option[ValidationHandler[In]] = None,
     override val initProcessHandler: Option[InitProcessHandler[In]] = None
-) extends Worker[In, Out, InitProcessWorker[In, Out]]:
-  lazy val topic: String = inOut.processName
+) extends Worker[In, Out, InitWorker[In, Out]]:
+  lazy val topic: String = inOut.id
 
   def validate(
       validator: ValidationHandler[In]
-  ): InitProcessWorker[In, Out] =
+  ): InitWorker[In, Out] =
     copy(validationHandler = Some(validator))
 
   def initProcess(
       init: InitProcessHandler[In]
-  ): InitProcessWorker[In, Out] =
+  ): InitWorker[In, Out] =
     copy(initProcessHandler = Some(init))
 
   def executor(using
       context: EngineRunContext
-  ): WorkerExecutor[In, Out, InitProcessWorker[In, Out]] =
+  ): WorkerExecutor[In, Out, InitWorker[In, Out]] =
     WorkerExecutor(this)
 
-end InitProcessWorker
+end InitWorker
 
 case class CustomWorker[
     In <: Product: CirceCodec,

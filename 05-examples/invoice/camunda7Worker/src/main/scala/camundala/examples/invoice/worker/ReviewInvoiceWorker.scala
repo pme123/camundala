@@ -3,13 +3,13 @@ package camundala.examples.invoice.worker
 import camundala.bpmn
 import camundala.examples.invoice.ReviewInvoice.*
 import camundala.worker.CamundalaWorkerError.{InitProcessError, ValidatorError}
-import camundala.worker.{GeneralVariables, InitProcessWorkerDsl}
+import camundala.worker.{GeneralVariables, InitWorkerDsl}
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class ReviewInvoiceWorker extends InvoiceWorkerHandler, InitProcessWorkerDsl[In, Out]:
+class ReviewInvoiceWorker extends InvoiceWorkerHandler, InitWorkerDsl[In, Out]:
 
-  lazy val process: bpmn.Process[In, Out] = example
+  lazy val inOut: bpmn.Process[In, Out] = example
 
   override def validate(in: In): Either[ValidatorError, In] =
     logger.info(s"Do some custom validation...")

@@ -31,7 +31,7 @@ trait WorkerDsl:
 
 end WorkerDsl
 
-trait InitProcessWorkerDsl[
+trait InitWorkerDsl[
     In <: Product: CirceCodec,
     Out <: Product: CirceCodec
 ] extends WorkerDsl,
@@ -39,13 +39,13 @@ trait InitProcessWorkerDsl[
       InitProcessDsl[In]:
 
 
-  lazy val worker: InitProcessWorker[In, Out] = InitProcessWorker(process)
+  lazy val worker: InitWorker[In, Out] = InitWorker(inOut)
     .validate(ValidationHandler(validate))
     .initProcess(InitProcessHandler(initProcess))
 
-  protected def process: Process[In, Out]
+  protected def inOut: InOut[In, Out, ?]
 
-end InitProcessWorkerDsl
+end InitWorkerDsl
 
 trait CustomWorkerDsl[
     In <: Product: CirceCodec,
