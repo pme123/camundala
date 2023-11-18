@@ -11,7 +11,60 @@ lazy val projectVersion =
   Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
 val scala3Version = "3.3.0"
 val org = "io.github.pme123"
+
+// dependency Versions
+// 00-documentation
+// - Laika Plugin
+// 00-helper
+val osLibVersion = "0.9.1"
+// 01-domain
+val tapirVersion = "1.9.0"
+val openapiCirceVersion = "0.7.1"
+val ironCirceVersion = "2.3.0"
+val junitInterfaceVersion = "0.11"
+// 02-bpmn
+// -> domain
+// - osLib
+// 03-api
+// -> bpmn
+val scalaXmlVersion = "2.1.0"
+val typesafeConfigVersion = "1.4.2"
+// - junitInterface
+// 03-dmn
+// -> bpmn
+val sttpClient3Version = "3.8.13"
 val dmnTesterVersion = "0.17.9"
+// 03-simulation
+// -> bpmn
+val testInterfaceVersion = "1.0"
+// - sttpClient3
+// 03-worker
+// -> bpmn
+
+// --- Implementations
+// 04-worker-c7spring
+// -> worker
+val camundaVersion = "7.19.0" // external task client
+// - sttpClient3
+
+// --- Experiments
+// 04-c7-spring
+// -> bpmn
+val camundaSpinVersion = "1.18.1"
+// camunda // server spring-boot
+// 04-c8-spring
+// -> bpmn
+val springBootVersion = "2.7.15"
+val zeebeVersion = "8.2.4"
+val scalaJacksonVersion = "2.14.2"
+
+// --- Examples
+val h2Version = "2.1.214"
+val twitter4jVersion = "4.1.2"
+val groovyVersion = "3.0.16"
+
+
+
 
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
@@ -24,17 +77,20 @@ lazy val root = project
     organization := org
   )
   .aggregate(
+    documentation,
+    helper,
     domain,
     bpmn,
     api,
     dmn,
-    worker,
-    camunda, // not in use
-    camunda7Worker,
-    camunda8, // not in use
     simulation,
-    helper,
-    documentation,
+    worker,
+    // implementations
+    camunda7Worker,
+    // experiments
+    camunda, // not in use
+    camunda8, // not in use
+    // examples
     exampleTwitterC7,
     exampleTwitterC8,
     exampleInvoiceC7,
@@ -71,6 +127,14 @@ lazy val documentation =
     )
     .enablePlugins(LaikaPlugin)
 
+lazy val helper = project
+  .in(file("./00-helper"))
+  .configure(publicationSettings)
+  .settings(projectSettings("helper"))
+  .settings(
+    libraryDependencies += osLibDependency
+  )
+
 // layer 01
 lazy val domain = project
   .in(file("./01-domain"))
@@ -79,10 +143,10 @@ lazy val domain = project
   .settings(
     autoImportSetting,
     libraryDependencies ++= (tapirDependencies :+
-      "com.novocode" % "junit-interface" % "0.11" % Test)
+      "com.novocode" % "junit-interface" % junitInterfaceVersion % Test)
   )
 // layer 02
-val osLibDependency = "com.lihaoyi" %% "os-lib" % "0.9.1"
+val osLibDependency = "com.lihaoyi" %% "os-lib" % osLibVersion
 lazy val bpmn = project
   .in(file("./02-bpmn"))
   .configure(publicationSettings)
@@ -92,6 +156,7 @@ lazy val bpmn = project
     libraryDependencies += osLibDependency
   )
   .dependsOn(domain)
+
 // layer 03
 lazy val api = project
   .in(file("./03-api"))
@@ -101,9 +166,9 @@ lazy val api = project
     autoImportSetting,
     libraryDependencies ++=
       Seq(
-        "org.scala-lang.modules" %% "scala-xml" % "2.1.0",
-        "com.typesafe" % "config" % "1.4.2",
-        "com.novocode" % "junit-interface" % "0.11" % Test
+        "org.scala-lang.modules" %% "scala-xml" % scalaXmlVersion,
+        "com.typesafe" % "config" % typesafeConfigVersion,
+        "com.novocode" % "junit-interface" % junitInterfaceVersion % Test
       )
   )
   .dependsOn(bpmn)
@@ -126,8 +191,6 @@ lazy val worker = project
   .settings(projectSettings("worker"))
   .settings(
     autoImportSetting,
-    libraryDependencies ++= Seq(
-    )
   )
   .dependsOn(bpmn)
 
@@ -139,7 +202,7 @@ lazy val simulation = project
     autoImportSetting,
     libraryDependencies ++= Seq(
       sttpDependency,
-      "org.scala-sbt" % "test-interface" % "1.0"
+      "org.scala-sbt" % "test-interface" % testInterfaceVersion
     )
   )
   .dependsOn(bpmn)
@@ -169,7 +232,7 @@ lazy val camunda = project
       "org.camunda.bpm" % "camunda-engine" % camundaVersion, // listeners
       "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion,
       "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
-      "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.18.1"
+      "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % camundaSpinVersion
     )
   )
   .dependsOn(bpmn)
@@ -202,52 +265,17 @@ lazy val autoImportSetting =
       "io.circe.derivation", "io.circe.syntax", "sttp.tapir", "sttp.tapir.json.circe"
     ).mkString(start = "-Yimports:", sep = ",", end = "")
 
-val tapirVersion = "1.2.10"
-// can be removed when tapir upgraded
-val circeVersion = "0.14.5"
 lazy val tapirDependencies = Seq(
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % tapirVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-redoc-bundle" % tapirVersion,
-  "com.softwaremill.sttp.apispec" %% "openapi-circe-yaml" % "0.3.2",
-  "io.circe" %% "circe-generic" % circeVersion,
-  "io.github.iltotore" %% "iron-circe" % "2.3.0",
-  "com.softwaremill.sttp.tapir" %% "tapir-iron" % "1.9.0"
+  "com.softwaremill.sttp.apispec" %% "openapi-circe-yaml" % openapiCirceVersion,
+ // "io.circe" %% "circe-generic" % circeVersion,
+  "io.github.iltotore" %% "iron-circe" % ironCirceVersion,
+  "com.softwaremill.sttp.tapir" %% "tapir-iron" % tapirVersion
 )
-lazy val sttpDependency = "com.softwaremill.sttp.client3" %% "circe" % "3.8.13"
-val camundaVersion = "7.19.0"
-/* NOT IN USE
-lazy val camundaTestDependencies = Seq(
-  // provide Camunda interaction
-  "org.camunda.bpm" % "camunda-engine" % camundaVersion,
-  "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
-  "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.13.1",
-  "org.codehaus.groovy" % "groovy-jsr223" % "3.0.10",
-  //
-  //"org.camunda.bpm.dmn" % "camunda-engine-dmn" % camundaVersion % Provided,
-  // provide test helper
-  "org.camunda.bpm.assert" % "camunda-bpm-assert" % "10.0.0",
-  "org.assertj" % "assertj-core" % "3.19.0",
-  "org.camunda.bpm.extension" % "camunda-bpm-assert-scenario" % "1.1.1",
-  "org.camunda.bpm.extension.mockito" % "camunda-bpm-mockito" % "5.16.0",
-  // dmn testing
-  //("org.camunda.bpm.extension.dmn.scala" % "dmn-engine" % "1.7.2-SNAPSHOT").cross(CrossVersion.for3Use2_13),
-  "de.odysseus.juel" % "juel" % "2.1.3",
-  //     "org.scalactic" %% "scalactic" % "3.2.9",
-  //     "org.scalatest" %% "scalatest" % "3.2.9",
-  //     "org.mockito" % "mockito-scala-scalatest_2.13" % "1.16.37",
-  "org.mockito" % "mockito-core" % "3.1.0",
-  "com.novocode" % "junit-interface" % "0.11"
-)
- */
 
-lazy val helper = project
-  .in(file("./00-helper"))
-  .configure(publicationSettings)
-  .settings(projectSettings("helper"))
-  .settings(
-    libraryDependencies += osLibDependency
-  )
+lazy val sttpDependency = "com.softwaremill.sttp.client3" %% "circe" % sttpClient3Version
 
 // EXAMPLES
 lazy val exampleInvoiceC7 = project
@@ -313,7 +341,6 @@ lazy val exampleDemos = project
   .settings(
     autoImportSetting,
     libraryDependencies ++= camundaDependencies
-    //   libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % "it",
   )
   .dependsOn(api, dmn, camunda, simulation)
 
@@ -365,10 +392,7 @@ lazy val exampleMyCompany = project
   .configure(preventPublication)
   .dependsOn(api)
 
-val springBootVersion = "2.7.15"
-val h2Version = "2.1.214"
-// Twitter
-val twitter4jVersion = "4.1.2"
+
 val camundaDependencies = Seq(
   "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
   "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
@@ -377,18 +401,17 @@ val camundaDependencies = Seq(
   "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
   // json support
   "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
-  "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % "1.18.1",
+  "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % camundaSpinVersion,
   // groovy support
-  "org.codehaus.groovy" % "groovy-jsr223" % "3.0.16",
+  "org.codehaus.groovy" % "groovy-jsr223" % groovyVersion,
   "com.h2database" % "h2" % h2Version
 ) //.map(_.exclude("org.slf4j", "slf4j-api"))
 
-val zeebeVersion = "8.2.4"
 val zeebeDependencies = Seq(
   "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
   "org.springframework.boot" % "spring-boot-starter-webflux" % springBootVersion,
   "io.camunda.spring" % "spring-boot-starter-camunda" % zeebeVersion,
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.14.2"
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % scalaJacksonVersion
 ).map(_.exclude("org.slf4j", "slf4j-api"))
 
 lazy val developerList = List(
