@@ -28,7 +28,7 @@ def release(version: String): Unit = {
   replaceVersion(version)
 
   val isSnapshot = version.contains("-")
-  os.proc("sbt", "-J-Xmx3G", "laikaSite").call()
+  os.proc("sbt", "-J-Xmx3G", "documentation/laikaSite").call()
 
   if (!isSnapshot) {
     ChangeLogUpdater.verifyChangelog(version)

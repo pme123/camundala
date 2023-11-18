@@ -15,6 +15,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.24.0 - 2023-11-18
+### Changed 
+- Cleanup Dependency versions. - see [Commit](https://github.com/pme123/camundala/commit/ffcbb5d7c5cae947db51da58c99e3624e218d113)
+- Example with Source Link. - see [Commit](https://github.com/pme123/camundala/commit/2cabf1e248b7065d4ca031ca774994023aaf0a00)
+- Removed default mocking for Custom Worker. - see [Commit](https://github.com/pme123/camundala/commit/894d45ce19bb8057676976a1a39ddd8e5e9864eb)
+- Changed InitProcessWorker to InitWorker - so it can be used for intermediate Events. - see [Commit](https://github.com/pme123/camundala/commit/012de59ffb6b3d45d5fa5a34c8b6352ca954e1bb)
+- Updated Laika Document Generation dependencies. - see [Commit](https://github.com/pme123/camundala/commit/d6631dcf48f8ecbfd6d43718bb33b9899745c8f5)
+
 ## 1.23.1 - 2023-11-16
 ### Changed 
 - Moved project to layered naming. - see [Commit](https://github.com/pme123/camundala/commit/6940896b96b0f113d580fbf6a45184fd8e3f72d7)
