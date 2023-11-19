@@ -18,7 +18,7 @@ jobs:
       - name: Compile
         run: sbt compile
       - name: Documentation
-        run: sbt laikaSite
+        run: sbt documentation/laikaSite
       - name: Test
         run: sbt test
       - name: Test Report
