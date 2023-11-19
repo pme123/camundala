@@ -27,9 +27,9 @@ meta.json
 /.vscode/launch.json
 /camunda-db.mv.db
 /05-examples/invoice/project/build.properties
-/camunda-h2-default/process-engine.mv.db
 /05-examples/.datakurre/
 /test.json
 /05-examples/invoice/camunda7Worker/camunda-h2-default/external-worker.mv.db
 /camunda-h2-default/external-worker.mv.db
 /05-examples/invoice/camunda7Worker/camunda-h2-default/process-engine.mv.db
+/05-examples/camunda-h2-default/process-engine.mv.db
