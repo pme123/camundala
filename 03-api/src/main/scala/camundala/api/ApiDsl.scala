@@ -2,8 +2,8 @@ package camundala
 package api
 
 import camundala.bpmn.*
+import camundala.domain.*
 
-import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
 trait ApiDsl extends ApiBaseDsl:
@@ -12,39 +12,40 @@ trait ApiDsl extends ApiBaseDsl:
     inOut.id
 
   // converters
-  implicit def toApi[
+  given [
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
-  ](process: Process[In, Out]): ProcessApi[In, Out] =
-    ProcessApi(nameOfVariable(process), process)
+  ]: Conversion[Process[In, Out], ProcessApi[In, Out]] =
+    process => ProcessApi(nameOfVariable(process), process)
 
-  implicit def toApi[
+  given [
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema: ClassTag,
       ServiceOut: Encoder: Decoder: Schema
-  ](
-      process: ServiceTask[In, Out, ServiceOut]
-  ): ServiceWorkerApi[In, Out, ServiceOut] =
-    ServiceWorkerApi(nameOfVariable(process), process)
+  ]: Conversion[ServiceTask[In, Out, ServiceOut], ServiceWorkerApi[In, Out, ServiceOut]] =
+    task => ServiceWorkerApi(nameOfVariable(task), task)
 
-  implicit def toApi[
+  given [
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
-  ](
-      task: CustomTask[In, Out]
-  ): CustomWorkerApi[In, Out] =
-    CustomWorkerApi(nameOfVariable(task), task)
+  ]: Conversion[CustomTask[In, Out], CustomWorkerApi[In, Out]] =
+    task => CustomWorkerApi(nameOfVariable(task), task)
 
-  implicit def toApi[
+  given [
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
-  ](dmn: DecisionDmn[In, Out]): DecisionDmnApi[In, Out] =
-    DecisionDmnApi(nameOfVariable(dmn), dmn)
+  ]: Conversion[DecisionDmn[In, Out], DecisionDmnApi[In, Out]] =
+    dmn => DecisionDmnApi(nameOfVariable(dmn), dmn)
 
-  implicit def toApi[
+  given [
       In <: Product: Encoder: Decoder: Schema,
       Out <: Product: Encoder: Decoder: Schema: ClassTag
-  ](inOut: Activity[In, Out, ?]): ActivityApi[In, Out] =
-    ActivityApi(nameOfVariable(inOut), inOut)
+  ]: Conversion[UserTask[In, Out], ActivityApi[In, Out]] =
+    inOut => ActivityApi(nameOfVariable(inOut), inOut)
+
+  given [
+      In <: Product: Encoder: Decoder: Schema
+  ]: Conversion[ReceiveEvent[In, ?], ActivityApi[In, NoOutput]] =
+    inOut => ActivityApi(nameOfVariable(inOut), inOut)
 
 end ApiDsl

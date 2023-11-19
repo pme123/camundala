@@ -30,12 +30,17 @@ case class MockedServiceResponse[
       .map(_.toList)
       .collect { case key :: value :: _ => key -> value }
       .toMap
+end MockedServiceResponse
 
 object MockedServiceResponse:
 
   def success[
       ServiceOut
-  ](status: Int, body: ServiceOut, headers: Map[String, String] = Map.empty): MockedServiceResponse[ServiceOut] =
+  ](
+      status: Int,
+      body: ServiceOut,
+      headers: Map[String, String] = Map.empty
+  ): MockedServiceResponse[ServiceOut] =
     MockedServiceResponse(status, Right(body), headers.toHeaders)
 
   def success200[
@@ -61,11 +66,10 @@ object MockedServiceResponse:
   ](status: Int): MockedServiceResponse[ServiceOut] =
     MockedServiceResponse(status, Left(None))
 
-  implicit def tapirSchema[ServiceOut: Schema]: Schema[MockedServiceResponse[ServiceOut]] =
+  given tapirSchema[ServiceOut: Schema]: Schema[MockedServiceResponse[ServiceOut]] =
     Schema.derived[MockedServiceResponse[ServiceOut]]
 
-  implicit def mockedHttpResponseEncoder[ServiceOut: Encoder]
-      : Encoder[MockedServiceResponse[ServiceOut]] =
+  given mockedHttpResponseEncoder[ServiceOut: Encoder]: Encoder[MockedServiceResponse[ServiceOut]] =
     Encoder.instance { response =>
       Json.obj(
         "respStatus" -> Json.fromInt(response.respStatus),
@@ -79,42 +83,22 @@ object MockedServiceResponse:
           .asJson
       )
     }
-  implicit def mockedHttpResponseDecoder[ServiceOut: Decoder]
-      : Decoder[MockedServiceResponse[ServiceOut]] =
+
+  given mockedHttpResponseDecoder[ServiceOut: Decoder]: Decoder[MockedServiceResponse[ServiceOut]] =
     Decoder.instance { cursor =>
-      for {
+      for
         respStatus <- cursor.downField("respStatus").as[Int]
         respBody <-
-          if (respStatus < 300)
+          if respStatus < 300 then
             cursor.downField("respBody").as[ServiceOut].map(Right(_))
           else cursor.downField("respBody").as[Option[Json]].map(Left(_))
         respHeaders <- cursor.downField("respHeaders").as[Seq[Seq[String]]]
-      } yield MockedServiceResponse(respStatus, respBody, respHeaders)
+      yield MockedServiceResponse(respStatus, respBody, respHeaders)
     }
 end MockedServiceResponse
 
-extension(headers: Map[String, String])
+extension (headers: Map[String, String])
   def toHeaders: Seq[Seq[String]] = headers.map {
-    case k ->v=> Seq(k,v)
+    case k -> v => Seq(k, v)
   }.toSeq
 end extension
-
-/*
-// needed for mocked Results of Seq
-implicit def seqCodec[T: CirceCodec]: CirceCodec[Seq[T]] =
-  new CirceCodec[Seq[T]] {
-    final def apply(c: HCursor): Result[Seq[T]] =
-      val jsons = c.values.get.toSeq.map(_.as[T])
-      val (lefts, rights) = jsons.partition(_.isLeft)
-      if (lefts.nonEmpty)
-        Left(
-          DecodingFailure(
-            "Problem decoding Seq",
-            lefts.collect { case Left(t) => t.history }.flatten.toList
-          )
-        )
-      else Right(rights.collect { case Right(a) => a })
-    final def apply(a: Seq[T]): Json = Json.arr(a.map(_.asJson): _*)
-  }
-end seqCodec
- */

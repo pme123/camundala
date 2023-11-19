@@ -3,7 +3,7 @@ package docs
 
 import os.{pwd, write}
 
-case class DependencyGraphCreator()(implicit
+case class DependencyGraphCreator()(using
     val apiConfig: ApiConfig,
     val configs: Seq[ApiProjectConf]
 ) extends DependencyCreator:
@@ -16,7 +16,7 @@ case class DependencyGraphCreator()(implicit
     )
   }
 
-  def createDependencies(implicit configs: Seq[ApiProjectConf]): String = {
+  def createDependencies(using configs: Seq[ApiProjectConf]): String = {
     create(
       configs,
       pack =>
@@ -24,7 +24,7 @@ case class DependencyGraphCreator()(implicit
     )
   }
 
-  def createProjectDependencies(implicit configs: Seq[ApiProjectConf]): Unit = {
+  def createProjectDependencies(using configs: Seq[ApiProjectConf]): Unit = {
     val graphsForProjects = treeForEachProjects(configs)
     graphsForProjects.foreach(g =>
       write.over(

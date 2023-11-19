@@ -29,6 +29,7 @@ enum DecisionResultType:
   case singleResult // Map(String, Object)
   case collectEntries // List(Object)
   case resultList // List(Map(String, Object))
+end DecisionResultType
 
 case class DecisionDmn[
     In <: Product: Encoder: Decoder: Schema,
@@ -50,33 +51,26 @@ end DecisionDmn
 
 // String | Boolean | Int | Long | Double |
 //  LocalDate | LocalDateTime | ZonedDateTime | scala.reflect.Enum
-implicit def DmnValueTypeEncoder[T <: DmnValueSimple]: Encoder[T] =
-  new Encoder[T] {
+given DmnValueTypeEncoder[T <: DmnValueSimple]: Encoder[T] =
+  new Encoder[T]:
     final def apply(dv: T): Json = valueToJson(dv)
-  }
 
-implicit def LocalDateDecoder: Decoder[LocalDate] = new Decoder[LocalDate] {
+given LocalDateDecoder: Decoder[LocalDate] = new Decoder[LocalDate]:
   final def apply(c: HCursor): Decoder.Result[LocalDate] =
     for result <- c.as[String]
     yield LocalDate.parse(result)
 
-}
-
-implicit def LocalDateTimeDecoder: Decoder[LocalDateTime] =
-  new Decoder[LocalDateTime] {
+given LocalDateTimeDecoder: Decoder[LocalDateTime] =
+  new Decoder[LocalDateTime]:
     final def apply(c: HCursor): Decoder.Result[LocalDateTime] =
       for result <- c.as[String]
       yield LocalDateTime.parse(result)
 
-  }
-
-implicit def ZonedDateTimeDecoder: Decoder[ZonedDateTime] =
-  new Decoder[ZonedDateTime] {
+given Decoder[ZonedDateTime] =
+  new Decoder[ZonedDateTime]:
     final def apply(c: HCursor): Decoder.Result[ZonedDateTime] =
       for result <- c.as[String]
       yield ZonedDateTime.parse(result)
-
-  }
 
 @description(
   "SingleEntry: Output of a DMN Table. This returns one `DmnValueType`."
@@ -86,47 +80,46 @@ case class SingleEntry[Out <: DmnValueType: Encoder: Decoder: ClassTag](
 ):
   lazy val toCamunda: CamundaVariable = CamundaVariable.valueToCamunda(result)
   val decisionResultType: DecisionResultType = DecisionResultType.singleEntry
+end SingleEntry
+
 object SingleEntry:
-  implicit def schemaForSingleEntry[A <: DmnValueType : Encoder : Decoder](implicit
-                                                                           sa: Schema[A]
-                                                                          ): Schema[SingleEntry[A]] =
+
+  given schemaForSingleEntry[A <: DmnValueType: Encoder: Decoder: Schema]: Schema[SingleEntry[A]] =
+    val sa = summon[Schema[A]]
     Schema[SingleEntry[A]](
       SchemaType.SCoproduct(List(sa), None) { case SingleEntry(x) =>
         Some(SchemaWithValue(sa, x))
       },
-      for {
+      for
         na <- sa.name
-      } yield Schema.SName("SingleEntry", List(na.show))
+      yield Schema.SName("SingleEntry", List(na.show))
     )
+  end schemaForSingleEntry
 
-  implicit def SingleEntryCodec[T <: DmnValueType : CirceCodec : ClassTag]
-  : CirceCodec[SingleEntry[T]] =
+  given SingleEntryCodec[T <: DmnValueType: CirceCodec: ClassTag]: CirceCodec[SingleEntry[T]] =
     CirceCodec.from(SingleEntryDecoder, SingleEntryEncoder)
 
-  implicit def SingleEntryEncoder[T <: DmnValueType : Encoder]
-  : Encoder[SingleEntry[T]] = new Encoder[SingleEntry[T]] {
-    final def apply(sr: SingleEntry[T]): Json = sr.result.asJson
-  }
+  given SingleEntryEncoder[T <: DmnValueType: Encoder]: Encoder[SingleEntry[T]] =
+    new Encoder[SingleEntry[T]]:
+      final def apply(sr: SingleEntry[T]): Json = sr.result.asJson
 
-  implicit def SingleEntryDecoder[T <: DmnValueType : Encoder : Decoder : ClassTag]
-  : Decoder[SingleEntry[T]] = new Decoder[SingleEntry[T]] {
-    final def apply(c: HCursor): Decoder.Result[SingleEntry[T]] =
-      for result <- c.as[T]
+  given SingleEntryDecoder[T <: DmnValueType: Encoder: Decoder: ClassTag]: Decoder[SingleEntry[T]] =
+    new Decoder[SingleEntry[T]]:
+      final def apply(c: HCursor): Decoder.Result[SingleEntry[T]] =
+        for result <- c.as[T]
         yield SingleEntry[T](result)
-
-  }
-
 end SingleEntry
 
 @description(
   "CollectEntry: Output of a DMN Table. This returns a Sequence of `DmnValueType`s."
 )
-case class CollectEntries[Out <: DmnValueType : Encoder: Decoder: Schema](
+case class CollectEntries[Out <: DmnValueType: Encoder: Decoder: Schema](
     result: Seq[Out]
 ):
   lazy val toCamunda: Seq[CamundaVariable] =
     result.map(CamundaVariable.valueToCamunda)
   val decisionResultType: DecisionResultType = DecisionResultType.collectEntries
+end CollectEntries
 
 object CollectEntries:
   def apply[Out <: DmnValueType: Encoder: Decoder: Schema](
@@ -135,30 +128,28 @@ object CollectEntries:
   ): CollectEntries[Out] =
     new CollectEntries[Out](result +: results)
 
-  implicit def schemaForCollectEntries[A <: DmnValueType : Encoder : Decoder](
-                                                                               implicit sa: Schema[A]
-                                                                             ): Schema[CollectEntries[A]] =
+  given schemaForCollectEntries[A <: DmnValueType: Encoder: Decoder: Schema]
+      : Schema[CollectEntries[A]] =
+    val sa = summon[Schema[A]]
     Schema[CollectEntries[A]](
       SchemaType.SCoproduct(List(sa), None) { case CollectEntries(x) =>
         x.headOption.map(SchemaWithValue(sa, _))
       },
-      for {
+      for
         na <- sa.name
-      } yield Schema.SName("CollectEntries", List(na.show))
+      yield Schema.SName("CollectEntries", List(na.show))
     )
+  end schemaForCollectEntries
 
-  implicit def CollectEntriesEncoder[T <: DmnValueType : Encoder : Decoder]
-  : Encoder[CollectEntries[T]] = new Encoder[CollectEntries[T]] {
-    final def apply(sr: CollectEntries[T]): Json = sr.result.asJson
-  }
+  given CollectEntriesEncoder[T <: DmnValueType: Encoder: Decoder]: Encoder[CollectEntries[T]] =
+    new Encoder[CollectEntries[T]]:
+      final def apply(sr: CollectEntries[T]): Json = sr.result.asJson
 
-  implicit def CollectEntriesDecoder[T <: DmnValueType : Encoder : Decoder : Schema]
-  : Decoder[CollectEntries[T]] = new Decoder[CollectEntries[T]] {
+  given CollectEntriesDecoder[T <: DmnValueType: Encoder: Decoder: Schema]
+      : Decoder[CollectEntries[T]] = new Decoder[CollectEntries[T]]:
     final def apply(c: HCursor): Decoder.Result[CollectEntries[T]] =
       for result <- c.as[Seq[T]]
-        yield CollectEntries[T](result)
-
-  }
+      yield CollectEntries[T](result)
 end CollectEntries
 
 @description(
@@ -169,31 +160,30 @@ case class SingleResult[Out <: Product: Encoder: Decoder: Schema](result: Out):
   lazy val toCamunda: Map[String, CamundaVariable] =
     CamundaVariable.toCamunda(result)
   val decisionResultType: DecisionResultType = DecisionResultType.singleResult
+end SingleResult
+
 object SingleResult:
-  implicit def schemaForSingleResult[A <: Product : Encoder : Decoder](implicit
-                                                                       sa: Schema[A]
-                                                                      ): Schema[SingleResult[A]] =
+  given schemaForSingleResult[A <: Product: Encoder: Decoder: Schema]: Schema[SingleResult[A]] =
+    val sa = summon[Schema[A]]
     Schema[SingleResult[A]](
       SchemaType.SCoproduct(List(sa), None) { case SingleResult(x) =>
         Some(SchemaWithValue(sa, x))
       },
-      for {
+      for
         na <- sa.name
-      } yield Schema.SName("SingleResult", List(na.show))
+      yield Schema.SName("SingleResult", List(na.show))
     )
+  end schemaForSingleResult
 
-  implicit def SingleResultEncoder[T <: Product : Encoder : Decoder : Schema]
-  : Encoder[SingleResult[T]] = new Encoder[SingleResult[T]] {
-    final def apply(sr: SingleResult[T]): Json = sr.result.asJson
-  }
+  given SingleResultEncoder[T <: Product: Encoder: Decoder: Schema]: Encoder[SingleResult[T]] =
+    new Encoder[SingleResult[T]]:
+      final def apply(sr: SingleResult[T]): Json = sr.result.asJson
 
-  implicit def SingleResultDecoder[T <: Product : Encoder : Decoder : Schema]
-  : Decoder[SingleResult[T]] = new Decoder[SingleResult[T]] {
-    final def apply(c: HCursor): Decoder.Result[SingleResult[T]] =
-      for result <- c.as[T]
+  given SingleResultDecoder[T <: Product: Encoder: Decoder: Schema]: Decoder[SingleResult[T]] =
+    new Decoder[SingleResult[T]]:
+      final def apply(c: HCursor): Decoder.Result[SingleResult[T]] =
+        for result <- c.as[T]
         yield SingleResult[T](result)
-
-  }
 end SingleResult
 
 @description(
@@ -206,6 +196,7 @@ case class ResultList[Out <: Product: Encoder: Decoder: Schema](
   lazy val toCamunda: Seq[Map[String, CamundaVariable]] =
     result.map(CamundaVariable.toCamunda)
   val decisionResultType: DecisionResultType = DecisionResultType.resultList
+end ResultList
 
 object ResultList:
   def apply[Out <: Product: Encoder: Decoder: Schema](
@@ -214,29 +205,27 @@ object ResultList:
   ): ResultList[Out] =
     new ResultList[Out](result +: results)
 
-  implicit def schemaForResultList[A <: Product: Encoder: Decoder](implicit
-      sa: Schema[A]
-  ): Schema[ResultList[A]] =
+  given schemaForResultList[A <: Product: Encoder: Decoder: Schema]: Schema[ResultList[A]] =
+    val sa = summon[Schema[A]]
     Schema[ResultList[A]](
       SchemaType.SCoproduct(List(sa), None) { case ResultList(x) =>
         x.headOption.map(SchemaWithValue(sa, _))
       },
-      for {
+      for
         na <- sa.name
-      } yield Schema.SName("ResultList", List(na.show))
+      yield Schema.SName("ResultList", List(na.show))
     )
+  end schemaForResultList
 
-  implicit def ResultListEncoder[T <: Product: Encoder: Decoder: Schema]
-      : Encoder[ResultList[T]] = new Encoder[ResultList[T]] {
-    final def apply(sr: ResultList[T]): Json = sr.result.asJson
-  }
-  implicit def ResultListDecoder[T <: Product: Encoder: Decoder: Schema]
-      : Decoder[ResultList[T]] = new Decoder[ResultList[T]] {
-    final def apply(c: HCursor): Decoder.Result[ResultList[T]] =
-      for result <- c.as[Seq[T]]
-      yield ResultList[T](result)
+  given ResultListEncoder[T <: Product: Encoder: Decoder: Schema]: Encoder[ResultList[T]] =
+    new Encoder[ResultList[T]]:
+      final def apply(sr: ResultList[T]): Json = sr.result.asJson
 
-  }
+  given ResultListDecoder[T <: Product: Encoder: Decoder: Schema]: Decoder[ResultList[T]] =
+    new Decoder[ResultList[T]]:
+      final def apply(c: HCursor): Decoder.Result[ResultList[T]] =
+        for result <- c.as[Seq[T]]
+        yield ResultList[T](result)
 end ResultList
 
 object DecisionDmn:
@@ -245,6 +234,7 @@ object DecisionDmn:
     DecisionDmn(
       InOutDescr(id, NoInput(), SingleEntry("INIT ONLY"))
     )
+end DecisionDmn
 
 @description(
   "A wrapper, to indicate if an Input is a Variable."
@@ -252,32 +242,28 @@ object DecisionDmn:
 case class DmnVariable[In <: DmnValueType: ClassTag](
     value: In
 )
+object DmnVariable:
+  given schemaForDmnVariable[A <: DmnValueType: Schema]: Schema[DmnVariable[A]] =
+    val sa = summon[Schema[A]]
+    Schema[DmnVariable[A]](
+      SchemaType.SCoproduct(List(sa), None) { case DmnVariable(x) =>
+        Some(SchemaWithValue(sa, x))
+      },
+      for
+        na <- sa.name
+      yield Schema.SName("DmnVariable", List(na.show))
+    )
+  end schemaForDmnVariable
 
-
-implicit def schemaForDmnVariable[A <: DmnValueType](implicit
-                                                                   sa: Schema[A]
-                                                                  ): Schema[DmnVariable[A]] =
-  Schema[DmnVariable[A]](
-    SchemaType.SCoproduct(List(sa), None) { case DmnVariable(x) =>
-      Some(SchemaWithValue(sa, x))
-    },
-    for {
-      na <- sa.name
-    } yield Schema.SName("DmnVariable", List(na.show))
-  )
-
-implicit def DmnVariableEncoder[T <: DmnValueType: Encoder: ClassTag]
-: Encoder[DmnVariable[T]] = new Encoder[DmnVariable[T]] {
-  final def apply(sr: DmnVariable[T]): Json = sr.value.asJson
-}
-implicit def DmnVariableDecoder[T <: DmnValueType: Decoder: ClassTag]
-: Decoder[DmnVariable[T]] = new Decoder[DmnVariable[T]] {
-  final def apply(c: HCursor): Decoder.Result[DmnVariable[T]] =
-    for value <- c.as[T]
-      yield DmnVariable[T](value)
-
-}
-
+  given DmnVariableEncoder[T <: DmnValueType: Encoder: ClassTag]: Encoder[DmnVariable[T]] =
+    new Encoder[DmnVariable[T]]:
+      final def apply(sr: DmnVariable[T]): Json = sr.value.asJson
+  given DmnVariableDecoder[T <: DmnValueType: Decoder: ClassTag]: Decoder[DmnVariable[T]] =
+    new Decoder[DmnVariable[T]]:
+      final def apply(c: HCursor): Decoder.Result[DmnVariable[T]] =
+        for value <- c.as[T]
+        yield DmnVariable[T](value)
+end DmnVariable
 
 extension (output: Product)
 
@@ -294,7 +280,7 @@ extension (output: Product)
         case _: Iterable[?] => false
         case p: Product =>
           p.productIterator.size > 1 &&
-            p.productIterator.forall(_.isInstanceOf[DmnValueType])
+          p.productIterator.forall(_.isInstanceOf[DmnValueType])
         case _ => false
       )
 
@@ -315,7 +301,7 @@ extension (output: Product)
           p.headOption match
             case Some(p: Product) =>
               p.productIterator.size > 1 &&
-                p.productIterator.forall(_.isInstanceOf[DmnValueType])
+              p.productIterator.forall(_.isInstanceOf[DmnValueType])
             case o => false
         case o => false
       )

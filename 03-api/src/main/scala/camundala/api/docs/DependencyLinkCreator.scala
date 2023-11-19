@@ -1,7 +1,7 @@
 package camundala.api
 package docs
 
-case class DependencyLinkCreator()(implicit
+case class DependencyLinkCreator()(using
                                    val apiConfig: ApiConfig,
                                    val configs: Seq[ApiProjectConf],
 ) extends DependencyCreator {

@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter
 trait CompanyDocCreator extends DependencyCreator:
 
   protected def gitBasePath: os.Path = apiConfig.projectsConfig.gitDir
-  protected implicit lazy val configs: Seq[ApiProjectConf] = setupDependencies()
+  protected given configs: Seq[ApiProjectConf] = setupDependencies()
   lazy val projectConfigs: Seq[ProjectConfig] =
     apiConfig.projectsConfig.projectConfigs
 
@@ -90,8 +90,8 @@ trait CompanyDocCreator extends DependencyCreator:
   end createDynamicConf
 
   private def createReleasePage(): Unit = {
-    implicit val configs: Seq[ApiProjectConf] = setupDependencies()
-    implicit val releaseC: ReleaseConfig = releaseConfig
+    given configs: Seq[ApiProjectConf] = setupDependencies()
+    given releaseC: ReleaseConfig = releaseConfig
     DependencyValidator().validateDependencies
     val indexGraph = DependencyGraphCreator().createIndex
     DependencyLinkCreator().createIndex(indexGraph)
@@ -196,7 +196,7 @@ trait CompanyDocCreator extends DependencyCreator:
         .mkString("\n")
   }
 
-  private def setupReleaseNotes(implicit configs: Seq[ApiProjectConf]) = {
+  private def setupReleaseNotes(using configs: Seq[ApiProjectConf]) = {
     val projectChangelogs = configs
       .filter(_.isNew) // take only the new ones
       .sortBy(_.name)

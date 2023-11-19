@@ -5,8 +5,6 @@ import camundala.bpmn.*
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 
-import scala.language.implicitConversions
-
 trait WorkerDsl:
 
   protected def engineContext: EngineContext

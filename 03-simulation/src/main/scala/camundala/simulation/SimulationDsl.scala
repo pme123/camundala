@@ -4,8 +4,6 @@ package simulation
 import camundala.bpmn.*
 import camundala.domain.{MockedServiceResponse, Optable}
 
-import scala.language.implicitConversions
-
 trait SimulationDsl[T] extends TestOverrideExtensions:
 
   protected def run(sim: SSimulation): T
@@ -109,34 +107,37 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
   ): SSubProcess =
     SSubProcess(nameOfVariable(process), process, body.toList)
 
-  implicit inline def toScenario(
-      inline process: Process[?, ?]
-  ): ProcessScenario =
-    ProcessScenario(nameOfVariable(process), process)
+  inline given Conversion[Process[?, ?], ProcessScenario] with
+    inline def apply(process: Process[?, ?]): ProcessScenario =
+      ProcessScenario(nameOfVariable(process), process)
 
-  implicit inline def toScenario(
-      inline task: ServiceTask[?, ?, ?]
-  ): ExternalTaskScenario =
-    ExternalTaskScenario(nameOfVariable(task), task)
+  inline given Conversion[ServiceTask[?, ?, ?], ExternalTaskScenario] with
+    inline def apply(task: ServiceTask[?, ?, ? ]): ExternalTaskScenario =
+      ExternalTaskScenario(nameOfVariable(task), task)
 
-  implicit inline def toScenario(
-      inline task: CustomTask[?, ?]
-  ): ExternalTaskScenario =
-    ExternalTaskScenario(nameOfVariable(task), task)
+  inline given Conversion[CustomTask[?, ?], ExternalTaskScenario] with
+    inline def apply(task: CustomTask[?, ? ]): ExternalTaskScenario =
+      ExternalTaskScenario(nameOfVariable(task), task)
 
-  implicit inline def toScenario(
-      inline decisionDmn: DecisionDmn[?, ?]
-  ): DmnScenario =
-    DmnScenario(nameOfVariable(decisionDmn), decisionDmn)
+  inline given Conversion[DecisionDmn[?, ?], DmnScenario] with
+    inline def apply(task: DecisionDmn[?, ? ]): DmnScenario =
+      DmnScenario(nameOfVariable(task), task)
 
-  implicit inline def toStep(inline inOut: UserTask[?, ?]): SUserTask =
-    SUserTask(nameOfVariable(inOut), inOut)
-  implicit inline def toStep(inline inOut: MessageEvent[?]): SMessageEvent =
-    SMessageEvent(nameOfVariable(inOut), inOut)
-  implicit inline def toStep(inline inOut: SignalEvent[?]): SSignalEvent =
-    SSignalEvent(nameOfVariable(inOut), inOut)
-  implicit inline def toStep(inline inOut: TimerEvent): STimerEvent =
-    STimerEvent(nameOfVariable(inOut), inOut)
+  inline given Conversion[UserTask[?, ?], SUserTask] with
+    inline def apply(task: UserTask[?, ? ]): SUserTask =
+      SUserTask(nameOfVariable(task), task)
+
+  inline given Conversion[MessageEvent[?], SMessageEvent] with
+    inline def apply(event: MessageEvent[? ]): SMessageEvent =
+      SMessageEvent(nameOfVariable(event), event)
+
+  inline given Conversion[SignalEvent[?], SSignalEvent] with
+    inline def apply(event: SignalEvent[? ]): SSignalEvent =
+      SSignalEvent(nameOfVariable(event), event)
+
+  inline given Conversion[TimerEvent, STimerEvent] with
+    inline def apply(event: TimerEvent): STimerEvent =
+      STimerEvent(nameOfVariable(event), event)
 
   extension (event: MessageEvent[?])
     def waitFor(readyVariable: String): SMessageEvent =

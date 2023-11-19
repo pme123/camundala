@@ -4,7 +4,7 @@ import camundala.bpmn.*
 import camundala.domain.*
 
 object TwitterApi extends BpmnDsl:
-  implicit def tenantId: Option[String] = Some("{{tenantId}}")
+  given tenantId: Option[String] = Some("{{tenantId}}")
 
   val twitterDemoProcess =
     val processId = "TwitterDemoP"

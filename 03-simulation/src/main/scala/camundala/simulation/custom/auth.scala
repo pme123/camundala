@@ -20,7 +20,7 @@ trait OAuthSimulationDsl extends CustomSimulation:
 
   def fsso: Fsso
 
-  override implicit def config
+  override given config
       : SimulationConfig[RequestT[Empty, Either[String, String], Any]] =
     super.config
       .withAuthHeader((r: RequestT[Empty, Either[String, String], Any]) => {

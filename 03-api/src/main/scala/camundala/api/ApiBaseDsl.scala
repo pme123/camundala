@@ -55,7 +55,7 @@ trait ApiBaseDsl:
     T <: DecisionDmnApi[In, Out]
   ] (decApi: T)
 
-    def withDiagramName(diagramName: String) = decApi.copy(diagramName = Some(diagramName))
+    def withDiagramName(diagramName: String): DecisionDmnApi[In, Out] = decApi.copy(diagramName = Some(diagramName))
   end extension
 
   extension[
@@ -64,6 +64,6 @@ trait ApiBaseDsl:
     T <: ProcessApi[In, Out]
   ] (processApi: T)
 
-    def withDiagramName(diagramName: String) = processApi.copy(diagramName = Some(diagramName))
+    def withDiagramName(diagramName: String): ProcessApi[In, Out] = processApi.copy(diagramName = Some(diagramName))
   end extension
 end ApiBaseDsl

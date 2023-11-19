@@ -2,8 +2,6 @@ package camundala
 package bpmn
 
 import camundala.domain.*
-
-import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
 trait BpmnDsl:
@@ -94,10 +92,8 @@ trait BpmnDsl:
     )*/
     dmn(decisionDefinitionKey, in, out, descr.value)
 
-  implicit def toCollectEntries[Out <: DmnValueType: Encoder: Decoder: Schema](
-      out: Seq[Out]
-  ): CollectEntries[Out] =
-    CollectEntries(out)
+  given toCollectEntries[Out <: DmnValueType: Encoder: Decoder: Schema]: Conversion[Seq[Out], CollectEntries[Out]] =
+    CollectEntries(_)
 
   def singleResult[
       In <: Product: Encoder: Decoder: Schema,

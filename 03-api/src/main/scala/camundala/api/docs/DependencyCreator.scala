@@ -3,15 +3,15 @@ package docs
 
 trait DependencyCreator :
 
-  protected implicit def apiConfig: ApiConfig
-  protected implicit def configs: Seq[ApiProjectConf]
-  protected implicit def releaseConfig: ReleaseConfig = readReleaseConfig
+  protected given apiConfig: ApiConfig
+  protected given configs: Seq[ApiProjectConf]
+  protected given releaseConfig: ReleaseConfig = readReleaseConfig
   
 
   case class Package(name: String, minorVersion: String) {
     lazy val show = s"$name:$minorVersion"
     lazy val showRect = s"$name:$minorVersion($name:$minorVersion)"
-    lazy val versionNumber = minorVersion.replace(".", "").toInt
+    lazy val versionNumber: Int = minorVersion.replace(".", "").toInt
   }
 
   object Package {
@@ -19,8 +19,8 @@ trait DependencyCreator :
       Package(conf.name, conf.minorVersion)
   }
 
-  lazy val colors = apiConfig.projectsConfig.colors
-  lazy val colorMap = colors.toMap
+  lazy val colors: Seq[(String, String)] = apiConfig.projectsConfig.colors
+  lazy val colorMap: Map[String, String] = colors.toMap
 
   protected def printGraph(dependencyGraph: String): String =
     s"""

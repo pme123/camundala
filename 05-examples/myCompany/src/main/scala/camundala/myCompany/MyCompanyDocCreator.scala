@@ -9,7 +9,7 @@ For now only the catalog is created.
 exampleMyCompany/run
  */
 object MyCompanyDocCreator extends CompanyDocCreator, App:
-  implicit lazy val apiConfig: ApiConfig = myCompanyConfig
+  given apiConfig: ApiConfig = myCompanyConfig
   protected def upload(releaseTag: String): Unit =
     println("Uploaded to Web Server")
 

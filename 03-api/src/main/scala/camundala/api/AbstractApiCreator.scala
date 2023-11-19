@@ -8,7 +8,7 @@ trait AbstractApiCreator extends ProcessReferenceCreator:
 
   protected def apiConfig: ApiConfig = ApiConfig()
 
-  protected implicit def tenantId: Option[String] = apiConfig.tenantId
+  protected given tenantId: Option[String] = apiConfig.tenantId
 
   protected def basePath: os.Path = apiConfig.basePath
 

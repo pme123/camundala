@@ -5,7 +5,7 @@ import camundala.bpmn.*
 import camundala.domain.*
 
 object TwitterApi extends BpmnDsl:
-  implicit def tenantId: Option[String] = Some("{{tenantId}}")
+  given tenantId: Option[String] = Some("{{tenantId}}")
 
   @description("""Every employee may create a Tweet.
                  |

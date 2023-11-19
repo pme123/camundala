@@ -5,7 +5,7 @@ import camundala.bpmn.*
 import pme123.camunda.dmn.tester.shared.*
 
 import java.time.LocalDateTime
-import scala.language.{implicitConversions, reflectiveCalls}
+import scala.language.reflectiveCalls
 import scala.reflect.ClassTag
 
 trait DmnTesterConfigCreator extends DmnConfigWriter:
@@ -21,10 +21,10 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
     dmnConfigs(dmnTesterObjects)
       .foreach(updateConfig(_, dmnConfigPath))
     println("Check it on http://localhost:8883")
+  end createDmnConfigs
 
-  given [In <: Product]: Conversion[DecisionDmn[In, _], DmnTesterObject[In]]
-    with
-    def apply(decisionDmn: DecisionDmn[In, _]): DmnTesterObject[In] =
+  given [In <: Product]: Conversion[DecisionDmn[In, _], DmnTesterObject[In]] =
+    decisionDmn =>
       DmnTesterObject(
         decisionDmn,
         defaultDmnPath(decisionDmn.decisionDefinitionKey)
@@ -56,8 +56,9 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
   ) =
     product.productElementNames
       .zip(product.productIterator)
-      .collect { case (k, v) if !v.isInstanceOf[DmnVariable[?]] =>
-        testValues(k, v, dmnTO.addTestValues)
+      .collect {
+        case (k, v) if !v.isInstanceOf[DmnVariable[?]] =>
+          testValues(k, v, dmnTO.addTestValues)
       }
       .toList
 
@@ -73,7 +74,7 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
     val isNullable = value match
       case Some(_) => true
       case _ => false
-    //noinspection ScalaUnnecessaryParentheses
+    // noinspection ScalaUnnecessaryParentheses
     unwrapValue match
       case v: (Double | Int | Long | Short | String | Float) =>
         TesterInput(
@@ -99,9 +100,11 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
         throw new IllegalArgumentException(
           s"Not supported for DMN Input ($k -> $v)"
         )
+    end match
+  end testValues
 
   private def toVariables[T <: Product](
-      product: T,
+      product: T
   ) =
     product.productElementNames
       .zip(product.productIterator)
@@ -112,7 +115,7 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
       .toList
 
   case class DmnTesterObject[In <: Product](
-      dDmn: DecisionDmn[In, _],
+      dDmn: DecisionDmn[In, ?],
       dmnPath: os.Path,
       addTestValues: Map[String, List[TesterValue]] = Map.empty,
       _testUnit: Boolean = false,
@@ -143,11 +146,16 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
     def acceptMissingRules: DmnTesterObject[In] =
       dmnTO.copy(_acceptMissingRules = true)
 
-    inline def testValues(inline key: In => DmnValueType | Option[DmnValueType], values: Any*): DmnTesterObject[In] =
+    inline def testValues(
+        inline key: In => DmnValueType | Option[DmnValueType],
+        values: Any*
+    ): DmnTesterObject[In] =
       val testerValues = values
         .map(v => toTesterValue(v.toString))
         .toList
       dmnTO.copy(addTestValues =
         dmnTO.addTestValues + (nameOfVariable(key) -> testerValues)
       )
+    end testValues
+  end extension
 end DmnTesterConfigCreator

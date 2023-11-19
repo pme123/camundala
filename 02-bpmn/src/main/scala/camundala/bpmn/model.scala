@@ -4,7 +4,6 @@ package bpmn
 import camundala.domain.*
 
 import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
-import scala.language.implicitConversions
 
 case class InOutDescr[
     In <: Product: Encoder: Decoder: Schema,

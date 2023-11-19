@@ -1,6 +1,6 @@
 package camundala.camunda
 
-import camundala.bpmn.*
+import camundala.bpmn.{*, given}
 import camundala.domain.*
 
 import io.circe.generic.auto.*

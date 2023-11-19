@@ -2,7 +2,6 @@ package camundala.simulation
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import scala.language.implicitConversions
 
 trait Logging {
 
@@ -11,7 +10,7 @@ trait Logging {
   def warn(msg: String): LogEntry = LogEntry(LogLevel.WARN, msg)
   def error(msg: String): LogEntry = LogEntry(LogLevel.ERROR, msg)
 
-  implicit def toLogSeq(logEntry: LogEntry): Seq[LogEntry] = Seq(logEntry)
+  given Conversion[LogEntry, Seq[LogEntry]] = Seq(_)
 
   extension (logs: Seq[LogEntry])
     def maxLevel: LogLevel =

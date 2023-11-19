@@ -15,31 +15,31 @@ case class CreateProcessInstanceIn[In, Out <: Product](
 ):
   def syncProcess(fetchVariables: Class[Out]): CreateProcessInstanceIn[In, Out] =
     copy(fetchVariables = Some(fetchVariables))
+end CreateProcessInstanceIn
 
-implicit def CreateProcessInstanceInDec[In: Decoder, Out <: Product: Decoder]
-    : Decoder[CreateProcessInstanceIn[In, Out]] =
-  deriveDecoder[CreateProcessInstanceIn[In, Out]]
+object CreateProcessInstanceIn:
+  given [In: Decoder, Out <: Product: Decoder]: Decoder[CreateProcessInstanceIn[In, Out]] =
+    deriveDecoder[CreateProcessInstanceIn[In, Out]]
 
-implicit def ClassDec[T <: Product: Decoder]: Decoder[Class[T]] =
-  new Decoder[Class[T]] {
-    final def apply(c: HCursor): Decoder.Result[Class[T]] =
-      for className <- c.as[String]
-      yield Class.forName(className).asInstanceOf[Class[T]]
-  }
+  given [T <: Product: Decoder]: Decoder[Class[T]] =
+    new Decoder[Class[T]]:
+      final def apply(c: HCursor): Decoder.Result[Class[T]] =
+        for className <- c.as[String]
+        yield Class.forName(className).asInstanceOf[Class[T]]
+end CreateProcessInstanceIn
 
 case class CreateProcessInstanceOut[Out <: Product](
-  processDefinitionKey: Long,
-  bpmnProcessId: String,
-  version: Int,
-  processInstanceKey: Long,
-  variables: Out
+    processDefinitionKey: Long,
+    bpmnProcessId: String,
+    version: Int,
+    processInstanceKey: Long,
+    variables: Out
 )
 
 object CreateProcessInstanceOut:
-  implicit def CreateProcessInstanceOutDec[Out <: Product: Decoder]
-  : Decoder[CreateProcessInstanceOut[Out]] =
+  given [Out <: Product: Decoder]: Decoder[CreateProcessInstanceOut[Out]] =
     deriveDecoder[CreateProcessInstanceOut[Out]]
 
-  implicit def CreateProcessInstanceOutEnc[Out <: Product: Encoder]
-  : Encoder[CreateProcessInstanceOut[Out]] =
+  given [Out <: Product: Encoder]: Encoder[CreateProcessInstanceOut[Out]] =
     deriveEncoder[CreateProcessInstanceOut[Out]]
+end CreateProcessInstanceOut

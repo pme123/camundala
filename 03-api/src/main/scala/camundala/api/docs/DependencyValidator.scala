@@ -1,7 +1,7 @@
 package camundala.api
 package docs
 
-case class DependencyValidator()(implicit
+case class DependencyValidator()(using
                                  val apiConfig: ApiConfig,
                                  val configs: Seq[ApiProjectConf],
 ) extends DependencyCreator:

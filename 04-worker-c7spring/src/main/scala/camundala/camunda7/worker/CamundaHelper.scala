@@ -1,15 +1,13 @@
 package camundala
 package camunda7.worker
 
-import camundala.bpmn.*
+import camundala.bpmn.{*, given}
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
 import io.circe.Decoder.Result
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.engine.variable.`type`.{PrimitiveValueType, ValueType}
 import org.camunda.bpm.engine.variable.value.TypedValue
-
-import scala.language.implicitConversions
 
 object CamundaHelper:
 

@@ -4,8 +4,6 @@ package camunda
 import camundala.bpmn.*
 import camundala.domain.*
 
-import scala.language.implicitConversions
-
 case class Bpmn(path: Path, processes: BpmnProcess*)
 
 case class BpmnProcess(
@@ -24,7 +22,7 @@ case class BpmnProcess(
     })
 
 object BpmnProcess:
-  implicit def elem(inOut: InOut[?,?, ?]): BpmnInOut[?,?] = BpmnInOut(inOut)
+  given Conversion[InOut[?,?, ?], BpmnInOut[?,?]] = BpmnInOut(_)
 
 case class BpmnInOut[
   In <: Product,
