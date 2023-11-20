@@ -15,6 +15,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.24.1 - 2023-11-20
+### Changed 
+- Fix given in auth. - see [Commit](https://github.com/pme123/camundala/commit/ccee0d34b90ac2ac3f1ac99f2081199ddff58b00)
+- Refactoring: removed implicits as much as possible. - see [Commit](https://github.com/pme123/camundala/commit/ffb3e07fca8491e39ff16beebac46527355faefb)
+- cleanup root level - see [Commit](https://github.com/pme123/camundala/commit/5cf2b138434200f284e3ee2cf3f7eebf0e72cbef)
+- fix of documentation in ci - see [Commit](https://github.com/pme123/camundala/commit/b129fc5c12541cc69d16dc242e6d0ad6b9b98f38)
+
 ## 1.24.0 - 2023-11-18
 ### Changed 
 - Cleanup Dependency versions. - see [Commit](https://github.com/pme123/camundala/commit/ffcbb5d7c5cae947db51da58c99e3624e218d113)
