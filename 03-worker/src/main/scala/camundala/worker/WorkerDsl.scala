@@ -36,7 +36,6 @@ trait InitWorkerDsl[
       ValidateDsl[In],
       InitProcessDsl[In]:
 
-
   lazy val worker: InitWorker[In, Out] = InitWorker(inOut)
     .validate(ValidationHandler(validate))
     .initProcess(InitProcessHandler(initProcess))
@@ -93,10 +92,11 @@ trait ServiceWorkerDsl[
   protected def queryParamKeys: Seq[String | (String, String)] = Seq.empty
   // mocking out from outService and headers
   protected def inputMapper(in: In): Option[ServiceIn] = None
-  protected def inputHeaders(in: In):Map[String, String] = Map.empty
+  protected def inputHeaders(in: In): Map[String, String] = Map.empty
   protected def outputMapper(
-                              serviceOut: ServiceResponse[ServiceOut]
-  ): Either[ServiceMappingError, Out] = defaultOutMapper(serviceOut)
+      serviceOut: ServiceResponse[ServiceOut],
+      in: In
+  ): Either[ServiceMappingError, Out] = defaultOutMapper(serviceOut, in)
 
   /** Run the Work is done by the handler. If you want a different behavior, you need to use the
     * CustomWorkerDsl
@@ -105,7 +105,10 @@ trait ServiceWorkerDsl[
       inputObject: In
   ): Either[CustomError, Out] = Right(serviceTask.out)
 
-  private def defaultOutMapper(serviceResponse: ServiceResponse[ServiceOut]): Either[ServiceMappingError, Out] =
+  private def defaultOutMapper(
+      serviceResponse: ServiceResponse[ServiceOut],
+      in: In
+  ): Either[ServiceMappingError, Out] =
     serviceResponse.outputBody match
       case _: NoOutput => Right(serviceTask.out)
       case _ =>

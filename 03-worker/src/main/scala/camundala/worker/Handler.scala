@@ -101,7 +101,7 @@ case class ServiceHandler[
     queryParamKeys: Seq[String | (String, String)],
     inputMapper: In => Option[ServiceIn],
     inputHeaders: In => Map[String, String],
-    outputMapper: ServiceResponse[ServiceOut] => Either[ServiceMappingError, Out],
+    outputMapper: (ServiceResponse[ServiceOut], In) => Either[ServiceMappingError, Out],
     defaultServiceOutMock: MockedServiceResponse[ServiceOut]
 ) extends RunWorkHandler[In, Out]:
 
@@ -110,11 +110,11 @@ case class ServiceHandler[
   ): RunnerOutput =
     val rRequest = runnableRequest(inputObject)
     for {
-      optWithServiceMock <- withServiceMock(rRequest)
+      optWithServiceMock <- withServiceMock(rRequest, inputObject)
       output <- handleMocking(optWithServiceMock, rRequest).getOrElse(
         summon[EngineRunContext]
-          .sendRequest(rRequest)
-          .flatMap(outputMapper)
+          .sendRequest[ServiceIn, ServiceOut](rRequest)
+          .flatMap(out => outputMapper(out, inputObject))
       )
     } yield output
 
@@ -128,7 +128,8 @@ case class ServiceHandler[
     RunnableRequest(httpMethod, uri, qParams, body, headers)
 
   private def withServiceMock(
-      runnableRequest: RunnableRequest[ServiceIn]
+      runnableRequest: RunnableRequest[ServiceIn],
+      in: In
   )(using context: EngineRunContext): Either[ServiceError, Option[Out]] =
     (
       context.generalVariables.defaultMocked,
@@ -137,11 +138,11 @@ case class ServiceHandler[
       case (_, Some(json)) =>
         (for {
           mockedResponse <- decodeMock[MockedServiceResponse[ServiceOut]](json)
-          out <- handleServiceMock(mockedResponse, runnableRequest)
+          out <- handleServiceMock(mockedResponse, runnableRequest, in)
         } yield out)
           .map(Some.apply)
       case (true, _) =>
-        handleServiceMock(defaultServiceOutMock, runnableRequest)
+        handleServiceMock(defaultServiceOutMock, runnableRequest, in)
           .map(Some.apply)
       case _ =>
         Right(None)
@@ -174,11 +175,12 @@ case class ServiceHandler[
 
   private def handleServiceMock(
       mockedResponse: MockedServiceResponse[ServiceOut],
-      runnableRequest: RunnableRequest[ServiceIn]
+      runnableRequest: RunnableRequest[ServiceIn],
+      in: In
   ): Either[ServiceError, Out] =
     mockedResponse match {
       case MockedServiceResponse(_, Right(body), headers) =>
-        mapBodyOutput(body, headers)
+        mapBodyOutput(body, headers, in)
       case MockedServiceResponse(status, Left(body), _) =>
         Left(
           ServiceRequestError(
@@ -194,7 +196,8 @@ case class ServiceHandler[
 
   def mapBodyOutput(
       serviceOutput: ServiceOut,
-      headers: Seq[Seq[String]]
+      headers: Seq[Seq[String]],
+      in: In
   ) =
     outputMapper(
       ServiceResponse(
@@ -204,7 +207,8 @@ case class ServiceHandler[
           .map(_.toList)
           .collect { case key :: value :: _ => key -> value }
           .toMap
-      )
+      ),
+      in
     )
 
   val defaultsMap = queryParamKeys.map {

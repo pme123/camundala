@@ -26,7 +26,7 @@ sealed trait Worker[
   // helper
   def variableNames: Seq[String] = in.productElementNames.toSeq
 
-  def defaultMock(using
+  def defaultMock(in: In)(using
                   context: EngineRunContext
                  ): MockerError | MockedOutput =
     MockedOutput(
@@ -112,10 +112,10 @@ case class ServiceWorker[
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     copy(runWorkHandler = Some(handler))
 
-  override def defaultMock(using
-      context: EngineRunContext
+  override def defaultMock(in: In)(using
+      context: EngineRunContext,
   ): MockerError | MockedOutput =
-    val mocked: Option[MockerError | MockedOutput] = // needed for Uniion Type
+    val mocked: Option[MockerError | MockedOutput] = // needed for Union Type
       runWorkHandler
       .map(handler =>
         handler
@@ -123,7 +123,8 @@ case class ServiceWorker[
             ServiceResponse(
               inOut.defaultServiceOutMock.unsafeBody,
               inOut.defaultServiceOutMock.headersAsMap
-            )
+            ),
+            in
           ) match
           case Right(out) => MockedOutput(context.toEngineObject(out))
           case Left(err) => MockerError(errorMsg = err.causeMsg)

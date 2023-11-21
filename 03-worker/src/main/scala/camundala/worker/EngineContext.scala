@@ -10,7 +10,7 @@ trait EngineContext:
   def getLogger(clazz: Class[?]): WorkerLogger
   def toEngineObject: Json => Any
 
-  def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
+  def sendRequest[ServiceIn <: Product: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
   ): Either[ServiceError, ServiceResponse[ServiceOut]]
 
@@ -25,7 +25,7 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
 
   def getLogger(clazz: Class[?]): WorkerLogger = engineContext.getLogger(clazz)
 
-  def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
+  def sendRequest[ServiceIn <: Product : Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
   ): Either[ServiceError, ServiceResponse[ServiceOut]] =
     engineContext.sendRequest(request)

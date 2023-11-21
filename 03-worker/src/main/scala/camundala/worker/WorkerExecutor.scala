@@ -18,7 +18,7 @@ case class WorkerExecutor[
     for {
       validatedInput <- InputValidator.validate(processVariables)
       initializedOutput <- Initializer.initVariables(validatedInput)
-      _ <- OutMocker.mockOrProceed()
+      _ <- OutMocker.mockOrProceed(validatedInput)
       output <- WorkRunner.run(validatedInput)
       allOutputs = camundaOutputs(validatedInput, initializedOutput, output)
       filteredOut = filteredOutput(allOutputs)
@@ -76,7 +76,7 @@ case class WorkerExecutor[
 
   object OutMocker:
 
-    def mockOrProceed(): Either[MockerError | MockedOutput, Option[Out]] =
+    def mockOrProceed(in: In): Either[MockerError | MockedOutput, Option[Out]] =
       (
         context.generalVariables.defaultMocked,
         context.generalVariables.isMockedSubprocess(worker.topic),
@@ -86,10 +86,10 @@ case class WorkerExecutor[
         case (_, _, Some(outputMock), _) => // if the outputMock is set than we mock
           Left(decodeMock(outputMock))
         case (_, true, _, None) => // if your process is a SubProcess check if it is mocked
-          Left(worker.defaultMock)
+          Left(worker.defaultMock(in))
         case (true, _, _, None)
             if defaultMocksAllowed => // if your process is a ExternalTask check if it is mocked
-          Left(worker.defaultMock)
+          Left(worker.defaultMock(in))
         case (_, _, None, _) =>
           Right(None)
     end mockOrProceed

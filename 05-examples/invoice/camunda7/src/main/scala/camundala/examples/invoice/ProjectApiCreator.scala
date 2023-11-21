@@ -29,7 +29,7 @@ object ProjectApiCreator extends DefaultApiCreator:
       ReviewInvoiceUT
     ),
     group("Workers")(
-      StarWarsRestApi.example,
+      StarWarsPeopleDetail.example,
       api(ArchiveInvoice.example)
     ),
     group("User Tasks")(

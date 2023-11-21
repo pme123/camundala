@@ -4,12 +4,12 @@ package simulation
 import camundala.bpmn.GenericExternalTask.ProcessStatus
 import camundala.bpmn.{ErrorCodes, InputParams}
 import camundala.domain.MockedServiceResponse
-import camundala.examples.invoice.StarWarsRestApi.*
+import camundala.examples.invoice.StarWarsPeopleDetail.*
 import camundala.simulation.*
 import camundala.simulation.custom.CustomSimulation
 
 // exampleInvoiceC7/It/testOnly *StarWarsApiSimulation
-class StarWarsApiSimulation extends CustomSimulation:
+class StarWarsPeopleDetailSimulation extends CustomSimulation:
 
   simulate(
     scenario(
@@ -57,19 +57,19 @@ class StarWarsApiSimulation extends CustomSimulation:
   private lazy val `Star Wars Api People Detail real failed` = example
     .withIn(In(90923))
   private lazy val `Star Wars Api People Detail defaultMock 2` =
-    StarWarsRestApi.example.mockWithDefault
+    StarWarsPeopleDetail.example.mockWithDefault
   private lazy val `Star Wars Api People Detail outputMock 2` =
-    StarWarsRestApi.example
+    StarWarsPeopleDetail.example
       .mockWith(Out.Success(People("Pascal Starrider")))
       .withOut(Out.Success(People("Pascal Starrider")))
   private lazy val `Star Wars Api People Detail outputMock handled` =
-    StarWarsRestApi.example
+    StarWarsPeopleDetail.example
       .handleError(ErrorCodes.`output-mocked`)
       .mockWith(Out.Success())
       .withOut(Out.Failure(ProcessStatus.`output-mocked`))
 
   private lazy val `Star Wars Api People Detail outputServiceMock 2` =
-    StarWarsRestApi.example
+    StarWarsPeopleDetail.example
       .mockServiceWith(
         MockedServiceResponse
           .success200(People("Peter Starrider"))
@@ -80,7 +80,7 @@ class StarWarsApiSimulation extends CustomSimulation:
   // it can not be handled - so if you want to handle mocking, you need to take outputMock:
   // - see `Star Wars Api People Detail outputMock handled`
   private lazy val `Star Wars Api People Detail outputServiceMock handled - not possible` =
-    StarWarsRestApi.example
+    StarWarsPeopleDetail.example
       .handleError(ErrorCodes.`output-mocked`)
       .mockServiceWith(
         MockedServiceResponse
@@ -90,25 +90,25 @@ class StarWarsApiSimulation extends CustomSimulation:
       .withOut(Out.Success(People("Peter Starrider")))
 
   private lazy val `Star Wars Api People Detail validation-failed handled` =
-    StarWarsRestApi.example
+    StarWarsPeopleDetail.example
       .handleError(ErrorCodes.`validation-failed`)
       .withIn(In(-12))
       .withOut(Out.Failure(ProcessStatus.`validation-failed`))
 
   private lazy val `Star Wars Api People Detail outputServiceMock failure` =
-    StarWarsRestApi.example.mockWithDefault
+    StarWarsPeopleDetail.example.mockWithDefault
       .mockServiceWith(MockedServiceResponse.error(404, Json.fromString("People Not found")))
 
   private lazy val `Star Wars Api People Detail outputServiceMock handled 404` =
-    StarWarsRestApi.example
+    StarWarsPeopleDetail.example
       .handleError(404)
       .withOut(Out.Failure())
       .mockServiceWith(MockedServiceResponse.error(404))
 
   private lazy val `Star Wars Api People Detail outputServiceMock handled 400` =
-    StarWarsRestApi.example
+    StarWarsPeopleDetail.example
       .handleError(400)
       .withOut(Out.Failure(ProcessStatus.`400`))
       .mockServiceWith(MockedServiceResponse.error(400))
 
-end StarWarsApiSimulation
+end StarWarsPeopleDetailSimulation
