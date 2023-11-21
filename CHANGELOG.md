@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.25.0 - 2023-11-21
+### Changed 
+- Added In to outputMapper in ServiceTask to filter the output. - see [Commit](https://github.com/pme123/camundala/commit/542ba9f16d45145d3e5d636fa719c126e0cedd02)
+
 ## 1.24.1 - 2023-11-20
 ### Changed 
 - Fix given in auth. - see [Commit](https://github.com/pme123/camundala/commit/ccee0d34b90ac2ac3f1ac99f2081199ddff58b00)
