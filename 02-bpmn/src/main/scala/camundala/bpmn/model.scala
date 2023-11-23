@@ -62,12 +62,14 @@ trait InOut[
   // this allows you to manipulate the existing out directly
   def withOut(outFunct: Out => Out): T =
     withInOutDescr(inOutDescr.copy(out = outFunct(out)))
+end InOut
 
 trait ProcessElement extends Product:
   def id: String
   def typeName: String = getClass.getSimpleName
   def label: String = typeName.head.toString.toLowerCase + typeName.tail
   def descr: Option[String]
+end ProcessElement
 
 trait ProcessNode extends ProcessElement
 
@@ -110,6 +112,7 @@ sealed trait ProcessOrExternalTask[
       )
     }.toMap
     super.camundaInMap ++ camundaImpersonateUserId ++ camundaOutputMock + camundaServicesMocked + camundaOutputVariables
+  end camundaInMap
 end ProcessOrExternalTask
 
 case class Process[
@@ -287,11 +290,11 @@ case class ServiceTask[
 
   override def camundaInMap: Map[String, CamundaVariable] =
     val camundaOutputServiceMock = outputServiceMock
-      .map(m => {
+      .map(m =>
         InputParams.outputServiceMock.toString -> CamundaVariable.valueToCamunda(
           m.asJson
         )
-      })
+      )
       .toMap
     super.camundaInMap ++ camundaOutputServiceMock
   end camundaInMap
@@ -359,6 +362,7 @@ case class UserTask[
 
   def withInOutDescr(descr: InOutDescr[In, Out]): UserTask[In, Out] =
     copy(inOutDescr = descr)
+end UserTask
 
 object UserTask:
 
@@ -383,6 +387,7 @@ case class MessageEvent[
 
   def withInOutDescr(descr: InOutDescr[In, NoOutput]): MessageEvent[In] =
     copy(inOutDescr = descr)
+end MessageEvent
 
 object MessageEvent:
 
@@ -402,6 +407,7 @@ case class SignalEvent[
 
   def withInOutDescr(descr: InOutDescr[In, NoOutput]): SignalEvent[In] =
     copy(inOutDescr = descr)
+end SignalEvent
 
 object SignalEvent:
 
@@ -419,6 +425,7 @@ case class TimerEvent(
 
   def withInOutDescr(descr: InOutDescr[NoInput, NoOutput]): TimerEvent =
     copy(inOutDescr = descr)
+end TimerEvent
 
 object TimerEvent:
 

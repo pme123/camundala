@@ -13,6 +13,7 @@ trait EngineContext:
   def sendRequest[ServiceIn <: Product: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
   ): Either[ServiceError, ServiceResponse[ServiceOut]]
+end EngineContext
 
 trait WorkerLogger:
   def debug(message: String): Unit
@@ -25,7 +26,7 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
 
   def getLogger(clazz: Class[?]): WorkerLogger = engineContext.getLogger(clazz)
 
-  def sendRequest[ServiceIn <: Product : Encoder, ServiceOut: Decoder](
+  def sendRequest[ServiceIn <: Product: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
   ): Either[ServiceError, ServiceResponse[ServiceOut]] =
     engineContext.sendRequest(request)
@@ -62,11 +63,10 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
       case v: (Product | Iterable[?] | Map[?, ?]) =>
         product.asJson.deepDropNullValues.hcursor
           .downField(key)
-          .as[Json] match {
+          .as[Json] match
           case Right(v) => jsonToEngineValue(v)
           case Left(ex) =>
             throwErr(s"$key of $v could NOT be Parsed to a JSON!\n$ex")
-        }
 
       case v =>
         valueToEngineObject(v)
@@ -90,14 +90,17 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
   def jsonToEngineValue(json: Json): Any =
     json match
       case j if j.isNull => null
-      case j if j.isNumber => j.asNumber.get.toBigDecimal.get
+      case j if j.isNumber =>
+        j.asNumber.get.toBigDecimal.get match
+          case n if n.isValidInt => n.toInt
+          case n if n.isValidLong => n.toLong
+          case n => n.toDouble
       case j if j.isBoolean => j.asBoolean.get
       case j if j.isString => j.asString.get
       case j =>
         toEngineObject(j)
-
   end jsonToEngineValue
-  
+
   private def toEngineObject: Json => Any = engineContext.toEngineObject
 
 end EngineRunContext
