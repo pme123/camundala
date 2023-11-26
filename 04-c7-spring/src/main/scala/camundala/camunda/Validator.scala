@@ -13,7 +13,7 @@ import org.camunda.bpm.engine.variable.value.TypedValue
 /**
  * Validator to validate the input variables automatically.
  */
-trait Validator[T <: Product : CirceCodec] :
+trait Validator[T <: Product : JsonCodec] :
 
   def prototype: T
 

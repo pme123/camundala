@@ -2,7 +2,7 @@ package camundala
 package simulation
 
 import camundala.bpmn.*
-import camundala.domain.{MockedServiceResponse, Optable}
+import camundala.domain.*
 
 trait SimulationDsl[T] extends TestOverrideExtensions:
 
@@ -27,9 +27,9 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     scen
 
   inline def serviceScenario[
-    In <: Product : Encoder : Decoder : Schema,
-    Out <: Product : Encoder : Decoder : Schema,
-    ServiceOut: Encoder : Decoder
+    In <: Product : JsonEncoder : JsonDecoder : Schema,
+    Out <: Product : JsonEncoder : JsonDecoder : Schema,
+    ServiceOut: JsonEncoder : JsonDecoder
   ](
      task: ServiceTask[In, Out, ServiceOut],
      outputMock: Out,
@@ -50,9 +50,9 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     )
 
   inline def serviceScenario[
-      In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema,
-      ServiceOut: Encoder: Decoder
+      In <: Product: JsonEncoder: JsonDecoder: Schema,
+      Out <: Product: JsonEncoder: JsonDecoder: Schema,
+      ServiceOut: JsonEncoder: JsonDecoder
   ](
       task: ServiceTask[In, Out, ServiceOut],
       outputMock: Out,
@@ -63,9 +63,9 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
       MockedServiceResponse.success200(outputServiceMock).withHeaders(respHeaders))
 
   inline def serviceScenario[
-    In <: Product : Encoder : Decoder : Schema,
-    Out <: Product : Encoder : Decoder : Schema,
-    ServiceOut: Encoder : Decoder
+    In <: Product : JsonEncoder : JsonDecoder : Schema,
+    Out <: Product : JsonEncoder : JsonDecoder : Schema,
+    ServiceOut: JsonEncoder : JsonDecoder
   ](
      task: ServiceTask[In, Out, ServiceOut],
    ): Seq[ExternalTaskScenario] =
@@ -188,9 +188,9 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
       scen.ignored
 
     inline def serviceScenario[
-      In <: Product : Encoder : Decoder : Schema,
-      Out <: Product : Encoder : Decoder : Schema,
-      ServiceOut: Encoder : Decoder
+      In <: Product : JsonEncoder : JsonDecoder : Schema,
+      Out <: Product : JsonEncoder : JsonDecoder : Schema,
+      ServiceOut: JsonEncoder : JsonDecoder
     ](
        task: ServiceTask[In, Out, ServiceOut],
        outputMock: Out,
@@ -199,9 +199,9 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
       Seq(ExternalTaskScenario(nameOfVariable(task) + " defaultMock", task).ignored)
 
     inline def serviceScenario[
-      In <: Product : Encoder : Decoder : Schema,
-      Out <: Product : Encoder : Decoder : Schema,
-      ServiceOut: Encoder : Decoder
+      In <: Product : JsonEncoder : JsonDecoder : Schema,
+      Out <: Product : JsonEncoder : JsonDecoder : Schema,
+      ServiceOut: JsonEncoder : JsonDecoder
     ](
        task: ServiceTask[In, Out, ServiceOut],
        outputMock: Out,
@@ -212,9 +212,9 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
         MockedServiceResponse.success200(outputServiceMock).withHeaders(respHeaders))
 
     inline def serviceScenario[
-      In <: Product : Encoder : Decoder : Schema,
-      Out <: Product : Encoder : Decoder : Schema,
-      ServiceOut: Encoder : Decoder
+      In <: Product : JsonEncoder : JsonDecoder : Schema,
+      Out <: Product : JsonEncoder : JsonDecoder : Schema,
+      ServiceOut: JsonEncoder : JsonDecoder
     ](
        task: ServiceTask[In, Out, ServiceOut],
      ): Seq[ExternalTaskScenario] =

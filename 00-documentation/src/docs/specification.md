@@ -51,7 +51,7 @@ Here is the _UserTask_ 'Approve Invoice' from our _Invoice Process_.
       )
     )
 
-    enum InvoiceCategory derives ConfiguredEnumCodec:
+    enum InvoiceCategory derives CJsonEnumCodec:
       case `Travel Expenses`, Misc, `Software License Costs`
     
     ```
@@ -75,7 +75,7 @@ You see here the following elements:
     * enumerations - like `InvoiceCategory`
     * objects - just other _Case Classes_
 * `invoiceDocument: FileRefInOut` in _Camunda 8_ only JSONs are allowed - so you need a File representation.
-* `enum InvoiceCategory..` this is how you define an enumeration. `..derives ConfiguredEnumCodec..` is for JSON marshalling.
+* `enum InvoiceCategory..` this is how you define an enumeration. `..derives CJsonEnumCodec..` is for JSON marshalling.
 * `` `Travel Expenses`, `` if you have names with spaces you need to use Back-Ticks.
 
 Checkout the Domain Description of @:source(camundala.examples.invoice.InvoiceReceipt).
@@ -90,7 +90,7 @@ as they are easy to create and there is support for documentation and JSON marsh
 If an attribute of a Case Class is an enumeration you can use the Scala `enum`.
 
 ```scala
-    enum InvoiceCategory derives ConfiguredEnumCodec:
+    enum InvoiceCategory derives CJsonEnumCodec:
       case `Travel Expenses`, Misc, `Software License Costs`
 ```
 
@@ -98,7 +98,7 @@ If an attribute of a Case Class is an enumeration you can use the Scala `enum`.
 If you have inputs or outputs that can differ, you can use the Scala `enum` as well. It just looks a bit different:
 
 ```scala
-  enum GetCodesOut derives ConfiguredCodec:
+  enum GetCodesOut derives CJsonCodec:
     case KeyValues(
         codesResult: Option[Map[String, String]] = None,
         poBox: Option[Map[String, String]] = Some(defaultPoBoxFr)
@@ -201,22 +201,22 @@ Sorry for this technical noise 😥.
 
 * Case Classes:
   ```scala
-  given Schema[InvoiceReceipt] = Schema.derived
-  given CirceCodec[InvoiceReceipt] = deriveCodec
+  given ApiSchema[InvoiceReceipt] = deriveApiSchema
+  given JsonCodec[InvoiceReceipt] = deriveCodec
  ```
 
 * Enumeration:
   ```scala
-  // ..derives ConfiguredCodec is needed for JSON marshalling of enums
-  enum GetCodesOut derives ConfiguredCodec:
+  // ..derives CJsonCodec is needed for JSON marshalling of enums
+  enum GetCodesOut derives CJsonCodec:
     ...
-  given Schema[GetCodesOut] = Schema.derived
+  given ApiSchema[GetCodesOut] = deriveApiSchema
   
   // for simple enums:
-  enum InvoiceCategory derives ConfiguredEnumCodec:
+  enum InvoiceCategory derives CJsonEnumCodec:
       case `Travel Expenses`, Misc, `Software License Costs`
 
-  given Schema[InvoiceCategory] = Schema.derived
+  given ApiSchema[InvoiceCategory] = deriveApiSchema
   ```
 
 ### Mock / Validation implementation

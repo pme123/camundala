@@ -15,8 +15,8 @@ case class StartProcessIn(
                            withVariablesInReturn: Boolean = true
                          )
 object StartProcessIn:
-  given Schema[StartProcessIn] = Schema.derived
-  given CirceCodec[StartProcessIn] = deriveCodec
+  given ApiSchema[StartProcessIn] = deriveSchema
+  given JsonCodec[StartProcessIn] = deriveCodec
 
 case class CorrelateMessageIn(
                                messageName: String,
@@ -33,8 +33,8 @@ case class CorrelateMessageIn(
                                variablesInResultEnabled: Boolean = true
                              )
 object CorrelateMessageIn:
-  given Schema[CorrelateMessageIn] = Schema.derived
-  given CirceCodec[CorrelateMessageIn] = deriveCodec
+  given ApiSchema[CorrelateMessageIn] = deriveSchema
+  given JsonCodec[CorrelateMessageIn] = deriveCodec
 
 case class SendSignalIn(
                          @description("The name of the signal to deliver.")
@@ -61,8 +61,8 @@ Note: If no execution id is defined the signal is broadcasted to all subscribed 
                        )
 
 object SendSignalIn:
-  given Schema[SendSignalIn] = Schema.derived
-  given CirceCodec[SendSignalIn] = deriveCodec
+  given ApiSchema[SendSignalIn] = deriveSchema
+  given JsonCodec[SendSignalIn] = deriveCodec
 
 @description(
   "A JSON object with the following properties:"
@@ -72,8 +72,8 @@ case class EvaluateDecisionIn(
                                variables: Map[String, CamundaVariable]
                              )
 object EvaluateDecisionIn:
-  given Schema[EvaluateDecisionIn] = Schema.derived
-  given CirceCodec[EvaluateDecisionIn] = deriveCodec
+  given ApiSchema[EvaluateDecisionIn] = deriveSchema
+  given JsonCodec[EvaluateDecisionIn] = deriveCodec
 
 
 case class CompleteTaskOut(
@@ -83,6 +83,6 @@ case class CompleteTaskOut(
                             variables: Map[String, CamundaVariable]
                           )
 object CompleteTaskOut:
-  given Schema[CompleteTaskOut] = Schema.derived
-  given CirceCodec[CompleteTaskOut] = deriveCodec
+  given ApiSchema[CompleteTaskOut] = deriveSchema
+  given JsonCodec[CompleteTaskOut] = deriveCodec
 end CompleteTaskOut

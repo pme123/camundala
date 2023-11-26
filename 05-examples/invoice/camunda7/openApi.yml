@@ -1,8 +1,8 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: "\n\nCreated at 11/11/2023, 10:24\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
+  summary: "\n\nCreated at 26/11/2023, 17:34\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
     \n> This is the invoice demo application which is shipped with the full distributions.\n\
     \nSee the original [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).\n\
     \nI bundled it here! Just run `InvoiceServletProcessApplication`.\n\nThis based\
@@ -70,9 +70,9 @@ paths:
       summary: 'Process: example-invoice-c7'
       description: "This starts the Invoice Receipt Process.\n\n- Input:  `camundala.examples.invoice.InvoiceReceipt\
         \ > In`\n- Output: `camundala.examples.invoice.InvoiceReceipt > Out`\n\n\n\
-        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-81414\"\
+        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-71749\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container:\
-        \ $('#example-invoice-c7-81414'), height: '95%', width: '95%' }));\" src=\"\
+        \ $('#example-invoice-c7-71749'), height: '95%', width: '95%' }));\" src=\"\
         data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
@@ -91,7 +91,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    type: Travel Expenses
                   invoiceNumber: I-12345
         required: true
       responses:
@@ -118,8 +119,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-95355">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-95355'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-44439">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-44439'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -135,19 +136,23 @@ paths:
               example-invoice-c7-assignApprover:
                 value:
                   amount: 30.0
-                  invoiceCategory: Software License Costs
+                  invoiceCategory:
+                    type: Software License Costs
               budget:
                 value:
                   amount: 30.0
-                  invoiceCategory: Software License Costs
+                  invoiceCategory:
+                    type: Software License Costs
               day-to-day expense:
                 value:
                   amount: 125.0
-                  invoiceCategory: Misc
+                  invoiceCategory:
+                    type: Misc
               exceptional:
                 value:
                   amount: 12345.0
-                  invoiceCategory: Misc
+                  invoiceCategory:
+                    type: Misc
         required: true
       responses:
         '200':
@@ -181,7 +186,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    type: Travel Expenses
                   invoiceNumber: I-12345
         required: true
       responses:
@@ -222,7 +228,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    type: Travel Expenses
                   invoiceNumber: I-12345
         required: true
       responses:
@@ -235,10 +242,10 @@ paths:
       summary: 'Process: example-invoice-c7-review'
       description: "This starts the Review Invoice Process.\n\n- Input:  `camundala.examples.invoice.ReviewInvoice\
         \ > In`\n- Output: `camundala.examples.invoice.ReviewInvoice > Out`\n\n\n\
-        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-7531\"\
+        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-25004\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({\
-        \ container: $('#example-invoice-c7-review-7531'), height: '95%', width: '95%'\
-        \ }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
+        \ container: $('#example-invoice-c7-review-25004'), height: '95%', width:\
+        \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
         \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
@@ -256,7 +263,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    type: Travel Expenses
                   invoiceNumber: I-12345
         required: true
       responses:
@@ -291,7 +299,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    type: Travel Expenses
                   invoiceNumber: I-12345
         required: true
       responses:
@@ -326,7 +335,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    type: Travel Expenses
                   invoiceNumber: I-12345
         required: true
       responses:
@@ -353,23 +363,26 @@ paths:
       summary: star-wars-api-people-detail
       description: "\n\n\n**Topic:** `star-wars-api-people-detail` (to define in the\
         \ _**Topic**_ of the _**External Task**_ > _Service Task_ of type _External_)\n\
-        \nGet People Details from StarWars API\n\n- Input:  `camundala.examples.invoice.StarWarsRestApi\
-        \ > In`\n- Output: `camundala.examples.invoice.StarWarsRestApi > Out`\n\n\
-        You can test this worker using the generic process _**camundala-externalTask-generic**_\
-        \ (e.g. with Postman).\n\n- ServiceOut:  `camundala.examples.invoice.StarWarsRestApi\
-        \ > People`\n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n\
-        </summary>\n\n<p>\n\n**outputVariables**:\n\nJust take the variable you need\
-        \ in your process!\n```json\n...\n\"outputVariables\": \"people,fromHeader\"\
-        ,\n...\n```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"people\"\
+        \nGet People Details from StarWars API\n\n- Input:  `camundala.examples.invoice.StarWarsPeopleDetail\
+        \ > In`\n- Output: `camundala.examples.invoice.StarWarsPeopleDetail > Out\
+        \ > Success`\n\nYou can test this worker using the generic process _**camundala-externalTask-generic**_\
+        \ (e.g. with Postman).\n\n- ServiceOut:  `camundala.domain.MockedServiceResponse`\n\
+        <p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
+        \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
+        ```json\n...\n\"outputVariables\": \"people,fromHeader,processStatus\",\n\
+        ...\n```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"people\"\
         \ : {\n    \"name\" : \"Luke Skywalker\",\n    \"height\" : \"172\",\n   \
         \ \"mass\" : \"77\",\n    \"hair_color\" : \"blond\",\n    \"skin_color\"\
         \ : \"fair\",\n    \"eye_color\" : \"blue\"\n  },\n  \"fromHeader\" : \"okidoki\"\
-        \n},\n...\n```\n\n**outputServiceMock**:\n```json\n...\n\"outputServiceMock\"\
-        : {\n  \"respStatus\" : 200,\n  \"respBody\" : {\n    \"name\" : \"Luke Skywalker\"\
-        ,\n    \"height\" : \"172\",\n    \"mass\" : \"77\",\n    \"hair_color\" :\
-        \ \"blond\",\n    \"skin_color\" : \"fair\",\n    \"eye_color\" : \"blue\"\
-        \n  },\n  \"respHeaders\" : [\n  ]\n},\n...\n```\n</p>\n</details>\n</p>\n\
-        \      \n    "
+        ,\n  \"processStatus\" : \"succeeded\",\n  \"type\" : \"Success\"\n},\n...\n\
+        ```\n\n**outputServiceMock**:\n```json\n...\n\"outputServiceMock\": {\n  \"\
+        respStatus\" : 200,\n  \"respBody\" : {\n    \"respStatus\" : 200,\n    \"\
+        respBody\" : {\n      \"name\" : \"Luke Skywalker\",\n      \"height\" : \"\
+        172\",\n      \"mass\" : \"77\",\n      \"hair_color\" : \"blond\",\n    \
+        \  \"skin_color\" : \"fair\",\n      \"eye_color\" : \"blue\"\n    },\n  \
+        \  \"respHeaders\" : [\n      [\n        \"fromHeader\",\n        \"okidoki\"\
+        \n      ]\n    ]\n  },\n  \"respHeaders\" : [\n  ]\n},\n...\n```\n</p>\n</details>\n\
+        </p>\n      \n    "
       operationId: star-wars-api-people-detail
       requestBody:
         content:
@@ -399,6 +412,8 @@ paths:
                       skin_color: fair
                       eye_color: blue
                     fromHeader: okidoki
+                    processStatus: succeeded
+                    type: Success
   /customtask/Workers/ArchiveInvoiceService:
     head:
       tags:
@@ -457,7 +472,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    type: Travel Expenses
                   invoiceNumber: I-12345
         required: true
       responses:
@@ -498,7 +514,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    type: Travel Expenses
                   invoiceNumber: I-12345
         required: true
       responses:
@@ -525,7 +542,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    type: Travel Expenses
                   invoiceNumber: I-12345
         required: true
       responses:
@@ -560,7 +578,8 @@ paths:
                 value:
                   creditor: Great Pizza for Everyone Inc.
                   amount: 300.0
-                  invoiceCategory: Travel Expenses
+                  invoiceCategory:
+                    type: Travel Expenses
                   invoiceNumber: I-12345
         required: true
       responses:
@@ -593,8 +612,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-52511">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-52511'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-77141">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-77141'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -610,7 +629,8 @@ paths:
               example-invoice-c7-assignApprover:
                 value:
                   amount: 30.0
-                  invoiceCategory: Software License Costs
+                  invoiceCategory:
+                    type: Software License Costs
         required: true
       responses:
         '200':
@@ -632,6 +652,10 @@ paths:
                   - sales
 components:
   schemas:
+    '400':
+      type: object
+    '404':
+      type: object
     ApproverGroup:
       oneOf:
       - $ref: '#/components/schemas/accounting'
@@ -640,6 +664,13 @@ components:
     CollectEntries_camundala.examples.invoice.InvoiceReceipt.ApproverGroup[]:
       oneOf:
       - $ref: '#/components/schemas/ApproverGroup'
+    Failure:
+      required:
+      - processStatus
+      type: object
+      properties:
+        processStatus:
+          $ref: '#/components/schemas/ProcessStatus'
     In:
       required:
       - creditor
@@ -739,23 +770,6 @@ components:
         clarified:
           type: boolean
           description: Flag that is set by the Reviewer
-      description: |
-        You can mock the response variables of this (sub)process.
-
-        Class: `camundala.examples.invoice.ReviewInvoice > Out`
-
-        Here an example:
-
-        ```scala
-        {
-          "clarified" : true
-        }
-        ```
-
-        General to mocking:
-
-        - `outputMock` mocks this process.
-        - `someSubProcessMock` mocks a sub process
     Out1:
       required:
       - approved
@@ -792,15 +806,9 @@ components:
           type: boolean
           description: Flag that is set by the Reviewer
     Out5:
-      required:
-      - people
-      - fromHeader
-      type: object
-      properties:
-        people:
-          $ref: '#/components/schemas/People'
-        fromHeader:
-          type: string
+      oneOf:
+      - $ref: '#/components/schemas/Failure'
+      - $ref: '#/components/schemas/Success'
     Out6:
       type: object
       properties:
@@ -828,13 +836,39 @@ components:
           type: string
         eye_color:
           type: string
+    ProcessStatus:
+      oneOf:
+      - $ref: '#/components/schemas/400'
+      - $ref: '#/components/schemas/404'
+      - $ref: '#/components/schemas/output-mocked'
+      - $ref: '#/components/schemas/succeeded'
+      - $ref: '#/components/schemas/validation-failed'
     Software License Costs:
       type: object
+    Success:
+      required:
+      - people
+      - fromHeader
+      - processStatus
+      type: object
+      properties:
+        people:
+          $ref: '#/components/schemas/People'
+        fromHeader:
+          type: string
+        processStatus:
+          $ref: '#/components/schemas/ProcessStatus'
     Travel Expenses:
       type: object
     accounting:
       type: object
     management:
       type: object
+    output-mocked:
+      type: object
     sales:
+      type: object
+    succeeded:
+      type: object
+    validation-failed:
       type: object

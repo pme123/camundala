@@ -64,8 +64,9 @@ end ErrorCodes
 val GenericExternalTaskProcessName = "camundala-externalTask-generic"
 
 object GenericExternalTask:
-  enum ProcessStatus derives ConfiguredEnumCodec:
+  enum ProcessStatus:
     case succeeded, `404`, `400`, `output-mocked`, `validation-failed`
   object ProcessStatus:
-    given Schema[ProcessStatus] = Schema.derived
+    given JsonCodec[ProcessStatus] = deriveEnumCodec
+    given ApiSchema[ProcessStatus] = deriveSchema
 end GenericExternalTask

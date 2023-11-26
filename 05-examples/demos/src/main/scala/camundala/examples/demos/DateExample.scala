@@ -15,8 +15,8 @@ object DateExample extends BpmnDsl:
   )
 
  
-  given Schema[Input] = Schema.derived
-  given CirceCodec[Input] = deriveCodec
+  given ApiSchema[Input] = deriveSchema
+  given JsonCodec[Input] = deriveCodec
 
 
 end DateExample
