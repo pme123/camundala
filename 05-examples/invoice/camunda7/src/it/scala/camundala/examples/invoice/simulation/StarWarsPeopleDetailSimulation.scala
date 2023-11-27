@@ -7,6 +7,7 @@ import camundala.domain.MockedServiceResponse
 import camundala.examples.invoice.StarWarsPeopleDetail.*
 import camundala.simulation.*
 import camundala.simulation.custom.CustomSimulation
+import io.circe.Json
 
 // exampleInvoiceC7/It/testOnly *StarWarsApiSimulation
 class StarWarsPeopleDetailSimulation extends CustomSimulation:

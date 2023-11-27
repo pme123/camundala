@@ -21,8 +21,8 @@ sealed trait GroupedApi extends CApi:
   def withApis(apis: List[_ <: CApi]): GroupedApi
 
 sealed trait InOutApi[
-    In <: Product: JsonEncoder: JsonDecoder: Schema,
-    Out <: Product: JsonEncoder: JsonDecoder: Schema: ClassTag
+    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema: ClassTag
 ] extends CApi:
   def inOut: InOut[In, Out, ?]
   def apiExamples: ApiExamples[In, Out]
@@ -102,8 +102,8 @@ sealed trait InOutApi[
 end InOutApi
 
 case class ProcessApi[
-    In <: Product: JsonEncoder: JsonDecoder: Schema,
-    Out <: Product: JsonEncoder: JsonDecoder: Schema: ClassTag
+    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema: ClassTag
 ](
     name: String,
     inOut: Process[In, Out],
@@ -136,8 +136,8 @@ case class ProcessApi[
 
 object ProcessApi:
   def apply[
-      In <: Product: JsonEncoder: JsonDecoder: Schema,
-      Out <: Product: JsonEncoder: JsonDecoder: Schema: ClassTag
+      In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+      Out <: Product: JsonEncoder: JsonDecoder: ApiSchema: ClassTag
   ](name: String, inOut: Process[In, Out]): ProcessApi[In, Out] =
     ProcessApi(name, inOut, ApiExamples(name, inOut))
 
@@ -180,8 +180,8 @@ def generalVariablesDescr[Out <: Product: JsonEncoder](
 end generalVariablesDescr
 
 sealed trait ExternalTaskApi[
-    In <: Product: JsonEncoder: JsonDecoder: Schema,
-    Out <: Product: JsonEncoder: JsonDecoder: Schema: ClassTag
+    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema: ClassTag
 ] extends InOutApi[In, Out]:
   def inOut: ExternalTask[In, Out, ?]
 
@@ -201,9 +201,9 @@ sealed trait ExternalTaskApi[
        |""".stripMargin
 
 case class ServiceWorkerApi[
-    In <: Product: JsonEncoder: JsonDecoder: Schema,
-    Out <: Product: JsonEncoder: JsonDecoder: Schema: ClassTag,
-    ServiceOut: JsonEncoder: JsonDecoder: Schema
+    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema: ClassTag,
+    ServiceOut: JsonEncoder: JsonDecoder: ApiSchema
 ](
     name: String,
     inOut: ServiceTask[In, Out, ServiceOut],
@@ -245,9 +245,9 @@ case class ServiceWorkerApi[
 
 object ServiceWorkerApi:
   def apply[
-      In <: Product: JsonEncoder: JsonDecoder: Schema,
-      Out <: Product: JsonEncoder: JsonDecoder: Schema: ClassTag,
-      ServiceOut: JsonEncoder: JsonDecoder: Schema
+      In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+      Out <: Product: JsonEncoder: JsonDecoder: ApiSchema: ClassTag,
+      ServiceOut: JsonEncoder: JsonDecoder: ApiSchema
   ](
       name: String,
       inOut: ServiceTask[In, Out, ServiceOut]
@@ -257,8 +257,8 @@ object ServiceWorkerApi:
 end ServiceWorkerApi
 
 case class CustomWorkerApi[
-    In <: Product: JsonEncoder: JsonDecoder: Schema,
-    Out <: Product: JsonEncoder: JsonDecoder: Schema: ClassTag
+    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema: ClassTag
 ](
     name: String,
     inOut: CustomTask[In, Out],
@@ -272,8 +272,8 @@ case class CustomWorkerApi[
 
 object CustomWorkerApi:
   def apply[
-      In <: Product: JsonEncoder: JsonDecoder: Schema,
-      Out <: Product: JsonEncoder: JsonDecoder: Schema: ClassTag
+      In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+      Out <: Product: JsonEncoder: JsonDecoder: ApiSchema: ClassTag
   ](
       name: String,
       inOut: CustomTask[In, Out]
@@ -283,8 +283,8 @@ object CustomWorkerApi:
 end CustomWorkerApi
 
 case class DecisionDmnApi[
-    In <: Product: JsonEncoder: JsonDecoder: Schema,
-    Out <: Product: JsonEncoder: JsonDecoder: Schema: ClassTag
+    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema: ClassTag
 ](
     name: String,
     inOut: DecisionDmn[In, Out],
@@ -313,8 +313,8 @@ case class DecisionDmnApi[
 
 object DecisionDmnApi:
   def apply[
-      In <: Product: JsonEncoder: JsonDecoder: Schema,
-      Out <: Product: JsonEncoder: JsonDecoder: Schema: ClassTag
+      In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+      Out <: Product: JsonEncoder: JsonDecoder: ApiSchema: ClassTag
   ](name: String, inOut: DecisionDmn[In, Out]): DecisionDmnApi[In, Out] =
     DecisionDmnApi(name, inOut, ApiExamples(name, inOut))
 
@@ -330,8 +330,8 @@ case class CApiGroup(
 end CApiGroup
 
 case class ActivityApi[
-    In <: Product: JsonEncoder: JsonDecoder: Schema,
-    Out <: Product: JsonEncoder: JsonDecoder: Schema: ClassTag
+    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema: ClassTag
 ](
     name: String,
     inOut: Activity[In, Out, ?],
@@ -346,15 +346,15 @@ case class ActivityApi[
 object ActivityApi:
 
   def apply[
-      In <: Product: JsonEncoder: JsonDecoder: Schema,
-      Out <: Product: JsonEncoder: JsonDecoder: Schema: ClassTag
+      In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+      Out <: Product: JsonEncoder: JsonDecoder: ApiSchema: ClassTag
   ](name: String, inOut: Activity[In, Out, ?]): ActivityApi[In, Out] =
     ActivityApi(name, inOut, ApiExamples(name, inOut))
 
 end ActivityApi
 case class ApiExamples[
-    In <: Product: JsonEncoder: JsonDecoder: Schema,
-    Out <: Product: JsonEncoder: JsonDecoder: Schema: ClassTag
+    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema: ClassTag
 ](
     inputExamples: InOutExamples[In],
     outputExamples: InOutExamples[Out]
@@ -363,14 +363,14 @@ case class ApiExamples[
 object ApiExamples:
 
   def apply[
-      In <: Product: JsonEncoder: JsonDecoder: Schema,
-      Out <: Product: JsonEncoder: JsonDecoder: Schema: ClassTag
+      In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+      Out <: Product: JsonEncoder: JsonDecoder: ApiSchema: ClassTag
   ](name: String, inOut: InOut[In, Out, ?]): ApiExamples[In, Out] =
     ApiExamples(InOutExamples(name, inOut.in), InOutExamples(name, inOut.out))
 
 end ApiExamples
 
-case class InOutExamples[T <: Product: JsonEncoder: JsonDecoder: Schema](
+case class InOutExamples[T <: Product: JsonEncoder: JsonDecoder: ApiSchema](
     examples: Seq[InOutExample[T]]
 ):
   @targetName("add")
@@ -382,13 +382,13 @@ case class InOutExamples[T <: Product: JsonEncoder: JsonDecoder: Schema](
 
 object InOutExamples:
 
-  def apply[T <: Product: JsonEncoder: JsonDecoder: Schema](
+  def apply[T <: Product: JsonEncoder: JsonDecoder: ApiSchema](
       name: String,
       inOut: T
   ): InOutExamples[T] =
     InOutExamples(Seq(InOutExample(name, inOut)))
 
-case class InOutExample[T <: Product: JsonEncoder: JsonDecoder: Schema](
+case class InOutExample[T <: Product: JsonEncoder: JsonDecoder: ApiSchema](
     name: String,
     example: T
 ):

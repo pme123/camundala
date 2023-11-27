@@ -6,6 +6,8 @@ import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 import sttp.model.{Method, Uri}
 
+import scala.reflect.ClassTag
+
 case class Workers(workers: Seq[Worker[?, ?, ?]])
 
 sealed trait Worker[
@@ -38,7 +40,7 @@ end Worker
 
 case class InitWorker[
     In <: Product: JsonCodec,
-    Out <: Product: JsonCodec
+    Out <: Product: JsonCodec : ClassTag
 ](
     inOut: InOut[In, Out, ?],
     override val validationHandler: Option[ValidationHandler[In]] = None,
@@ -65,7 +67,7 @@ end InitWorker
 
 case class CustomWorker[
     In <: Product: JsonCodec,
-    Out <: Product: JsonCodec
+    Out <: Product: JsonCodec:ClassTag
 ](
     inOut: CustomTask[In, Out],
     override val validationHandler: Option[ValidationHandler[In]] = None,
@@ -92,9 +94,9 @@ end CustomWorker
 
 case class ServiceWorker[
     In <: Product: JsonCodec,
-    Out <: Product: JsonCodec,
-    ServiceIn <: Product: Encoder,
-    ServiceOut: Decoder
+    Out <: Product: JsonCodec: ClassTag,
+    ServiceIn <: Product: JsonEncoder,
+    ServiceOut: JsonDecoder
 ](
     inOut: ServiceTask[In, Out, ServiceOut],
     override val validationHandler: Option[ValidationHandler[In]] = None,
@@ -156,7 +158,7 @@ case class GeneralVariables(
 
 end GeneralVariables
 
-case class RunnableRequest[ServiceIn: Encoder](
+case class RunnableRequest[ServiceIn: JsonEncoder](
     httpMethod: Method,
     apiUri: Uri,
     queryParams: Seq[(String, Seq[String])],
@@ -166,7 +168,7 @@ case class RunnableRequest[ServiceIn: Encoder](
 
 object RunnableRequest:
 
-  def apply[In <: Product: JsonCodec, ServiceIn <: Product : Encoder](
+  def apply[In <: Product: JsonCodec, ServiceIn <: Product : JsonEncoder](
       inputObject: In,
       requestHandler: ServiceHandler[In, ?, ServiceIn, ?]
   ): RunnableRequest[ServiceIn] =

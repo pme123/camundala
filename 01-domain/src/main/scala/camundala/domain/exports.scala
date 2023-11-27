@@ -2,9 +2,9 @@ package camundala
 package domain
 
 import io.circe.derivation.Configuration
-import io.circe.generic.semiauto.deriveCodec
+import io.circe.parser
 import sttp.model.Uri
-import sttp.tapir.generic
+import sttp.tapir.Schema
 
 import java.net.URLDecoder
 import java.nio.charset.Charset
@@ -16,24 +16,25 @@ import scala.language.implicitConversions
 export io.circe.{Codec as CirceCodec}
 export sttp.tapir.Schema.annotations.description
 
-
 implicit val c: Configuration = Configuration.default.withDefaults
- .withDiscriminator("type")
+  .withDiscriminator("type")
 type ConfiguredEnumCodec[T] = io.circe.derivation.ConfiguredEnumCodec[T]
 type ConfiguredCodec[T] = io.circe.derivation.ConfiguredCodec[T]
 
 type JsonCodec[T] = io.circe.Codec[T]
 
 inline def deriveCodec[A](using inline A: Mirror.Of[A]): JsonCodec[A] =
-  //io.circe.generic.semiauto.deriveCodec
-  io.circe.derivation.ConfiguredCodec.derived(using Configuration.default//.withDefaults
+  io.circe.derivation.ConfiguredCodec.derived(using
+  Configuration.default // .withDefaults
     .withDiscriminator("type"))
 inline def deriveEnumCodec[A](using inline A: Mirror.SumOf[A]): JsonCodec[A] =
-  io.circe.derivation.ConfiguredEnumCodec.derived(using Configuration.default //.withDefaults
-    .withoutDiscriminator
-   // .withDiscriminator("type")
+  io.circe.derivation.ConfiguredEnumCodec.derived(using
+    Configuration.default // .withDefaults
+      .withoutDiscriminator
+    // .withDiscriminator("type")
   )
 
+type Json = io.circe.Json
 type JsonEncoder[T] = io.circe.Encoder[T]
 inline def deriveEncoder[A](using inline A: Mirror.Of[A]): JsonEncoder[A] =
   io.circe.generic.semiauto.deriveEncoder
@@ -46,10 +47,13 @@ inline def deriveSchema[T](using
     m: Mirror.Of[T]
 ): Schema[T] =
   Schema.derived[T]
+inline def deriveEnumSchema[T](using
+    m: Mirror.Of[T]
+): Schema[T] =
+  Schema.derivedEnumeration[T].defaultStringBased
 
 // Circe Enum codec
 // used implicit instead of given - so no extra import is needed domain.{*, given}
-
 
 case class NoInput()
 object NoInput:
@@ -64,13 +68,13 @@ object NoOutput:
 enum NotValidStatus:
   case notValid
 object NotValidStatus:
-  given ApiSchema[NotValidStatus] = deriveSchema
+  given ApiSchema[NotValidStatus] = deriveEnumSchema
   given JsonCodec[NotValidStatus] = deriveEnumCodec
 
 enum CanceledStatus:
   case canceled
 object CanceledStatus:
-  given ApiSchema[CanceledStatus] = deriveSchema
+  given ApiSchema[CanceledStatus] = deriveEnumSchema
   given JsonCodec[CanceledStatus] = deriveEnumCodec
 
 @deprecated

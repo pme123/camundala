@@ -2,15 +2,15 @@ package camundala
 package camunda8
 
 import bpmn.*
+import domain.*
 import camundala.bpmn.CamundaVariable.CJson
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.api.response.{
-  ProcessInstanceEvent,
-  ProcessInstanceResult
-}
+import io.camunda.zeebe.client.api.response.{ProcessInstanceEvent, ProcessInstanceResult}
+import io.circe.parser
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.{HttpStatus, ResponseEntity}
+
 import scala.jdk.CollectionConverters.*
 
 trait RestEndpoint extends Validator:
@@ -22,8 +22,8 @@ trait RestEndpoint extends Validator:
   protected var zeebeClient: ZeebeClient = _
 
   def createInstance[
-      In <: Product: Decoder: Encoder,
-      Out <: Product: Decoder: Encoder
+      In <: Product: JsonDecoder: JsonEncoder,
+      Out <: Product: JsonDecoder: JsonEncoder
   ](
       processId: String,
       startVars: Either[String, CreateProcessInstanceIn[In, Out]]
@@ -43,7 +43,7 @@ trait RestEndpoint extends Validator:
           .status(HttpStatus.BAD_REQUEST)
           .body(errorMsg)
 
-  private def start[In <: Product: Decoder: Encoder, Out <: Product: Decoder](
+  private def start[In <: Product: JsonDecoder: JsonEncoder, Out <: Product: JsonDecoder](
       processId: String,
       startObj: CreateProcessInstanceIn[In, Out]
   ): Either[String, ProcessInstanceEvent | ProcessInstanceResult] =
@@ -86,7 +86,7 @@ trait RestEndpoint extends Validator:
       case _ =>
         camundaVariable.value
 
-  private def extractBody[Out <: Product: Decoder: Encoder](
+  private def extractBody[Out <: Product: JsonDecoder: JsonEncoder](
       process: ProcessInstanceResult
   ): Response =
     // parsing will validate output

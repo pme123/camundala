@@ -3,7 +3,6 @@ package bpmn
 
 import camundala.domain.*
 import io.circe.*
-import io.circe.Json.*
 
 import java.time.LocalDateTime
 import scala.annotation.tailrec
@@ -13,7 +12,7 @@ sealed trait CamundaVariable:
 
 object CamundaVariable:
 
-  given Encoder[CamundaVariable] =
+  given JsonEncoder[CamundaVariable] =
     Encoder.instance {
       case v: CString => v.asJson
       case v: CInteger => v.asJson
@@ -29,56 +28,56 @@ object CamundaVariable:
     deriveSchema
 
   given ApiSchema[CString] = deriveSchema
-  given Encoder[CString] = deriveEncoder
-  given Decoder[CString] = deriveDecoder
+  given JsonEncoder[CString] = deriveEncoder
+  given JsonDecoder[CString] = deriveDecoder
 
   given ApiSchema[CInteger] = deriveSchema
-  given Encoder[CInteger] = deriveEncoder
-  given Decoder[CInteger] = deriveDecoder
+  given JsonEncoder[CInteger] = deriveEncoder
+  given JsonDecoder[CInteger] = deriveDecoder
 
   given ApiSchema[CLong] = deriveSchema
-  given Encoder[CLong] = deriveEncoder
-  given Decoder[CLong] = deriveDecoder
+  given JsonEncoder[CLong] = deriveEncoder
+  given JsonDecoder[CLong] = deriveDecoder
 
   given ApiSchema[CDouble] = deriveSchema
-  given Encoder[CDouble] = deriveEncoder
-  given Decoder[CDouble] = deriveDecoder
+  given JsonEncoder[CDouble] = deriveEncoder
+  given JsonDecoder[CDouble] = deriveDecoder
 
   given ApiSchema[CBoolean] = deriveSchema
-  given Encoder[CBoolean] = deriveEncoder
-  given Decoder[CBoolean] = deriveDecoder
+  given JsonEncoder[CBoolean] = deriveEncoder
+  given JsonDecoder[CBoolean] = deriveDecoder
 
   given ApiSchema[CFile] = deriveSchema
-  given Encoder[CFile] = deriveEncoder
-  given Decoder[CFile] = deriveDecoder
+  given JsonEncoder[CFile] = deriveEncoder
+  given JsonDecoder[CFile] = deriveDecoder
 
   given ApiSchema[CFileValueInfo] =
     deriveSchema
-  given Encoder[CFileValueInfo] =
+  given JsonEncoder[CFileValueInfo] =
     deriveEncoder
-  given Decoder[CFileValueInfo] =
+  given JsonDecoder[CFileValueInfo] =
     deriveDecoder
 
   given ApiSchema[CJson] = deriveSchema
-  given Encoder[CJson] = deriveEncoder
-  given Decoder[CJson] = deriveDecoder
+  given JsonEncoder[CJson] = deriveEncoder
+  given JsonDecoder[CJson] = deriveDecoder
 
-  def toCamunda[T <: Product: Encoder](
+  def toCamunda[T <: Product: JsonEncoder](
       products: Seq[T]
   ): Seq[Map[String, CamundaVariable]] =
     products.map(toCamunda)
 
-  def toCamunda[T <: Product: Encoder](
+  def toCamunda[T <: Product: JsonEncoder](
       product: T
   ): Map[String, CamundaVariable] =
     product.productElementNames
       .zip(product.productIterator)
-     // .filterNot { case _ -> v => v.isInstanceOf[None.type] } // don't send null
+      // .filterNot { case _ -> v => v.isInstanceOf[None.type] } // don't send null
       .map { case (k, v) => k -> objectToCamunda(product, k, v) }
       .toMap
 
   @tailrec
-  def objectToCamunda[T <: Product: Encoder](
+  def objectToCamunda[T <: Product: JsonEncoder](
       product: T,
       key: String,
       value: Any
@@ -97,11 +96,10 @@ object CamundaVariable:
       case v: (Product | Iterable[?] | Map[?, ?]) =>
         product.asJson.deepDropNullValues.hcursor
           .downField(key)
-          .as[Json] match {
-            case Right(str) if str.isString => CString(str.asString.get) // Pure Enum!
-            case Right(v) => CJson(v.toString)
-            case Left(ex) => throwErr(s"$key of $v could NOT be Parsed to a JSON!\n$ex")
-          }
+          .as[Json] match
+          case Right(str) if str.isString => CString(str.asString.get) // Pure Enum!
+          case Right(v) => CJson(v.toString)
+          case Left(ex) => throwErr(s"$key of $v could NOT be Parsed to a JSON!\n$ex")
 
       case v =>
         valueToCamunda(v)
@@ -135,6 +133,7 @@ object CamundaVariable:
     val value: Null = null
 
     private val `type`: String = "String"
+  end CNull
   case class CString(value: String, private val `type`: String = "String")
       extends CamundaVariable
   case class CInteger(value: Int, private val `type`: String = "Integer")
@@ -162,7 +161,7 @@ object CamundaVariable:
   case class CJson(value: String, private val `type`: String = "Json")
       extends CamundaVariable
 
-  given Decoder[CamundaVariable] =
+  given JsonDecoder[CamundaVariable] =
     (c: HCursor) =>
       for
         valueType <- c.downField("type").as[String]
@@ -192,7 +191,7 @@ object CamundaVariable:
   def jsonToCamundaValue(json: Json): JsonToCamundaValue =
 
     val folder: Json.Folder[JsonToCamundaValue] =
-      new Json.Folder[JsonToCamundaValue] {
+      new Json.Folder[JsonToCamundaValue]:
         def onNull: CamundaVariable = CNull
 
         def onBoolean(value: Boolean): CamundaVariable = CBoolean(value)
@@ -223,7 +222,6 @@ object CamundaVariable:
                 case _: (Map[?, ?] | Seq[?]) => CJson(v.toString)
               )
             )
-      }
     json.foldWith(folder)
 
   end jsonToCamundaValue

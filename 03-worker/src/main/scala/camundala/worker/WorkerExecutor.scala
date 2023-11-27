@@ -3,10 +3,14 @@ package worker
 
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
+import io.circe
+import io.circe.JsonObject
+
+import scala.reflect.ClassTag
 
 case class WorkerExecutor[
     In <: Product: JsonCodec,
-    Out <: Product: JsonCodec,
+    Out <: Product: JsonCodec : ClassTag,
     T <: Worker[In, Out, ?]
 ](
     worker: T
@@ -48,7 +52,7 @@ case class WorkerExecutor[
             )
       val json: Either[ValidatorError, JsonObject] = jsonResult
         .map(_.foldLeft(JsonObject()) { case (jsonObj, jsonKey -> jsonValue) =>
-          jsonObj.add(jsonKey, jsonValue.getOrElse(Json.Null))
+          jsonObj.add(jsonKey, jsonValue.getOrElse(circe.Json.Null))
         })
       json
         .flatMap(jsonObj =>

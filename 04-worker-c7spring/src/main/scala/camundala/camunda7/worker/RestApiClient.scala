@@ -2,6 +2,7 @@ package camundala
 package camunda7.worker
 
 import camundala.bpmn.*
+import camundala.domain.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
 import io.circe.parser
@@ -14,8 +15,8 @@ import scala.util.Try
 trait RestApiClient:
 
   def sendRequest[
-      ServiceIn: Encoder, // body of service
-      ServiceOut: Decoder // output of service
+      ServiceIn: JsonEncoder, // body of service
+      ServiceOut: JsonDecoder // output of service
   ](
       runnableRequest: RunnableRequest[ServiceIn]
   ): Either[ServiceError, ServiceResponse[ServiceOut]] =
@@ -57,7 +58,7 @@ trait RestApiClient:
     Right(request)
 
   protected def decodeResponse[
-      ServiceOut: Decoder // output of service
+      ServiceOut: JsonDecoder // output of service
   ](
       body: String
   ): Either[ServiceBadBodyError, ServiceOut] =
@@ -67,7 +68,7 @@ trait RestApiClient:
       .left
       .map(err => ServiceBadBodyError(s"Problem creating body from response.\n$err"))
 
-  protected def requestWithOptBody[ServiceIn: Encoder](
+  protected def requestWithOptBody[ServiceIn: JsonEncoder](
       runnableRequest: RunnableRequest[ServiceIn]
   ) =
     val request =

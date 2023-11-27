@@ -10,7 +10,7 @@ export sttp.model.Uri.UriContext
 export sttp.model.Method
 export sttp.model.Uri
 
-def decodeTo[A: Decoder](
+def decodeTo[A: JsonDecoder](
     jsonStr: String
 ): Either[CamundalaWorkerError.UnexpectedError, A] =
   io.circe.parser
@@ -136,7 +136,7 @@ object CamundalaWorkerError:
       errorMsg: String
   ) extends ServiceError
 
-  def requestMsg[ServiceIn: Encoder](
+  def requestMsg[ServiceIn: JsonEncoder](
       runnableRequest: RunnableRequest[ServiceIn]
   ): String =
     s""" - Request URL: ${prettyUriString(runnableRequest.apiUri)}
@@ -152,7 +152,7 @@ object CamundalaWorkerError:
         .getOrElse("")}
         | - Request Header: ${runnableRequest.headers.map{case k -> v => s"$k -> $v"}.mkString(", ")}""".stripMargin
 
-  def serviceErrorMsg[ServiceIn: Encoder](
+  def serviceErrorMsg[ServiceIn: JsonEncoder](
       status: Int,
       errorMsg: String,
       runnableRequest: RunnableRequest[ServiceIn]

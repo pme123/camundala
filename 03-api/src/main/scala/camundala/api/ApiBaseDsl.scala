@@ -12,21 +12,21 @@ trait ApiBaseDsl:
     CApiGroup(name, apis.toList)
 
   def api[
-    In <: Product : Encoder : Decoder : Schema,
-    Out <: Product : Encoder : Decoder : Schema : ClassTag,
+    In <: Product : JsonEncoder : JsonDecoder : ApiSchema,
+    Out <: Product : JsonEncoder : JsonDecoder : ApiSchema : ClassTag,
     T <: InOutApi[In, Out]
   ](pApi: T): T =
     pApi
 
   def api[
-      In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema: ClassTag
+      In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+      Out <: Product: JsonEncoder: JsonDecoder: ApiSchema: ClassTag
   ](pApi: ProcessApi[In, Out])(body: CApi*): ProcessApi[In, Out] =
     pApi.withApis(body.toList)
 
   extension[
-    In <: Product : Encoder : Decoder : Schema,
-    Out <: Product : Encoder : Decoder : Schema : ClassTag,
+    In <: Product : JsonEncoder : JsonDecoder : ApiSchema,
+    Out <: Product : JsonEncoder : JsonDecoder : ApiSchema : ClassTag,
     T <: InOutApi[In, Out]
   ] (inOutApi: T)
 
@@ -51,8 +51,8 @@ trait ApiBaseDsl:
   end extension
 
   extension[
-    In <: Product : Encoder : Decoder : Schema,
-    Out <: Product : Encoder : Decoder : Schema : ClassTag,
+    In <: Product : JsonEncoder : JsonDecoder : ApiSchema,
+    Out <: Product : JsonEncoder : JsonDecoder : ApiSchema : ClassTag,
     T <: DecisionDmnApi[In, Out]
   ] (decApi: T)
 
@@ -60,8 +60,8 @@ trait ApiBaseDsl:
   end extension
 
   extension[
-    In <: Product : Encoder : Decoder : Schema,
-    Out <: Product : Encoder : Decoder : Schema : ClassTag,
+    In <: Product : JsonEncoder : JsonDecoder : ApiSchema,
+    Out <: Product : JsonEncoder : JsonDecoder : ApiSchema : ClassTag,
     T <: ProcessApi[In, Out]
   ] (processApi: T)
 

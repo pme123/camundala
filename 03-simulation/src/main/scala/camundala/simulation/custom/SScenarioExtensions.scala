@@ -18,20 +18,20 @@ trait SScenarioExtensions extends SStepExtensions:
   )
   object ProcessInstanceOrExecution:
     given ApiSchema[ProcessInstanceOrExecution] = deriveSchema
-    given Encoder[ProcessInstanceOrExecution] = deriveEncoder
-    given Decoder[ProcessInstanceOrExecution] = deriveDecoder
+    given JsonEncoder[ProcessInstanceOrExecution] = deriveEncoder
+    given JsonDecoder[ProcessInstanceOrExecution] = deriveDecoder
 
   case class Execution(processInstanceId: String)
   object Execution:
     given ApiSchema[Execution] = deriveSchema
-    given Encoder[Execution] = deriveEncoder
-    given Decoder[Execution] = deriveDecoder
+    given JsonEncoder[Execution] = deriveEncoder
+    given JsonDecoder[Execution] = deriveDecoder
 
   case class ProcessInstance(id: String)
   object ProcessInstance:
-    given ApiSchema[ProcessInstance] = Schema.derived
-    given Encoder[ProcessInstance] = deriveEncoder
-    given Decoder[ProcessInstance] = deriveDecoder
+    given ApiSchema[ProcessInstance] = deriveSchema
+    given JsonEncoder[ProcessInstance] = deriveEncoder
+    given JsonDecoder[ProcessInstance] = deriveDecoder
 
   extension (scenario: IsProcessScenario)
 

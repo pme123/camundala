@@ -37,11 +37,12 @@ object SignalMessageExample extends BpmnDsl:
     given ApiSchema[SignalMessageExampleOut] = deriveSchema
     given JsonCodec[SignalMessageExampleOut] = deriveCodec
 
-  enum EndStatus derives ConfiguredEnumCodec :
+  enum EndStatus :
     case messageReceived, signalReceived
 
   object EndStatus:
     given ApiSchema[EndStatus] = deriveSchema
+    given JsonCodec[EndStatus] = deriveEnumCodec
 
 
 end SignalMessageExample
