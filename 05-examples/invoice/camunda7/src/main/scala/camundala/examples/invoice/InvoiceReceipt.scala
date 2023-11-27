@@ -29,8 +29,8 @@ object InvoiceReceipt extends BpmnDsl:
       invoiceReviewedMock: Option[ReviewInvoice.Out] = None
   )
   object In:
-    given Schema[In] = Schema.derived
-    given CirceCodec[In] = deriveCodec
+    given ApiSchema[In] = deriveSchema
+    given JsonCodec[In] = deriveCodec
   end In
 
   case class Out(
@@ -42,8 +42,8 @@ object InvoiceReceipt extends BpmnDsl:
       clarified: Option[Boolean] = None
   )
   object Out:
-    given Schema[Out] = Schema.derived
-    given CirceCodec[Out] = deriveCodec
+    given ApiSchema[Out] = deriveSchema
+    given JsonCodec[Out] = deriveCodec
   end Out
 
   lazy val example: Process[In, Out] =
@@ -63,8 +63,8 @@ object InvoiceReceipt extends BpmnDsl:
           InvoiceCategory.`Software License Costs`
     )
     object In:
-      given Schema[In] = Schema.derived
-      given CirceCodec[In] = deriveCodec
+      given ApiSchema[In] = deriveSchema
+      given JsonCodec[In] = deriveCodec
     end In
 
     type Out = Seq[ApproverGroup]
@@ -89,8 +89,8 @@ object InvoiceReceipt extends BpmnDsl:
         approved: Boolean = true
     )
     object Out:
-      given Schema[Out] = Schema.derived
-      given CirceCodec[Out] = deriveCodec
+      given ApiSchema[Out] = deriveSchema
+      given JsonCodec[Out] = deriveCodec
     end Out
 
     lazy val example: UserTask[In, Out] =
@@ -113,8 +113,8 @@ object InvoiceReceipt extends BpmnDsl:
         invoiceNumber: String = "I-12345",
     )
     object In:
-      given Schema[In] = Schema.derived
-      given CirceCodec[In] = deriveCodec
+      given ApiSchema[In] = deriveSchema
+      given JsonCodec[In] = deriveCodec
     end In
 
     type Out = NoOutput
@@ -131,7 +131,7 @@ object InvoiceReceipt extends BpmnDsl:
   enum ApproverGroup derives ConfiguredEnumCodec:
     case accounting, sales, management
   object ApproverGroup:
-    given Schema[ApproverGroup] = Schema.derived
+    given ApiSchema[ApproverGroup] = deriveSchema
   end ApproverGroup
 
 end InvoiceReceipt

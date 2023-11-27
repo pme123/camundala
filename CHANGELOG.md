@@ -318,7 +318,7 @@ Be aware that breaking changes could still occur, but they will be reflected in 
 ## 0.15.0 - 2023-03-29
 ### Changed
 - MAP-6085: Adding to api documentation without inlining for better performance. - see [Commit](https://github.com/pme123/camundala/commit/973af3ac8301c56814f0c991847ea162d8636fa6)
-- Using CirceCodec instead of circe Encoder / Decoder. - see [Commit](https://github.com/pme123/camundala/commit/e439df39df696ab8e5f6a59bccde009d9f21538d)
+- Using JsonCodec instead of circe Encoder / Decoder. - see [Commit](https://github.com/pme123/camundala/commit/e439df39df696ab8e5f6a59bccde009d9f21538d)
 - Migrated to circe's Enum encoding / decoding. - see [Commit](https://github.com/pme123/camundala/commit/6871107b883b080219265574f9caf0f3e7d35f0c)
 
 ## 0.14.10 - 2023-03-14

@@ -37,19 +37,19 @@ case class TestWithMock(
 
 
 object TestWithMock:
-    given Schema[TestWithMock] = Schema.derived
-    given CirceCodec[TestWithMock] = deriveCodec
+    given ApiSchema[TestWithMock] = deriveSchema
+    given JsonCodec[TestWithMock] = deriveCodec
 end TestWithMock
 
 case class Error(msg: String = "failed")
 object Error:
-    given Schema[Error] = Schema.derived
-    given CirceCodec[Error] = deriveCodec
+    given ApiSchema[Error] = deriveSchema
+    given JsonCodec[Error] = deriveCodec
 end Error 
 
 case class Success(ok: String = "hello")
 
 object Success:
-    given Schema[Success] = Schema.derived
-    given CirceCodec[Success] = deriveCodec
+    given ApiSchema[Success] = deriveSchema
+    given JsonCodec[Success] = deriveCodec
 end Success

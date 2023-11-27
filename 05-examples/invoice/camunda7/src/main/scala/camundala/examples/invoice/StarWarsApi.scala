@@ -24,8 +24,8 @@ object StarWarsPeople extends BpmnDsl:
   )
 
   object In:
-    given Schema[In] = Schema.derived
-    given CirceCodec[In] = deriveCodec
+    given ApiSchema[In] = deriveSchema
+    given JsonCodec[In] = deriveCodec
   end In
 
   enum Out derives ConfiguredCodec:
@@ -37,7 +37,7 @@ object StarWarsPeople extends BpmnDsl:
   end Out
 
   object Out:
-    given Schema[Out] = Schema.derived
+    given ApiSchema[Out] = deriveSchema
   end Out
 
   case class PeopleResults(
@@ -45,8 +45,8 @@ object StarWarsPeople extends BpmnDsl:
   )
 
   object PeopleResults:
-    given Schema[PeopleResults] = Schema.derived
-    given CirceCodec[PeopleResults] = deriveCodec
+    given ApiSchema[PeopleResults] = deriveSchema
+    given JsonCodec[PeopleResults] = deriveCodec
   end PeopleResults
 
   final lazy val example: ServiceTask[In, Out, ServiceOut] =
@@ -73,8 +73,8 @@ object StarWarsPeopleDetail extends BpmnDsl:
   )
 
   object In:
-    given Schema[In] = Schema.derived
-    given CirceCodec[In] = deriveCodec
+    given ApiSchema[In] = deriveSchema
+    given JsonCodec[In] = deriveCodec
   end In
 
   enum Out derives ConfiguredCodec:
@@ -87,7 +87,7 @@ object StarWarsPeopleDetail extends BpmnDsl:
   end Out
 
   object Out:
-    given Schema[Out] = Schema.derived
+    given ApiSchema[Out] = deriveSchema
   end Out
   final lazy val example: ServiceTask[In, Out, ServiceOut] =
     serviceTask(
@@ -110,6 +110,6 @@ case class People(
 )
 
 object People:
-  given Schema[People] = Schema.derived
-  given CirceCodec[People] = deriveCodec
+  given ApiSchema[People] = deriveSchema
+  given JsonCodec[People] = deriveCodec
 end People

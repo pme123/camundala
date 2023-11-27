@@ -395,7 +395,7 @@
                               )
 
 </span><span class="annotation">@description</span><span>(</span><span class="string-literal">&quot;These Groups can approve the invoice.&quot;</span><span>)
-</span><span class="identifier">enum</span><span> </span><span class="type-name">ApproverGroup</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">ConfiguredEnumCodec</span><span> :
+</span><span class="identifier">enum</span><span> </span><span class="type-name">ApproverGroup</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">JsonEnumCodec</span><span> :
   </span><span class="keyword">case</span><span> </span><span class="identifier">accounting</span><span>, </span><span class="identifier">sales</span><span>, </span><span class="identifier">management</span></code></pre>
         <ul>
           <li>Running this will use the inputs <code>amount</code> and <code>invoiceCategory</code> for the evaluation.</li>

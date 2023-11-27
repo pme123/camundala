@@ -31,7 +31,7 @@ trait ValidationHandler[In <: Product: circe.Codec]:
 
 object ValidationHandler:
   def apply[
-      In <: Product: CirceCodec
+      In <: Product: JsonCodec
   ](funct: In => Either[ValidatorError, In]): ValidationHandler[In] =
     new ValidationHandler[In] {
       override def validate(in: In): Either[ValidatorError, In] =
@@ -68,13 +68,13 @@ object ValidationHandler:
   * Default is no Initialization.
   */
 trait InitProcessHandler[
-    In <: Product: CirceCodec
+    In <: Product: JsonCodec
 ]:
   def init(input: In): Either[InitProcessError, Map[String, Any]]
 
 object InitProcessHandler:
   def apply[
-      In <: Product: CirceCodec
+      In <: Product: JsonCodec
   ](funct: In => Either[InitProcessError, Map[String, Any]]): InitProcessHandler[In] =
     new InitProcessHandler[In] {
       override def init(in: In): Either[InitProcessError, Map[String, Any]] =
@@ -82,8 +82,8 @@ object InitProcessHandler:
     }
 
 trait RunWorkHandler[
-    In <: Product: CirceCodec,
-    Out <: Product: CirceCodec
+    In <: Product: JsonCodec,
+    Out <: Product: JsonCodec
 ]:
   type RunnerOutput =
     EngineRunContext ?=> Either[RunWorkError, Out]
@@ -91,8 +91,8 @@ trait RunWorkHandler[
   def runWork(inputObject: In): RunnerOutput
 
 case class ServiceHandler[
-    In <: Product: CirceCodec,
-    Out <: Product: CirceCodec,
+    In <: Product: JsonCodec,
+    Out <: Product: JsonCodec,
     ServiceIn <: Product: Encoder,
     ServiceOut: Decoder
 ](
@@ -230,16 +230,16 @@ case class ServiceHandler[
 end ServiceHandler
 
 trait CustomHandler[
-    In <: Product: CirceCodec,
-    Out <: Product: CirceCodec
+    In <: Product: JsonCodec,
+    Out <: Product: JsonCodec
 ] extends RunWorkHandler[In, Out]:
 
 end CustomHandler
 
 object CustomHandler:
   def apply[
-      In <: Product: CirceCodec,
-      Out <: Product: CirceCodec
+      In <: Product: JsonCodec,
+      Out <: Product: JsonCodec
   ](funct: In => Either[CustomError, Out]): CustomHandler[In, Out] =
     new CustomHandler[In, Out] {
       override def runWork(inputObject: In): RunnerOutput =

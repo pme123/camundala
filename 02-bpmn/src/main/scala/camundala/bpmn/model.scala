@@ -178,11 +178,12 @@ case class Process[
 
 end Process
 
-enum StartEventType derives ConfiguredEnumCodec:
+enum StartEventType:
   case None, Message, Signal
 
 object StartEventType:
-  given Schema[StartEventType] = Schema.derived
+  given JsonCodec[StartEventType] = deriveCodec
+  given ApiSchema[StartEventType] = deriveSchema
 
 sealed trait ExternalTask[
     In <: Product: Encoder: Decoder: Schema,

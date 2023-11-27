@@ -43,8 +43,8 @@ object Sample extends BpmnDsl:
       address: Address = Address()
   )
   object SampleIn:
-    given Schema[SampleIn] = Schema.derived
-    given CirceCodec[SampleIn] = deriveCodec
+    given ApiSchema[SampleIn] = deriveSchema
+    given JsonCodec[SampleIn] = deriveCodec
   end SampleIn
 
   case class Address(
@@ -56,8 +56,8 @@ object Sample extends BpmnDsl:
       country: String = "CH"
   )
   object Address:
-    given Schema[Address] = Schema.derived
-    given CirceCodec[Address] = deriveCodec
+    given ApiSchema[Address] = deriveSchema
+    given JsonCodec[Address] = deriveCodec
   end Address
 
   case class SampleOut(
@@ -66,8 +66,8 @@ object Sample extends BpmnDsl:
       outputValue: String = "Just some text"
   )
   object SampleOut:
-    given Schema[SampleOut] = Schema.derived
-    given CirceCodec[SampleOut] = deriveCodec
+    given ApiSchema[SampleOut] = deriveSchema
+    given JsonCodec[SampleOut] = deriveCodec
   end SampleOut
 
   lazy val standardSample: SampleIn = SampleIn()
