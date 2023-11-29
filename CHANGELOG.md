@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.25.3 - 2023-11-29
+### Changed 
+- Adjusted Scala- and Github Actions Versions - see [Commit](https://github.com/pme123/camundala/commit/3f33b08df8f265e7072323fdb69d685675207bff)
+
 ## 1.25.2 - 2023-11-29
 ### Changed 
 - Adding types for indepent Json En-/ Decoding. - see [Commit](https://github.com/pme123/camundala/commit/81ea9428310deefb446bb07c78ff696eff4ae1c9)
