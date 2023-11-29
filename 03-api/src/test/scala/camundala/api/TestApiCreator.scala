@@ -44,7 +44,7 @@ object Sample extends BpmnDsl:
   )
   object SampleIn:
     given ApiSchema[SampleIn] = deriveSchema
-    given JsonCodec[SampleIn] = deriveCodec
+    given InOutCodec[SampleIn] = deriveCodec
   end SampleIn
 
   case class Address(
@@ -57,7 +57,7 @@ object Sample extends BpmnDsl:
   )
   object Address:
     given ApiSchema[Address] = deriveSchema
-    given JsonCodec[Address] = deriveCodec
+    given InOutCodec[Address] = deriveCodec
   end Address
 
   case class SampleOut(
@@ -67,7 +67,7 @@ object Sample extends BpmnDsl:
   )
   object SampleOut:
     given ApiSchema[SampleOut] = deriveSchema
-    given JsonCodec[SampleOut] = deriveCodec
+    given InOutCodec[SampleOut] = deriveCodec
   end SampleOut
 
   lazy val standardSample: SampleIn = SampleIn()

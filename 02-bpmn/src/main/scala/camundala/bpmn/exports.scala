@@ -67,6 +67,6 @@ object GenericExternalTask:
   enum ProcessStatus:
     case succeeded, `404`, `400`, `output-mocked`, `validation-failed`
   object ProcessStatus:
-    given JsonCodec[ProcessStatus] = deriveEnumCodec
-    given ApiSchema[ProcessStatus] = deriveSchema
+    given ApiSchema[ProcessStatus] = deriveEnumSchema
+    given InOutCodec[ProcessStatus] = deriveEnumCodec
 end GenericExternalTask

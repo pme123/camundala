@@ -14,7 +14,7 @@ object ArchiveInvoice extends BpmnDsl:
                 )
   object In:
     given ApiSchema[In] = deriveSchema
-    given JsonCodec[In] = deriveCodec
+    given InOutCodec[In] = deriveCodec
   end In
 
   case class Out(
@@ -22,10 +22,10 @@ object ArchiveInvoice extends BpmnDsl:
                 )
   object Out:
     given ApiSchema[Out] = deriveSchema
-    given JsonCodec[Out] = deriveCodec
+    given InOutCodec[Out] = deriveCodec
   end Out
 
-  given JsonCodec[List[String]] = deriveCodec
+  given InOutCodec[List[String]] = deriveCodec
 
   lazy val example: CustomTask[In, Out] =
     customTask(

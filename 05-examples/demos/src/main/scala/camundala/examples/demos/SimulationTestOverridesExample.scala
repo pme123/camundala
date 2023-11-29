@@ -9,7 +9,7 @@ object SimulationTestOverridesExample extends BpmnDsl:
 
   object SimpleObject:
     given ApiSchema[SimpleObject] = deriveSchema
-    given JsonCodec[SimpleObject] = deriveCodec
+    given InOutCodec[SimpleObject] = deriveCodec
 
   case class InOutput(
                        simpleValue: String = "hello",
@@ -19,7 +19,7 @@ object SimulationTestOverridesExample extends BpmnDsl:
                      )
   object InOutput:
     given ApiSchema[InOutput] = deriveSchema
-    given JsonCodec[InOutput] = deriveCodec
+    given InOutCodec[InOutput] = deriveCodec
 
   lazy val simulationProcess = process(
     id = "simulation-TestOverrides",

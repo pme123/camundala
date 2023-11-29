@@ -22,7 +22,7 @@ enum TestOverrideType:
   case Exists, NotExists, IsEquals, HasSize, Contains
 
 object TestOverrideType:
-  given JsonCodec[TestOverrideType] = deriveCodec
+  given InOutCodec[TestOverrideType] = deriveCodec
   given ApiSchema[TestOverrideType] = deriveSchema
 
 def addOverride[
@@ -44,16 +44,16 @@ def addOverride[
 object TestOverrides:
   given ApiSchema[TestOverrides] = deriveSchema
 
-  given JsonEncoder[TestOverrides] = deriveEncoder
+  given InOutEncoder[TestOverrides] = deriveEncoder
 
-  given JsonDecoder[TestOverrides] = deriveDecoder
+  given InOutDecoder[TestOverrides] = deriveDecoder
 
 object TestOverride:
   given ApiSchema[TestOverride] = deriveSchema
 
-  given JsonEncoder[TestOverride] = deriveEncoder
+  given InOutEncoder[TestOverride] = deriveEncoder
 
-  given JsonDecoder[TestOverride] = deriveDecoder
+  given InOutDecoder[TestOverride] = deriveDecoder
 
 trait TestOverrideExtensions:
 
@@ -69,7 +69,7 @@ trait TestOverrideExtensions:
     ): T =
       add(Some(key), TestOverrideType.NotExists)
 
-    def isEquals[V: JsonEncoder](
+    def isEquals[V: InOutEncoder](
         key: String,
         value: V
     ): T =
@@ -100,7 +100,7 @@ trait TestOverrideExtensions:
       )
 
     // used for collections
-    def contains[V: JsonEncoder](
+    def contains[V: InOutEncoder](
                               key: String,
                               value: V
                             ): T =
@@ -111,7 +111,7 @@ trait TestOverrideExtensions:
       )
 
     // used for DMNs ResultList and CollectEntries
-    def contains[V: JsonEncoder](
+    def contains[V: InOutEncoder](
         expected: V
     ): T =
       add(
@@ -128,7 +128,7 @@ trait TestOverrideExtensions:
       withOverride.add(TestOverride(key, overrideType, value))
 
 
-    private def camundaVariable[V: JsonEncoder](
+    private def camundaVariable[V: InOutEncoder](
                                              value: V
                                            ) =
       val v = value match

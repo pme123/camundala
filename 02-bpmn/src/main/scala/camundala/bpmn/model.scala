@@ -182,7 +182,7 @@ enum StartEventType:
   case None, Message, Signal
 
 object StartEventType:
-  given JsonCodec[StartEventType] = deriveCodec
+  given InOutCodec[StartEventType] = deriveCodec
   given ApiSchema[StartEventType] = deriveSchema
 
 sealed trait ExternalTask[

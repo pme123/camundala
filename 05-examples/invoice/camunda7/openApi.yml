@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: "\n\nCreated at 26/11/2023, 18:01\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
+  summary: "\n\nCreated at 29/11/2023, 11:39\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
     \n> This is the invoice demo application which is shipped with the full distributions.\n\
     \nSee the original [README](https://github.com/camunda/camunda-bpm-platform/tree/master/examples/invoice).\n\
     \nI bundled it here! Just run `InvoiceServletProcessApplication`.\n\nThis based\
@@ -70,9 +70,9 @@ paths:
       summary: 'Process: example-invoice-c7'
       description: "This starts the Invoice Receipt Process.\n\n- Input:  `camundala.examples.invoice.InvoiceReceipt\
         \ > In`\n- Output: `camundala.examples.invoice.InvoiceReceipt > Out`\n\n\n\
-        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-53531\"\
+        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-11661\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container:\
-        \ $('#example-invoice-c7-53531'), height: '95%', width: '95%' }));\" src=\"\
+        \ $('#example-invoice-c7-11661'), height: '95%', width: '95%' }));\" src=\"\
         data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
@@ -118,8 +118,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-94363">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-94363'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-88291">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-88291'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -155,7 +155,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CollectEntries_camundala.examples.invoice.InvoiceReceipt.ApproverGroup[]'
+                $ref: '#/components/schemas/CollectEntries_camundala.examples.invoice.InvoiceReceipt$.ApproverGroup[]'
               examples:
                 example-invoice-c7-assignApprover:
                   value:
@@ -235,9 +235,9 @@ paths:
       summary: 'Process: example-invoice-c7-review'
       description: "This starts the Review Invoice Process.\n\n- Input:  `camundala.examples.invoice.ReviewInvoice\
         \ > In`\n- Output: `camundala.examples.invoice.ReviewInvoice > Out`\n\n\n\
-        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-61982\"\
+        <div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-30677\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({\
-        \ container: $('#example-invoice-c7-review-61982'), height: '95%', width:\
+        \ container: $('#example-invoice-c7-review-30677'), height: '95%', width:\
         \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
@@ -598,8 +598,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-18785">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-18785'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-38671">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-38671'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -623,7 +623,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CollectEntries_camundala.examples.invoice.InvoiceReceipt.ApproverGroup[]'
+                $ref: '#/components/schemas/CollectEntries_camundala.examples.invoice.InvoiceReceipt$.ApproverGroup[]'
               examples:
                 example-invoice-c7-assignApprover:
                   value:
@@ -637,16 +637,13 @@ paths:
                   - sales
 components:
   schemas:
-    '400':
-      type: object
-    '404':
-      type: object
     ApproverGroup:
-      oneOf:
-      - $ref: '#/components/schemas/accounting'
-      - $ref: '#/components/schemas/management'
-      - $ref: '#/components/schemas/sales'
-    CollectEntries_camundala.examples.invoice.InvoiceReceipt.ApproverGroup[]:
+      type: string
+      enum:
+      - accounting
+      - management
+      - sales
+    CollectEntries_camundala.examples.invoice.InvoiceReceipt$.ApproverGroup[]:
       oneOf:
       - $ref: '#/components/schemas/ApproverGroup'
     Failure:
@@ -741,12 +738,11 @@ components:
         shouldFail:
           type: boolean
     InvoiceCategory:
-      oneOf:
-      - $ref: '#/components/schemas/Misc'
-      - $ref: '#/components/schemas/Software License Costs'
-      - $ref: '#/components/schemas/Travel Expenses'
-    Misc:
-      type: object
+      type: string
+      enum:
+      - Misc
+      - Software License Costs
+      - Travel Expenses
     Out:
       required:
       - clarified
@@ -822,14 +818,13 @@ components:
         eye_color:
           type: string
     ProcessStatus:
-      oneOf:
-      - $ref: '#/components/schemas/400'
-      - $ref: '#/components/schemas/404'
-      - $ref: '#/components/schemas/output-mocked'
-      - $ref: '#/components/schemas/succeeded'
-      - $ref: '#/components/schemas/validation-failed'
-    Software License Costs:
-      type: object
+      type: string
+      enum:
+      - '400'
+      - '404'
+      - output-mocked
+      - succeeded
+      - validation-failed
     Success:
       required:
       - people
@@ -843,17 +838,3 @@ components:
           type: string
         processStatus:
           $ref: '#/components/schemas/ProcessStatus'
-    Travel Expenses:
-      type: object
-    accounting:
-      type: object
-    management:
-      type: object
-    output-mocked:
-      type: object
-    sales:
-      type: object
-    succeeded:
-      type: object
-    validation-failed:
-      type: object

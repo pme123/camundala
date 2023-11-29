@@ -19,7 +19,7 @@ object TwitterApi extends BpmnDsl:
   )
   object CreateTweet:
     given ApiSchema[CreateTweet] = deriveSchema
-    given JsonCodec[CreateTweet] = deriveCodec
+    given InOutCodec[CreateTweet] = deriveCodec
   end CreateTweet
 
   @description("""Every Tweet has to be accepted by the Boss.""")
@@ -29,7 +29,7 @@ object TwitterApi extends BpmnDsl:
   )
   object ReviewedTweet:
     given ApiSchema[ReviewedTweet] = deriveSchema
-    given JsonCodec[ReviewedTweet] = deriveCodec
+    given InOutCodec[ReviewedTweet] = deriveCodec
   end ReviewedTweet
 
   val twitterDemoProcess =

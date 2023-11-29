@@ -18,7 +18,7 @@ case class RequestErrorOutput(
 )
 object RequestErrorOutput:
   given ApiSchema[RequestErrorOutput] = deriveSchema
-  given JsonCodec[RequestErrorOutput] = deriveCodec
+  given InOutCodec[RequestErrorOutput] = deriveCodec
 end RequestErrorOutput
 
 case class CamundaError(
@@ -26,7 +26,7 @@ case class CamundaError(
     message: String = "a detailed message"
 )
 object CamundaError:
-  given JsonCodec[CamundaError] = deriveCodec
+  given InOutCodec[CamundaError] = deriveCodec
   given ApiSchema[CamundaError] = deriveSchema
 end CamundaError
 
@@ -40,7 +40,7 @@ case class CamundaAuthError(
 )
 object CamundaAuthError:
   given ApiSchema[CamundaAuthError] = deriveSchema
-  given JsonCodec[CamundaAuthError] = deriveCodec
+  given InOutCodec[CamundaAuthError] = deriveCodec
 end CamundaAuthError
 
 given ApiSchema[StatusCode] = Schema(SchemaType.SInteger())
@@ -70,7 +70,7 @@ case class GetActiveJobIn(
                          )
 object GetActiveJobIn:
   given ApiSchema[GetActiveJobIn] = deriveSchema
-  given JsonCodec[GetActiveJobIn] = deriveCodec
+  given InOutCodec[GetActiveJobIn] = deriveCodec
 
 /*
 @endpointInput("task/{taskId}/form-variables")
@@ -96,7 +96,7 @@ case class CompleteTaskIn(
 )
 object CompleteTaskIn:
   given ApiSchema[CompleteTaskIn] = deriveSchema
-  given JsonCodec[CompleteTaskIn] = deriveCodec
+  given InOutCodec[CompleteTaskIn] = deriveCodec
 
 @description(
   "Same as GetActiveJobIn."
@@ -120,7 +120,7 @@ case class GetActiveTaskIn(
 )
 object GetActiveTaskIn:
   given ApiSchema[GetActiveTaskIn] = deriveSchema
-  given JsonCodec[GetActiveTaskIn] = deriveCodec
+  given InOutCodec[GetActiveTaskIn] = deriveCodec
 
 case class RequestInput[T](examples: Map[ExampleName, T]):
   def :+(label: String, example: T): RequestInput[T] =
@@ -229,7 +229,7 @@ case class GetActiveTaskOut(
 )
 object GetActiveTaskOut:
   given ApiSchema[GetActiveTaskOut] = deriveSchema
-  given JsonCodec[GetActiveTaskOut] = deriveCodec
+  given InOutCodec[GetActiveTaskOut] = deriveCodec
 end GetActiveTaskOut
 
 

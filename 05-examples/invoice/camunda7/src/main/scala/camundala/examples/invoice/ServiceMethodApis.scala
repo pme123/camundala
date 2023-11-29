@@ -18,7 +18,7 @@ object ServiceMethodDeleteApi extends BpmnDsl:
 
   object In:
     given ApiSchema[In] = deriveSchema
-    given JsonCodec[In] = deriveCodec
+    given InOutCodec[In] = deriveCodec
   end In
 
   case class Out(
@@ -27,7 +27,7 @@ object ServiceMethodDeleteApi extends BpmnDsl:
 
   object Out:
     given ApiSchema[Out] = deriveSchema
-    given JsonCodec[Out] = deriveCodec
+    given InOutCodec[Out] = deriveCodec
   end Out
 
   case class Dummy(
@@ -35,7 +35,7 @@ object ServiceMethodDeleteApi extends BpmnDsl:
   )
   object Dummy:
     given ApiSchema[Dummy] = deriveSchema
-    given JsonCodec[Dummy] = deriveCodec
+    given InOutCodec[Dummy] = deriveCodec
   end Dummy
 
   final lazy val example: ServiceTask[In, Out, ServiceOut] =

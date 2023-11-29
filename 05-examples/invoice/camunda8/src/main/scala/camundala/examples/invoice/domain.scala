@@ -18,14 +18,14 @@ object domain :
 
   object InvoiceReceipt:
     given ApiSchema[InvoiceReceipt] = deriveSchema
-    given JsonCodec[InvoiceReceipt] = deriveCodec
+    given InOutCodec[InvoiceReceipt] = deriveCodec
   end InvoiceReceipt
 
   @description("There are three possible Categories")
   enum InvoiceCategory derives ConfiguredEnumCodec :
     case `Travel Expenses`, Misc, `Software License Costs`
   object InvoiceCategory:
-    given ApiSchema[InvoiceCategory] = deriveSchema
+    given ApiSchema[InvoiceCategory] = deriveEnumSchema
   end InvoiceCategory
 
   case class SelectApproverGroup(
@@ -35,14 +35,14 @@ object domain :
                                 )
   object SelectApproverGroup:
     given ApiSchema[SelectApproverGroup] = deriveSchema
-    given JsonCodec[SelectApproverGroup] = deriveCodec
+    given InOutCodec[SelectApproverGroup] = deriveCodec
   end SelectApproverGroup
 
   @description("These Groups can approve the invoice.")
   enum ApproverGroup derives ConfiguredEnumCodec :
     case accounting, sales, management
   object ApproverGroup:
-    given ApiSchema[ApproverGroup] = deriveSchema
+    given ApiSchema[ApproverGroup] = deriveEnumSchema
   end ApproverGroup
 
   @description("""Every Invoice has to be accepted by the Boss.""")
@@ -52,7 +52,7 @@ object domain :
                            )
   object ApproveInvoice:
     given ApiSchema[ApproveInvoice] = deriveSchema
-    given JsonCodec[ApproveInvoice] = deriveCodec
+    given InOutCodec[ApproveInvoice] = deriveCodec
   end ApproveInvoice
 
   @description(
@@ -62,13 +62,13 @@ object domain :
                                 )
   object PrepareBankTransfer:
     given ApiSchema[PrepareBankTransfer] = deriveSchema
-    given JsonCodec[PrepareBankTransfer] = deriveCodec
+    given InOutCodec[PrepareBankTransfer] = deriveCodec
   end PrepareBankTransfer
 
   case class AssignedReviewer(reviewer: String = "John")
   object AssignedReviewer:
     given ApiSchema[AssignedReviewer] = deriveSchema
-    given JsonCodec[AssignedReviewer] = deriveCodec
+    given InOutCodec[AssignedReviewer] = deriveCodec
   end AssignedReviewer
 
   case class InvoiceReviewed(
@@ -78,7 +78,7 @@ object domain :
 
   object InvoiceReviewed:
     given ApiSchema[InvoiceReviewed] = deriveSchema
-    given JsonCodec[InvoiceReviewed] = deriveCodec
+    given InOutCodec[InvoiceReviewed] = deriveCodec
   end InvoiceReviewed
 
   case class InvoiceReceiptCheck(
@@ -92,7 +92,7 @@ object domain :
 
   object InvoiceReceiptCheck:
     given ApiSchema[InvoiceReceiptCheck] = deriveSchema
-    given JsonCodec[InvoiceReceiptCheck] = deriveCodec
+    given InOutCodec[InvoiceReceiptCheck] = deriveCodec
   end InvoiceReceiptCheck
 
 

@@ -35,7 +35,7 @@ case class Tweet(
 
 object Tweet:
   given ApiSchema[Tweet] = deriveSchema
-  given JsonCodec[Tweet] = deriveCodec
+  given InOutCodec[Tweet] = deriveCodec
 
 @description("Every Tweet has to be accepted by the Boss.")
 case class ReviewedTweet(
@@ -47,7 +47,7 @@ case class ReviewedTweet(
 
 object ReviewedTweet:
   given ApiSchema[ReviewedTweet] = deriveSchema
-  given JsonCodec[ReviewedTweet] = deriveCodec
+  given InOutCodec[ReviewedTweet] = deriveCodec
 
 @description("Every Tweet has to be accepted by the Boss.")
 case class TweetOut(
@@ -64,4 +64,4 @@ object EndStatus:
 
 object TweetOut:
   given ApiSchema[TweetOut] = deriveSchema
-  given JsonCodec[TweetOut] = deriveCodec
+  given InOutCodec[TweetOut] = deriveCodec

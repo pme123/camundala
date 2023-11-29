@@ -8,12 +8,12 @@ object TestDomain extends BpmnDsl:
   case class SomeObj(tag: String = "okidoki", isOk: String = "false")
   object SomeObj:
     given ApiSchema[SomeObj] = deriveSchema
-    given JsonCodec[SomeObj] = deriveCodec
+    given InOutCodec[SomeObj] = deriveCodec
   end SomeObj
   case class ValueWrapper(success: Boolean = false)
   object ValueWrapper:
     given ApiSchema[ValueWrapper] = deriveSchema
-    given JsonCodec[ValueWrapper] = deriveCodec
+    given InOutCodec[ValueWrapper] = deriveCodec
   end ValueWrapper
 // process In
   case class In(
@@ -25,7 +25,7 @@ object TestDomain extends BpmnDsl:
   )
   object In:
     given ApiSchema[In] = deriveSchema
-    given JsonCodec[In] = deriveCodec
+    given InOutCodec[In] = deriveCodec
   end In
 
   //  Out
@@ -38,7 +38,7 @@ object TestDomain extends BpmnDsl:
   )
   object Out:
     given ApiSchema[Out] = deriveSchema
-    given JsonCodec[Out] = deriveCodec
+    given InOutCodec[Out] = deriveCodec
   end Out
 
   // generate-test.bpmn

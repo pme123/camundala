@@ -69,12 +69,12 @@ object DecisionResultTypes extends BpmnDsl:
   )
 
   given ApiSchema[Input] = deriveSchema
-  given JsonCodec[Input] = deriveCodec
+  given InOutCodec[Input] = deriveCodec
 
   given ApiSchema[ManyOutResult] = deriveSchema
-  given JsonCodec[ManyOutResult] = deriveCodec
+  given InOutCodec[ManyOutResult] = deriveCodec
 
   given ApiSchema[BadManyOutResult] = deriveSchema
-  given JsonCodec[BadManyOutResult] = deriveCodec
+  given InOutCodec[BadManyOutResult] = deriveCodec
 
 end DecisionResultTypes

@@ -9,8 +9,8 @@ import sttp.model.{Method, Uri}
 case class Workers(workers: Seq[Worker[?, ?, ?]])
 
 sealed trait Worker[
-    In <: Product: JsonCodec,
-    Out <: Product: JsonCodec,
+    In <: Product: InOutCodec,
+    Out <: Product: InOutCodec,
     T <: Worker[In, Out, ?]
 ]:
 
@@ -37,8 +37,8 @@ sealed trait Worker[
 end Worker
 
 case class InitWorker[
-    In <: Product: JsonCodec,
-    Out <: Product: JsonCodec
+    In <: Product: InOutCodec,
+    Out <: Product: InOutCodec
 ](
     inOut: InOut[In, Out, ?],
     override val validationHandler: Option[ValidationHandler[In]] = None,
@@ -64,8 +64,8 @@ case class InitWorker[
 end InitWorker
 
 case class CustomWorker[
-    In <: Product: JsonCodec,
-    Out <: Product: JsonCodec
+    In <: Product: InOutCodec,
+    Out <: Product: InOutCodec
 ](
     inOut: CustomTask[In, Out],
     override val validationHandler: Option[ValidationHandler[In]] = None,
@@ -91,8 +91,8 @@ case class CustomWorker[
 end CustomWorker
 
 case class ServiceWorker[
-    In <: Product: JsonCodec,
-    Out <: Product: JsonCodec,
+    In <: Product: InOutCodec,
+    Out <: Product: InOutCodec,
     ServiceIn <: Product: Encoder,
     ServiceOut: Decoder
 ](
@@ -166,7 +166,7 @@ case class RunnableRequest[ServiceIn: Encoder](
 
 object RunnableRequest:
 
-  def apply[In <: Product: JsonCodec, ServiceIn <: Product : Encoder](
+  def apply[In <: Product: InOutCodec, ServiceIn <: Product : Encoder](
       inputObject: In,
       requestHandler: ServiceHandler[In, ?, ServiceIn, ?]
   ): RunnableRequest[ServiceIn] =

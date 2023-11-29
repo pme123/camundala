@@ -25,7 +25,7 @@ object StarWarsPeople extends BpmnDsl:
 
   object In:
     given ApiSchema[In] = deriveSchema
-    given JsonCodec[In] = deriveCodec
+    given InOutCodec[In] = deriveCodec
   end In
 
   enum Out derives ConfiguredCodec:
@@ -46,7 +46,7 @@ object StarWarsPeople extends BpmnDsl:
 
   object PeopleResults:
     given ApiSchema[PeopleResults] = deriveSchema
-    given JsonCodec[PeopleResults] = deriveCodec
+    given InOutCodec[PeopleResults] = deriveCodec
   end PeopleResults
 
   final lazy val example: ServiceTask[In, Out, ServiceOut] =
@@ -74,7 +74,7 @@ object StarWarsPeopleDetail extends BpmnDsl:
 
   object In:
     given ApiSchema[In] = deriveSchema
-    given JsonCodec[In] = deriveCodec
+    given InOutCodec[In] = deriveCodec
   end In
 
   enum Out derives ConfiguredCodec:
@@ -111,5 +111,5 @@ case class People(
 
 object People:
   given ApiSchema[People] = deriveSchema
-  given JsonCodec[People] = deriveCodec
+  given InOutCodec[People] = deriveCodec
 end People

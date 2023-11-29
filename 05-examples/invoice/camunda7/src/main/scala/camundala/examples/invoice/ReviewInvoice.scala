@@ -15,7 +15,7 @@ object ReviewInvoice extends BpmnDsl:
   )
   object In:
     given ApiSchema[In] = deriveSchema
-    given JsonCodec[In] = deriveCodec
+    given InOutCodec[In] = deriveCodec
   end In
 
   case class Out(
@@ -24,7 +24,7 @@ object ReviewInvoice extends BpmnDsl:
   )
   object Out:
     given ApiSchema[Out] = deriveSchema
-    given JsonCodec[Out] = deriveCodec
+    given InOutCodec[Out] = deriveCodec
   end Out
 
   lazy val example: Process[In, Out] =
@@ -47,7 +47,7 @@ object ReviewInvoice extends BpmnDsl:
                   )
     object Out:
       given ApiSchema[Out] = deriveSchema
-      given JsonCodec[Out] = deriveCodec
+      given InOutCodec[Out] = deriveCodec
     end Out
 
     lazy val example: UserTask[In, Out] =
@@ -70,7 +70,7 @@ object ReviewInvoice extends BpmnDsl:
                   )
     object Out:
       given ApiSchema[Out] = deriveSchema
-      given JsonCodec[Out] = deriveCodec
+      given InOutCodec[Out] = deriveCodec
     end Out
 
     lazy val example: UserTask[In, Out] =

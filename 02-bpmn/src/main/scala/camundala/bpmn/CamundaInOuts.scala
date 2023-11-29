@@ -16,7 +16,7 @@ case class StartProcessIn(
                          )
 object StartProcessIn:
   given ApiSchema[StartProcessIn] = deriveSchema
-  given JsonCodec[StartProcessIn] = deriveCodec
+  given InOutCodec[StartProcessIn] = deriveCodec
 
 case class CorrelateMessageIn(
                                messageName: String,
@@ -34,7 +34,7 @@ case class CorrelateMessageIn(
                              )
 object CorrelateMessageIn:
   given ApiSchema[CorrelateMessageIn] = deriveSchema
-  given JsonCodec[CorrelateMessageIn] = deriveCodec
+  given InOutCodec[CorrelateMessageIn] = deriveCodec
 
 case class SendSignalIn(
                          @description("The name of the signal to deliver.")
@@ -62,7 +62,7 @@ Note: If no execution id is defined the signal is broadcasted to all subscribed 
 
 object SendSignalIn:
   given ApiSchema[SendSignalIn] = deriveSchema
-  given JsonCodec[SendSignalIn] = deriveCodec
+  given InOutCodec[SendSignalIn] = deriveCodec
 
 @description(
   "A JSON object with the following properties:"
@@ -73,7 +73,7 @@ case class EvaluateDecisionIn(
                              )
 object EvaluateDecisionIn:
   given ApiSchema[EvaluateDecisionIn] = deriveSchema
-  given JsonCodec[EvaluateDecisionIn] = deriveCodec
+  given InOutCodec[EvaluateDecisionIn] = deriveCodec
 
 
 case class CompleteTaskOut(
@@ -84,5 +84,5 @@ case class CompleteTaskOut(
                           )
 object CompleteTaskOut:
   given ApiSchema[CompleteTaskOut] = deriveSchema
-  given JsonCodec[CompleteTaskOut] = deriveCodec
+  given InOutCodec[CompleteTaskOut] = deriveCodec
 end CompleteTaskOut

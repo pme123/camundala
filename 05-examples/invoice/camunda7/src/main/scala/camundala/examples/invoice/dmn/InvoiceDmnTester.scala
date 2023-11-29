@@ -48,7 +48,7 @@ object InvoiceDmnTester
     case `day-to-day expense`, budget, exceptional
 
   object InvoiceClassification:
-    given Schema[InvoiceClassification] = Schema.derived
+    given Schema[InvoiceClassification] = deriveEnumSchema
 
   private lazy val InvoiceAssignApproverDmnUnit =
     collectEntries(
