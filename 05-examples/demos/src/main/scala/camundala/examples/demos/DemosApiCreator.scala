@@ -16,7 +16,7 @@ object DemosApiCreator extends DefaultApiCreator:
 
   override protected val apiConfig: ApiConfig =
     super.apiConfig
-      .withBasePath(os.pwd / "examples" / "demos")
+      .withBasePath(os.pwd / "05-examples" / "demos")
       .withDocProjectUrl(project => s"https://webstor.ch/camundala/myCompany/$project")
       .withDiagramDownloadPath(
         "src/main/resources"

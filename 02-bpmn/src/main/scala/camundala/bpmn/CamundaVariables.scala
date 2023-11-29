@@ -25,41 +25,41 @@ object CamundaVariable:
       case CNull => Json.Null
     }
 
-  given Schema[CamundaVariable] =
-    Schema.derived
+  given ApiSchema[CamundaVariable] =
+    deriveSchema
 
-  given Schema[CString] = Schema.derived
+  given ApiSchema[CString] = deriveSchema
   given Encoder[CString] = deriveEncoder
   given Decoder[CString] = deriveDecoder
 
-  given Schema[CInteger] = Schema.derived
+  given ApiSchema[CInteger] = deriveSchema
   given Encoder[CInteger] = deriveEncoder
   given Decoder[CInteger] = deriveDecoder
 
-  given Schema[CLong] = Schema.derived
+  given ApiSchema[CLong] = deriveSchema
   given Encoder[CLong] = deriveEncoder
   given Decoder[CLong] = deriveDecoder
 
-  given Schema[CDouble] = Schema.derived
+  given ApiSchema[CDouble] = deriveSchema
   given Encoder[CDouble] = deriveEncoder
   given Decoder[CDouble] = deriveDecoder
 
-  given Schema[CBoolean] = Schema.derived
+  given ApiSchema[CBoolean] = deriveSchema
   given Encoder[CBoolean] = deriveEncoder
   given Decoder[CBoolean] = deriveDecoder
 
-  given Schema[CFile] = Schema.derived
+  given ApiSchema[CFile] = deriveSchema
   given Encoder[CFile] = deriveEncoder
   given Decoder[CFile] = deriveDecoder
 
-  given Schema[CFileValueInfo] =
-    Schema.derived
+  given ApiSchema[CFileValueInfo] =
+    deriveSchema
   given Encoder[CFileValueInfo] =
     deriveEncoder
   given Decoder[CFileValueInfo] =
     deriveDecoder
 
-  given Schema[CJson] = Schema.derived
+  given ApiSchema[CJson] = deriveSchema
   given Encoder[CJson] = deriveEncoder
   given Decoder[CJson] = deriveDecoder
 

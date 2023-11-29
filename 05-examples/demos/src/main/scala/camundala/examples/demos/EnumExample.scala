@@ -13,19 +13,20 @@ object EnumExample extends BpmnDsl:
         customMock: Option[Output] = Some(Output.A())
     )
   object Input:
-    given Schema[Input] = Schema.derived
+    given ApiSchema[Input] = deriveSchema
 
-  enum Output derives ConfiguredCodec:
+  enum Output:
 
     case A(someOut: Option[String] = Some("hello"), intValue: Int = 12, simpleEnum: SimpleEnum = SimpleEnum.One)
   object Output:
-    given Schema[Output] = Schema.derived
+    given ApiSchema[Output] = deriveSchema
+    given InOutCodec[Output] = deriveCodec
 
   enum SimpleEnum derives ConfiguredEnumCodec:
      case One,Two
 
   object SimpleEnum:
-    given Schema[SimpleEnum] = Schema.derived
+    given ApiSchema[SimpleEnum] = deriveEnumSchema
 
   lazy val enumExample = process(
     "enum-example",

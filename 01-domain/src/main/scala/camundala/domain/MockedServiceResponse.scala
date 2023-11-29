@@ -67,9 +67,9 @@ object MockedServiceResponse:
     MockedServiceResponse(status, Left(None))
 
   given tapirSchema[ServiceOut: Schema]: Schema[MockedServiceResponse[ServiceOut]] =
-    Schema.derived[MockedServiceResponse[ServiceOut]]
+    deriveSchema[MockedServiceResponse[ServiceOut]]
 
-  given mockedHttpResponseEncoder[ServiceOut: Encoder]: Encoder[MockedServiceResponse[ServiceOut]] =
+  given mockedHttpResponseJsonEncoder[ServiceOut: InOutEncoder]: InOutEncoder[MockedServiceResponse[ServiceOut]] =
     Encoder.instance { response =>
       Json.obj(
         "respStatus" -> Json.fromInt(response.respStatus),
@@ -84,7 +84,7 @@ object MockedServiceResponse:
       )
     }
 
-  given mockedHttpResponseDecoder[ServiceOut: Decoder]: Decoder[MockedServiceResponse[ServiceOut]] =
+  given mockedHttpResponseJsonDecoder[ServiceOut: InOutDecoder]: InOutDecoder[MockedServiceResponse[ServiceOut]] =
     Decoder.instance { cursor =>
       for
         respStatus <- cursor.downField("respStatus").as[Int]

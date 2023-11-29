@@ -15,8 +15,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## 1.25.1 - 2023-11-29
+## 1.25.2 - 2023-11-29
 ### Changed 
+- Adding types for indepent Json En-/ Decoding. - see [Commit](https://github.com/pme123/camundala/commit/81ea9428310deefb446bb07c78ff696eff4ae1c9)
+- Revert "Reduce dependencies to Circe." - see [Commit](https://github.com/pme123/camundala/commit/524ae7bb93b8a5cf2822c79deece203b161df1ab)
+- Reduce dependencies to Circe. - see [Commit](https://github.com/pme123/camundala/commit/cde430e60f1a3cf0abb45e5d523a73c1df6551e1)
+- Merge branch 'experiments-json-codec' into develop - see [Commit](https://github.com/pme123/camundala/commit/ecb22e61e94b8c9199d3fed3711a51977aa44dcc)
+- Fixed examples path. - see [Commit](https://github.com/pme123/camundala/commit/682e8b44b3faedbde5596bc43dfd32c2ee54efb0)
+- Experiments JSON codecs - problems in projects. - see [Commit](https://github.com/pme123/camundala/commit/c01cec0d39f9432a0b74ed74cb97c3af217f5129)
+- Fixed DMN Tester Example Paths. - see [Commit](https://github.com/pme123/camundala/commit/d8c5a6e27493f02e282094d6b1f018310f88f1c8)
 - Added Refined Types in refined. - see [Commit](https://github.com/pme123/camundala/commit/65301e05d4cbba5a7cf9ceb6c3d571244c44b467)
 - Fixed BigDecimal in jsonToEngineValue. - see [Commit](https://github.com/pme123/camundala/commit/6c833b9c4099678fdc2a108683553f80292485fd)
 

@@ -1,6 +1,7 @@
 package camundala
 package camunda7.worker
 
+import camundala.domain.*
 import camundala.bpmn.{*, given}
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*

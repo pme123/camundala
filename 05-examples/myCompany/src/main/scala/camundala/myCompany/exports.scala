@@ -6,7 +6,7 @@ lazy val postmanApiConfig = ApiConfig()
   .withEndpoint("http://localhost:9000/public/api")
 
 lazy val myCompanyConfig = postmanApiConfig
-  .withBasePath(os.pwd / "examples" / "myCompany")
+  .withBasePath(os.pwd / "05-examples" / "myCompany")
   .withDocProjectUrl(project => s"https://webstor.ch/$project")
   .withProjectsConfig(myCompanyGitConfigs)
   .withDiagramDownloadPath("diagrams")
@@ -28,19 +28,19 @@ private lazy val myCompanyGitConfigs =
 private lazy val myProjects: Seq[ProjectConfig] = Seq(
   ProjectConfig(
     name = "exampleDemos",
-    path = _ => os.rel / "examples" / "demos",
+    path = _ => os.rel / "05-examples" / "demos",
     group = demos,
     color = "#f4ffcc"
   ),
   ProjectConfig(
     "exampleInvoiceC7Version",
-    _ => os.rel / "examples" / "invoice" / "camunda7",
+    _ => os.rel / "05-examples" / "invoice" / "camunda7",
     group = invoices,
     color = "#c8feda"
   ),
   ProjectConfig(
     "exampleTwitterC8Version",
-    _ => os.rel / "examples" / "twitter" / "camunda8",
+    _ => os.rel / "05-examples" / "twitter" / "camunda8",
     group = twitter,
     color = "#f2d9d9"
   )

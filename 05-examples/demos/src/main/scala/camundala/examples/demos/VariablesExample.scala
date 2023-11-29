@@ -17,8 +17,8 @@ object VariablesExample extends BpmnDsl:
   )
 
 
-  given Schema[Input] = Schema.derived
-  given CirceCodec[Input] = deriveCodec
+  given ApiSchema[Input] = deriveSchema
+  given InOutCodec[Input] = deriveCodec
 
 
 end VariablesExample

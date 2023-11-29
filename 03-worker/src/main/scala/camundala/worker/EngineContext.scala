@@ -84,7 +84,7 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
       case other =>
         other
 
-  def domainObjToEngineObject[A <: Product: CirceCodec](variable: A): Any =
+  def domainObjToEngineObject[A <: Product: InOutCodec](variable: A): Any =
     toEngineObject(variable.asJson)
 
   def jsonToEngineValue(json: Json): Any =

@@ -14,7 +14,7 @@ object DemosDmnTester
       App:
 
   override protected val projectBasePath: os.Path =
-    os.pwd / "examples" / "demos"
+    os.pwd / "05-examples" / "demos"
 
   override val starterConfig: DmnTesterStarterConfig = DmnTesterStarterConfig(
   )

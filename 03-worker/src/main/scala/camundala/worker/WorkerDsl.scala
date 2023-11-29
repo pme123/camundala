@@ -30,8 +30,8 @@ trait WorkerDsl:
 end WorkerDsl
 
 trait InitWorkerDsl[
-    In <: Product: CirceCodec,
-    Out <: Product: CirceCodec
+    In <: Product: InOutCodec,
+    Out <: Product: InOutCodec
 ] extends WorkerDsl,
       ValidateDsl[In],
       InitProcessDsl[In]:
@@ -45,8 +45,8 @@ trait InitWorkerDsl[
 end InitWorkerDsl
 
 trait CustomWorkerDsl[
-    In <: Product: CirceCodec,
-    Out <: Product: CirceCodec
+    In <: Product: InOutCodec,
+    Out <: Product: InOutCodec
 ] extends WorkerDsl,
       ValidateDsl[In],
       RunWorkDsl[In, Out]:
@@ -61,8 +61,8 @@ trait CustomWorkerDsl[
 end CustomWorkerDsl
 
 trait ServiceWorkerDsl[
-    In <: Product: CirceCodec,
-    Out <: Product: CirceCodec,
+    In <: Product: InOutCodec,
+    Out <: Product: InOutCodec,
     ServiceIn <: Product: Encoder,
     ServiceOut: Decoder
 ] extends WorkerDsl,
@@ -117,7 +117,7 @@ trait ServiceWorkerDsl[
 end ServiceWorkerDsl
 
 private trait ValidateDsl[
-    In <: Product: CirceCodec
+    In <: Product: InOutCodec
 ]:
 
   def validate(in: In): Either[ValidatorError, In] = Right(in)
@@ -125,7 +125,7 @@ private trait ValidateDsl[
 end ValidateDsl
 
 private trait InitProcessDsl[
-    In <: Product: CirceCodec
+    In <: Product: InOutCodec
 ]:
 
   def initProcess(in: In): Either[InitProcessError, Map[String, Any]] = Right(Map.empty)
@@ -133,8 +133,8 @@ private trait InitProcessDsl[
 end InitProcessDsl
 
 private trait RunWorkDsl[
-    In <: Product: CirceCodec,
-    Out <: Product: CirceCodec
+    In <: Product: InOutCodec,
+    Out <: Product: InOutCodec
 ]:
 
   def runWork(

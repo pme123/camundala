@@ -5,8 +5,8 @@ import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 
 case class WorkerExecutor[
-    In <: Product: CirceCodec,
-    Out <: Product: CirceCodec,
+    In <: Product: InOutCodec,
+    Out <: Product: InOutCodec,
     T <: Worker[In, Out, ?]
 ](
     worker: T

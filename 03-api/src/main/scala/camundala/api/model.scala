@@ -17,8 +17,8 @@ case class RequestErrorOutput(
     examples: Map[ExampleName, CamundaError] = Map.empty
 )
 object RequestErrorOutput:
-  given Schema[RequestErrorOutput] = Schema.derived
-  given CirceCodec[RequestErrorOutput] = deriveCodec
+  given ApiSchema[RequestErrorOutput] = deriveSchema
+  given InOutCodec[RequestErrorOutput] = deriveCodec
 end RequestErrorOutput
 
 case class CamundaError(
@@ -26,8 +26,8 @@ case class CamundaError(
     message: String = "a detailed message"
 )
 object CamundaError:
-  given CirceCodec[CamundaError] = deriveCodec
-  given Schema[CamundaError] = Schema.derived
+  given InOutCodec[CamundaError] = deriveCodec
+  given ApiSchema[CamundaError] = deriveSchema
 end CamundaError
 
 case class CamundaAuthError(
@@ -39,11 +39,11 @@ case class CamundaAuthError(
     resourceId: String = "Mary"
 )
 object CamundaAuthError:
-  given Schema[CamundaAuthError] = Schema.derived
-  given CirceCodec[CamundaAuthError] = deriveCodec
+  given ApiSchema[CamundaAuthError] = deriveSchema
+  given InOutCodec[CamundaAuthError] = deriveCodec
 end CamundaAuthError
 
-given Schema[StatusCode] = Schema(SchemaType.SInteger())
+given ApiSchema[StatusCode] = Schema(SchemaType.SInteger())
 given Encoder[StatusCode] = Encoder.instance(st => st.code.asJson)
 given Decoder[StatusCode] = (c: HCursor) => c.value.as[Int].map(StatusCode(_))
 
@@ -69,8 +69,8 @@ case class GetActiveJobIn(
                            active: Boolean = true
                          )
 object GetActiveJobIn:
-  given Schema[GetActiveJobIn] = Schema.derived
-  given CirceCodec[GetActiveJobIn] = deriveCodec
+  given ApiSchema[GetActiveJobIn] = deriveSchema
+  given InOutCodec[GetActiveJobIn] = deriveCodec
 
 /*
 @endpointInput("task/{taskId}/form-variables")
@@ -95,8 +95,8 @@ case class CompleteTaskIn(
     withVariablesInReturn: Boolean = true
 )
 object CompleteTaskIn:
-  given Schema[CompleteTaskIn] = Schema.derived
-  given CirceCodec[CompleteTaskIn] = deriveCodec
+  given ApiSchema[CompleteTaskIn] = deriveSchema
+  given InOutCodec[CompleteTaskIn] = deriveCodec
 
 @description(
   "Same as GetActiveJobIn."
@@ -119,8 +119,8 @@ case class GetActiveTaskIn(
     active: Boolean = true
 )
 object GetActiveTaskIn:
-  given Schema[GetActiveTaskIn] = Schema.derived
-  given CirceCodec[GetActiveTaskIn] = deriveCodec
+  given ApiSchema[GetActiveTaskIn] = deriveSchema
+  given InOutCodec[GetActiveTaskIn] = deriveCodec
 
 case class RequestInput[T](examples: Map[ExampleName, T]):
   def :+(label: String, example: T): RequestInput[T] =
@@ -228,8 +228,8 @@ case class GetActiveTaskOut(
     id: String = "f150c3f1-13f5-11ec-936e-0242ac1d0007"
 )
 object GetActiveTaskOut:
-  given Schema[GetActiveTaskOut] = Schema.derived
-  given CirceCodec[GetActiveTaskOut] = deriveCodec
+  given ApiSchema[GetActiveTaskOut] = deriveSchema
+  given InOutCodec[GetActiveTaskOut] = deriveCodec
 end GetActiveTaskOut
 
 

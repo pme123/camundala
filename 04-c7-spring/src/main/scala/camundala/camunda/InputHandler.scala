@@ -4,7 +4,7 @@ import camundala.domain.*
 import org.camunda.bpm.engine.delegate.{DelegateExecution, ExecutionListener}
 
 
-abstract class InputHandler[T <: Product : CirceCodec]
+abstract class InputHandler[T <: Product : InOutCodec]
   extends ExecutionListener, Validator[T], Mocker :
 
   @throws[Exception]

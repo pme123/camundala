@@ -14,23 +14,24 @@ object InvoiceDmnTester
       App:
 
   override protected val projectBasePath: os.Path =
-    os.pwd / "examples" / "invoice" / "camunda7"
+    os.pwd / "05-examples" / "invoice" / "camunda7"
 
   override val starterConfig: DmnTesterStarterConfig = DmnTesterStarterConfig(
+
   )
 
   startDmnTester()
 
   createDmnConfigs(
     InvoiceAssignApproverDMN.example
-      .dmnPath("invoiceBusinessDecisions")
+      .dmnPath("example-invoice-c7-assignApprover")
       .testValues(_.amount, 249, 250, 999, 1000, 1001),
     // for demonstration - created unit test - acceptMissingRules just for demo
     InvoiceAssignApproverDmnUnit
       .acceptMissingRules
       .testUnit
-      .dmnPath("invoiceBusinessDecisions")
-      .inTestMode
+      .dmnPath("example-invoice-c7-assignApprover")
+    //  .inTestMode
   )
 
   case class InvoiceAssignApproverDmnIn(
@@ -47,7 +48,7 @@ object InvoiceDmnTester
     case `day-to-day expense`, budget, exceptional
 
   object InvoiceClassification:
-    given Schema[InvoiceClassification] = Schema.derived
+    given Schema[InvoiceClassification] = deriveEnumSchema
 
   private lazy val InvoiceAssignApproverDmnUnit =
     collectEntries(
