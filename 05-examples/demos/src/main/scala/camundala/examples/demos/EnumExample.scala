@@ -5,7 +5,7 @@ import camundala.domain.*
 
 object EnumExample extends BpmnDsl:
 
-  enum Input:
+  enum Input derives CJsonCodec:
 
     case A(
         someValue: Option[String] = Some("hello"),
@@ -14,21 +14,18 @@ object EnumExample extends BpmnDsl:
     )
   object Input:
     given ApiSchema[Input] = deriveSchema
-    given JsonCodec[Input] = deriveCodec
 
-  enum Output:
+  enum Output derives CJsonCodec:
 
     case A(someOut: Option[String] = Some("hello"), intValue: Int = 12, simpleEnum: SimpleEnum = SimpleEnum.One)
   object Output:
     given ApiSchema[Output] = deriveSchema
-    given JsonCodec[Output] = deriveCodec
 
-  enum SimpleEnum:
+  enum SimpleEnum derives CJsonEnumCodec:
      case One,Two
 
   object SimpleEnum:
-    given ApiSchema[SimpleEnum] = deriveEnumSchema
-    given JsonCodec[SimpleEnum] = deriveEnumCodec
+    given ApiSchema[SimpleEnum] = deriveSchema
 
   lazy val enumExample = process(
     "enum-example",

@@ -7,8 +7,8 @@ import scala.reflect.ClassTag
 trait BpmnDsl:
 
   def process[
-      In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-      Out <: Product: JsonEncoder: JsonDecoder: ApiSchema
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
   ](
       id: String,
       in: In = NoInput(),
@@ -20,9 +20,9 @@ trait BpmnDsl:
     )
 
   def serviceTask[
-      In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-      Out <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-      ServiceOut: JsonEncoder: JsonDecoder
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema,
+      ServiceOut: Encoder: Decoder
   ](
       topicName: String,
       in: In = NoInput(),
@@ -36,8 +36,8 @@ trait BpmnDsl:
     )
 
   def customTask[
-    In <: Product : JsonEncoder : JsonDecoder : ApiSchema,
-    Out <: Product : JsonEncoder : JsonDecoder : ApiSchema
+    In <: Product : Encoder : Decoder : Schema,
+    Out <: Product : Encoder : Decoder : Schema
   ](
      topicName: String,
      in: In = NoInput(),
@@ -50,8 +50,8 @@ trait BpmnDsl:
 
   // Use result strategy, like _singleEntry_, _collectEntries_, _singleResult_, _resultList_
   private def dmn[
-      In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-      Out <: Product: JsonEncoder: JsonDecoder: ApiSchema
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
   ](
       decisionDefinitionKey: String,
       in: In,
@@ -63,8 +63,8 @@ trait BpmnDsl:
     )
 
   def singleEntry[
-      In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-      Out <: DmnValueType: JsonEncoder: JsonDecoder: ApiSchema: ClassTag
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: DmnValueType: Encoder: Decoder: Schema: ClassTag
   ](
       decisionDefinitionKey: String,
       in: In,
@@ -78,8 +78,8 @@ trait BpmnDsl:
     dmn(decisionDefinitionKey, in, SingleEntry(out), descr.value)
 
   def collectEntries[
-      In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-      Out <: DmnValueType: JsonEncoder: JsonDecoder: ApiSchema
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: DmnValueType: Encoder: Decoder: Schema
   ](
       decisionDefinitionKey: String,
       in: In,
@@ -92,12 +92,12 @@ trait BpmnDsl:
     )*/
     dmn(decisionDefinitionKey, in, out, descr.value)
 
-  given toCollectEntries[Out <: DmnValueType: JsonEncoder: JsonDecoder: ApiSchema]: Conversion[Seq[Out], CollectEntries[Out]] =
+  given toCollectEntries[Out <: DmnValueType: Encoder: Decoder: Schema]: Conversion[Seq[Out], CollectEntries[Out]] =
     CollectEntries(_)
 
   def singleResult[
-      In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-      Out <: Product: JsonEncoder: JsonDecoder: ApiSchema
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
   ](
       decisionDefinitionKey: String,
       in: In,
@@ -114,8 +114,8 @@ trait BpmnDsl:
     dmn(decisionDefinitionKey, in, SingleResult(out), descr.value)
 
   def resultList[
-      In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-      Out <: Product: JsonEncoder: JsonDecoder: ApiSchema
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
   ](
       decisionDefinitionKey: String,
       in: In,
@@ -132,8 +132,8 @@ trait BpmnDsl:
     dmn(decisionDefinitionKey, in, ResultList(out), descr.value)
 
   def userTask[
-      In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-      Out <: Product: JsonEncoder: JsonDecoder: ApiSchema
+      In <: Product: Encoder: Decoder: Schema,
+      Out <: Product: Encoder: Decoder: Schema
   ](
       id: String,
       in: In = NoInput(),
@@ -145,7 +145,7 @@ trait BpmnDsl:
     )
 
   def messageEvent[
-      Msg <: Product: JsonEncoder: JsonDecoder: ApiSchema
+      Msg <: Product: Encoder: Decoder: Schema
   ](
       messageName: String,
       in: Msg = NoInput(),
@@ -164,7 +164,7 @@ trait BpmnDsl:
 
   @deprecated("Use messageEvent.")
   def receiveMessageEvent[
-      Msg <: Product: JsonEncoder: JsonDecoder: ApiSchema
+      Msg <: Product: Encoder: Decoder: Schema
   ](
       messageName: String,
       in: Msg = NoInput(),
@@ -174,7 +174,7 @@ trait BpmnDsl:
     messageEvent(messageName, in, id, descr)
 
   def signalEvent[
-      Msg <: Product: JsonEncoder: JsonDecoder: ApiSchema
+      Msg <: Product: Encoder: Decoder: Schema
   ](
       messageName: String,
       in: Msg = NoInput(),
@@ -193,7 +193,7 @@ trait BpmnDsl:
 
   @deprecated("Use signalEvent.")
   def receiveSignalEvent[
-      Msg <: Product: JsonEncoder: JsonDecoder: ApiSchema
+      Msg <: Product: Encoder: Decoder: Schema
   ](
       messageName: String,
       in: Msg = NoInput(),

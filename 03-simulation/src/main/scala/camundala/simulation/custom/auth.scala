@@ -1,7 +1,6 @@
 package camundala.simulation
 package custom
 
-import io.circe.parser
 import sttp.client3.*
 
 trait BasicSimulationDsl extends CustomSimulation:

@@ -5,8 +5,6 @@ import camundala.bpmn.*
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 
-import scala.reflect.ClassTag
-
 trait WorkerDsl:
 
   protected def engineContext: EngineContext
@@ -33,7 +31,7 @@ end WorkerDsl
 
 trait InitWorkerDsl[
     In <: Product: JsonCodec,
-    Out <: Product: JsonCodec: ClassTag
+    Out <: Product: JsonCodec
 ] extends WorkerDsl,
       ValidateDsl[In],
       InitProcessDsl[In]:
@@ -48,7 +46,7 @@ end InitWorkerDsl
 
 trait CustomWorkerDsl[
     In <: Product: JsonCodec,
-    Out <: Product: JsonCodec: ClassTag
+    Out <: Product: JsonCodec
 ] extends WorkerDsl,
       ValidateDsl[In],
       RunWorkDsl[In, Out]:
@@ -64,9 +62,9 @@ end CustomWorkerDsl
 
 trait ServiceWorkerDsl[
     In <: Product: JsonCodec,
-    Out <: Product: JsonCodec : ClassTag,
-    ServiceIn <: Product: JsonEncoder,
-    ServiceOut: JsonDecoder
+    Out <: Product: JsonCodec,
+    ServiceIn <: Product: Encoder,
+    ServiceOut: Decoder
 ] extends WorkerDsl,
       ValidateDsl[In],
       RunWorkDsl[In, Out]:

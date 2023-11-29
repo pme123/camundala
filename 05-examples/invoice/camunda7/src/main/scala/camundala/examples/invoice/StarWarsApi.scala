@@ -28,7 +28,7 @@ object StarWarsPeople extends BpmnDsl:
     given JsonCodec[In] = deriveCodec
   end In
 
-  enum Out:
+  enum Out derives ConfiguredCodec:
     case Success(
         people: Seq[People] = Seq(People()),
         val processStatus: ProcessStatus = ProcessStatus.succeeded
@@ -38,7 +38,6 @@ object StarWarsPeople extends BpmnDsl:
 
   object Out:
     given ApiSchema[Out] = deriveSchema
-    given JsonCodec[Out] = deriveCodec
   end Out
 
   case class PeopleResults(
@@ -78,7 +77,7 @@ object StarWarsPeopleDetail extends BpmnDsl:
     given JsonCodec[In] = deriveCodec
   end In
 
-  enum Out:
+  enum Out derives ConfiguredCodec:
     case Success(
         people: People = People(),
         fromHeader: String = "okidoki",
@@ -89,8 +88,6 @@ object StarWarsPeopleDetail extends BpmnDsl:
 
   object Out:
     given ApiSchema[Out] = deriveSchema
-    given JsonCodec[Out] = deriveCodec
-
   end Out
   final lazy val example: ServiceTask[In, Out, ServiceOut] =
     serviceTask(

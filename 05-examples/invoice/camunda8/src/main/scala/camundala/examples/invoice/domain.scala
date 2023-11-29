@@ -22,11 +22,10 @@ object domain :
   end InvoiceReceipt
 
   @description("There are three possible Categories")
-  enum InvoiceCategory :
+  enum InvoiceCategory derives ConfiguredEnumCodec :
     case `Travel Expenses`, Misc, `Software License Costs`
   object InvoiceCategory:
-    given ApiSchema[InvoiceCategory] = deriveEnumSchema
-    given JsonCodec[InvoiceCategory] = deriveEnumCodec
+    given ApiSchema[InvoiceCategory] = deriveSchema
   end InvoiceCategory
 
   case class SelectApproverGroup(
@@ -40,11 +39,10 @@ object domain :
   end SelectApproverGroup
 
   @description("These Groups can approve the invoice.")
-  enum ApproverGroup :
+  enum ApproverGroup derives ConfiguredEnumCodec :
     case accounting, sales, management
   object ApproverGroup:
-    given ApiSchema[ApproverGroup] = deriveEnumSchema
-    given JsonCodec[ApproverGroup] = deriveEnumCodec
+    given ApiSchema[ApproverGroup] = deriveSchema
   end ApproverGroup
 
   @description("""Every Invoice has to be accepted by the Boss.""")

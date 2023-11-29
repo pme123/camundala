@@ -1,7 +1,6 @@
 package camundala.camunda7.worker
 
 import camundala.bpmn.*
-import camundala.domain.*
 import camundala.camunda7.worker.CamundaHelper.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.BadVariableError

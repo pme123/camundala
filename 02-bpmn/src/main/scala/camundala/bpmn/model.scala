@@ -2,13 +2,12 @@ package camundala
 package bpmn
 
 import camundala.domain.*
-import io.circe.Json
 
 import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 
 case class InOutDescr[
-    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema
 ](
     id: String,
     in: In = NoInput(),
@@ -17,14 +16,14 @@ case class InOutDescr[
 )
 
 trait Activity[
-    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema,
     T <: InOut[In, Out, T]
 ] extends InOut[In, Out, T]
 
 trait InOut[
-    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema,
     T <: InOut[In, Out, T]
 ] extends ProcessElement:
   def inOutDescr: InOutDescr[In, Out]
@@ -75,8 +74,8 @@ end ProcessElement
 trait ProcessNode extends ProcessElement
 
 sealed trait ProcessOrExternalTask[
-    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema,
     T <: InOut[In, Out, T]
 ] extends InOut[In, Out, T]:
   def processName: String
@@ -117,8 +116,8 @@ sealed trait ProcessOrExternalTask[
 end ProcessOrExternalTask
 
 case class Process[
-    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema
 ](
     inOutDescr: InOutDescr[In, Out],
     elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty,
@@ -183,12 +182,12 @@ enum StartEventType:
   case None, Message, Signal
 
 object StartEventType:
-  given JsonCodec[StartEventType] = deriveEnumCodec
-  given ApiSchema[StartEventType] = deriveEnumSchema
+  given JsonCodec[StartEventType] = deriveCodec
+  given ApiSchema[StartEventType] = deriveSchema
 
 sealed trait ExternalTask[
-    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema,
     T <: ExternalTask[In, Out, T]
 ] extends ProcessOrExternalTask[In, Out, T]:
   override final def topicName: String = inOutDescr.id
@@ -213,9 +212,9 @@ sealed trait ExternalTask[
 end ExternalTask
 
 case class ServiceTask[
-    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-    ServiceOut: JsonEncoder: JsonDecoder
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema,
+    ServiceOut: Encoder: Decoder
 ](
     inOutDescr: InOutDescr[In, Out],
     defaultServiceOutMock: MockedServiceResponse[ServiceOut],
@@ -304,8 +303,8 @@ case class ServiceTask[
 end ServiceTask
 
 case class CustomTask[
-    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema
 ](
     inOutDescr: InOutDescr[In, Out],
     outputMock: Option[Out] = None,
@@ -352,8 +351,8 @@ case class CustomTask[
 end CustomTask
 
 case class UserTask[
-    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
-    Out <: Product: JsonEncoder: JsonDecoder: ApiSchema
+    In <: Product: Encoder: Decoder: Schema,
+    Out <: Product: Encoder: Decoder: Schema
 ](
     inOutDescr: InOutDescr[In, Out]
 ) extends ProcessNode,
@@ -375,13 +374,13 @@ object UserTask:
 end UserTask
 
 sealed trait ReceiveEvent[
-    In <: Product: JsonEncoder: JsonDecoder: ApiSchema,
+    In <: Product: Encoder: Decoder: Schema,
     T <: ReceiveEvent[In, T]
 ] extends ProcessNode,
       Activity[In, NoOutput, T]
 
 case class MessageEvent[
-    In <: Product: JsonEncoder: JsonDecoder: ApiSchema
+    In <: Product: Encoder: Decoder: Schema
 ](
     messageName: String,
     inOutDescr: InOutDescr[In, NoOutput]
@@ -401,7 +400,7 @@ object MessageEvent:
 end MessageEvent
 
 case class SignalEvent[
-    In <: Product: JsonEncoder: JsonDecoder: ApiSchema
+    In <: Product: Encoder: Decoder: Schema
 ](
     messageName: String,
     inOutDescr: InOutDescr[In, NoOutput]

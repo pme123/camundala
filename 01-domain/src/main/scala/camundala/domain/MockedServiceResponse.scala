@@ -1,9 +1,5 @@
 package camundala.domain
 
-import io.circe.*
-import sttp.tapir.json.circe.*
-import sttp.tapir.*
-
 @description(
   "Mocks a REST Service Response (must be handled by the BPF package)."
 )
@@ -70,7 +66,7 @@ object MockedServiceResponse:
   ](status: Int): MockedServiceResponse[ServiceOut] =
     MockedServiceResponse(status, Left(None))
 
-  given tapirSchema[ServiceOut: ApiSchema]: ApiSchema[MockedServiceResponse[ServiceOut]] =
+  given tapirSchema[ServiceOut: Schema]: Schema[MockedServiceResponse[ServiceOut]] =
     deriveSchema[MockedServiceResponse[ServiceOut]]
 
   given mockedHttpResponseJsonEncoder[ServiceOut: JsonEncoder]: JsonEncoder[MockedServiceResponse[ServiceOut]] =

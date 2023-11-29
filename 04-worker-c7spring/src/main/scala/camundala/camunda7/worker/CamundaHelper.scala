@@ -6,7 +6,6 @@ import camundala.bpmn.{*, given}
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
 import io.circe.Decoder.Result
-import io.circe.{Json, parser}
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.engine.variable.`type`.{PrimitiveValueType, ValueType}
 import org.camunda.bpm.engine.variable.value.TypedValue
@@ -21,7 +20,7 @@ object CamundaHelper:
   /** Returns the Variable in the Bag. If there is none it return `null`. It returns whatever
     * datatype the variable contains.
     */
-  def variableOpt[A: JsonDecoder](
+  def variableOpt[A: Decoder](
       varKey: String | InputParams
   ): HelperContext[Either[BadVariableError, Option[A]]] =
     for {
@@ -83,7 +82,7 @@ object CamundaHelper:
   /** Analog `variable(String vari)`. You can define a Value that is returned if there is no
     * Variable with this name.
     */
-  def variable[A: JsonDecoder](
+  def variable[A: Decoder](
       varKey: String | InputParams,
       defaultObj: A
   ): HelperContext[Either[BadVariableError, A]] =
@@ -91,7 +90,7 @@ object CamundaHelper:
 
   /** Returns the Variable in the Bag. B if there is no Variable with that identifier.
     */
-  def variable[T: JsonDecoder](
+  def variable[T: Decoder](
       varKey: String | InputParams
   ): HelperContext[Either[BadVariableError, T]] =
     variableOpt(varKey)
@@ -135,13 +134,7 @@ object CamundaHelper:
           case vt: DmnValueSimple =>
             Right(vt.asJson)
           case en: scala.reflect.Enum =>
-            parser.parse(en.toString)
-              .left
-              .map(ex =>
-                BadVariableError(
-                  s"Could not parse $en: $ex"
-                )
-              )
+            Right(Json.fromString(en.toString))
           case other =>
             Left(
               BadVariableError(

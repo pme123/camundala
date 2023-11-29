@@ -3,7 +3,6 @@ package worker
 
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.ServiceError
-import io.circe.JsonObject
 
 import java.time.LocalDateTime
 
@@ -11,7 +10,7 @@ trait EngineContext:
   def getLogger(clazz: Class[?]): WorkerLogger
   def toEngineObject: Json => Any
 
-  def sendRequest[ServiceIn <: Product: JsonEncoder, ServiceOut: JsonDecoder](
+  def sendRequest[ServiceIn <: Product: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
   ): Either[ServiceError, ServiceResponse[ServiceOut]]
 end EngineContext
@@ -27,7 +26,7 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
 
   def getLogger(clazz: Class[?]): WorkerLogger = engineContext.getLogger(clazz)
 
-  def sendRequest[ServiceIn <: Product: JsonEncoder, ServiceOut: JsonDecoder](
+  def sendRequest[ServiceIn <: Product: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
   ): Either[ServiceError, ServiceResponse[ServiceOut]] =
     engineContext.sendRequest(request)
@@ -38,7 +37,7 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
     json.toMap
       .map { case (k, v) => k -> jsonToEngineValue(v) }
 
-  def toEngineObject[T <: Product: JsonEncoder](
+  def toEngineObject[T <: Product: Encoder](
       product: T
   ): Map[String, Any] =
     product.productElementNames
@@ -53,7 +52,7 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
     variables
       .map { case (k, v) => k -> jsonToEngineValue(v) }
 
-  def objectToEngineObject[T <: Product: JsonEncoder](
+  def objectToEngineObject[T <: Product: Encoder](
       product: T,
       key: String,
       value: Any

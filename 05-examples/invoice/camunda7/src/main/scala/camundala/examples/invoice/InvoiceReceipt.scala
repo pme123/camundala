@@ -128,12 +128,10 @@ object InvoiceReceipt extends BpmnDsl:
       )
   end PrepareBankTransferUT
 
-  enum ApproverGroup:
+  enum ApproverGroup derives ConfiguredEnumCodec:
     case accounting, sales, management
   object ApproverGroup:
-    given ApiSchema[ApproverGroup] = deriveEnumSchema
-    given JsonCodec[ApproverGroup] = deriveEnumCodec
-
+    given ApiSchema[ApproverGroup] = deriveSchema
   end ApproverGroup
 
 end InvoiceReceipt

@@ -56,7 +56,7 @@ case class CamundaProperty(
 
 object CamundaProperty:
 
-  given JsonDecoder[CamundaProperty] =
+  given Decoder[CamundaProperty] =
     (c: HCursor) =>
       for
         name <- c.downField("name").as[String]

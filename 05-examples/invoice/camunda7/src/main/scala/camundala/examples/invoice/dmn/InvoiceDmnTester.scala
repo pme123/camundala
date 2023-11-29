@@ -39,17 +39,16 @@ object InvoiceDmnTester
                            )
 
   object InvoiceAssignApproverDmnIn:
-    given ApiSchema[InvoiceAssignApproverDmnIn] = deriveSchema
+    given Schema[InvoiceAssignApproverDmnIn] = Schema.derived
     given CirceCodec[InvoiceAssignApproverDmnIn] = deriveCodec
   end InvoiceAssignApproverDmnIn
 
   @description("There are three possible Categories")
-  enum InvoiceClassification:
+  enum InvoiceClassification derives ConfiguredEnumCodec:
     case `day-to-day expense`, budget, exceptional
 
   object InvoiceClassification:
-    given ApiSchema[InvoiceClassification] = deriveEnumSchema
-    given JsonCodec[InvoiceClassification] = deriveEnumCodec
+    given Schema[InvoiceClassification] = Schema.derived
 
   private lazy val InvoiceAssignApproverDmnUnit =
     collectEntries(

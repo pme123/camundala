@@ -1,7 +1,6 @@
 package camundala
 package camunda7.worker
 
-import camundala.domain.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.ServiceError
 import org.camunda.bpm.client.variable.ClientValues
@@ -16,7 +15,7 @@ trait Camunda7Context extends EngineContext:
   lazy val toEngineObject: Json => Any =
     json => ClientValues.jsonValue(json.toString)
 
-  def sendRequest[ServiceIn: JsonEncoder, ServiceOut: JsonDecoder](
+  def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
   ): Either[ServiceError, ServiceResponse[ServiceOut]] =
     DefaultRestApiClient.sendRequest(request)

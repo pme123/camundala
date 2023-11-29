@@ -18,8 +18,8 @@ val org = "io.github.pme123"
 // 00-helper
 val osLibVersion = "0.9.1"
 // 01-domain
-val tapirVersion = "1.9.2"
-val openapiCirceVersion = "0.7.3"
+val tapirVersion = "1.9.0"
+val openapiCirceVersion = "0.7.1"
 val ironCirceVersion = "2.3.0"
 val junitInterfaceVersion = "0.11"
 // 02-bpmn
@@ -259,11 +259,11 @@ def projectSettings(projName: String) = Seq(
   )
 )
 lazy val autoImportSetting =
-  scalacOptions += Seq(
-      "java.lang", "scala", "scala.Predef",
-      "io.circe.syntax"
+  scalacOptions +=
+    Seq(
+      "java.lang", "scala", "scala.Predef", "io.circe", "io.circe.generic.semiauto",
+      "io.circe.derivation", "io.circe.syntax", "sttp.tapir", "sttp.tapir.json.circe"
     ).mkString(start = "-Yimports:", sep = ",", end = "")
-
 
 lazy val tapirDependencies = Seq(
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
