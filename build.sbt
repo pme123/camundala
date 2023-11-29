@@ -9,7 +9,7 @@ import scala.util.Using
 
 lazy val projectVersion =
   Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
-val scala3Version = "3.3.0"
+val scala3Version = "3.3.1"
 val org = "io.github.pme123"
 
 // dependency Versions
