@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## 1.25.1 - 2023-11-29
+## 1.25.2 - 2023-11-29
 ### Changed 
 - Adding types for indepent Json En-/ Decoding. - see [Commit](https://github.com/pme123/camundala/commit/81ea9428310deefb446bb07c78ff696eff4ae1c9)
 - Revert "Reduce dependencies to Circe." - see [Commit](https://github.com/pme123/camundala/commit/524ae7bb93b8a5cf2822c79deece203b161df1ab)
