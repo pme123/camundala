@@ -13,33 +13,16 @@ trait EngineContext:
   def sendRequest[ServiceIn <: Product: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
   ): Either[ServiceError, ServiceResponse[ServiceOut]]
-end EngineContext
-
-trait WorkerLogger:
-  def debug(message: String): Unit
-  def info(message: String): Unit
-  def warn(message: String): Unit
-  def error(err: CamundalaWorkerError): Unit
-end WorkerLogger
-
-final case class EngineRunContext(engineContext: EngineContext, generalVariables: GeneralVariables):
-
-  def getLogger(clazz: Class[?]): WorkerLogger = engineContext.getLogger(clazz)
-
-  def sendRequest[ServiceIn <: Product: Encoder, ServiceOut: Decoder](
-      request: RunnableRequest[ServiceIn]
-  ): Either[ServiceError, ServiceResponse[ServiceOut]] =
-    engineContext.sendRequest(request)
 
   def jsonObjectToEngineObject(
-      json: JsonObject
-  ): Map[String, Any] =
+                                json: JsonObject
+                              ): Map[String, Any] =
     json.toMap
       .map { case (k, v) => k -> jsonToEngineValue(v) }
 
-  def toEngineObject[T <: Product: Encoder](
-      product: T
-  ): Map[String, Any] =
+  def toEngineObject[T <: Product : Encoder](
+                                              product: T
+                                            ): Map[String, Any] =
     product.productElementNames
       .zip(product.productIterator)
       // .filterNot { case _ -> v => v.isInstanceOf[None.type] } // don't send null
@@ -47,16 +30,16 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
       .toMap
 
   def toEngineObject(
-      variables: Map[String, Json]
-  ): Map[String, Any] =
+                      variables: Map[String, Json]
+                    ): Map[String, Any] =
     variables
       .map { case (k, v) => k -> jsonToEngineValue(v) }
 
-  def objectToEngineObject[T <: Product: Encoder](
-      product: T,
-      key: String,
-      value: Any
-  ): Any =
+  def objectToEngineObject[T <: Product : Encoder](
+                                                    product: T,
+                                                    key: String,
+                                                    value: Any
+                                                  ): Any =
     value match
       case None | null => null
       case Some(v) => objectToEngineObject(product, key, v)
@@ -84,7 +67,7 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
       case other =>
         other
 
-  def domainObjToEngineObject[A <: Product: InOutCodec](variable: A): Any =
+  def domainObjToEngineObject[A <: Product : InOutCodec](variable: A): Any =
     toEngineObject(variable.asJson)
 
   def jsonToEngineValue(json: Json): Any =
@@ -101,6 +84,37 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
         toEngineObject(j)
   end jsonToEngineValue
 
-  private def toEngineObject: Json => Any = engineContext.toEngineObject
+end EngineContext
+
+trait WorkerLogger:
+  def debug(message: String): Unit
+  def info(message: String): Unit
+  def warn(message: String): Unit
+  def error(err: CamundalaWorkerError): Unit
+end WorkerLogger
+
+final case class EngineRunContext(engineContext: EngineContext, generalVariables: GeneralVariables):
+
+  def getLogger(clazz: Class[?]): WorkerLogger = engineContext.getLogger(clazz)
+
+  def sendRequest[ServiceIn <: Product: Encoder, ServiceOut: Decoder](
+      request: RunnableRequest[ServiceIn]
+  ): Either[ServiceError, ServiceResponse[ServiceOut]] =
+    engineContext.sendRequest(request)
+
+  def toEngineObject[T <: Product : Encoder](
+                                              product: T
+                                            ): Map[String, Any] =
+    engineContext.toEngineObject(product)
+
+  def toEngineObject(
+                      variables: Map[String, Json]
+                    ): Map[String, Any] =
+    engineContext.toEngineObject(variables)
+
+  def jsonObjectToEngineObject(
+                                json: JsonObject
+                              ): Map[String, Any] =
+    engineContext.jsonObjectToEngineObject(json)
 
 end EngineRunContext

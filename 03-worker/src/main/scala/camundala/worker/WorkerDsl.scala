@@ -42,6 +42,80 @@ trait InitWorkerDsl[
 
   protected def inOut: InOut[In, Out, ?]
 
+  /** initialize the config of the form of:
+    * ```
+    * case class InConfig(
+    *    timerIdentificationNotReceived: Option[String :| Iso8601Duration],
+    *    timerEBankingContractCheckOpened: Option[String :| CronExpr] =
+    *  ...
+    *  )
+    * ```
+    */
+  protected def initConfig[T <: Product: InOutEncoder](
+      configOpt: Option[T],
+      defaults: T
+  ): Map[String, Any] =
+    val defaultsJson = defaults.asJson
+    val r = configOpt.map {
+      config =>
+        val json = config.asJson
+        config.productElementNames
+          .map(k =>
+            k -> (json.hcursor
+              .downField(k).focus, defaultsJson.hcursor
+              .downField(k).focus)
+          ).collect {
+            case k -> (Some(j), Some(dj)) if j.isNull =>
+              k -> dj
+            case k -> (Some(j), _) =>
+              k -> j
+            case k -> (_, dj) =>
+              k -> dj.getOrElse(Json.Null)
+          }
+          .toMap
+    }.getOrElse { // get all defaults
+      defaults.productElementNames
+        .map(k =>
+          k -> defaultsJson.hcursor
+            .downField(k).focus
+        ).collect {
+          case k -> Some(j) =>
+            k -> j
+        }
+        .toMap
+    }
+    engineContext.toEngineObject(r)
+  end initConfig
+
+  /** initialize Mocks of the form:
+    * ```
+    * case class Mocks(
+    *  searchAccountMock: Option[MockedServiceResponse[GetAccountSearchReference.ServiceOut]],
+    *  getAccountHolderMock: Option[GetClientClientKey.Out],
+    *  ...
+    * )
+    * ```
+    */
+  protected def initMocks[T <: Product: InOutEncoder](mocksOpt: Option[T], defaults: T) =
+    mocksOpt.map {
+      mocks =>
+        val json = mocks.asJson
+        mocks.productElementNames
+          .map(k =>
+            k -> json.hcursor
+              .downField(k).focus
+          ).collect {
+            case k -> Some(j) =>
+              k -> (if j.isNull then
+                      null // because every variable used in an expression must be on the process
+                    else
+                      engineContext.toEngineObject(j)
+              )
+          }
+          .toMap
+    }.getOrElse(engineContext.toEngineObject(defaults))
+  end initMocks
+
 end InitWorkerDsl
 
 trait CustomWorkerDsl[
