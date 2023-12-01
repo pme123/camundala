@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.25.4 - 2023-12-01
+### Changed 
+- Added Helper functions to init Config and Mocks in InitWorker. - see [Commit](https://github.com/pme123/camundala/commit/6cb361679ae8ef9af06e62051329b7f45c3d287a)
+- Moved toEngineObject to EngineContext. - see [Commit](https://github.com/pme123/camundala/commit/f09fd2baa5167a28c62c4be2e992b063ae9dcb53)
+- Removed deprecated mocking descriptions. - see [Commit](https://github.com/pme123/camundala/commit/942d79e408163c337ef4c5517e9d49fc755bddbb)
+
 ## 1.25.3 - 2023-11-29
 ### Changed 
 - Adjusted Scala- and Github Actions Versions - see [Commit](https://github.com/pme123/camundala/commit/3f33b08df8f265e7072323fdb69d685675207bff)
