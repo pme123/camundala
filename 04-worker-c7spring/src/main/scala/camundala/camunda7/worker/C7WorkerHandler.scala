@@ -4,10 +4,11 @@ package camunda7.worker
 import camundala.domain.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
+import jakarta.annotation.PostConstruct
 import org.camunda.bpm.client.{ExternalTaskClient, task as camunda}
 import org.springframework.beans.factory.annotation.Autowired
 
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 import scala.jdk.CollectionConverters.*
 
 /** To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required

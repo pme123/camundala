@@ -44,7 +44,8 @@ val testInterfaceVersion = "1.0"
 // --- Implementations
 // 04-worker-c7spring
 // -> worker
-val camundaVersion = "7.19.0" // external task client
+val camundaVersion = "7.20.0" // external task client
+val jaxbApiVersion = "2.3.1" // needed by the camunda client 7.20?!
 // - sttpClient3
 
 // --- Experiments
@@ -216,7 +217,8 @@ lazy val camunda7Worker = project
     autoImportSetting,
     libraryDependencies ++= Seq(
       sttpDependency,
-      "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion
+      "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion,
+      "javax.xml.bind" % "jaxb-api" % jaxbApiVersion
     )
   )
   .dependsOn(worker)
@@ -229,7 +231,7 @@ lazy val camunda = project
   .settings(
     autoImportSetting,
     libraryDependencies ++= Seq(
-      "org.camunda.bpm" % "camunda-engine" % camundaVersion, // listeners
+      "org.camunda.bpm" % "camunda-engine-spring-6" % camundaVersion, // listeners
       "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion,
       "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
       "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % camundaSpinVersion

@@ -39,11 +39,13 @@ import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.Task;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * Process Application exposing this application's resources the process engine.
  */
-public class InvoiceProcessApplication extends ServletProcessApplication {
+@SpringBootApplication
+public class InvoiceProcessApplication {
 
   private static final Logger LOGGER = Logger.getLogger(InvoiceProcessApplication.class.getName());
 
