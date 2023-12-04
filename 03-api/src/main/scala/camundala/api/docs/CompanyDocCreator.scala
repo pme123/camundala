@@ -19,7 +19,7 @@ trait CompanyDocCreator extends DependencyCreator:
 
   protected def upload(releaseTag: String): Unit
 
-  def prepareDocs(): Unit = {
+  def prepareDocs(): Unit =
     println(s"API Config: $apiConfig")
     apiConfig.projectsConfig.init
     createCatalog()
@@ -27,9 +27,9 @@ trait CompanyDocCreator extends DependencyCreator:
     createDynamicConf()
     // println(s"Preparing Docs Started")
     createReleasePage()
-  }
+  end prepareDocs
 
-  def releaseDocs(): Unit = {
+  def releaseDocs(): Unit =
     createDynamicConf()
     println(s"Releasing Docs started")
     os.proc(
@@ -39,7 +39,7 @@ trait CompanyDocCreator extends DependencyCreator:
       "laikaSite" // generate HTML pages from Markup
     ).callOnConsole()
     upload(releaseConfig.releaseTag)
-  }
+  end releaseDocs
 
   protected def createCatalog(): Unit =
 
@@ -49,22 +49,24 @@ trait CompanyDocCreator extends DependencyCreator:
                       |%}
                       |## Catalog
                       |${projectConfigs
-      .map { case pc @ ProjectConfig(projectName, _, _, _, _) =>
-        val path = pc.absGitPath(gitBasePath) / catalogFileName
-        if (os.exists(path))
-          os.read(path)
-        else
-          s"""### $projectName
-                      |Sorry there is no $path.
-                      |""".stripMargin
-      }
-      .mkString("\n")}""".stripMargin
+                       .map { case pc @ ProjectConfig(projectName, _, _, _, _) =>
+                         val path = pc.absGitPath(gitBasePath) / catalogFileName
+                         if os.exists(path) then
+                           os.read(path)
+                         else
+                           s"""### $projectName
+                              |Sorry there is no $path.
+                              |""".stripMargin
+                         end if
+                       }
+                       .mkString("\n")}""".stripMargin
     val catalogPath = apiConfig.basePath / "src" / "docs" / catalogFileName
     println(s"Catalog Path: $catalogPath")
-    if (os.exists(catalogPath))
+    if os.exists(catalogPath) then
       os.write.over(catalogPath, catalogs)
     else
       os.write(catalogPath, catalogs, createFolders = true)
+  end createCatalog
 
   protected def createDynamicConf(): Unit =
     val table =
@@ -72,24 +74,25 @@ trait CompanyDocCreator extends DependencyCreator:
          |laika.versioned = false
          |release.tag = "${releaseConfig.releaseTag}"
          |created.day = "${LocalDate
-        .now()
-        .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))}"
+          .now()
+          .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))}"
          |laika.navigationOrder = [
          |  index.md
+         |  release.md
          |  overviewDependencies.md
          |  pattern.md
          |  statistics.md
          |  devStatistics.md
          |  catalog.md
          |  contact.md
-         |  releases
+         |  instructions.md
          |  dependencies
          |]
          """.stripMargin
     os.write.over(apiConfig.basePath / "src" / "docs" / "directory.conf", table)
   end createDynamicConf
 
-  private def createReleasePage(): Unit = {
+  private def createReleasePage(): Unit =
     given configs: Seq[ApiProjectConf] = setupDependencies()
     given releaseC: ReleaseConfig = releaseConfig
     DependencyValidator().validateDependencies
@@ -101,7 +104,12 @@ trait CompanyDocCreator extends DependencyCreator:
     val releaseNotes = setupReleaseNotes
     DependencyValidator().validateOrphans
     val table =
-      s"""# Release ${releaseConfig.releaseTag}
+      s"""
+         |{%
+         |laika.versioned = true
+         |%}
+         |
+         |# Release ${releaseConfig.releaseTag}
          | ${releaseConfig.releasedLabel}
          |
          |${releaseConfig.jiraReleaseUrl.map(u => s"[JIRA Release Planing]($u)").getOrElse("")}
@@ -112,16 +120,11 @@ trait CompanyDocCreator extends DependencyCreator:
          |
          |${releaseNotes}
          """.stripMargin
-    val releasePath = apiConfig.basePath / "src" / "docs" / "releases"
-    if (!os.exists(releasePath)) os.makeDir(releasePath)
-    os.write.over(
-      releasePath / s"v${releaseConfig.releaseTag}.md",
-      table
-    )
+    val releasePath = apiConfig.basePath / "src" / "docs" / "release.md"
+    os.write.over(releasePath, table)
+  end createReleasePage
 
-  }
-
-  private def setupDependencies(): Seq[ApiProjectConf] = {
+  private def setupDependencies(): Seq[ApiProjectConf] =
     val packages = os.read.lines(apiConfig.basePath / "VERSIONS.conf")
     val dependencies = packages
       .filter(_.contains("Version"))
@@ -137,10 +140,10 @@ trait CompanyDocCreator extends DependencyCreator:
         projectName -> (version, isNew)
       }
     dependencies.map { case p -> v => fetchConf(p, v._1, v._2) }.flatten
-  }
+  end setupDependencies
 
-  private def fetchConf(project: String, version: String, isNew: Boolean) = {
-    for {
+  private def fetchConf(project: String, version: String, isNew: Boolean) =
+    for
       projectCloneUrl <- apiConfig.projectsConfig.projectCloneUrl(project)
       projectConfig <- projectConfigs.find(_.name == project)
       projectPath = projectConfig.absGitPath(gitBasePath)
@@ -150,20 +153,19 @@ trait CompanyDocCreator extends DependencyCreator:
       _ = os
         .proc("git", "checkout", s"tags/v$version")
         .callOnConsole(projectPath)
-    } yield ApiProjectConf(
+    yield ApiProjectConf(
       projectPath / apiConfig.projectsConfig.projectConfPath,
       os.read.lines(projectPath / "CHANGELOG.md").toSeq,
       isNew
     )
-  }
 
-  private def dependencyTable(configs: Seq[ApiProjectConf]) = {
+  private def dependencyTable(configs: Seq[ApiProjectConf]) =
     val filteredConfigs =
       configs
         .filter(c =>
           configs.exists(c2 =>
             c.name != c2.name && c2.dependencies.exists(d => d.name == c.name)
-          ) //&& c.version.matches(d.version)) )
+          ) // && c.version.matches(d.version)) )
         )
         .sortBy(_.name)
 
@@ -177,8 +179,8 @@ trait CompanyDocCreator extends DependencyCreator:
       configs
         .sortBy(_.name)
         .map { c =>
-          val name = if (c.isNew) s"[${c.name}]*" else s"${c.name}"
-          val version = if (c.isNew) s"**${c.version}**" else c.version
+          val name = if c.isNew then s"[${c.name}]*" else s"${c.name}"
+          val version = if c.isNew then s"**${c.version}**" else c.version
           s"|| **$name** | $version " +
             filteredConfigs
               .map(c2 =>
@@ -194,9 +196,9 @@ trait CompanyDocCreator extends DependencyCreator:
               .mkString("| ", " | ", " |")
         }
         .mkString("\n")
-  }
+  end dependencyTable
 
-  private def setupReleaseNotes(using configs: Seq[ApiProjectConf]) = {
+  private def setupReleaseNotes(using configs: Seq[ApiProjectConf]) =
     val projectChangelogs = configs
       .filter(_.isNew) // take only the new ones
       .sortBy(_.name)
@@ -217,9 +219,9 @@ trait CompanyDocCreator extends DependencyCreator:
        |${projectChangelogs}
        |
        |""".stripMargin
-  }
+  end setupReleaseNotes
 
-  private def extractChangelog(conf: ApiProjectConf) = {
+  private def extractChangelog(conf: ApiProjectConf) =
     val versionRegex = "## \\d+\\.\\d+\\.\\d+.+"
     val groups = ChangeLogGroup.values
 
@@ -237,13 +239,13 @@ trait CompanyDocCreator extends DependencyCreator:
       // group
       .foldLeft((Seq.empty[ChangeLogEntry], ChangeLogGroup.Changed)) {
         case ((entries, activeGroup), line) =>
-          line match {
+          line match
             case l if l.startsWith("### ") => // group
               val group = ChangeLogGroup.withName(l.drop(4).trim)
               (entries, group)
             case l =>
               val regex = """(.*)(MAP-\d+)(:? )(.*)""".r
-              val newEntry = regex.findFirstMatchIn(l) match {
+              val newEntry = regex.findFirstMatchIn(l) match
                 case Some(v) =>
                   val jiraTicket = v.group(2)
                   ChangeLogEntry(
@@ -252,9 +254,7 @@ trait CompanyDocCreator extends DependencyCreator:
                     Some(jiraTicket)
                   )
                 case None => ChangeLogEntry(activeGroup, l)
-              }
               (entries :+ newEntry, activeGroup)
-          }
       }
       ._1
 
@@ -268,7 +268,7 @@ trait CompanyDocCreator extends DependencyCreator:
             changeLogEntries.filter(_.group == group).groupBy(_.ticket).map {
               case k -> v => k.getOrElse("Other") -> v.map(_.text)
             }
-          if (groups.take(3).contains(group)) { // for Added, Changed, Fixed -> merge tickets
+          if groups.take(3).contains(group) then // for Added, Changed, Fixed -> merge tickets
             val existingResult = newEntries.foldLeft(result) {
               case (result, (ticket, texts)) =>
                 (result.view.mapValues { rTickets =>
@@ -287,9 +287,9 @@ trait CompanyDocCreator extends DependencyCreator:
             }
 
             existingResult + (group -> filteredNew)
-          } else {
+          else
             result + (group -> newEntries)
-          }
+          end if
       }
       .filter(g => g._2.nonEmpty) // remove if there are no new entries
 
@@ -297,32 +297,30 @@ trait CompanyDocCreator extends DependencyCreator:
       .map { case k -> v =>
         s"""### $k
            |${v.toSeq
-          .sortBy(_._1)
-          .map { case ticket -> entries =>
-            s"""
-           |**${replaceJira(ticket)}**
-           |
-           |${entries.mkString("\n")}
-           |""".stripMargin
-          }
-          .mkString("\n")}
+            .sortBy(_._1)
+            .map { case ticket -> entries =>
+              s"""
+                 |**${replaceJira(ticket)}**
+                 |
+                 |${entries.mkString("\n")}
+                 |""".stripMargin
+            }
+            .mkString("\n")}
            |""".stripMargin
       }
       .mkString("\n")
-  }
+  end extractChangelog
 
   private def replaceJira(
       jiraTicket: String
-  ): String = {
-    if (jiraTicket == "Other")
+  ): String =
+    if jiraTicket == "Other" then
       jiraTicket
     else
       s"[$jiraTicket](https://issue.swisscom.ch/browse/$jiraTicket)"
-  }
 
-  private object ChangeLogGroup extends Enumeration {
+  private object ChangeLogGroup extends Enumeration:
     val Added, Changed, Fixed, Deprecated, Removed, Security = Value
-  }
 
   private case class ChangeLogEntry(
       group: ChangeLogGroup.Value = ChangeLogGroup.Changed,
