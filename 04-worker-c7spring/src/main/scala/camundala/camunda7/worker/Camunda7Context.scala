@@ -42,6 +42,6 @@ case class Camunda7WorkerLogger(private val delegateLogger: Logger) extends Work
 
   def error(err: CamundalaWorkerError): Unit =
     if (delegateLogger.isErrorEnabled)
-      delegateLogger.error(s"Error ${err.errorCode}: ${err.errorMsg}")
+      delegateLogger.error(s"Error ${err.causeMsg}")
 
 end Camunda7WorkerLogger
