@@ -8,8 +8,8 @@ object SimulationTestOverridesExample extends BpmnDsl:
   case class SimpleObject(name: String = "salu", other: Boolean = false)
 
   object SimpleObject:
-    given ApiSchema[SimpleObject] = deriveSchema
-    given InOutCodec[SimpleObject] = deriveCodec
+    given ApiSchema[SimpleObject] = deriveApiSchema
+    given InOutCodec[SimpleObject] = deriveInOutCodec
 
   case class InOutput(
                        simpleValue: String = "hello",
@@ -18,8 +18,8 @@ object SimulationTestOverridesExample extends BpmnDsl:
                        objectCollectionValue: Seq[SimpleObject] = Seq(SimpleObject(), SimpleObject("tschau", true)),
                      )
   object InOutput:
-    given ApiSchema[InOutput] = deriveSchema
-    given InOutCodec[InOutput] = deriveCodec
+    given ApiSchema[InOutput] = deriveApiSchema
+    given InOutCodec[InOutput] = deriveInOutCodec
 
   lazy val simulationProcess = process(
     id = "simulation-TestOverrides",

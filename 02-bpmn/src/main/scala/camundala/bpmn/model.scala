@@ -6,8 +6,8 @@ import camundala.domain.*
 import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 
 case class InOutDescr[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema
+    In <: Product:  InOutCodec: ApiSchema,
+    Out <: Product:  InOutCodec: ApiSchema
 ](
     id: String,
     in: In = NoInput(),
@@ -16,14 +16,14 @@ case class InOutDescr[
 )
 
 trait Activity[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema,
+    In <: Product:  InOutCodec: ApiSchema,
+    Out <: Product:  InOutCodec: ApiSchema,
     T <: InOut[In, Out, T]
 ] extends InOut[In, Out, T]
 
 trait InOut[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema,
+    In <: Product:  InOutCodec: ApiSchema,
+    Out <: Product:  InOutCodec: ApiSchema,
     T <: InOut[In, Out, T]
 ] extends ProcessElement:
   def inOutDescr: InOutDescr[In, Out]
@@ -74,8 +74,8 @@ end ProcessElement
 trait ProcessNode extends ProcessElement
 
 sealed trait ProcessOrExternalTask[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema,
+    In <: Product:  InOutCodec: ApiSchema,
+    Out <: Product:  InOutCodec: ApiSchema,
     T <: InOut[In, Out, T]
 ] extends InOut[In, Out, T]:
   def processName: String
@@ -116,8 +116,8 @@ sealed trait ProcessOrExternalTask[
 end ProcessOrExternalTask
 
 case class Process[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema
+    In <: Product:  InOutCodec: ApiSchema,
+    Out <: Product:  InOutCodec: ApiSchema
 ](
     inOutDescr: InOutDescr[In, Out],
     elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty,
@@ -182,12 +182,12 @@ enum StartEventType:
   case None, Message, Signal
 
 object StartEventType:
-  given InOutCodec[StartEventType] = deriveCodec
-  given ApiSchema[StartEventType] = deriveSchema
+  given InOutCodec[StartEventType] = deriveInOutCodec
+  given ApiSchema[StartEventType] = deriveApiSchema
 
 sealed trait ExternalTask[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema,
+    In <: Product:  InOutCodec: ApiSchema,
+    Out <: Product:  InOutCodec: ApiSchema,
     T <: ExternalTask[In, Out, T]
 ] extends ProcessOrExternalTask[In, Out, T]:
   override final def topicName: String = inOutDescr.id
@@ -212,9 +212,9 @@ sealed trait ExternalTask[
 end ExternalTask
 
 case class ServiceTask[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema,
-    ServiceOut: Encoder: Decoder
+    In <: Product:  InOutCodec: ApiSchema,
+    Out <: Product:  InOutCodec: ApiSchema,
+    ServiceOut:  InOutCodec
 ](
     inOutDescr: InOutDescr[In, Out],
     defaultServiceOutMock: MockedServiceResponse[ServiceOut],
@@ -303,8 +303,8 @@ case class ServiceTask[
 end ServiceTask
 
 case class CustomTask[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema
+    In <: Product:  InOutCodec: ApiSchema,
+    Out <: Product:  InOutCodec: ApiSchema
 ](
     inOutDescr: InOutDescr[In, Out],
     outputMock: Option[Out] = None,
@@ -351,8 +351,8 @@ case class CustomTask[
 end CustomTask
 
 case class UserTask[
-    In <: Product: Encoder: Decoder: Schema,
-    Out <: Product: Encoder: Decoder: Schema
+    In <: Product:  InOutCodec: ApiSchema,
+    Out <: Product:  InOutCodec: ApiSchema
 ](
     inOutDescr: InOutDescr[In, Out]
 ) extends ProcessNode,
@@ -374,13 +374,13 @@ object UserTask:
 end UserTask
 
 sealed trait ReceiveEvent[
-    In <: Product: Encoder: Decoder: Schema,
+    In <: Product:  InOutCodec: ApiSchema,
     T <: ReceiveEvent[In, T]
 ] extends ProcessNode,
       Activity[In, NoOutput, T]
 
 case class MessageEvent[
-    In <: Product: Encoder: Decoder: Schema
+    In <: Product:  InOutCodec: ApiSchema
 ](
     messageName: String,
     inOutDescr: InOutDescr[In, NoOutput]
@@ -400,7 +400,7 @@ object MessageEvent:
 end MessageEvent
 
 case class SignalEvent[
-    In <: Product: Encoder: Decoder: Schema
+    In <: Product:  InOutCodec: ApiSchema
 ](
     messageName: String,
     inOutDescr: InOutDescr[In, NoOutput]

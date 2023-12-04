@@ -22,8 +22,8 @@ enum TestOverrideType:
   case Exists, NotExists, IsEquals, HasSize, Contains
 
 object TestOverrideType:
-  given InOutCodec[TestOverrideType] = deriveCodec
-  given ApiSchema[TestOverrideType] = deriveSchema
+  given InOutCodec[TestOverrideType] = deriveInOutCodec
+  given ApiSchema[TestOverrideType] = deriveApiSchema
 
 def addOverride[
     T <: Product
@@ -42,14 +42,14 @@ def addOverride[
   TestOverrides(newOverrides)
 
 object TestOverrides:
-  given ApiSchema[TestOverrides] = deriveSchema
+  given ApiSchema[TestOverrides] = deriveApiSchema
 
   given InOutEncoder[TestOverrides] = deriveEncoder
 
   given InOutDecoder[TestOverrides] = deriveDecoder
 
 object TestOverride:
-  given ApiSchema[TestOverride] = deriveSchema
+  given ApiSchema[TestOverride] = deriveApiSchema
 
   given InOutEncoder[TestOverride] = deriveEncoder
 

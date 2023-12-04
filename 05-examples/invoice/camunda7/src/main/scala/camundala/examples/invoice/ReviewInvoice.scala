@@ -14,8 +14,8 @@ object ReviewInvoice extends BpmnDsl:
       invoiceNumber: String = "I-12345",
   )
   object In:
-    given ApiSchema[In] = deriveSchema
-    given InOutCodec[In] = deriveCodec
+    given ApiSchema[In] = deriveApiSchema
+    given InOutCodec[In] = deriveInOutCodec
   end In
 
   case class Out(
@@ -23,8 +23,8 @@ object ReviewInvoice extends BpmnDsl:
       clarified: Boolean = true
   )
   object Out:
-    given ApiSchema[Out] = deriveSchema
-    given InOutCodec[Out] = deriveCodec
+    given ApiSchema[Out] = deriveApiSchema
+    given InOutCodec[Out] = deriveInOutCodec
   end Out
 
   lazy val example: Process[In, Out] =
@@ -46,8 +46,8 @@ object ReviewInvoice extends BpmnDsl:
                     reviewer: String = "John"
                   )
     object Out:
-      given ApiSchema[Out] = deriveSchema
-      given InOutCodec[Out] = deriveCodec
+      given ApiSchema[Out] = deriveApiSchema
+      given InOutCodec[Out] = deriveInOutCodec
     end Out
 
     lazy val example: UserTask[In, Out] =
@@ -69,8 +69,8 @@ object ReviewInvoice extends BpmnDsl:
                     clarified: Boolean = true
                   )
     object Out:
-      given ApiSchema[Out] = deriveSchema
-      given InOutCodec[Out] = deriveCodec
+      given ApiSchema[Out] = deriveApiSchema
+      given InOutCodec[Out] = deriveInOutCodec
     end Out
 
     lazy val example: UserTask[In, Out] =

@@ -18,8 +18,8 @@ object TwitterApi extends BpmnDsl:
       content: String = "Test Tweet"
   )
   object CreateTweet:
-    given ApiSchema[CreateTweet] = deriveSchema
-    given InOutCodec[CreateTweet] = deriveCodec
+    given ApiSchema[CreateTweet] = deriveApiSchema
+    given InOutCodec[CreateTweet] = deriveInOutCodec
   end CreateTweet
 
   @description("""Every Tweet has to be accepted by the Boss.""")
@@ -28,8 +28,8 @@ object TwitterApi extends BpmnDsl:
       approved: Boolean = true
   )
   object ReviewedTweet:
-    given ApiSchema[ReviewedTweet] = deriveSchema
-    given InOutCodec[ReviewedTweet] = deriveCodec
+    given ApiSchema[ReviewedTweet] = deriveApiSchema
+    given InOutCodec[ReviewedTweet] = deriveInOutCodec
   end ReviewedTweet
 
   val twitterDemoProcess =

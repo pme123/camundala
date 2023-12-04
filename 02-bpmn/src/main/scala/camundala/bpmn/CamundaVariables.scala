@@ -26,40 +26,40 @@ object CamundaVariable:
     }
 
   given ApiSchema[CamundaVariable] =
-    deriveSchema
+    deriveApiSchema
 
-  given ApiSchema[CString] = deriveSchema
+  given ApiSchema[CString] = deriveApiSchema
   given Encoder[CString] = deriveEncoder
   given Decoder[CString] = deriveDecoder
 
-  given ApiSchema[CInteger] = deriveSchema
+  given ApiSchema[CInteger] = deriveApiSchema
   given Encoder[CInteger] = deriveEncoder
   given Decoder[CInteger] = deriveDecoder
 
-  given ApiSchema[CLong] = deriveSchema
+  given ApiSchema[CLong] = deriveApiSchema
   given Encoder[CLong] = deriveEncoder
   given Decoder[CLong] = deriveDecoder
 
-  given ApiSchema[CDouble] = deriveSchema
+  given ApiSchema[CDouble] = deriveApiSchema
   given Encoder[CDouble] = deriveEncoder
   given Decoder[CDouble] = deriveDecoder
 
-  given ApiSchema[CBoolean] = deriveSchema
+  given ApiSchema[CBoolean] = deriveApiSchema
   given Encoder[CBoolean] = deriveEncoder
   given Decoder[CBoolean] = deriveDecoder
 
-  given ApiSchema[CFile] = deriveSchema
+  given ApiSchema[CFile] = deriveApiSchema
   given Encoder[CFile] = deriveEncoder
   given Decoder[CFile] = deriveDecoder
 
   given ApiSchema[CFileValueInfo] =
-    deriveSchema
+    deriveApiSchema
   given Encoder[CFileValueInfo] =
     deriveEncoder
   given Decoder[CFileValueInfo] =
     deriveDecoder
 
-  given ApiSchema[CJson] = deriveSchema
+  given ApiSchema[CJson] = deriveApiSchema
   given Encoder[CJson] = deriveEncoder
   given Decoder[CJson] = deriveDecoder
 

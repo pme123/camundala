@@ -1,5 +1,9 @@
 package camundala.domain
 
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.jsoniter.given
+import sttp.tapir.codec.iron.given
+
 @description(
   "Mocks a REST Service Response (must be handled by the BPF package)."
 )
@@ -7,7 +11,7 @@ case class MockedServiceResponse[
     ServiceOut // output of service
 ](
     respStatus: Int,
-    respBody: Either[Option[Json], ServiceOut],
+    respBody: Either[Option[String :| InOutJson], ServiceOut],
     respHeaders: Seq[Seq[String]] = Seq.empty
 ):
   def withHeader(
@@ -58,7 +62,7 @@ object MockedServiceResponse:
 
   def error[
       ServiceOut
-  ](status: Int, body: Json): MockedServiceResponse[ServiceOut] =
+  ](status: Int, body: String :| InOutJson): MockedServiceResponse[ServiceOut] =
     MockedServiceResponse(status, Left(Some(body)))
 
   def error[
@@ -66,35 +70,11 @@ object MockedServiceResponse:
   ](status: Int): MockedServiceResponse[ServiceOut] =
     MockedServiceResponse(status, Left(None))
 
-  given tapirSchema[ServiceOut: Schema]: Schema[MockedServiceResponse[ServiceOut]] =
-    deriveSchema[MockedServiceResponse[ServiceOut]]
+  given [ServiceOut: ApiSchema]:ApiSchema[MockedServiceResponse[ServiceOut]] =
+    deriveApiSchema[MockedServiceResponse[ServiceOut]]
+  given [ServiceOut: InOutCodec]: InOutCodec[MockedServiceResponse[ServiceOut]] =
+    deriveInOutCodec[MockedServiceResponse[ServiceOut]]
 
-  given mockedHttpResponseJsonEncoder[ServiceOut: InOutEncoder]: InOutEncoder[MockedServiceResponse[ServiceOut]] =
-    Encoder.instance { response =>
-      Json.obj(
-        "respStatus" -> Json.fromInt(response.respStatus),
-        "respBody" -> (
-          response.respBody match
-            case Right(value) => value.asJson
-            case Left(err) => err.getOrElse(Json.Null)
-        ),
-        "respHeaders" -> response.respHeaders
-          .map(_.map(Json.fromString))
-          .asJson
-      )
-    }
-
-  given mockedHttpResponseJsonDecoder[ServiceOut: InOutDecoder]: InOutDecoder[MockedServiceResponse[ServiceOut]] =
-    Decoder.instance { cursor =>
-      for
-        respStatus <- cursor.downField("respStatus").as[Int]
-        respBody <-
-          if respStatus < 300 then
-            cursor.downField("respBody").as[ServiceOut].map(Right(_))
-          else cursor.downField("respBody").as[Option[Json]].map(Left(_))
-        respHeaders <- cursor.downField("respHeaders").as[Seq[Seq[String]]]
-      yield MockedServiceResponse(respStatus, respBody, respHeaders)
-    }
 end MockedServiceResponse
 
 extension (headers: Map[String, String])

@@ -2,6 +2,23 @@ package camundala.domain
 
 import io.github.iltotore.iron.constraint.all.*
 
+// Json
+type InOutJson = DescribedAs[
+  Match["""(?(DEFINE)
+  # Note that everything is atomic, JSON does not need backtracking if it's valid
+  # and this prevents catastrophic backtracking
+  (?<json>(?>\s*(?&object)\s*|\s*(?&array)\s*))
+  (?<object>(?>\{\s*(?>(?&pair)(?>\s*,\s*(?&pair))*)?\s*\}))
+  (?<pair>(?>(?&STRING)\s*:\s*(?&value)))
+  (?<array>(?>\[\s*(?>(?&value)(?>\s*,\s*(?&value))*)?\s*\]))
+  (?<value>(?>true|false|null|(?&STRING)|(?&NUMBER)|(?&object)|(?&array)))
+  (?<STRING>(?>"(?>\\(?>["\\\/bfnrt]|u[a-fA-F0-9]{4})|[^"\\\0-\x1F\x7F]+)*"))
+  (?<NUMBER>(?>-?(?>0|[1-9][0-9]*)(?>\.[0-9]+)?(?>[eE][+-]?[0-9]+)?))
+  )
+  \A(?&json)\z"""],
+  "Valid Json"
+]
+val inOutJsonDescr = "Valid Json"
 
 // Date Time
 type Iso8601Day = DescribedAs[

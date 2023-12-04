@@ -2,6 +2,7 @@ package camundala
 package bpmn
 
 import camundala.domain.*
+import com.github.plokhotnyuk.jsoniter_scala.core.*
 import io.circe
 import io.circe.HCursor
 import sttp.tapir.*
@@ -32,8 +33,8 @@ enum DecisionResultType:
 end DecisionResultType
 
 case class DecisionDmn[
-    In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema
+    In <: Product: InOutCodec: ApiSchema,
+    Out <: Product: InOutCodec: ApiSchema
 ](
     inOutDescr: InOutDescr[In, Out]
 ) extends ProcessNode,
@@ -75,7 +76,7 @@ given InOutDecoder[ZonedDateTime] =
 @description(
   "SingleEntry: Output of a DMN Table. This returns one `DmnValueType`."
 )
-case class SingleEntry[Out <: DmnValueType: InOutEncoder: InOutDecoder: ClassTag](
+case class SingleEntry[Out <: DmnValueType: InOutCodec: ClassTag](
     result: Out
 ):
   lazy val toCamunda: CamundaVariable = CamundaVariable.valueToCamunda(result)
@@ -84,7 +85,7 @@ end SingleEntry
 
 object SingleEntry:
 
-  given schemaForSingleEntry[A <: DmnValueType: InOutEncoder: InOutDecoder: Schema]: Schema[SingleEntry[A]] =
+  given schemaForSingleEntry[A <: DmnValueType: InOutCodec: ApiSchema]: ApiSchema[SingleEntry[A]] =
     val sa = summon[Schema[A]]
     Schema[SingleEntry[A]](
       SchemaType.SCoproduct(List(sa), None) { case SingleEntry(x) =>
@@ -103,7 +104,7 @@ object SingleEntry:
     new InOutEncoder[SingleEntry[T]]:
       final def apply(sr: SingleEntry[T]): Json = sr.result.asJson
 
-  given SingleEntryJsonDecoder[T <: DmnValueType: InOutEncoder: InOutDecoder: ClassTag]: InOutDecoder[SingleEntry[T]] =
+  given SingleEntryJsonDecoder[T <: DmnValueType: InOutCodec: ClassTag]: InOutDecoder[SingleEntry[T]] =
     new InOutDecoder[SingleEntry[T]]:
       final def apply(c: HCursor): Decoder.Result[SingleEntry[T]] =
         for result <- c.as[T]
@@ -113,7 +114,7 @@ end SingleEntry
 @description(
   "CollectEntry: Output of a DMN Table. This returns a Sequence of `DmnValueType`s."
 )
-case class CollectEntries[Out <: DmnValueType: InOutEncoder: InOutDecoder: Schema](
+case class CollectEntries[Out <: DmnValueType: InOutCodec: ApiSchema](
     result: Seq[Out]
 ):
   lazy val toCamunda: Seq[CamundaVariable] =
@@ -122,14 +123,14 @@ case class CollectEntries[Out <: DmnValueType: InOutEncoder: InOutDecoder: Schem
 end CollectEntries
 
 object CollectEntries:
-  def apply[Out <: DmnValueType: InOutEncoder: InOutDecoder: Schema](
+  def apply[Out <: DmnValueType: InOutCodec: ApiSchema](
       result: Out,
       results: Out*
   ): CollectEntries[Out] =
     new CollectEntries[Out](result +: results)
 
-  given schemaForCollectEntries[A <: DmnValueType: InOutEncoder: InOutDecoder: Schema]
-      : Schema[CollectEntries[A]] =
+  given schemaForCollectEntries[A <: DmnValueType: InOutCodec: ApiSchema]
+      : ApiSchema[CollectEntries[A]] =
     val sa = summon[Schema[A]]
     Schema[CollectEntries[A]](
       SchemaType.SCoproduct(List(sa), None) { case CollectEntries(x) =>
@@ -141,21 +142,23 @@ object CollectEntries:
     )
   end schemaForCollectEntries
 
-  given CollectEntriesJsonEncoder[T <: DmnValueType: InOutEncoder: InOutDecoder]: InOutEncoder[CollectEntries[T]] =
-    new InOutEncoder[CollectEntries[T]]:
-      final def apply(sr: CollectEntries[T]): Json = sr.result.asJson
+  given [Out <: DmnValueType: InOutCodec]: JsonValueCodec[CollectEntries[Out]] = new JsonValueCodec[CollectEntries[Out]] {
+    private[this] val codec: JsonValueCodec[Seq[Out]] = JsonCodecMaker.make[Seq[Out]]
 
-  given CollectEntriesJsonDecoder[T <: DmnValueType: InOutEncoder: InOutDecoder: Schema]
-      : InOutDecoder[CollectEntries[T]] = new InOutDecoder[CollectEntries[T]]:
-    final def apply(c: HCursor): Decoder.Result[CollectEntries[T]] =
-      for result <- c.as[Seq[T]]
-      yield CollectEntries[T](result)
+    override def decodeValue(in: JsonReader, default: CollectEntries[Out]): CollectEntries[Out] =
+      CollectEntries[Out](codec.decodeValue(in, default.result))
+
+    override def encodeValue(x: CollectEntries[Out], out: JsonWriter): Unit =
+      codec.encodeValue(x.result, out)
+
+    override def nullValue: String = null
+  }
 end CollectEntries
 
 @description(
   "SingleResult: Output of a DMN Table. This returns one `Product` (case class) with more than one fields of `DmnValueType`s."
 )
-case class SingleResult[Out <: Product: InOutEncoder: InOutDecoder: Schema](result: Out):
+case class SingleResult[Out <: Product: InOutCodec: ApiSchema](result: Out):
 
   lazy val toCamunda: Map[String, CamundaVariable] =
     CamundaVariable.toCamunda(result)
@@ -163,7 +166,7 @@ case class SingleResult[Out <: Product: InOutEncoder: InOutDecoder: Schema](resu
 end SingleResult
 
 object SingleResult:
-  given schemaForSingleResult[A <: Product: InOutEncoder: InOutDecoder: Schema]: Schema[SingleResult[A]] =
+  given schemaForSingleResult[A <: Product: InOutCodec: ApiSchema]: ApiSchema[SingleResult[A]] =
     val sa = summon[Schema[A]]
     Schema[SingleResult[A]](
       SchemaType.SCoproduct(List(sa), None) { case SingleResult(x) =>
@@ -175,11 +178,11 @@ object SingleResult:
     )
   end schemaForSingleResult
 
-  given SingleResultJsonEncoder[T <: Product: InOutEncoder: InOutDecoder: Schema]: InOutEncoder[SingleResult[T]] =
+  given SingleResultJsonEncoder[T <: Product: InOutCodec: ApiSchema]: InOutEncoder[SingleResult[T]] =
     new InOutEncoder[SingleResult[T]]:
       final def apply(sr: SingleResult[T]): Json = sr.result.asJson
 
-  given SingleResultJsonDecoder[T <: Product: InOutEncoder: InOutDecoder: Schema]: InOutDecoder[SingleResult[T]] =
+  given SingleResultJsonDecoder[T <: Product: InOutCodec: ApiSchema]: InOutDecoder[SingleResult[T]] =
     new InOutDecoder[SingleResult[T]]:
       final def apply(c: HCursor): Decoder.Result[SingleResult[T]] =
         for result <- c.as[T]
@@ -189,7 +192,7 @@ end SingleResult
 @description(
   "ResultList: Output of a DMN Table. This returns a Sequence of `Product`s (case classes) with more than one fields of `DmnValueType`s"
 )
-case class ResultList[Out <: Product: Encoder: Decoder: Schema](
+case class ResultList[Out <: Product:  InOutCodec: ApiSchema](
     result: Seq[Out]
 ):
 
@@ -199,13 +202,13 @@ case class ResultList[Out <: Product: Encoder: Decoder: Schema](
 end ResultList
 
 object ResultList:
-  def apply[Out <: Product: Encoder: Decoder: Schema](
+  def apply[Out <: Product:  InOutCodec: ApiSchema](
       result: Out,
       results: Out*
   ): ResultList[Out] =
     new ResultList[Out](result +: results)
 
-  given schemaForResultList[A <: Product: Encoder: Decoder: Schema]: Schema[ResultList[A]] =
+  given schemaForResultList[A <: Product:  InOutCodec: ApiSchema]: ApiSchema[ResultList[A]] =
     val sa = summon[Schema[A]]
     Schema[ResultList[A]](
       SchemaType.SCoproduct(List(sa), None) { case ResultList(x) =>
@@ -217,11 +220,11 @@ object ResultList:
     )
   end schemaForResultList
 
-  given ResultListEncoder[T <: Product: Encoder: Decoder: Schema]: Encoder[ResultList[T]] =
+  given ResultListEncoder[T <: Product:  InOutCodec: ApiSchema]: Encoder[ResultList[T]] =
     new Encoder[ResultList[T]]:
       final def apply(sr: ResultList[T]): Json = sr.result.asJson
 
-  given ResultListDecoder[T <: Product: Encoder: Decoder: Schema]: Decoder[ResultList[T]] =
+  given ResultListDecoder[T <: Product:  InOutCodec: ApiSchema]: Decoder[ResultList[T]] =
     new Decoder[ResultList[T]]:
       final def apply(c: HCursor): Decoder.Result[ResultList[T]] =
         for result <- c.as[Seq[T]]
@@ -243,7 +246,7 @@ case class DmnVariable[In <: DmnValueType: ClassTag](
     value: In
 )
 object DmnVariable:
-  given schemaForDmnVariable[A <: DmnValueType: Schema]: Schema[DmnVariable[A]] =
+  given schemaForDmnVariable[A <: DmnValueType: ApiSchema]: ApiSchema[DmnVariable[A]] =
     val sa = summon[Schema[A]]
     Schema[DmnVariable[A]](
       SchemaType.SCoproduct(List(sa), None) { case DmnVariable(x) =>

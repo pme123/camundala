@@ -34,8 +34,8 @@ case class Tweet(
                 )
 
 object Tweet:
-  given ApiSchema[Tweet] = deriveSchema
-  given InOutCodec[Tweet] = deriveCodec
+  given ApiSchema[Tweet] = deriveApiSchema
+  given InOutCodec[Tweet] = deriveInOutCodec
 
 @description("Every Tweet has to be accepted by the Boss.")
 case class ReviewedTweet(
@@ -46,8 +46,8 @@ case class ReviewedTweet(
                         )
 
 object ReviewedTweet:
-  given ApiSchema[ReviewedTweet] = deriveSchema
-  given InOutCodec[ReviewedTweet] = deriveCodec
+  given ApiSchema[ReviewedTweet] = deriveApiSchema
+  given InOutCodec[ReviewedTweet] = deriveInOutCodec
 
 @description("Every Tweet has to be accepted by the Boss.")
 case class TweetOut(
@@ -60,8 +60,8 @@ case class TweetOut(
 enum EndStatus derives ConfiguredEnumCodec :
   case published, notPublished
 object EndStatus:
-  given ApiSchema[EndStatus] = deriveSchema
+  given ApiSchema[EndStatus] = deriveApiSchema
 
 object TweetOut:
-  given ApiSchema[TweetOut] = deriveSchema
-  given InOutCodec[TweetOut] = deriveCodec
+  given ApiSchema[TweetOut] = deriveApiSchema
+  given InOutCodec[TweetOut] = deriveInOutCodec

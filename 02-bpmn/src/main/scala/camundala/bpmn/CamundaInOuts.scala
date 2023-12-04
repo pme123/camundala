@@ -15,8 +15,8 @@ case class StartProcessIn(
                            withVariablesInReturn: Boolean = true
                          )
 object StartProcessIn:
-  given ApiSchema[StartProcessIn] = deriveSchema
-  given InOutCodec[StartProcessIn] = deriveCodec
+  given ApiSchema[StartProcessIn] = deriveApiSchema
+  given InOutCodec[StartProcessIn] = deriveInOutCodec
 
 case class CorrelateMessageIn(
                                messageName: String,
@@ -33,8 +33,8 @@ case class CorrelateMessageIn(
                                variablesInResultEnabled: Boolean = true
                              )
 object CorrelateMessageIn:
-  given ApiSchema[CorrelateMessageIn] = deriveSchema
-  given InOutCodec[CorrelateMessageIn] = deriveCodec
+  given ApiSchema[CorrelateMessageIn] = deriveApiSchema
+  given InOutCodec[CorrelateMessageIn] = deriveInOutCodec
 
 case class SendSignalIn(
                          @description("The name of the signal to deliver.")
@@ -61,8 +61,8 @@ Note: If no execution id is defined the signal is broadcasted to all subscribed 
                        )
 
 object SendSignalIn:
-  given ApiSchema[SendSignalIn] = deriveSchema
-  given InOutCodec[SendSignalIn] = deriveCodec
+  given ApiSchema[SendSignalIn] = deriveApiSchema
+  given InOutCodec[SendSignalIn] = deriveInOutCodec
 
 @description(
   "A JSON object with the following properties:"
@@ -72,8 +72,8 @@ case class EvaluateDecisionIn(
                                variables: Map[String, CamundaVariable]
                              )
 object EvaluateDecisionIn:
-  given ApiSchema[EvaluateDecisionIn] = deriveSchema
-  given InOutCodec[EvaluateDecisionIn] = deriveCodec
+  given ApiSchema[EvaluateDecisionIn] = deriveApiSchema
+  given InOutCodec[EvaluateDecisionIn] = deriveInOutCodec
 
 
 case class CompleteTaskOut(
@@ -83,6 +83,6 @@ case class CompleteTaskOut(
                             variables: Map[String, CamundaVariable]
                           )
 object CompleteTaskOut:
-  given ApiSchema[CompleteTaskOut] = deriveSchema
-  given InOutCodec[CompleteTaskOut] = deriveCodec
+  given ApiSchema[CompleteTaskOut] = deriveApiSchema
+  given InOutCodec[CompleteTaskOut] = deriveInOutCodec
 end CompleteTaskOut

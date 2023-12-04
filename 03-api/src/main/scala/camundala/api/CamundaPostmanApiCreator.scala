@@ -368,7 +368,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
 
   extension (inOutApi: InOutApi[?, ?])
     def toPostmanInput[
-        T <: Product: Encoder: Decoder: Schema
+        T <: Product:  InOutCodec: ApiSchema
     ](
         wrapper: FormVariables => T,
         examples: Seq[InOutExample[?]] = inOutApi.apiExamples.inputExamples.fetchExamples

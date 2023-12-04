@@ -29,8 +29,8 @@ object InvoiceReceipt extends BpmnDsl:
       invoiceReviewedMock: Option[ReviewInvoice.Out] = None
   )
   object In:
-    given ApiSchema[In] = deriveSchema
-    given InOutCodec[In] = deriveCodec
+    given ApiSchema[In] = deriveApiSchema
+    given InOutCodec[In] = deriveInOutCodec
   end In
 
   case class Out(
@@ -42,8 +42,8 @@ object InvoiceReceipt extends BpmnDsl:
       clarified: Option[Boolean] = None
   )
   object Out:
-    given ApiSchema[Out] = deriveSchema
-    given InOutCodec[Out] = deriveCodec
+    given ApiSchema[Out] = deriveApiSchema
+    given InOutCodec[Out] = deriveInOutCodec
   end Out
 
   lazy val example: Process[In, Out] =
@@ -63,8 +63,8 @@ object InvoiceReceipt extends BpmnDsl:
           InvoiceCategory.`Software License Costs`
     )
     object In:
-      given ApiSchema[In] = deriveSchema
-      given InOutCodec[In] = deriveCodec
+      given ApiSchema[In] = deriveApiSchema
+      given InOutCodec[In] = deriveInOutCodec
     end In
 
     type Out = Seq[ApproverGroup]
@@ -89,8 +89,8 @@ object InvoiceReceipt extends BpmnDsl:
         approved: Boolean = true
     )
     object Out:
-      given ApiSchema[Out] = deriveSchema
-      given InOutCodec[Out] = deriveCodec
+      given ApiSchema[Out] = deriveApiSchema
+      given InOutCodec[Out] = deriveInOutCodec
     end Out
 
     lazy val example: UserTask[In, Out] =
@@ -113,8 +113,8 @@ object InvoiceReceipt extends BpmnDsl:
         invoiceNumber: String = "I-12345",
     )
     object In:
-      given ApiSchema[In] = deriveSchema
-      given InOutCodec[In] = deriveCodec
+      given ApiSchema[In] = deriveApiSchema
+      given InOutCodec[In] = deriveInOutCodec
     end In
 
     type Out = NoOutput

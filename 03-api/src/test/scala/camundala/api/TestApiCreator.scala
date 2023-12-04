@@ -43,8 +43,8 @@ object Sample extends BpmnDsl:
       address: Address = Address()
   )
   object SampleIn:
-    given ApiSchema[SampleIn] = deriveSchema
-    given InOutCodec[SampleIn] = deriveCodec
+    given ApiSchema[SampleIn] = deriveApiSchema
+    given InOutCodec[SampleIn] = deriveInOutCodec
   end SampleIn
 
   case class Address(
@@ -56,8 +56,8 @@ object Sample extends BpmnDsl:
       country: String = "CH"
   )
   object Address:
-    given ApiSchema[Address] = deriveSchema
-    given InOutCodec[Address] = deriveCodec
+    given ApiSchema[Address] = deriveApiSchema
+    given InOutCodec[Address] = deriveInOutCodec
   end Address
 
   case class SampleOut(
@@ -66,8 +66,8 @@ object Sample extends BpmnDsl:
       outputValue: String = "Just some text"
   )
   object SampleOut:
-    given ApiSchema[SampleOut] = deriveSchema
-    given InOutCodec[SampleOut] = deriveCodec
+    given ApiSchema[SampleOut] = deriveApiSchema
+    given InOutCodec[SampleOut] = deriveInOutCodec
   end SampleOut
 
   lazy val standardSample: SampleIn = SampleIn()

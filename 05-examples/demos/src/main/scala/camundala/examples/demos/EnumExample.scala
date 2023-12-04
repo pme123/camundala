@@ -13,14 +13,14 @@ object EnumExample extends BpmnDsl:
         customMock: Option[Output] = Some(Output.A())
     )
   object Input:
-    given ApiSchema[Input] = deriveSchema
+    given ApiSchema[Input] = deriveApiSchema
 
   enum Output:
 
     case A(someOut: Option[String] = Some("hello"), intValue: Int = 12, simpleEnum: SimpleEnum = SimpleEnum.One)
   object Output:
-    given ApiSchema[Output] = deriveSchema
-    given InOutCodec[Output] = deriveCodec
+    given ApiSchema[Output] = deriveApiSchema
+    given InOutCodec[Output] = deriveInOutCodec
 
   enum SimpleEnum derives ConfiguredEnumCodec:
      case One,Two

@@ -1,86 +1,34 @@
 package camundala
 package domain
 
-import io.circe.derivation.Configuration
-import io.circe.generic.semiauto.deriveCodec
 import sttp.model.Uri
-import sttp.tapir.generic
 
 import java.net.URLDecoder
 import java.nio.charset.Charset
 import java.util.Base64
-import scala.deriving.Mirror
 import scala.language.implicitConversions
-
-// circe Json Encoder / Decoder
-export io.circe.{Codec as CirceCodec}
-
-type InOutCodec[T] = io.circe.Codec[T]
-type InOutEncoder[T] = io.circe.Encoder[T]
-type InOutDecoder[T] = io.circe.Decoder[T]
-
-// Circe Enum codec
-// used implicit instead of given - so no extra import is needed domain.{*, given}
-implicit val c: Configuration = Configuration.default.withDefaults
-  .withDiscriminator("type")
-/*
-type ConfiguredEnumCodec[T] = io.circe.derivation.ConfiguredEnumCodec[T]
-type ConfiguredCodec[T] = io.circe.derivation.ConfiguredCodec[T]
-
-
-inline def deriveCodec[A](using inline A: Mirror.Of[A]): JsonCodec[A] =
-//io.circe.generic.semiauto.deriveCodec
-  io.circe.derivation.ConfiguredCodec.derived(using Configuration.default //.withDefaults
-    .withDiscriminator("type"))
-
- */
-inline def deriveEnumCodec[A](using inline A: Mirror.SumOf[A]): InOutCodec[A] =
-  io.circe.derivation.ConfiguredEnumCodec.derived(using Configuration.default //.withDefaults
-    .withoutDiscriminator
-  )
-
-/*
-inline def deriveEncoder[A](using inline A: Mirror.Of[A]): JsonEncoder[A] =
-  io.circe.generic.semiauto.deriveEncoder
-
-inline def deriveDecoder[A](using inline A: Mirror.Of[A]): JsonDecoder[A] =
-  io.circe.generic.semiauto.deriveDecoder
-*/
-
-// Tapir encoding / decoding
-export sttp.tapir.Schema.annotations.description
-
-type ApiSchema[T] = Schema[T]
-inline def deriveSchema[T](using
-                           m: Mirror.Of[T]
-                          ): Schema[T] =
-  Schema.derived[T]
-inline def deriveEnumSchema[T](using
-    m: Mirror.Of[T]
-): Schema[T] =
-  Schema.derivedEnumeration[T].defaultStringBased
 
 case class NoInput()
 object NoInput:
-  given ApiSchema[NoInput] = deriveSchema
-  given InOutCodec[NoInput] = deriveCodec
+  given ApiSchema[NoInput] = deriveApiSchema
+  given InOutCodec[NoInput] = deriveInOutCodec
 
 case class NoOutput()
 object NoOutput:
-  given ApiSchema[NoOutput] = deriveSchema
-  given InOutCodec[NoOutput] = deriveCodec
+  given ApiSchema[NoOutput] = deriveApiSchema
+  given InOutCodec[NoOutput] = deriveInOutCodec
 
 enum NotValidStatus:
   case notValid
 object NotValidStatus:
-  given ApiSchema[NotValidStatus] = deriveEnumSchema
-  given InOutCodec[NotValidStatus] = deriveEnumCodec
+  given ApiSchema[NotValidStatus] = deriveEnumApiSchema
+  given InOutCodec[NotValidStatus] = deriveEnumInOutCodec
 
 enum CanceledStatus:
   case canceled
 object CanceledStatus:
-  given ApiSchema[CanceledStatus] = deriveEnumSchema
-  given InOutCodec[CanceledStatus] = deriveEnumCodec
+  given ApiSchema[CanceledStatus] = deriveEnumApiSchema
+  given InOutCodec[CanceledStatus] = deriveEnumInOutCodec
 
 @deprecated
 trait GenericServiceIn:
@@ -96,8 +44,8 @@ case class FileInOut(
 end FileInOut
 
 object FileInOut:
-  given ApiSchema[FileInOut] = deriveSchema
-  given InOutCodec[FileInOut] = deriveCodec
+  given ApiSchema[FileInOut] = deriveApiSchema
+  given InOutCodec[FileInOut] = deriveInOutCodec
 
 /** In Camunda 8 only json is allowed!
   */
@@ -109,8 +57,8 @@ case class FileRefInOut(
 )
 
 object FileRefInOut:
-  given ApiSchema[FileRefInOut] = deriveSchema
-  given InOutCodec[FileRefInOut] = deriveCodec
+  given ApiSchema[FileRefInOut] = deriveApiSchema
+  given InOutCodec[FileRefInOut] = deriveInOutCodec
 
 // Use this in the DSL to avoid Option[?]
 // see https://stackoverflow.com/a/69925310/2750966
@@ -124,11 +72,7 @@ object Optable:
 def throwErr(err: String) =
   throw new IllegalArgumentException(err)
 
-def toJson(json: String): Json =
-  parser.parse(json) match
-    case Right(v) => v.deepDropNullValues
-    case Left(exc) =>
-      throwErr(s"Could not create Json from your String -> $exc")
+@deprecated("Add mocking directly.")
 val testModeDescr =
   "This flag indicades that this is a test - in the process it can behave accordingly."
 
@@ -142,10 +86,10 @@ def serviceNameDescr(serviceName: String) =
 @deprecated(
   "If you mock another Service or Subprocess - use `serviceOrProcessMockDescr` - otherwise:\n\n" + deprecatedDescr
 )
-def outputMockDescr[Out: InOutEncoder](mock: Out) =
+def outputMockDescr[Out: InOutCodec](mock: Out) =
   serviceOrProcessMockDescr(mock)
 
-def serviceOrProcessMockDescr[Out: InOutEncoder](mock: Out) =
+def serviceOrProcessMockDescr[Out: InOutCodec](mock: Out) =
   s"""You can mock the response variables of this (sub)process.
      |
      |Class: `${mock.getClass.getName.replace("$", " > ")}`
@@ -153,7 +97,7 @@ def serviceOrProcessMockDescr[Out: InOutEncoder](mock: Out) =
      |Here an example:
      |
      |```scala
-     |${mock.asJson}
+     |${mock.toJsonStr}
      |```
      |
      |General to mocking:
@@ -167,7 +111,7 @@ val defaultMockedDescr =
   "This flag will mock every Service that this Process calls, using the default Mock."
 
 @deprecated(deprecatedDescr)
-def outputServiceMockDescr[ServiceOut: InOutEncoder](mock: ServiceOut) =
+def outputServiceMockDescr[ServiceOut: InOutCodec](mock: ServiceOut) =
   s"""You can mock the response variables of this Http Service.
      |
      |Class: `${mock.getClass.getName.replace("$", " > ")}`
@@ -176,7 +120,7 @@ def outputServiceMockDescr[ServiceOut: InOutEncoder](mock: ServiceOut) =
      |
      |```scala
      |MockedHttpResponse.success200(
-     |  ${mock.asJson}
+     |  ${mock.toJsonStr}
      |)
      |```
      |

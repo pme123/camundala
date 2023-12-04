@@ -5,7 +5,7 @@ import bpmn.*
 import domain.*
 import io.circe.*
 import sttp.model.StatusCode
-import sttp.tapir.{Schema, SchemaType}
+import sttp.tapir.{Schema, ApiSchemaType}
 import sttp.tapir.Schema.annotations.description
 
 import scala.collection.immutable
@@ -17,8 +17,8 @@ case class RequestErrorOutput(
     examples: Map[ExampleName, CamundaError] = Map.empty
 )
 object RequestErrorOutput:
-  given ApiSchema[RequestErrorOutput] = deriveSchema
-  given InOutCodec[RequestErrorOutput] = deriveCodec
+  given ApiSchema[RequestErrorOutput] = deriveApiSchema
+  given InOutCodec[RequestErrorOutput] = deriveInOutCodec
 end RequestErrorOutput
 
 case class CamundaError(
@@ -26,8 +26,8 @@ case class CamundaError(
     message: String = "a detailed message"
 )
 object CamundaError:
-  given InOutCodec[CamundaError] = deriveCodec
-  given ApiSchema[CamundaError] = deriveSchema
+  given InOutCodec[CamundaError] = deriveInOutCodec
+  given ApiSchema[CamundaError] = deriveApiSchema
 end CamundaError
 
 case class CamundaAuthError(
@@ -39,11 +39,11 @@ case class CamundaAuthError(
     resourceId: String = "Mary"
 )
 object CamundaAuthError:
-  given ApiSchema[CamundaAuthError] = deriveSchema
-  given InOutCodec[CamundaAuthError] = deriveCodec
+  given ApiSchema[CamundaAuthError] = deriveApiSchema
+  given InOutCodec[CamundaAuthError] = deriveInOutCodec
 end CamundaAuthError
 
-given ApiSchema[StatusCode] = Schema(SchemaType.SInteger())
+given ApiSchema[StatusCode] = ApiSchema(SchemaType.SInteger())
 given Encoder[StatusCode] = Encoder.instance(st => st.code.asJson)
 given Decoder[StatusCode] = (c: HCursor) => c.value.as[Int].map(StatusCode(_))
 
@@ -69,8 +69,8 @@ case class GetActiveJobIn(
                            active: Boolean = true
                          )
 object GetActiveJobIn:
-  given ApiSchema[GetActiveJobIn] = deriveSchema
-  given InOutCodec[GetActiveJobIn] = deriveCodec
+  given ApiSchema[GetActiveJobIn] = deriveApiSchema
+  given InOutCodec[GetActiveJobIn] = deriveInOutCodec
 
 /*
 @endpointInput("task/{taskId}/form-variables")
@@ -95,8 +95,8 @@ case class CompleteTaskIn(
     withVariablesInReturn: Boolean = true
 )
 object CompleteTaskIn:
-  given ApiSchema[CompleteTaskIn] = deriveSchema
-  given InOutCodec[CompleteTaskIn] = deriveCodec
+  given ApiSchema[CompleteTaskIn] = deriveApiSchema
+  given InOutCodec[CompleteTaskIn] = deriveInOutCodec
 
 @description(
   "Same as GetActiveJobIn."
@@ -119,8 +119,8 @@ case class GetActiveTaskIn(
     active: Boolean = true
 )
 object GetActiveTaskIn:
-  given ApiSchema[GetActiveTaskIn] = deriveSchema
-  given InOutCodec[GetActiveTaskIn] = deriveCodec
+  given ApiSchema[GetActiveTaskIn] = deriveApiSchema
+  given InOutCodec[GetActiveTaskIn] = deriveInOutCodec
 
 case class RequestInput[T](examples: Map[ExampleName, T]):
   def :+(label: String, example: T): RequestInput[T] =
@@ -228,8 +228,8 @@ case class GetActiveTaskOut(
     id: String = "f150c3f1-13f5-11ec-936e-0242ac1d0007"
 )
 object GetActiveTaskOut:
-  given ApiSchema[GetActiveTaskOut] = deriveSchema
-  given InOutCodec[GetActiveTaskOut] = deriveCodec
+  given ApiSchema[GetActiveTaskOut] = deriveApiSchema
+  given InOutCodec[GetActiveTaskOut] = deriveInOutCodec
 end GetActiveTaskOut
 
 

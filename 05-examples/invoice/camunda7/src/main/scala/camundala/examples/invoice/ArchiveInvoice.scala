@@ -13,19 +13,19 @@ object ArchiveInvoice extends BpmnDsl:
                   shouldFail: Option[Boolean] = Some(true),
                 )
   object In:
-    given ApiSchema[In] = deriveSchema
-    given InOutCodec[In] = deriveCodec
+    given ApiSchema[In] = deriveApiSchema
+    given InOutCodec[In] = deriveInOutCodec
   end In
 
   case class Out(
                   archived: Option[Boolean] = Some(true),
                 )
   object Out:
-    given ApiSchema[Out] = deriveSchema
-    given InOutCodec[Out] = deriveCodec
+    given ApiSchema[Out] = deriveApiSchema
+    given InOutCodec[Out] = deriveInOutCodec
   end Out
 
-  given InOutCodec[List[String]] = deriveCodec
+  given InOutCodec[List[String]] = deriveInOutCodec
 
   lazy val example: CustomTask[In, Out] =
     customTask(

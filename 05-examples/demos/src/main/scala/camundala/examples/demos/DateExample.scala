@@ -15,8 +15,8 @@ object DateExample extends BpmnDsl:
   )
 
  
-  given ApiSchema[Input] = deriveSchema
-  given InOutCodec[Input] = deriveCodec
+  given ApiSchema[Input] = deriveApiSchema
+  given InOutCodec[Input] = deriveInOutCodec
 
 
 end DateExample

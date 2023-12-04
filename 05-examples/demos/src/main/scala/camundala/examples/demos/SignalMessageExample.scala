@@ -26,16 +26,16 @@ object SignalMessageExample extends BpmnDsl:
 
   case class SignalMessageExampleIn(someValue: String = "hello")
   object SignalMessageExampleIn:
-    given ApiSchema[SignalMessageExampleIn] = deriveSchema
-    given InOutCodec[SignalMessageExampleIn] = deriveCodec
+    given ApiSchema[SignalMessageExampleIn] = deriveApiSchema
+    given InOutCodec[SignalMessageExampleIn] = deriveInOutCodec
 
   case class SignalMessageExampleOut(
                                       someValue: String = "hello",
                                       endStatus: EndStatus = EndStatus.messageReceived
                                     )
   object SignalMessageExampleOut:
-    given ApiSchema[SignalMessageExampleOut] = deriveSchema
-    given InOutCodec[SignalMessageExampleOut] = deriveCodec
+    given ApiSchema[SignalMessageExampleOut] = deriveApiSchema
+    given InOutCodec[SignalMessageExampleOut] = deriveInOutCodec
 
   enum EndStatus derives ConfiguredEnumCodec :
     case messageReceived, signalReceived

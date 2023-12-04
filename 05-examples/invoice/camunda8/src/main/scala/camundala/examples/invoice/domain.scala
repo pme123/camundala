@@ -17,8 +17,8 @@ object domain :
                            )
 
   object InvoiceReceipt:
-    given ApiSchema[InvoiceReceipt] = deriveSchema
-    given InOutCodec[InvoiceReceipt] = deriveCodec
+    given ApiSchema[InvoiceReceipt] = deriveApiSchema
+    given InOutCodec[InvoiceReceipt] = deriveInOutCodec
   end InvoiceReceipt
 
   @description("There are three possible Categories")
@@ -34,8 +34,8 @@ object domain :
                                   InvoiceCategory.`Software License Costs`
                                 )
   object SelectApproverGroup:
-    given ApiSchema[SelectApproverGroup] = deriveSchema
-    given InOutCodec[SelectApproverGroup] = deriveCodec
+    given ApiSchema[SelectApproverGroup] = deriveApiSchema
+    given InOutCodec[SelectApproverGroup] = deriveInOutCodec
   end SelectApproverGroup
 
   @description("These Groups can approve the invoice.")
@@ -51,8 +51,8 @@ object domain :
                              approved: Boolean = true
                            )
   object ApproveInvoice:
-    given ApiSchema[ApproveInvoice] = deriveSchema
-    given InOutCodec[ApproveInvoice] = deriveCodec
+    given ApiSchema[ApproveInvoice] = deriveApiSchema
+    given InOutCodec[ApproveInvoice] = deriveInOutCodec
   end ApproveInvoice
 
   @description(
@@ -61,14 +61,14 @@ object domain :
   case class PrepareBankTransfer(
                                 )
   object PrepareBankTransfer:
-    given ApiSchema[PrepareBankTransfer] = deriveSchema
-    given InOutCodec[PrepareBankTransfer] = deriveCodec
+    given ApiSchema[PrepareBankTransfer] = deriveApiSchema
+    given InOutCodec[PrepareBankTransfer] = deriveInOutCodec
   end PrepareBankTransfer
 
   case class AssignedReviewer(reviewer: String = "John")
   object AssignedReviewer:
-    given ApiSchema[AssignedReviewer] = deriveSchema
-    given InOutCodec[AssignedReviewer] = deriveCodec
+    given ApiSchema[AssignedReviewer] = deriveApiSchema
+    given InOutCodec[AssignedReviewer] = deriveInOutCodec
   end AssignedReviewer
 
   case class InvoiceReviewed(
@@ -77,8 +77,8 @@ object domain :
                             )
 
   object InvoiceReviewed:
-    given ApiSchema[InvoiceReviewed] = deriveSchema
-    given InOutCodec[InvoiceReviewed] = deriveCodec
+    given ApiSchema[InvoiceReviewed] = deriveApiSchema
+    given InOutCodec[InvoiceReviewed] = deriveInOutCodec
   end InvoiceReviewed
 
   case class InvoiceReceiptCheck(
@@ -91,8 +91,8 @@ object domain :
                                 )
 
   object InvoiceReceiptCheck:
-    given ApiSchema[InvoiceReceiptCheck] = deriveSchema
-    given InOutCodec[InvoiceReceiptCheck] = deriveCodec
+    given ApiSchema[InvoiceReceiptCheck] = deriveApiSchema
+    given InOutCodec[InvoiceReceiptCheck] = deriveInOutCodec
   end InvoiceReceiptCheck
 
 

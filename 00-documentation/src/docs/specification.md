@@ -202,7 +202,7 @@ Sorry for this technical noise 😥.
 * Case Classes:
   ```scala
   given ApiSchema[InvoiceReceipt] = deriveApiSchema
-  given JsonCodec[InvoiceReceipt] = deriveCodec
+  given JsonCodec[InvoiceReceipt] = deriveInOutCodec
  ```
 
 * Enumeration:

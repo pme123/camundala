@@ -18,7 +18,8 @@ val org = "io.github.pme123"
 // 00-helper
 val osLibVersion = "0.9.1"
 // 01-domain
-val tapirVersion = "1.9.0"
+val tapirVersion = "1.9.3"
+val jsoniterVersion = "2.25.0"
 val openapiCirceVersion = "0.7.1"
 val ironCirceVersion = "2.3.0"
 val junitInterfaceVersion = "0.11"
@@ -141,7 +142,6 @@ lazy val domain = project
   .configure(publicationSettings)
   .settings(projectSettings("domain"))
   .settings(
-    autoImportSetting,
     libraryDependencies ++= (tapirDependencies :+
       "com.novocode" % "junit-interface" % junitInterfaceVersion % Test)
   )
@@ -152,7 +152,6 @@ lazy val bpmn = project
   .configure(publicationSettings)
   .settings(projectSettings("bpmn"))
   .settings(
-    autoImportSetting,
     libraryDependencies += osLibDependency
   )
   .dependsOn(domain)
@@ -163,7 +162,6 @@ lazy val api = project
   .configure(publicationSettings)
   .settings(projectSettings("api"))
   .settings(
-    autoImportSetting,
     libraryDependencies ++=
       Seq(
         "org.scala-lang.modules" %% "scala-xml" % scalaXmlVersion,
@@ -189,9 +187,6 @@ lazy val worker = project
   .in(file("./03-worker"))
   .configure(publicationSettings)
   .settings(projectSettings("worker"))
-  .settings(
-    autoImportSetting,
-  )
   .dependsOn(bpmn)
 
 lazy val simulation = project
@@ -199,7 +194,6 @@ lazy val simulation = project
   .configure(publicationSettings)
   .settings(projectSettings("simulation"))
   .settings(
-    autoImportSetting,
     libraryDependencies ++= Seq(
       sttpDependency,
       "org.scala-sbt" % "test-interface" % testInterfaceVersion
@@ -213,7 +207,6 @@ lazy val camunda7Worker = project
   .configure(publicationSettings)
   .settings(projectSettings("camunda7-worker"))
   .settings(
-    autoImportSetting,
     libraryDependencies ++= Seq(
       sttpDependency,
       "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion
@@ -227,7 +220,6 @@ lazy val camunda = project
   .configure(publicationSettings)
   .settings(projectSettings("camunda"))
   .settings(
-    autoImportSetting,
     libraryDependencies ++= Seq(
       "org.camunda.bpm" % "camunda-engine" % camundaVersion, // listeners
       "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion,
@@ -242,7 +234,6 @@ lazy val camunda8 = project
   .configure(preventPublication)
   .settings(projectSettings("camunda8"))
   .settings(
-    autoImportSetting,
     libraryDependencies ++= zeebeDependencies
   )
   .dependsOn(bpmn)
@@ -258,20 +249,18 @@ def projectSettings(projName: String) = Seq(
     //   "-Wunused:imports"
   )
 )
-lazy val autoImportSetting =
-  scalacOptions +=
-    Seq(
-      "java.lang", "scala", "scala.Predef", "io.circe", "io.circe.generic.semiauto",
-      "io.circe.derivation", "io.circe.syntax", "sttp.tapir", "sttp.tapir.json.circe"
-    ).mkString(start = "-Yimports:", sep = ",", end = "")
 
 lazy val tapirDependencies = Seq(
+  // Jsoniter
+  "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core" % jsoniterVersion,
+  // Use the "provided" scope instead when the "compile-internal" scope is not supported
+  "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % jsoniterVersion % Provided,
+  "io.github.iltotore" %% "iron-jsoniter" % "2.3.0",
+  // Tapir
   "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
-  "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % tapirVersion,
+  "com.softwaremill.sttp.tapir" %% "tapir-jsoniter-scala" % tapirVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-redoc-bundle" % tapirVersion,
   "com.softwaremill.sttp.apispec" %% "openapi-circe-yaml" % openapiCirceVersion,
- // "io.circe" %% "circe-generic" % circeVersion,
-  "io.github.iltotore" %% "iron-circe" % ironCirceVersion,
   "com.softwaremill.sttp.tapir" %% "tapir-iron" % tapirVersion
 )
 
@@ -284,7 +273,6 @@ lazy val exampleInvoiceC7 = project
   .configure(preventPublication)
   .configure(integrationTests)
   .settings(
-    autoImportSetting,
     // Test / parallelExecution := false,
     libraryDependencies ++= camundaDependencies
   )
@@ -294,7 +282,6 @@ lazy val exampleInvoiceWorkerC7 = project
   .in(file("./05-examples/invoice/camunda7Worker"))
   .settings(projectSettings("example-invoice-c7"))
   .configure(preventPublication)
-  .settings(autoImportSetting)
   .dependsOn(camunda7Worker, exampleInvoiceC7)
 
 lazy val exampleInvoiceC8 = project
@@ -303,7 +290,6 @@ lazy val exampleInvoiceC8 = project
   .configure(preventPublication)
   .configure(integrationTests)
   .settings(
-    autoImportSetting,
     Test / parallelExecution := false,
     libraryDependencies ++= zeebeDependencies
   )
@@ -315,7 +301,6 @@ lazy val exampleTwitterC7 = project
   .configure(preventPublication)
   .configure(integrationTests)
   .settings(
-    autoImportSetting,
     libraryDependencies ++= camundaDependencies :+
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
@@ -327,7 +312,6 @@ lazy val exampleTwitterC8 = project
   .configure(preventPublication)
   .configure(integrationTests)
   .settings(
-    autoImportSetting,
     libraryDependencies +=
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
@@ -339,7 +323,6 @@ lazy val exampleDemos = project
   .configure(preventPublication)
   .configure(integrationTests)
   .settings(
-    autoImportSetting,
     libraryDependencies ++= camundaDependencies
   )
   .dependsOn(api, dmn, camunda, simulation)
