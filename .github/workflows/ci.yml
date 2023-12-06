@@ -12,7 +12,8 @@ jobs:
       - name: Setup JDK
         uses: olafurpg/setup-scala@v14
         with:
-          java-version: adopt@1.11
+          java-version: '17'
+          distribution: 'adopt'
       - name: Coursier cache
         uses: coursier/cache-action@v6
       - name: Compile

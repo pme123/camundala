@@ -14,10 +14,9 @@ import org.springframework.context.annotation.Configuration
 import sttp.client3.UriContext
 import sttp.model.*
 
-import javax.annotation.PostConstruct
-
 @Configuration
-class ServiceMethodDeleteWorker extends InvoiceWorkerHandler, ServiceWorkerDsl[In, Out, NoInput, ServiceOut]:
+class ServiceMethodDeleteWorker extends InvoiceWorkerHandler,
+      ServiceWorkerDsl[In, Out, NoInput, ServiceOut]:
 
   lazy val serviceTask = example
 

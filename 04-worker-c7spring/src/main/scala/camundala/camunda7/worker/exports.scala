@@ -12,4 +12,3 @@ export org.springframework.context.annotation.Configuration
 lazy val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
 
 type HelperContext[T] = ExternalTask ?=> T
-// end REMOVE

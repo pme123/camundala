@@ -6,7 +6,7 @@
   <bpmn:collaboration id="Collaboration_19iwku0">
     <bpmn:participant id="Participant_example-invoice-c7-review" name="example-invoice-c7-review" processRef="example-invoice-c7-review" />
   </bpmn:collaboration>
-  <bpmn:process id="example-invoice-c7-review" name="example-invoice-c7-review" processType="None" isClosed="false" isExecutable="true" camunda:isStartableInTasklist="false">
+  <bpmn:process id="example-invoice-c7-review" name="example-invoice-c7-review" processType="None" isClosed="false" isExecutable="true" camunda:historyTimeToLive="10" camunda:isStartableInTasklist="false">
     <bpmn:endEvent id="InvoiceReviewedEE" name="Invoice Reviewed">
       <bpmn:incoming>SequenceFlow_0vvoxt0</bpmn:incoming>
     </bpmn:endEvent>

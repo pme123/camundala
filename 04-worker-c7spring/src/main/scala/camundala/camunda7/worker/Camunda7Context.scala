@@ -17,7 +17,7 @@ trait Camunda7Context extends EngineContext:
 
   def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
-  ): Either[ServiceError, ServiceResponse[ServiceOut]] =
+  ): SendRequestType[ServiceOut] =
     DefaultRestApiClient.sendRequest(request)
 
 
@@ -42,6 +42,6 @@ case class Camunda7WorkerLogger(private val delegateLogger: Logger) extends Work
 
   def error(err: CamundalaWorkerError): Unit =
     if (delegateLogger.isErrorEnabled)
-      delegateLogger.error(s"Error ${err.errorCode}: ${err.errorMsg}")
+      delegateLogger.error(s"Error ${err.causeMsg}")
 
 end Camunda7WorkerLogger

@@ -4,10 +4,11 @@ package camunda7.worker
 import camundala.domain.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
+import jakarta.annotation.PostConstruct
 import org.camunda.bpm.client.{ExternalTaskClient, task as camunda}
 import org.springframework.beans.factory.annotation.Autowired
 
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 import scala.jdk.CollectionConverters.*
 
 /** To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
@@ -18,7 +19,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
   @Autowired()
   protected var engineContext: EngineContext = _
 
-  @Autowired
+  @Autowired()
   protected var externalTaskClient: ExternalTaskClient = _
 
   def worker: Worker[?, ?, ?]
@@ -113,6 +114,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
               )
                 handleSuccess(filtered)
               else
+                logger.info(s"Handled Error: ${error.causeMsg}")
                 externalTaskService.handleBpmnError(
                   summon[camunda.ExternalTask],
                   s"${error.errorCode}",
@@ -127,11 +129,11 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
         }
         .left
         .map { err =>
-          val errMessage = s"${err.errorCode}: ${err.errorMsg}"
+          logger.error(err)
           externalTaskService.handleFailure(
             summon[camunda.ExternalTask],
-            errMessage,
-            s" $errMessage\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
+            err.causeMsg,
+            s" ${err.causeMsg}\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
             0,
             0
           ) // TODO implement retry mechanism

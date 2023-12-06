@@ -10,6 +10,8 @@ export sttp.model.Uri.UriContext
 export sttp.model.Method
 export sttp.model.Uri
 
+type SendRequestType[ServiceOut] = EngineRunContext ?=> Either[ServiceError, ServiceResponse[ServiceOut]]
+
 def decodeTo[A: Decoder](
     jsonStr: String
 ): Either[CamundalaWorkerError.UnexpectedError, A] =

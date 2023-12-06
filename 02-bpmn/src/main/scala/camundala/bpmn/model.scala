@@ -107,9 +107,7 @@ sealed trait ProcessOrExternalTask[
         outputVariables.asJson
       )
     val camundaImpersonateUserId = impersonateUserId.toSeq.map { uiId =>
-      InputParams.impersonateUserId.toString -> CamundaVariable.valueToCamunda(
-        impersonateUserId
-      )
+      InputParams.impersonateUserId.toString -> CamundaVariable.valueToCamunda(uiId)
     }.toMap
     super.camundaInMap ++ camundaImpersonateUserId ++ camundaOutputMock + camundaServicesMocked + camundaOutputVariables
   end camundaInMap

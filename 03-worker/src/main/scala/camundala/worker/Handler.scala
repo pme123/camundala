@@ -187,7 +187,7 @@ case class ServiceHandler[
             status,
             serviceErrorMsg(
               status,
-              s"Mocked Error: ${body.asJson}",
+              s"Mocked Error: ${body.map(_.asJson).getOrElse("-")}",
               runnableRequest
             )
           )
