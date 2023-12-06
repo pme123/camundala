@@ -18,7 +18,7 @@ trait RestApiClient:
       ServiceOut: Decoder // output of service
   ](
       runnableRequest: RunnableRequest[ServiceIn]
-  ): Either[ServiceError, ServiceResponse[ServiceOut]] =
+  ): SendRequestType[ServiceOut] =
     try {
       for {
         reqWithOptBody <- requestWithOptBody(runnableRequest)
@@ -53,7 +53,7 @@ trait RestApiClient:
   // no auth per default
   protected def auth(
       request: Request[Either[String, String], Any]
-  ): Either[ServiceAuthError, Request[Either[String, String], Any]] =
+  )(using EngineRunContext): Either[ServiceAuthError, Request[Either[String, String], Any]] =
     Right(request)
 
   protected def decodeResponse[

@@ -12,7 +12,7 @@ trait EngineContext:
 
   def sendRequest[ServiceIn <: Product: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
-  ): Either[ServiceError, ServiceResponse[ServiceOut]]
+  ): SendRequestType[ServiceOut]
 
   def jsonObjectToEngineObject(
                                 json: JsonObject
@@ -99,7 +99,7 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
 
   def sendRequest[ServiceIn <: Product: Encoder, ServiceOut: Decoder](
       request: RunnableRequest[ServiceIn]
-  ): Either[ServiceError, ServiceResponse[ServiceOut]] =
+  ): SendRequestType[ServiceOut] =
     engineContext.sendRequest(request)
 
   def toEngineObject[T <: Product : Encoder](

@@ -22,7 +22,7 @@ object CamundaHelper:
     */
   def variableOpt[A: Decoder](
       varKey: String | InputParams
-  ): HelperContext[Either[BadVariableError, Option[A]]] =
+  )(using ExternalTask):Either[BadVariableError, Option[A]] =
     for {
       maybeJson <- jsonVariableOpt(varKey)
       obj <- maybeJson
