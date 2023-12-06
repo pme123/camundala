@@ -15,6 +15,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.25.5 - 2023-12-06
+### Changed 
+- Adjusted java version to 17 for springboot. - see [Commit](https://github.com/pme123/camundala/commit/82021562f457f53732eb46313e9b3b1a4db7b6d3)
+- Added EngineRunContext to RestApiClient. - see [Commit](https://github.com/pme123/camundala/commit/aaa7114fec6c58e9074dc3007be052917d15440f)
+- Fixing some Logging in Worker. - see [Commit](https://github.com/pme123/camundala/commit/3da1b1160a96c7b21fae79fbd26f1af224a97347)
+- Removed Database from Worker. - see [Commit](https://github.com/pme123/camundala/commit/0cfcafbae045e8e3da351bafe61f36b10af0d493)
+- Updated to Camunda 7.20. - see [Commit](https://github.com/pme123/camundala/commit/b3166ed49999369c44d3612548ec646ecfa94ec7)
+- Merge remote-tracking branch 'origin/develop' into develop - see [Commit](https://github.com/pme123/camundala/commit/7097099c56aa9d3c71f77e36bded6aee8b7f13e2)
+- Switched to only on versioned page for releases in CompanyDocCreator. - see [Commit](https://github.com/pme123/camundala/commit/fc7a5723e00808de7cc09eb6cad76cfc984cdced)
+- Switched to only on versioned page for releases in CompanyDocCreator. - see [Commit](https://github.com/pme123/camundala/commit/4c1e10e3a208520a0ae4798efa062439a03cea91)
+
 ## 1.25.4 - 2023-12-01
 ### Changed 
 - Added Helper functions to init Config and Mocks in InitWorker. - see [Commit](https://github.com/pme123/camundala/commit/6cb361679ae8ef9af06e62051329b7f45c3d287a)
