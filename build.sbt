@@ -258,7 +258,8 @@ def projectSettings(projName: String) = Seq(
   scalacOptions ++= Seq(
     //   "-Xmax-inlines:50", // is declared as erased, but is in fact used
     //   "-Wunused:imports"
-  )
+  ),
+  javacOptions ++= Seq("-source", "17", "-target", "17")
 )
 lazy val autoImportSetting =
   scalacOptions +=

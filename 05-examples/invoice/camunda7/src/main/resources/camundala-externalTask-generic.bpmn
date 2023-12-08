@@ -5,11 +5,11 @@
   <bpmn:collaboration id="Collaboration_056504p">
     <bpmn:participant id="CamundalaexternalTaskgenericParticipant" name="camundala-externalTask-generic" processRef="camundala-externalTask-generic" />
   </bpmn:collaboration>
-  <bpmn:process id="camundala-externalTask-generic" name="camundala-externalTask-generic" isExecutable="true" camunda:historyTimeToLive="1">
+  <bpmn:process id="camundala-externalTask-generic" name="camundala-externalTask-generic" isExecutable="true">
     <bpmn:serviceTask id="CallExternalTaskTopicNameTask" name="Call External Task ${topicName}" camunda:type="external" camunda:topic="${topicName}">
       <bpmn:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="handledErrors">${handledErrors}</camunda:inputParameter>
+          <camunda:inputParameter name="handledErrors">${execution.getVariable("handledErrors")}</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_14mczfv</bpmn:incoming>
@@ -21,20 +21,7 @@
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0qgyrqy</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_14mczfv" sourceRef="CamundalaexternalTaskgenericStartEvent" targetRef="CallExternalTaskTopicNameTask" />
     <bpmn:sequenceFlow id="Flow_0qgyrqy" sourceRef="CallExternalTaskTopicNameTask" targetRef="SucceededEndEvent" />
-    <bpmn:startEvent id="CamundalaexternalTaskgenericStartEvent" name="camundala-externalTask-generic">
-      <bpmn:extensionElements>
-        <camunda:executionListener event="end">
-          <camunda:script scriptFormat="groovy">println("handledErrors: $handledErrors")
-println("handledErrors: ${handledErrors.getClass()}")
-
-if(handledErrors != null &amp;&amp; !handledErrors.elements().isEmpty())
-  execution.setVariable("handledError" ,handledErrors.elements()[0].stringValue())</camunda:script>
-        </camunda:executionListener>
-      </bpmn:extensionElements>
-      <bpmn:outgoing>Flow_14mczfv</bpmn:outgoing>
-    </bpmn:startEvent>
     <bpmn:boundaryEvent id="HandledErrorBoundaryEvent" attachedToRef="CallExternalTaskTopicNameTask">
       <bpmn:outgoing>Flow_0rez82z</bpmn:outgoing>
       <bpmn:errorEventDefinition id="ErrorEventDefinition_162g46y" errorRef="Error_0blmisz" camunda:errorCodeVariable="404" />
@@ -80,6 +67,11 @@ if(handledErrors != null &amp;&amp; !handledErrors.elements().isEmpty())
       <bpmn:errorEventDefinition id="ErrorEventDefinition_0ogxnq9" errorRef="Error_0tdcv3y" />
     </bpmn:boundaryEvent>
     <bpmn:sequenceFlow id="Flow_14rqldz" sourceRef="Event_1roicyw" targetRef="ValidationfailedEndEvent" />
+    <bpmn:startEvent id="CamundalaexternalTaskgenericStartEvent" name="camundala-externalTask-generic">
+      <bpmn:extensionElements />
+      <bpmn:outgoing>Flow_14mczfv</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_14mczfv" sourceRef="CamundalaexternalTaskgenericStartEvent" targetRef="CallExternalTaskTopicNameTask" />
   </bpmn:process>
   <bpmn:error id="Error_0blmisz" name="404" errorCode="404" />
   <bpmn:error id="Error_0zjbq5k" name="400" errorCode="400" />

@@ -33,3 +33,4 @@ meta.json
 /camunda-h2-default/external-worker.mv.db
 /05-examples/invoice/camunda7Worker/camunda-h2-default/process-engine.mv.db
 /05-examples/camunda-h2-default/process-engine.mv.db
+/test.yml

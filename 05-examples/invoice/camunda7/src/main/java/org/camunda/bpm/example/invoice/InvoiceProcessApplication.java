@@ -16,30 +16,24 @@
  */
 package org.camunda.bpm.example.invoice;
 
-import static org.camunda.bpm.engine.variable.Variables.createVariables;
-import static org.camunda.bpm.engine.variable.Variables.fileValue;
+import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.authorization.Groups;
+import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.camunda.bpm.engine.impl.util.ClockUtil;
+import org.camunda.bpm.engine.impl.util.IoUtil;
+import org.camunda.bpm.engine.repository.ProcessDefinition;
+import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.task.Task;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.logging.Logger;
 
-import org.camunda.bpm.BpmPlatform;
-import org.camunda.bpm.application.PostDeploy;
-import org.camunda.bpm.application.ProcessApplication;
-import org.camunda.bpm.application.impl.ServletProcessApplication;
-import org.camunda.bpm.engine.ProcessEngine;
-import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.authorization.Groups;
-import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.camunda.bpm.engine.impl.util.ClockUtil;
-import org.camunda.bpm.engine.impl.util.IoUtil;
-import org.camunda.bpm.engine.repository.DeploymentBuilder;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
-import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.camunda.bpm.engine.task.Task;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import static org.camunda.bpm.engine.variable.Variables.createVariables;
+import static org.camunda.bpm.engine.variable.Variables.fileValue;
 
 /**
  * Process Application exposing this application's resources the process engine.
