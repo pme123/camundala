@@ -1,0 +1,140 @@
+openapi: 3.1.0
+info:
+  title: Twitter Process API C7
+  version: '1.0'
+  summary: "\n\nCreated at 08/12/2023, 15:35\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
+    \nThere is no README.md in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>Supported\
+    \ General Variables</i></b>\n</summary>\n\n<p>\n\n### Processes\n\n**mockedSubprocesses**:\n\
+    \nMock the SubProcesses with their default Mocks.\nThis is a list of the _SubProcesses\
+    \ processNames_ you want to mock.\nDepending on your implementation it is also\
+    \ possible to use a _comma separated_ String,\nlike `\"mySubProcess,myOtherSubProcess\"\
+    `\n\n\n- DSL:\n```scala\nprocess(..)\n  .mockSubProcesses(\"mySubProcess1\", \"\
+    mySubProcess2\") // creates a list with SubProcessess\n  .mockSubProcess(\"myOtherSubProcess\"\
+    ) // adds a SubProcess\n```\n\n- Json\n```json\n...\n\"mockedSubprocesses\": [\"\
+    mySubProcess\", \"myOtherSubProcess\"],\n...\n```\n\n### Processes and ExternalTasks\n\
+    **outputVariables**:\n\nYou can filter the Output with a list of variable names\
+    \ you are interested in.\nThis list may include all variables from the output\
+    \ (`Out`). We included an example for each Process or ExternalTask.\nDepending\
+    \ on your implementation it is also possible to use a _comma separated_ String,\n\
+    like `\"name,firstName\"`\n\n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n\
+    \  .withOutputVariables(\"name\", \"firstName\") // creates a list with outputVariables\n\
+    \  .withOutputVariable(\"nickname\") // adds a outputVariable\n```\n\n- Json\n\
+    ```json\n...\n\"outputVariables\": [\"name\", \"firstName\"],\n...\n```\n\n\n\
+    **outputMock**:\n\nMock the Process or ExternalTask (`Out`)\n - You find an example\
+    \ in every _Process_ and _ExternalTask_.\n\n\n- DSL:\n```scala\nprocess(..) //\
+    \ or serviceProcess(..)\n  .mockWith(outputMock)\n```\n\n- Json\n```json\n...\n\
+    \"outputMock\": {..},\n...\n```\n\n\n**defaultMocked**:\n\nMock the ExternalTasks\
+    \ (Workers only) with their default Mock:\n\n- DSL:\n```scala\nprocess(..) //\
+    \ or serviceProcess(..)\n  .mockServices\n```\n\n- Json\n```json\n...\n\"defaultMocked\"\
+    : true,\n...\n```\n\n\n**impersonateUserId**:\n\nUser-ID of a User that should\
+    \ be taken to authenticate to the services.\nThis must be supported by your implementation.\
+    \ *Be caution: this may be a security issue!*.\nIt is helpful if you have Tokens\
+    \ that expire, but long running Processes.\n\n- DSL:\n```scala\nprocess(..) //\
+    \ or serviceProcess(..)\n  .withImpersonateUserId(impersonateUserId)\n```\n\n\
+    - Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\n###\
+    \ ExternalTasks\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
+    \ - You find an example in every _ExternalTask_.\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \  .mockServiceWith(MockedServiceResponse\n     .success200(inOut.defaultServiceOutMock))\n\
+    ```\n\n- Json\n```json\n...\n\"outputServiceMock\": {\n  \"respStatus\" : 200,\n\
+    \  \"respBody\" : \"Example String Body\",\n  \"respHeaders\" : [\n  ]\n},\n...\n\
+    ```\n\n\n**handledErrors**:\n\nA list of error codes that are handled (`BpmnError`)\n\
+    Depending on your implementation it is also possible to use a _comma separated_\
+    \ String,\nlike `\"validation-failed,404\"`\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \  .handleErrors(ErrorCodes.`validation-failed`, \"404\") // create a list of\
+    \ handledErrors\n  .handleError(\"404\") // add a handledError\n```\n\n- Json\n\
+    ```json\n...\n\"handledErrors\": [\"validation-failed\", \"404\"],\n...\n```\n\
+    \n\n**regexHandledErrors**:\n\nYou can further filter Handled Errors with a list\
+    \ of Regex expressions that the body error message must match.\nDepending on your\
+    \ implementation it is also possible to use a _comma separated_ String,\nlike\
+    \ `\"SQL exception,\"errorNr\":\"20000\"\"`\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \  .handleErrorWithRegex(\"SQL exception\")\n  .handleErrorWithRegex(\"\\\"errorNr\\\
+    \":\\\"20000\\\"\")\n```\n\n- Json\n```json\n...\n\"regexHandledErrors\": [\"\
+    SQL exception\", \"\"errorNr\":\"20000\"\"],\n...\n```\n\n</p>\n</details>\n<p/>\n\
+    \        \n"
+paths:
+  /process/TwitterDemoP:
+    head:
+      tags:
+      - TwitterDemoP
+      summary: 'Process: TwitterDemoP'
+      description: "This runs the Twitter Approvement Process.\n\n- Input:  `camundala.examples.twitter.bpmn.TwitterApi\
+        \ > CreateTweet`\n- Output: `camundala.examples.twitter.bpmn.TwitterApi >\
+        \ ReviewedTweet`\n\n\n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n\
+        </summary>\n\n<p>\n\n**outputVariables**:\n\nJust take the variable you need\
+        \ in your process!\n```json\n...\n\"outputVariables\": \"approved\",\n...\n\
+        ```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"approved\"\
+        \ : true\n},\n...\n```\n\n</p>\n</details>\n</p>\n      "
+      operationId: 'Process: TwitterDemoP'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTweet'
+            examples:
+              TwitterDemoP:
+                value:
+                  email: me@myself.com
+                  content: Test Tweet
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewedTweet'
+              examples:
+                TwitterDemoP:
+                  value:
+                    approved: true
+  /usertask/TwitterDemoP/ReviewTweetUT:
+    head:
+      tags:
+      - TwitterDemoP
+      summary: 'UserTask: ReviewTweetUT'
+      description: |2-
+
+
+        - Input:  `camundala.domain.NoInput`
+        - Output: `camundala.examples.twitter.bpmn.TwitterApi > ReviewedTweet`
+      operationId: 'UserTask: ReviewTweetUT'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewedTweet'
+              examples:
+                ReviewTweetUT:
+                  value:
+                    approved: true
+                Tweet rejected:
+                  value:
+                    approved: false
+components:
+  schemas:
+    CreateTweet:
+      required:
+      - email
+      - content
+      type: object
+      properties:
+        email:
+          type: string
+        content:
+          type: string
+      description: |
+        Every employee may create a Tweet.
+
+        - email:   The email address of the creator.
+        - content: The content of the Tweet.
+    ReviewedTweet:
+      required:
+      - approved
+      type: object
+      properties:
+        approved:
+          type: boolean
+          description: If true, the Boss accepted the Tweet
+      description: Every Tweet has to be accepted by the Boss.

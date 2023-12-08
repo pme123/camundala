@@ -8,6 +8,7 @@ import laika.helium.config.{Favicon, HeliumIcon, IconLink}
 
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
+ThisBuild / evictionErrorLevel := Level.Warn
 
 lazy val root = project
   .in(file("."))
@@ -32,8 +33,7 @@ lazy val root = project
     camunda8, // not in use
     // examples
     exampleInvoice,
-    exampleTwitterC7,
-    exampleTwitterC8,
+    exampleTwitter,
     exampleDemos,
     exampleMyCompany
   )
@@ -192,6 +192,7 @@ lazy val camunda8 = project
 // end not in use
 
 // EXAMPLES
+// INVOICE
 lazy val exampleInvoice = project
   .in(file("./05-examples/invoice"))
   .settings(projectSettings("example-invoice"))
@@ -264,35 +265,71 @@ lazy val exampleInvoiceC8 = project
   )
   .dependsOn(bpmn, api, /*exampleInvoiceBpmn,*/ camunda8)
 
+// TWITTER
+lazy val exampleTwitter = project
+  .in(file("./05-examples/twitter"))
+  .settings(projectSettings("example-twitter"))
+  .configure(preventPublication)
+  .aggregate(
+    exampleTwitterBpmn,
+    exampleTwitterApi,
+    exampleTwitterSimulation,
+    exampleTwitterC7,
+    exampleTwitterC8
+  )
+
+lazy val exampleTwitterBpmn = project
+  .in(file("./05-examples/twitter/02-bpmn"))
+  .settings(projectSettings("example-twitter-bpmn"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .dependsOn(bpmn)
+
+lazy val exampleTwitterApi = project
+  .in(file("./05-examples/twitter/03-api"))
+  .settings(projectSettings("example-twitter-api"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .dependsOn(api, exampleTwitterBpmn)
+
+lazy val exampleTwitterSimulation = project
+  .in(file("./05-examples/twitter/03-simulation"))
+  .settings(projectSettings("example-twitter-simulation"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .settings(testFrameworks += new TestFramework(
+    "camundala.simulation.custom.SimulationTestFramework"
+  ))
+  .dependsOn(simulation, exampleTwitterBpmn)
+
 lazy val exampleTwitterC7 = project
-  .in(file("./05-examples/twitter/camunda7"))
+  .in(file("./05-examples/twitter/04-c7-spring"))
   .settings(projectSettings("example-twitter-c7"))
   .configure(preventPublication)
-  .configure(integrationTests)
   .settings(
     autoImportSetting,
     libraryDependencies ++= camundaDependencies :+
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
-  )
-  .dependsOn(api, simulation)
 
+)
+  .dependsOn(bpmn, exampleTwitterBpmn, camunda)
+
+// not in use
 lazy val exampleTwitterC8 = project
-  .in(file("./05-examples/twitter/camunda8"))
+  .in(file("./05-examples/twitter/04-c8-spring"))
   .settings(projectSettings("example-twitter-c8"))
   .configure(preventPublication)
-  .configure(integrationTests)
   .settings(
     autoImportSetting,
     libraryDependencies +=
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
-  .dependsOn(camunda8, api, simulation)
+  .dependsOn(bpmn, api, /*exampleTwitterBpmn,*/ camunda8)
 
 lazy val exampleDemos = project
   .in(file("./05-examples/demos"))
   .settings(projectSettings("example-demos"))
   .configure(preventPublication)
-  .configure(integrationTests)
   .settings(
     autoImportSetting,
     libraryDependencies ++= camundaDependencies
@@ -347,11 +384,3 @@ lazy val exampleMyCompany = project
   .configure(preventPublication)
   .dependsOn(api)
 
-lazy val integrationTests: Project => Project =
-  _.configs(IntegrationTest)
-    .settings(
-      Defaults.itSettings,
-      testFrameworks += new TestFramework(
-        "camundala.simulation.custom.SimulationTestFramework"
-      )
-    )
