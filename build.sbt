@@ -326,15 +326,67 @@ lazy val exampleTwitterC8 = project
   )
   .dependsOn(bpmn, api, /*exampleTwitterBpmn,*/ camunda8)
 
+// INVOICE
 lazy val exampleDemos = project
   .in(file("./05-examples/demos"))
   .settings(projectSettings("example-demos"))
+  .configure(preventPublication)
+  .aggregate(
+    exampleDemosBpmn,
+    exampleDemosApi,
+    exampleDemosDmn,
+    exampleDemosSimulation,
+    exampleDemosWorker,
+    exampleDemosC7,
+  )
+
+lazy val exampleDemosBpmn = project
+  .in(file("./05-examples/demos/02-bpmn"))
+  .settings(projectSettings("example-demos-bpmn"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .dependsOn(bpmn)
+
+lazy val exampleDemosApi = project
+  .in(file("./05-examples/demos/03-api"))
+  .settings(projectSettings("example-demos-api"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .dependsOn(api, exampleDemosBpmn)
+
+lazy val exampleDemosDmn = project
+  .in(file("./05-examples/demos/03-dmn"))
+  .settings(projectSettings("example-demos-dmn"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .dependsOn(dmn, exampleDemosBpmn)
+
+lazy val exampleDemosSimulation = project
+  .in(file("./05-examples/demos/03-simulation"))
+  .settings(projectSettings("example-demos-simulation"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .settings(testFrameworks += new TestFramework(
+    "camundala.simulation.custom.SimulationTestFramework"
+  ))
+  .dependsOn(simulation, exampleDemosBpmn)
+
+lazy val exampleDemosWorker = project
+  .in(file("./05-examples/demos/03-worker"))
+  .settings(projectSettings("example-demos-worker"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .dependsOn(worker, camunda7Worker, exampleDemosBpmn)
+
+lazy val exampleDemosC7 = project
+  .in(file("./05-examples/demos/04-c7-spring"))
+  .settings(projectSettings("example-demos-c7"))
   .configure(preventPublication)
   .settings(
     autoImportSetting,
     libraryDependencies ++= camundaDependencies
   )
-  .dependsOn(api, dmn, camunda, simulation)
+  .dependsOn(bpmn, exampleDemosBpmn, camunda)
 
 // start company documentation example
 import com.typesafe.config.ConfigFactory

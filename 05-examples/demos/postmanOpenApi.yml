@@ -1,48 +1,64 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Demos Example Process API
   version: '1.0'
-  summary: |2+
-
-    **This is for Postman - to have example requests. Be aware the Output is not provided!**
-
-
-
-    Created at 09/07/2023, 12:56
-
-    ****
-
-
-
-
-    # Changelog
-
-    <details>
-    <summary>CHANGELOG.md</summary>
-    <p>
-
-
-    All notable changes to this project will be documented in this file.
-
-    * Types of Changes (L3):
-      * Added: new features
-      * Changed: changes in existing functionality
-      * Deprecated: soon-to-be-removed features
-      * Removed: now removed features
-      * Fixed: any bug fixes
-      * Security: in case of vulnerabilities
-
-
-    The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-    and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-    ### Unreleased
-    Initial Version
-
-    </p>
-    </details>
-
-
+  summary: "\n**This is for Postman - to have example requests. Be aware the Output\
+    \ is not provided!**\n\n\n\nCreated at 08/12/2023, 16:30\n\n**See the [Camundala\
+    \ Documentation](https://pme123.github.io/camundala/)\n\n\n\n\n<details>\n<summary><b><i>CHANGELOG.md</i></b></summary>\n\
+    <p>\n\n\nAll notable changes to this project will be documented in this file.\n\
+    \n* Types of Changes (L3):\n  * Added: new features\n  * Changed: changes in existing\
+    \ functionality\n  * Deprecated: soon-to-be-removed features\n  * Removed: now\
+    \ removed features\n  * Fixed: any bug fixes\n  * Security: in case of vulnerabilities\n\
+    \n\nThe format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),\n\
+    and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).\n\
+    \n### Unreleased\nInitial Version\n\n</p>\n</details>\n\n\n<p/>\n<details>\n<summary>\n\
+    <b><i>Supported General Variables</i></b>\n</summary>\n\n<p>\n\n### Processes\n\
+    \n**mockedSubprocesses**:\n\nMock the SubProcesses with their default Mocks.\n\
+    This is a list of the _SubProcesses processNames_ you want to mock.\nDepending\
+    \ on your implementation it is also possible to use a _comma separated_ String,\n\
+    like `\"mySubProcess,myOtherSubProcess\"`\n\n\n- DSL:\n```scala\nprocess(..)\n\
+    \  .mockSubProcesses(\"mySubProcess1\", \"mySubProcess2\") // creates a list with\
+    \ SubProcessess\n  .mockSubProcess(\"myOtherSubProcess\") // adds a SubProcess\n\
+    ```\n\n- Json\n```json\n...\n\"mockedSubprocesses\": [\"mySubProcess\", \"myOtherSubProcess\"\
+    ],\n...\n```\n\n### Processes and ExternalTasks\n**outputVariables**:\n\nYou can\
+    \ filter the Output with a list of variable names you are interested in.\nThis\
+    \ list may include all variables from the output (`Out`). We included an example\
+    \ for each Process or ExternalTask.\nDepending on your implementation it is also\
+    \ possible to use a _comma separated_ String,\nlike `\"name,firstName\"`\n\n\n\
+    - DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withOutputVariables(\"\
+    name\", \"firstName\") // creates a list with outputVariables\n  .withOutputVariable(\"\
+    nickname\") // adds a outputVariable\n```\n\n- Json\n```json\n...\n\"outputVariables\"\
+    : [\"name\", \"firstName\"],\n...\n```\n\n\n**outputMock**:\n\nMock the Process\
+    \ or ExternalTask (`Out`)\n - You find an example in every _Process_ and _ExternalTask_.\n\
+    \n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .mockWith(outputMock)\n\
+    ```\n\n- Json\n```json\n...\n\"outputMock\": {..},\n...\n```\n\n\n**defaultMocked**:\n\
+    \nMock the ExternalTasks (Workers only) with their default Mock:\n\n- DSL:\n```scala\n\
+    process(..) // or serviceProcess(..)\n  .mockServices\n```\n\n- Json\n```json\n\
+    ...\n\"defaultMocked\": true,\n...\n```\n\n\n**impersonateUserId**:\n\nUser-ID\
+    \ of a User that should be taken to authenticate to the services.\nThis must be\
+    \ supported by your implementation. *Be caution: this may be a security issue!*.\n\
+    It is helpful if you have Tokens that expire, but long running Processes.\n\n\
+    - DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n  .withImpersonateUserId(impersonateUserId)\n\
+    ```\n\n- Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
+    \n### ExternalTasks\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
+    \ - You find an example in every _ExternalTask_.\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \  .mockServiceWith(MockedServiceResponse\n     .success200(inOut.defaultServiceOutMock))\n\
+    ```\n\n- Json\n```json\n...\n\"outputServiceMock\": {\n  \"respStatus\" : 200,\n\
+    \  \"respBody\" : \"Example String Body\",\n  \"respHeaders\" : [\n  ]\n},\n...\n\
+    ```\n\n\n**handledErrors**:\n\nA list of error codes that are handled (`BpmnError`)\n\
+    Depending on your implementation it is also possible to use a _comma separated_\
+    \ String,\nlike `\"validation-failed,404\"`\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \  .handleErrors(ErrorCodes.`validation-failed`, \"404\") // create a list of\
+    \ handledErrors\n  .handleError(\"404\") // add a handledError\n```\n\n- Json\n\
+    ```json\n...\n\"handledErrors\": [\"validation-failed\", \"404\"],\n...\n```\n\
+    \n\n**regexHandledErrors**:\n\nYou can further filter Handled Errors with a list\
+    \ of Regex expressions that the body error message must match.\nDepending on your\
+    \ implementation it is also possible to use a _comma separated_ String,\nlike\
+    \ `\"SQL exception,\"errorNr\":\"20000\"\"`\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \  .handleErrorWithRegex(\"SQL exception\")\n  .handleErrorWithRegex(\"\\\"errorNr\\\
+    \":\\\"20000\\\"\")\n```\n\n- Json\n```json\n...\n\"regexHandledErrors\": [\"\
+    SQL exception\", \"\"errorNr\":\"20000\"\"],\n...\n```\n\n</p>\n</details>\n<p/>\n\
+    \        \n\n"
 servers:
 - url: http://localhost:8034/engine-rest
   description: Local Developer Server
@@ -51,7 +67,7 @@ paths:
     post:
       tags:
       - singleEntry
-      summary: 'singleEntry: EvaluateDecision'
+      summary: 'DecisionDmn: singleEntry'
       description: |2
 
 
@@ -60,7 +76,7 @@ paths:
         - _decisionDefinitionKey_: `singleEntry`,
 
 
-        See API Doc: [singleEntry](https://webstor.ch/demos-example/OpenApi.html#operation/DecisionDmn:%20singleEntry)
+        See API Doc: [DecisionDmn: singleEntry](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/singleEntry/operation/DecisionDmn:%20singleEntry)
       operationId: postDecision-definitionKeyKey--remove:singleentry--Evaluate
       parameters:
       - name: key
@@ -90,7 +106,7 @@ paths:
     post:
       tags:
       - collectEntries
-      summary: 'collectEntries: EvaluateDecision'
+      summary: 'DecisionDmn: collectEntries'
       description: |2
 
 
@@ -99,7 +115,7 @@ paths:
         - _decisionDefinitionKey_: `collectEntries`,
 
 
-        See API Doc: [collectEntries](https://webstor.ch/demos-example/OpenApi.html#operation/DecisionDmn:%20collectEntries)
+        See API Doc: [DecisionDmn: collectEntries](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/collectEntries/operation/DecisionDmn:%20collectEntries)
       operationId: postDecision-definitionKeyKey--remove:collectentries--Evaluate
       parameters:
       - name: key
@@ -129,7 +145,7 @@ paths:
     post:
       tags:
       - singleResult
-      summary: 'singleResult: EvaluateDecision'
+      summary: 'DecisionDmn: singleResult'
       description: |2
 
 
@@ -138,7 +154,7 @@ paths:
         - _decisionDefinitionKey_: `singleResult`,
 
 
-        See API Doc: [singleResult](https://webstor.ch/demos-example/OpenApi.html#operation/DecisionDmn:%20singleResult)
+        See API Doc: [DecisionDmn: singleResult](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/singleResult/operation/DecisionDmn:%20singleResult)
       operationId: postDecision-definitionKeyKey--remove:singleresult--Evaluate
       parameters:
       - name: key
@@ -168,7 +184,7 @@ paths:
     post:
       tags:
       - resultList
-      summary: 'resultList: EvaluateDecision'
+      summary: 'DecisionDmn: resultList'
       description: |2
 
 
@@ -177,7 +193,7 @@ paths:
         - _decisionDefinitionKey_: `resultList`,
 
 
-        See API Doc: [resultList](https://webstor.ch/demos-example/OpenApi.html#operation/DecisionDmn:%20resultList)
+        See API Doc: [DecisionDmn: resultList](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/resultList/operation/DecisionDmn:%20resultList)
       operationId: postDecision-definitionKeyKey--remove:resultlist--Evaluate
       parameters:
       - name: key
@@ -207,11 +223,11 @@ paths:
     post:
       tags:
       - camundala-mapping-example
-      summary: 'camundala-mapping-example: StartProcess'
+      summary: 'Process: camundala-mapping-example'
       description: |2
 
 
-        See API Doc: [camundala-mapping-example](https://webstor.ch/demos-example/OpenApi.html#operation/Process:%20camundala-mapping-example)
+        See API Doc: [Process: camundala-mapping-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/camundala-mapping-example/operation/Process:%20camundala-mapping-example)
       operationId: postProcess-definitionKeyCamundala-mapping-exampleStart
       responses:
         '200':
@@ -220,11 +236,11 @@ paths:
     post:
       tags:
       - enum-example
-      summary: 'enum-example: StartProcess'
+      summary: 'Process: enum-example'
       description: |2
 
 
-        See API Doc: [enum-example](https://webstor.ch/demos-example/OpenApi.html#operation/Process:%20enum-example)
+        See API Doc: [Process: enum-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/enum-example/operation/Process:%20enum-example)
       operationId: postProcess-definitionKeyEnum-exampleStart
       requestBody:
         content:
@@ -244,10 +260,11 @@ paths:
                     customMock:
                       value: |-
                         {
-                          "someOut" : "hello",
-                          "intValue" : 12,
-                          "simpleEnum" : "One",
-                          "type" : "A"
+                          "A" : {
+                            "someOut" : "hello",
+                            "intValue" : 12,
+                            "simpleEnum" : "One"
+                          }
                         }
                       type: Json
                   businessKey: enum-example
@@ -260,7 +277,7 @@ paths:
     post:
       tags:
       - DateExample
-      summary: 'DateExample: EvaluateDecision'
+      summary: 'DecisionDmn: DateExample'
       description: |2
 
 
@@ -269,7 +286,7 @@ paths:
         - _decisionDefinitionKey_: `DateExample`,
 
 
-        See API Doc: [DateExample](https://webstor.ch/demos-example/OpenApi.html#operation/DecisionDmn:%20DateExample)
+        See API Doc: [DecisionDmn: DateExample](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/DateExample/operation/DecisionDmn:%20DateExample)
       operationId: postDecision-definitionKeyKey--remove:dateexample--Evaluate
       parameters:
       - name: key
@@ -299,7 +316,7 @@ paths:
     post:
       tags:
       - VariablesExample
-      summary: 'VariablesExample: EvaluateDecision'
+      summary: 'DecisionDmn: VariablesExample'
       description: |2
 
 
@@ -308,7 +325,7 @@ paths:
         - _decisionDefinitionKey_: `VariablesExample`,
 
 
-        See API Doc: [VariablesExample](https://webstor.ch/demos-example/OpenApi.html#operation/DecisionDmn:%20VariablesExample)
+        See API Doc: [DecisionDmn: VariablesExample](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/VariablesExample/operation/DecisionDmn:%20VariablesExample)
       operationId: postDecision-definitionKeyKey--remove:variablesexample--Evaluate
       parameters:
       - name: key
@@ -344,11 +361,11 @@ paths:
     post:
       tags:
       - simulation-TestOverrides
-      summary: 'simulation-TestOverrides: StartProcess'
+      summary: 'Process: simulation-TestOverrides'
       description: |2
 
 
-        See API Doc: [simulation-TestOverrides](https://webstor.ch/demos-example/OpenApi.html#operation/Process:%20simulation-TestOverrides)
+        See API Doc: [Process: simulation-TestOverrides](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/simulation-TestOverrides/operation/Process:%20simulation-TestOverrides)
       operationId: postProcess-definitionKeySimulation-testoverridesStart
       requestBody:
         content:
@@ -399,11 +416,11 @@ paths:
     post:
       tags:
       - SignalMessageExample
-      summary: 'signal-example: StartProcess'
+      summary: 'Process: signal-example'
       description: |2
 
 
-        See API Doc: [signal-example](https://webstor.ch/demos-example/OpenApi.html#operation/Process:%20signal-example)
+        See API Doc: [Process: signal-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/signal-example/operation/Process:%20signal-example)
       operationId: postProcess-definitionKeySignal-example--removesignal-example--Start
       requestBody:
         content:
@@ -427,11 +444,11 @@ paths:
     post:
       tags:
       - SignalMessageExample
-      summary: 'message-for-example: StartProcess'
+      summary: 'Process: message-for-example'
       description: |2
 
 
-        See API Doc: [message-for-example](https://webstor.ch/demos-example/OpenApi.html#operation/Process:%20message-for-example)
+        See API Doc: [Process: message-for-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/message-for-example/operation/Process:%20message-for-example)
       operationId: postProcess-definitionKeyMessage-for-example--removemessage-for-example--Start
       requestBody:
         content:
@@ -455,7 +472,7 @@ paths:
     post:
       tags:
       - SignalMessageExample
-      summary: 'intermediate-signal-for-example: SendSignal'
+      summary: 'SignalEvent: intermediate-signal-for-example'
       description: |2
 
         - _messageName_: `intermediate-signal-for-example`
@@ -464,7 +481,7 @@ paths:
         - _messageName_: `intermediate-signal-for-example`,
 
 
-        See API Doc: [intermediate-signal-for-example](https://webstor.ch/demos-example/OpenApi.html#operation/SignalEvent:%20intermediate-signal-for-example)
+        See API Doc: [SignalEvent: intermediate-signal-for-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/intermediate-signal-for-example/operation/SignalEvent:%20intermediate-signal-for-example)
       operationId: postSignal--remove:intermediate-signal-for-example--
       requestBody:
         content:
@@ -487,7 +504,7 @@ paths:
     post:
       tags:
       - SignalMessageExample
-      summary: 'intermediate-message-for-example: CorrelateMessage'
+      summary: 'MessageEvent: intermediate-message-for-example'
       description: |2
 
         - _messageName_: `intermediate-message-for-example`
@@ -496,7 +513,7 @@ paths:
         - _messageName_: `intermediate-message-for-example`,
 
 
-        See API Doc: [intermediate-message-for-example](https://webstor.ch/demos-example/OpenApi.html#operation/MessageEvent:%20intermediate-message-for-example)
+        See API Doc: [MessageEvent: intermediate-message-for-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/intermediate-message-for-example/operation/MessageEvent:%20intermediate-message-for-example)
       operationId: postMessage--remove:intermediate-message-for-example--
       requestBody:
         content:
@@ -523,11 +540,11 @@ paths:
     post:
       tags:
       - timer-example
-      summary: 'timer-example: StartProcess'
+      summary: 'Process: timer-example'
       description: |2
 
 
-        See API Doc: [timer-example](https://webstor.ch/demos-example/OpenApi.html#operation/Process:%20timer-example)
+        See API Doc: [Process: timer-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/timer-example/operation/Process:%20timer-example)
       operationId: postProcess-definitionKeyTimer-exampleStart
       responses:
         '200':
@@ -536,11 +553,11 @@ paths:
     post:
       tags:
       - timer-example
-      summary: 'wait for one day: GetActiveJob'
+      summary: 'TimerEvent: wait for one day'
       description: |2
 
 
-        See API Doc: [wait for one day](https://webstor.ch/demos-example/OpenApi.html#operation/TimerEvent:%20wait%20for%20one%20day)
+        See API Doc: [TimerEvent: wait for one day](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/wait-for-one-day/operation/TimerEvent:%20wait%20for%20one%20day)
       operationId: postJob--remove:wait for one day--
       responses:
         '200':
@@ -549,11 +566,11 @@ paths:
     post:
       tags:
       - timer-example
-      summary: 'wait for one day: ExecuteTimer'
+      summary: 'TimerEvent: wait for one day'
       description: |2
 
 
-        See API Doc: [wait for one day](https://webstor.ch/demos-example/OpenApi.html#operation/TimerEvent:%20wait%20for%20one%20day)
+        See API Doc: [TimerEvent: wait for one day](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#tag/wait-for-one-day/operation/TimerEvent:%20wait%20for%20one%20day)
       operationId: postJobJobidExecute--remove:wait for one day--
       parameters:
       - name: jobId

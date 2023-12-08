@@ -57,11 +57,12 @@ case class TweetOut(
                           endStatus: EndStatus = EndStatus.published
                         )
 
-enum EndStatus derives ConfiguredEnumCodec :
+enum EndStatus :
   case published, notPublished
 object EndStatus:
   given ApiSchema[EndStatus] = deriveSchema
-
+  given InOutCodec[EndStatus] = deriveEnumCodec
+  
 object TweetOut:
   given ApiSchema[TweetOut] = deriveSchema
   given InOutCodec[TweetOut] = deriveCodec
