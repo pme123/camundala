@@ -17,7 +17,7 @@ trait DmnTesterHelpers:
       containerName: String = "camunda-dmn-tester",
       // path to where the configs should be created in
       dmnConfigPaths: Seq[os.Path] = Seq(
-        projectBasePath / "src" / "it" / "resources" / "dmnConfigs"
+        projectBasePath / "src" / "main" / "resources" / "dmnConfigs"
       ),
       // paths where the DMNs are (could be different places)
       dmnPaths: Seq[os.Path] = Seq(

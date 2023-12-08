@@ -238,7 +238,7 @@ We provide an example with the invoice example for Camunda 7.
 
 - Add it to the Start event in the BPMN:
     - Listener Type: `Java class`
-    - Java class: `camundala.examples.invoice.listener.InvoiceInputHandler`
+    - Java class: `camundala.examples.invoice.c7.InvoiceInputHandler`
 
 - Add a condition (Expression) that finishes the process if mocked.
     - Condition Expression: `${mocked}`

@@ -1,0 +1,829 @@
+openapi: 3.1.0
+info:
+  title: Invoice Example Process API
+  version: '1.0'
+  summary: "\n\nCreated at 08/12/2023, 10:19\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
+    \nThere is no README.md in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>Supported\
+    \ General Variables</i></b>\n</summary>\n\n<p>\n\n### Processes\n\n**mockedSubprocesses**:\n\
+    \nMock the SubProcesses with their default Mocks.\nThis is a list of the _SubProcesses\
+    \ processNames_ you want to mock.\nDepending on your implementation it is also\
+    \ possible to use a _comma separated_ String,\nlike `\"mySubProcess,myOtherSubProcess\"\
+    `\n\n\n- DSL:\n```scala\nprocess(..)\n  .mockSubProcesses(\"mySubProcess1\", \"\
+    mySubProcess2\") // creates a list with SubProcessess\n  .mockSubProcess(\"myOtherSubProcess\"\
+    ) // adds a SubProcess\n```\n\n- Json\n```json\n...\n\"mockedSubprocesses\": [\"\
+    mySubProcess\", \"myOtherSubProcess\"],\n...\n```\n\n### Processes and ExternalTasks\n\
+    **outputVariables**:\n\nYou can filter the Output with a list of variable names\
+    \ you are interested in.\nThis list may include all variables from the output\
+    \ (`Out`). We included an example for each Process or ExternalTask.\nDepending\
+    \ on your implementation it is also possible to use a _comma separated_ String,\n\
+    like `\"name,firstName\"`\n\n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n\
+    \  .withOutputVariables(\"name\", \"firstName\") // creates a list with outputVariables\n\
+    \  .withOutputVariable(\"nickname\") // adds a outputVariable\n```\n\n- Json\n\
+    ```json\n...\n\"outputVariables\": [\"name\", \"firstName\"],\n...\n```\n\n\n\
+    **outputMock**:\n\nMock the Process or ExternalTask (`Out`)\n - You find an example\
+    \ in every _Process_ and _ExternalTask_.\n\n\n- DSL:\n```scala\nprocess(..) //\
+    \ or serviceProcess(..)\n  .mockWith(outputMock)\n```\n\n- Json\n```json\n...\n\
+    \"outputMock\": {..},\n...\n```\n\n\n**defaultMocked**:\n\nMock the ExternalTasks\
+    \ (Workers only) with their default Mock:\n\n- DSL:\n```scala\nprocess(..) //\
+    \ or serviceProcess(..)\n  .mockServices\n```\n\n- Json\n```json\n...\n\"defaultMocked\"\
+    : true,\n...\n```\n\n\n**impersonateUserId**:\n\nUser-ID of a User that should\
+    \ be taken to authenticate to the services.\nThis must be supported by your implementation.\
+    \ *Be caution: this may be a security issue!*.\nIt is helpful if you have Tokens\
+    \ that expire, but long running Processes.\n\n- DSL:\n```scala\nprocess(..) //\
+    \ or serviceProcess(..)\n  .withImpersonateUserId(impersonateUserId)\n```\n\n\
+    - Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\n###\
+    \ ExternalTasks\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
+    \ - You find an example in every _ExternalTask_.\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \  .mockServiceWith(MockedServiceResponse\n     .success200(inOut.defaultServiceOutMock))\n\
+    ```\n\n- Json\n```json\n...\n\"outputServiceMock\": {\n  \"respStatus\" : 200,\n\
+    \  \"respBody\" : \"Example String Body\",\n  \"respHeaders\" : [\n  ]\n},\n...\n\
+    ```\n\n\n**handledErrors**:\n\nA list of error codes that are handled (`BpmnError`)\n\
+    Depending on your implementation it is also possible to use a _comma separated_\
+    \ String,\nlike `\"validation-failed,404\"`\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \  .handleErrors(ErrorCodes.`validation-failed`, \"404\") // create a list of\
+    \ handledErrors\n  .handleError(\"404\") // add a handledError\n```\n\n- Json\n\
+    ```json\n...\n\"handledErrors\": [\"validation-failed\", \"404\"],\n...\n```\n\
+    \n\n**regexHandledErrors**:\n\nYou can further filter Handled Errors with a list\
+    \ of Regex expressions that the body error message must match.\nDepending on your\
+    \ implementation it is also possible to use a _comma separated_ String,\nlike\
+    \ `\"SQL exception,\"errorNr\":\"20000\"\"`\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \  .handleErrorWithRegex(\"SQL exception\")\n  .handleErrorWithRegex(\"\\\"errorNr\\\
+    \":\\\"20000\\\"\")\n```\n\n- Json\n```json\n...\n\"regexHandledErrors\": [\"\
+    SQL exception\", \"\"errorNr\":\"20000\"\"],\n...\n```\n\n</p>\n</details>\n<p/>\n\
+    \        \n"
+paths:
+  /process/example-invoice-c7:
+    head:
+      tags:
+      - example-invoice-c7
+      summary: 'Process: example-invoice-c7'
+      description: "This starts the Invoice Receipt Process.\n\n- Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt\
+        \ > In`\n- Output: `camundala.examples.invoice.bpmn.InvoiceReceipt > Out`\n\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-23859\"\
+        >\n    <img onLoad=\"openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container:\
+        \ $('#example-invoice-c7-23859'), height: '95%', width: '95%' }));\" src=\"\
+        data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
+        \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)\n\
+        \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
+        \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
+        ```json\n...\n\"outputVariables\": \"approved,clarified\",\n...\n```\n\n**outputMock**:\n\
+        \n```json\n...\n\"outputMock\": {\n  \"approved\" : true,\n  \"clarified\"\
+        \ : null\n},\n...\n```\n\n</p>\n</details>\n</p>\n      "
+      operationId: 'Process: example-invoice-c7'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In'
+            examples:
+              example-invoice-c7:
+                value:
+                  creditor: Great Pizza for Everyone Inc.
+                  amount: 300.0
+                  invoiceCategory: Travel Expenses
+                  invoiceNumber: I-12345
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Out1'
+              examples:
+                example-invoice-c7:
+                  value:
+                    approved: true
+  /decisiondmn/example-invoice-c7/example-invoice-c7-assignApprover:
+    head:
+      tags:
+      - example-invoice-c7
+      summary: 'DecisionDmn: example-invoice-c7-assignApprover'
+      description: |+
+        Decision Table on who must approve the Invoice.
+
+        - Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt > InvoiceAssignApproverDMN > In`
+        - Output: `camundala.bpmn.CollectEntries`
+
+
+        <div class="diagramCanvas">
+          <div class="diagram" id="example-invoice-c7-assignApprover-49413">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-49413'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)
+
+      operationId: 'DecisionDmn: example-invoice-c7-assignApprover'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In1'
+            examples:
+              example-invoice-c7-assignApprover:
+                value:
+                  amount: 30.0
+                  invoiceCategory: Software License Costs
+              budget:
+                value:
+                  amount: 30.0
+                  invoiceCategory: Software License Costs
+              day-to-day expense:
+                value:
+                  amount: 125.0
+                  invoiceCategory: Misc
+              exceptional:
+                value:
+                  amount: 12345.0
+                  invoiceCategory: Misc
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectEntries_camundala.examples.invoice.bpmn.InvoiceReceipt$.ApproverGroup[]'
+              examples:
+                example-invoice-c7-assignApprover:
+                  value:
+                  - management
+  /usertask/example-invoice-c7/ApproveInvoiceUT:
+    head:
+      tags:
+      - example-invoice-c7
+      summary: 'UserTask: ApproveInvoiceUT'
+      description: |-
+        Approve the invoice (or not).
+
+        - Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.examples.invoice.bpmn.InvoiceReceipt > ApproveInvoiceUT > Out`
+      operationId: 'UserTask: ApproveInvoiceUT'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In2'
+            examples:
+              ApproveInvoiceUT:
+                value:
+                  creditor: Great Pizza for Everyone Inc.
+                  amount: 300.0
+                  invoiceCategory: Travel Expenses
+                  invoiceNumber: I-12345
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Out2'
+              examples:
+                ApproveInvoiceUT:
+                  value:
+                    approved: true
+                Invoice approved:
+                  value:
+                    approved: true
+                Invoice NOT approved:
+                  value:
+                    approved: false
+  /usertask/example-invoice-c7/PrepareBankTransferUT:
+    head:
+      tags:
+      - example-invoice-c7
+      summary: 'UserTask: PrepareBankTransferUT'
+      description: |-
+        Prepare the bank transfer in the Financial Accounting System.
+
+        - Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.domain.NoOutput`
+      operationId: 'UserTask: PrepareBankTransferUT'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In2'
+            examples:
+              PrepareBankTransferUT:
+                value:
+                  creditor: Great Pizza for Everyone Inc.
+                  amount: 300.0
+                  invoiceCategory: Travel Expenses
+                  invoiceNumber: I-12345
+        required: true
+      responses:
+        '200':
+          description: ''
+  /process/example-invoice-c7-review:
+    head:
+      tags:
+      - example-invoice-c7-review
+      summary: 'Process: example-invoice-c7-review'
+      description: "This starts the Review Invoice Process.\n\n- Input:  `camundala.examples.invoice.bpmn.ReviewInvoice\
+        \ > In`\n- Output: `camundala.examples.invoice.bpmn.ReviewInvoice > Out`\n\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-65918\"\
+        >\n    <img onLoad=\"openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({\
+        \ container: $('#example-invoice-c7-review-65918'), height: '95%', width:\
+        \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
+        \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)\n\
+        \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
+        \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
+        ```json\n...\n\"outputVariables\": \"clarified\",\n...\n```\n\n**outputMock**:\n\
+        \n```json\n...\n\"outputMock\": {\n  \"clarified\" : true\n},\n...\n```\n\n\
+        </p>\n</details>\n</p>\n      "
+      operationId: 'Process: example-invoice-c7-review'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In3'
+            examples:
+              example-invoice-c7-review:
+                value:
+                  creditor: Great Pizza for Everyone Inc.
+                  amount: 300.0
+                  invoiceCategory: Travel Expenses
+                  invoiceNumber: I-12345
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Out'
+              examples:
+                example-invoice-c7-review:
+                  value:
+                    clarified: true
+  /usertask/example-invoice-c7-review/AssignReviewerUT:
+    head:
+      tags:
+      - example-invoice-c7-review
+      summary: 'UserTask: AssignReviewerUT'
+      description: |-
+        Select the Reviewer.
+
+        - Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.examples.invoice.bpmn.ReviewInvoice > AssignReviewerUT > Out`
+      operationId: 'UserTask: AssignReviewerUT'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In2'
+            examples:
+              AssignReviewerUT:
+                value:
+                  creditor: Great Pizza for Everyone Inc.
+                  amount: 300.0
+                  invoiceCategory: Travel Expenses
+                  invoiceNumber: I-12345
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Out3'
+              examples:
+                AssignReviewerUT:
+                  value:
+                    reviewer: John
+  /usertask/example-invoice-c7-review/ReviewInvoiceUT:
+    head:
+      tags:
+      - example-invoice-c7-review
+      summary: 'UserTask: ReviewInvoiceUT'
+      description: |-
+        Review Invoice and approve.
+
+        - Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.examples.invoice.bpmn.ReviewInvoice > ReviewInvoiceUT > Out`
+      operationId: 'UserTask: ReviewInvoiceUT'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In2'
+            examples:
+              ReviewInvoiceUT:
+                value:
+                  creditor: Great Pizza for Everyone Inc.
+                  amount: 300.0
+                  invoiceCategory: Travel Expenses
+                  invoiceNumber: I-12345
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Out4'
+              examples:
+                ReviewInvoiceUT:
+                  value:
+                    clarified: true
+                Invoice clarified:
+                  value:
+                    clarified: true
+                Invoice NOT clarified:
+                  value:
+                    clarified: false
+  /servicetask/Workers/star-wars-api-people-detail:
+    head:
+      tags:
+      - Workers
+      summary: star-wars-api-people-detail
+      description: "\n\n\n**Topic:** `star-wars-api-people-detail` (to define in the\
+        \ _**Topic**_ of the _**External Task**_ > _Service Task_ of type _External_)\n\
+        \nGet People Details from StarWars API\n\n- Input:  `camundala.examples.invoice.bpmn.StarWarsPeopleDetail\
+        \ > In`\n- Output: `camundala.examples.invoice.bpmn.StarWarsPeopleDetail >\
+        \ Out > Success`\n\nYou can test this worker using the generic process _**camundala-externalTask-generic**_\
+        \ (e.g. with Postman).\n\n- ServiceOut:  `camundala.domain.MockedServiceResponse`\n\
+        <p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
+        \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
+        ```json\n...\n\"outputVariables\": \"people,fromHeader,processStatus\",\n\
+        ...\n```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"people\"\
+        \ : {\n    \"name\" : \"Luke Skywalker\",\n    \"height\" : \"172\",\n   \
+        \ \"mass\" : \"77\",\n    \"hair_color\" : \"blond\",\n    \"skin_color\"\
+        \ : \"fair\",\n    \"eye_color\" : \"blue\"\n  },\n  \"fromHeader\" : \"okidoki\"\
+        ,\n  \"processStatus\" : \"succeeded\",\n  \"type\" : \"Success\"\n},\n...\n\
+        ```\n\n**outputServiceMock**:\n```json\n...\n\"outputServiceMock\": {\n  \"\
+        respStatus\" : 200,\n  \"respBody\" : {\n    \"respStatus\" : 200,\n    \"\
+        respBody\" : {\n      \"name\" : \"Luke Skywalker\",\n      \"height\" : \"\
+        172\",\n      \"mass\" : \"77\",\n      \"hair_color\" : \"blond\",\n    \
+        \  \"skin_color\" : \"fair\",\n      \"eye_color\" : \"blue\"\n    },\n  \
+        \  \"respHeaders\" : [\n      [\n        \"fromHeader\",\n        \"okidoki\"\
+        \n      ]\n    ]\n  },\n  \"respHeaders\" : [\n  ]\n},\n...\n```\n</p>\n</details>\n\
+        </p>\n      \n    "
+      operationId: star-wars-api-people-detail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In4'
+            examples:
+              star-wars-api-people-detail:
+                value:
+                  id: 1
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Out5'
+              examples:
+                star-wars-api-people-detail:
+                  value:
+                    people:
+                      name: Luke Skywalker
+                      height: '172'
+                      mass: '77'
+                      hair_color: blond
+                      skin_color: fair
+                      eye_color: blue
+                    fromHeader: okidoki
+                    processStatus: succeeded
+                    type: Success
+  /customtask/Workers/ArchiveInvoiceService:
+    head:
+      tags:
+      - Workers
+      summary: 'CustomTask: ArchiveInvoiceService'
+      description: |2
+
+        **Topic:** `ArchiveInvoiceService` (to define in the _**Topic**_ of the _**External Task**_ > _Service Task_ of type _External_)
+
+        Archives the Receipt.
+
+        - Input:  `camundala.examples.invoice.bpmn.ArchiveInvoice > In`
+        - Output: `camundala.examples.invoice.bpmn.ArchiveInvoice > Out`
+
+        You can test this worker using the generic process _**camundala-externalTask-generic**_ (e.g. with Postman).
+      operationId: 'CustomTask: ArchiveInvoiceService'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In5'
+            examples:
+              ArchiveInvoiceService:
+                value:
+                  shouldFail: true
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Out6'
+              examples:
+                ArchiveInvoiceService:
+                  value:
+                    archived: true
+  /usertask/UserTasks/ApproveInvoiceUT:
+    head:
+      tags:
+      - User Tasks
+      summary: 'UserTask: ApproveInvoiceUT'
+      description: |-
+        Approve the invoice (or not).
+
+        - Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.examples.invoice.bpmn.InvoiceReceipt > ApproveInvoiceUT > Out`
+      operationId: 'UserTask: ApproveInvoiceUT'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In2'
+            examples:
+              ApproveInvoiceUT:
+                value:
+                  creditor: Great Pizza for Everyone Inc.
+                  amount: 300.0
+                  invoiceCategory: Travel Expenses
+                  invoiceNumber: I-12345
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Out2'
+              examples:
+                ApproveInvoiceUT:
+                  value:
+                    approved: true
+                Invoice approved:
+                  value:
+                    approved: true
+                Invoice NOT approved:
+                  value:
+                    approved: false
+  /usertask/UserTasks/PrepareBankTransferUT:
+    head:
+      tags:
+      - User Tasks
+      summary: 'UserTask: PrepareBankTransferUT'
+      description: |-
+        Prepare the bank transfer in the Financial Accounting System.
+
+        - Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.domain.NoOutput`
+      operationId: 'UserTask: PrepareBankTransferUT'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In2'
+            examples:
+              PrepareBankTransferUT:
+                value:
+                  creditor: Great Pizza for Everyone Inc.
+                  amount: 300.0
+                  invoiceCategory: Travel Expenses
+                  invoiceNumber: I-12345
+        required: true
+      responses:
+        '200':
+          description: ''
+  /usertask/UserTasks/AssignReviewerUT:
+    head:
+      tags:
+      - User Tasks
+      summary: 'UserTask: AssignReviewerUT'
+      description: |-
+        Select the Reviewer.
+
+        - Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.examples.invoice.bpmn.ReviewInvoice > AssignReviewerUT > Out`
+      operationId: 'UserTask: AssignReviewerUT'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In2'
+            examples:
+              AssignReviewerUT:
+                value:
+                  creditor: Great Pizza for Everyone Inc.
+                  amount: 300.0
+                  invoiceCategory: Travel Expenses
+                  invoiceNumber: I-12345
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Out3'
+              examples:
+                AssignReviewerUT:
+                  value:
+                    reviewer: John
+  /usertask/UserTasks/ReviewInvoiceUT:
+    head:
+      tags:
+      - User Tasks
+      summary: 'UserTask: ReviewInvoiceUT'
+      description: |-
+        Review Invoice and approve.
+
+        - Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt > PrepareBankTransferUT > In`
+        - Output: `camundala.examples.invoice.bpmn.ReviewInvoice > ReviewInvoiceUT > Out`
+      operationId: 'UserTask: ReviewInvoiceUT'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In2'
+            examples:
+              ReviewInvoiceUT:
+                value:
+                  creditor: Great Pizza for Everyone Inc.
+                  amount: 300.0
+                  invoiceCategory: Travel Expenses
+                  invoiceNumber: I-12345
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Out4'
+              examples:
+                ReviewInvoiceUT:
+                  value:
+                    clarified: true
+                Invoice clarified:
+                  value:
+                    clarified: true
+                Invoice NOT clarified:
+                  value:
+                    clarified: false
+  /decisiondmn/DMNs/example-invoice-c7-assignApprover:
+    head:
+      tags:
+      - DMNs
+      summary: 'DecisionDmn: example-invoice-c7-assignApprover'
+      description: |+
+        Decision Table on who must approve the Invoice.
+
+        - Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt > InvoiceAssignApproverDMN > In`
+        - Output: `camundala.bpmn.CollectEntries`
+
+
+        <div class="diagramCanvas">
+          <div class="diagram" id="example-invoice-c7-assignApprover-77673">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-77673'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          </div>
+        </div>
+
+        Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)
+
+      operationId: 'DecisionDmn: example-invoice-c7-assignApprover'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In1'
+            examples:
+              example-invoice-c7-assignApprover:
+                value:
+                  amount: 30.0
+                  invoiceCategory: Software License Costs
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectEntries_camundala.examples.invoice.bpmn.InvoiceReceipt$.ApproverGroup[]'
+              examples:
+                example-invoice-c7-assignApprover:
+                  value:
+                  - management
+                budget:
+                  value:
+                  - management
+                day-to-day expense:
+                  value:
+                  - accounting
+                  - sales
+components:
+  schemas:
+    ApproverGroup:
+      type: string
+      enum:
+      - accounting
+      - management
+      - sales
+    CollectEntries_camundala.examples.invoice.bpmn.InvoiceReceipt$.ApproverGroup[]:
+      oneOf:
+      - $ref: '#/components/schemas/ApproverGroup'
+    Failure:
+      required:
+      - processStatus
+      type: object
+      properties:
+        processStatus:
+          $ref: '#/components/schemas/ProcessStatus'
+    In:
+      required:
+      - creditor
+      - amount
+      - invoiceCategory
+      - invoiceNumber
+      type: object
+      properties:
+        creditor:
+          type: string
+        amount:
+          type: number
+          format: double
+        invoiceCategory:
+          $ref: '#/components/schemas/InvoiceCategory'
+        invoiceNumber:
+          type: string
+        shouldFail:
+          type: boolean
+          description: You can let the Archive Service fail for testing.
+        invoiceReviewedMock:
+          $ref: '#/components/schemas/Out'
+    In1:
+      required:
+      - amount
+      - invoiceCategory
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+        invoiceCategory:
+          $ref: '#/components/schemas/InvoiceCategory'
+    In2:
+      required:
+      - creditor
+      - amount
+      - invoiceCategory
+      - invoiceNumber
+      type: object
+      properties:
+        creditor:
+          type: string
+        amount:
+          type: number
+          format: double
+        invoiceCategory:
+          $ref: '#/components/schemas/InvoiceCategory'
+        invoiceNumber:
+          type: string
+      description: Same Input as _InvoiceReceipt_, only without mocking - no mocking
+        in UserTasks
+    In3:
+      required:
+      - creditor
+      - amount
+      - invoiceCategory
+      - invoiceNumber
+      type: object
+      properties:
+        creditor:
+          type: string
+        amount:
+          type: number
+          format: double
+        invoiceCategory:
+          $ref: '#/components/schemas/InvoiceCategory'
+        invoiceNumber:
+          type: string
+      description: Same Input as _InvoiceReceipt_, only different Mocking
+    In4:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+      description: Same Input as _InvoiceReceipt_, only different Mocking
+    In5:
+      type: object
+      properties:
+        shouldFail:
+          type: boolean
+    InvoiceCategory:
+      type: string
+      enum:
+      - Misc
+      - Software License Costs
+      - Travel Expenses
+    Out:
+      required:
+      - clarified
+      type: object
+      properties:
+        clarified:
+          type: boolean
+          description: Flag that is set by the Reviewer
+    Out1:
+      required:
+      - approved
+      type: object
+      properties:
+        approved:
+          type: boolean
+          description: If true, the Boss accepted the Invoice
+        clarified:
+          type: boolean
+          description: Flag that is set by the Reviewer (only set if there was a review).
+    Out2:
+      required:
+      - approved
+      type: object
+      properties:
+        approved:
+          type: boolean
+          description: If true, the Boss accepted the Invoice
+      description: Every Invoice has to be accepted by the Boss.
+    Out3:
+      required:
+      - reviewer
+      type: object
+      properties:
+        reviewer:
+          type: string
+    Out4:
+      required:
+      - clarified
+      type: object
+      properties:
+        clarified:
+          type: boolean
+          description: Flag that is set by the Reviewer
+    Out5:
+      oneOf:
+      - $ref: '#/components/schemas/Failure'
+      - $ref: '#/components/schemas/Success'
+    Out6:
+      type: object
+      properties:
+        archived:
+          type: boolean
+    People:
+      required:
+      - name
+      - height
+      - mass
+      - hair_color
+      - skin_color
+      - eye_color
+      type: object
+      properties:
+        name:
+          type: string
+        height:
+          type: string
+        mass:
+          type: string
+        hair_color:
+          type: string
+        skin_color:
+          type: string
+        eye_color:
+          type: string
+    ProcessStatus:
+      type: string
+      enum:
+      - '400'
+      - '404'
+      - output-mocked
+      - succeeded
+      - validation-failed
+    Success:
+      required:
+      - people
+      - fromHeader
+      - processStatus
+      type: object
+      properties:
+        people:
+          $ref: '#/components/schemas/People'
+        fromHeader:
+          type: string
+        processStatus:
+          $ref: '#/components/schemas/ProcessStatus'
