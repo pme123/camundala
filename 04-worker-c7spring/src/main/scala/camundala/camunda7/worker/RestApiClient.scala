@@ -7,6 +7,7 @@ import camundala.worker.CamundalaWorkerError.*
 import io.circe.parser
 import sttp.client3.*
 import sttp.client3.circe.*
+import sttp.model.Uri.QuerySegment
 import sttp.model.{Header, Uri}
 
 import scala.util.Try
@@ -19,8 +20,8 @@ trait RestApiClient:
   ](
       runnableRequest: RunnableRequest[ServiceIn]
   ): SendRequestType[ServiceOut] =
-    try {
-      for {
+    try
+      for
         reqWithOptBody <- requestWithOptBody(runnableRequest)
         req <- auth(reqWithOptBody)
         response = req.send(backend)
@@ -28,12 +29,11 @@ trait RestApiClient:
         body <- readBody(statusCode, response, req)
         headers = response.headers.map(h => h.name -> h.value).toMap
         out <- decodeResponse[ServiceOut](body)
-      } yield ServiceResponse(out, headers)
-    } catch {
+      yield ServiceResponse(out, headers)
+    catch
       case ex: Throwable =>
         ex.printStackTrace()
         Left(ServiceUnexpectedError(ex.getMessage))
-    }
   end sendRequest
 
   protected def readBody(
@@ -71,18 +71,28 @@ trait RestApiClient:
       runnableRequest: RunnableRequest[ServiceIn]
   ) =
     val request =
-      requestMethod(runnableRequest.httpMethod, runnableRequest.apiUri, runnableRequest.queryParams, runnableRequest.headers)
+      requestMethod(
+        runnableRequest.httpMethod,
+        runnableRequest.apiUri,
+        runnableRequest.qSegments,
+        runnableRequest.headers
+      )
     Try(runnableRequest.requestBodyOpt.map(b => request.body(b)).getOrElse(request)).toEither.left
       .map(err => ServiceBadBodyError(errorMsg = s"Problem creating body for request.\n$err"))
+  end requestWithOptBody
 
   private def requestMethod(
-                             httpMethod: Method,
-                             apiUri: Uri,
-                             qParams: Seq[(String, Seq[String])],
-                             headers: Map[String, String]
-                           ): Request[Either[String, String], Any] =
+      httpMethod: Method,
+      apiUri: Uri,
+      qSegments: Seq[QuerySegment],
+      headers: Map[String, String]
+  ): Request[Either[String, String], Any] =
     basicRequest
-      .copy(uri = apiUri.params(QueryParams(qParams)), headers = headers.toSeq.map{case k -> v => Header(k,v)}, method = httpMethod)
+      .copy(
+        uri = apiUri.addQuerySegments(qSegments),
+        headers = headers.toSeq.map { case k -> v => Header(k, v) },
+        method = httpMethod
+      )
   end requestMethod
 
 end RestApiClient

@@ -150,7 +150,7 @@ trait ServiceWorkerDsl[
         ServiceHandler(
           method,
           apiUri,
-          queryParamKeys,
+          querySegments,
           inputMapper,
           inputHeaders,
           outputMapper,
@@ -163,7 +163,7 @@ trait ServiceWorkerDsl[
   protected def apiUri(in: In): Uri
   // optional
   protected def method: Method = Method.GET
-  protected def queryParamKeys: Seq[String | (String, String)] = Seq.empty
+  protected def querySegments: Seq[QuerySegmentOrParam] = Seq.empty
   // mocking out from outService and headers
   protected def inputMapper(in: In): Option[ServiceIn] = None
   protected def inputHeaders(in: In): Map[String, String] = Map.empty
@@ -188,6 +188,16 @@ trait ServiceWorkerDsl[
       case _ =>
         Left(ServiceMappingError(s"There is an outputMapper missing for '${getClass.getName}'."))
   end defaultOutMapper
+
+  protected def queryKeys(ks: String*): Seq[QuerySegmentOrParam] =
+    ks.map(QuerySegmentOrParam.Key(_))
+
+  protected def queryKeyValues(kvs: (String, Any)*): Seq[QuerySegmentOrParam] =
+    kvs.map { case k -> v => QuerySegmentOrParam.KeyValue(k, s"$v") }
+
+  protected def queryValues(vs: Any*): Seq[QuerySegmentOrParam] =
+    vs.map(v => QuerySegmentOrParam.Value(s"$v"))
+
 end ServiceWorkerDsl
 
 private trait ValidateDsl[

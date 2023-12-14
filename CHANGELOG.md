@@ -15,6 +15,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.26.0 - 2023-12-14
+### Changed 
+- Added values to the Query Parameters in ServiceWorker. - see [Commit](https://github.com/pme123/camundala/commit/fea0cbb169d388795d9617c8ae80fe9c2ef6b63f)
+- Migrating to sbt 1.9 / Diamond architecture > demos example. - see [Commit](https://github.com/pme123/camundala/commit/203ff814a55b4e82515a47c80514ab1413e1611c)
+- Migrating to sbt 1.9 / Diamond architecture > twitter example. - see [Commit](https://github.com/pme123/camundala/commit/9c212d482240767d7c0a8a79710f1199f5566493)
+- Added READMEs for not maintained modules. - see [Commit](https://github.com/pme123/camundala/commit/aaa72e4754b08ba7e038206d7e23e619934582dc)
+- Migrating to sbt 1.9 / Diamond architecture > invioce example. - see [Commit](https://github.com/pme123/camundala/commit/33202b31cd78f0126aaa90474cd82afad28abc3b)
+- Fix in camundala-externalTask-generic - handledErrors. - see [Commit](https://github.com/pme123/camundala/commit/b1b659230ed9fc08f2c2fd018b258c45105dac1e)
+
 ## 1.25.5 - 2023-12-06
 ### Changed 
 - Adjusted java version to 17 for springboot. - see [Commit](https://github.com/pme123/camundala/commit/82021562f457f53732eb46313e9b3b1a4db7b6d3)

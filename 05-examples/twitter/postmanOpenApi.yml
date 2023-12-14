@@ -1,0 +1,297 @@
+openapi: 3.1.0
+info:
+  title: Twitter Process API C7
+  version: '1.0'
+  summary: "\n**This is for Postman - to have example requests. Be aware the Output\
+    \ is not provided!**\n\n\n\nCreated at 08/12/2023, 15:35\n\n**See the [Camundala\
+    \ Documentation](https://pme123.github.io/camundala/)\n\nThere is no README.md\
+    \ in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>Supported General Variables</i></b>\n\
+    </summary>\n\n<p>\n\n### Processes\n\n**mockedSubprocesses**:\n\nMock the SubProcesses\
+    \ with their default Mocks.\nThis is a list of the _SubProcesses processNames_\
+    \ you want to mock.\nDepending on your implementation it is also possible to use\
+    \ a _comma separated_ String,\nlike `\"mySubProcess,myOtherSubProcess\"`\n\n\n\
+    - DSL:\n```scala\nprocess(..)\n  .mockSubProcesses(\"mySubProcess1\", \"mySubProcess2\"\
+    ) // creates a list with SubProcessess\n  .mockSubProcess(\"myOtherSubProcess\"\
+    ) // adds a SubProcess\n```\n\n- Json\n```json\n...\n\"mockedSubprocesses\": [\"\
+    mySubProcess\", \"myOtherSubProcess\"],\n...\n```\n\n### Processes and ExternalTasks\n\
+    **outputVariables**:\n\nYou can filter the Output with a list of variable names\
+    \ you are interested in.\nThis list may include all variables from the output\
+    \ (`Out`). We included an example for each Process or ExternalTask.\nDepending\
+    \ on your implementation it is also possible to use a _comma separated_ String,\n\
+    like `\"name,firstName\"`\n\n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n\
+    \  .withOutputVariables(\"name\", \"firstName\") // creates a list with outputVariables\n\
+    \  .withOutputVariable(\"nickname\") // adds a outputVariable\n```\n\n- Json\n\
+    ```json\n...\n\"outputVariables\": [\"name\", \"firstName\"],\n...\n```\n\n\n\
+    **outputMock**:\n\nMock the Process or ExternalTask (`Out`)\n - You find an example\
+    \ in every _Process_ and _ExternalTask_.\n\n\n- DSL:\n```scala\nprocess(..) //\
+    \ or serviceProcess(..)\n  .mockWith(outputMock)\n```\n\n- Json\n```json\n...\n\
+    \"outputMock\": {..},\n...\n```\n\n\n**defaultMocked**:\n\nMock the ExternalTasks\
+    \ (Workers only) with their default Mock:\n\n- DSL:\n```scala\nprocess(..) //\
+    \ or serviceProcess(..)\n  .mockServices\n```\n\n- Json\n```json\n...\n\"defaultMocked\"\
+    : true,\n...\n```\n\n\n**impersonateUserId**:\n\nUser-ID of a User that should\
+    \ be taken to authenticate to the services.\nThis must be supported by your implementation.\
+    \ *Be caution: this may be a security issue!*.\nIt is helpful if you have Tokens\
+    \ that expire, but long running Processes.\n\n- DSL:\n```scala\nprocess(..) //\
+    \ or serviceProcess(..)\n  .withImpersonateUserId(impersonateUserId)\n```\n\n\
+    - Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\n###\
+    \ ExternalTasks\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
+    \ - You find an example in every _ExternalTask_.\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \  .mockServiceWith(MockedServiceResponse\n     .success200(inOut.defaultServiceOutMock))\n\
+    ```\n\n- Json\n```json\n...\n\"outputServiceMock\": {\n  \"respStatus\" : 200,\n\
+    \  \"respBody\" : \"Example String Body\",\n  \"respHeaders\" : [\n  ]\n},\n...\n\
+    ```\n\n\n**handledErrors**:\n\nA list of error codes that are handled (`BpmnError`)\n\
+    Depending on your implementation it is also possible to use a _comma separated_\
+    \ String,\nlike `\"validation-failed,404\"`\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \  .handleErrors(ErrorCodes.`validation-failed`, \"404\") // create a list of\
+    \ handledErrors\n  .handleError(\"404\") // add a handledError\n```\n\n- Json\n\
+    ```json\n...\n\"handledErrors\": [\"validation-failed\", \"404\"],\n...\n```\n\
+    \n\n**regexHandledErrors**:\n\nYou can further filter Handled Errors with a list\
+    \ of Regex expressions that the body error message must match.\nDepending on your\
+    \ implementation it is also possible to use a _comma separated_ String,\nlike\
+    \ `\"SQL exception,\"errorNr\":\"20000\"\"`\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    \  .handleErrorWithRegex(\"SQL exception\")\n  .handleErrorWithRegex(\"\\\"errorNr\\\
+    \":\\\"20000\\\"\")\n```\n\n- Json\n```json\n...\n\"regexHandledErrors\": [\"\
+    SQL exception\", \"\"errorNr\":\"20000\"\"],\n...\n```\n\n</p>\n</details>\n<p/>\n\
+    \        \n\n"
+servers:
+- url: http://localhost:8887/engine-rest
+  description: Local Developer Server
+paths:
+  /process-definition/key/TwitterDemoP/start:
+    post:
+      tags:
+      - TwitterDemoP
+      summary: 'Process: TwitterDemoP'
+      description: |
+        This runs the Twitter Approvement Process.
+
+        See API Doc: [Process: TwitterDemoP](No URL defined for twitter-example-c7/OpenApi.html#tag/TwitterDemoP/operation/Process:%20TwitterDemoP)
+      operationId: postProcess-definitionKeyTwitterdemopStart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              TwitterDemoP:
+                value:
+                  variables:
+                    email:
+                      value: me@myself.com
+                      type: String
+                    content:
+                      value: Test Tweet
+                      type: String
+                  businessKey: TwitterDemoP
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/--REMOVE:ReviewTweetUT--:
+    post:
+      tags:
+      - TwitterDemoP
+      summary: 'UserTask: ReviewTweetUT'
+      description: |2
+
+
+        See API Doc: [UserTask: ReviewTweetUT](No URL defined for twitter-example-c7/OpenApi.html#tag/ReviewTweetUT/operation/UserTask:%20ReviewTweetUT)
+      operationId: postTask--remove:reviewtweetut--
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/form-variables/--REMOVE:ReviewTweetUT--:
+    get:
+      tags:
+      - TwitterDemoP
+      summary: 'UserTask: ReviewTweetUT'
+      description: |2
+
+
+        See API Doc: [UserTask: ReviewTweetUT](No URL defined for twitter-example-c7/OpenApi.html#tag/ReviewTweetUT/operation/UserTask:%20ReviewTweetUT)
+      operationId: getTaskTaskidForm-variables--remove:reviewtweetut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      - name: variableNames
+        in: query
+        description: |-
+          A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+          It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+          If the query parameter contains non-existent variable names, the variable names are ignored.
+        required: false
+        schema:
+          type: string
+          default: name,example
+      - name: deserializeValues
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/complete/--REMOVE:ReviewTweetUT--:
+    post:
+      tags:
+      - TwitterDemoP
+      summary: 'UserTask: ReviewTweetUT'
+      description: |2
+
+
+        See API Doc: [UserTask: ReviewTweetUT](No URL defined for twitter-example-c7/OpenApi.html#tag/ReviewTweetUT/operation/UserTask:%20ReviewTweetUT)
+      operationId: postTaskTaskidComplete--remove:reviewtweetut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          type: string
+          default: '{{taskId}}'
+      responses:
+        '200':
+          description: ''
+components:
+  schemas:
+    CBoolean:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: boolean
+        type:
+          type: string
+    CDouble:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: number
+          format: double
+        type:
+          type: string
+    CFile:
+      required:
+      - value
+      - valueInfo
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+          description: The File's content as Base64 encoded String.
+        valueInfo:
+          $ref: '#/components/schemas/CFileValueInfo'
+        type:
+          type: string
+    CFileValueInfo:
+      required:
+      - filename
+      type: object
+      properties:
+        filename:
+          type: string
+        mimetype:
+          type: string
+    CInteger:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int32
+        type:
+          type: string
+    CJson:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+        type:
+          type: string
+    CLong:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int64
+        type:
+          type: string
+    CNull:
+      type: object
+    CString:
+      required:
+      - value
+      - type
+      type: object
+      properties:
+        value:
+          type: string
+        type:
+          type: string
+    CamundaVariable:
+      oneOf:
+      - $ref: '#/components/schemas/CBoolean'
+      - $ref: '#/components/schemas/CDouble'
+      - $ref: '#/components/schemas/CFile'
+      - $ref: '#/components/schemas/CInteger'
+      - $ref: '#/components/schemas/CJson'
+      - $ref: '#/components/schemas/CLong'
+      - $ref: '#/components/schemas/CNull'
+      - $ref: '#/components/schemas/CString'
+    Map_CamundaVariable:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/CamundaVariable'
+    StartProcessIn:
+      required:
+      - variables
+      - withVariablesInReturn
+      type: object
+      properties:
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+        businessKey:
+          type: string
+          description: The business key of the process instance.
+        withVariablesInReturn:
+          type: boolean
+          description: Set to false will not return the Process Variables.
+      description: 'A JSON object with the following properties: (at least an empty
+        JSON object {} or an empty request body)'

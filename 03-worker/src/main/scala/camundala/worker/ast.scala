@@ -4,6 +4,8 @@ package worker
 import camundala.bpmn.*
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
+import camundala.worker.QuerySegmentOrParam.{Key, KeyValue, Value}
+import sttp.model.Uri.QuerySegment
 import sttp.model.{Method, Uri}
 
 case class Workers(workers: Seq[Worker[?, ?, ?]])
@@ -27,8 +29,8 @@ sealed trait Worker[
   def variableNames: Seq[String] = in.productElementNames.toSeq
 
   def defaultMock(in: In)(using
-                  context: EngineRunContext
-                 ): MockerError | MockedOutput =
+      context: EngineRunContext
+  ): MockerError | MockedOutput =
     MockedOutput(
       context.toEngineObject(out)
     )
@@ -103,35 +105,36 @@ case class ServiceWorker[
   lazy val topic: String = inOut.topicName
 
   def validate(
-                handler: ValidationHandler[In]
+      handler: ValidationHandler[In]
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     copy(validationHandler = Some(handler))
 
   def runWork(
-               handler: ServiceHandler[In, Out, ServiceIn, ServiceOut]
+      handler: ServiceHandler[In, Out, ServiceIn, ServiceOut]
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     copy(runWorkHandler = Some(handler))
 
   override def defaultMock(in: In)(using
-      context: EngineRunContext,
+      context: EngineRunContext
   ): MockerError | MockedOutput =
     val mocked: Option[MockerError | MockedOutput] = // needed for Union Type
       runWorkHandler
-      .map(handler =>
-        handler
-          .outputMapper(
-            ServiceResponse(
-              inOut.defaultServiceOutMock.unsafeBody,
-              inOut.defaultServiceOutMock.headersAsMap
-            ),
-            in
-          ) match
-          case Right(out) => MockedOutput(context.toEngineObject(out))
-          case Left(err) => MockerError(errorMsg = err.causeMsg)
-      )
+        .map(handler =>
+          handler
+            .outputMapper(
+              ServiceResponse(
+                inOut.defaultServiceOutMock.unsafeBody,
+                inOut.defaultServiceOutMock.headersAsMap
+              ),
+              in
+            ) match
+            case Right(out) => MockedOutput(context.toEngineObject(out))
+            case Left(err) => MockerError(errorMsg = err.causeMsg)
+        )
     mocked.getOrElse(
-          MockerError(s"There is no ServiceRunner defined for Worker: $topic")
-      )
+      MockerError(s"There is no ServiceRunner defined for Worker: $topic")
+    )
+  end defaultMock
 
   def executor(using
       context: EngineRunContext
@@ -159,38 +162,40 @@ end GeneralVariables
 case class RunnableRequest[ServiceIn: Encoder](
     httpMethod: Method,
     apiUri: Uri,
-    queryParams: Seq[(String, Seq[String])],
+    qSegments: Seq[QuerySegment],
     requestBodyOpt: Option[ServiceIn],
-    headers: Map[String,String],
+    headers: Map[String, String]
 )
 
 object RunnableRequest:
 
-  def apply[In <: Product: InOutCodec, ServiceIn <: Product : Encoder](
+  def apply[In <: Product: InOutCodec, ServiceIn <: Product: Encoder](
       inputObject: In,
       requestHandler: ServiceHandler[In, ?, ServiceIn, ?]
   ): RunnableRequest[ServiceIn] =
 
-    val defaultsMap = requestHandler.queryParamKeys.map {
-      case k -> v => k -> Some(v)
-      case k => k -> None
-    }.toMap
-
-    val queryParams: Seq[(String, Seq[String])] =
+    val valueMap: Map[String, String] =
       inputObject.productElementNames.toSeq
         .zip(inputObject.productIterator.toSeq)
         .collect {
-          case k -> Some(value) if defaultsMap.contains(k) =>
-            k -> Seq(s"$value")
-
-          case k -> None if defaultsMap.get(k).flatten.isDefined =>
-            k -> Seq(defaultsMap.get(k).flatten.get)
-
+          case k -> Some(v) => k -> s"$v"
+          case k -> v => k -> s"$v"
         }
+        .toMap
+
+    val segments =
+      requestHandler.querySegments
+        .collect {
+          case Value(v) => QuerySegment.Value(v)
+          case KeyValue(k, v) => QuerySegment.KeyValue(k, v)
+          case Key(k) if valueMap.contains(k) =>
+            QuerySegment.KeyValue(k, valueMap(k))
+        }
+
     new RunnableRequest[ServiceIn](
       requestHandler.httpMethod,
       requestHandler.apiUri(inputObject),
-      queryParams,
+      segments,
       requestHandler.inputMapper(inputObject),
       requestHandler.inputHeaders(inputObject)
     )
@@ -202,3 +207,8 @@ case class ServiceResponse[ServiceOut](
     headers: Map[String, String]
 )
 
+enum QuerySegmentOrParam:
+  case Key(key: String)
+  case Value(value: String)
+  case KeyValue(key: String, value: String)
+end QuerySegmentOrParam

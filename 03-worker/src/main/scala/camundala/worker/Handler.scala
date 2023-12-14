@@ -4,6 +4,7 @@ package worker
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 import io.circe
+import sttp.model.Uri.QuerySegment
 import sttp.model.{Method, Uri}
 
 /** handler for Custom Validation (next to the automatic Validation of the In Object.
@@ -96,13 +97,13 @@ case class ServiceHandler[
     ServiceIn <: Product: Encoder,
     ServiceOut: Decoder
 ](
-    httpMethod: Method,
-    apiUri: In => Uri,
-    queryParamKeys: Seq[String | (String, String)],
-    inputMapper: In => Option[ServiceIn],
-    inputHeaders: In => Map[String, String],
-    outputMapper: (ServiceResponse[ServiceOut], In) => Either[ServiceMappingError, Out],
-    defaultServiceOutMock: MockedServiceResponse[ServiceOut]
+   httpMethod: Method,
+   apiUri: In => Uri,
+   querySegments: Seq[QuerySegmentOrParam],
+   inputMapper: In => Option[ServiceIn],
+   inputHeaders: In => Map[String, String],
+   outputMapper: (ServiceResponse[ServiceOut], In) => Either[ServiceMappingError, Out],
+   defaultServiceOutMock: MockedServiceResponse[ServiceOut]
 ) extends RunWorkHandler[In, Out]:
 
   def runWork(
@@ -121,11 +122,7 @@ case class ServiceHandler[
   private def runnableRequest(
       inputObject: In
   ): RunnableRequest[ServiceIn] =
-    val body = inputMapper(inputObject)
-    val uri = apiUri(inputObject)
-    val qParams = queryParams(inputObject)
-    val headers = inputHeaders(inputObject)
-    RunnableRequest(httpMethod, uri, qParams, body, headers)
+    RunnableRequest(inputObject, this)
 
   private def withServiceMock(
       runnableRequest: RunnableRequest[ServiceIn],
@@ -211,22 +208,6 @@ case class ServiceHandler[
       in
     )
 
-  val defaultsMap = queryParamKeys.map {
-    case k -> v => k -> Some(v)
-    case k => k -> None
-  }.toMap
-
-  private def queryParams(inputObject: In): Seq[(String, Seq[String])] =
-    inputObject.productElementNames.toSeq
-      .zip(inputObject.productIterator.toSeq)
-      .collect {
-        case k -> Some(value) if defaultsMap.contains(k) =>
-          k -> Seq(s"$value")
-
-        case k -> None if defaultsMap.get(k).flatten.isDefined =>
-          k -> Seq(defaultsMap.get(k).flatten.get)
-
-      }
 end ServiceHandler
 
 trait CustomHandler[

@@ -9,7 +9,7 @@
     <bpmn:serviceTask id="CallExternalTaskTopicNameTask" name="Call External Task ${topicName}" camunda:type="external" camunda:topic="${topicName}">
       <bpmn:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="handledErrors">${handledErrors}</camunda:inputParameter>
+          <camunda:inputParameter name="handledErrors">${execution.getVariable("handledErrors")}</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_14mczfv</bpmn:incoming>
@@ -21,12 +21,7 @@
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0qgyrqy</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_14mczfv" sourceRef="CamundalaexternalTaskgenericStartEvent" targetRef="CallExternalTaskTopicNameTask" />
     <bpmn:sequenceFlow id="Flow_0qgyrqy" sourceRef="CallExternalTaskTopicNameTask" targetRef="SucceededEndEvent" />
-    <bpmn:startEvent id="CamundalaexternalTaskgenericStartEvent" name="camundala-externalTask-generic">
-      <bpmn:extensionElements />
-      <bpmn:outgoing>Flow_14mczfv</bpmn:outgoing>
-    </bpmn:startEvent>
     <bpmn:boundaryEvent id="HandledErrorBoundaryEvent" attachedToRef="CallExternalTaskTopicNameTask">
       <bpmn:outgoing>Flow_0rez82z</bpmn:outgoing>
       <bpmn:errorEventDefinition id="ErrorEventDefinition_162g46y" errorRef="Error_0blmisz" camunda:errorCodeVariable="404" />
@@ -72,6 +67,11 @@
       <bpmn:errorEventDefinition id="ErrorEventDefinition_0ogxnq9" errorRef="Error_0tdcv3y" />
     </bpmn:boundaryEvent>
     <bpmn:sequenceFlow id="Flow_14rqldz" sourceRef="Event_1roicyw" targetRef="ValidationfailedEndEvent" />
+    <bpmn:startEvent id="CamundalaexternalTaskgenericStartEvent" name="camundala-externalTask-generic">
+      <bpmn:extensionElements />
+      <bpmn:outgoing>Flow_14mczfv</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_14mczfv" sourceRef="CamundalaexternalTaskgenericStartEvent" targetRef="CallExternalTaskTopicNameTask" />
   </bpmn:process>
   <bpmn:error id="Error_0blmisz" name="404" errorCode="404" />
   <bpmn:error id="Error_0zjbq5k" name="400" errorCode="400" />
@@ -121,16 +121,10 @@
           <dc:Bounds x="531" y="518" width="77" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1kv1u3y_di" bpmnElement="HandledErrorBoundaryEvent">
-        <dc:Bounds x="435" y="212" width="36" height="36" />
+      <bpmndi:BPMNShape id="BPMNShape_1oeltv5" bpmnElement="Event_1roicyw" bioc:fill="#D5D5D5">
+        <dc:Bounds x="335" y="212" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="470" y="255" width="19" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0kdzx8u_di" bpmnElement="Event_0dm2ydu">
-        <dc:Bounds x="402" y="212" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="390" y="255" width="19" height="14" />
+          <dc:Bounds x="252.5" y="193" width="39" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_047id8n_di" bpmnElement="MockedBoundaryEvent" bioc:fill="#D5D5D5">
@@ -139,10 +133,16 @@
           <dc:Bounds x="453" y="193" width="73" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1oeltv5" bpmnElement="Event_1roicyw" bioc:fill="#D5D5D5">
-        <dc:Bounds x="335" y="212" width="36" height="36" />
+      <bpmndi:BPMNShape id="Event_0kdzx8u_di" bpmnElement="Event_0dm2ydu">
+        <dc:Bounds x="402" y="212" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="252.5" y="193" width="39" height="14" />
+          <dc:Bounds x="390" y="255" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1kv1u3y_di" bpmnElement="HandledErrorBoundaryEvent">
+        <dc:Bounds x="435" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="470" y="255" width="19" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_14mczfv_di" bpmnElement="Flow_14mczfv">

@@ -1,74 +1,14 @@
+import Dependencies.*
+import Settings.*
 import laika.ast.Path.Root
 import laika.config.*
 import laika.format.Markdown.GitHubFlavor
 import laika.helium.Helium
 import laika.helium.config.{Favicon, HeliumIcon, IconLink}
-import sbt.url
-
-import scala.util.Using
-
-lazy val projectVersion =
-  Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
-val scala3Version = "3.3.1"
-val org = "io.github.pme123"
-
-// dependency Versions
-// 00-documentation
-// - Laika Plugin
-// 00-helper
-val osLibVersion = "0.9.1"
-// 01-domain
-val tapirVersion = "1.9.0"
-val openapiCirceVersion = "0.7.1"
-val ironCirceVersion = "2.3.0"
-val junitInterfaceVersion = "0.11"
-// 02-bpmn
-// -> domain
-// - osLib
-// 03-api
-// -> bpmn
-val scalaXmlVersion = "2.1.0"
-val typesafeConfigVersion = "1.4.2"
-// - junitInterface
-// 03-dmn
-// -> bpmn
-val sttpClient3Version = "3.8.13"
-val dmnTesterVersion = "0.17.9"
-// 03-simulation
-// -> bpmn
-val testInterfaceVersion = "1.0"
-// - sttpClient3
-// 03-worker
-// -> bpmn
-
-// --- Implementations
-// 04-worker-c7spring
-// -> worker
-val camundaVersion = "7.20.0" // external task client
-val jaxbApiVersion = "2.3.1" // needed by the camunda client 7.20?!
-// - sttpClient3
-
-// --- Experiments
-// 04-c7-spring
-// -> bpmn
-val camundaSpinVersion = "1.18.1"
-// camunda // server spring-boot
-// 04-c8-spring
-// -> bpmn
-val springBootVersion = "2.7.15"
-val zeebeVersion = "8.2.4"
-val scalaJacksonVersion = "2.14.2"
-
-// --- Examples
-val h2Version = "2.1.214"
-val twitter4jVersion = "4.1.2"
-val groovyVersion = "3.0.16"
-
-
-
 
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
+ThisBuild / evictionErrorLevel := Level.Warn
 
 lazy val root = project
   .in(file("."))
@@ -92,11 +32,8 @@ lazy val root = project
     camunda, // not in use
     camunda8, // not in use
     // examples
-    exampleTwitterC7,
-    exampleTwitterC8,
-    exampleInvoiceC7,
-    exampleInvoiceWorkerC7,
-    exampleInvoiceC8,
+    exampleInvoice,
+    exampleTwitter,
     exampleDemos,
     exampleMyCompany
   )
@@ -116,11 +53,15 @@ lazy val documentation =
               TargetDefinition.external("bpmn specification", "https://www.bpmn.org"),
               TargetDefinition.external("camunda", "https://camunda.com")
             ).addSourceLinks(
-              SourceLinks(baseUri = "https://github.com/pme123/camundala/tree/master/05-examples/invoice/camunda7/src/main/scala/", suffix = "scala")
+              SourceLinks(
+                baseUri =
+                  "https://github.com/pme123/camundala/tree/master/05-examples/invoice/camunda7/src/main/scala/",
+                suffix = "scala"
+              )
             )
         )
         .withRawContent
-        //.failOnMessages(MessageFilter.None)
+      // .failOnMessages(MessageFilter.None)
       //  .renderMessages(MessageFilter.None)
       ,
       laikaSite / target := baseDirectory.value / ".." / "docs",
@@ -191,7 +132,7 @@ lazy val worker = project
   .configure(publicationSettings)
   .settings(projectSettings("worker"))
   .settings(
-    autoImportSetting,
+    autoImportSetting
   )
   .dependsOn(bpmn)
 
@@ -250,101 +191,202 @@ lazy val camunda8 = project
   .dependsOn(bpmn)
 // end not in use
 
-def projectSettings(projName: String) = Seq(
-  name := s"camundala-$projName",
-  organization := org,
-  scalaVersion := scala3Version,
-  version := projectVersion,
-  scalacOptions ++= Seq(
-    //   "-Xmax-inlines:50", // is declared as erased, but is in fact used
-    //   "-Wunused:imports"
-  )
-)
-lazy val autoImportSetting =
-  scalacOptions +=
-    Seq(
-      "java.lang", "scala", "scala.Predef", "io.circe", "io.circe.generic.semiauto",
-      "io.circe.derivation", "io.circe.syntax", "sttp.tapir", "sttp.tapir.json.circe"
-    ).mkString(start = "-Yimports:", sep = ",", end = "")
-
-lazy val tapirDependencies = Seq(
-  "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
-  "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % tapirVersion,
-  "com.softwaremill.sttp.tapir" %% "tapir-redoc-bundle" % tapirVersion,
-  "com.softwaremill.sttp.apispec" %% "openapi-circe-yaml" % openapiCirceVersion,
- // "io.circe" %% "circe-generic" % circeVersion,
-  "io.github.iltotore" %% "iron-circe" % ironCirceVersion,
-  "com.softwaremill.sttp.tapir" %% "tapir-iron" % tapirVersion
-)
-
-lazy val sttpDependency = "com.softwaremill.sttp.client3" %% "circe" % sttpClient3Version
-
 // EXAMPLES
-lazy val exampleInvoiceC7 = project
-  .in(file("./05-examples/invoice/camunda7"))
-  .settings(projectSettings("example-invoice-c7"))
+// INVOICE
+lazy val exampleInvoice = project
+  .in(file("./05-examples/invoice"))
+  .settings(projectSettings("example-invoice"))
   .configure(preventPublication)
-  .configure(integrationTests)
-  .settings(
-    autoImportSetting,
-    // Test / parallelExecution := false,
-    libraryDependencies ++= camundaDependencies
+  .aggregate(
+    exampleInvoiceBpmn,
+    exampleInvoiceApi,
+    exampleInvoiceDmn,
+    exampleInvoiceSimulation,
+    exampleInvoiceWorker,
+    exampleInvoiceC7,
+    exampleInvoiceC8
   )
-  .dependsOn(api, dmn, camunda, simulation)
 
-lazy val exampleInvoiceWorkerC7 = project
-  .in(file("./05-examples/invoice/camunda7Worker"))
-  .settings(projectSettings("example-invoice-c7"))
+lazy val exampleInvoiceBpmn = project
+  .in(file("./05-examples/invoice/02-bpmn"))
+  .settings(projectSettings("example-invoice-bpmn"))
   .configure(preventPublication)
   .settings(autoImportSetting)
-  .dependsOn(camunda7Worker, exampleInvoiceC7)
+  .dependsOn(bpmn)
 
-lazy val exampleInvoiceC8 = project
-  .in(file("./05-examples/invoice/camunda8"))
-  .settings(projectSettings("example-invoice-c8"))
+lazy val exampleInvoiceApi = project
+  .in(file("./05-examples/invoice/03-api"))
+  .settings(projectSettings("example-invoice-api"))
   .configure(preventPublication)
-  .configure(integrationTests)
+  .settings(autoImportSetting)
+  .dependsOn(api, exampleInvoiceBpmn)
+
+lazy val exampleInvoiceDmn = project
+  .in(file("./05-examples/invoice/03-dmn"))
+  .settings(projectSettings("example-invoice-dmn"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .dependsOn(dmn, exampleInvoiceBpmn)
+
+lazy val exampleInvoiceSimulation = project
+  .in(file("./05-examples/invoice/03-simulation"))
+  .settings(projectSettings("example-invoice-simulation"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .settings(testFrameworks += new TestFramework(
+    "camundala.simulation.custom.SimulationTestFramework"
+  ))
+  .dependsOn(simulation, exampleInvoiceBpmn)
+
+lazy val exampleInvoiceWorker = project
+  .in(file("./05-examples/invoice/03-worker"))
+  .settings(projectSettings("example-invoice-worker"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .dependsOn(worker, camunda7Worker, exampleInvoiceBpmn)
+
+lazy val exampleInvoiceC7 = project
+  .in(file("./05-examples/invoice/04-c7-spring"))
+  .settings(projectSettings("example-invoice-c7"))
+  .configure(preventPublication)
   .settings(
     autoImportSetting,
-    Test / parallelExecution := false,
-    libraryDependencies ++= zeebeDependencies
+    libraryDependencies ++= camundaDependencies
   )
-  .dependsOn(camunda8, api, simulation)
+  .dependsOn(bpmn, exampleInvoiceBpmn, camunda)
+
+// not in use
+lazy val exampleInvoiceC8 = project
+  .in(file("./05-examples/invoice/04-c8-spring"))
+  .settings(projectSettings("example-invoice-c8"))
+  .configure(preventPublication)
+  .settings(
+    autoImportSetting
+  )
+  .dependsOn(bpmn, api, /*exampleInvoiceBpmn,*/ camunda8)
+
+// TWITTER
+lazy val exampleTwitter = project
+  .in(file("./05-examples/twitter"))
+  .settings(projectSettings("example-twitter"))
+  .configure(preventPublication)
+  .aggregate(
+    exampleTwitterBpmn,
+    exampleTwitterApi,
+    exampleTwitterSimulation,
+    exampleTwitterC7,
+    exampleTwitterC8
+  )
+
+lazy val exampleTwitterBpmn = project
+  .in(file("./05-examples/twitter/02-bpmn"))
+  .settings(projectSettings("example-twitter-bpmn"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .dependsOn(bpmn)
+
+lazy val exampleTwitterApi = project
+  .in(file("./05-examples/twitter/03-api"))
+  .settings(projectSettings("example-twitter-api"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .dependsOn(api, exampleTwitterBpmn)
+
+lazy val exampleTwitterSimulation = project
+  .in(file("./05-examples/twitter/03-simulation"))
+  .settings(projectSettings("example-twitter-simulation"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .settings(testFrameworks += new TestFramework(
+    "camundala.simulation.custom.SimulationTestFramework"
+  ))
+  .dependsOn(simulation, exampleTwitterBpmn)
 
 lazy val exampleTwitterC7 = project
-  .in(file("./05-examples/twitter/camunda7"))
+  .in(file("./05-examples/twitter/04-c7-spring"))
   .settings(projectSettings("example-twitter-c7"))
   .configure(preventPublication)
-  .configure(integrationTests)
   .settings(
     autoImportSetting,
     libraryDependencies ++= camundaDependencies :+
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
-  )
-  .dependsOn(api, simulation)
 
+)
+  .dependsOn(bpmn, exampleTwitterBpmn, camunda)
+
+// not in use
 lazy val exampleTwitterC8 = project
-  .in(file("./05-examples/twitter/camunda8"))
+  .in(file("./05-examples/twitter/04-c8-spring"))
   .settings(projectSettings("example-twitter-c8"))
   .configure(preventPublication)
-  .configure(integrationTests)
   .settings(
     autoImportSetting,
     libraryDependencies +=
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
-  .dependsOn(camunda8, api, simulation)
+  .dependsOn(bpmn, api, /*exampleTwitterBpmn,*/ camunda8)
 
+// INVOICE
 lazy val exampleDemos = project
   .in(file("./05-examples/demos"))
   .settings(projectSettings("example-demos"))
   .configure(preventPublication)
-  .configure(integrationTests)
+  .aggregate(
+    exampleDemosBpmn,
+    exampleDemosApi,
+    exampleDemosDmn,
+    exampleDemosSimulation,
+    exampleDemosWorker,
+    exampleDemosC7,
+  )
+
+lazy val exampleDemosBpmn = project
+  .in(file("./05-examples/demos/02-bpmn"))
+  .settings(projectSettings("example-demos-bpmn"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .dependsOn(bpmn)
+
+lazy val exampleDemosApi = project
+  .in(file("./05-examples/demos/03-api"))
+  .settings(projectSettings("example-demos-api"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .dependsOn(api, exampleDemosBpmn)
+
+lazy val exampleDemosDmn = project
+  .in(file("./05-examples/demos/03-dmn"))
+  .settings(projectSettings("example-demos-dmn"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .dependsOn(dmn, exampleDemosBpmn)
+
+lazy val exampleDemosSimulation = project
+  .in(file("./05-examples/demos/03-simulation"))
+  .settings(projectSettings("example-demos-simulation"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .settings(testFrameworks += new TestFramework(
+    "camundala.simulation.custom.SimulationTestFramework"
+  ))
+  .dependsOn(simulation, exampleDemosBpmn)
+
+lazy val exampleDemosWorker = project
+  .in(file("./05-examples/demos/03-worker"))
+  .settings(projectSettings("example-demos-worker"))
+  .configure(preventPublication)
+  .settings(autoImportSetting)
+  .dependsOn(worker, camunda7Worker, exampleDemosBpmn)
+
+lazy val exampleDemosC7 = project
+  .in(file("./05-examples/demos/04-c7-spring"))
+  .settings(projectSettings("example-demos-c7"))
+  .configure(preventPublication)
   .settings(
     autoImportSetting,
     libraryDependencies ++= camundaDependencies
   )
-  .dependsOn(api, dmn, camunda, simulation)
+  .dependsOn(bpmn, exampleDemosBpmn, camunda)
 
 // start company documentation example
 import com.typesafe.config.ConfigFactory
@@ -394,78 +436,3 @@ lazy val exampleMyCompany = project
   .configure(preventPublication)
   .dependsOn(api)
 
-
-val camundaDependencies = Seq(
-  "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
-  "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
-  "io.netty" % "netty-all" % "4.1.73.Final", // needed for Spring Boot Version > 2.5.*
-  "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
-  "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
-  // json support
-  "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
-  "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % camundaSpinVersion,
-  // groovy support
-  "org.codehaus.groovy" % "groovy-jsr223" % groovyVersion,
-  "com.h2database" % "h2" % h2Version
-) //.map(_.exclude("org.slf4j", "slf4j-api"))
-
-val zeebeDependencies = Seq(
-  "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
-  "org.springframework.boot" % "spring-boot-starter-webflux" % springBootVersion,
-  "io.camunda.spring" % "spring-boot-starter-camunda" % zeebeVersion,
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % scalaJacksonVersion
-).map(_.exclude("org.slf4j", "slf4j-api"))
-
-lazy val developerList = List(
-  Developer(
-    id = "pme123",
-    name = "Pascal Mengelt",
-    email = "pascal.mengelt@gmail.com",
-    url = url("https://github.com/pme123")
-  )
-)
-
-lazy val publicationSettings: Project => Project = _.settings(
-  // publishMavenStyle := true,
-  pomIncludeRepository := { _ => false },
-  sonatypeRepository := "https://s01.oss.sonatype.org/service/local",
-  /*  publishTo := {
-    val nexus = "https://s01.oss.sonatype.org/"
-    if (isSnapshot.value)
-      Some("snapshots" at nexus + "content/repositories/snapshots")
-    else Some("releases" at nexus + "service/local/staging/deploy/maven2")
-  },
-  credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credentials"),
-   */ licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
-  homepage := Some(url("https://github.com/pme123/camundala")),
-  startYear := Some(2021),
-  // logLevel := Level.Debug,
-  scmInfo := Some(
-    ScmInfo(
-      url("https://github.com/pme123/camundala"),
-      "scm:git:github.com:/pme123/camundala"
-    )
-  ),
-  developers := developerList
-)
-
-lazy val preventPublication: Project => Project =
-  _.settings(
-    publish := {},
-    publishTo := Some(
-      Resolver
-        .file("Unused transient repository", target.value / "fakepublish")
-    ),
-    publishArtifact := false,
-    publishLocal := {},
-    packagedArtifacts := Map.empty
-  ) // doesn't work - https://github.com/sbt/sbt-pgp/issues/42
-
-lazy val integrationTests: Project => Project =
-  _.configs(IntegrationTest)
-    .settings(
-      Defaults.itSettings,
-      testFrameworks += new TestFramework(
-        "camundala.simulation.custom.SimulationTestFramework"
-      )
-    )
