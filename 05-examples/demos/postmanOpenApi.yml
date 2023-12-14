@@ -3,7 +3,7 @@ info:
   title: Demos Example Process API
   version: '1.0'
   summary: "\n**This is for Postman - to have example requests. Be aware the Output\
-    \ is not provided!**\n\n\n\nCreated at 08/12/2023, 16:30\n\n**See the [Camundala\
+    \ is not provided!**\n\n\n\nCreated at 09/12/2023, 12:29\n\n**See the [Camundala\
     \ Documentation](https://pme123.github.io/camundala/)\n\n\n\n\n<details>\n<summary><b><i>CHANGELOG.md</i></b></summary>\n\
     <p>\n\n\nAll notable changes to this project will be documented in this file.\n\
     \n* Types of Changes (L3):\n  * Added: new features\n  * Changed: changes in existing\
@@ -260,11 +260,10 @@ paths:
                     customMock:
                       value: |-
                         {
-                          "A" : {
-                            "someOut" : "hello",
-                            "intValue" : 12,
-                            "simpleEnum" : "One"
-                          }
+                          "someOut" : "hello",
+                          "intValue" : 12,
+                          "simpleEnum" : "One",
+                          "type" : "A"
                         }
                       type: Json
                   businessKey: enum-example

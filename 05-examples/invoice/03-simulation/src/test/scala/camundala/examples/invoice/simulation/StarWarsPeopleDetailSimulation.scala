@@ -10,7 +10,7 @@ import camundala.simulation.*
 import camundala.simulation.custom.CustomSimulation
 
 // exampleInvoiceSimulation/test
-// exampleInvoiceSimulation/testOnly *StarWarsApiSimulation
+// exampleInvoiceSimulation/testOnly *StarWarsPeopleDetailSimulation
 class StarWarsPeopleDetailSimulation extends CustomSimulation:
 
   simulate(

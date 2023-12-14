@@ -141,14 +141,7 @@ object CamundalaWorkerError:
   def requestMsg[ServiceIn: Encoder](
       runnableRequest: RunnableRequest[ServiceIn]
   ): String =
-    s""" - Request URL: ${prettyUriString(runnableRequest.apiUri)}
-       | - Request Params: ${runnableRequest.queryParams
-        .map {
-          case k -> seq if seq.isEmpty =>
-            k
-          case k -> seq => s"$k=${seq.mkString(", ")}"
-        }
-        .mkString("&")}
+    s""" - Request URL: ${prettyUriString(runnableRequest.apiUri.addQuerySegments(runnableRequest.qSegments))}
        | - Request Body: ${runnableRequest.requestBodyOpt
         .map(_.asJson)
         .getOrElse("")}

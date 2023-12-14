@@ -16,6 +16,11 @@ class StarWarsPeopleDetailWorker extends InvoiceWorkerHandler,
 
   def apiUri(in: In): Uri = uri"https://swapi.dev/api/people/${in.id}"
 
+  override protected def querySegments: Seq[QuerySegmentOrParam] =
+    QuerySegmentOrParam.keys("id") ++
+      QuerySegmentOrParam.keyValues("a" -> 1, "b" -> true) ++
+      QuerySegmentOrParam.values(12, false, null)
+    
   override def validate(in: In): Either[ValidatorError, In] =
     if in.id <= 0 then
       Left(ValidatorError("The search id for People must be > 0!"))
