@@ -17,7 +17,7 @@ class StarWarsPeopleDetailWorker extends InvoiceWorkerHandler,
   def apiUri(in: In): Uri = uri"https://swapi.dev/api/people/${in.id}"
 
   override protected def querySegments: Seq[QuerySegmentOrParam] =
-    queryKeys("id") ++
+    queryKeys("id", "optName") ++
       queryKeyValues("a" -> 1, "b" -> true) ++
       queryValues(12, false, null)
     

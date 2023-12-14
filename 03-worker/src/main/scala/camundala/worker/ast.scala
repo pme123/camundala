@@ -179,7 +179,7 @@ object RunnableRequest:
         .zip(inputObject.productIterator.toSeq)
         .collect {
           case k -> Some(v) => k -> s"$v"
-          case k -> v => k -> s"$v"
+          case k -> v if v != None => k -> s"$v"
         }
         .toMap
 

@@ -57,7 +57,7 @@ class StarWarsPeopleDetailSimulation extends CustomSimulation:
   private lazy val `Star Wars Api People Detail real` = example
     .withOut(Out.Success(fromHeader = "---")) // no header
   private lazy val `Star Wars Api People Detail real failed` = example
-    .withIn(In(90923))
+    .withIn(In(90923, Some("skywalker")))
   private lazy val `Star Wars Api People Detail defaultMock 2` =
     StarWarsPeopleDetail.example.mockWithDefault
   private lazy val `Star Wars Api People Detail outputMock 2` =
