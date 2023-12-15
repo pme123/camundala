@@ -1,28 +1,24 @@
 package camundala.domain
 
-import org.junit.*
-import org.junit.Assert.*
 
-import io.circe.*
-
-class MockedServiceResponseTest:
+class MockedServiceResponseTest extends munit.FunSuite:
  
   lazy val myMockResp =  TestWithMock()
 
-  @Test
-  def testCodecSuccess(): Unit =
+  test("testCodecSuccess") {
     val json = myMockResp.asJson
-    assertEquals(myMockResp, json.as[TestWithMock].getOrElse(fail()))
+    assertEquals(myMockResp, json.as[TestWithMock].getOrElse(fail("Decoding Problem")))
+  }
 
   lazy val myMockErrorResp =  TestWithMock(
     MockedServiceResponse.error(444, Json.fromString("ERROR")),
     MockedServiceResponse.error(444),
   )
 
-  @Test
-  def testCodecError(): Unit =
+  test("testCodecError"){
     val json = myMockErrorResp.asJson
-    assertEquals(myMockErrorResp, json.as[TestWithMock].getOrElse(fail()))
+    assertEquals(myMockErrorResp, json.as[TestWithMock].getOrElse(fail("Decoding Problem")))
+  }
 
 end MockedServiceResponseTest
 
@@ -31,7 +27,6 @@ type ServiceOut2 = Seq[Success]
 
 case class TestWithMock(
                          myMock: MockedServiceResponse[Success] = MockedServiceResponse.success(122, Success()),
-                         @description(outputServiceMockDescr(seqSuccess))
                          noOutputMock: MockedServiceResponse[NoOutput] = MockedServiceResponse.success(122, NoOutput()),
 )
 

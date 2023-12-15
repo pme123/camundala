@@ -1,3 +1,4 @@
+import Dependencies.mUnitVersion
 import sbt.Keys.*
 import sbt.*
 import xerial.sbt.Sonatype.autoImport.sonatypeRepository
@@ -21,6 +22,10 @@ object Settings {
       //   "-Wunused:imports"
     ),
     javacOptions ++= Seq("-source", "17", "-target", "17")
+  )
+  lazy val unitTestSettings = Seq(
+    libraryDependencies +="org.scalameta" %% "munit" % mUnitVersion % Test,
+    testFrameworks += new TestFramework("munit.Framework")
   )
 
   lazy val publicationSettings: Project => Project = _.settings(

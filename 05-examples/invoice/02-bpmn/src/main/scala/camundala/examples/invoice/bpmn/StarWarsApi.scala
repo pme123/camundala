@@ -69,6 +69,8 @@ object StarWarsPeopleDetail extends BpmnDsl:
   @description("Same Input as _InvoiceReceipt_, only different Mocking")
   case class In(
       id: Int = 1,
+      @description("Optional value to test querySegments")
+      optName: Option[String] = None
   )
 
   object In:

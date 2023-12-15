@@ -82,10 +82,10 @@ lazy val domain = project
   .in(file("./01-domain"))
   .configure(publicationSettings)
   .settings(projectSettings("domain"))
+  .settings(unitTestSettings)
   .settings(
     autoImportSetting,
-    libraryDependencies ++= (tapirDependencies :+
-      "com.novocode" % "junit-interface" % junitInterfaceVersion % Test)
+    libraryDependencies ++= tapirDependencies
   )
 // layer 02
 val osLibDependency = "com.lihaoyi" %% "os-lib" % osLibVersion
@@ -93,6 +93,7 @@ lazy val bpmn = project
   .in(file("./02-bpmn"))
   .configure(publicationSettings)
   .settings(projectSettings("bpmn"))
+  .settings(unitTestSettings)
   .settings(
     autoImportSetting,
     libraryDependencies += osLibDependency
@@ -104,13 +105,13 @@ lazy val api = project
   .in(file("./03-api"))
   .configure(publicationSettings)
   .settings(projectSettings("api"))
+  .settings(unitTestSettings)
   .settings(
     autoImportSetting,
     libraryDependencies ++=
       Seq(
         "org.scala-lang.modules" %% "scala-xml" % scalaXmlVersion,
         "com.typesafe" % "config" % typesafeConfigVersion,
-        "com.novocode" % "junit-interface" % junitInterfaceVersion % Test
       )
   )
   .dependsOn(bpmn)
@@ -119,6 +120,7 @@ lazy val dmn = project
   .in(file("./03-dmn"))
   .configure(publicationSettings)
   .settings(projectSettings("dmn"))
+  .settings(unitTestSettings)
   .settings(
     libraryDependencies ++= Seq(
       sttpDependency,
@@ -131,6 +133,7 @@ lazy val worker = project
   .in(file("./03-worker"))
   .configure(publicationSettings)
   .settings(projectSettings("worker"))
+  .settings(unitTestSettings)
   .settings(
     autoImportSetting
   )
@@ -310,8 +313,7 @@ lazy val exampleTwitterC7 = project
     autoImportSetting,
     libraryDependencies ++= camundaDependencies :+
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
-
-)
+  )
   .dependsOn(bpmn, exampleTwitterBpmn, camunda)
 
 // not in use
@@ -337,7 +339,7 @@ lazy val exampleDemos = project
     exampleDemosDmn,
     exampleDemosSimulation,
     exampleDemosWorker,
-    exampleDemosC7,
+    exampleDemosC7
   )
 
 lazy val exampleDemosBpmn = project
@@ -435,4 +437,3 @@ lazy val exampleMyCompany = project
   .enablePlugins(LaikaPlugin, BuildInfoPlugin)
   .configure(preventPublication)
   .dependsOn(api)
-
