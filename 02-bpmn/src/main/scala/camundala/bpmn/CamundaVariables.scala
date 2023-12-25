@@ -29,46 +29,35 @@ object CamundaVariable:
     deriveApiSchema
 
   given ApiSchema[CString] = deriveApiSchema
-  given Encoder[CString] = deriveEncoder
-  given Decoder[CString] = deriveDecoder
+  given InOutCodec[CString] = deriveInOutCodec
 
   given ApiSchema[CInteger] = deriveApiSchema
-  given Encoder[CInteger] = deriveEncoder
-  given Decoder[CInteger] = deriveDecoder
+  given InOutCodec[CInteger] = deriveInOutCodec
 
   given ApiSchema[CLong] = deriveApiSchema
-  given Encoder[CLong] = deriveEncoder
-  given Decoder[CLong] = deriveDecoder
+  given InOutCodec[CLong] = deriveInOutCodec
 
   given ApiSchema[CDouble] = deriveApiSchema
-  given Encoder[CDouble] = deriveEncoder
-  given Decoder[CDouble] = deriveDecoder
+  given InOutCodec[CDouble] = deriveInOutCodec
 
   given ApiSchema[CBoolean] = deriveApiSchema
-  given Encoder[CBoolean] = deriveEncoder
-  given Decoder[CBoolean] = deriveDecoder
+  given InOutCodec[CBoolean] = deriveInOutCodec
 
   given ApiSchema[CFile] = deriveApiSchema
-  given Encoder[CFile] = deriveEncoder
-  given Decoder[CFile] = deriveDecoder
+  given InOutCodec[CFile] = deriveInOutCodec
 
-  given ApiSchema[CFileValueInfo] =
-    deriveApiSchema
-  given Encoder[CFileValueInfo] =
-    deriveEncoder
-  given Decoder[CFileValueInfo] =
-    deriveDecoder
+  given ApiSchema[CFileValueInfo] = deriveApiSchema
+  given InOutCodec[CFileValueInfo] = deriveInOutCodec
 
   given ApiSchema[CJson] = deriveApiSchema
-  given Encoder[CJson] = deriveEncoder
-  given Decoder[CJson] = deriveDecoder
+  given InOutCodec[CJson] = deriveInOutCodec
 
-  def toCamunda[T <: Product: Encoder](
+  def toCamunda[T <: Product: InOutEncoder](
       products: Seq[T]
   ): Seq[Map[String, CamundaVariable]] =
     products.map(toCamunda)
 
-  def toCamunda[T <: Product: Encoder](
+  def toCamunda[T <: Product: InOutEncoder](
       product: T
   ): Map[String, CamundaVariable] =
     product.productElementNames
@@ -78,7 +67,7 @@ object CamundaVariable:
       .toMap
 
   @tailrec
-  def objectToCamunda[T <: Product: Encoder](
+  def objectToCamunda[T <: Product: InOutEncoder](
       product: T,
       key: String,
       value: Any

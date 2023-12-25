@@ -30,14 +30,6 @@ inline def deriveEnumInOutCodec[A](using inline A: Mirror.SumOf[A]): InOutCodec[
     .withoutDiscriminator
   )
 
-/*
-inline def deriveEncoder[A](using inline A: Mirror.Of[A]): JsonEncoder[A] =
-  io.circe.generic.semiauto.deriveEncoder
-
-inline def deriveDecoder[A](using inline A: Mirror.Of[A]): JsonDecoder[A] =
-  io.circe.generic.semiauto.deriveDecoder
-*/
-
 // Tapir encoding / decoding
 export sttp.tapir.Schema.annotations.description
 

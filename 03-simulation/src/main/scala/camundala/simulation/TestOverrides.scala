@@ -43,17 +43,11 @@ def addOverride[
 
 object TestOverrides:
   given ApiSchema[TestOverrides] = deriveApiSchema
-
-  given InOutEncoder[TestOverrides] = deriveEncoder
-
-  given InOutDecoder[TestOverrides] = deriveDecoder
+  given InOutCodec[TestOverrides] = deriveInOutCodec
 
 object TestOverride:
   given ApiSchema[TestOverride] = deriveApiSchema
-
-  given InOutEncoder[TestOverride] = deriveEncoder
-
-  given InOutDecoder[TestOverride] = deriveDecoder
+  given InOutCodec[TestOverride] = deriveInOutCodec
 
 trait TestOverrideExtensions:
 

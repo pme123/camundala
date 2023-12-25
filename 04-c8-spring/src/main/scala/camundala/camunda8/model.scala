@@ -1,8 +1,8 @@
 package camundala
 package camunda8
 
-import domain.*
-import bpmn.*
+import camundala.bpmn.*
+import camundala.domain.*
 import io.circe.HCursor
 
 case class CreateProcessInstanceIn[In, Out <: Product](
@@ -37,9 +37,6 @@ case class CreateProcessInstanceOut[Out <: Product](
 )
 
 object CreateProcessInstanceOut:
-  given [Out <: Product: Decoder]: Decoder[CreateProcessInstanceOut[Out]] =
-    deriveDecoder[CreateProcessInstanceOut[Out]]
-
-  given [Out <: Product: Encoder]: Encoder[CreateProcessInstanceOut[Out]] =
-    deriveEncoder[CreateProcessInstanceOut[Out]]
+  given [Out <: Product: InOutCodec]: InOutCodec[CreateProcessInstanceOut[Out]] =
+    deriveInOutCodec
 end CreateProcessInstanceOut
