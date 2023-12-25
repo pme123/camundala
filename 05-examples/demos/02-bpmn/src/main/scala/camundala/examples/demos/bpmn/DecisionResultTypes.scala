@@ -68,13 +68,13 @@ object DecisionResultTypes extends BpmnDsl:
     "camundala-mapping-example"
   )
 
-  given ApiSchema[Input] = deriveSchema
+  given ApiSchema[Input] = deriveApiSchema
   given InOutCodec[Input] = deriveCodec
 
-  given ApiSchema[ManyOutResult] = deriveSchema
+  given ApiSchema[ManyOutResult] = deriveApiSchema
   given InOutCodec[ManyOutResult] = deriveCodec
 
-  given ApiSchema[BadManyOutResult] = deriveSchema
+  given ApiSchema[BadManyOutResult] = deriveApiSchema
   given InOutCodec[BadManyOutResult] = deriveCodec
 
 end DecisionResultTypes

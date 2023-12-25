@@ -12,7 +12,7 @@ object ArchiveInvoice extends BpmnDsl:
                   shouldFail: Option[Boolean] = Some(true),
                 )
   object In:
-    given ApiSchema[In] = deriveSchema
+    given ApiSchema[In] = deriveApiSchema
     given InOutCodec[In] = deriveCodec
   end In
 
@@ -20,7 +20,7 @@ object ArchiveInvoice extends BpmnDsl:
                   archived: Option[Boolean] = Some(true),
                 )
   object Out:
-    given ApiSchema[Out] = deriveSchema
+    given ApiSchema[Out] = deriveApiSchema
     given InOutCodec[Out] = deriveCodec
   end Out
 

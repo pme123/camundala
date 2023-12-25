@@ -181,7 +181,7 @@ enum StartEventType:
 
 object StartEventType:
   given InOutCodec[StartEventType] = deriveCodec
-  given ApiSchema[StartEventType] = deriveSchema
+  given ApiSchema[StartEventType] = deriveApiSchema
 
 sealed trait ExternalTask[
     In <: Product: Encoder: Decoder: Schema,

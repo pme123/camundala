@@ -17,13 +17,13 @@ trait SScenarioExtensions extends SStepExtensions:
       processInstance: Option[ProcessInstance]
   )
   object ProcessInstanceOrExecution:
-    given ApiSchema[ProcessInstanceOrExecution] = deriveSchema
+    given ApiSchema[ProcessInstanceOrExecution] = deriveApiSchema
     given Encoder[ProcessInstanceOrExecution] = deriveEncoder
     given Decoder[ProcessInstanceOrExecution] = deriveDecoder
 
   case class Execution(processInstanceId: String)
   object Execution:
-    given ApiSchema[Execution] = deriveSchema
+    given ApiSchema[Execution] = deriveApiSchema
     given Encoder[Execution] = deriveEncoder
     given Decoder[Execution] = deriveDecoder
 

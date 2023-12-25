@@ -20,21 +20,12 @@ type InOutEncoder[T] = io.circe.Encoder[T]
 type InOutDecoder[T] = io.circe.Decoder[T]
 
 // Circe Enum codec
-// used implicit instead of given - so no extra import is needed domain.{*, given}
-implicit val c: Configuration = Configuration.default.withDefaults
-  .withDiscriminator("type")
-/*
-type ConfiguredEnumCodec[T] = io.circe.derivation.ConfiguredEnumCodec[T]
-type ConfiguredCodec[T] = io.circe.derivation.ConfiguredCodec[T]
 
-
-inline def deriveCodec[A](using inline A: Mirror.Of[A]): JsonCodec[A] =
-//io.circe.generic.semiauto.deriveCodec
+inline def deriveInOutCodec[A](using inline A: Mirror.Of[A]): InOutCodec[A] =
   io.circe.derivation.ConfiguredCodec.derived(using Configuration.default //.withDefaults
     .withDiscriminator("type"))
 
- */
-inline def deriveEnumCodec[A](using inline A: Mirror.SumOf[A]): InOutCodec[A] =
+inline def deriveEnumInOutCodec[A](using inline A: Mirror.SumOf[A]): InOutCodec[A] =
   io.circe.derivation.ConfiguredEnumCodec.derived(using Configuration.default //.withDefaults
     .withoutDiscriminator
   )
@@ -51,36 +42,36 @@ inline def deriveDecoder[A](using inline A: Mirror.Of[A]): JsonDecoder[A] =
 export sttp.tapir.Schema.annotations.description
 
 type ApiSchema[T] = Schema[T]
-inline def deriveSchema[T](using
-                           m: Mirror.Of[T]
+inline def deriveApiSchema[T](using
+                              m: Mirror.Of[T]
                           ): Schema[T] =
   Schema.derived[T]
-inline def deriveEnumSchema[T](using
-    m: Mirror.Of[T]
+inline def deriveEnumApiSchema[T](using
+                                  m: Mirror.Of[T]
 ): Schema[T] =
   Schema.derivedEnumeration[T].defaultStringBased
 
 case class NoInput()
 object NoInput:
-  given ApiSchema[NoInput] = deriveSchema
+  given ApiSchema[NoInput] = deriveApiSchema
   given InOutCodec[NoInput] = deriveCodec
 
 case class NoOutput()
 object NoOutput:
-  given ApiSchema[NoOutput] = deriveSchema
+  given ApiSchema[NoOutput] = deriveApiSchema
   given InOutCodec[NoOutput] = deriveCodec
 
 enum NotValidStatus:
   case notValid
 object NotValidStatus:
-  given ApiSchema[NotValidStatus] = deriveEnumSchema
-  given InOutCodec[NotValidStatus] = deriveEnumCodec
+  given ApiSchema[NotValidStatus] = deriveEnumApiSchema
+  given InOutCodec[NotValidStatus] = deriveEnumInOutCodec
 
 enum CanceledStatus:
   case canceled
 object CanceledStatus:
-  given ApiSchema[CanceledStatus] = deriveEnumSchema
-  given InOutCodec[CanceledStatus] = deriveEnumCodec
+  given ApiSchema[CanceledStatus] = deriveEnumApiSchema
+  given InOutCodec[CanceledStatus] = deriveEnumInOutCodec
 
 @deprecated
 trait GenericServiceIn:
@@ -96,7 +87,7 @@ case class FileInOut(
 end FileInOut
 
 object FileInOut:
-  given ApiSchema[FileInOut] = deriveSchema
+  given ApiSchema[FileInOut] = deriveApiSchema
   given InOutCodec[FileInOut] = deriveCodec
 
 /** In Camunda 8 only json is allowed!
@@ -109,7 +100,7 @@ case class FileRefInOut(
 )
 
 object FileRefInOut:
-  given ApiSchema[FileRefInOut] = deriveSchema
+  given ApiSchema[FileRefInOut] = deriveApiSchema
   given InOutCodec[FileRefInOut] = deriveCodec
 
 // Use this in the DSL to avoid Option[?]

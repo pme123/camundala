@@ -17,7 +17,7 @@ object TwitterApi extends BpmnDsl:
       content: String = "Test Tweet"
   )
   object CreateTweet:
-    given ApiSchema[CreateTweet] = deriveSchema
+    given ApiSchema[CreateTweet] = deriveApiSchema
     given InOutCodec[CreateTweet] = deriveCodec
   end CreateTweet
 
@@ -27,7 +27,7 @@ object TwitterApi extends BpmnDsl:
       approved: Boolean = true
   )
   object ReviewedTweet:
-    given ApiSchema[ReviewedTweet] = deriveSchema
+    given ApiSchema[ReviewedTweet] = deriveApiSchema
     given InOutCodec[ReviewedTweet] = deriveCodec
   end ReviewedTweet
 
