@@ -12,7 +12,7 @@ export sttp.model.Uri
 
 type SendRequestType[ServiceOut] = EngineRunContext ?=> Either[ServiceError, ServiceResponse[ServiceOut]]
 
-def decodeTo[A: Decoder](
+def decodeTo[A: InOutDecoder](
     jsonStr: String
 ): Either[CamundalaWorkerError.UnexpectedError, A] =
   io.circe.parser
@@ -138,7 +138,7 @@ object CamundalaWorkerError:
       errorMsg: String
   ) extends ServiceError
 
-  def requestMsg[ServiceIn: Encoder](
+  def requestMsg[ServiceIn: InOutEncoder](
       runnableRequest: RunnableRequest[ServiceIn]
   ): String =
     s""" - Request URL: ${prettyUriString(runnableRequest.apiUri.addQuerySegments(runnableRequest.qSegments))}
@@ -147,7 +147,7 @@ object CamundalaWorkerError:
         .getOrElse("")}
         | - Request Header: ${runnableRequest.headers.map{case k -> v => s"$k -> $v"}.mkString(", ")}""".stripMargin
 
-  def serviceErrorMsg[ServiceIn: Encoder](
+  def serviceErrorMsg[ServiceIn: InOutEncoder](
       status: Int,
       errorMsg: String,
       runnableRequest: RunnableRequest[ServiceIn]

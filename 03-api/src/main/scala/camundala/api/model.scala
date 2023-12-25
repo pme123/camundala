@@ -44,8 +44,8 @@ object CamundaAuthError:
 end CamundaAuthError
 
 given ApiSchema[StatusCode] = Schema(SchemaType.SInteger())
-given Encoder[StatusCode] = Encoder.instance(st => st.code.asJson)
-given Decoder[StatusCode] = (c: HCursor) => c.value.as[Int].map(StatusCode(_))
+given InOutEncoder[StatusCode] = Encoder.instance(st => st.code.asJson)
+given InOutDecoder[StatusCode] = (c: HCursor) => c.value.as[Int].map(StatusCode(_))
 
 
 @description(

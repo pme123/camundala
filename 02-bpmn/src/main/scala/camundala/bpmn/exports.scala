@@ -9,7 +9,7 @@ val camundaVersion = "7.15"
 // sttp
 export sttp.model.StatusCode
   
-def toJsonString[T <: Product: Encoder](product: T): String =
+def toJsonString[T <: Product: InOutEncoder](product: T): String =
   product.asJson.deepDropNullValues.toString
 
 @deprecated("Use `Optable`.")

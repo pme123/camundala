@@ -20,7 +20,7 @@ object CamundaHelper:
   /** Returns the Variable in the Bag. If there is none it return `null`. It returns whatever
     * datatype the variable contains.
     */
-  def variableOpt[A: Decoder](
+  def variableOpt[A: InOutDecoder](
       varKey: String | InputParams
   )(using ExternalTask):Either[BadVariableError, Option[A]] =
     for {
@@ -82,7 +82,7 @@ object CamundaHelper:
   /** Analog `variable(String vari)`. You can define a Value that is returned if there is no
     * Variable with this name.
     */
-  def variable[A: Decoder](
+  def variable[A: InOutDecoder](
       varKey: String | InputParams,
       defaultObj: A
   ): HelperContext[Either[BadVariableError, A]] =
@@ -90,7 +90,7 @@ object CamundaHelper:
 
   /** Returns the Variable in the Bag. B if there is no Variable with that identifier.
     */
-  def variable[T: Decoder](
+  def variable[T: InOutDecoder](
       varKey: String | InputParams
   ): HelperContext[Either[BadVariableError, T]] =
     variableOpt(varKey)

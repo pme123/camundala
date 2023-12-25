@@ -13,7 +13,7 @@ sealed trait CamundaVariable:
 
 object CamundaVariable:
 
-  given Encoder[CamundaVariable] =
+  given InOutEncoder[CamundaVariable] =
     Encoder.instance {
       case v: CString => v.asJson
       case v: CInteger => v.asJson
@@ -151,7 +151,7 @@ object CamundaVariable:
   case class CJson(value: String, private val `type`: String = "Json")
       extends CamundaVariable
 
-  given Decoder[CamundaVariable] =
+  given InOutDecoder[CamundaVariable] =
     (c: HCursor) =>
       for
         valueType <- c.downField("type").as[String]

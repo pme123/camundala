@@ -1,6 +1,7 @@
 package camundala
 package camunda8
 
+import domain.*
 import cats.syntax.show.*
 import io.circe
 import io.circe.DecodingFailure
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 trait Validator:
 
-  def validate[T: Decoder](json: String): Either[String, T] =
+  def validate[T: InOutDecoder](json: String): Either[String, T] =
     decode[T](json) match
       case Left(error: DecodingFailure) =>
         Left(error.show)

@@ -18,10 +18,10 @@ case class CreateProcessInstanceIn[In, Out <: Product](
 end CreateProcessInstanceIn
 
 object CreateProcessInstanceIn:
-  given [In: Decoder, Out <: Product: Decoder]: Decoder[CreateProcessInstanceIn[In, Out]] =
+  given [In: InOutDecoder, Out <: Product: InOutDecoder]: InOutDecoder[CreateProcessInstanceIn[In, Out]] =
     deriveDecoder[CreateProcessInstanceIn[In, Out]]
 
-  given [T <: Product: Decoder]: Decoder[Class[T]] =
+  given [T <: Product: InOutDecoder]: InOutDecoder[Class[T]] =
     new Decoder[Class[T]]:
       final def apply(c: HCursor): Decoder.Result[Class[T]] =
         for className <- c.as[String]

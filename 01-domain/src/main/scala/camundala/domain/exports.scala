@@ -12,7 +12,7 @@ import java.util.Base64
 import scala.deriving.Mirror
 import scala.language.implicitConversions
 
-// circe Json Encoder / Decoder
+// circe JsonInOutEncoder/ Decoder
 export io.circe.{Codec as CirceCodec}
 
 type InOutCodec[T] = io.circe.Codec[T]

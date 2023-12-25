@@ -95,8 +95,8 @@ end CustomWorker
 case class ServiceWorker[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
-    ServiceIn <: Product: Encoder,
-    ServiceOut: Decoder
+    ServiceIn <: Product: InOutEncoder,
+    ServiceOut: InOutDecoder
 ](
     inOut: ServiceTask[In, Out, ServiceOut],
     override val validationHandler: Option[ValidationHandler[In]] = None,
@@ -159,7 +159,7 @@ case class GeneralVariables(
 
 end GeneralVariables
 
-case class RunnableRequest[ServiceIn: Encoder](
+case class RunnableRequest[ServiceIn: InOutEncoder](
     httpMethod: Method,
     apiUri: Uri,
     qSegments: Seq[QuerySegment],
@@ -169,7 +169,7 @@ case class RunnableRequest[ServiceIn: Encoder](
 
 object RunnableRequest:
 
-  def apply[In <: Product: InOutCodec, ServiceIn <: Product: Encoder](
+  def apply[In <: Product: InOutCodec, ServiceIn <: Product: InOutEncoder](
       inputObject: In,
       requestHandler: ServiceHandler[In, ?, ServiceIn, ?]
   ): RunnableRequest[ServiceIn] =

@@ -2,6 +2,7 @@ package camundala
 package camunda8
 
 import bpmn.*
+import domain.*
 import camundala.bpmn.CamundaVariable.CJson
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.camunda.zeebe.client.ZeebeClient
@@ -22,8 +23,8 @@ trait RestEndpoint extends Validator:
   protected var zeebeClient: ZeebeClient = _
 
   def createInstance[
-      In <: Product: Decoder: Encoder,
-      Out <: Product: Decoder: Encoder
+      In <: Product: InOutCodec,
+      Out <: Product: InOutCodec
   ](
       processId: String,
       startVars: Either[String, CreateProcessInstanceIn[In, Out]]
@@ -43,7 +44,7 @@ trait RestEndpoint extends Validator:
           .status(HttpStatus.BAD_REQUEST)
           .body(errorMsg)
 
-  private def start[In <: Product: Decoder: Encoder, Out <: Product: Decoder](
+  private def start[In <: Product: InOutDecoder: InOutEncoder, Out <: Product: InOutDecoder](
       processId: String,
       startObj: CreateProcessInstanceIn[In, Out]
   ): Either[String, ProcessInstanceEvent | ProcessInstanceResult] =
@@ -86,7 +87,7 @@ trait RestEndpoint extends Validator:
       case _ =>
         camundaVariable.value
 
-  private def extractBody[Out <: Product: Decoder: Encoder](
+  private def extractBody[Out <: Product: InOutCodec](
       process: ProcessInstanceResult
   ): Response =
     // parsing will validate output
