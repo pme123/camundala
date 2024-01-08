@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## 1.27.0 - 2024-01-08
+## 1.27.1 - 2024-01-08
 ### Changed 
 - Added optional release ResponsiblePerson. - see [Commit](https://github.com/pme123/camundala/commit/37e40f3bbc66082b3aa8d7297dcc331147ec7d86)
 - Replaced Encoder/Decoder with InOutEncoder/InOutDecoder. - see [Commit](https://github.com/pme123/camundala/commit/cfedc4f414770370cec267a6545ee47bf926b6d5)
