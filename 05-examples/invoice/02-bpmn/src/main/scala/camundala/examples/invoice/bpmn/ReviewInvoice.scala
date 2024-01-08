@@ -14,7 +14,7 @@ object ReviewInvoice extends BpmnDsl:
       invoiceNumber: String = "I-12345",
   )
   object In:
-    given ApiSchema[In] = deriveSchema
+    given ApiSchema[In] = deriveApiSchema
     given InOutCodec[In] = deriveCodec
   end In
 
@@ -23,7 +23,7 @@ object ReviewInvoice extends BpmnDsl:
       clarified: Boolean = true
   )
   object Out:
-    given ApiSchema[Out] = deriveSchema
+    given ApiSchema[Out] = deriveApiSchema
     given InOutCodec[Out] = deriveCodec
   end Out
 
@@ -46,7 +46,7 @@ object ReviewInvoice extends BpmnDsl:
                     reviewer: String = "John"
                   )
     object Out:
-      given ApiSchema[Out] = deriveSchema
+      given ApiSchema[Out] = deriveApiSchema
       given InOutCodec[Out] = deriveCodec
     end Out
 
@@ -69,7 +69,7 @@ object ReviewInvoice extends BpmnDsl:
                     clarified: Boolean = true
                   )
     object Out:
-      given ApiSchema[Out] = deriveSchema
+      given ApiSchema[Out] = deriveApiSchema
       given InOutCodec[Out] = deriveCodec
     end Out
 

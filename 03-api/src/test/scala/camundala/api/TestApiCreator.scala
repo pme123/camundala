@@ -43,7 +43,7 @@ object Sample extends BpmnDsl:
       address: Address = Address()
   )
   object SampleIn:
-    given ApiSchema[SampleIn] = deriveSchema
+    given ApiSchema[SampleIn] = deriveApiSchema
     given InOutCodec[SampleIn] = deriveCodec
   end SampleIn
 
@@ -56,7 +56,7 @@ object Sample extends BpmnDsl:
       country: String = "CH"
   )
   object Address:
-    given ApiSchema[Address] = deriveSchema
+    given ApiSchema[Address] = deriveApiSchema
     given InOutCodec[Address] = deriveCodec
   end Address
 
@@ -66,7 +66,7 @@ object Sample extends BpmnDsl:
       outputValue: String = "Just some text"
   )
   object SampleOut:
-    given ApiSchema[SampleOut] = deriveSchema
+    given ApiSchema[SampleOut] = deriveApiSchema
     given InOutCodec[SampleOut] = deriveCodec
   end SampleOut
 

@@ -51,7 +51,7 @@ Here is the _UserTask_ 'Approve Invoice' from our _Invoice Process_.
       )
     )
 
-    enum InvoiceCategory derives CJsonEnumCodec:
+    enum InvoiceCategory :
       case `Travel Expenses`, Misc, `Software License Costs`
     
     ```
@@ -75,7 +75,7 @@ You see here the following elements:
     * enumerations - like `InvoiceCategory`
     * objects - just other _Case Classes_
 * `invoiceDocument: FileRefInOut` in _Camunda 8_ only JSONs are allowed - so you need a File representation.
-* `enum InvoiceCategory..` this is how you define an enumeration. `..derives CJsonEnumCodec..` is for JSON marshalling.
+* `enum InvoiceCategory..` this is how you define an enumeration.
 * `` `Travel Expenses`, `` if you have names with spaces you need to use Back-Ticks.
 
 Checkout the Domain Description of @:source(camundala.examples.invoice.InvoiceReceipt).
@@ -90,7 +90,7 @@ as they are easy to create and there is support for documentation and JSON marsh
 If an attribute of a Case Class is an enumeration you can use the Scala `enum`.
 
 ```scala
-    enum InvoiceCategory derives CJsonEnumCodec:
+    enum InvoiceCategory :
       case `Travel Expenses`, Misc, `Software License Costs`
 ```
 
@@ -98,7 +98,7 @@ If an attribute of a Case Class is an enumeration you can use the Scala `enum`.
 If you have inputs or outputs that can differ, you can use the Scala `enum` as well. It just looks a bit different:
 
 ```scala
-  enum GetCodesOut derives CJsonCodec:
+  enum GetCodesOut:
     case KeyValues(
         codesResult: Option[Map[String, String]] = None,
         poBox: Option[Map[String, String]] = Some(defaultPoBoxFr)
@@ -202,22 +202,25 @@ Sorry for this technical noise 😥.
 * Case Classes:
   ```scala
   given ApiSchema[InvoiceReceipt] = deriveApiSchema
-  given JsonCodec[InvoiceReceipt] = deriveCodec
+  given InOutCodec[InvoiceReceipt] = deriveInOutCodec
  ```
 
 * Enumeration:
   ```scala
-  // ..derives CJsonCodec is needed for JSON marshalling of enums
-  enum GetCodesOut derives CJsonCodec:
+  enum GetCodesOut:
     ...
-  given ApiSchema[GetCodesOut] = deriveApiSchema
+  object GetCodesOut:  
+    given ApiSchema[GetCodesOut] = deriveApiSchema
+    given InOutCodec[GetCodesOut] = deriveInOutCodec
   
   // for simple enums:
-  enum InvoiceCategory derives CJsonEnumCodec:
+  enum InvoiceCategory:
       case `Travel Expenses`, Misc, `Software License Costs`
 
-  given ApiSchema[InvoiceCategory] = deriveApiSchema
-  ```
+  object InvoiceCategory:  
+    given ApiSchema[InvoiceCategory] = deriveEnumApiSchema
+    given InOutCodec[InvoiceCategory] = deriveEnumInOutCodec
+```
 
 ### Mock / Validation implementation
 We provide an example with the invoice example for Camunda 7.

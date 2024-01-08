@@ -56,7 +56,7 @@ case class CamundaProperty(
 
 object CamundaProperty:
 
-  given Decoder[CamundaProperty] =
+  given InOutDecoder[CamundaProperty] =
     (c: HCursor) =>
       for
         name <- c.downField("name").as[String]

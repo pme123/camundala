@@ -23,11 +23,11 @@ object StarWarsPeople extends BpmnDsl:
   )
 
   object In:
-    given ApiSchema[In] = deriveSchema
+    given ApiSchema[In] = deriveApiSchema
     given InOutCodec[In] = deriveCodec
   end In
 
-  enum Out derives ConfiguredCodec:
+  enum Out:
     case Success(
         people: Seq[People] = Seq(People()),
         val processStatus: ProcessStatus = ProcessStatus.succeeded
@@ -36,7 +36,8 @@ object StarWarsPeople extends BpmnDsl:
   end Out
 
   object Out:
-    given ApiSchema[Out] = deriveSchema
+    given ApiSchema[Out] = deriveApiSchema
+    given InOutCodec[Out] = deriveInOutCodec
   end Out
 
   case class PeopleResults(
@@ -44,7 +45,7 @@ object StarWarsPeople extends BpmnDsl:
   )
 
   object PeopleResults:
-    given ApiSchema[PeopleResults] = deriveSchema
+    given ApiSchema[PeopleResults] = deriveApiSchema
     given InOutCodec[PeopleResults] = deriveCodec
   end PeopleResults
 
@@ -74,22 +75,24 @@ object StarWarsPeopleDetail extends BpmnDsl:
   )
 
   object In:
-    given ApiSchema[In] = deriveSchema
+    given ApiSchema[In] = deriveApiSchema
     given InOutCodec[In] = deriveCodec
   end In
 
-  enum Out derives ConfiguredCodec:
+  enum Out:
     case Success(
         people: People = People(),
         fromHeader: String = "okidoki",
-        val processStatus: ProcessStatus = ProcessStatus.succeeded
+        processStatus: ProcessStatus = ProcessStatus.succeeded
     )
     case Failure(val processStatus: ProcessStatus = ProcessStatus.`404`)
   end Out
 
   object Out:
-    given ApiSchema[Out] = deriveSchema
+    given ApiSchema[Out] = deriveApiSchema
+    given InOutCodec[Out] = deriveInOutCodec
   end Out
+  
   final lazy val example: ServiceTask[In, Out, ServiceOut] =
     serviceTask(
       topicName,
@@ -111,6 +114,6 @@ case class People(
 )
 
 object People:
-  given ApiSchema[People] = deriveSchema
+  given ApiSchema[People] = deriveApiSchema
   given InOutCodec[People] = deriveCodec
 end People

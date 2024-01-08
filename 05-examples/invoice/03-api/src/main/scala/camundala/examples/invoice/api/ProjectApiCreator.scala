@@ -30,7 +30,9 @@ object ProjectApiCreator extends DefaultApiCreator:
       ReviewInvoiceUT
     ),
     group("Workers")(
-      StarWarsPeopleDetail.example,
+      StarWarsPeopleDetail.example
+      .withOutExample("Success", StarWarsPeopleDetail.Out.Success())
+      .withOutExample("Failure", StarWarsPeopleDetail.Out.Failure()),
       api(ArchiveInvoice.example)
     ),
     group("User Tasks")(

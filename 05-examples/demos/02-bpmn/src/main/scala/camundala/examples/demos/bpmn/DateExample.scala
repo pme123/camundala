@@ -10,7 +10,7 @@ object DateExample extends BpmnDsl:
   case class Input(inDate: LocalDateTime = LocalDateTime.parse("2013-12-12T12:12:12"))
 
   object Input:
-    given ApiSchema[Input] = deriveSchema
+    given ApiSchema[Input] = deriveApiSchema
     given InOutCodec[Input] = deriveCodec
 
   lazy val DateExampleDMN = singleEntry(

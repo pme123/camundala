@@ -16,7 +16,7 @@ object ServiceMethodDeleteApi extends BpmnDsl:
   )
 
   object In:
-    given ApiSchema[In] = deriveSchema
+    given ApiSchema[In] = deriveApiSchema
     given InOutCodec[In] = deriveCodec
   end In
 
@@ -25,7 +25,7 @@ object ServiceMethodDeleteApi extends BpmnDsl:
     )
 
   object Out:
-    given ApiSchema[Out] = deriveSchema
+    given ApiSchema[Out] = deriveApiSchema
     given InOutCodec[Out] = deriveCodec
   end Out
 
@@ -33,7 +33,7 @@ object ServiceMethodDeleteApi extends BpmnDsl:
       id: Long = 123L,
   )
   object Dummy:
-    given ApiSchema[Dummy] = deriveSchema
+    given ApiSchema[Dummy] = deriveApiSchema
     given InOutCodec[Dummy] = deriveCodec
   end Dummy
 

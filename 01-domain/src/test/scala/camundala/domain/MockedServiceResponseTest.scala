@@ -32,19 +32,19 @@ case class TestWithMock(
 
 
 object TestWithMock:
-    given ApiSchema[TestWithMock] = deriveSchema
+    given ApiSchema[TestWithMock] = deriveApiSchema
     given InOutCodec[TestWithMock] = deriveCodec
 end TestWithMock
 
 case class Error(msg: String = "failed")
 object Error:
-    given ApiSchema[Error] = deriveSchema
+    given ApiSchema[Error] = deriveApiSchema
     given InOutCodec[Error] = deriveCodec
 end Error 
 
 case class Success(ok: String = "hello")
 
 object Success:
-    given ApiSchema[Success] = deriveSchema
+    given ApiSchema[Success] = deriveApiSchema
     given InOutCodec[Success] = deriveCodec
 end Success

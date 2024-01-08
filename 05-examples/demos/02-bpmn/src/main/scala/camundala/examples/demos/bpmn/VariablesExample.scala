@@ -17,7 +17,7 @@ object VariablesExample extends BpmnDsl:
   )
 
 
-  given ApiSchema[Input] = deriveSchema
+  given ApiSchema[Input] = deriveApiSchema
   given InOutCodec[Input] = deriveCodec
 
 

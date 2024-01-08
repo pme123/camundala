@@ -189,7 +189,7 @@ end SingleResult
 @description(
   "ResultList: Output of a DMN Table. This returns a Sequence of `Product`s (case classes) with more than one fields of `DmnValueType`s"
 )
-case class ResultList[Out <: Product: Encoder: Decoder: Schema](
+case class ResultList[Out <: Product: InOutEncoder: InOutDecoder: Schema](
     result: Seq[Out]
 ):
 
@@ -199,13 +199,13 @@ case class ResultList[Out <: Product: Encoder: Decoder: Schema](
 end ResultList
 
 object ResultList:
-  def apply[Out <: Product: Encoder: Decoder: Schema](
+  def apply[Out <: Product: InOutEncoder: InOutDecoder: Schema](
       result: Out,
       results: Out*
   ): ResultList[Out] =
     new ResultList[Out](result +: results)
 
-  given schemaForResultList[A <: Product: Encoder: Decoder: Schema]: Schema[ResultList[A]] =
+  given schemaForResultList[A <: Product: InOutEncoder: InOutDecoder: Schema]: Schema[ResultList[A]] =
     val sa = summon[Schema[A]]
     Schema[ResultList[A]](
       SchemaType.SCoproduct(List(sa), None) { case ResultList(x) =>
@@ -217,11 +217,11 @@ object ResultList:
     )
   end schemaForResultList
 
-  given ResultListEncoder[T <: Product: Encoder: Decoder: Schema]: Encoder[ResultList[T]] =
+  given ResultListEncoder[T <: Product: InOutEncoder: InOutDecoder: Schema]: InOutEncoder[ResultList[T]] =
     new Encoder[ResultList[T]]:
       final def apply(sr: ResultList[T]): Json = sr.result.asJson
 
-  given ResultListDecoder[T <: Product: Encoder: Decoder: Schema]: Decoder[ResultList[T]] =
+  given ResultListDecoder[T <: Product: InOutEncoder: InOutDecoder: Schema]: InOutDecoder[ResultList[T]] =
     new Decoder[ResultList[T]]:
       final def apply(c: HCursor): Decoder.Result[ResultList[T]] =
         for result <- c.as[Seq[T]]
@@ -255,10 +255,10 @@ object DmnVariable:
     )
   end schemaForDmnVariable
 
-  given DmnVariableEncoder[T <: DmnValueType: Encoder: ClassTag]: Encoder[DmnVariable[T]] =
+  given DmnVariableEncoder[T <: DmnValueType: InOutEncoder: ClassTag]: InOutEncoder[DmnVariable[T]] =
     new Encoder[DmnVariable[T]]:
       final def apply(sr: DmnVariable[T]): Json = sr.value.asJson
-  given DmnVariableDecoder[T <: DmnValueType: Decoder: ClassTag]: Decoder[DmnVariable[T]] =
+  given DmnVariableDecoder[T <: DmnValueType: InOutDecoder: ClassTag]: InOutDecoder[DmnVariable[T]] =
     new Decoder[DmnVariable[T]]:
       final def apply(c: HCursor): Decoder.Result[DmnVariable[T]] =
         for value <- c.as[T]

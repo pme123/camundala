@@ -9,7 +9,7 @@ val camundaVersion = "7.15"
 // sttp
 export sttp.model.StatusCode
   
-def toJsonString[T <: Product: Encoder](product: T): String =
+def toJsonString[T <: Product: InOutEncoder](product: T): String =
   product.asJson.deepDropNullValues.toString
 
 @deprecated("Use `Optable`.")
@@ -67,6 +67,6 @@ object GenericExternalTask:
   enum ProcessStatus:
     case succeeded, `404`, `400`, `output-mocked`, `validation-failed`
   object ProcessStatus:
-    given ApiSchema[ProcessStatus] = deriveEnumSchema
-    given InOutCodec[ProcessStatus] = deriveEnumCodec
+    given ApiSchema[ProcessStatus] = deriveEnumApiSchema
+    given InOutCodec[ProcessStatus] = deriveEnumInOutCodec
 end GenericExternalTask

@@ -327,5 +327,5 @@ trait CompanyDocCreator extends DependencyCreator:
       text: String,
       ticket: Option[String] = None
   )
-
+  
 end CompanyDocCreator

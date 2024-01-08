@@ -15,6 +15,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.27.0 - 2024-01-08
+### Changed 
+- Added optional release ResponsiblePerson. - see [Commit](https://github.com/pme123/camundala/commit/37e40f3bbc66082b3aa8d7297dcc331147ec7d86)
+- Replaced Encoder/Decoder with InOutEncoder/InOutDecoder. - see [Commit](https://github.com/pme123/camundala/commit/cfedc4f414770370cec267a6545ee47bf926b6d5)
+- Replaced deriveEncoder/deriveDecoder with deriveInOutCodec. - see [Commit](https://github.com/pme123/camundala/commit/0314b73bee92c1f536f42a03400cb6127023a0e7)
+- Changed derives to deriveInOutCodec. - see [Commit](https://github.com/pme123/camundala/commit/160d4016d05db6a7ba60d9ca1c78fc8d263e48e7)
+
 ## 1.26.2 - 2023-12-15
 ### Changed 
 - Changed to MUnit from JUnit. - see [Commit](https://github.com/pme123/camundala/commit/64dc2f8f9f7e240e4e1c9d8869235897cfa62c73)
@@ -66,7 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed BigDecimal in jsonToEngineValue. - see [Commit](https://github.com/pme123/camundala/commit/6c833b9c4099678fdc2a108683553f80292485fd)
 
 ## 1.25.0 - 2023-11-21
-### Changed 
+### Changed
 - Added In to outputMapper in ServiceTask to filter the output. - see [Commit](https://github.com/pme123/camundala/commit/542ba9f16d45145d3e5d636fa719c126e0cedd02)
 
 ## 1.24.1 - 2023-11-20

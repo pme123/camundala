@@ -94,8 +94,8 @@ trait RunWorkHandler[
 case class ServiceHandler[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
-    ServiceIn <: Product: Encoder,
-    ServiceOut: Decoder
+    ServiceIn <: Product: InOutEncoder,
+    ServiceOut: InOutDecoder
 ](
    httpMethod: Method,
    apiUri: In => Uri,
@@ -146,7 +146,7 @@ case class ServiceHandler[
 
   end withServiceMock
 
-  private def decodeMock[Out: Decoder](
+  private def decodeMock[Out: InOutDecoder](
       json: Json
   ): Either[ServiceMockingError, Out] =
     decodeTo[Out](json.asJson.toString).left

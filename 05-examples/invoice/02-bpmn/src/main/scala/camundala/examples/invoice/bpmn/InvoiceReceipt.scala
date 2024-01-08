@@ -27,7 +27,7 @@ object InvoiceReceipt extends BpmnDsl:
       invoiceReviewedMock: Option[ReviewInvoice.Out] = None
   )
   object In:
-    given ApiSchema[In] = deriveSchema
+    given ApiSchema[In] = deriveApiSchema
     given InOutCodec[In] = deriveCodec
   end In
 
@@ -40,7 +40,7 @@ object InvoiceReceipt extends BpmnDsl:
       clarified: Option[Boolean] = None
   )
   object Out:
-    given ApiSchema[Out] = deriveSchema
+    given ApiSchema[Out] = deriveApiSchema
     given InOutCodec[Out] = deriveCodec
   end Out
 
@@ -61,7 +61,7 @@ object InvoiceReceipt extends BpmnDsl:
           InvoiceCategory.`Software License Costs`
     )
     object In:
-      given ApiSchema[In] = deriveSchema
+      given ApiSchema[In] = deriveApiSchema
       given InOutCodec[In] = deriveCodec
     end In
 
@@ -87,7 +87,7 @@ object InvoiceReceipt extends BpmnDsl:
         approved: Boolean = true
     )
     object Out:
-      given ApiSchema[Out] = deriveSchema
+      given ApiSchema[Out] = deriveApiSchema
       given InOutCodec[Out] = deriveCodec
     end Out
 
@@ -111,7 +111,7 @@ object InvoiceReceipt extends BpmnDsl:
         invoiceNumber: String = "I-12345",
     )
     object In:
-      given ApiSchema[In] = deriveSchema
+      given ApiSchema[In] = deriveApiSchema
       given InOutCodec[In] = deriveCodec
     end In
 
@@ -129,8 +129,8 @@ object InvoiceReceipt extends BpmnDsl:
   enum ApproverGroup:
     case accounting, sales, management
   object ApproverGroup:
-    given ApiSchema[ApproverGroup] = deriveEnumSchema
-    given InOutCodec[ApproverGroup] = deriveEnumCodec
+    given ApiSchema[ApproverGroup] = deriveEnumApiSchema
+    given InOutCodec[ApproverGroup] = deriveEnumInOutCodec
 
   end ApproverGroup
 

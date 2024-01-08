@@ -4,7 +4,7 @@ laika.versioned = true
 %}
 
 # Valiant Process Documentation
-> **Preview to the next Release**
+Approved by Christian Pfister (10.01.2024)
 
 
 _Updated for Release ${release.tag} - created on ${created.day}_

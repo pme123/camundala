@@ -17,7 +17,7 @@ case class RequestErrorOutput(
     examples: Map[ExampleName, CamundaError] = Map.empty
 )
 object RequestErrorOutput:
-  given ApiSchema[RequestErrorOutput] = deriveSchema
+  given ApiSchema[RequestErrorOutput] = deriveApiSchema
   given InOutCodec[RequestErrorOutput] = deriveCodec
 end RequestErrorOutput
 
@@ -27,7 +27,7 @@ case class CamundaError(
 )
 object CamundaError:
   given InOutCodec[CamundaError] = deriveCodec
-  given ApiSchema[CamundaError] = deriveSchema
+  given ApiSchema[CamundaError] = deriveApiSchema
 end CamundaError
 
 case class CamundaAuthError(
@@ -39,13 +39,13 @@ case class CamundaAuthError(
     resourceId: String = "Mary"
 )
 object CamundaAuthError:
-  given ApiSchema[CamundaAuthError] = deriveSchema
+  given ApiSchema[CamundaAuthError] = deriveApiSchema
   given InOutCodec[CamundaAuthError] = deriveCodec
 end CamundaAuthError
 
 given ApiSchema[StatusCode] = Schema(SchemaType.SInteger())
-given Encoder[StatusCode] = Encoder.instance(st => st.code.asJson)
-given Decoder[StatusCode] = (c: HCursor) => c.value.as[Int].map(StatusCode(_))
+given InOutEncoder[StatusCode] = Encoder.instance(st => st.code.asJson)
+given InOutDecoder[StatusCode] = (c: HCursor) => c.value.as[Int].map(StatusCode(_))
 
 
 @description(
@@ -69,7 +69,7 @@ case class GetActiveJobIn(
                            active: Boolean = true
                          )
 object GetActiveJobIn:
-  given ApiSchema[GetActiveJobIn] = deriveSchema
+  given ApiSchema[GetActiveJobIn] = deriveApiSchema
   given InOutCodec[GetActiveJobIn] = deriveCodec
 
 /*
@@ -95,7 +95,7 @@ case class CompleteTaskIn(
     withVariablesInReturn: Boolean = true
 )
 object CompleteTaskIn:
-  given ApiSchema[CompleteTaskIn] = deriveSchema
+  given ApiSchema[CompleteTaskIn] = deriveApiSchema
   given InOutCodec[CompleteTaskIn] = deriveCodec
 
 @description(
@@ -119,7 +119,7 @@ case class GetActiveTaskIn(
     active: Boolean = true
 )
 object GetActiveTaskIn:
-  given ApiSchema[GetActiveTaskIn] = deriveSchema
+  given ApiSchema[GetActiveTaskIn] = deriveApiSchema
   given InOutCodec[GetActiveTaskIn] = deriveCodec
 
 case class RequestInput[T](examples: Map[ExampleName, T]):
@@ -228,7 +228,7 @@ case class GetActiveTaskOut(
     id: String = "f150c3f1-13f5-11ec-936e-0242ac1d0007"
 )
 object GetActiveTaskOut:
-  given ApiSchema[GetActiveTaskOut] = deriveSchema
+  given ApiSchema[GetActiveTaskOut] = deriveApiSchema
   given InOutCodec[GetActiveTaskOut] = deriveCodec
 end GetActiveTaskOut
 

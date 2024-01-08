@@ -67,7 +67,7 @@ object MockedServiceResponse:
     MockedServiceResponse(status, Left(None))
 
   given tapirSchema[ServiceOut: Schema]: Schema[MockedServiceResponse[ServiceOut]] =
-    deriveSchema[MockedServiceResponse[ServiceOut]]
+    deriveApiSchema[MockedServiceResponse[ServiceOut]]
 
   given mockedHttpResponseJsonEncoder[ServiceOut: InOutEncoder]: InOutEncoder[MockedServiceResponse[ServiceOut]] =
     Encoder.instance { response =>

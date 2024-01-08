@@ -13,7 +13,7 @@ sealed trait CamundaVariable:
 
 object CamundaVariable:
 
-  given Encoder[CamundaVariable] =
+  given InOutEncoder[CamundaVariable] =
     Encoder.instance {
       case v: CString => v.asJson
       case v: CInteger => v.asJson
@@ -26,49 +26,38 @@ object CamundaVariable:
     }
 
   given ApiSchema[CamundaVariable] =
-    deriveSchema
+    deriveApiSchema
 
-  given ApiSchema[CString] = deriveSchema
-  given Encoder[CString] = deriveEncoder
-  given Decoder[CString] = deriveDecoder
+  given ApiSchema[CString] = deriveApiSchema
+  given InOutCodec[CString] = deriveInOutCodec
 
-  given ApiSchema[CInteger] = deriveSchema
-  given Encoder[CInteger] = deriveEncoder
-  given Decoder[CInteger] = deriveDecoder
+  given ApiSchema[CInteger] = deriveApiSchema
+  given InOutCodec[CInteger] = deriveInOutCodec
 
-  given ApiSchema[CLong] = deriveSchema
-  given Encoder[CLong] = deriveEncoder
-  given Decoder[CLong] = deriveDecoder
+  given ApiSchema[CLong] = deriveApiSchema
+  given InOutCodec[CLong] = deriveInOutCodec
 
-  given ApiSchema[CDouble] = deriveSchema
-  given Encoder[CDouble] = deriveEncoder
-  given Decoder[CDouble] = deriveDecoder
+  given ApiSchema[CDouble] = deriveApiSchema
+  given InOutCodec[CDouble] = deriveInOutCodec
 
-  given ApiSchema[CBoolean] = deriveSchema
-  given Encoder[CBoolean] = deriveEncoder
-  given Decoder[CBoolean] = deriveDecoder
+  given ApiSchema[CBoolean] = deriveApiSchema
+  given InOutCodec[CBoolean] = deriveInOutCodec
 
-  given ApiSchema[CFile] = deriveSchema
-  given Encoder[CFile] = deriveEncoder
-  given Decoder[CFile] = deriveDecoder
+  given ApiSchema[CFile] = deriveApiSchema
+  given InOutCodec[CFile] = deriveInOutCodec
 
-  given ApiSchema[CFileValueInfo] =
-    deriveSchema
-  given Encoder[CFileValueInfo] =
-    deriveEncoder
-  given Decoder[CFileValueInfo] =
-    deriveDecoder
+  given ApiSchema[CFileValueInfo] = deriveApiSchema
+  given InOutCodec[CFileValueInfo] = deriveInOutCodec
 
-  given ApiSchema[CJson] = deriveSchema
-  given Encoder[CJson] = deriveEncoder
-  given Decoder[CJson] = deriveDecoder
+  given ApiSchema[CJson] = deriveApiSchema
+  given InOutCodec[CJson] = deriveInOutCodec
 
-  def toCamunda[T <: Product: Encoder](
+  def toCamunda[T <: Product: InOutEncoder](
       products: Seq[T]
   ): Seq[Map[String, CamundaVariable]] =
     products.map(toCamunda)
 
-  def toCamunda[T <: Product: Encoder](
+  def toCamunda[T <: Product: InOutEncoder](
       product: T
   ): Map[String, CamundaVariable] =
     product.productElementNames
@@ -78,7 +67,7 @@ object CamundaVariable:
       .toMap
 
   @tailrec
-  def objectToCamunda[T <: Product: Encoder](
+  def objectToCamunda[T <: Product: InOutEncoder](
       product: T,
       key: String,
       value: Any
@@ -162,7 +151,7 @@ object CamundaVariable:
   case class CJson(value: String, private val `type`: String = "Json")
       extends CamundaVariable
 
-  given Decoder[CamundaVariable] =
+  given InOutDecoder[CamundaVariable] =
     (c: HCursor) =>
       for
         valueType <- c.downField("type").as[String]

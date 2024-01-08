@@ -13,38 +13,38 @@ trait ApiDsl extends ApiBaseDsl:
 
   // converters
   given [
-      In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema: ClassTag
+      In <: Product:InOutEncoder: InOutDecoder: Schema,
+      Out <: Product:InOutEncoder: InOutDecoder: Schema: ClassTag
   ]: Conversion[Process[In, Out], ProcessApi[In, Out]] =
     process => ProcessApi(nameOfVariable(process), process)
 
   given [
-      In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema: ClassTag,
-      ServiceOut: Encoder: Decoder: Schema
+      In <: Product:InOutEncoder: InOutDecoder: Schema,
+      Out <: Product:InOutEncoder: InOutDecoder: Schema: ClassTag,
+      ServiceOut:InOutEncoder: InOutDecoder: Schema
   ]: Conversion[ServiceTask[In, Out, ServiceOut], ServiceWorkerApi[In, Out, ServiceOut]] =
     task => ServiceWorkerApi(nameOfVariable(task), task)
 
   given [
-      In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema: ClassTag
+      In <: Product:InOutEncoder: InOutDecoder: Schema,
+      Out <: Product:InOutEncoder: InOutDecoder: Schema: ClassTag
   ]: Conversion[CustomTask[In, Out], CustomWorkerApi[In, Out]] =
     task => CustomWorkerApi(nameOfVariable(task), task)
 
   given [
-      In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema: ClassTag
+      In <: Product:InOutEncoder: InOutDecoder: Schema,
+      Out <: Product:InOutEncoder: InOutDecoder: Schema: ClassTag
   ]: Conversion[DecisionDmn[In, Out], DecisionDmnApi[In, Out]] =
     dmn => DecisionDmnApi(nameOfVariable(dmn), dmn)
 
   given [
-      In <: Product: Encoder: Decoder: Schema,
-      Out <: Product: Encoder: Decoder: Schema: ClassTag
+      In <: Product:InOutEncoder: InOutDecoder: Schema,
+      Out <: Product:InOutEncoder: InOutDecoder: Schema: ClassTag
   ]: Conversion[UserTask[In, Out], ActivityApi[In, Out]] =
     inOut => ActivityApi(nameOfVariable(inOut), inOut)
 
   given [
-      In <: Product: Encoder: Decoder: Schema
+      In <: Product: InOutEncoder: InOutDecoder: Schema
   ]: Conversion[ReceiveEvent[In, ?], ActivityApi[In, NoOutput]] =
     inOut => ActivityApi(nameOfVariable(inOut), inOut)
 

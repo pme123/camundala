@@ -327,7 +327,7 @@ case class SelectApproverGroup(
                               )
 
 @description("These Groups can approve the invoice.")
-enum ApproverGroup derives CJsonEnumCodec :
+enum ApproverGroup :
   case accounting, sales, management
 ```
 - Running this will use the inputs `amount` and `invoiceCategory` for the evaluation.

@@ -10,7 +10,7 @@ trait EngineContext:
   def getLogger(clazz: Class[?]): WorkerLogger
   def toEngineObject: Json => Any
 
-  def sendRequest[ServiceIn <: Product: Encoder, ServiceOut: Decoder](
+  def sendRequest[ServiceIn <: Product: InOutEncoder, ServiceOut: InOutDecoder](
       request: RunnableRequest[ServiceIn]
   ): SendRequestType[ServiceOut]
 
@@ -20,7 +20,7 @@ trait EngineContext:
     json.toMap
       .map { case (k, v) => k -> jsonToEngineValue(v) }
 
-  def toEngineObject[T <: Product : Encoder](
+  def toEngineObject[T <: Product : InOutEncoder](
                                               product: T
                                             ): Map[String, Any] =
     product.productElementNames
@@ -35,7 +35,7 @@ trait EngineContext:
     variables
       .map { case (k, v) => k -> jsonToEngineValue(v) }
 
-  def objectToEngineObject[T <: Product : Encoder](
+  def objectToEngineObject[T <: Product : InOutEncoder](
                                                     product: T,
                                                     key: String,
                                                     value: Any
@@ -97,12 +97,12 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
 
   def getLogger(clazz: Class[?]): WorkerLogger = engineContext.getLogger(clazz)
 
-  def sendRequest[ServiceIn <: Product: Encoder, ServiceOut: Decoder](
+  def sendRequest[ServiceIn <: Product: InOutEncoder, ServiceOut: InOutDecoder](
       request: RunnableRequest[ServiceIn]
   ): SendRequestType[ServiceOut] =
     engineContext.sendRequest(request)
 
-  def toEngineObject[T <: Product : Encoder](
+  def toEngineObject[T <: Product : InOutEncoder](
                                               product: T
                                             ): Map[String, Any] =
     engineContext.toEngineObject(product)

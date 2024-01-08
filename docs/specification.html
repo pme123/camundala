@@ -139,7 +139,7 @@
   )
 )
 
-</span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">CJsonEnumCodec</span><span>:
+</span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span> :
   </span><span class="keyword">case</span><span> </span><span class="identifier">`Travel Expenses`</span><span>, </span><span class="type-name">Misc</span><span>, </span><span class="identifier">`Software License Costs`</span></code></pre>
           </li>
           <li>
@@ -164,7 +164,7 @@
             </ul>
           </li>
           <li><code>invoiceDocument: FileRefInOut</code> in <em>Camunda 8</em> only JSONs are allowed - so you need a File representation.</li>
-          <li><code>enum InvoiceCategory..</code> this is how you define an enumeration. <code>..derives CJsonEnumCodec..</code> is for JSON marshalling.</li>
+          <li><code>enum InvoiceCategory..</code> this is how you define an enumeration.</li>
           <li><code>`Travel Expenses`,</code> if you have names with spaces you need to use Back-Ticks.</li>
         </ul>
         <p>Checkout the Domain Description of <a class="source" href="https://github.com/pme123/camundala/tree/master/05-examples/invoice/camunda7/src/main/scala/camundala/examples/invoice/InvoiceReceipt.scala">InvoiceReceipt</a>.</p>
@@ -176,12 +176,12 @@
         
         <h3 id="simple-enum" class="section"><a class="anchor-link left" href="#simple-enum"><i class="icofont-laika link">&#xef71;</i></a>Simple Enum</h3>
         <p>If an attribute of a Case Class is an enumeration you can use the Scala <code>enum</code>.</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">CJsonEnumCodec</span><span>:
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span> :
       </span><span class="keyword">case</span><span> </span><span class="identifier">`Travel Expenses`</span><span>, </span><span class="type-name">Misc</span><span>, </span><span class="identifier">`Software License Costs`</span></code></pre>
         
         <h3 id="hierarchy-enum" class="section"><a class="anchor-link left" href="#hierarchy-enum"><i class="icofont-laika link">&#xef71;</i></a>Hierarchy Enum</h3>
         <p>If you have inputs or outputs that can differ, you can use the Scala <code>enum</code> as well. It just looks a bit different:</p>
-        <pre><code class="nohighlight"><span>  </span><span class="identifier">enum</span><span> </span><span class="type-name">GetCodesOut</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">CJsonCodec</span><span>:
+        <pre><code class="nohighlight"><span>  </span><span class="identifier">enum</span><span> </span><span class="type-name">GetCodesOut</span><span>:
     </span><span class="keyword">case</span><span> </span><span class="type-name">KeyValues</span><span>(
         </span><span class="identifier">codesResult</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]] = </span><span class="type-name">None</span><span>,
         </span><span class="identifier">poBox</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]] = </span><span class="type-name">Some</span><span>(</span><span class="identifier">defaultPoBoxFr</span><span>)
@@ -288,20 +288,23 @@
           <li>
             <p>Case Classes:</p>
             <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">given</span><span> </span><span class="type-name">ApiSchema</span><span>[</span><span class="type-name">InvoiceReceipt</span><span>] = </span><span class="identifier">deriveApiSchema</span><span>
-</span><span class="identifier">given</span><span> </span><span class="type-name">JsonCodec</span><span>[</span><span class="type-name">InvoiceReceipt</span><span>] = </span><span class="identifier">deriveCodec</span></code></pre>
+</span><span class="identifier">given</span><span> </span><span class="type-name">InOutCodec</span><span>[</span><span class="type-name">InvoiceReceipt</span><span>] = </span><span class="identifier">deriveInOutCodec</span></code></pre>
           </li>
           <li>
             <p>Enumeration:</p>
-            <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// ..derives CJsonCodec is needed for JSON marshalling of enums
-</span><span class="identifier">enum</span><span> </span><span class="type-name">GetCodesOut</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">CJsonCodec</span><span>:
+            <pre><code class="nohighlight"><span class="identifier">enum</span><span> </span><span class="type-name">GetCodesOut</span><span>:
 ...
+</span><span class="keyword">object</span><span> </span><span class="type-name">GetCodesOut</span><span>:  
 </span><span class="identifier">given</span><span> </span><span class="type-name">ApiSchema</span><span>[</span><span class="type-name">GetCodesOut</span><span>] = </span><span class="identifier">deriveApiSchema</span><span>
+</span><span class="identifier">given</span><span> </span><span class="type-name">InOutCodec</span><span>[</span><span class="type-name">GetCodesOut</span><span>] = </span><span class="identifier">deriveInOutCodec</span><span>
 
 </span><span class="comment">// for simple enums:
-</span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span> </span><span class="identifier">derives</span><span> </span><span class="type-name">CJsonEnumCodec</span><span>:
+</span><span class="identifier">enum</span><span> </span><span class="type-name">InvoiceCategory</span><span>:
   </span><span class="keyword">case</span><span> </span><span class="identifier">`Travel Expenses`</span><span>, </span><span class="type-name">Misc</span><span>, </span><span class="identifier">`Software License Costs`</span><span>
 
-</span><span class="identifier">given</span><span> </span><span class="type-name">ApiSchema</span><span>[</span><span class="type-name">InvoiceCategory</span><span>] = </span><span class="identifier">deriveApiSchema</span></code></pre>
+</span><span class="keyword">object</span><span> </span><span class="type-name">InvoiceCategory</span><span>:  
+</span><span class="identifier">given</span><span> </span><span class="type-name">ApiSchema</span><span>[</span><span class="type-name">InvoiceCategory</span><span>] = </span><span class="identifier">deriveEnumApiSchema</span><span>
+</span><span class="identifier">given</span><span> </span><span class="type-name">InOutCodec</span><span>[</span><span class="type-name">InvoiceCategory</span><span>] = </span><span class="identifier">deriveEnumInOutCodec</span></code></pre>
           </li>
         </ul>
         

@@ -5,7 +5,7 @@ import camundala.domain.*
 
 object EnumExample extends BpmnDsl:
 
-  enum Input derives ConfiguredCodec:
+  enum Input:
 
     case A(
         someValue: Option[String] = Some("hello"),
@@ -14,9 +14,10 @@ object EnumExample extends BpmnDsl:
     )
   end Input
   object Input:
-    given ApiSchema[Input] = deriveSchema
+    given ApiSchema[Input] = deriveApiSchema
+    given InOutCodec[Input] = deriveInOutCodec
 
-  enum Output derives ConfiguredCodec:
+  enum Output:
 
     case A(
         someOut: Option[String] = Some("hello"),
@@ -25,14 +26,15 @@ object EnumExample extends BpmnDsl:
     )
   end Output
   object Output:
-    given ApiSchema[Output] = deriveSchema
+    given ApiSchema[Output] = deriveApiSchema
+    given InOutCodec[Output] = deriveInOutCodec
 
   enum SimpleEnum:
     case One, Two
 
   object SimpleEnum:
-    given ApiSchema[SimpleEnum] = deriveEnumSchema
-    given InOutCodec[SimpleEnum] = deriveEnumCodec
+    given ApiSchema[SimpleEnum] = deriveEnumApiSchema
+    given InOutCodec[SimpleEnum] = deriveEnumInOutCodec
 
   lazy val enumExample = process(
     "enum-example",
