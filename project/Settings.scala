@@ -74,8 +74,15 @@ object Settings {
   lazy val autoImportSetting =
     scalacOptions +=
       Seq(
-        "java.lang", "scala", "scala.Predef", "io.circe", "io.circe.generic.semiauto",
-        "io.circe.derivation", "io.circe.syntax", "sttp.tapir", "sttp.tapir.json.circe"
+        "java.lang",
+        "scala",
+        "scala.Predef",
+        "io.circe",
+        "io.circe.generic.semiauto",
+        "io.circe.derivation",
+        "io.circe.syntax",
+        "sttp.tapir",
+        "sttp.tapir.json.circe"
       ).mkString(start = "-Yimports:", sep = ",", end = "")
 
 }
