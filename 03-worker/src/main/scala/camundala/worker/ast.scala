@@ -98,7 +98,7 @@ case class ServiceWorker[
     ServiceIn <: Product: InOutEncoder,
     ServiceOut: InOutDecoder
 ](
-    inOut: ServiceTask[In, Out, ServiceOut],
+    inOut: ServiceTask[In, Out, ServiceIn, ServiceOut],
     override val validationHandler: Option[ValidationHandler[In]] = None,
     override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None
 ) extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
@@ -171,6 +171,8 @@ object RunnableRequest:
 
   def apply[In <: Product: InOutCodec, ServiceIn <: Product: InOutEncoder](
       inputObject: In,
+      apiUri: Uri,
+      optRequestBody: Option[ServiceIn],
       requestHandler: ServiceHandler[In, ?, ServiceIn, ?]
   ): RunnableRequest[ServiceIn] =
 
@@ -191,12 +193,12 @@ object RunnableRequest:
           case Key(k) if valueMap.contains(k) =>
             QuerySegment.KeyValue(k, valueMap(k))
         }
-
+      
     new RunnableRequest[ServiceIn](
       requestHandler.httpMethod,
-      requestHandler.apiUri(inputObject),
+      apiUri,
       segments,
-      requestHandler.inputMapper(inputObject),
+      optRequestBody,
       requestHandler.inputHeaders(inputObject)
     )
   end apply

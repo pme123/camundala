@@ -13,7 +13,9 @@ import sttp.tapir.codec.iron.given
 object StarWarsPeople extends BpmnDsl:
 
   final val topicName = "star-wars-api-people"
+  type ServiceIn = NoInput
   type ServiceOut = PeopleResults
+  lazy val serviceInExample = NoInput()
   lazy val serviceMock: MockedServiceResponse[ServiceOut] =
     MockedServiceResponse.success200(PeopleResults())
 
@@ -49,13 +51,14 @@ object StarWarsPeople extends BpmnDsl:
     given InOutCodec[PeopleResults] = deriveCodec
   end PeopleResults
 
-  final lazy val example: ServiceTask[In, Out, ServiceOut] =
+  final lazy val example: ServiceTask[In, Out, ServiceIn, ServiceOut] =
     serviceTask(
       topicName,
       descr = "Get People from StarWars API",
       in = In(),
       out = Out.Success(),
-      defaultServiceOutMock = serviceMock
+      defaultServiceOutMock = serviceMock,
+      serviceInExample = serviceInExample
     )
 
 end StarWarsPeople
@@ -63,7 +66,10 @@ end StarWarsPeople
 object StarWarsPeopleDetail extends BpmnDsl:
 
   final val topicName = "star-wars-api-people-detail"
+  type ServiceIn = NoInput
   type ServiceOut = People
+  lazy val serviceInExample = NoInput()
+
   lazy val serviceMock: MockedServiceResponse[ServiceOut] =
     MockedServiceResponse.success200(People(), Map("fromHeader" -> "okidoki"))
 
@@ -93,13 +99,14 @@ object StarWarsPeopleDetail extends BpmnDsl:
     given InOutCodec[Out] = deriveInOutCodec
   end Out
   
-  final lazy val example: ServiceTask[In, Out, ServiceOut] =
+  final lazy val example: ServiceTask[In, Out, ServiceIn, ServiceOut] =
     serviceTask(
       topicName,
       descr = "Get People Details from StarWars API",
       in = In(),
       out = Out.Success(),
-      defaultServiceOutMock = serviceMock
+      defaultServiceOutMock = serviceMock,
+      serviceInExample = serviceInExample
     )
 
 end StarWarsPeopleDetail

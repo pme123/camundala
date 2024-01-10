@@ -16,12 +16,12 @@ import sttp.model.*
 
 @Configuration
 class ServiceMethodDeleteWorker extends InvoiceWorkerHandler,
-      ServiceWorkerDsl[In, Out, NoInput, ServiceOut]:
+      ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]:
 
   lazy val serviceTask = example
 
   override val method = Method.DELETE
 
-  def apiUri(in: In): Uri = uri"https://JustSomeUrl.ch/${in.id}"
+  def apiUri(in: In) = Right(uri"https://JustSomeUrl.ch/${in.id}")
 
 end ServiceMethodDeleteWorker

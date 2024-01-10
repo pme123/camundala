@@ -7,7 +7,9 @@ import camundala.domain.*
 object ServiceMethodDeleteApi extends BpmnDsl:
 
   final val topicName = "service-method-delete"
+  type ServiceIn = NoInput
   type ServiceOut = NoOutput
+  lazy val serviceInExample = NoInput()
   lazy val serviceMock = MockedServiceResponse.success204
 
   @description("Same Input as _InvoiceReceipt_, only different Mocking")
@@ -37,13 +39,14 @@ object ServiceMethodDeleteApi extends BpmnDsl:
     given InOutCodec[Dummy] = deriveCodec
   end Dummy
 
-  final lazy val example: ServiceTask[In, Out, ServiceOut] =
+  final lazy val example: ServiceTask[In, Out, ServiceIn, ServiceOut] =
     serviceTask(
       topicName,
       descr = "Delete Dummy - mocking test",
       in = In(),
       out = Out(),
       defaultServiceOutMock = serviceMock,
+      serviceInExample = serviceInExample
     )
 
 end ServiceMethodDeleteApi
@@ -51,7 +54,9 @@ end ServiceMethodDeleteApi
 object ServiceMethodListApi extends BpmnDsl:
 
   final val topicName = "service-method-list"
+  type ServiceIn = NoInput
   type ServiceOut = List[Dummy]
+  lazy val serviceInExample = NoInput()
   lazy val serviceMock = MockedServiceResponse.success200(List(Dummy()))
 
   @description("Same Input as _InvoiceReceipt_, only different Mocking")
@@ -82,13 +87,14 @@ object ServiceMethodListApi extends BpmnDsl:
     given InOutCodec[Dummy] = deriveCodec
   end Dummy
 
-  final lazy val example: ServiceTask[In, Out, ServiceOut] =
+  final lazy val example: ServiceTask[In, Out, ServiceIn, ServiceOut] =
     serviceTask(
       topicName,
       descr = "Delete Dummy - mocking test",
       in = In(),
       out = Out(),
       defaultServiceOutMock = serviceMock,
+      serviceInExample = serviceInExample
     )
 
 end ServiceMethodListApi

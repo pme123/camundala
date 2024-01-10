@@ -14,7 +14,7 @@ class StarWarsPeopleWorker extends InvoiceWorkerHandler,
 
   lazy val serviceTask = example
 
-  def apiUri(in: In): Uri = uri"https://swapi.dev/api/people"
+  def apiUri(in: In) = Right(uri"https://swapi.dev/api/people")
 
   override def outputMapper(
       serviceOut: ServiceResponse[ServiceOut],

@@ -14,7 +14,7 @@ class StarWarsPeopleDetailWorker extends InvoiceWorkerHandler,
 
   lazy val serviceTask = example
 
-  def apiUri(in: In): Uri = uri"https://swapi.dev/api/people/${in.id}"
+  def apiUri(in: In) = Right(uri"https://swapi.dev/api/people/${in.id}")
 
   override protected def querySegments: Seq[QuerySegmentOrParam] =
     queryKeys("id", "optName") ++

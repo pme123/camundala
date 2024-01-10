@@ -154,18 +154,19 @@ trait ServiceWorkerDsl[
           inputMapper,
           inputHeaders,
           outputMapper,
-          serviceTask.defaultServiceOutMock
+          serviceTask.defaultServiceOutMock,
+          serviceTask.serviceInExample
         )
       )
 
   // required
-  protected def serviceTask: ServiceTask[In, Out, ServiceOut]
-  protected def apiUri(in: In): Uri
+  protected def serviceTask: ServiceTask[In, Out, ServiceIn, ServiceOut]
+  protected def apiUri(in: In): Either[ServiceMappingError, Uri]
   // optional
   protected def method: Method = Method.GET
   protected def querySegments: Seq[QuerySegmentOrParam] = Seq.empty
   // mocking out from outService and headers
-  protected def inputMapper(in: In): Option[ServiceIn] = None
+  protected def inputMapper(in: In): Either[ServiceMappingError, Option[ServiceIn]] = defaultInMapper
   protected def inputHeaders(in: In): Map[String, String] = Map.empty
   protected def outputMapper(
       serviceOut: ServiceResponse[ServiceOut],
@@ -178,6 +179,12 @@ trait ServiceWorkerDsl[
   final def runWork(
       inputObject: In
   ): Either[CustomError, Out] = Right(serviceTask.out)
+
+  private lazy val defaultInMapper: Either[ServiceMappingError, Option[ServiceIn]] =
+    serviceTask.serviceInExample match
+      case _: NoInput => Right(None)
+      case _ =>
+        Left(ServiceMappingError(s"There is an inputMapper missing for '${getClass.getName}'."))
 
   private def defaultOutMapper(
       serviceResponse: ServiceResponse[ServiceOut],
