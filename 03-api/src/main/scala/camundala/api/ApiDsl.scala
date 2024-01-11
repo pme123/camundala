@@ -21,8 +21,9 @@ trait ApiDsl extends ApiBaseDsl:
   given [
       In <: Product:InOutEncoder: InOutDecoder: Schema,
       Out <: Product:InOutEncoder: InOutDecoder: Schema: ClassTag,
+      ServiceIn: InOutEncoder: InOutDecoder: Schema,
       ServiceOut:InOutEncoder: InOutDecoder: Schema
-  ]: Conversion[ServiceTask[In, Out, ServiceOut], ServiceWorkerApi[In, Out, ServiceOut]] =
+  ]: Conversion[ServiceTask[In, Out, ServiceIn, ServiceOut], ServiceWorkerApi[In, Out, ServiceIn, ServiceOut]] =
     task => ServiceWorkerApi(nameOfVariable(task), task)
 
   given [
