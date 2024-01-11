@@ -171,9 +171,11 @@ object RunnableRequest:
 
   def apply[In <: Product: InOutCodec, ServiceIn <: Product: InOutEncoder](
       inputObject: In,
+      httpMethod: Method,
       apiUri: Uri,
+      querySegments: Seq[QuerySegmentOrParam],
       optRequestBody: Option[ServiceIn],
-      requestHandler: ServiceHandler[In, ?, ServiceIn, ?]
+      headers: Map[String, String]
   ): RunnableRequest[ServiceIn] =
 
     val valueMap: Map[String, String] =
@@ -186,20 +188,20 @@ object RunnableRequest:
         .toMap
 
     val segments =
-      requestHandler.querySegments
+      querySegments
         .collect {
           case Value(v) => QuerySegment.Value(v)
           case KeyValue(k, v) => QuerySegment.KeyValue(k, v)
           case Key(k) if valueMap.contains(k) =>
             QuerySegment.KeyValue(k, valueMap(k))
         }
-      
+
     new RunnableRequest[ServiceIn](
-      requestHandler.httpMethod,
+      httpMethod,
       apiUri,
       segments,
       optRequestBody,
-      requestHandler.inputHeaders(inputObject)
+      headers
     )
   end apply
 end RunnableRequest

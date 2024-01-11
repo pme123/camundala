@@ -14,26 +14,26 @@ class StarWarsPeopleDetailWorker extends InvoiceWorkerHandler,
 
   lazy val serviceTask = example
 
-  def apiUri(in: In) = Right(uri"https://swapi.dev/api/people/${in.id}")
+  def apiUri(in: In) = uri"https://swapi.dev/api/people/${in.id}"
 
-  override protected def querySegments: Seq[QuerySegmentOrParam] =
+  override def querySegments(in:In): Seq[QuerySegmentOrParam] =
     queryKeys("id", "optName") ++
-      queryKeyValues("a" -> 1, "b" -> true) ++
+      queryKeyValues("a" -> in.id, "b" -> true) ++
       queryValues(12, false, null)
-    
+
   override def validate(in: In): Either[ValidatorError, In] =
     if in.id <= 0 then
       Left(ValidatorError("The search id for People must be > 0!"))
     else
       super.validate(in)
 
+  override def inputHeaders(in: In): Map[String, String] =
+    Map("test-db-id" -> in.id.toString)
+    
   override def outputMapper(
       serviceOut: ServiceResponse[ServiceOut],
       in: In
   ): Either[ServiceMappingError, Out] =
     Right(Out.Success(serviceOut.outputBody, serviceOut.headers.getOrElse("fromHeader", "---")))
-
-  override protected def inputHeaders(in: In): Map[String, String] =
-    Map("test-db-id" -> in.id.toString)
 
 end StarWarsPeopleDetailWorker

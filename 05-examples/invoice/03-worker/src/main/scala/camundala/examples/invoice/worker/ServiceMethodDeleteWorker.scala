@@ -22,6 +22,6 @@ class ServiceMethodDeleteWorker extends InvoiceWorkerHandler,
 
   override val method = Method.DELETE
 
-  def apiUri(in: In) = Right(uri"https://JustSomeUrl.ch/${in.id}")
+  def apiUri(in: In) = uri"https://JustSomeUrl.ch/${in.id}"
 
 end ServiceMethodDeleteWorker

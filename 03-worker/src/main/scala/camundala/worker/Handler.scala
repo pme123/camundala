@@ -101,9 +101,9 @@ case class ServiceHandler[
     ServiceOut: InOutDecoder
 ](
     httpMethod: Method,
-    apiUri: In => Either[ServiceMappingError, Uri],
-    querySegments: Seq[QuerySegmentOrParam],
-    inputMapper: In => Either[ServiceMappingError, Option[ServiceIn]],
+    apiUri: In => Uri,
+    querySegments: In => Seq[QuerySegmentOrParam],
+    inputMapper: In => Option[ServiceIn],
     inputHeaders: In => Map[String, String],
     outputMapper: (ServiceResponse[ServiceOut], In) => Either[ServiceMappingError, Out],
     defaultServiceOutMock: MockedServiceResponse[ServiceOut],
@@ -113,8 +113,8 @@ case class ServiceHandler[
   def runWork(
       inputObject: In
   ): RunnerOutput =
+    val rRequest = runnableRequest(inputObject)
     for
-      rRequest <- runnableRequest(inputObject)
       optWithServiceMock <- withServiceMock(rRequest, inputObject)
       output <- handleMocking(optWithServiceMock, rRequest).getOrElse(
         summon[EngineRunContext]
@@ -122,14 +122,20 @@ case class ServiceHandler[
           .flatMap(out => outputMapper(out, inputObject))
       )
     yield output
+    end for
+  end runWork
 
   private def runnableRequest(
       inputObject: In
-  ): Either[ServiceMappingError, RunnableRequest[ServiceIn]] =
-    for
-      apiUri <- apiUri(inputObject)
-      optRequestBody <- inputMapper(inputObject)
-    yield RunnableRequest(inputObject, apiUri, optRequestBody, this)
+  ): RunnableRequest[ServiceIn] =
+    RunnableRequest(
+      inputObject,
+      httpMethod,
+      apiUri(inputObject),
+      querySegments(inputObject),
+      inputMapper(inputObject),
+      inputHeaders(inputObject)
+    )
 
   private def withServiceMock(
       runnableRequest: RunnableRequest[ServiceIn],

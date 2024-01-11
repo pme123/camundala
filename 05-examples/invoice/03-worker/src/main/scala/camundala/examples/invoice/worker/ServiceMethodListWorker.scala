@@ -15,7 +15,7 @@ class ServiceMethodListWorker extends InvoiceWorkerHandler,
 
   override val method = Method.GET
 
-  def apiUri(in: In) = Right(uri"https://JustSomeUrl.ch/${in.id}")
+  def apiUri(in: In) = uri"https://JustSomeUrl.ch/${in.id}"
 
   override def outputMapper(serviceOut: ServiceResponse[ServiceOut], in: In): Either[ServiceMappingError, Out] = 
     Right(Out(dummies = serviceOut.outputBody))
