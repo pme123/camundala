@@ -62,11 +62,18 @@ trait RestApiClient:
   ](
       body: String
   ): Either[ServiceBadBodyError, ServiceOut] =
-    parser
-      .decodeAccumulating[ServiceOut](body)
-      .toEither
-      .left
-      .map(err => ServiceBadBodyError(s"Problem creating body from response.\n$err"))
+    if body.isBlank then
+      NoOutput() match
+        case o if o.isInstanceOf[ServiceOut] =>
+          Right(NoOutput().asInstanceOf[ServiceOut])
+        case _ =>
+          Left(ServiceBadBodyError("There is no body in the response and the ServiceOut is not NoOutput."))
+    else
+      parser
+        .decodeAccumulating[ServiceOut](body)
+        .toEither
+        .left
+        .map(err => ServiceBadBodyError(s"Problem creating body from response.\n$err\nBODY: $body"))
 
   protected def requestWithOptBody[ServiceIn: InOutEncoder](
       runnableRequest: RunnableRequest[ServiceIn]
