@@ -14,6 +14,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.28.0 - 2024-01-15
+### Changed 
+- Handling empty Body in RestApiClient. - see [Commit](https://github.com/pme123/camundala/commit/b4a72209f1093dab50356dbfb1e5fc42f478208f)
+- Fixed compilation errors. - see [Commit](https://github.com/pme123/camundala/commit/df2a8258b9036f4bf715bad13c8ec5aafc408196)
+- Error Handling for inputs in validation. - see [Commit](https://github.com/pme123/camundala/commit/56b5849ca7ebdcc0e3100faa6e785dbd67b2bce5)
+- Added Error Handling to apiUri and inputMapper. - see [Commit](https://github.com/pme123/camundala/commit/4cdd582e7b94db885b0548f85fe5964d8fa6b472)
+- Added Test with ServiceOutput List. - see [Commit](https://github.com/pme123/camundala/commit/d0d65cc64f2294e738ac9805b71afa2fbfc87dc8)
 
 ## 1.27.1 - 2024-01-08
 ### Changed 
