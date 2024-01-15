@@ -29,15 +29,16 @@ import sttp.model.{Method, Uri}
   */
 trait ValidationHandler[In <: Product: circe.Codec]:
   def validate(in: In): Either[ValidatorError, In]
+end ValidationHandler
 
 object ValidationHandler:
   def apply[
       In <: Product: InOutCodec
   ](funct: In => Either[ValidatorError, In]): ValidationHandler[In] =
-    new ValidationHandler[In] {
+    new ValidationHandler[In]:
       override def validate(in: In): Either[ValidatorError, In] =
         funct(in)
-    }
+end ValidationHandler
 
 /** handler for Custom Process Initialisation. All the variables in the Result Map will be put on
   * the process.
@@ -72,15 +73,16 @@ trait InitProcessHandler[
     In <: Product: InOutCodec
 ]:
   def init(input: In): Either[InitProcessError, Map[String, Any]]
+end InitProcessHandler
 
 object InitProcessHandler:
   def apply[
       In <: Product: InOutCodec
   ](funct: In => Either[InitProcessError, Map[String, Any]]): InitProcessHandler[In] =
-    new InitProcessHandler[In] {
+    new InitProcessHandler[In]:
       override def init(in: In): Either[InitProcessError, Map[String, Any]] =
         funct(in)
-    }
+end InitProcessHandler
 
 trait RunWorkHandler[
     In <: Product: InOutCodec,
@@ -90,6 +92,7 @@ trait RunWorkHandler[
     EngineRunContext ?=> Either[RunWorkError, Out]
 
   def runWork(inputObject: In): RunnerOutput
+end RunWorkHandler
 
 case class ServiceHandler[
     In <: Product: InOutCodec,
@@ -97,32 +100,42 @@ case class ServiceHandler[
     ServiceIn <: Product: InOutEncoder,
     ServiceOut: InOutDecoder
 ](
-   httpMethod: Method,
-   apiUri: In => Uri,
-   querySegments: Seq[QuerySegmentOrParam],
-   inputMapper: In => Option[ServiceIn],
-   inputHeaders: In => Map[String, String],
-   outputMapper: (ServiceResponse[ServiceOut], In) => Either[ServiceMappingError, Out],
-   defaultServiceOutMock: MockedServiceResponse[ServiceOut]
+    httpMethod: Method,
+    apiUri: In => Uri,
+    querySegments: In => Seq[QuerySegmentOrParam],
+    inputMapper: In => Option[ServiceIn],
+    inputHeaders: In => Map[String, String],
+    outputMapper: (ServiceResponse[ServiceOut], In) => Either[ServiceMappingError, Out],
+    defaultServiceOutMock: MockedServiceResponse[ServiceOut],
+    serviceInExample: ServiceIn
 ) extends RunWorkHandler[In, Out]:
 
   def runWork(
       inputObject: In
   ): RunnerOutput =
     val rRequest = runnableRequest(inputObject)
-    for {
+    for
       optWithServiceMock <- withServiceMock(rRequest, inputObject)
       output <- handleMocking(optWithServiceMock, rRequest).getOrElse(
         summon[EngineRunContext]
           .sendRequest[ServiceIn, ServiceOut](rRequest)
           .flatMap(out => outputMapper(out, inputObject))
       )
-    } yield output
+    yield output
+    end for
+  end runWork
 
   private def runnableRequest(
       inputObject: In
   ): RunnableRequest[ServiceIn] =
-    RunnableRequest(inputObject, this)
+    RunnableRequest(
+      inputObject,
+      httpMethod,
+      apiUri(inputObject),
+      querySegments(inputObject),
+      inputMapper(inputObject),
+      inputHeaders(inputObject)
+    )
 
   private def withServiceMock(
       runnableRequest: RunnableRequest[ServiceIn],
@@ -133,10 +146,10 @@ case class ServiceHandler[
       context.generalVariables.outputServiceMockOpt
     ) match
       case (_, Some(json)) =>
-        (for {
+        (for
           mockedResponse <- decodeMock[MockedServiceResponse[ServiceOut]](json)
           out <- handleServiceMock(mockedResponse, runnableRequest, in)
-        } yield out)
+        yield out)
           .map(Some.apply)
       case (true, _) =>
         handleServiceMock(defaultServiceOutMock, runnableRequest, in)
@@ -175,7 +188,7 @@ case class ServiceHandler[
       runnableRequest: RunnableRequest[ServiceIn],
       in: In
   ): Either[ServiceError, Out] =
-    mockedResponse match {
+    mockedResponse match
       case MockedServiceResponse(_, Right(body), headers) =>
         mapBodyOutput(body, headers, in)
       case MockedServiceResponse(status, Left(body), _) =>
@@ -189,7 +202,6 @@ case class ServiceHandler[
             )
           )
         )
-    }
 
   def mapBodyOutput(
       serviceOutput: ServiceOut,
@@ -222,7 +234,7 @@ object CustomHandler:
       In <: Product: InOutCodec,
       Out <: Product: InOutCodec
   ](funct: In => Either[CustomError, Out]): CustomHandler[In, Out] =
-    new CustomHandler[In, Out] {
+    new CustomHandler[In, Out]:
       override def runWork(inputObject: In): RunnerOutput =
         funct(inputObject)
-    }
+end CustomHandler

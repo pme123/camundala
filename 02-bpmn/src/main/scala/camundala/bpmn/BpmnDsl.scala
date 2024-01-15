@@ -2,6 +2,7 @@ package camundala
 package bpmn
 
 import camundala.domain.*
+
 import scala.reflect.ClassTag
 
 trait BpmnDsl:
@@ -22,30 +23,33 @@ trait BpmnDsl:
   def serviceTask[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
       Out <: Product: InOutEncoder: InOutDecoder: Schema,
+      ServiceIn: InOutEncoder: InOutDecoder,
       ServiceOut: InOutEncoder: InOutDecoder
   ](
       topicName: String,
       in: In = NoInput(),
       out: Out = NoOutput(),
       defaultServiceOutMock: MockedServiceResponse[ServiceOut],
+      serviceInExample: ServiceIn,
       descr: Optable[String] = None
-  ): ServiceTask[In, Out, ServiceOut] =
+  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     ServiceTask(
       InOutDescr(topicName, in, out, descr.value),
-      defaultServiceOutMock
+      defaultServiceOutMock,
+      serviceInExample
     )
 
   def customTask[
-    In <: Product :InOutEncoder: InOutDecoder : Schema,
-    Out <: Product :InOutEncoder: InOutDecoder : Schema
+      In <: Product: InOutEncoder: InOutDecoder: Schema,
+      Out <: Product: InOutEncoder: InOutDecoder: Schema
   ](
-     topicName: String,
-     in: In = NoInput(),
-     out: Out = NoOutput(),
-     descr: Optable[String] = None
-   ): CustomTask[In, Out] =
+      topicName: String,
+      in: In = NoInput(),
+      out: Out = NoOutput(),
+      descr: Optable[String] = None
+  ): CustomTask[In, Out] =
     CustomTask(
-      InOutDescr(topicName, in, out, descr.value),
+      InOutDescr(topicName, in, out, descr.value)
     )
 
   // Use result strategy, like _singleEntry_, _collectEntries_, _singleResult_, _resultList_
@@ -92,7 +96,8 @@ trait BpmnDsl:
     )*/
     dmn(decisionDefinitionKey, in, out, descr.value)
 
-  given toCollectEntries[Out <: DmnValueType: InOutEncoder: InOutDecoder: Schema]: Conversion[Seq[Out], CollectEntries[Out]] =
+  given toCollectEntries[Out <: DmnValueType: InOutEncoder: InOutDecoder: Schema]
+      : Conversion[Seq[Out], CollectEntries[Out]] =
     CollectEntries(_)
 
   def singleResult[

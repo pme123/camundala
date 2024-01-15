@@ -154,19 +154,20 @@ trait ServiceWorkerDsl[
           inputMapper,
           inputHeaders,
           outputMapper,
-          serviceTask.defaultServiceOutMock
+          serviceTask.defaultServiceOutMock,
+          serviceTask.serviceInExample
         )
       )
 
   // required
-  protected def serviceTask: ServiceTask[In, Out, ServiceOut]
-  protected def apiUri(in: In): Uri
+  protected def serviceTask: ServiceTask[In, Out, ServiceIn, ServiceOut]
+  protected def apiUri(in: In): Uri // input must be valid - so no errors
   // optional
   protected def method: Method = Method.GET
-  protected def querySegments: Seq[QuerySegmentOrParam] = Seq.empty
+  protected def querySegments(in: In): Seq[QuerySegmentOrParam] = Seq.empty  // input must be valid - so no errors
   // mocking out from outService and headers
-  protected def inputMapper(in: In): Option[ServiceIn] = None
-  protected def inputHeaders(in: In): Map[String, String] = Map.empty
+  protected def inputMapper(in: In): Option[ServiceIn] = None  // input must be valid - so no errors
+  protected def inputHeaders(in: In): Map[String, String] = Map.empty // input must be valid - so no errors
   protected def outputMapper(
       serviceOut: ServiceResponse[ServiceOut],
       in: In

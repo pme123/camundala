@@ -98,7 +98,7 @@ case class ServiceWorker[
     ServiceIn <: Product: InOutEncoder,
     ServiceOut: InOutDecoder
 ](
-    inOut: ServiceTask[In, Out, ServiceOut],
+    inOut: ServiceTask[In, Out, ServiceIn, ServiceOut],
     override val validationHandler: Option[ValidationHandler[In]] = None,
     override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None
 ) extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
@@ -171,7 +171,11 @@ object RunnableRequest:
 
   def apply[In <: Product: InOutCodec, ServiceIn <: Product: InOutEncoder](
       inputObject: In,
-      requestHandler: ServiceHandler[In, ?, ServiceIn, ?]
+      httpMethod: Method,
+      apiUri: Uri,
+      querySegments: Seq[QuerySegmentOrParam],
+      optRequestBody: Option[ServiceIn],
+      headers: Map[String, String]
   ): RunnableRequest[ServiceIn] =
 
     val valueMap: Map[String, String] =
@@ -184,7 +188,7 @@ object RunnableRequest:
         .toMap
 
     val segments =
-      requestHandler.querySegments
+      querySegments
         .collect {
           case Value(v) => QuerySegment.Value(v)
           case KeyValue(k, v) => QuerySegment.KeyValue(k, v)
@@ -193,11 +197,11 @@ object RunnableRequest:
         }
 
     new RunnableRequest[ServiceIn](
-      requestHandler.httpMethod,
-      requestHandler.apiUri(inputObject),
+      httpMethod,
+      apiUri,
       segments,
-      requestHandler.inputMapper(inputObject),
-      requestHandler.inputHeaders(inputObject)
+      optRequestBody,
+      headers
     )
   end apply
 end RunnableRequest
