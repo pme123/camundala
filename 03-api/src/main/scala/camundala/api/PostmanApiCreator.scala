@@ -111,7 +111,6 @@ trait PostmanApiCreator extends AbstractApiCreator:
         label: String,
         descr: Option[String] = None
     ): PublicEndpoint[?, Unit, Unit, Any] =
-      val anchor = s"#operation/${api.endpointName.replace(" ", "%20")}"
       Some(
         endpoint
           .tag(tag)

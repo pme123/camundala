@@ -37,10 +37,12 @@ trait AbstractApiCreator extends ProcessReferenceCreator:
   end createLink
 
   extension (inOutApi: InOutApi[?, ?])
-    def endpointType: String = inOutApi.inOut.getClass.getSimpleName
-    def endpointName: String = (inOutApi, inOutApi.inOut.in) match
-      case (serviceApi: ServiceWorkerApi[?, ?, ?, ?], _) => serviceApi.name
-      case (_, gs: GenericServiceIn) => gs.serviceName
-      case _ => s"$endpointType: ${inOutApi.id}"
+    def endpointName: String =
+      val name = (inOutApi, inOutApi.inOut.in) match
+        case (serviceApi: ServiceWorkerApi[?, ?, ?, ?], _) => serviceApi.name
+        case (_, gs: GenericServiceIn) => gs.serviceName
+        case _ => inOutApi.id
+      s"${inOutApi.inOutType}: ${name.replace(s"$projectName-", "")}"
+  end extension
 
 end AbstractApiCreator

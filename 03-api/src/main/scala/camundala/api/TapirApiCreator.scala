@@ -53,22 +53,20 @@ trait TapirApiCreator extends AbstractApiCreator:
         additionalDescr: Option[String] = None
     ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       val tagPath = tag.replace(" ", "")
-      val path = inOutApi.inOut.in match
+      val path: EndpointInput[Unit] = inOutApi.inOut.in match
         case gs: GenericServiceIn =>
-          inOutApi.endpointType.toLowerCase() / inOutApi.id / gs.serviceName
+          inOutApi.inOutType.toString / inOutApi.id / gs.serviceName
         case _ if tagPath == inOutApi.id =>
           if (inOutApi.name == inOutApi.id)
-            inOutApi.endpointType.toLowerCase() / inOutApi.id
+            inOutApi.inOutType.toString / inOutApi.id
           else
-            inOutApi.endpointType.toLowerCase() / inOutApi.id / inOutApi.name
+            inOutApi.inOutType.toString / inOutApi.id / inOutApi.name
               .replace(" ", "")
         case _ =>
-          println(s"${inOutApi.name} == ${inOutApi.id}")
           if (inOutApi.name == inOutApi.id)
-            inOutApi.endpointType.toLowerCase() / tagPath / inOutApi.id
+            inOutApi.inOutType.toString / tagPath / inOutApi.id
           else
-            inOutApi.endpointType
-              .toLowerCase() / tagPath / inOutApi.id / inOutApi.name.replace(
+            inOutApi.inOutType.toString / tagPath / inOutApi.id / inOutApi.name.replace(
               " ",
               ""
             )
