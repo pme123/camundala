@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: "\n\nCreated at 25/12/2023, 13:10\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
+  summary: "\n\nCreated at 18/01/2024, 10:11\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
     \nThere is no README.md in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>Supported\
     \ General Variables</i></b>\n</summary>\n\n<p>\n\n### Processes\n\n**mockedSubprocesses**:\n\
     \nMock the SubProcesses with their default Mocks.\nThis is a list of the _SubProcesses\
@@ -52,16 +52,16 @@ info:
     SQL exception\", \"\"errorNr\":\"20000\"\"],\n...\n```\n\n</p>\n</details>\n<p/>\n\
     \        \n"
 paths:
-  /process/example-invoice-c7:
+  /Bpmn/example-invoice-c7:
     head:
       tags:
       - example-invoice-c7
-      summary: 'Process: example-invoice-c7'
+      summary: 'Bpmn: example-invoice-c7'
       description: "This starts the Invoice Receipt Process.\n\n- Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt\
         \ > In`\n- Output: `camundala.examples.invoice.bpmn.InvoiceReceipt > Out`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-36824\"\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-65332\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container:\
-        \ $('#example-invoice-c7-36824'), height: '95%', width: '95%' }));\" src=\"\
+        \ $('#example-invoice-c7-65332'), height: '95%', width: '95%' }));\" src=\"\
         data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
@@ -69,7 +69,7 @@ paths:
         ```json\n...\n\"outputVariables\": \"approved,clarified\",\n...\n```\n\n**outputMock**:\n\
         \n```json\n...\n\"outputMock\": {\n  \"approved\" : true,\n  \"clarified\"\
         \ : null\n},\n...\n```\n\n</p>\n</details>\n</p>\n      "
-      operationId: 'Process: example-invoice-c7'
+      operationId: 'Bpmn: example-invoice-c7'
       requestBody:
         content:
           application/json:
@@ -94,11 +94,11 @@ paths:
                 example-invoice-c7:
                   value:
                     approved: true
-  /decisiondmn/example-invoice-c7/example-invoice-c7-assignApprover:
+  /Dmn/example-invoice-c7/example-invoice-c7-assignApprover:
     head:
       tags:
       - example-invoice-c7
-      summary: 'DecisionDmn: example-invoice-c7-assignApprover'
+      summary: 'Dmn: example-invoice-c7-assignApprover'
       description: |+
         Decision Table on who must approve the Invoice.
 
@@ -107,14 +107,14 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-87722">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-87722'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-58623">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-58623'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
         Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)
 
-      operationId: 'DecisionDmn: example-invoice-c7-assignApprover'
+      operationId: 'Dmn: example-invoice-c7-assignApprover'
       requestBody:
         content:
           application/json:
@@ -149,7 +149,7 @@ paths:
                 example-invoice-c7-assignApprover:
                   value:
                   - management
-  /usertask/example-invoice-c7/ApproveInvoiceUT:
+  /UserTask/example-invoice-c7/ApproveInvoiceUT:
     head:
       tags:
       - example-invoice-c7
@@ -190,7 +190,7 @@ paths:
                 Invoice NOT approved:
                   value:
                     approved: false
-  /usertask/example-invoice-c7/PrepareBankTransferUT:
+  /UserTask/example-invoice-c7/PrepareBankTransferUT:
     head:
       tags:
       - example-invoice-c7
@@ -217,16 +217,16 @@ paths:
       responses:
         '200':
           description: ''
-  /process/example-invoice-c7-review:
+  /Bpmn/example-invoice-c7-review:
     head:
       tags:
       - example-invoice-c7-review
-      summary: 'Process: example-invoice-c7-review'
+      summary: 'Bpmn: example-invoice-c7-review'
       description: "This starts the Review Invoice Process.\n\n- Input:  `camundala.examples.invoice.bpmn.ReviewInvoice\
         \ > In`\n- Output: `camundala.examples.invoice.bpmn.ReviewInvoice > Out`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-57193\"\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-26331\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({\
-        \ container: $('#example-invoice-c7-review-57193'), height: '95%', width:\
+        \ container: $('#example-invoice-c7-review-26331'), height: '95%', width:\
         \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
@@ -234,7 +234,7 @@ paths:
         ```json\n...\n\"outputVariables\": \"clarified\",\n...\n```\n\n**outputMock**:\n\
         \n```json\n...\n\"outputMock\": {\n  \"clarified\" : true\n},\n...\n```\n\n\
         </p>\n</details>\n</p>\n      "
-      operationId: 'Process: example-invoice-c7-review'
+      operationId: 'Bpmn: example-invoice-c7-review'
       requestBody:
         content:
           application/json:
@@ -259,7 +259,7 @@ paths:
                 example-invoice-c7-review:
                   value:
                     clarified: true
-  /usertask/example-invoice-c7-review/AssignReviewerUT:
+  /UserTask/example-invoice-c7-review/AssignReviewerUT:
     head:
       tags:
       - example-invoice-c7-review
@@ -294,7 +294,7 @@ paths:
                 AssignReviewerUT:
                   value:
                     reviewer: John
-  /usertask/example-invoice-c7-review/ReviewInvoiceUT:
+  /UserTask/example-invoice-c7-review/ReviewInvoiceUT:
     head:
       tags:
       - example-invoice-c7-review
@@ -335,11 +335,11 @@ paths:
                 Invoice NOT clarified:
                   value:
                     clarified: false
-  /servicetask/Workers/star-wars-api-people-detail:
+  /Worker/Workers/star-wars-api-people-detail:
     head:
       tags:
       - Workers
-      summary: star-wars-api-people-detail
+      summary: 'Worker: star-wars-api-people-detail'
       description: "\n\n\n**Topic:** `star-wars-api-people-detail` (to define in the\
         \ _**Topic**_ of the _**External Task**_ > _Service Task_ of type _External_)\n\
         \nGet People Details from StarWars API\n\n- Input:  `camundala.examples.invoice.bpmn.StarWarsPeopleDetail\
@@ -362,7 +362,7 @@ paths:
         \  \"respHeaders\" : [\n      [\n        \"fromHeader\",\n        \"okidoki\"\
         \n      ]\n    ]\n  },\n  \"respHeaders\" : [\n  ]\n},\n...\n```\n</p>\n</details>\n\
         </p>\n      \n    "
-      operationId: star-wars-api-people-detail
+      operationId: 'Worker: star-wars-api-people-detail'
       requestBody:
         content:
           application/json:
@@ -409,11 +409,11 @@ paths:
                   value:
                     processStatus: '404'
                     type: Failure
-  /customtask/Workers/ArchiveInvoiceService:
+  /Worker/Workers/ArchiveInvoiceService:
     head:
       tags:
       - Workers
-      summary: 'CustomTask: ArchiveInvoiceService'
+      summary: 'Worker: ArchiveInvoiceService'
       description: |2
 
         **Topic:** `ArchiveInvoiceService` (to define in the _**Topic**_ of the _**External Task**_ > _Service Task_ of type _External_)
@@ -424,7 +424,7 @@ paths:
         - Output: `camundala.examples.invoice.bpmn.ArchiveInvoice > Out`
 
         You can test this worker using the generic process _**camundala-externalTask-generic**_ (e.g. with Postman).
-      operationId: 'CustomTask: ArchiveInvoiceService'
+      operationId: 'Worker: ArchiveInvoiceService'
       requestBody:
         content:
           application/json:
@@ -446,7 +446,7 @@ paths:
                 ArchiveInvoiceService:
                   value:
                     archived: true
-  /usertask/UserTasks/ApproveInvoiceUT:
+  /UserTask/UserTasks/ApproveInvoiceUT:
     head:
       tags:
       - User Tasks
@@ -487,7 +487,7 @@ paths:
                 Invoice NOT approved:
                   value:
                     approved: false
-  /usertask/UserTasks/PrepareBankTransferUT:
+  /UserTask/UserTasks/PrepareBankTransferUT:
     head:
       tags:
       - User Tasks
@@ -514,7 +514,7 @@ paths:
       responses:
         '200':
           description: ''
-  /usertask/UserTasks/AssignReviewerUT:
+  /UserTask/UserTasks/AssignReviewerUT:
     head:
       tags:
       - User Tasks
@@ -549,7 +549,7 @@ paths:
                 AssignReviewerUT:
                   value:
                     reviewer: John
-  /usertask/UserTasks/ReviewInvoiceUT:
+  /UserTask/UserTasks/ReviewInvoiceUT:
     head:
       tags:
       - User Tasks
@@ -590,11 +590,11 @@ paths:
                 Invoice NOT clarified:
                   value:
                     clarified: false
-  /decisiondmn/DMNs/example-invoice-c7-assignApprover:
+  /Dmn/DMNs/example-invoice-c7-assignApprover:
     head:
       tags:
       - DMNs
-      summary: 'DecisionDmn: example-invoice-c7-assignApprover'
+      summary: 'Dmn: example-invoice-c7-assignApprover'
       description: |+
         Decision Table on who must approve the Invoice.
 
@@ -603,14 +603,14 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-77605">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-77605'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-55083">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-55083'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
         Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)
 
-      operationId: 'DecisionDmn: example-invoice-c7-assignApprover'
+      operationId: 'Dmn: example-invoice-c7-assignApprover'
       requestBody:
         content:
           application/json:
@@ -680,6 +680,23 @@ components:
           description: You can let the Archive Service fail for testing.
         invoiceReviewedMock:
           $ref: '#/components/schemas/Out'
+          description: |
+            You can mock the response variables of this (sub)process.
+
+            Class: `camundala.examples.invoice.bpmn.ReviewInvoice > Out`
+
+            Here an example:
+
+            ```scala
+            {
+              "clarified" : true
+            }
+            ```
+
+            General to mocking:
+
+            - `outputMock` mocks this process.
+            - `someSubProcessMock` mocks a sub process
     In1:
       required:
       - amount

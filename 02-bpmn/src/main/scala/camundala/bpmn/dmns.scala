@@ -38,6 +38,7 @@ case class DecisionDmn[
     inOutDescr: InOutDescr[In, Out]
 ) extends ProcessNode,
       Activity[In, Out, DecisionDmn[In, Out]]:
+  lazy val inOutType: InOutType = InOutType.Dmn
 
   override val label: String =
     """// use singleEntry / collectEntries / singleResult / resultList

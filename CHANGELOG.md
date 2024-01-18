@@ -14,6 +14,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## 1.28.1 - 2024-01-18
+### Changed 
+- Adjusted Naming and References in ApiCreator. - see [Commit](https://github.com/pme123/camundala/commit/f2f06dc8e6612ca4358cc3621167ede29b66765e)
+
 ## 1.28.0 - 2024-01-15
 ### Changed 
 - Handling empty Body in RestApiClient. - see [Commit](https://github.com/pme123/camundala/commit/b4a72209f1093dab50356dbfb1e5fc42f478208f)

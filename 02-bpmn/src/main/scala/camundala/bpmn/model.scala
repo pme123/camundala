@@ -21,6 +21,9 @@ trait Activity[
     T <: InOut[In, Out, T]
 ] extends InOut[In, Out, T]
 
+enum InOutType:
+  case Bpmn, Dmn, Worker, Timer, Signal, Message, UserTask
+
 trait InOut[
     In <: Product: InOutEncoder: InOutDecoder: Schema,
     Out <: Product: InOutEncoder: InOutDecoder: Schema,
@@ -28,7 +31,8 @@ trait InOut[
 ] extends ProcessElement:
   def inOutDescr: InOutDescr[In, Out]
   // def constructor: InOutDescr[In, Out] => T
-  lazy val inOutClass: String = this.getClass.getName
+  def inOutType: InOutType
+
   lazy val id: String = inOutDescr.id
   lazy val descr: Option[String] = inOutDescr.descr
   lazy val in: In = inOutDescr.in
@@ -126,6 +130,7 @@ case class Process[
     defaultMocked: Boolean = false,
     impersonateUserId: Option[String] = None
 ) extends ProcessOrExternalTask[In, Out, Process[In, Out]]:
+  lazy val inOutType: InOutType = InOutType.Bpmn
 
   lazy val processName = inOutDescr.id
 
@@ -191,6 +196,7 @@ sealed trait ExternalTask[
   override final def topicName: String = inOutDescr.id
   def handledErrors: Seq[ErrorCodeType]
   def regexHandledErrors: Seq[String]
+  lazy val inOutType: InOutType = InOutType.Worker
 
   def processName: String = GenericExternalTaskProcessName
 
@@ -357,6 +363,7 @@ case class UserTask[
     inOutDescr: InOutDescr[In, Out]
 ) extends ProcessNode,
       Activity[In, Out, UserTask[In, Out]]:
+  lazy val inOutType: InOutType = InOutType.UserTask
 
   override lazy val camundaToCheckMap: Map[String, CamundaVariable] =
     camundaInMap
@@ -385,6 +392,7 @@ case class MessageEvent[
     messageName: String,
     inOutDescr: InOutDescr[In, NoOutput]
 ) extends ReceiveEvent[In, MessageEvent[In]]:
+  lazy val inOutType: InOutType = InOutType.Message
 
   def withInOutDescr(descr: InOutDescr[In, NoOutput]): MessageEvent[In] =
     copy(inOutDescr = descr)
@@ -405,6 +413,7 @@ case class SignalEvent[
     messageName: String,
     inOutDescr: InOutDescr[In, NoOutput]
 ) extends ReceiveEvent[In, SignalEvent[In]]:
+  lazy val inOutType: InOutType = InOutType.Signal
 
   def withInOutDescr(descr: InOutDescr[In, NoOutput]): SignalEvent[In] =
     copy(inOutDescr = descr)
@@ -423,6 +432,7 @@ case class TimerEvent(
     title: String,
     inOutDescr: InOutDescr[NoInput, NoOutput]
 ) extends ReceiveEvent[NoInput, TimerEvent]:
+  lazy val inOutType: InOutType = InOutType.Timer
 
   def withInOutDescr(descr: InOutDescr[NoInput, NoOutput]): TimerEvent =
     copy(inOutDescr = descr)

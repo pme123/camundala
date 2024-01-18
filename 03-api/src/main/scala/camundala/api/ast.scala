@@ -30,6 +30,7 @@ sealed trait InOutApi[
   lazy val id: String = inOutDescr.id
   lazy val descr: String = inOut.descr.getOrElse("")
   lazy val typeName: String = inOut.typeName
+  lazy val inOutType: InOutType = inOut.inOutType
 
   def withExamples(
       examples: ApiExamples[In, Out]

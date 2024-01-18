@@ -4,37 +4,41 @@ package api
 import sttp.apispec.openapi.Contact
 
 case class ApiConfig(
-                      // define tenant if you have one
-                      tenantId: Option[String] = None,
-                      // contact email / phone, if there are questions
-                      contact: Option[Contact] = None,
-                      // REST endpoint (for testing API)
-                      endpoint: String = "http://localhost:8080/engine-rest",
-                      // Base Path of your project (if changed - all doc paths will be adjusted)
-                      basePath: os.Path = os.pwd,
-                      // If your project is on cawemo, add here the Id of the folder of your bpmns.
-                      cawemoFolder: Option[String] = None,
-                      openApiPath: os.Path = os.pwd / "openApi.yml",
-                      postmanOpenApiPath: os.Path = os.pwd / "postmanOpenApi.yml",
-                      openApiDocuPath: os.Path = os.pwd / "OpenApi.html",
-                      postmanOpenApiDocuPath: os.Path = os.pwd / "PostmanOpenApi.html",
-                      // If you work with JIRA, you can add matchers that will create automatically URLs to JIRA Tasks
-                      jiraUrls: Map[String, String] = Map.empty,
-                      // Configure your project setup
-                      projectsConfig: ProjectsConfig = ProjectsConfig(),
-                      // The URL of your published documentations
-                      // myProject => s"http://myCompany/bpmnDocs/${myProject}"
-                      docProjectUrl: String => String = proj => s"No URL defined for $proj",
-                      // If you want to integrate your BPMNs and DMNs in your Documentation.
-                      // Add the path the diagrams are located on your webserver.
-                      // myProject => s"http://myCompany/bpmnDocs/${myProject}/${diagramDownloadPath}"
-                      // if you want to have a diagram - you must define this!
-                      diagramDownloadPath: Option[String] = None,
-                      // if you want to adjust the diagramName
-                      diagramNameAdjuster: Option[String => String] = None,
-                      // by default the Api are optimized in a way that each Api is listed just ones.
-                      // so for example, if you list your DMNs extra, they will be removed from the catalog.md
-                      catalogOptimized: Boolean = true
+    // define tenant if you have one
+    tenantId: Option[String] = None,
+    // contact email / phone, if there are questions
+    contact: Option[Contact] = None,
+    // REST endpoint (for testing API)
+    endpoint: String = "http://localhost:8080/engine-rest",
+    // Base Path of your project (if changed - all doc paths will be adjusted)
+    basePath: os.Path = os.pwd,
+    // If your project is on cawemo, add here the Id of the folder of your bpmns.
+    cawemoFolder: Option[String] = None,
+    openApiPath: os.Path = os.pwd / "openApi.yml",
+    postmanOpenApiPath: os.Path = os.pwd / "postmanOpenApi.yml",
+    openApiDocuPath: os.Path = os.pwd / "OpenApi.html",
+    postmanOpenApiDocuPath: os.Path = os.pwd / "PostmanOpenApi.html",
+    // If you work with JIRA, you can add matchers that will create automatically URLs to JIRA Tasks
+    jiraUrls: Map[String, String] = Map.empty,
+    // Configure your project setup
+    projectsConfig: ProjectsConfig = ProjectsConfig(),
+    // The URL of your published documentations
+    // myProject => s"http://myCompany/bpmnDocs/${myProject}"
+    docProjectUrl: String => String = proj => s"No URL defined for $proj",
+    // If you want to integrate your BPMNs and DMNs in your Documentation.
+    // Add the path the diagrams are located on your webserver.
+    // myProject => s"http://myCompany/bpmnDocs/${myProject}/${diagramDownloadPath}"
+    // if you want to have a diagram - you must define this!
+    diagramDownloadPath: Option[String] = None,
+    // if you want to adjust the diagramName
+    diagramNameAdjuster: Option[String => String] = None,
+    // by default the Api are optimized in a way that each Api is listed just ones.
+    // so for example, if you list your DMNs extra, they will be removed from the catalog.md
+    catalogOptimized: Boolean = true,
+    // function to extract project and the reference id from a reference (CallActivity, Dmn or ExternalWorker)
+    // default returns the first part of the reference as project (e.g. mycompany from mycompany-product)
+    projectRefId: String => (String, String) =
+      pr => pr.split("-").head -> pr
 ):
   val catalogPath: os.Path = basePath / catalogFileName
 
@@ -92,12 +96,17 @@ case class ApiConfig(
   def withoutCatalogOptimization(): ApiConfig =
     copy(catalogOptimized = false)
 
+  def withProjectRefId(projectRefId: String => (String, String)): ApiConfig =
+    copy(projectRefId = projectRefId)
+    
+end ApiConfig
+
 case class ProjectsConfig(
-                           // Path, where the Git Projects are cloned.
-                           gitDir: os.Path = os.pwd / os.up / "git-temp",
-                           // Path to your ApiProjectConf
-                           projectConfPath: os.RelPath = os.rel / "PROJECT.conf",
-                           groupedConfigs: Seq[GroupedProjectConfig] = Seq.empty
+    // Path, where the Git Projects are cloned.
+    gitDir: os.Path = os.pwd / os.up / "git-temp",
+    // Path to your ApiProjectConf
+    projectConfPath: os.RelPath = os.rel / "PROJECT.conf",
+    groupedConfigs: Seq[GroupedProjectConfig] = Seq.empty
 ):
   lazy val isConfigured: Boolean = groupedConfigs.nonEmpty
 
@@ -137,7 +146,7 @@ case class GroupedProjectConfig(
 ):
 
   def init(gitDir: os.Path): Unit =
-    if (groupedProjects)
+    if groupedProjects then
       updateProject(gitDir, cloneUrl)
     else
       projects.foreach { project =>
@@ -153,16 +162,17 @@ case class GroupedProjectConfig(
     println(s"Git Project Dir: $gitProjectDir")
     println(s"Git Repo: $gitRepo")
     os.makeDir.all(gitProjectDir)
-    if (!(gitProjectDir / ".gitignore").toIO.exists()) {
+    if !(gitProjectDir / ".gitignore").toIO.exists() then
       os.proc("git", "clone", gitRepo, gitProjectDir)
         .callOnConsole(gitProjectDir)
-    } else {
+    else {
       os
         .proc("git", "checkout", "develop")
         .callOnConsole(gitProjectDir)
       os.proc("git", "pull", "origin", "develop")
         .callOnConsole(gitProjectDir)
     }
+    end if
   end updateProject
 end GroupedProjectConfig
 

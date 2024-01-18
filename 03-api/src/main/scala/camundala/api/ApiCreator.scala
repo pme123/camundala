@@ -302,8 +302,9 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
             Some(api.name)
           )
         case api: InOutApi[?, ?] =>
-          s"- ${createLink(s"${api.typeName}: ${api.name}", groupAnchor)}"
+          s"- ${createLink(api.endpointName, groupAnchor)}"
       }
+      .sorted
       .mkString("\n")
   end toCatalog
 
