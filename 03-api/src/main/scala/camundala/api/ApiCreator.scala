@@ -19,6 +19,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
     val apiDoc = ApiDoc(apis.toList)
     writeOpenApis(apiDoc)
     writeCatalog(apiDoc)
+  end document
 
   private def writeOpenApis(apiDoc: ApiDoc): Unit =
     writeOpenApi(
@@ -32,6 +33,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
       apiConfig.postmanOpenApiDocuPath
     )
     println(s"Check Open API Docu: ${apiConfig.openApiDocuPath}")
+  end writeOpenApis
 
   protected lazy val openAPIDocsInterpreter =
     OpenAPIDocsInterpreter(docsOptions =
@@ -42,112 +44,121 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
     val endpoints = create(apiDoc)
     openAPIDocsInterpreter
       .toOpenAPI(endpoints, info(title, description))
+  end openApi
 
   protected def postmanOpenApi(apiDoc: ApiDoc): OpenAPI =
     val endpoints = createPostman(apiDoc)
     openAPIDocsInterpreter
       .toOpenAPI(endpoints, info(title, postmanDescription))
       .servers(servers)
+  end postmanOpenApi
 
   protected def createChangeLog(): String =
     val changeLogFile = basePath / "CHANGELOG.md"
-    if (changeLogFile.toIO.exists())
+    if changeLogFile.toIO.exists() then
       s"""
          |<details>
          |<summary><b><i>CHANGELOG.md</i></b></summary>
          |<p>
          |
          |${os.read
-        .lines(changeLogFile)
-        .tail
-        .map(_.replace("##", "###"))
-        .map(replaceJira(_, apiConfig.jiraUrls))
-        .mkString("\n")}
+          .lines(changeLogFile)
+          .tail
+          .map(_.replace("##", "###"))
+          .map(replaceJira(_, apiConfig.jiraUrls))
+          .mkString("\n")}
          |
          |</p>
          |</details>
          |""".stripMargin
     else
       ""
+    end if
   end createChangeLog
 
   protected def createGeneralVariables(): String =
     s"""|<p/>
         |<details>
         |<summary>
-        |<b><i>Supported General Variables</i></b>
+        |<b><i>General Variables</i></b>
         |</summary>
         |
         |<p>
         |
-        |### Processes
+        |### Mocking
         |""".stripMargin +
       createGeneralVariable(
-        InputParams.mockedSubprocesses,
-        s"""Mock the SubProcesses with their default Mocks.
-          |This is a list of the _SubProcesses processNames_ you want to mock.
-          |${listOfStringsOrCommaSeparated("mySubProcess,myOtherSubProcess")}
-          |""".stripMargin,
-        """process(..)
-          |  .mockSubProcesses("mySubProcess1", "mySubProcess2") // creates a list with SubProcessess
-          |  .mockSubProcess("myOtherSubProcess") // adds a SubProcess""".stripMargin,
-        """"mockedSubprocesses": ["mySubProcess", "myOtherSubProcess"],"""
+        InputParams.servicesMocked,
+        "Mock all the _ServiceWorkers_ in your process with their default Mock:",
+        "process(..)\n  .mockServices",
+        s"\"${InputParams.servicesMocked}\": true,"
       ) +
-      "### Processes and ExternalTasks" +
       createGeneralVariable(
-        InputParams.outputVariables,
-        s"""You can filter the Output with a list of variable names you are interested in.
-           |This list may include all variables from the output (`Out`). We included an example for each Process or ExternalTask.
-           |${listOfStringsOrCommaSeparated("name,firstName")}
+        InputParams.mockedWorkers,
+        s"""Mock any Process- and/or ExternalTask-Worker with their default Mocks.
+           |This is a list of the _Worker topicNames or Process processNames_, you want to mock.
+           |${listOfStringsOrCommaSeparated("mySubProcess,myOtherSubProcess,myService")}
+           |
+           |_Be aware_: For Sub-Processes, this expects an _InitWorker_ where the _topicName_ is equal to the _processName_.
            |""".stripMargin,
-        """process(..) // or serviceProcess(..)
-          |  .withOutputVariables("name", "firstName") // creates a list with outputVariables
-          |  .withOutputVariable("nickname") // adds a outputVariable""".stripMargin,
-        """"outputVariables": ["name", "firstName"],"""
+        """process(..)
+          |  .mockedWorkers("mySubProcess1", "mySubProcess2") // creates a list with SubProcessess
+          |  .mockedWorker("myOtherSubProcess") // adds a SubProcess""".stripMargin,
+        """"mockedWorkers": ["mySubProcess", "myOtherSubProcess, myService"],"""
       ) +
       createGeneralVariable(
         InputParams.outputMock,
         """Mock the Process or ExternalTask (`Out`)
           | - You find an example in every _Process_ and _ExternalTask_.
           |""".stripMargin,
-        """process(..) // or serviceProcess(..)
+        """process(..) // or serviceTask(..)/customTask(..)
           |  .mockWith(outputMock)""".stripMargin,
         """"outputMock": {..},"""
       ) +
       createGeneralVariable(
-        InputParams.defaultMocked,
-        "Mock the ExternalTasks (Workers only) with their default Mock:",
-        "process(..) // or serviceProcess(..)\n  .mockServices",
-        "\"defaultMocked\": true,"
-      ) +
-      createGeneralVariable(
-        InputParams.impersonateUserId,
-        """User-ID of a User that should be taken to authenticate to the services.
-          |This must be supported by your implementation. *Be caution: this may be a security issue!*.
-          |It is helpful if you have Tokens that expire, but long running Processes.""".stripMargin,
-        """process(..) // or serviceProcess(..)
-          |  .withImpersonateUserId(impersonateUserId)""".stripMargin,
-        """"impersonateUserId": "myUserName","""
-      ) +
-      "### ExternalTasks" +
-      createGeneralVariable(
         InputParams.outputServiceMock,
         """Mock the Inner-Service (`MockedServiceResponse[ServiceOut]`)
-          | - You find an example in every _ExternalTask_.
+          | - You find an example in every _ServiceTask_.
           |""".stripMargin,
-        """serviceProcess(..)
+        """serviceTask(..)
           |  .mockServiceWith(MockedServiceResponse
           |     .success200(inOut.defaultServiceOutMock))""".stripMargin,
         s""""outputServiceMock": ${MockedServiceResponse
-          .success200("Example String Body")
-          .asJson},""".stripMargin
+            .success200("Example String Body")
+            .asJson},""".stripMargin
       ) +
+      "### Mapping" +
+      createGeneralVariable(
+        InputParams.outputVariables,
+        s"""You can filter the Output with a list of variable names you are interested in.
+           |This list may include all variables from the output (`Out`). We included an example for each Process or ExternalTask.
+           |${listOfStringsOrCommaSeparated("name,firstName")}
+           |""".stripMargin,
+        """process(..) // or serviceTask(..)/customTask(..)
+          |  .withOutputVariables("name", "firstName") // creates a list with outputVariables
+          |  .withOutputVariable("nickname") // adds a outputVariable""".stripMargin,
+        """"outputVariables": ["name", "firstName"],"""
+      ) +
+      createGeneralVariable(
+        InputParams.manualOutMapping,
+        s"""By default all output Variables (`Out`) are on the Process for _External Tasks_.
+           |If the filter _${InputParams.outputVariables}_ is not enough,
+           |you can set this variable - every output variable is then local.
+           |
+           |_Be aware_ that you must then manually have _output mappings_ for each output variable!
+           |""".stripMargin,
+        """serviceTask(..) // or customTask(..)
+          |  .manualOutMapping""".stripMargin,
+        """"manualOutMapping": true,"""
+      ) + "### Mocking" +
       createGeneralVariable(
         InputParams.handledErrors,
         s"""A list of error codes that are handled (`BpmnError`)
            |${listOfStringsOrCommaSeparated("validation-failed,404")}
+           |
+           |At the moment only _ServiceTasks_ supported.
            |""".stripMargin,
-        """serviceProcess(..)
+        """serviceTask(..)
           |  .handleErrors(ErrorCodes.`validation-failed`, "404") // create a list of handledErrors
           |  .handleError("404") // add a handledError""".stripMargin,
         s""""handledErrors": ["validation-failed", "404"],""".stripMargin
@@ -156,13 +167,25 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
         InputParams.regexHandledErrors,
         s"""You can further filter Handled Errors with a list of Regex expressions that the body error message must match.
            |${listOfStringsOrCommaSeparated(
-          "SQL exception,\"errorNr\":\"20000\""
-        )}
+            "SQL exception,\"errorNr\":\"20000\""
+          )}
+           |
+           |At the moment only _ServiceTasks_ supported.
            |""".stripMargin,
-        """serviceProcess(..)
+        """serviceTask(..)
           |  .handleErrorWithRegex("SQL exception")
           |  .handleErrorWithRegex("\"errorNr\":\"20000\"")""".stripMargin,
         s""""regexHandledErrors": ["SQL exception", "\"errorNr\":\"20000\""],""".stripMargin
+      ) +
+      "### Authorization" +
+      createGeneralVariable(
+        InputParams.impersonateUserId,
+        """User-ID of a User that should be taken to authenticate to the services.
+          |This must be supported by your implementation. *Be caution: this may be a security issue!*.
+          |It is helpful if you have Tokens that expire, but long running Processes.""".stripMargin,
+        """process(..) // or serviceTask(..)/customTask(..)
+          |  .withImpersonateUserId(impersonateUserId)""".stripMargin,
+        """"impersonateUserId": "myUserName","""
       ) +
       """</p>
         |</details>
@@ -176,7 +199,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
       scalaExample: String,
       jsonExample: String
   ) =
-    if (supportedVariables.contains(key))
+    if supportedVariables.contains(key) then
       s"""
          |**$key**:
          |
@@ -214,10 +237,11 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
 
   protected def createReadme(): String =
     val readme = basePath / "README.md"
-    if (readme.toIO.exists())
+    if readme.toIO.exists() then
       os.read.lines(readme).tail.mkString("\n")
     else
       "There is no README.md in the Project."
+  end createReadme
 
   protected def description: Option[String] = Some(
     s"""
@@ -234,53 +258,57 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
        |""".stripMargin
   )
   protected def postmanDescription: Option[String] =
-    description.map(descr => s"""
-                                |**This is for Postman - to have example requests. Be aware the Output is not provided!**
-                                |
-                                |$descr
-                                |""".stripMargin)
+    description.map(descr =>
+      s"""
+         |**This is for Postman - to have example requests. Be aware the Output is not provided!**
+         |
+         |$descr
+         |""".stripMargin
+    )
 
   private def writeOpenApi(
       path: os.Path,
       api: OpenAPI,
       docPath: os.Path
   ): Unit =
-    if (os.exists(path))
+    if os.exists(path) then
       os.remove(path)
     val yaml = api.toYaml
     os.write(path, yaml)
     println(s"Created Open API $path")
     println(s"See Open API Html $docPath")
+  end writeOpenApi
 
   private def writeCatalog(apiDoc: ApiDoc): Unit =
     val catalogPath = apiConfig.catalogPath
-    if (os.exists(catalogPath))
+    if os.exists(catalogPath) then
       os.remove(catalogPath)
     val catalog = toCatalog(apiDoc)
     os.write(catalogPath, catalog)
     println(s"Created Catalog $catalogPath")
+  end writeCatalog
 
   private def toCatalog(apiDoc: ApiDoc): String =
     val optimizedApis =
-      if (apiConfig.catalogOptimized)
+      if apiConfig.catalogOptimized then
         collectApis(apiDoc)
       else apiDoc.apis
     s"""### $title
        |${toCatalog(optimizedApis)}
        |""".stripMargin
+  end toCatalog
 
   private def collectApis(apiDoc: ApiDoc): List[CApi] =
     apiDoc.apis.foldLeft(List.empty[CApi]) {
       case (result, groupedApi: GroupedApi) =>
         val filteredApis =
           groupedApi.apis
-        if (filteredApis.nonEmpty)
+        if filteredApis.nonEmpty then
           result :+ groupedApi.withApis(filteredApis)
         else result
       case (result, otherApi: CApi) =>
         result :+ otherApi
     }
-
 
   private def toCatalog(
       apis: List[CApi],
@@ -289,7 +317,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
     apis
       .map {
         case pa @ ProcessApi(name, inOut, _, apis, _) =>
-          if (groupAnchor.nonEmpty)
+          if groupAnchor.nonEmpty then
             s"- ${createLink(pa.endpointName, groupAnchor)}"
           else
             s"""
@@ -309,6 +337,6 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
   end toCatalog
 
   private def listOfStringsOrCommaSeparated(example: String) =
-    s"""Depending on your implementation it is also possible to use a _comma separated_ String,
+    s"""It is also possible to use a _comma separated_ String,
        |like `"$example"`""".stripMargin
 end ApiCreator

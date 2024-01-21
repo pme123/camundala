@@ -13,11 +13,11 @@ import camundala.simulation.custom.CustomSimulation
 class InvoiceSimulation extends CustomSimulation:
 
   simulate(
-    scenario(`Review Invoice`)(
+    ignore.scenario(`Review Invoice`)(
       AssignReviewerUT,
       ReviewInvoiceUT
     ),
-    incidentScenario(
+    ignore.incidentScenario(
       `Invoice Receipt that fails`,
       "Could not archive invoice..."
     )(
@@ -30,11 +30,11 @@ class InvoiceSimulation extends CustomSimulation:
       ApproveInvoiceUT,
       PrepareBankTransferUT
     ),
-    scenario(WithOverrideScenario)(
+    ignore.scenario(WithOverrideScenario)(
       `ApproveInvoiceUT with Override`,
       PrepareBankTransferUT
     ),
-    scenario(`Invoice Receipt with Review`)(
+    ignore.scenario(`Invoice Receipt with Review`)(
       NotApproveInvoiceUT,
       subProcess(`Review Invoice`)(
         AssignReviewerUT,
@@ -43,52 +43,52 @@ class InvoiceSimulation extends CustomSimulation:
       ApproveInvoiceUT, // now approve
       PrepareBankTransferUT
     ),
-    scenario(`Invoice Receipt with Review failed`)(
+    ignore.scenario(`Invoice Receipt with Review failed`)(
       NotApproveInvoiceUT, // do not approve
       subProcess(`Review Invoice not clarified`)(
         AssignReviewerUT,
         ReviewInvoiceNotClarifiedUT // do not clarify
       )
     ),
-    scenario(`Invoice Receipt with Review mocked`)(
+    ignore.scenario(`Invoice Receipt with Review mocked`)(
       NotApproveInvoiceUT,
       // subProcess Mocked - so nothing to do
       ApproveInvoiceUT, // now approve
       PrepareBankTransferUT
     ),
-    scenario(InvoiceAssignApproverDMN),
-    scenario(InvoiceAssignApproverDMN2),
-    incidentScenario(
+    ignore.scenario(InvoiceAssignApproverDMN),
+    ignore.scenario(InvoiceAssignApproverDMN2),
+    ignore.incidentScenario(
       BadValidationP,
       "DecodingFailure at .creditor: Got value 'null' with wrong type, expecting string"
     ),
     // mocking
-    scenario(`Invoice Receipt mocked invoiceReviewed`)(
+    ignore.scenario(`Invoice Receipt mocked invoiceReviewed`)(
       NotApproveInvoiceUT,
       // subProcess not needed because of mocking
       ApproveInvoiceUT, // now approve
       PrepareBankTransferUT
     ),
-    scenario(`Review Invoice mocked`), // mocks itself
+    ignore.scenario(`Review Invoice mocked`), // mocks itself
     // ExternalTask - works only if exampleInvoiceWorkerC7 is running
-    scenario(
+    ignore.scenario(
       `Archive Invoice`
     ),
-    scenario(
+    ignore.scenario(
       `Archive Invoice handled`
     ),
-    scenario(
+    ignore.scenario(
       `Archive Invoice handled regex matched`
     ),
-    incidentScenario(
+    ignore.incidentScenario(
       `Archive Invoice handled not matched`,
       "The error was handled, but did not match the defined 'regexHandledErrors'."
     ),
-    incidentScenario(
+    ignore.incidentScenario(
       `Archive Invoice that fails`,
       "Could not archive invoice"
     ),
-    scenario(`Archive Invoice mocked output`),
+    ignore.scenario(`Archive Invoice mocked output`),
   )
 
   override implicit def config =
@@ -163,12 +163,12 @@ class InvoiceSimulation extends CustomSimulation:
   private lazy val `Invoice Receipt with Review mocked` =
     InvoiceReceipt.example
       .withOut(InvoiceReceipt.Out(clarified = Some(true)))
-      .mockSubProcess(ReviewInvoice.processName)
+      .mockWorker(ReviewInvoice.processName)
 
   private lazy val `Invoice Receipt with Review failed` =
     InvoiceReceipt.example
       .withOut(
-        InvoiceReceipt.Out(approved = false, clarified = Some(false))
+        InvoiceReceipt.Out(approved = false, clarified = Some(false), archived = None)
       )
   private lazy val BadValidationP =
     InvoiceReceipt.example

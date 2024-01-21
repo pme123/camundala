@@ -8,7 +8,7 @@ object InvoiceReceipt extends BpmnDsl:
 
   val processName = "example-invoice-c7"
 
-  case class  In(
+  case class In(
       creditor: String = "Great Pizza for Everyone Inc.",
       amount: Double = 300.0,
       invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`,
@@ -37,7 +37,11 @@ object InvoiceReceipt extends BpmnDsl:
       @description(
         "Flag that is set by the Reviewer (only set if there was a review)."
       )
-      clarified: Option[Boolean] = None
+      clarified: Option[Boolean] = None,
+      @description(
+        "Flag that is set by the Archive Service."
+      )
+      archived: Option[Boolean] = Some(false)
   )
   object Out:
     given ApiSchema[Out] = deriveApiSchema
@@ -47,7 +51,7 @@ object InvoiceReceipt extends BpmnDsl:
   lazy val example: Process[In, Out] =
     process(
       id = processName,
-      descr = //cawemoDescr(
+      descr = // cawemoDescr(
         "This starts the Invoice Receipt Process.",
       // "e289c19a-8a57-4467-8583-de72a5e57488"      ),
       in = In(),
@@ -72,7 +76,7 @@ object InvoiceReceipt extends BpmnDsl:
         decisionDefinitionKey = "example-invoice-c7-assignApprover",
         in = In(),
         out = Seq(ApproverGroup.management),
-        descr = //cawemoDescr(
+        descr = // cawemoDescr(
           "Decision Table on who must approve the Invoice.",
         // "155ba236-d5d1-42f7-8b56-3e90e0bb98d4" )
       )
@@ -108,7 +112,7 @@ object InvoiceReceipt extends BpmnDsl:
         creditor: String = "Great Pizza for Everyone Inc.",
         amount: Double = 300.0,
         invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`,
-        invoiceNumber: String = "I-12345",
+        invoiceNumber: String = "I-12345"
     )
     object In:
       given ApiSchema[In] = deriveApiSchema
@@ -135,4 +139,3 @@ object InvoiceReceipt extends BpmnDsl:
   end ApproverGroup
 
 end InvoiceReceipt
-

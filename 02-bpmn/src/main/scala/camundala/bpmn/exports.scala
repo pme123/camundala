@@ -2,13 +2,14 @@ package camundala
 package bpmn
 
 import camundala.domain.*
+
 import scala.compiletime.{constValue, constValueTuple}
 
 val camundaVersion = "7.15"
 
 // sttp
 export sttp.model.StatusCode
-  
+
 def toJsonString[T <: Product: InOutEncoder](product: T): String =
   product.asJson.deepDropNullValues.toString
 
@@ -25,16 +26,20 @@ def cawemoDescr(descr: String, cawemoLink: String) =
      |""".stripMargin
 
 inline def nameOfVariable(inline x: Any): String = ${ NameOf.nameOfVariable('x) }
-inline def nameOfType[A]: String = ${NameOf.nameOfType[A]}
+inline def nameOfType[A]: String = ${ NameOf.nameOfType[A] }
 
 enum InputParams:
-  case defaultMocked
+  // mocking
+  case servicesMocked
+  case mockedWorkers
   case outputMock
   case outputServiceMock
-  case mockedSubprocesses
+  // mapping
+  case manualOutMapping
   case outputVariables
   case handledErrors
   case regexHandledErrors
+  // authorization
   case impersonateUserId
   // special case
   case topicName
@@ -59,7 +64,6 @@ enum ErrorCodes:
   case `service-bad-body-error`
   case `service-unexpected-error`
 end ErrorCodes
-
 
 val GenericExternalTaskProcessName = "camundala-externalTask-generic"
 

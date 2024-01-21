@@ -145,17 +145,21 @@ end ServiceWorker
 
 // ApiCreator that describes these variables
 case class GeneralVariables(
-    defaultMocked: Boolean = false,
+    // mocking
+    servicesMocked: Boolean = false,
+    mockedWorkers: Seq[String] = Seq.empty,
     outputMockOpt: Option[Json] = None,
     outputServiceMockOpt: Option[Json] = None,
-    mockedSubprocesses: Seq[String] = Seq.empty,
+    // mapping
+    manualOutMapping: Boolean = false,
     outputVariables: Seq[String] = Seq.empty,
     handledErrors: Seq[String] = Seq.empty,
     regexHandledErrors: Seq[String] = Seq.empty,
+    // authorization
     impersonateUserIdOpt: Option[String] = None
 ):
-  def isMockedSubprocess(workerTopicName: String): Boolean =
-    mockedSubprocesses.contains(workerTopicName)
+  def isMockedWorker(workerTopicName: String): Boolean =
+    mockedWorkers.contains(workerTopicName)
 
 end GeneralVariables
 

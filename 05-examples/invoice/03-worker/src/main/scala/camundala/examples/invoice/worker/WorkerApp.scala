@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.context.annotation.ComponentScan
 
-//sbt> exampleInvoiceWorkerC7/run
+//sbt> exampleInvoiceWorker/run
 @SpringBootApplication
 @ConfigurationPropertiesScan
 @ComponentScan(basePackages = Array(

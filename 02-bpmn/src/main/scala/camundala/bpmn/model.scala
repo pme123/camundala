@@ -85,11 +85,10 @@ sealed trait ProcessOrExternalTask[
   def processName: String
 
   def topicName: String = processName
-  final val topicDefinition: String = s"$topicName::" // $inputVariableNames"
-  def defaultMocked: Boolean
-  def outputMock: Option[Out]
-  def outputVariables: Seq[String]
-  def impersonateUserId: Option[String]
+
+  protected def servicesMocked: Boolean
+  protected def outputMock: Option[Out]
+  protected def impersonateUserId: Option[String]
 
   lazy val inputVariableNames: Seq[String] = in.productElementNames.toSeq
 
@@ -103,17 +102,13 @@ sealed trait ProcessOrExternalTask[
       .toMap
 
     val camundaServicesMocked: (String, CamundaVariable) =
-      InputParams.defaultMocked.toString -> CamundaVariable.valueToCamunda(
-        defaultMocked
-      )
-    val camundaOutputVariables: (String, CamundaVariable) =
-      InputParams.outputVariables.toString -> CamundaVariable.valueToCamunda(
-        outputVariables.asJson
+      InputParams.servicesMocked.toString -> CamundaVariable.valueToCamunda(
+        servicesMocked
       )
     val camundaImpersonateUserId = impersonateUserId.toSeq.map { uiId =>
       InputParams.impersonateUserId.toString -> CamundaVariable.valueToCamunda(uiId)
     }.toMap
-    super.camundaInMap ++ camundaImpersonateUserId ++ camundaOutputMock + camundaServicesMocked + camundaOutputVariables
+    super.camundaInMap ++ camundaImpersonateUserId ++ camundaOutputMock + camundaServicesMocked
   end camundaInMap
 end ProcessOrExternalTask
 
@@ -124,11 +119,10 @@ case class Process[
     inOutDescr: InOutDescr[In, Out],
     elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty,
     startEventType: StartEventType = StartEventType.None,
-    outputMock: Option[Out] = None,
-    mockedSubprocesses: Seq[String] = Seq.empty,
-    outputVariables: Seq[String] = Seq.empty,
-    defaultMocked: Boolean = false,
-    impersonateUserId: Option[String] = None
+    protected val servicesMocked: Boolean = false,
+    protected val mockedWorkers: Seq[String] = Seq.empty,
+    protected val outputMock: Option[Out] = None,
+    protected val impersonateUserId: Option[String] = None
 ) extends ProcessOrExternalTask[In, Out, Process[In, Out]]:
   lazy val inOutType: InOutType = InOutType.Bpmn
 
@@ -153,30 +147,24 @@ case class Process[
     copy(startEventType = startEventType)
 
   def mockServices: Process[In, Out] =
-    copy(defaultMocked = true)
+    copy(servicesMocked = true)
 
   def mockWith(outputMock: Out): Process[In, Out] =
     copy(outputMock = Some(outputMock))
 
-  def mockSubProcesses(processNames: String*): Process[In, Out] =
-    copy(mockedSubprocesses = processNames)
+  def mockWorkers(workerNames: String*): Process[In, Out] =
+    copy(mockedWorkers = workerNames)
 
-  def mockSubProcess(processName: String): Process[In, Out] =
-    copy(mockedSubprocesses = mockedSubprocesses :+ processName)
-
-  def withOutputVariables(names: String*): Process[In, Out] =
-    copy(outputVariables = names)
-
-  def withOutputVariable(name: String): Process[In, Out] =
-    withOutputVariables(name)
+  def mockWorker(workerName: String): Process[In, Out] =
+    copy(mockedWorkers = mockedWorkers :+ workerName)
 
   override def camundaInMap: Map[String, CamundaVariable] =
-    val camundaMockedSubprocesses =
-      InputParams.mockedSubprocesses.toString -> CamundaVariable.valueToCamunda(
-        mockedSubprocesses.asJson
+    val camundaMockedWorkers =
+      InputParams.mockedWorkers.toString -> CamundaVariable.valueToCamunda(
+        mockedWorkers.asJson
       )
 
-    super.camundaInMap + camundaMockedSubprocesses
+    super.camundaInMap + camundaMockedWorkers
   end camundaInMap
 
 end Process
@@ -194,8 +182,10 @@ sealed trait ExternalTask[
     T <: ExternalTask[In, Out, T]
 ] extends ProcessOrExternalTask[In, Out, T]:
   override final def topicName: String = inOutDescr.id
-  def handledErrors: Seq[ErrorCodeType]
-  def regexHandledErrors: Seq[String]
+  protected def manualOutMapping: Boolean
+  protected def outputVariables: Seq[String]
+  protected def handledErrors: Seq[ErrorCodeType]
+  protected def regexHandledErrors: Seq[String]
   lazy val inOutType: InOutType = InOutType.Worker
 
   def processName: String = GenericExternalTaskProcessName
@@ -206,20 +196,20 @@ sealed trait ExternalTask[
         handledErrors.map(_.toString).asJson
       )) +
       (InputParams.regexHandledErrors.toString -> CamundaVariable
-        .valueToCamunda(
-          regexHandledErrors.asJson
-        )) +
+        .valueToCamunda(regexHandledErrors.asJson)) +
       (InputParams.topicName.toString -> CamundaVariable
-        .valueToCamunda(
-          topicName
-        ))
+        .valueToCamunda(topicName)) +
+      (InputParams.manualOutMapping.toString -> CamundaVariable
+        .valueToCamunda(manualOutMapping)) +
+      (InputParams.outputVariables.toString -> CamundaVariable
+        .valueToCamunda(outputVariables.asJson))
 end ExternalTask
 
 case class ServiceTask[
     In <: Product: InOutEncoder: InOutDecoder: Schema,
     Out <: Product: InOutEncoder: InOutDecoder: Schema,
     ServiceIn: InOutEncoder: InOutDecoder,
-    ServiceOut: InOutEncoder: InOutDecoder,
+    ServiceOut: InOutEncoder: InOutDecoder
 ](
     inOutDescr: InOutDescr[In, Out],
     defaultServiceOutMock: MockedServiceResponse[ServiceOut],
@@ -228,13 +218,14 @@ case class ServiceTask[
       "Default is _GenericExternalTaskProcessName_ - in future only used as External Task"
     )
     override val processName: String = GenericExternalTaskProcessName,
-    outputVariables: Seq[String] = Seq.empty,
-    outputMock: Option[Out] = None,
-    defaultMocked: Boolean = false,
-    impersonateUserId: Option[String] = None,
-    outputServiceMock: Option[MockedServiceResponse[ServiceOut]] = None,
-    handledErrors: Seq[ErrorCodeType] = Seq.empty,
-    regexHandledErrors: Seq[String] = Seq.empty
+    protected val outputMock: Option[Out] = None,
+    protected val servicesMocked: Boolean = false,
+    protected val outputServiceMock: Option[MockedServiceResponse[ServiceOut]] = None,
+    protected val outputVariables: Seq[String] = Seq.empty,
+    protected val manualOutMapping: Boolean = false,
+    protected val handledErrors: Seq[ErrorCodeType] = Seq.empty,
+    protected val regexHandledErrors: Seq[String] = Seq.empty,
+    protected val impersonateUserId: Option[String] = None
 ) extends ExternalTask[In, Out, ServiceTask[In, Out, ServiceIn, ServiceOut]]:
 
   @deprecated("Use _topicName_")
@@ -250,24 +241,11 @@ case class ServiceTask[
   ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(processName = processName)
 
-  def withOutputVariables(names: String*): ServiceTask[In, Out, ServiceIn, ServiceOut] =
-    copy(outputVariables = names)
-
-  def withOutputVariable(
-      processName: String
-  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
-    copy(outputVariables = outputVariables :+ processName)
-
-  def withImpersonateUserId(
-      impersonateUserId: String
-  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
-    copy(impersonateUserId = Some(impersonateUserId))
-
   def mockWith(outputMock: Out): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(outputMock = Some(outputMock))
 
-  def mockWithDefault: ServiceTask[In, Out, ServiceIn, ServiceOut] =
-    copy(defaultMocked = true)
+  def mockServicesWithDefault: ServiceTask[In, Out, ServiceIn, ServiceOut] =
+    copy(servicesMocked = true)
 
   def mockServiceWith(
       outputServiceMock: MockedServiceResponse[ServiceOut]
@@ -279,6 +257,17 @@ case class ServiceTask[
       outputServiceMock: ServiceOut
   ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(outputServiceMock = Some(MockedServiceResponse.success200(outputServiceMock)))
+
+  def withOutputVariables(names: String*): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+    copy(outputVariables = names)
+
+  def withOutputVariable(
+      processName: String
+  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+    copy(outputVariables = outputVariables :+ processName)
+
+  def withManualOutMapping: ServiceTask[In, Out, ServiceIn, ServiceOut] =
+    copy(manualOutMapping = true)
 
   def handleErrors(
       errorCodes: ErrorCodeType*
@@ -294,6 +283,11 @@ case class ServiceTask[
       regex: String
   ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(regexHandledErrors = regexHandledErrors :+ regex)
+
+  def withImpersonateUserId(
+      impersonateUserId: String
+  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+    copy(impersonateUserId = Some(impersonateUserId))
 
   override def camundaInMap: Map[String, CamundaVariable] =
     val camundaOutputServiceMock = outputServiceMock
@@ -313,12 +307,13 @@ case class CustomTask[
     Out <: Product: InOutEncoder: InOutDecoder: Schema
 ](
     inOutDescr: InOutDescr[In, Out],
-    outputMock: Option[Out] = None,
-    outputVariables: Seq[String] = Seq.empty,
-    defaultMocked: Boolean = false,
-    impersonateUserId: Option[String] = None,
-    handledErrors: Seq[ErrorCodeType] = Seq.empty,
-    regexHandledErrors: Seq[String] = Seq.empty
+    protected val outputMock: Option[Out] = None,
+    protected val outputVariables: Seq[String] = Seq.empty,
+    protected val servicesMocked: Boolean = false,
+    protected val manualOutMapping: Boolean = false,
+    protected val impersonateUserId: Option[String] = None,
+    protected val handledErrors: Seq[ErrorCodeType] = Seq.empty,
+    protected val regexHandledErrors: Seq[String] = Seq.empty
 ) extends ExternalTask[In, Out, CustomTask[In, Out]]:
 
   def withInOutDescr(descr: InOutDescr[In, Out]): CustomTask[In, Out] =
@@ -328,7 +323,7 @@ case class CustomTask[
     copy(impersonateUserId = Some(impersonateUserId))
 
   def mockServices: CustomTask[In, Out] =
-    copy(defaultMocked = true)
+    copy(servicesMocked = true)
 
   def mockWith(outputMock: Out): CustomTask[In, Out] =
     copy(outputMock = Some(outputMock))

@@ -6,33 +6,33 @@ info:
     \ is not provided!**\n\n\n\nCreated at 08/12/2023, 15:35\n\n**See the [Camundala\
     \ Documentation](https://pme123.github.io/camundala/)\n\nThere is no README.md\
     \ in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>Supported General Variables</i></b>\n\
-    </summary>\n\n<p>\n\n### Processes\n\n**mockedSubprocesses**:\n\nMock the SubProcesses\
+    </summary>\n\n<p>\n\n### Processes\n\n**mockedWorkers**:\n\nMock the SubProcesses\
     \ with their default Mocks.\nThis is a list of the _SubProcesses processNames_\
     \ you want to mock.\nDepending on your implementation it is also possible to use\
     \ a _comma separated_ String,\nlike `\"mySubProcess,myOtherSubProcess\"`\n\n\n\
-    - DSL:\n```scala\nprocess(..)\n  .mockSubProcesses(\"mySubProcess1\", \"mySubProcess2\"\
-    ) // creates a list with SubProcessess\n  .mockSubProcess(\"myOtherSubProcess\"\
-    ) // adds a SubProcess\n```\n\n- Json\n```json\n...\n\"mockedSubprocesses\": [\"\
+    - DSL:\n```scala\nprocess(..)\n  .mockedWorkers(\"mySubProcess1\", \"mySubProcess2\"\
+    ) // creates a list with SubProcessess\n  .mockedWorker(\"myOtherSubProcess\"\
+    ) // adds a SubProcess\n```\n\n- Json\n```json\n...\n\"mockedWorkers\": [\"\
     mySubProcess\", \"myOtherSubProcess\"],\n...\n```\n\n### Processes and ExternalTasks\n\
     **outputVariables**:\n\nYou can filter the Output with a list of variable names\
     \ you are interested in.\nThis list may include all variables from the output\
     \ (`Out`). We included an example for each Process or ExternalTask.\nDepending\
     \ on your implementation it is also possible to use a _comma separated_ String,\n\
-    like `\"name,firstName\"`\n\n\n- DSL:\n```scala\nprocess(..) // or serviceProcess(..)\n\
+    like `\"name,firstName\"`\n\n\n- DSL:\n```scala\nprocess(..) // or serviceTask(..)/customTask(..)\n\
     \  .withOutputVariables(\"name\", \"firstName\") // creates a list with outputVariables\n\
     \  .withOutputVariable(\"nickname\") // adds a outputVariable\n```\n\n- Json\n\
     ```json\n...\n\"outputVariables\": [\"name\", \"firstName\"],\n...\n```\n\n\n\
     **outputMock**:\n\nMock the Process or ExternalTask (`Out`)\n - You find an example\
     \ in every _Process_ and _ExternalTask_.\n\n\n- DSL:\n```scala\nprocess(..) //\
-    \ or serviceProcess(..)\n  .mockWith(outputMock)\n```\n\n- Json\n```json\n...\n\
+    \ or serviceTask(..)/customTask(..)\n  .mockWith(outputMock)\n```\n\n- Json\n```json\n...\n\
     \"outputMock\": {..},\n...\n```\n\n\n**defaultMocked**:\n\nMock the ExternalTasks\
     \ (Workers only) with their default Mock:\n\n- DSL:\n```scala\nprocess(..) //\
-    \ or serviceProcess(..)\n  .mockServices\n```\n\n- Json\n```json\n...\n\"defaultMocked\"\
+    \ or serviceTask(..)/customTask(..)\n  .mockServices\n```\n\n- Json\n```json\n...\n\"defaultMocked\"\
     : true,\n...\n```\n\n\n**impersonateUserId**:\n\nUser-ID of a User that should\
     \ be taken to authenticate to the services.\nThis must be supported by your implementation.\
     \ *Be caution: this may be a security issue!*.\nIt is helpful if you have Tokens\
     \ that expire, but long running Processes.\n\n- DSL:\n```scala\nprocess(..) //\
-    \ or serviceProcess(..)\n  .withImpersonateUserId(impersonateUserId)\n```\n\n\
+    \ or serviceTask(..)/customTask(..)\n  .withImpersonateUserId(impersonateUserId)\n```\n\n\
     - Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\n###\
     \ ExternalTasks\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
     \ - You find an example in every _ExternalTask_.\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\

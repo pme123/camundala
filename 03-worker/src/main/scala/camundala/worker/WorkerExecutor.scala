@@ -15,14 +15,14 @@ case class WorkerExecutor[
   def execute(
       processVariables: Seq[Either[BadVariableError, (String, Option[Json])]]
   ) =
-    for {
+    for
       validatedInput <- InputValidator.validate(processVariables)
       initializedOutput <- Initializer.initVariables(validatedInput)
       _ <- OutMocker.mockOrProceed(validatedInput)
       output <- WorkRunner.run(validatedInput)
       allOutputs = camundaOutputs(validatedInput, initializedOutput, output)
       filteredOut = filteredOutput(allOutputs)
-    } yield filteredOut
+    yield filteredOut
 
   object InputValidator:
     lazy val prototype = worker.in
@@ -78,24 +78,20 @@ case class WorkerExecutor[
 
     def mockOrProceed(in: In): Either[MockerError | MockedOutput, Option[Out]] =
       (
-        context.generalVariables.defaultMocked,
-        context.generalVariables.isMockedSubprocess(worker.topic),
+        context.generalVariables.isMockedWorker(worker.topic),
         context.generalVariables.outputMockOpt,
         context.generalVariables.outputServiceMockOpt
       ) match
-        case (_, _, Some(outputMock), _) => // if the outputMock is set than we mock
+        // if the outputMock is set than we mock
+        case (_, Some(outputMock), _) =>
           Left(decodeMock(outputMock))
-        case (_, true, _, None) => // if your process is a SubProcess check if it is mocked
+        // if your worker is mocked we use the default mock
+        case (true, None, None) =>
           Left(worker.defaultMock(in))
-        case (true, _, _, None)
-            if defaultMocksAllowed => // if your process is a ExternalTask check if it is mocked
-          Left(worker.defaultMock(in))
-        case (_, _, None, _) =>
+        // otherwise it is not mocked or it is a service mock which is handled in service Worker during running
+        case (_, None, _) =>
           Right(None)
     end mockOrProceed
-
-    //TODO default mocking only for ServiceWorker possible - subprocesses and customworkers only with mockedSubprocesses possible and that is a bad name
-    private lazy val defaultMocksAllowed = false //  worker.isInstanceOf[CustomWorker[?, ?]]
 
     private def decodeMock(
         json: Json
@@ -133,10 +129,12 @@ case class WorkerExecutor[
       allOutputs: Map[String, Any]
   ): Map[String, Any] =
     val filter = context.generalVariables.outputVariables
-    if (filter.isEmpty)
+    if filter.isEmpty then
       allOutputs
     else
       allOutputs
         .filter { case k -> _ => filter.contains(k) }
+    end if
+  end filteredOutput
 
 end WorkerExecutor

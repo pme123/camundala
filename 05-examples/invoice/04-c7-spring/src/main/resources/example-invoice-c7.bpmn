@@ -77,7 +77,7 @@
         <camunda:in source="invoiceDocument" target="invoiceDocument" />
         <camunda:out source="clarified" target="clarified" />
         <camunda:in source="invoiceReviewedMock" target="outputMock" />
-        <camunda:in source="mockedSubprocesses" target="mockedSubprocesses" />
+        <camunda:in source="mockedWorkers" target="mockedWorkers" />
       </extensionElements>
       <incoming>NoSequenceFlow1</incoming>
       <outgoing>sequenceFlow_183__ReviewInvoiceCA__ReviewSuccessfulEG</outgoing>
@@ -140,6 +140,12 @@
       <incoming>SequenceFlow_3__ArchiveInvoiceST__InvoiceProcessedEE</incoming>
     </endEvent>
     <serviceTask id="ArchiveInvoiceTask" name="Archive Invoice" implementation="##WebService" camunda:type="external" camunda:topic="ArchiveInvoiceService">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="manualOutMapping">${true}</camunda:inputParameter>
+          <camunda:outputParameter name="archived">${archived}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
       <incoming>SequenceFlow_2__PrepareBankTransferUT__ArchiveInvoiceST</incoming>
       <outgoing>SequenceFlow_3__ArchiveInvoiceST__InvoiceProcessedEE</outgoing>
     </serviceTask>

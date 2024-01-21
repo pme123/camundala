@@ -179,3 +179,4 @@ lazy val timerExample = timerEvent(
   "timer-for-example",
 )
 ```
+
