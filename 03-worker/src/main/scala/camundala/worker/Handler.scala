@@ -73,18 +73,18 @@ trait InitProcessHandler[
     In <: Product: InOutCodec,
     InConfig <: Product: InOutCodec
 ]:
-  def init(input: In, inConfig: InConfig): Either[InitProcessError, Map[String, Any]]
+  def init(input: In, optInConfig: Option[InConfig]): Either[InitProcessError, Map[String, Any]]
 end InitProcessHandler
 
 object InitProcessHandler:
   def apply[
       In <: Product: InOutCodec,
       InConfig <: Product: InOutCodec
-  ](funct: (In, InConfig) => Either[InitProcessError, Map[String, Any]])
+  ](funct: (In, Option[InConfig]) => Either[InitProcessError, Map[String, Any]])
       : InitProcessHandler[In, InConfig] =
     new InitProcessHandler[In, InConfig]:
-      override def init(in: In, inConfig: InConfig): Either[InitProcessError, Map[String, Any]] =
-        funct(in, inConfig)
+      override def init(in: In, optInConfig: Option[InConfig]): Either[InitProcessError, Map[String, Any]] =
+        funct(in, optInConfig)
 end InitProcessHandler
 
 trait RunWorkHandler[

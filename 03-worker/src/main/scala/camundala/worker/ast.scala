@@ -28,8 +28,6 @@ sealed trait Worker[
   def runWorkHandler: Option[RunWorkHandler[In, Out]] = None
   // helper
   def variableNames: Seq[String] = in.productElementNames.toSeq
-  def inConfigVariableNames: Seq[String] = Seq.empty
-
 
   def defaultMock(in: In)(using
       context: EngineRunContext
@@ -51,9 +49,7 @@ case class InitWorker[
    override val initProcessHandler: Option[InitProcessHandler[In, InConfig]] = None
 ) extends Worker[In, Out, InConfig, InitWorker[In, Out, InConfig]]:
   lazy val topic: String = inOutExample.id
-
-  override def inConfigVariableNames: Seq[String] = inOutExample.inConfig.productElementNames.toSeq
-
+  
   def validate(
       validator: ValidationHandler[In]
   ): InitWorker[In, Out, InConfig] =

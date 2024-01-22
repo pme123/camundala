@@ -7,7 +7,6 @@ object ReviewInvoice extends BpmnDsl:
   final val processName = "example-invoice-c7-review"
 
   type InConfig = NoInConfig
-  lazy val inConfigExample = NoInConfig()
   
   @description("Same Input as _InvoiceReceipt_, only different Mocking")
   case class In(
@@ -38,7 +37,7 @@ object ReviewInvoice extends BpmnDsl:
       // "cc9f978a-e98a-4b01-991d-36d682574cda"),
       in = In(),
       out = Out(),
-      inConfig = inConfigExample
+      inConfig = NoInConfig()
     )
 
   object AssignReviewerUT:

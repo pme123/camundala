@@ -41,8 +41,9 @@ enum InputParams:
   case regexHandledErrors
   // authorization
   case impersonateUserId
-  // special case
+  // special cases
   case topicName
+  case inConfig
 end InputParams
 
 type ErrorCodeType = ErrorCodes | String | Int

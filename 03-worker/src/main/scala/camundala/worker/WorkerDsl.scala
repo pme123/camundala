@@ -149,8 +149,8 @@ private trait InitProcessDsl[
   protected def defaultConfig: InConfig
   protected def engineContext: EngineContext
 
-  def initProcess(in: In, inConfig: InConfig): Either[InitProcessError, Map[String, Any]] =
-    Right(initConfig(inConfig))
+  def initProcess(in: In, optInConfig: Option[InConfig]): Either[InitProcessError, Map[String, Any]] =
+    Right(optInConfig.map(initConfig).getOrElse(Map.empty))
 
   /** initialize the config of the form of:
     * ```

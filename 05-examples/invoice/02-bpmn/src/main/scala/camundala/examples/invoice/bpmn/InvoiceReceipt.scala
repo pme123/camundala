@@ -7,7 +7,7 @@ import camundala.examples.invoice.bpmn.ReviewInvoice.Out
 object InvoiceReceipt extends BpmnDsl:
 
   val processName = "example-invoice-c7"
-
+  
   case class In(
       creditor: String = "Great Pizza for Everyone Inc.",
       amount: Double = 300.0,

@@ -18,9 +18,9 @@ class ReviewInvoiceWorker extends InvoiceWorkerHandler, InitWorkerDsl[In, Out, I
     Right(in)
   end validate
 
-  override def initProcess(in: In, inConfig: InConfig): Either[InitProcessError, Map[String, Any]] =
+  override def initProcess(in: In, optInConfig: Option[InConfig]): Either[InitProcessError, Map[String, Any]] =
     // logger.info("Do some variable initialization...")
-    super.initProcess(in, inConfig).map(_ + ("justToTestInit" -> in.amount))
+    super.initProcess(in, optInConfig).map(_ + ("justToTestInit" -> in.amount))
   end initProcess
 
 end ReviewInvoiceWorker

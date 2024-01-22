@@ -15,12 +15,13 @@ case class WorkerExecutor[
 
   def execute(
       processVariables: Seq[Either[BadVariableError, (String, Option[Json])]],
-      inConfigVariables: Seq[Either[BadVariableError, (String, Option[Json])]]
+      tryInConfigVariable: Either[BadVariableError, Option[Json]]
   ) =
     for
-      validatedInput <- InputValidator.validateIn(processVariables)
-      validatedInConfig <- InputValidator.validate[InConfig](inConfigVariables)
-      initializedOutput <- Initializer.initVariables(validatedInput, validatedInConfig)
+      validatedInput <- InputValidator.validate(processVariables)
+      inConfigVariable <- tryInConfigVariable
+      optInConfig <- toInConfig(inConfigVariable)
+      initializedOutput <- Initializer.initVariables(validatedInput, optInConfig)
       _ <- OutMocker.mockOrProceed(validatedInput)
       output <- WorkRunner.run(validatedInput)
       allOutputs = camundaOutputs(validatedInput, initializedOutput, output)
@@ -31,16 +32,9 @@ case class WorkerExecutor[
     lazy val prototype = worker.in
     lazy val validationHandler = worker.validationHandler
 
-    def validateIn(
+    def validate(
         inputParamsAsJson: Seq[Either[Any, (String, Option[Json])]]
     ): Either[ValidatorError, In] =
-      validate[In](inputParamsAsJson)
-            .flatMap(in => validationHandler.map(h => h.validate(in)).getOrElse(Right(in)))
-    end validateIn
-
-    def validate[T <: Product : InOutCodec](
-                                             inputParamsAsJson: Seq[Either[Any, (String, Option[Json])]]
-                                           ): Either[ValidatorError, T] =
       val jsonResult: Either[ValidatorError, Seq[(String, Option[Json])]] =
         inputParamsAsJson
           .partition(_.isRight) match
@@ -62,8 +56,9 @@ case class WorkerExecutor[
         })
       json
         .flatMap(jsonObj =>
-          decodeTo[T](jsonObj.asJson.toString).left
+          decodeTo[In](jsonObj.asJson.toString).left
             .map(ex => ValidatorError(errorMsg = ex.errorMsg))
+            .flatMap(in => validationHandler.map(h => h.validate(in)).getOrElse(Right(in)))
         )
     end validate
 
@@ -75,14 +70,14 @@ case class WorkerExecutor[
     )
 
     def initVariables(
-        validatedInput: In,
-        inConfig: InConfig
+                       validatedInput: In,
+                       optInConfig: Option[InConfig]
     ): Either[InitProcessError, Map[String, Any]] =
       worker.initProcessHandler
-      .map { vi =>
-        vi.init(validatedInput, inConfig).map(_ ++ defaultVariables)
-      }
-      .getOrElse(Right(defaultVariables))
+        .map { vi =>
+          vi.init(validatedInput, optInConfig).map(_ ++ defaultVariables)
+        }
+        .getOrElse(Right(defaultVariables))
   end Initializer
 
   object OutMocker:
@@ -147,5 +142,14 @@ case class WorkerExecutor[
         .filter { case k -> _ => filter.contains(k) }
     end if
   end filteredOutput
+
+  private def toInConfig(optJson: Option[Json]): Either[BadVariableError, Option[InConfig]] =
+    optJson
+      .map(_.as[InConfig].left.map(ex => BadVariableError(s"InConfig could not be decoded correctly: ${ex.getMessage}"))) match
+      case None =>
+        worker match
+          case iw: InitWorker[?, ?, ?] => Right(Some(iw.inOutExample.inConfig))
+          case _ => Right(None)
+      case Some(Right(inC)) => Right(Some(inC))
 
 end WorkerExecutor
