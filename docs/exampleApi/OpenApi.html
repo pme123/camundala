@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ReDoc</title>
+    <!-- needed for adaptive design -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+
+    <!-- bpmn styles -->
+    <link rel="stylesheet" href="https://unpkg.com/bpmn-js@11.5.0/dist/assets/bpmn-js.css">
+    <!-- dmn styles -->
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@14.1.0/dist/assets/dmn-js-shared.css">
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@14.1.0/dist/assets/dmn-js-drd.css">
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@14.1.0/dist/assets/dmn-js-decision-table.css">
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@14.1.0/dist/assets/dmn-js-literal-expression.css">
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@14.1.0/dist/assets/dmn-font/css/dmn.css">
+
+    <!--
+    ReDoc doesn't change outer page styles
+    -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            z-index: 10;
+
+        }
+        header {
+            background-color:  #ebf6f7;
+            border-bottom: 1px solid #a7d4de;
+            z-index: 12;
+        }
+        .homeLink {
+            text-decoration: none;
+            margin: 0;
+            padding-top: 8px;
+            padding-bottom: 0px;
+            padding-left: 16px;
+            width: 100%;
+            text-align: center;
+
+        }
+        /* The sticky class is added to the header with JS when it reaches its scroll position */
+        .sticky {
+            position: fixed;
+            top: 0;
+            width: 100%
+        }
+        .sticky + .content {
+            padding-top: 102px;
+        }
+        .diagramCanvas {
+            border: solid 1px grey;
+            height:500px;
+        }
+        .diagram {
+            padding: 5px;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<!-- bpmn viewer -->
+<script src="https://unpkg.com/bpmn-js@11.5.0/dist/bpmn-viewer.development.js"></script>
+<!-- dmn viewer -->
+<script src="https://unpkg.com/dmn-js@14.1.0/dist/dmn-viewer.development.js"></script>
+<!-- jquery (required for bpmn / dmn example) -->
+<script src="https://unpkg.com/jquery@3.3.1/dist/jquery.js"></script>
+<script>
+
+    function openFromUrl(url, viewer) {
+        console.log('attempting to open <' + url + '>');
+        $.ajax("src/main/resources/" + url, {dataType: 'text'}).done(async function (xml) {
+
+            try {
+                await viewer.importXML(xml);
+                if(url.endsWith(".bpmn"))
+                    viewer.get('canvas').zoom('fit-viewport');
+                else {
+                    const activeEditor = viewer.getActiveViewer();
+                    activeEditor.get('canvas').zoom('fit-viewport');
+                }            } catch (err) {
+                console.error(err);
+            }
+        });
+    }
+</script>
+<redoc class="content" spec-url='./openApi.yml'></redoc>
+<script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
+</body>
+</html>
