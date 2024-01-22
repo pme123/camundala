@@ -149,47 +149,6 @@ Be aware that the description of Input- and Output Objects are not taken into th
 So document them in the process description if needed.
 @:@
 
-### Supported General Variables
-To avoid a lot of boilerplate in your _Input Objects_, we define a list of input variables we handle by default.
-
-- camundala-api:
-  - Creates the documentation of these variables, including example.
-  - For mocking, it will generate a concrete example in each Process or ServiceProcess.
-
-- camundala-simulation: 
-  - Adds them, if defined to call the Camunda's REST API.
-
-- camundala-worker: 
-  - Experimental implementation of them.
-
-You can override the list of variables, you support in your _ApiProjectCreator_, like
-
-```scala
-import camundala.bpmn.InputParams.*
-
-override def supportedVariables: Seq[InputParams] = Seq(
-    defaultMocked,
-    outputMock,
-    outputServiceMock,
-    handledErrors,
-    regexHandledErrors,
-    impersonateUserId
-  )
-```
-
-### Mocking
-This looks a bit strange, that mocking is at the domain level. 
-However, it turns out that this is quite helpful:
-
-- API Documentation: You see if a process provides Mocking, and/or if it is possible to mock certain sub processes.
-- Simulation: You can simple mock sub processes.
-- Postman Requests: You can manipulate with mocks the path taken in the process (even on production).
-
-@:callout(info)
-The mocking can new be done with General Variables - see chapter above.
-@:@
-
-
 ### JSON marshalling
 
 @:callout(info)
@@ -199,21 +158,14 @@ There is an automatic way, but it turned out that it made compiling slow.
 Sorry for this technical noise 😥.
 @:@
 
-* Case Classes:
+* Case Classes and Enumerations:
   ```scala
   given ApiSchema[InvoiceReceipt] = deriveApiSchema
   given InOutCodec[InvoiceReceipt] = deriveInOutCodec
  ```
 
-* Enumeration:
+* Simple Enumerations:
   ```scala
-  enum GetCodesOut:
-    ...
-  object GetCodesOut:  
-    given ApiSchema[GetCodesOut] = deriveApiSchema
-    given InOutCodec[GetCodesOut] = deriveInOutCodec
-  
-  // for simple enums:
   enum InvoiceCategory:
       case `Travel Expenses`, Misc, `Software License Costs`
 
@@ -221,27 +173,3 @@ Sorry for this technical noise 😥.
     given ApiSchema[InvoiceCategory] = deriveEnumApiSchema
     given InOutCodec[InvoiceCategory] = deriveEnumInOutCodec
 ```
-
-### Mock / Validation implementation
-We provide an example with the invoice example for Camunda 7.
-**Be aware** that this was not tested in practice (we sadly have a proprietary solution).
-
-[Mock Example BPMN](images/mockExampleBpmn.png)
-
-- Implement a Listener that validates and handles the mocking.
-
-  ```scala
-  class InvoiceInputHandler extends InputHandler[InvoiceReceipt.In] :
-  
-    lazy val prototype: InvoiceReceipt.In = InvoiceReceipt.In()
-  ```
-
-    - Validation: The prototype is needed to generic figure out what input variables are expected.
-    - Mocking: Nothing needed.
-
-- Add it to the Start event in the BPMN:
-    - Listener Type: `Java class`
-    - Java class: `camundala.examples.invoice.c7.InvoiceInputHandler`
-
-- Add a condition (Expression) that finishes the process if mocked.
-    - Condition Expression: `${mocked}`

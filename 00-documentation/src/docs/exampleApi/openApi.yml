@@ -2,9 +2,9 @@ openapi: 3.1.0
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: "\n\nCreated at 21/01/2024, 12:26\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
-    \nThere is no README.md in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>General\
-    \ Variables</i></b>\n</summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\
+  summary: "\n\nCreated at 20/01/2024, 16:15\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
+    \nThere is no README.md in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n##\
+    \ General Variables\n</summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\
     \nMock all the _ServiceWorkers_ in your process with their default Mock:\n\n-\
     \ DSL:\n```scala\nprocess(..)\n  .mockServices\n```\n\n- Json\n```json\n...\n\"\
     servicesMocked\": true,\n...\n```\n\n\n**mockedWorkers**:\n\nMock any Process-\
@@ -32,13 +32,14 @@ info:
     name\", \"firstName\") // creates a list with outputVariables\n  .withOutputVariable(\"\
     nickname\") // adds a outputVariable\n```\n\n- Json\n```json\n...\n\"outputVariables\"\
     : [\"name\", \"firstName\"],\n...\n```\n\n\n**manualOutMapping**:\n\nBy default\
-    \ all output Variables (`Out`) are on the Process for _External Tasks_.\nIf the\
-    \ filter _outputVariables_ is not enough,\nyou can set this variable - every output\
-    \ variable is then local.\n\n_Be aware_ that you must then manually have _output\
-    \ mappings_ for each output variable!\n\n\n- DSL:\n```scala\nserviceTask(..) //\
-    \ or customTask(..)\n  .manualOutMapping\n```\n\n- Json\n```json\n...\n\"manualOutMapping\"\
-    : true,\n...\n```\n\n### Mocking\n**handledErrors**:\n\nA list of error codes\
-    \ that are handled (`BpmnError`)\nIt is also possible to use a _comma separated_\
+    \ all output Variables (`Out`) are on the Process.\nIf the filter _outputVariables_\
+    \ is not enough, you can set this variable.\n\n_Be aware_ that you must then manually\
+    \ have _output mappings_ for each output variable!\n\n\n- DSL:\n```scala\nprocess(..)\
+    \ // or serviceTask(..)/customTask(..)\n  .withOutputVariables(\"name\", \"firstName\"\
+    ) // creates a list with outputVariables\n  .withOutputVariable(\"nickname\")\
+    \ // adds a outputVariable\n```\n\n- Json\n```json\n...\n\"outputVariables\":\
+    \ [\"name\", \"firstName\"],\n...\n```\n\n\n**handledErrors**:\n\nA list of error\
+    \ codes that are handled (`BpmnError`)\nIt is also possible to use a _comma separated_\
     \ String,\nlike `\"validation-failed,404\"`\n\nAt the moment only _ServiceTasks_\
     \ supported.\n\n\n- DSL:\n```scala\nserviceTask(..)\n  .handleErrors(ErrorCodes.`validation-failed`,\
     \ \"404\") // create a list of handledErrors\n  .handleError(\"404\") // add a\
@@ -65,9 +66,9 @@ paths:
       summary: 'Bpmn: example-invoice-c7'
       description: "This starts the Invoice Receipt Process.\n\n- Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt\
         \ > In`\n- Output: `camundala.examples.invoice.bpmn.InvoiceReceipt > Out`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-15026\"\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-77167\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container:\
-        \ $('#example-invoice-c7-15026'), height: '95%', width: '95%' }));\" src=\"\
+        \ $('#example-invoice-c7-77167'), height: '95%', width: '95%' }));\" src=\"\
         data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
@@ -113,8 +114,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-62243">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-62243'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-49612">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-49612'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -230,16 +231,16 @@ paths:
       summary: 'Bpmn: example-invoice-c7-review'
       description: "This starts the Review Invoice Process.\n\n- Input:  `camundala.examples.invoice.bpmn.ReviewInvoice\
         \ > In`\n- Output: `camundala.examples.invoice.bpmn.ReviewInvoice > Out`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-68823\"\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-70329\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({\
-        \ container: $('#example-invoice-c7-review-68823'), height: '95%', width:\
+        \ container: $('#example-invoice-c7-review-70329'), height: '95%', width:\
         \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
         \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
-        ```json\n...\n\"outputVariables\": \"clarified,archived\",\n...\n```\n\n**outputMock**:\n\
-        \n```json\n...\n\"outputMock\": {\n  \"clarified\" : true,\n  \"archived\"\
-        \ : true\n},\n...\n```\n\n</p>\n</details>\n</p>\n      "
+        ```json\n...\n\"outputVariables\": \"clarified\",\n...\n```\n\n**outputMock**:\n\
+        \n```json\n...\n\"outputMock\": {\n  \"clarified\" : true\n},\n...\n```\n\n\
+        </p>\n</details>\n</p>\n      "
       operationId: 'Bpmn: example-invoice-c7-review'
       requestBody:
         content:
@@ -265,7 +266,6 @@ paths:
                 example-invoice-c7-review:
                   value:
                     clarified: true
-                    archived: true
   /UserTask/example-invoice-c7-review/AssignReviewerUT:
     head:
       tags:
@@ -610,8 +610,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-66585">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-66585'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-92798">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-92798'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -696,8 +696,7 @@ components:
 
             ```scala
             {
-              "clarified" : true,
-              "archived" : true
+              "clarified" : true
             }
             ```
 
@@ -779,14 +778,11 @@ components:
     Out:
       required:
       - clarified
-      - archived
       type: object
       properties:
         clarified:
           type: boolean
           description: Flag that is set by the Reviewer
-        archived:
-          type: boolean
     Out1:
       required:
       - approved

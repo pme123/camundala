@@ -35,7 +35,7 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
       outputMock: Out,
       outputServiceMock: MockedServiceResponse[ServiceOut]
   ): Seq[ExternalTaskScenario] =
-    val withDefaultMock = task.mockWithDefault
+    val withDefaultMock = task.mockServicesWithDefault
     val withOutputMock = task
       .mockWith(outputMock)
       .withOut(outputMock)

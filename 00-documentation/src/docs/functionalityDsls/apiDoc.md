@@ -175,29 +175,36 @@ If you have a change log in your base path (`config.basePath / "CHANGELOG.md`),
 we integrate it automatically in the documentation - as a collapsed part.
 
 #### General Variables
-You can document general variables that are supported in any Process- and/or ExternalTask-Worker. 
+General variables that are supported in any Process- and/or ExternalTask-Worker are documented - in a collapsed part. 
 By default, the following Variables are supported:
 
 ```scala
 enum InputParams:
-  case defaultMocked
+    // mocking
+  case servicesMocked
+  case mockedWorkers
   case outputMock
-  case mockedSubprocesses
   case outputServiceMock
+  // mapping
+  case manualOutMapping
   case outputVariables
   case handledErrors
   case regexHandledErrors
+  // authorization
   case impersonateUserId
 end InputParams
 ```
 That expects that your implementation can handle these variables. 
-In the future we provide for example _Service Workers_, that support these variables.
+
+@:callout(info)
+If you are using our Workers they are supported out of the box!
+@:@
 
 If you only want to support some of them, you can override them:
 
 ```scala
   override def supportedVariables: Seq[InputParams] = Seq(
-    defaultMocked,
+    servicesMocked,
     outputMock,
     outputServiceMock,
     handledErrors,

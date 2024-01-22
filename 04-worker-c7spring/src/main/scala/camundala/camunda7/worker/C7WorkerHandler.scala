@@ -58,7 +58,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
           generalVariables <- tryGeneralVariables
           context = EngineRunContext(engineContext, generalVariables)
           filteredOut <- worker.executor(using context).execute(tryProcessVariables)
-        } yield externalTaskService.handleSuccess(filteredOut) //
+        } yield externalTaskService.handleSuccess(filteredOut, generalVariables.manualOutMapping) //
       ).left.map { ex =>
         externalTaskService.handleError(ex, tryGeneralVariables)
       }
@@ -77,12 +77,14 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
   extension (externalTaskService: camunda.ExternalTaskService)
 
     private def handleSuccess(
-        filteredOutput: Map[String, Any]
+        filteredOutput: Map[String, Any],
+        manualOutMapping: Boolean
     ): HelperContext[Unit] =
+      
       externalTaskService.complete(
         summon[camunda.ExternalTask],
-        filteredOutput.asJava,
-        Map.empty.asJava
+        if manualOutMapping then Map.empty.asJava else filteredOutput.asJava, // Process Variables
+        if !manualOutMapping then Map.empty.asJava else filteredOutput.asJava, // local Variables
       )
 
     private def handleError(
@@ -112,7 +114,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
                   error.errorCode.toString
                 )
               )
-                handleSuccess(filtered)
+                handleSuccess(filtered, generalVariables.manualOutMapping)
               else
                 logger.info(s"Handled Error: ${error.causeMsg}")
                 externalTaskService.handleBpmnError(
