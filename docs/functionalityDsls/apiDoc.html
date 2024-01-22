@@ -58,9 +58,11 @@
     <li class="level1 nav-leaf"><a href="../bpmnDsl.html">BPMN DSL</a></li>
     <li class="level1 nav-leaf"><a href="../projectSetup.html">Project Setup</a></li>
     <li class="level1 nav-leaf"><a href="../technologies.html">Technologies</a></li>
+    <li class="level1 nav-leaf"><a href="../generalConcerns.html">General Concerns</a></li>
     <li class="level1 nav-header">Functional DSLs</li>
     <li class="level2 active nav-leaf"><a href="#">API Documentation</a></li>
     <li class="level2 nav-leaf"><a href="simulation.html">Simulations</a></li>
+    <li class="level2 nav-leaf"><a href="worker.html">Workers</a></li>
     <li class="level2 nav-leaf"><a href="dmnTester.html">DMN Tester</a></li>
   </ul>
 
@@ -277,23 +279,30 @@
         we integrate it automatically in the documentation - as a collapsed part.</p>
         
         <h4 id="general-variables" class="section"><a class="anchor-link left" href="#general-variables"><i class="icofont-laika link">&#xef71;</i></a>General Variables</h4>
-        <p>You can document general variables that are supported in any Process- and/or ExternalTask-Worker. 
+        <p>General variables that are supported in any Process- and/or ExternalTask-Worker are documented - in a collapsed part. 
         By default, the following Variables are supported:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">enum</span><span> </span><span class="type-name">InputParams</span><span>:
-  </span><span class="keyword">case</span><span> </span><span class="identifier">defaultMocked</span><span>
-  </span><span class="keyword">case</span><span> </span><span class="identifier">outputMock</span><span>
+        <pre><code class="nohighlight"><span class="identifier">enum</span><span> </span><span class="type-name">InputParams</span><span>:
+    </span><span class="comment">// mocking
+</span><span>  </span><span class="keyword">case</span><span> </span><span class="identifier">servicesMocked</span><span>
   </span><span class="keyword">case</span><span> </span><span class="identifier">mockedWorkers</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="identifier">outputMock</span><span>
   </span><span class="keyword">case</span><span> </span><span class="identifier">outputServiceMock</span><span>
+  </span><span class="comment">// mapping
+</span><span>  </span><span class="keyword">case</span><span> </span><span class="identifier">manualOutMapping</span><span>
   </span><span class="keyword">case</span><span> </span><span class="identifier">outputVariables</span><span>
   </span><span class="keyword">case</span><span> </span><span class="identifier">handledErrors</span><span>
   </span><span class="keyword">case</span><span> </span><span class="identifier">regexHandledErrors</span><span>
-  </span><span class="keyword">case</span><span> </span><span class="identifier">impersonateUserId</span><span>
+  </span><span class="comment">// authorization
+</span><span>  </span><span class="keyword">case</span><span> </span><span class="identifier">impersonateUserId</span><span>
 </span><span class="identifier">end</span><span> </span><span class="type-name">InputParams</span></code></pre>
-        <p>That expects that your implementation can handle these variables. 
-        In the future we provide for example <em>Service Workers</em>, that support these variables.</p>
+        <p>That expects that your implementation can handle these variables. </p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>If you are using our Workers they are supported out of the box!</p>
+        </div>
         <p>If you only want to support some of them, you can override them:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">supportedVariables</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">InputParams</span><span>] = </span><span class="type-name">Seq</span><span>(
-    </span><span class="identifier">defaultMocked</span><span>,
+    </span><span class="identifier">servicesMocked</span><span>,
     </span><span class="identifier">outputMock</span><span>,
     </span><span class="identifier">outputServiceMock</span><span>,
     </span><span class="identifier">handledErrors</span><span>,

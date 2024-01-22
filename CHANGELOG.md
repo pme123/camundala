@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.28.2 - 2024-01-22
+### Changed 
+- Added manualOutMapping / documented GeneralVariables. - see [Commit](https://github.com/pme123/camundala/commit/30e367e6981bdf23d7253a876309c899dcfb81bf)
+- Updated Datakurre Plugins. - see [Commit](https://github.com/pme123/camundala/commit/c55c734d292c6c5cea0b346d7ae50e5f6ee3a9d9)
+
 ## 1.28.1 - 2024-01-18
 ### Changed 
 - Adjusted Naming and References in ApiCreator. - see [Commit](https://github.com/pme123/camundala/commit/f2f06dc8e6612ca4358cc3621167ede29b66765e)
