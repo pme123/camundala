@@ -5,7 +5,7 @@ import camundala.bpmn.*
 
 object BadScenarioExample extends BpmnDsl:
 
-  lazy val `Bad Scenario with Message`: Process[_, _] =
+  lazy val `Bad Scenario with Message` =
     process(
       "badScenario-example"
     )

@@ -10,7 +10,7 @@ import sttp.tapir.{PublicEndpoint, *}
 trait CamundaPostmanApiCreator extends PostmanApiCreator:
 
   protected def createPostmanForProcess(
-      api: ProcessApi[?, ?],
+      api: ProcessApi[?, ?, ?],
       tag: String,
       isGroup: Boolean = false
   ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
@@ -67,7 +67,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
       api.executeTimer(tag)
     )
 
-  extension (process: ProcessApi[?, ?])
+  extension (process: ProcessApi[?, ?, ?])
     def startProcess(
         tag: String,
         isGroup: Boolean
@@ -263,6 +263,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
             .default(false)
         )
         .get
+    end getTaskFormVariables
 
     def completeTask(tag: String): PublicEndpoint[?, Unit, ?, Any] =
       val path = "task" / taskIdPath() / "complete" / s"--REMOVE:${api.id}--"
@@ -277,6 +278,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
         .postmanBaseEndpoint(tag, input, "CompleteTask")
         .in(path)
         .post
+    end completeTask
 
     def evaluateDecision(tag: String): PublicEndpoint[?, Unit, ?, Any] =
       val decisionDmn = api.inOut.asInstanceOf[DecisionDmn[?, ?]]
@@ -298,6 +300,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
         .postmanBaseEndpoint(tag, input, "EvaluateDecision", Some(descr))
         .in(path)
         .post
+    end evaluateDecision
 
     def correlateMessage(tag: String): PublicEndpoint[?, Unit, ?, Any] =
       val event = api.inOut.asInstanceOf[MessageEvent[?]]
@@ -321,6 +324,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
         .postmanBaseEndpoint(tag, input, "CorrelateMessage", Some(descr))
         .in(path)
         .post
+    end correlateMessage
 
     def sendSignal(tag: String): PublicEndpoint[?, Unit, ?, Any] =
       val event = api.inOut.asInstanceOf[SignalEvent[?]]
@@ -343,6 +347,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
         .postmanBaseEndpoint(tag, input, "SendSignal", Some(descr))
         .in(path)
         .post
+    end sendSignal
 
     def getActiveJob(tag: String): PublicEndpoint[?, Unit, ?, Any] =
       val path = "job" / s"--REMOVE:${api.id}--"
@@ -363,6 +368,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
         .postmanBaseEndpoint(tag, None, "ExecuteTimer", Some(api.descr))
         .in(path)
         .post
+    end executeTimer
 
   end extension
 

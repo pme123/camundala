@@ -114,16 +114,18 @@ end ProcessOrExternalTask
 
 case class Process[
     In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema
+    Out <: Product: InOutEncoder: InOutDecoder: Schema,
+    InConfig <: Product: InOutCodec
 ](
     inOutDescr: InOutDescr[In, Out],
-    elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty,
+    inConfig: InConfig,
+    protected val elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty,
     startEventType: StartEventType = StartEventType.None,
     protected val servicesMocked: Boolean = false,
     protected val mockedWorkers: Seq[String] = Seq.empty,
     protected val outputMock: Option[Out] = None,
     protected val impersonateUserId: Option[String] = None
-) extends ProcessOrExternalTask[In, Out, Process[In, Out]]:
+) extends ProcessOrExternalTask[In, Out, Process[In, Out, InConfig]]:
   lazy val inOutType: InOutType = InOutType.Bpmn
 
   lazy val processName = inOutDescr.id
@@ -132,30 +134,34 @@ case class Process[
     io
   }
 
-  def withInOutDescr(descr: InOutDescr[In, Out]): Process[In, Out] =
+  def withInOutDescr(descr: InOutDescr[In, Out]): Process[In, Out, InConfig] =
     copy(inOutDescr = descr)
 
-  def withElements(
-      elements: (ProcessNode | InOut[?, ?, ?])*
-  ): Process[In, Out] =
+  def withElements(elements: (ProcessNode | InOut[?, ?, ?])*): Process[In, Out, InConfig] =
     this.copy(elements = elements)
 
-  def withImpersonateUserId(impersonateUserId: String): Process[In, Out] =
+  def withImpersonateUserId(impersonateUserId: String): Process[In, Out, InConfig] =
     copy(impersonateUserId = Some(impersonateUserId))
 
-  def withStartEventType(startEventType: StartEventType): Process[In, Out] =
+  def withStartEventType(startEventType: StartEventType): Process[In, Out, InConfig] =
     copy(startEventType = startEventType)
 
-  def mockServices: Process[In, Out] =
+  def withInConfig(inConfig: InConfig): Process[In, Out, InConfig] =
+    copy(inConfig = inConfig)
+
+  def withInConfig(inFunct: InConfig => InConfig): Process[In, Out, InConfig] =
+    copy(inConfig = inFunct(inConfig))
+
+  def mockServices: Process[In, Out, InConfig] =
     copy(servicesMocked = true)
 
-  def mockWith(outputMock: Out): Process[In, Out] =
+  def mockWith(outputMock: Out): Process[In, Out, InConfig] =
     copy(outputMock = Some(outputMock))
 
-  def mockWorkers(workerNames: String*): Process[In, Out] =
+  def mockWorkers(workerNames: String*): Process[In, Out, InConfig] =
     copy(mockedWorkers = workerNames)
 
-  def mockWorker(workerName: String): Process[In, Out] =
+  def mockWorker(workerName: String): Process[In, Out, InConfig] =
     copy(mockedWorkers = mockedWorkers :+ workerName)
 
   override def camundaInMap: Map[String, CamundaVariable] =

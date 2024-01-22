@@ -7,7 +7,7 @@ import camundala.domain.*
 case class Bpmn(path: Path, processes: BpmnProcess*)
 
 case class BpmnProcess(
-    process: Process[?, ?],
+    process: Process[?, ?, ?],
     elements: Seq[BpmnInOut[?,?]] = Seq.empty
 ):
   lazy val id: String = process.id

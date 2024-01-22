@@ -1,8 +1,8 @@
 package camundala
 package api
 
-import domain.*
-import bpmn.*
+import camundala.bpmn.*
+import camundala.domain.*
 import sttp.tapir.*
 
 trait PostmanApiCreator extends AbstractApiCreator:
@@ -12,12 +12,13 @@ trait PostmanApiCreator extends AbstractApiCreator:
   ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
     println(s"Start Postman API: ${apiDoc.apis.size} top level APIs")
     apiDoc.apis.flatMap(_.createPostman())
+  end createPostman
 
   extension (cApi: CApi)
     def createPostman(): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       println(s"Start Grouped API: ${cApi.name}")
       cApi match
-        case pa: ProcessApi[?, ?] =>
+        case pa: ProcessApi[?, ?, ?] =>
           createPostmanForProcess(pa, pa.name) ++ pa.apis.flatMap(
             _.createPostman(cApi.name)
           )
@@ -27,6 +28,7 @@ trait PostmanApiCreator extends AbstractApiCreator:
           gApi.apis.flatMap(_.createPostman(cApi.name, true))
         case _: CApi =>
           cApi.createPostman(cApi.name, true)
+      end match
 
   end extension
 
@@ -52,14 +54,15 @@ trait PostmanApiCreator extends AbstractApiCreator:
               createPostmanForSignalEvent(aa, tag)
             case _: TimerEvent =>
               createPostmanForTimerEvent(aa, tag)
-        case pa@ProcessApi(name, _, _, apis, _)
-          if apis.forall(_.isInstanceOf[ActivityApi[?, ?]]) =>
+          end match
+        case pa @ ProcessApi(name, _, _, apis, _)
+            if apis.forall(_.isInstanceOf[ActivityApi[?, ?]]) =>
           createPostmanForProcess(pa, tag) ++ apis.flatMap(_.createPostman(tag))
-        case api@ServiceWorkerApi(_, _, _) =>
+        case api @ ServiceWorkerApi(_, _, _) =>
           createPostmanForExternalTask(api, tag)
-        case api@CustomWorkerApi(_, _, _) =>
+        case api @ CustomWorkerApi(_, _, _) =>
           createPostmanForExternalTask(api, tag)
-        case da: DecisionDmnApi[?,?] =>
+        case da: DecisionDmnApi[?, ?] =>
           createPostmanForDecisionDmn(da.toActivityApi, tag)
         case ga =>
           throw IllegalArgumentException(
@@ -69,14 +72,14 @@ trait PostmanApiCreator extends AbstractApiCreator:
   end extension
 
   protected def createPostmanForProcess(
-      api: ProcessApi[?, ?],
+      api: ProcessApi[?, ?, ?],
       tag: String,
       isGroup: Boolean = false
   ): Seq[PublicEndpoint[?, Unit, ?, Any]]
 
   protected def createPostmanForExternalTask(
-                                                api: ExternalTaskApi[?, ?],
-                                                tag: String
+      api: ExternalTaskApi[?, ?],
+      tag: String
   ): Seq[PublicEndpoint[?, Unit, ?, Any]]
 
   protected def createPostmanForUserTask(
@@ -121,7 +124,7 @@ trait PostmanApiCreator extends AbstractApiCreator:
                |See API Doc: ${createLink(api.endpointName, Some(api.name))}
                |""".stripMargin
           )
-        // .securityIn(auth.bearer()(sttp.tapir.Codec.cookies)) could not be imported to Postman:(
+          // .securityIn(auth.bearer()(sttp.tapir.Codec.cookies)) could not be imported to Postman:(
 
       ).map(ep =>
         input
@@ -137,7 +140,7 @@ trait PostmanApiCreator extends AbstractApiCreator:
         case gs: GenericServiceIn =>
           inOutApi.id / s"--REMOVE${gs.serviceName}--"
         case _ =>
-          if (isGroup)
+          if isGroup then
             inOutApi.id / s"--REMOVE${inOutApi.name.replace(" ", "")}--"
           else
             inOutApi.id
@@ -179,7 +182,8 @@ trait PostmanApiCreator extends AbstractApiCreator:
           |let result = pm.response.json()[0];
           |pm.collectionVariables.set("jobId", result.id)
           |```
-          |""".stripMargin)
+          |""".stripMargin
+      )
       .default("{{taskId}}")
 
   protected def definitionKeyPath(key: String): EndpointInput[String] =

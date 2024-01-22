@@ -6,6 +6,9 @@ import camundala.domain.*
 object ReviewInvoice extends BpmnDsl:
   final val processName = "example-invoice-c7-review"
 
+  type InConfig = NoInConfig
+  lazy val inConfigExample = NoInConfig()
+  
   @description("Same Input as _InvoiceReceipt_, only different Mocking")
   case class In(
       creditor: String = "Great Pizza for Everyone Inc.",
@@ -27,14 +30,15 @@ object ReviewInvoice extends BpmnDsl:
     given InOutCodec[Out] = deriveCodec
   end Out
 
-  lazy val example: Process[In, Out] =
+  lazy val example =
     process(
       id = processName,
       descr = // cawemoDescr(
         "This starts the Review Invoice Process.",
       // "cc9f978a-e98a-4b01-991d-36d682574cda"),
       in = In(),
-      out = Out()
+      out = Out(),
+      inConfig = inConfigExample
     )
 
   object AssignReviewerUT:

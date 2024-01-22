@@ -8,25 +8,28 @@ import camundala.worker.QuerySegmentOrParam.{Key, KeyValue, Value}
 import sttp.model.Uri.QuerySegment
 import sttp.model.{Method, Uri}
 
-case class Workers(workers: Seq[Worker[?, ?, ?]])
+case class Workers(workers: Seq[Worker[?, ?, ?, ?]])
 
 sealed trait Worker[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
-    T <: Worker[In, Out, ?]
+    InConfig <: Product: InOutCodec,
+    T <: Worker[In, Out, InConfig, ?]
 ]:
 
-  def inOut: InOut[In, Out, ?]
+  def inOutExample: InOut[In, Out, ?]
   def topic: String
-  lazy val in: In = inOut.in
-  lazy val out: Out = inOut.out
+  lazy val in: In = inOutExample.in
+  lazy val out: Out = inOutExample.out
   // handler
   def validationHandler: Option[ValidationHandler[In]] = None
-  def initProcessHandler: Option[InitProcessHandler[In]] = None
+  def initProcessHandler: Option[InitProcessHandler[In, InConfig]] = None
   // no handler for mocking - all done from the InOut Object
   def runWorkHandler: Option[RunWorkHandler[In, Out]] = None
   // helper
   def variableNames: Seq[String] = in.productElementNames.toSeq
+  def inConfigVariableNames: Seq[String] = Seq.empty
+
 
   def defaultMock(in: In)(using
       context: EngineRunContext
@@ -35,32 +38,35 @@ sealed trait Worker[
       context.toEngineObject(out)
     )
 
-  def executor(using context: EngineRunContext): WorkerExecutor[In, Out, T]
+  def executor(using context: EngineRunContext): WorkerExecutor[In, Out, InConfig, T]
 end Worker
 
 case class InitWorker[
     In <: Product: InOutCodec,
-    Out <: Product: InOutCodec
+    Out <: Product: InOutCodec,
+    InConfig <: Product: InOutCodec
 ](
-    inOut: InOut[In, Out, ?],
-    override val validationHandler: Option[ValidationHandler[In]] = None,
-    override val initProcessHandler: Option[InitProcessHandler[In]] = None
-) extends Worker[In, Out, InitWorker[In, Out]]:
-  lazy val topic: String = inOut.id
+   inOutExample: Process[In, Out, InConfig],
+   override val validationHandler: Option[ValidationHandler[In]] = None,
+   override val initProcessHandler: Option[InitProcessHandler[In, InConfig]] = None
+) extends Worker[In, Out, InConfig, InitWorker[In, Out, InConfig]]:
+  lazy val topic: String = inOutExample.id
+
+  override def inConfigVariableNames: Seq[String] = inOutExample.inConfig.productElementNames.toSeq
 
   def validate(
       validator: ValidationHandler[In]
-  ): InitWorker[In, Out] =
+  ): InitWorker[In, Out, InConfig] =
     copy(validationHandler = Some(validator))
 
   def initProcess(
-      init: InitProcessHandler[In]
-  ): InitWorker[In, Out] =
+      init: InitProcessHandler[In, InConfig]
+  ): InitWorker[In, Out, InConfig] =
     copy(initProcessHandler = Some(init))
 
   def executor(using
       context: EngineRunContext
-  ): WorkerExecutor[In, Out, InitWorker[In, Out]] =
+  ): WorkerExecutor[In, Out, InConfig, InitWorker[In, Out, InConfig]] =
     WorkerExecutor(this)
 
 end InitWorker
@@ -69,11 +75,11 @@ case class CustomWorker[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec
 ](
-    inOut: CustomTask[In, Out],
-    override val validationHandler: Option[ValidationHandler[In]] = None,
-    override val runWorkHandler: Option[RunWorkHandler[In, Out]] = None
-) extends Worker[In, Out, CustomWorker[In, Out]]:
-  lazy val topic: String = inOut.topicName
+   inOutExample: CustomTask[In, Out],
+   override val validationHandler: Option[ValidationHandler[In]] = None,
+   override val runWorkHandler: Option[RunWorkHandler[In, Out]] = None
+) extends Worker[In, Out, NoInConfig, CustomWorker[In, Out]]:
+  lazy val topic: String = inOutExample.topicName
 
   def validate(
       validator: ValidationHandler[In]
@@ -87,7 +93,7 @@ case class CustomWorker[
 
   def executor(using
       context: EngineRunContext
-  ): WorkerExecutor[In, Out, CustomWorker[In, Out]] =
+  ): WorkerExecutor[In, Out, NoInConfig, CustomWorker[In, Out]] =
     WorkerExecutor(this)
 
 end CustomWorker
@@ -98,11 +104,11 @@ case class ServiceWorker[
     ServiceIn <: Product: InOutEncoder,
     ServiceOut: InOutDecoder
 ](
-    inOut: ServiceTask[In, Out, ServiceIn, ServiceOut],
-    override val validationHandler: Option[ValidationHandler[In]] = None,
-    override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None
-) extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
-  lazy val topic: String = inOut.topicName
+   inOutExample: ServiceTask[In, Out, ServiceIn, ServiceOut],
+   override val validationHandler: Option[ValidationHandler[In]] = None,
+   override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None
+) extends Worker[In, Out, NoInConfig, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
+  lazy val topic: String = inOutExample.topicName
 
   def validate(
       handler: ValidationHandler[In]
@@ -123,8 +129,8 @@ case class ServiceWorker[
           handler
             .outputMapper(
               ServiceResponse(
-                inOut.defaultServiceOutMock.unsafeBody,
-                inOut.defaultServiceOutMock.headersAsMap
+                inOutExample.defaultServiceOutMock.unsafeBody,
+                inOutExample.defaultServiceOutMock.headersAsMap
               ),
               in
             ) match
@@ -138,7 +144,7 @@ case class ServiceWorker[
 
   def executor(using
       context: EngineRunContext
-  ): WorkerExecutor[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]] =
+  ): WorkerExecutor[In, Out, NoInConfig, ServiceWorker[In, Out, ServiceIn, ServiceOut]] =
     WorkerExecutor(this)
 
 end ServiceWorker

@@ -68,7 +68,7 @@ object bpmn extends BpmnDsl:
     out = PrepareBankTransfer()
   )
 
-  lazy val `Review Invoice`: Process[InvoiceReceipt, InvoiceReviewed] =
+  lazy val `Review Invoice` =
     val processId = "ReviewInvoiceP"
     process(
       id = processId,
@@ -79,7 +79,7 @@ object bpmn extends BpmnDsl:
       in = InvoiceReceipt(),
       out = InvoiceReviewed()
     )
-  lazy val `Review Invoice not clarified`: Process[InvoiceReceipt, InvoiceReviewed] =
+  lazy val `Review Invoice not clarified` =
     `Review Invoice`
     .withOut(InvoiceReviewed(false))
     

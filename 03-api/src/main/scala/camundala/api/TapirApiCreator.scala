@@ -14,13 +14,14 @@ trait TapirApiCreator extends AbstractApiCreator:
       case groupedApi: GroupedApi => groupedApi.create()
       case cApi: CApi => cApi.create("")
     }
+  end create
 
   extension (groupedApi: GroupedApi)
     def create(): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       println(s"Start Grouped API: ${groupedApi.name}")
       val apis = groupedApi.apis.flatMap(_.create(groupedApi.name))
       groupedApi match
-        case pa: ProcessApi[?, ?] =>
+        case pa: ProcessApi[?, ?, ?] =>
           pa.createEndpoint(pa.name, pa.additionalDescr) ++ apis
         case _: CApiGroup => apis
 
@@ -34,11 +35,11 @@ trait TapirApiCreator extends AbstractApiCreator:
         case aa @ ActivityApi(_, _, _) =>
           aa.createEndpoint(tag)
         case pa @ ProcessApi(name, _, _, apis, _)
-            if apis.isEmpty => //.forall(_.isInstanceOf[ActivityApi[?,?]]) =>
+            if apis.isEmpty => // .forall(_.isInstanceOf[ActivityApi[?,?]]) =>
           pa.createEndpoint(tag, pa.additionalDescr) ++ apis.flatMap(
             _.create(tag)
           )
-        case spa : ExternalTaskApi[?,?] =>
+        case spa: ExternalTaskApi[?, ?] =>
           spa.createEndpoint(tag, spa.additionalDescr)
         case ga =>
           throw IllegalArgumentException(
@@ -57,13 +58,13 @@ trait TapirApiCreator extends AbstractApiCreator:
         case gs: GenericServiceIn =>
           inOutApi.inOutType.toString / inOutApi.id / gs.serviceName
         case _ if tagPath == inOutApi.id =>
-          if (inOutApi.name == inOutApi.id)
+          if inOutApi.name == inOutApi.id then
             inOutApi.inOutType.toString / inOutApi.id
           else
             inOutApi.inOutType.toString / inOutApi.id / inOutApi.name
               .replace(" ", "")
         case _ =>
-          if (inOutApi.name == inOutApi.id)
+          if inOutApi.name == inOutApi.id then
             inOutApi.inOutType.toString / tagPath / inOutApi.id
           else
             inOutApi.inOutType.toString / tagPath / inOutApi.id / inOutApi.name.replace(
@@ -86,6 +87,7 @@ trait TapirApiCreator extends AbstractApiCreator:
           .head
       ).map(ep => inOutApi.toInput.map(ep.in).getOrElse(ep))
         .map(ep => inOutApi.toOutput.map(ep.out).getOrElse(ep))
+    end createEndpoint
 
     private def toInput: Option[EndpointInput[?]] =
       inOutApi.inOut.in match
@@ -122,7 +124,7 @@ trait TapirApiCreator extends AbstractApiCreator:
           )
   end extension
 
-  extension (pa: ProcessApi[?, ?] | ExternalTaskApi[?, ?])
+  extension (pa: ProcessApi[?, ?, ?] | ExternalTaskApi[?, ?])
     def processName: String =
       pa.inOut.in match
         case gs: GenericServiceIn =>
@@ -130,7 +132,7 @@ trait TapirApiCreator extends AbstractApiCreator:
         case _ => pa.id
 
     def additionalDescr: Option[String] =
-      if (apiConfig.projectsConfig.isConfigured)
+      if apiConfig.projectsConfig.isConfigured then
         val usedByDescr = UsedByReferenceCreator(processName).create()
         val usesDescr = UsesReferenceCreator(processName).create()
         Some(s"\n\n${usedByDescr.mkString}${usesDescr.mkString}")
@@ -139,7 +141,7 @@ trait TapirApiCreator extends AbstractApiCreator:
 
   extension (dmn: DecisionDmnApi[?, ?])
     def additionalDescr: Option[String] =
-      if (apiConfig.projectsConfig.isConfigured)
+      if apiConfig.projectsConfig.isConfigured then
         val usedByDescr = UsedByReferenceCreator(dmn.id).create()
         Some(s"\n\n${usedByDescr.mkString}")
       else None

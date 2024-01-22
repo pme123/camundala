@@ -74,3 +74,9 @@ object GenericExternalTask:
     given ApiSchema[ProcessStatus] = deriveEnumApiSchema
     given InOutCodec[ProcessStatus] = deriveEnumInOutCodec
 end GenericExternalTask
+
+case class NoInConfig()
+
+object NoInConfig:
+  given InOutCodec[NoInConfig] = deriveCodec
+  given ApiSchema[NoInConfig] = deriveApiSchema

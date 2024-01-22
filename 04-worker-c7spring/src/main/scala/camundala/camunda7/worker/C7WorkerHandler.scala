@@ -22,7 +22,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
   @Autowired()
   protected var externalTaskClient: ExternalTaskClient = _
 
-  def worker: Worker[?, ?, ?]
+  def worker: Worker[?, ?, ?, ?]
   def topic: String
 
   override def execute(
@@ -52,12 +52,13 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
       externalTaskService: camunda.ExternalTaskService
   ): HelperContext[Unit] =
     val tryProcessVariables = ProcessVariablesExtractor.extract(worker.variableNames)
+    val tryInConfigVariables = ProcessVariablesExtractor.extract(worker.inConfigVariableNames)
     val tryGeneralVariables = ProcessVariablesExtractor.extractGeneral()
     try {
       (for {
           generalVariables <- tryGeneralVariables
           context = EngineRunContext(engineContext, generalVariables)
-          filteredOut <- worker.executor(using context).execute(tryProcessVariables)
+          filteredOut <- worker.executor(using context).execute(tryProcessVariables, tryInConfigVariables)
         } yield externalTaskService.handleSuccess(filteredOut, generalVariables.manualOutMapping) //
       ).left.map { ex =>
         externalTaskService.handleError(ex, tryGeneralVariables)

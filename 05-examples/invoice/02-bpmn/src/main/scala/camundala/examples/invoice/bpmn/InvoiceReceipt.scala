@@ -21,10 +21,7 @@ object InvoiceReceipt extends BpmnDsl:
                                                        ),
                                                        Some("application/pdf")
                                                      )*/
-      @description("You can let the Archive Service fail for testing.")
-      shouldFail: Option[Boolean] = None,
-      @description(serviceOrProcessMockDescr(ReviewInvoice.Out()))
-      invoiceReviewedMock: Option[ReviewInvoice.Out] = None
+
   )
   object In:
     given ApiSchema[In] = deriveApiSchema
@@ -48,14 +45,26 @@ object InvoiceReceipt extends BpmnDsl:
     given InOutCodec[Out] = deriveCodec
   end Out
 
-  lazy val example: Process[In, Out] =
+  case class InConfig(
+      @description("You can let the Archive Service fail for testing.")
+      shouldFail: Option[Boolean] = None,
+      @description(serviceOrProcessMockDescr(ReviewInvoice.Out()))
+      invoiceReviewedMock: Option[ReviewInvoice.Out] = None
+  )
+  object InConfig:
+    given ApiSchema[InConfig] = deriveApiSchema
+    given InOutCodec[InConfig] = deriveCodec
+  end InConfig
+
+  lazy val example =
     process(
       id = processName,
       descr = // cawemoDescr(
         "This starts the Invoice Receipt Process.",
       // "e289c19a-8a57-4467-8583-de72a5e57488"      ),
       in = In(),
-      out = Out() // just for testing
+      out = Out(), // just for testing
+      inConfig = InConfig()
     )
 
   object InvoiceAssignApproverDMN:

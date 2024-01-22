@@ -7,17 +7,20 @@ import camundala.worker.CamundalaWorkerError.*
 case class WorkerExecutor[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
-    T <: Worker[In, Out, ?]
+    InConfig <: Product: InOutCodec,
+    T <: Worker[In, Out, InConfig, ?]
 ](
     worker: T
 )(using context: EngineRunContext):
 
   def execute(
-      processVariables: Seq[Either[BadVariableError, (String, Option[Json])]]
+      processVariables: Seq[Either[BadVariableError, (String, Option[Json])]],
+      inConfigVariables: Seq[Either[BadVariableError, (String, Option[Json])]]
   ) =
     for
-      validatedInput <- InputValidator.validate(processVariables)
-      initializedOutput <- Initializer.initVariables(validatedInput)
+      validatedInput <- InputValidator.validateIn(processVariables)
+      validatedInConfig <- InputValidator.validate[InConfig](inConfigVariables)
+      initializedOutput <- Initializer.initVariables(validatedInput, validatedInConfig)
       _ <- OutMocker.mockOrProceed(validatedInput)
       output <- WorkRunner.run(validatedInput)
       allOutputs = camundaOutputs(validatedInput, initializedOutput, output)
@@ -28,9 +31,16 @@ case class WorkerExecutor[
     lazy val prototype = worker.in
     lazy val validationHandler = worker.validationHandler
 
-    def validate(
+    def validateIn(
         inputParamsAsJson: Seq[Either[Any, (String, Option[Json])]]
     ): Either[ValidatorError, In] =
+      validate[In](inputParamsAsJson)
+            .flatMap(in => validationHandler.map(h => h.validate(in)).getOrElse(Right(in)))
+    end validateIn
+
+    def validate[T <: Product : InOutCodec](
+                                             inputParamsAsJson: Seq[Either[Any, (String, Option[Json])]]
+                                           ): Either[ValidatorError, T] =
       val jsonResult: Either[ValidatorError, Seq[(String, Option[Json])]] =
         inputParamsAsJson
           .partition(_.isRight) match
@@ -52,9 +62,8 @@ case class WorkerExecutor[
         })
       json
         .flatMap(jsonObj =>
-          decodeTo[In](jsonObj.asJson.toString).left
+          decodeTo[T](jsonObj.asJson.toString).left
             .map(ex => ValidatorError(errorMsg = ex.errorMsg))
-            .flatMap(in => validationHandler.map(h => h.validate(in)).getOrElse(Right(in)))
         )
     end validate
 
@@ -66,10 +75,12 @@ case class WorkerExecutor[
     )
 
     def initVariables(
-        validatedInput: In
-    ): Either[InitProcessError, Map[String, Any]] = worker.initProcessHandler
+        validatedInput: In,
+        inConfig: InConfig
+    ): Either[InitProcessError, Map[String, Any]] =
+      worker.initProcessHandler
       .map { vi =>
-        vi.init(validatedInput).map(_ ++ defaultVariables)
+        vi.init(validatedInput, inConfig).map(_ ++ defaultVariables)
       }
       .getOrElse(Right(defaultVariables))
   end Initializer

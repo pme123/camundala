@@ -1,8 +1,8 @@
 package camundala
 package api
 
-import domain.*
-import bpmn.*
+import camundala.bpmn.*
+import camundala.domain.*
 
 import scala.reflect.ClassTag
 
@@ -12,23 +12,24 @@ trait ApiBaseDsl:
     CApiGroup(name, apis.toList)
 
   def api[
-    In <: Product :InOutEncoder: InOutDecoder : Schema,
-    Out <: Product :InOutEncoder: InOutDecoder : Schema : ClassTag,
-    T <: InOutApi[In, Out]
+      In <: Product: InOutEncoder: InOutDecoder: Schema,
+      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
+      T <: InOutApi[In, Out]
   ](pApi: T): T =
     pApi
 
   def api[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag
-  ](pApi: ProcessApi[In, Out])(body: CApi*): ProcessApi[In, Out] =
+      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
+      InConfig <: Product: InOutCodec
+  ](pApi: ProcessApi[In, Out, InConfig])(body: CApi*): ProcessApi[In, Out, InConfig] =
     pApi.withApis(body.toList)
 
-  extension[
-    In <: Product :InOutEncoder: InOutDecoder : Schema,
-    Out <: Product :InOutEncoder: InOutDecoder : Schema : ClassTag,
-    T <: InOutApi[In, Out]
-  ] (inOutApi: T)
+  extension [
+      In <: Product: InOutEncoder: InOutDecoder: Schema,
+      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
+      T <: InOutApi[In, Out]
+  ](inOutApi: T)
 
     inline def withExample(inline example: InOut[In, Out, ?]): T =
       withExample(nameOfVariable(example), example)
@@ -50,21 +51,22 @@ trait ApiBaseDsl:
       inOutApi.addOutExample(label, example).asInstanceOf[T]
   end extension
 
-  extension[
-    In <: Product :InOutEncoder: InOutDecoder : Schema,
-    Out <: Product :InOutEncoder: InOutDecoder : Schema : ClassTag,
-    T <: DecisionDmnApi[In, Out]
-  ] (decApi: T)
-
-    def withDiagramName(diagramName: String): DecisionDmnApi[In, Out] = decApi.copy(diagramName = Some(diagramName))
+  extension [
+      In <: Product: InOutEncoder: InOutDecoder: Schema,
+      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
+      T <: DecisionDmnApi[In, Out]
+  ](decApi: T)
+    def withDiagramName(diagramName: String): DecisionDmnApi[In, Out] =
+      decApi.copy(diagramName = Some(diagramName))
   end extension
 
-  extension[
-    In <: Product :InOutEncoder: InOutDecoder : Schema,
-    Out <: Product :InOutEncoder: InOutDecoder : Schema : ClassTag,
-    T <: ProcessApi[In, Out]
-  ] (processApi: T)
-
-    def withDiagramName(diagramName: String): ProcessApi[In, Out] = processApi.copy(diagramName = Some(diagramName))
+  extension [
+      In <: Product: InOutEncoder: InOutDecoder: Schema,
+      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
+      InConfig <: Product: InOutCodec,
+      T <: ProcessApi[In, Out, InConfig]
+  ](processApi: T)
+    def withDiagramName(diagramName: String): ProcessApi[In, Out, InConfig] =
+      processApi.copy(diagramName = Some(diagramName))
   end extension
 end ApiBaseDsl

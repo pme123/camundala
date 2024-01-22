@@ -70,18 +70,21 @@ end ValidationHandler
   * Default is no Initialization.
   */
 trait InitProcessHandler[
-    In <: Product: InOutCodec
+    In <: Product: InOutCodec,
+    InConfig <: Product: InOutCodec
 ]:
-  def init(input: In): Either[InitProcessError, Map[String, Any]]
+  def init(input: In, inConfig: InConfig): Either[InitProcessError, Map[String, Any]]
 end InitProcessHandler
 
 object InitProcessHandler:
   def apply[
-      In <: Product: InOutCodec
-  ](funct: In => Either[InitProcessError, Map[String, Any]]): InitProcessHandler[In] =
-    new InitProcessHandler[In]:
-      override def init(in: In): Either[InitProcessError, Map[String, Any]] =
-        funct(in)
+      In <: Product: InOutCodec,
+      InConfig <: Product: InOutCodec
+  ](funct: (In, InConfig) => Either[InitProcessError, Map[String, Any]])
+      : InitProcessHandler[In, InConfig] =
+    new InitProcessHandler[In, InConfig]:
+      override def init(in: In, inConfig: InConfig): Either[InitProcessError, Map[String, Any]] =
+        funct(in, inConfig)
 end InitProcessHandler
 
 trait RunWorkHandler[
