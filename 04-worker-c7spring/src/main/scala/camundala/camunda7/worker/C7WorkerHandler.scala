@@ -53,14 +53,13 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
       externalTaskService: camunda.ExternalTaskService
   ): HelperContext[Unit] =
     val tryProcessVariables = ProcessVariablesExtractor.extract(worker.variableNames)
-    val tryInConfigVariable = ProcessVariablesExtractor.extractInConfig()
     val tryGeneralVariables = ProcessVariablesExtractor.extractGeneral()
     try
       (for
           generalVariables <- tryGeneralVariables
           context = EngineRunContext(engineContext, generalVariables)
           filteredOut <-
-            worker.executor(using context).execute(tryProcessVariables, tryInConfigVariable)
+            worker.executor(using context).execute(tryProcessVariables)
         yield externalTaskService.handleSuccess(filteredOut, generalVariables.manualOutMapping) //
       ).left.map { ex =>
         externalTaskService.handleError(ex, tryGeneralVariables)

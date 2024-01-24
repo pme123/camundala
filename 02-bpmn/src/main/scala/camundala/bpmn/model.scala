@@ -146,12 +146,6 @@ case class Process[
   def withStartEventType(startEventType: StartEventType): Process[In, Out, InConfig] =
     copy(startEventType = startEventType)
 
-  def withInConfig(inConfig: InConfig): Process[In, Out, InConfig] =
-    copy(inConfig = inConfig)
-
-  def withInConfig(inFunct: InConfig => InConfig): Process[In, Out, InConfig] =
-    copy(inConfig = inFunct(inConfig))
-
   def mockServices: Process[In, Out, InConfig] =
     copy(servicesMocked = true)
 

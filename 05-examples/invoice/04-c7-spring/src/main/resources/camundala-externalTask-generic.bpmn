@@ -75,6 +75,7 @@
   </bpmn:process>
   <bpmn:error id="Error_0blmisz" name="404" errorCode="404" />
   <bpmn:error id="Error_0zjbq5k" name="400" errorCode="400" />
+  <bpmn:error id="Error_1dxb25w" name="custom-run-error" errorCode="custom-run-error" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_056504p">
       <bpmndi:BPMNShape id="Participant_11hsz4j_di" bpmnElement="CamundalaexternalTaskgenericParticipant" isHorizontal="true">

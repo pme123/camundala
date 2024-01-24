@@ -7,7 +7,7 @@ object ReviewInvoice extends BpmnDsl:
   final val processName = "example-invoice-c7-review"
 
   type InConfig = NoInConfig
-  
+
   @description("Same Input as _InvoiceReceipt_, only different Mocking")
   case class In(
       creditor: String = "Great Pizza for Everyone Inc.",

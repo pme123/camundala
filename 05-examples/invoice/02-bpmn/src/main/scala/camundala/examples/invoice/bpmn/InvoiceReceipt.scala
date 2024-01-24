@@ -7,22 +7,15 @@ import camundala.examples.invoice.bpmn.ReviewInvoice.Out
 object InvoiceReceipt extends BpmnDsl:
 
   val processName = "example-invoice-c7"
-  
+
   case class In(
       creditor: String = "Great Pizza for Everyone Inc.",
       amount: Double = 300.0,
       invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`,
       invoiceNumber: String = "I-12345",
-      // removed due to problems with sttp client
-      /*   invoiceDocument: FileInOut = FileInOut(
-                                                       "invoice.pdf",
-                                                       read.bytes(
-                                                         os.resource / "invoice.pdf"
-                                                       ),
-                                                       Some("application/pdf")
-                                                     )*/
+      inConfig: Option[InConfig] = None
+  ) extends WithConfig[InConfig]
 
-  )
   object In:
     given ApiSchema[In] = deriveApiSchema
     given InOutCodec[In] = deriveCodec

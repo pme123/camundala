@@ -76,6 +76,9 @@ object GenericExternalTask:
     given InOutCodec[ProcessStatus] = deriveEnumInOutCodec
 end GenericExternalTask
 
+trait WithConfig[InConfig <: Product : InOutCodec]:
+  def inConfig: Option[InConfig]
+  
 case class NoInConfig()
 
 object NoInConfig:

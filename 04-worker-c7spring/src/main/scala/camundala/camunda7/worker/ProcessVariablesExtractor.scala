@@ -14,7 +14,6 @@ import org.camunda.bpm.engine.variable.value.TypedValue
 object ProcessVariablesExtractor:
 
   type VariableType = HelperContext[Seq[Either[BadVariableError, (String, Option[Json])]]]
-  type InConfigType = HelperContext[Either[BadVariableError, Option[Json]]]
   type GeneralVariableType = HelperContext[Either[BadVariableError, GeneralVariables]]
 
   // gets the input variables of the process as Optional Jsons.
@@ -33,12 +32,6 @@ object ProcessVariablesExtractor:
           Right(k -> None) // k -> null as Camunda Expressions need them
       }
   end extract
-
-  def extractInConfig(): InConfigType =
-    jsonVariableOpt(InputParams.inConfig)
-      
-      
-  end extractInConfig
 
   def extractGeneral(): GeneralVariableType =
     for {

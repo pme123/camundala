@@ -15,13 +15,10 @@ case class WorkerExecutor[
 
   def execute(
       processVariables: Seq[Either[BadVariableError, (String, Option[Json])]],
-      tryInConfigVariable: Either[BadVariableError, Option[Json]]
   ) =
     for
       validatedInput <- InputValidator.validate(processVariables)
-      inConfigVariable <- tryInConfigVariable
-      optInConfig <- toInConfig(inConfigVariable)
-      initializedOutput <- Initializer.initVariables(validatedInput, optInConfig)
+      initializedOutput <- Initializer.initVariables(validatedInput)
       _ <- OutMocker.mockOrProceed(validatedInput)
       output <- WorkRunner.run(validatedInput)
       allOutputs = camundaOutputs(validatedInput, initializedOutput, output)
@@ -71,11 +68,10 @@ case class WorkerExecutor[
 
     def initVariables(
                        validatedInput: In,
-                       optInConfig: Option[InConfig]
     ): Either[InitProcessError, Map[String, Any]] =
       worker.initProcessHandler
         .map { vi =>
-          vi.init(validatedInput, optInConfig).map(_ ++ defaultVariables)
+          vi.init(validatedInput).map(_ ++ defaultVariables)
         }
         .getOrElse(Right(defaultVariables))
   end Initializer
@@ -142,14 +138,5 @@ case class WorkerExecutor[
         .filter { case k -> _ => filter.contains(k) }
     end if
   end filteredOutput
-
-  private def toInConfig(optJson: Option[Json]): Either[BadVariableError, Option[InConfig]] =
-    optJson
-      .map(_.as[InConfig].left.map(ex => BadVariableError(s"InConfig could not be decoded correctly: ${ex.getMessage}"))) match
-      case None =>
-        worker match
-          case iw: InitWorker[?, ?, ?] => Right(Some(iw.inOutExample.inConfig))
-          case _ => Right(None)
-      case Some(Right(inC)) => Right(Some(inC))
 
 end WorkerExecutor
