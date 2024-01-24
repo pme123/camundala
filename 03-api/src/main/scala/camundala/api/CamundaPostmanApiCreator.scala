@@ -10,7 +10,7 @@ import sttp.tapir.{PublicEndpoint, *}
 trait CamundaPostmanApiCreator extends PostmanApiCreator:
 
   protected def createPostmanForProcess(
-      api: ProcessApi[?, ?, ?],
+      api: ProcessApi[?, ?],
       tag: String,
       isGroup: Boolean = false
   ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
@@ -67,7 +67,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
       api.executeTimer(tag)
     )
 
-  extension (process: ProcessApi[?, ?, ?])
+  extension (process: ProcessApi[?, ?])
     def startProcess(
         tag: String,
         isGroup: Boolean

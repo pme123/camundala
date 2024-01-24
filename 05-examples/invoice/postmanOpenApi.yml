@@ -3,7 +3,7 @@ info:
   title: Invoice Example Process API
   version: '1.0'
   summary: "\n**This is for Postman - to have example requests. Be aware the Output\
-    \ is not provided!**\n\n\n\nCreated at 21/01/2024, 12:26\n\n**See the [Camundala\
+    \ is not provided!**\n\n\n\nCreated at 24/01/2024, 14:44\n\n**See the [Camundala\
     \ Documentation](https://pme123.github.io/camundala/)\n\nThere is no README.md\
     \ in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>General Variables</i></b>\n\
     </summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\nMock all the _ServiceWorkers_\
@@ -91,6 +91,32 @@ paths:
                     amount:
                       value: 300.0
                       type: Double
+                    invoiceCategory:
+                      value: Travel Expenses
+                      type: String
+                  businessKey: example-invoice-c7
+                  withVariablesInReturn: true
+              With InConfig:
+                value:
+                  variables:
+                    creditor:
+                      value: Great Pizza for Everyone Inc.
+                      type: String
+                    invoiceNumber:
+                      value: I-12345
+                      type: String
+                    amount:
+                      value: 300.0
+                      type: Double
+                    inConfig:
+                      value: |-
+                        {
+                          "shouldFail" : false,
+                          "invoiceReviewedMock" : {
+                            "clarified" : true
+                          }
+                        }
+                      type: Json
                     invoiceCategory:
                       value: Travel Expenses
                       type: String

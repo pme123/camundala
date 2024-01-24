@@ -14,7 +14,10 @@ object InvoiceReceipt extends BpmnDsl:
       invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`,
       invoiceNumber: String = "I-12345",
       inConfig: Option[InConfig] = None
-  ) extends WithConfig[InConfig]
+  ) extends WithConfig[InConfig]:
+
+    lazy val defaultConfig: InConfig = InConfig()
+
 
   object In:
     given ApiSchema[In] = deriveApiSchema
@@ -45,6 +48,10 @@ object InvoiceReceipt extends BpmnDsl:
       invoiceReviewedMock: Option[ReviewInvoice.Out] = None
   )
   object InConfig:
+    lazy val example: InConfig = InConfig(
+      shouldFail = Some(false),
+      invoiceReviewedMock = Some(ReviewInvoice.Out())
+    )
     given ApiSchema[InConfig] = deriveApiSchema
     given InOutCodec[InConfig] = deriveCodec
   end InConfig
@@ -57,7 +64,6 @@ object InvoiceReceipt extends BpmnDsl:
       // "e289c19a-8a57-4467-8583-de72a5e57488"      ),
       in = In(),
       out = Out(), // just for testing
-      inConfig = InConfig()
     )
 
   object InvoiceAssignApproverDMN:

@@ -22,7 +22,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
   @Autowired()
   protected var externalTaskClient: ExternalTaskClient = _
 
-  def worker: Worker[?, ?, ?, ?]
+  def worker: Worker[?, ?, ?]
   def topic: String
 
   override def execute(

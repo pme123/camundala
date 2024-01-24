@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class ReviewInvoiceWorker extends InvoiceWorkerHandler, InitWorkerDsl[In, Out, InConfig]:
 
-  lazy val inOutExample: bpmn.Process[In, Out, InConfig] = example
+  lazy val inOutExample: bpmn.Process[In, Out] = example
   
   override def validate(in: In): Either[ValidatorError, In] =
     logger.info(s"Do some custom validation...")

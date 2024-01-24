@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: "\n\nCreated at 21/01/2024, 12:26\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
+  summary: "\n\nCreated at 24/01/2024, 14:44\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
     \nThere is no README.md in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>General\
     \ Variables</i></b>\n</summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\
     \nMock all the _ServiceWorkers_ in your process with their default Mock:\n\n-\
@@ -65,16 +65,17 @@ paths:
       summary: 'Bpmn: example-invoice-c7'
       description: "This starts the Invoice Receipt Process.\n\n- Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt\
         \ > In`\n- Output: `camundala.examples.invoice.bpmn.InvoiceReceipt > Out`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-15026\"\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-42774\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container:\
-        \ $('#example-invoice-c7-15026'), height: '95%', width: '95%' }));\" src=\"\
+        \ $('#example-invoice-c7-42774'), height: '95%', width: '95%' }));\" src=\"\
         data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
         \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
-        ```json\n...\n\"outputVariables\": \"approved,clarified\",\n...\n```\n\n**outputMock**:\n\
-        \n```json\n...\n\"outputMock\": {\n  \"approved\" : true,\n  \"clarified\"\
-        \ : null\n},\n...\n```\n\n</p>\n</details>\n</p>\n      "
+        ```json\n...\n\"outputVariables\": \"approved,clarified,archived\",\n...\n\
+        ```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"approved\"\
+        \ : true,\n  \"clarified\" : null,\n  \"archived\" : false\n},\n...\n```\n\
+        \n</p>\n</details>\n</p>\n      "
       operationId: 'Bpmn: example-invoice-c7'
       requestBody:
         content:
@@ -88,6 +89,16 @@ paths:
                   amount: 300.0
                   invoiceCategory: Travel Expenses
                   invoiceNumber: I-12345
+              With InConfig:
+                value:
+                  creditor: Great Pizza for Everyone Inc.
+                  amount: 300.0
+                  invoiceCategory: Travel Expenses
+                  invoiceNumber: I-12345
+                  inConfig:
+                    shouldFail: false
+                    invoiceReviewedMock:
+                      clarified: true
         required: true
       responses:
         '200':
@@ -100,6 +111,7 @@ paths:
                 example-invoice-c7:
                   value:
                     approved: true
+                    archived: false
   /Dmn/example-invoice-c7/example-invoice-c7-assignApprover:
     head:
       tags:
@@ -113,8 +125,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-62243">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-62243'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-71879">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-71879'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -230,16 +242,16 @@ paths:
       summary: 'Bpmn: example-invoice-c7-review'
       description: "This starts the Review Invoice Process.\n\n- Input:  `camundala.examples.invoice.bpmn.ReviewInvoice\
         \ > In`\n- Output: `camundala.examples.invoice.bpmn.ReviewInvoice > Out`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-68823\"\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-69558\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({\
-        \ container: $('#example-invoice-c7-review-68823'), height: '95%', width:\
+        \ container: $('#example-invoice-c7-review-69558'), height: '95%', width:\
         \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
         \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
-        ```json\n...\n\"outputVariables\": \"clarified,archived\",\n...\n```\n\n**outputMock**:\n\
-        \n```json\n...\n\"outputMock\": {\n  \"clarified\" : true,\n  \"archived\"\
-        \ : true\n},\n...\n```\n\n</p>\n</details>\n</p>\n      "
+        ```json\n...\n\"outputVariables\": \"clarified\",\n...\n```\n\n**outputMock**:\n\
+        \n```json\n...\n\"outputMock\": {\n  \"clarified\" : true\n},\n...\n```\n\n\
+        </p>\n</details>\n</p>\n      "
       operationId: 'Bpmn: example-invoice-c7-review'
       requestBody:
         content:
@@ -265,7 +277,6 @@ paths:
                 example-invoice-c7-review:
                   value:
                     clarified: true
-                    archived: true
   /UserTask/example-invoice-c7-review/AssignReviewerUT:
     head:
       tags:
@@ -610,8 +621,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-66585">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-66585'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-13058">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-13058'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -682,29 +693,8 @@ components:
           $ref: '#/components/schemas/InvoiceCategory'
         invoiceNumber:
           type: string
-        shouldFail:
-          type: boolean
-          description: You can let the Archive Service fail for testing.
-        invoiceReviewedMock:
-          $ref: '#/components/schemas/Out'
-          description: |
-            You can mock the response variables of this (sub)process.
-
-            Class: `camundala.examples.invoice.bpmn.ReviewInvoice > Out`
-
-            Here an example:
-
-            ```scala
-            {
-              "clarified" : true,
-              "archived" : true
-            }
-            ```
-
-            General to mocking:
-
-            - `outputMock` mocks this process.
-            - `someSubProcessMock` mocks a sub process
+        inConfig:
+          $ref: '#/components/schemas/InConfig'
     In1:
       required:
       - amount
@@ -770,6 +760,31 @@ components:
       properties:
         shouldFail:
           type: boolean
+    InConfig:
+      type: object
+      properties:
+        shouldFail:
+          type: boolean
+          description: You can let the Archive Service fail for testing.
+        invoiceReviewedMock:
+          $ref: '#/components/schemas/Out'
+          description: |
+            You can mock the response variables of this (sub)process.
+
+            Class: `camundala.examples.invoice.bpmn.ReviewInvoice > Out`
+
+            Here an example:
+
+            ```scala
+            {
+              "clarified" : true
+            }
+            ```
+
+            General to mocking:
+
+            - `outputMock` mocks this process.
+            - `someSubProcessMock` mocks a sub process
     InvoiceCategory:
       type: string
       enum:
@@ -779,14 +794,11 @@ components:
     Out:
       required:
       - clarified
-      - archived
       type: object
       properties:
         clarified:
           type: boolean
           description: Flag that is set by the Reviewer
-        archived:
-          type: boolean
     Out1:
       required:
       - approved
@@ -798,6 +810,9 @@ components:
         clarified:
           type: boolean
           description: Flag that is set by the Reviewer (only set if there was a review).
+        archived:
+          type: boolean
+          description: Flag that is set by the Archive Service.
     Out2:
       required:
       - approved

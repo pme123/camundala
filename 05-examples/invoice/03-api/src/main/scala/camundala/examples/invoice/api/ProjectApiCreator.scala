@@ -6,8 +6,8 @@ import camundala.api.*
 import camundala.bpmn.*
 import camundala.domain.*
 import camundala.examples.invoice.bpmn.*
-import camundala.examples.invoice.bpmn.InvoiceReceipt.InvoiceAssignApproverDMN.*
 import camundala.examples.invoice.bpmn.InvoiceReceipt.*
+import camundala.examples.invoice.bpmn.InvoiceReceipt.InvoiceAssignApproverDMN.*
 
 // define an object that extends from a common Api Creator
 // exampleInvoiceApi/run
@@ -20,7 +20,7 @@ object ProjectApiCreator extends DefaultApiCreator:
   protected val version = "1.0"
 
   document(
-    api(InvoiceReceipt.example)(
+    api(`Invoice Receipt`)(
       InvoiceAssignApproverDMN1,
       ApproveInvoiceUT,
       InvoiceReceipt.PrepareBankTransferUT.example
@@ -58,6 +58,11 @@ object ProjectApiCreator extends DefaultApiCreator:
 //  .withCawemoFolder("a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala")
 
 
+  private lazy val `Invoice Receipt` =
+    InvoiceReceipt.example
+      .withInExample(
+        "With InConfig", InvoiceReceipt.In(inConfig = Some(InConfig.example))
+      )
   private lazy val ApproveInvoiceUT =
     InvoiceReceipt.ApproveInvoiceUT.example
       .withOutExample("Invoice approved", InvoiceReceipt.ApproveInvoiceUT.Out())

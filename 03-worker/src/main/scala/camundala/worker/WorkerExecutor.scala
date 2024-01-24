@@ -7,8 +7,7 @@ import camundala.worker.CamundalaWorkerError.*
 case class WorkerExecutor[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
-    InConfig <: Product: InOutCodec,
-    T <: Worker[In, Out, InConfig, ?]
+    T <: Worker[In, Out, ?]
 ](
     worker: T
 )(using context: EngineRunContext):

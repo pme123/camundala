@@ -37,7 +37,6 @@ object ReviewInvoice extends BpmnDsl:
       // "cc9f978a-e98a-4b01-991d-36d682574cda"),
       in = In(),
       out = Out(),
-      inConfig = NoInConfig()
     )
 
   object AssignReviewerUT:

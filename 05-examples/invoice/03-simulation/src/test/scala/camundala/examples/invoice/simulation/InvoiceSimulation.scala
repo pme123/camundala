@@ -101,7 +101,8 @@ class InvoiceSimulation extends CustomSimulation:
   private lazy val `Invoice Receipt mocked invoiceReviewed` =
     `Invoice Receipt with Review`
       .withIn(InvoiceReceipt.In(inConfig =
-        Some(InvoiceReceipt.InConfig(invoiceReviewedMock = Some(ReviewInvoice.Out())))
+        Some(InvoiceReceipt.InConfig(
+          invoiceReviewedMock = Some(ReviewInvoice.Out())))
       ))
 
   private lazy val ApproveInvoiceUT = InvoiceReceipt.ApproveInvoiceUT.example
@@ -122,7 +123,7 @@ class InvoiceSimulation extends CustomSimulation:
   private lazy val NotApproveInvoiceUT =
     ApproveInvoiceUT
       .withOut(InvoiceReceipt.ApproveInvoiceUT.Out(false))
-  // this indirection is needed as we use the same Process for two ignore.scenarios (name clash).
+  // this indirection is needed as we use the same Process for two scenarios (name clash).
   private lazy val `Invoice Receipt with Override` = InvoiceReceipt.example
 
   private lazy val WithOverrideScenario =

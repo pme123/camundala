@@ -10,30 +10,13 @@ trait BpmnDsl:
   def process[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
       Out <: Product: InOutEncoder: InOutDecoder: Schema,
-      InConfig <: Product: InOutCodec
   ](
       id: String,
       in: In,
       out: Out,
-      inConfig: InConfig,
-      descr: Optable[String]
-  ): Process[In, Out, InConfig] =
-    Process(InOutDescr(id, in, out, descr.value),
-      inConfig = inConfig
-    )
-
-  def process[
-    In <: Product : InOutEncoder : InOutDecoder : Schema,
-    Out <: Product : InOutEncoder : InOutDecoder : Schema,
-  ](
-     id: String,
-     in: In = NoInput(),
-     out: Out = NoOutput(),
-     descr: Optable[String] = None
-   ): Process[In, Out, NoInConfig] =
-    Process(InOutDescr(id, in, out, descr.value),
-      inConfig = NoInConfig()
-    )
+      descr: Optable[String] = None
+  ): Process[In, Out] =
+    Process(InOutDescr(id, in, out, descr.value))
 
   def serviceTask[
       In <: Product: InOutEncoder: InOutDecoder: Schema,

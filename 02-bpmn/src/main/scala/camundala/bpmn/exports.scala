@@ -78,6 +78,7 @@ end GenericExternalTask
 
 trait WithConfig[InConfig <: Product : InOutCodec]:
   def inConfig: Option[InConfig]
+  def defaultConfig: InConfig
   
 case class NoInConfig()
 

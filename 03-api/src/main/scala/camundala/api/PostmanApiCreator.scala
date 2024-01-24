@@ -18,7 +18,7 @@ trait PostmanApiCreator extends AbstractApiCreator:
     def createPostman(): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       println(s"Start Grouped API: ${cApi.name}")
       cApi match
-        case pa: ProcessApi[?, ?, ?] =>
+        case pa: ProcessApi[?, ?] =>
           createPostmanForProcess(pa, pa.name) ++ pa.apis.flatMap(
             _.createPostman(cApi.name)
           )
@@ -72,7 +72,7 @@ trait PostmanApiCreator extends AbstractApiCreator:
   end extension
 
   protected def createPostmanForProcess(
-      api: ProcessApi[?, ?, ?],
+      api: ProcessApi[?, ?],
       tag: String,
       isGroup: Boolean = false
   ): Seq[PublicEndpoint[?, Unit, ?, Any]]

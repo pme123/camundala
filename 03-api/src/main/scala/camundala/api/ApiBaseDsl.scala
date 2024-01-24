@@ -20,9 +20,8 @@ trait ApiBaseDsl:
 
   def api[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
-      InConfig <: Product: InOutCodec
-  ](pApi: ProcessApi[In, Out, InConfig])(body: CApi*): ProcessApi[In, Out, InConfig] =
+      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag
+  ](pApi: ProcessApi[In, Out])(body: CApi*): ProcessApi[In, Out] =
     pApi.withApis(body.toList)
 
   extension [
@@ -63,10 +62,9 @@ trait ApiBaseDsl:
   extension [
       In <: Product: InOutEncoder: InOutDecoder: Schema,
       Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
-      InConfig <: Product: InOutCodec,
-      T <: ProcessApi[In, Out, InConfig]
+      T <: ProcessApi[In, Out]
   ](processApi: T)
-    def withDiagramName(diagramName: String): ProcessApi[In, Out, InConfig] =
+    def withDiagramName(diagramName: String): ProcessApi[In, Out] =
       processApi.copy(diagramName = Some(diagramName))
   end extension
 end ApiBaseDsl

@@ -115,17 +115,15 @@ end ProcessOrExternalTask
 case class Process[
     In <: Product: InOutEncoder: InOutDecoder: Schema,
     Out <: Product: InOutEncoder: InOutDecoder: Schema,
-    InConfig <: Product: InOutCodec
 ](
     inOutDescr: InOutDescr[In, Out],
-    inConfig: InConfig,
     protected val elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty,
     startEventType: StartEventType = StartEventType.None,
     protected val servicesMocked: Boolean = false,
     protected val mockedWorkers: Seq[String] = Seq.empty,
     protected val outputMock: Option[Out] = None,
     protected val impersonateUserId: Option[String] = None
-) extends ProcessOrExternalTask[In, Out, Process[In, Out, InConfig]]:
+) extends ProcessOrExternalTask[In, Out, Process[In, Out]]:
   lazy val inOutType: InOutType = InOutType.Bpmn
 
   lazy val processName = inOutDescr.id
@@ -134,28 +132,28 @@ case class Process[
     io
   }
 
-  def withInOutDescr(descr: InOutDescr[In, Out]): Process[In, Out, InConfig] =
+  def withInOutDescr(descr: InOutDescr[In, Out]): Process[In, Out] =
     copy(inOutDescr = descr)
 
-  def withElements(elements: (ProcessNode | InOut[?, ?, ?])*): Process[In, Out, InConfig] =
+  def withElements(elements: (ProcessNode | InOut[?, ?, ?])*): Process[In, Out] =
     this.copy(elements = elements)
 
-  def withImpersonateUserId(impersonateUserId: String): Process[In, Out, InConfig] =
+  def withImpersonateUserId(impersonateUserId: String): Process[In, Out] =
     copy(impersonateUserId = Some(impersonateUserId))
 
-  def withStartEventType(startEventType: StartEventType): Process[In, Out, InConfig] =
+  def withStartEventType(startEventType: StartEventType): Process[In, Out] =
     copy(startEventType = startEventType)
 
-  def mockServices: Process[In, Out, InConfig] =
+  def mockServices: Process[In, Out] =
     copy(servicesMocked = true)
 
-  def mockWith(outputMock: Out): Process[In, Out, InConfig] =
+  def mockWith(outputMock: Out): Process[In, Out] =
     copy(outputMock = Some(outputMock))
 
-  def mockWorkers(workerNames: String*): Process[In, Out, InConfig] =
+  def mockWorkers(workerNames: String*): Process[In, Out] =
     copy(mockedWorkers = workerNames)
 
-  def mockWorker(workerName: String): Process[In, Out, InConfig] =
+  def mockWorker(workerName: String): Process[In, Out] =
     copy(mockedWorkers = mockedWorkers :+ workerName)
 
   override def camundaInMap: Map[String, CamundaVariable] =

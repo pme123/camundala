@@ -12,7 +12,7 @@ trait WorkerDsl:
   protected def logger: WorkerLogger
 
   // needed that it can be called from CSubscriptionPostProcessor
-  def worker: Worker[?, ?, ?, ?]
+  def worker: Worker[?, ?, ?]
 
   def topic: String = worker.topic
 
@@ -37,15 +37,12 @@ trait InitWorkerDsl[
       ValidateDsl[In],
       InitProcessDsl[In, InConfig]:
 
-  protected def inOutExample: Process[In, Out, InConfig]
+  protected def inOutExample: InOut[In, Out, ?]
 
-  protected lazy val defaultConfig: InConfig = inOutExample.inConfig
-    
-  lazy val worker: InitWorker[In, Out, InConfig] = 
+  lazy val worker: InitWorker[In, Out] =
     InitWorker(inOutExample)
-    .validate(ValidationHandler(validate))
-    .initProcess(InitProcessHandler(initProcess))
-
+      .validate(ValidationHandler(validate))
+      .initProcess(InitProcessHandler(initProcess))
 
 end InitWorkerDsl
 
@@ -97,7 +94,7 @@ trait ServiceWorkerDsl[
   protected def method: Method = Method.GET
   protected def querySegments(in: In): Seq[QuerySegmentOrParam] =
     Seq.empty // input must be valid - so no errors
-  // mocking out from outService and headers
+      // mocking out from outService and headers
   protected def inputMapper(in: In): Option[ServiceIn] = None // input must be valid - so no errors
   protected def inputHeaders(in: In): Map[String, String] =
     Map.empty // input must be valid - so no errors
@@ -146,17 +143,22 @@ private trait InitProcessDsl[
     In <: Product: InOutCodec,
     InConfig <: Product: InOutCodec
 ]:
-  protected def defaultConfig: InConfig
   protected def engineContext: EngineContext
 
   // by default the InConfig is initialized
   def initProcess(in: In): Either[InitProcessError, Map[String, Any]] =
     val inConfig = in match
-      case i: WithConfig[?] => i.inConfig.map(_.asInstanceOf[InConfig])
-      case _ => None
-    Right(inConfig.map(initConfig).getOrElse(Map.empty))
+      case i: WithConfig[?] =>
+        initConfig(
+          i.inConfig.asInstanceOf[Option[InConfig]],
+          i.defaultConfig.asInstanceOf[InConfig]
+        )
+      case _ => Map.empty
+    Right(inConfig)
+  end initProcess
 
   /** initialize the config of the form of:
+    *
     * ```
     * case class InConfig(
     * timerIdentificationNotReceived: Option[String :| Iso8601Duration],
@@ -165,27 +167,39 @@ private trait InitProcessDsl[
     * )
     * ```
     */
-  private def initConfig[T <: Product: InOutEncoder](
-      config: T, 
+  private def initConfig(
+                          optConfig: Option[InConfig],
+                          defaultConfig: InConfig
   ): Map[String, Any] =
-    val json = config.asJson
     val defaultJson = defaultConfig.asJson
-    val r =
-      config.productElementNames
+    val r = optConfig.map {
+      config =>
+        val json = config.asJson
+        config.productElementNames
+          .map(k =>
+            k -> (json.hcursor
+              .downField(k).focus, defaultJson.hcursor
+              .downField(k).focus)
+          ).collect {
+            case k -> (Some(j), Some(dj)) if j.isNull =>
+              k -> dj
+            case k -> (Some(j), _) =>
+              k -> j
+            case k -> (_, dj) =>
+              k -> dj.getOrElse(Json.Null)
+          }
+          .toMap
+    }.getOrElse { // get all defaults
+      defaultConfig.productElementNames
         .map(k =>
-          k -> (json.hcursor
-            .downField(k).focus, defaultJson.hcursor 
-            .downField(k).focus)
+          k -> defaultJson.hcursor
+            .downField(k).focus
         ).collect {
-          case k -> (Some(j), Some(dj)) if j.isNull =>
-            k -> dj
-          case k -> (Some(j), _) =>
+          case k -> Some(j) =>
             k -> j
-          case k -> (_, dj) =>
-            k -> dj.getOrElse(Json.Null)
         }
         .toMap
-    end r
+    }
     engineContext.toEngineObject(r)
   end initConfig
 
