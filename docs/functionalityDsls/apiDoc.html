@@ -92,7 +92,6 @@
     <li class="level2 nav-leaf"><a href="#process-apis">Process Apis</a></li>
     <li class="level2 nav-leaf"><a href="#input-output-variables">Input-/ Output-Variables</a></li>
     <li class="level2 nav-leaf"><a href="#examples">Examples</a></li>
-    <li class="level2 nav-leaf"><a href="#cawemo-description">Cawemo description</a></li>
     <li class="level2 nav-leaf"><a href="#project-dependencies">Project dependencies</a></li>
     <li class="level2 nav-leaf"><a href="#generic-service-process">Generic Service Process</a></li>
     <li class="level1 nav-leaf"><a href="#groups">Groups</a></li>
@@ -230,8 +229,6 @@
 </span><span>    </span><span class="identifier">endpoint</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;http://localhost:8080/engine-rest&quot;</span><span>,
     </span><span class="comment">// Base Path of your project (if changed - all doc paths will be adjusted)
 </span><span>    </span><span class="identifier">basePath</span><span>: </span><span class="identifier">os</span><span>.</span><span class="type-name">Path</span><span> = </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span>,
-    </span><span class="comment">// If your project is on cawemo, add here the Id of the folder of your bpmns.
-</span><span>    </span><span class="identifier">cawemoFolder</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">None</span><span>,
     </span><span class="identifier">openApiPath</span><span>: </span><span class="identifier">os</span><span>.</span><span class="type-name">Path</span><span> = </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="string-literal">&quot;openApi.yml&quot;</span><span>,
     </span><span class="identifier">postmanOpenApiPath</span><span>: </span><span class="identifier">os</span><span>.</span><span class="type-name">Path</span><span> = </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="string-literal">&quot;postmanOpenApi.yml&quot;</span><span>,
     </span><span class="identifier">openApiDocuPath</span><span>: </span><span class="identifier">os</span><span>.</span><span class="type-name">Path</span><span> = </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="string-literal">&quot;OpenApi.html&quot;</span><span>,
@@ -502,22 +499,6 @@
             </span><span class="type-name">CollectEntries</span><span>(</span><span class="type-name">ApproverGroup</span><span>.</span><span class="identifier">accounting</span><span>, </span><span class="type-name">ApproverGroup</span><span>.</span><span class="identifier">sales</span><span>)
           )
       )</span></code></pre>
-        
-        <h3 id="cawemo-description" class="section"><a class="anchor-link left" href="#cawemo-description"><i class="icofont-laika link">&#xef71;</i></a>Cawemo description</h3>
-        <p>If you use Cawemo you can integrate the BPMN- and DMN-diagrams in your documentation.</p>
-        <p>Example: </p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">process</span><span>(
-  </span><span class="identifier">id</span><span> = </span><span class="type-name">InvoiceReceiptPIdent</span><span>,
-  </span><span class="identifier">descr</span><span> = </span><span class="identifier">cawemoDescr</span><span>(
-    </span><span class="string-literal">&quot;This starts the Invoice Receipt Process.&quot;</span><span>,
-    </span><span class="string-literal">&quot;e289c19a-8a57-4467-8583-de72a5e57488&quot;</span><span>
-  ),
-  </span><span class="identifier">in</span><span> = </span><span class="type-name">InvoiceReceipt</span><span>(),
-  </span><span class="identifier">out</span><span> = </span><span class="type-name">InvoiceReceiptCheck</span><span>() 
-)</span></code></pre>
-        <p>Just use the <code>cawemoDescr</code> function with the id of your diagram. 
-        This is the identifier you get in the share link URL in Cawemo.</p>
-        <p><img src="images/api_cawemoBpmn.png" alt="api_cawemoBpmn"></p>
         
         <h3 id="project-dependencies" class="section"><a class="anchor-link left" href="#project-dependencies"><i class="icofont-laika link">&#xef71;</i></a>Project dependencies</h3>
         <p>To know where your process is used and what processes your process is using, is very helpful.</p>

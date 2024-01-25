@@ -12,8 +12,8 @@ trait BpmnDsl:
       Out <: Product: InOutEncoder: InOutDecoder: Schema,
   ](
       id: String,
-      in: In,
-      out: Out,
+      in: In = NoInput(),
+      out: Out = NoOutput(),
       descr: Optable[String] = None
   ): Process[In, Out] =
     Process(InOutDescr(id, in, out, descr.value))

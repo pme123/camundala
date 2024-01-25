@@ -18,7 +18,6 @@ object ApiProjectCreator extends DefaultApiCreator:
     super.apiConfig
       .withBasePath(os.pwd / "05-examples" / "invoice" / "camunda8")
       .withPort(8034)
-      .withCawemoFolder("a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala")
 
   document (
     api(`Invoice Receipt`)(
