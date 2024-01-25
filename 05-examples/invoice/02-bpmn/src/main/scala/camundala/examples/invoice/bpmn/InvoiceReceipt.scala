@@ -17,7 +17,7 @@ object InvoiceReceipt extends BpmnDsl:
   ) extends WithConfig[InConfig]:
 
     lazy val defaultConfig: InConfig = InConfig()
-
+  end In
 
   object In:
     given ApiSchema[In] = deriveApiSchema
@@ -59,11 +59,9 @@ object InvoiceReceipt extends BpmnDsl:
   lazy val example =
     process(
       id = processName,
-      descr = // cawemoDescr(
-        "This starts the Invoice Receipt Process.",
-      // "e289c19a-8a57-4467-8583-de72a5e57488"      ),
+      descr = "This starts the Invoice Receipt Process.",
       in = In(),
-      out = Out(), // just for testing
+      out = Out() // just for testing
     )
 
   object InvoiceAssignApproverDMN:
@@ -84,9 +82,7 @@ object InvoiceReceipt extends BpmnDsl:
         decisionDefinitionKey = "example-invoice-c7-assignApprover",
         in = In(),
         out = Seq(ApproverGroup.management),
-        descr = // cawemoDescr(
-          "Decision Table on who must approve the Invoice.",
-        // "155ba236-d5d1-42f7-8b56-3e90e0bb98d4" )
+        descr = "Decision Table on who must approve the Invoice."
       )
   end InvoiceAssignApproverDMN
 

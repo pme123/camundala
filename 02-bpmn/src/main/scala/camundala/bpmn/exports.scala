@@ -18,13 +18,6 @@ def maybe[T](value: T | Option[T]): Option[T] = value match
   case v: Option[?] => v.asInstanceOf[Option[T]]
   case v => Some(v.asInstanceOf[T])
 
-def cawemoDescr(descr: String, cawemoLink: String) =
-  s"""
-     |$descr
-     |
-     |<iframe src="https://cawemo.com/embed/$cawemoLink" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
-     |""".stripMargin
-
 inline def nameOfVariable(inline x: Any): String = ${ NameOf.nameOfVariable('x) }
 inline def nameOfType[A]: String = ${ NameOf.nameOfType[A] }
 

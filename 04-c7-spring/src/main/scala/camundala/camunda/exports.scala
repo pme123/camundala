@@ -36,8 +36,6 @@ type FromCamundable[T] = CBpmnModelInstance ?=> T
 trait ProjectPaths:
 
   def projectPath: Path
-  lazy val cawemoPath: Path = projectPath / "cawemo"
-  lazy val withIdPath: Path = cawemoPath / "with-ids"
   lazy val generatedPath: Path = projectPath / "src" / "main" / "resources"
 
 trait AsString[A]:

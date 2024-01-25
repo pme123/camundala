@@ -32,9 +32,7 @@ object ReviewInvoice extends BpmnDsl:
   lazy val example =
     process(
       id = processName,
-      descr = // cawemoDescr(
-        "This starts the Review Invoice Process.",
-      // "cc9f978a-e98a-4b01-991d-36d682574cda"),
+      descr = "This starts the Review Invoice Process.",
       in = In(),
       out = Out(),
     )

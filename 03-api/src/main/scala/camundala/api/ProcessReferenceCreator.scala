@@ -22,6 +22,7 @@ trait ProcessReferenceCreator:
 
   lazy val allBpmns: Seq[(String, Seq[(os.Path, String)])] =
     println(s"BPMN Reference Base Directory: $gitBasePath")
+    apiConfig.projectsConfig.initProject(projectName) // update all projects
     projectConfigs
       .map { pc =>
         val absBpmnPath = pc.absBpmnPath(gitBasePath)
