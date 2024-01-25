@@ -1,5 +1,6 @@
 package camundala.camunda7.worker
 
+import camundala.domain.*
 import camundala.bpmn.*
 import camundala.camunda7.worker.CamundaHelper.*
 import camundala.worker.*
@@ -58,4 +59,5 @@ object ProcessVariablesExtractor:
       impersonateUserIdOpt = impersonateUserIdOpt
     )
   end extractGeneral
+  
 end ProcessVariablesExtractor

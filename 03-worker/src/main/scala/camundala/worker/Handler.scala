@@ -77,7 +77,7 @@ end InitProcessHandler
 
 object InitProcessHandler:
   def apply[
-      In <: Product: InOutCodec
+      In <: Product: InOutCodec,
   ](funct: In => Either[InitProcessError, Map[String, Any]]): InitProcessHandler[In] =
     new InitProcessHandler[In]:
       override def init(in: In): Either[InitProcessError, Map[String, Any]] =

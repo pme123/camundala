@@ -1,8 +1,8 @@
 package camundala.examples.invoice
 
-import domain.*
-import camundala.domain.*
 import camundala.bpmn.*
+import camundala.domain.*
+import camundala.examples.invoice.domain.*
 
 object bpmn extends BpmnDsl:
 
@@ -11,10 +11,7 @@ object bpmn extends BpmnDsl:
   lazy val `Invoice Receipt` =
     process(
       id = InvoiceReceiptPIdent,
-      descr = cawemoDescr(
-        "This starts the Invoice Receipt Process.",
-        "e289c19a-8a57-4467-8583-de72a5e57488"
-      ),
+      descr = "This starts the Invoice Receipt Process.",
       in = InvoiceReceipt(),
       out = InvoiceReceiptCheck() // just for testing
     )
@@ -36,10 +33,7 @@ object bpmn extends BpmnDsl:
     decisionDefinitionKey = "invoice-assign-approver",
     in = SelectApproverGroup(),
     out = Seq(ApproverGroup.management),
-    descr = cawemoDescr(
-      "Decision Table on who must approve the Invoice.",
-      "155ba236-d5d1-42f7-8b56-3e90e0bb98d4"
-    )
+    descr = "Decision Table on who must approve the Invoice."
   )
 
   lazy val InvoiceAssignApproverDMN2 =
@@ -68,21 +62,19 @@ object bpmn extends BpmnDsl:
     out = PrepareBankTransfer()
   )
 
-  lazy val `Review Invoice`: Process[InvoiceReceipt, InvoiceReviewed] =
+  lazy val `Review Invoice` =
     val processId = "ReviewInvoiceP"
     process(
       id = processId,
-      descr = cawemoDescr(
-        "This starts the Review Invoice Process.",
-        "cc9f978a-e98a-4b01-991d-36d682574cda"
-      ),
+      descr = "This starts the Review Invoice Process.",
       in = InvoiceReceipt(),
       out = InvoiceReviewed()
     )
-  lazy val `Review Invoice not clarified`: Process[InvoiceReceipt, InvoiceReviewed] =
+  end `Review Invoice`
+  lazy val `Review Invoice not clarified` =
     `Review Invoice`
-    .withOut(InvoiceReviewed(false))
-    
+      .withOut(InvoiceReviewed(false))
+
   lazy val AssignReviewerUT = userTask(
     id = "AssignReviewerUT",
     descr = "Select the Reviewer.",

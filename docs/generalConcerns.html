@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en-CH">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>General Concerns</title>
+  
+  
+  <meta name="description" content="camundala-documentation"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="helium/site/laika-helium.css" />
+  <script src="helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="index.html"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="index.html">Intro</a></li>
+    <li class="level1 nav-leaf"><a href="specification.html">Process &amp; Domain Specification</a></li>
+    <li class="level1 nav-leaf"><a href="bpmnDsl.html">BPMN DSL</a></li>
+    <li class="level1 nav-leaf"><a href="projectSetup.html">Project Setup</a></li>
+    <li class="level1 nav-leaf"><a href="technologies.html">Technologies</a></li>
+    <li class="level1 active nav-leaf"><a href="#">General Concerns</a></li>
+    <li class="level1 nav-header">Functional DSLs</li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/apiDoc.html">API Documentation</a></li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/simulation.html">Simulations</a></li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/worker.html">Workers</a></li>
+    <li class="level2 nav-leaf"><a href="functionalityDsls/dmnTester.html">DMN Tester</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">General Concerns</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-node"><a href="#mocking">Mocking</a></li>
+    <li class="level2 nav-leaf"><a href="#_1-services-mocked">1. Services mocked</a></li>
+    <li class="level2 nav-leaf"><a href="#_2-mocked-worker">2. Mocked Worker</a></li>
+    <li class="level2 nav-leaf"><a href="#_3-mocked-output">3. Mocked Output</a></li>
+    <li class="level2 nav-leaf"><a href="#_4-mocked-service-output">4. Mocked Service Output</a></li>
+    <li class="level2 nav-leaf"><a href="#mocking-input-outputmock-outputservicemock">Mocking Input (<em>outputMock</em> &amp; <em>outputServiceMock</em>)</a></li>
+    <li class="level1 nav-leaf"><a href="#process-configuration">Process Configuration</a></li>
+    <li class="level1 nav-node"><a href="#mapping">Mapping</a></li>
+    <li class="level2 nav-leaf"><a href="#_1-filter-output-variables">1. Filter Output Variables</a></li>
+    <li class="level2 nav-leaf"><a href="#_2-manual-output-mapping">2. Manual Output Mapping</a></li>
+    <li class="level1 nav-node"><a href="#exception-handling">Exception Handling</a></li>
+    <li class="level2 nav-leaf"><a href="#_1-list-of-error-codes">1. List of Error Codes</a></li>
+    <li class="level2 nav-leaf"><a href="#_2-list-of-error-messages">2. List of Error Messages</a></li>
+    <li class="level1 nav-node"><a href="#authorization">Authorization</a></li>
+    <li class="level2 nav-leaf"><a href="#impersonate-user">Impersonate User</a></li>
+    <li class="level1 nav-leaf"><a href="#validation">Validation</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="general-concerns" class="title">General Concerns</h1>
+        <p>(General Variables)</p>
+        <p>To avoid a lot of boilerplate in your <em>Input Objects</em>, we define a list of input variables we handle by default.</p>
+        <p>We generate a description with the API Documentation under <a href="exampleApi/OpenApi.html"><em>General Variables</em></a>.</p>
+        <ul>
+          <li>
+            <p>camundala-api:</p>
+            <ul>
+              <li>Creates the documentation of these variables, including example.</li>
+              <li>For mocking, it will generate a concrete example in each Process or ServiceProcess.</li>
+            </ul>
+          </li>
+          <li>
+            <p>camundala-simulation:</p>
+            <ul>
+              <li>Adds them, if defined to call the Camunda&#39;s REST API.</li>
+            </ul>
+          </li>
+          <li>
+            <p>camundala-worker:</p>
+            <ul>
+              <li>Part of the implementation.</li>
+            </ul>
+          </li>
+        </ul>
+        <p>You can override the list of variables, you support in your <em>ApiProjectCreator</em>, like</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">bpmn</span><span>.</span><span class="type-name">InputParams</span><span>.*
+
+</span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">supportedVariables</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">InputParams</span><span>] = </span><span class="type-name">Seq</span><span>(
+    </span><span class="identifier">servicesMocked</span><span>,
+    </span><span class="identifier">outputMock</span><span>,
+    </span><span class="identifier">outputServiceMock</span><span>,
+    </span><span class="identifier">handledErrors</span><span>,
+    </span><span class="identifier">regexHandledErrors</span><span>,
+    </span><span class="identifier">impersonateUserId</span><span>
+  )</span></code></pre>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>If you use our Workers - you must use the predefined Variables.</p>
+        </div>
+        
+        <h3 id="mocking" class="section"><a class="anchor-link left" href="#mocking"><i class="icofont-laika link">&#xef71;</i></a>Mocking</h3>
+        <p>This looks a bit strange, that mocking is at the domain level.
+        However, it turns out that this is quite helpful:</p>
+        <ul>
+          <li>API Documentation: You see if a process provides Mocking, and/or if it is possible to mock certain sub processes.</li>
+          <li>Simulation: You can simply mock sub processes and workers.</li>
+          <li>Postman Requests: You can manipulate with mocks the path taken in the process (even on production).</li>
+        </ul>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>The mocking is done with General Variables - see also the chapter above.</p>
+          <p><strong>The Usage</strong> is described here under <a href="exampleApi/OpenApi.html"><em>General Variables</em></a></p>
+        </div>
+        <p>We have four ways to mock. Each possibility is done with a dedicated Process Variable.</p>
+        
+        <h4 id="_1-services-mocked" class="section"><a class="anchor-link left" href="#_1-services-mocked"><i class="icofont-laika link">&#xef71;</i></a>1. Services mocked</h4>
+        <ul>
+          <li>Variable: <code>servicesMocked: Boolean</code> - default: <em>false</em></li>
+        </ul>
+        <p>In a process, this mocks every <em>ServiceTask</em> (<em>ServiceWorker</em>),
+        with the <code>serviceMock</code> (<code>MockedServiceResponse[ServiceOut]</code>).</p>
+        
+        <h4 id="_2-mocked-worker" class="section"><a class="anchor-link left" href="#_2-mocked-worker"><i class="icofont-laika link">&#xef71;</i></a>2. Mocked Worker</h4>
+        <ul>
+          <li>Variable: <code>mockedWorker: Seq[String]</code> - default: <em>Seq.empty</em></li>
+        </ul>
+        <p>In a process, this mocks the <em>SubProcesses</em> and <em>ServiceTasks</em>,
+        if their <em>topicName</em> or <em>processName</em> is in this list.</p>
+        <p><em>Processes</em> must have an <em>InitWorker</em> and you need to add an <em>In Mapping</em> in the <em>BPMN</em>!</p>
+        
+        <h4 id="_3-mocked-output" class="section"><a class="anchor-link left" href="#_3-mocked-output"><i class="icofont-laika link">&#xef71;</i></a>3. Mocked Output</h4>
+        <ul>
+          <li>Variable: <code>outputMock: Option[Out]</code> - default: <em>None</em></li>
+        </ul>
+        <p>A Process or a Worker, can be mocked with its <code>Out</code> object.</p>
+        <p><em>Processes</em> must have an <em>InitWorker</em>!</p>
+        
+        <h4 id="_4-mocked-service-output" class="section"><a class="anchor-link left" href="#_4-mocked-service-output"><i class="icofont-laika link">&#xef71;</i></a>4. Mocked Service Output</h4>
+        <ul>
+          <li>Variable: <code>outputServiceMock: Option[MockedServiceResponse[ServiceOut]]</code> - default: <em>None</em></li>
+        </ul>
+        <p>A <em>ServiceWorker</em>, can be mocked with its <code>ServiceOut</code> object.</p>
+        <p>This allows you also to mock failures in the Service, e.g. <code>MockedServiceResponse.error(404)</code>.</p>
+        
+        <h4 id="mocking-input-outputmock-outputservicemock" class="section"><a class="anchor-link left" href="#mocking-input-outputmock-outputservicemock"><i class="icofont-laika link">&#xef71;</i></a>Mocking Input (<em>outputMock</em> &amp; <em>outputServiceMock</em>)</h4>
+        <p>We define specific Mocks of a Process in its Input Class (<code>In</code>).</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">In</span><span>(
+                 </span><span class="comment">//..
+</span><span>                 </span><span class="identifier">mocks</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Mocks</span><span>] = </span><span class="type-name">None</span><span>
+               )</span></code></pre>
+        <p>For better readability we put all Mocks in a separate <em>case class</em>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Mocks</span><span>(
+                    </span><span class="annotation">@description</span><span>(</span><span class="identifier">serviceOrProcessMockDescr</span><span>(</span><span class="type-name">GetAccount</span><span>.</span><span class="type-name">Out</span><span>()))
+                    </span><span class="identifier">getAccountMock</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">GetAccount</span><span>.</span><span class="type-name">Out</span><span>] = </span><span class="type-name">None</span><span>,
+                    </span><span class="annotation">@description</span><span>(</span><span class="identifier">serviceOrProcessMockDescr</span><span>(</span><span class="type-name">GetAccount</span><span>.</span><span class="identifier">serviceMock</span><span>))
+                    </span><span class="identifier">getServiceAccountMock</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">MockedServiceResponse</span><span>[</span><span class="type-name">GetAccount</span><span>.</span><span class="type-name">ServiceOut</span><span>]] = </span><span class="type-name">None</span><span>,
+                  )</span></code></pre>
+        <p>This class contains all mocks as optional variables.</p>
+        <ul>
+          <li>
+            <p>In the <em>BPMN</em> you map the mocks to the according <em>outputMock</em> or <em>outputServiceMock</em>.</p>
+            <ul>
+              <li><em>getAccountMock</em> -&gt; <em>outputMock</em></li>
+              <li><em>getServiceAccountMock</em> -&gt; <em>outputServiceMock</em></li>
+            </ul>
+          </li>
+        </ul>
+        
+        <h3 id="process-configuration" class="section"><a class="anchor-link left" href="#process-configuration"><i class="icofont-laika link">&#xef71;</i></a>Process Configuration</h3>
+        <p>The configuration of a process is also part of the Input object (<code>In</code>),
+        and so part of the domain specification.</p>
+        <p>A like the <em>Mocks</em> this has these advantages:</p>
+        <ul>
+          <li>API Documentation: You see if there are technical variables that you can adjust. E.g. <em>Timers</em> etc.</li>
+          <li>Simulation: You can simply set a <em>Timer</em> to 0, to also test <em>Timers</em>.</li>
+          <li>Postman Requests: A Business Analyst can test the process also, without waiting until a <em>Timer</em> is due.</li>
+        </ul>
+        <p>We define specific Mocks of a Process in its Input Class (<code>In</code>).</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">In</span><span>(
+                 </span><span class="comment">//..
+</span><span>                 </span><span class="identifier">config</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">InConfig</span><span>] = </span><span class="type-name">None</span><span>,
+               )</span></code></pre>
+        <p>For better readability we put all Configurations in a separate <em>case class</em>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InConfig</span><span>(
+                       </span><span class="annotation">@description</span><span>(</span><span class="string-literal">&quot;Timer to wait....&quot;</span><span>)
+                       </span><span class="identifier">waitForInput</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;PT2H&quot;</span><span>
+                     )</span></code></pre>
+        <p>The class contains all variables with its default values.</p>
+        
+        <h3 id="mapping" class="section"><a class="anchor-link left" href="#mapping"><i class="icofont-laika link">&#xef71;</i></a>Mapping</h3>
+        <p>By default, all output variables (<code>Out</code>) of a Worker are on the process (External Task completion).</p>
+        <p>To reduce the variables you have two possibilities, that also can be combined:</p>
+        
+        <h4 id="_1-filter-output-variables" class="section"><a class="anchor-link left" href="#_1-filter-output-variables"><i class="icofont-laika link">&#xef71;</i></a>1. Filter Output Variables</h4>
+        <ul>
+          <li>Variable: <code>outputVariables: Seq[String]</code> - default: <em>Seq.empty</em></li>
+        </ul>
+        <p>You can filter the Output with a list of variable names you are interested in.
+        This list may include all variables from the output (<code>Out</code>).</p>
+        
+        <h4 id="_2-manual-output-mapping" class="section"><a class="anchor-link left" href="#_2-manual-output-mapping"><i class="icofont-laika link">&#xef71;</i></a>2. Manual Output Mapping</h4>
+        <ul>
+          <li>Variable: <code>manualOutMapping:  Boolean</code> - default: <em>false</em></li>
+        </ul>
+        <p>This will complete the External Task only with <strong>local</strong> output variables.
+        And you must do the output mapping manually in the <em>BPMN</em>.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>This is needed, if you have the output variable already in the process with another value.</p>
+        </div>
+        
+        <h3 id="exception-handling" class="section"><a class="anchor-link left" href="#exception-handling"><i class="icofont-laika link">&#xef71;</i></a>Exception Handling</h3>
+        <p>To handle an Exception in a Worker, we can do the following:</p>
+        
+        <h4 id="_1-list-of-error-codes" class="section"><a class="anchor-link left" href="#_1-list-of-error-codes"><i class="icofont-laika link">&#xef71;</i></a>1. List of Error Codes</h4>
+        <ul>
+          <li>Variable: <code>handledErrors: Seq[String]</code> - default: <em>Seq.empty</em></li>
+        </ul>
+        <p>To handle Errors in a <em>ServiceTask</em>, you need to define a list of error codes.
+        If an error has this error code, it will complete with a <em>BpmnError</em>, instead a Failure.</p>
+        
+        <h4 id="_2-list-of-error-messages" class="section"><a class="anchor-link left" href="#_2-list-of-error-messages"><i class="icofont-laika link">&#xef71;</i></a>2. List of Error Messages</h4>
+        <ul>
+          <li>Variable: <code>regexHandledErrors: Seq[String]</code> - default: <em>Seq.empty</em></li>
+        </ul>
+        <p>If the error code is not enough, you can also add a list of regex expressions, to filter the Errors you handle.</p>
+        <p>For example, you want to handle a <em>400</em> error, but only if the message contains <em>bad response</em>.</p>
+        
+        <h3 id="authorization" class="section"><a class="anchor-link left" href="#authorization"><i class="icofont-laika link">&#xef71;</i></a>Authorization</h3>
+        
+        <h4 id="impersonate-user" class="section"><a class="anchor-link left" href="#impersonate-user"><i class="icofont-laika link">&#xef71;</i></a>Impersonate User</h4>
+        <ul>
+          <li>Variable: <code>impersonateUserId: Option[String]</code> - default: <em>None</em></li>
+        </ul>
+        <p>User-ID or Correlation-ID of a User that should be taken to authenticate to the services.
+        This must be supported by your implementation.</p>
+        <p>It is helpful if you have Tokens that expire, but long-running Processes.</p>
+        
+        <h3 id="validation" class="section"><a class="anchor-link left" href="#validation"><i class="icofont-laika link">&#xef71;</i></a>Validation</h3>
+        <p>The Validation is handled by all <em><a href="functionalityDsls/worker.html#workers">Workers</a></em> and no additional variables are needed.</p>
+        <p>The following objects are handled:</p>
+        <ul>
+          <li>Input Variables (<code>In</code>)</li>
+          <li>Service Output Variables (Service Output Body <code>ServiceOut</code>)</li>
+        </ul>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

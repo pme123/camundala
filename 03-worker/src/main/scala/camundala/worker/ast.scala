@@ -16,10 +16,10 @@ sealed trait Worker[
     T <: Worker[In, Out, ?]
 ]:
 
-  def inOut: InOut[In, Out, ?]
+  def inOutExample: InOut[In, Out, ?]
   def topic: String
-  lazy val in: In = inOut.in
-  lazy val out: Out = inOut.out
+  lazy val in: In = inOutExample.in
+  lazy val out: Out = inOutExample.out
   // handler
   def validationHandler: Option[ValidationHandler[In]] = None
   def initProcessHandler: Option[InitProcessHandler[In]] = None
@@ -42,11 +42,11 @@ case class InitWorker[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec
 ](
-    inOut: InOut[In, Out, ?],
+    inOutExample: InOut[In, Out, ?],
     override val validationHandler: Option[ValidationHandler[In]] = None,
     override val initProcessHandler: Option[InitProcessHandler[In]] = None
 ) extends Worker[In, Out, InitWorker[In, Out]]:
-  lazy val topic: String = inOut.id
+  lazy val topic: String = inOutExample.id
 
   def validate(
       validator: ValidationHandler[In]
@@ -69,11 +69,11 @@ case class CustomWorker[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec
 ](
-    inOut: CustomTask[In, Out],
+    inOutExample: CustomTask[In, Out],
     override val validationHandler: Option[ValidationHandler[In]] = None,
     override val runWorkHandler: Option[RunWorkHandler[In, Out]] = None
 ) extends Worker[In, Out, CustomWorker[In, Out]]:
-  lazy val topic: String = inOut.topicName
+  lazy val topic: String = inOutExample.topicName
 
   def validate(
       validator: ValidationHandler[In]
@@ -98,11 +98,11 @@ case class ServiceWorker[
     ServiceIn <: Product: InOutEncoder,
     ServiceOut: InOutDecoder
 ](
-    inOut: ServiceTask[In, Out, ServiceIn, ServiceOut],
+    inOutExample: ServiceTask[In, Out, ServiceIn, ServiceOut],
     override val validationHandler: Option[ValidationHandler[In]] = None,
     override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None
 ) extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
-  lazy val topic: String = inOut.topicName
+  lazy val topic: String = inOutExample.topicName
 
   def validate(
       handler: ValidationHandler[In]
@@ -123,8 +123,8 @@ case class ServiceWorker[
           handler
             .outputMapper(
               ServiceResponse(
-                inOut.defaultServiceOutMock.unsafeBody,
-                inOut.defaultServiceOutMock.headersAsMap
+                inOutExample.defaultServiceOutMock.unsafeBody,
+                inOutExample.defaultServiceOutMock.headersAsMap
               ),
               in
             ) match

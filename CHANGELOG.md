@@ -15,6 +15,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.28.3 - 2024-01-25
+### Changed 
+- Fixed Compile errors. - see [Commit](https://github.com/pme123/camundala/commit/dbfabdd2e443453859501d5310d0f1824ae37713)
+- Removed Cawemo / added initProject before Reference Creation. - see [Commit](https://github.com/pme123/camundala/commit/6e862c2d04cc1a3ac6c7aa771602fea6361c7779)
+- Introduced InConfig as pattern. - see [Commit](https://github.com/pme123/camundala/commit/9fa1008982e946cb4bae8953587c0d545a17958b)
+- Working InvoiceSimulation with InConfig. - see [Commit](https://github.com/pme123/camundala/commit/df0b97718e4ab6ec2d52ea87d271e73d8370a49e)
+- With extra config object. - see [Commit](https://github.com/pme123/camundala/commit/483f1056df4f910aa0cec4a2f8628fef7b5effe2)
+- Merge branch 'develop' into inConfig - see [Commit](https://github.com/pme123/camundala/commit/9257657ba1c3a2622b10047082165c322f13408a)
+- Added Doc files. - see [Commit](https://github.com/pme123/camundala/commit/d62a89fb9385fffb6712a678df85dff92799e19b)
+
 ## 1.28.2 - 2024-01-22
 ### Changed 
 - Added manualOutMapping / documented GeneralVariables. - see [Commit](https://github.com/pme123/camundala/commit/30e367e6981bdf23d7253a876309c899dcfb81bf)

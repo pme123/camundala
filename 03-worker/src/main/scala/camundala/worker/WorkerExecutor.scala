@@ -13,7 +13,7 @@ case class WorkerExecutor[
 )(using context: EngineRunContext):
 
   def execute(
-      processVariables: Seq[Either[BadVariableError, (String, Option[Json])]]
+      processVariables: Seq[Either[BadVariableError, (String, Option[Json])]],
   ) =
     for
       validatedInput <- InputValidator.validate(processVariables)
@@ -66,12 +66,13 @@ case class WorkerExecutor[
     )
 
     def initVariables(
-        validatedInput: In
-    ): Either[InitProcessError, Map[String, Any]] = worker.initProcessHandler
-      .map { vi =>
-        vi.init(validatedInput).map(_ ++ defaultVariables)
-      }
-      .getOrElse(Right(defaultVariables))
+                       validatedInput: In,
+    ): Either[InitProcessError, Map[String, Any]] =
+      worker.initProcessHandler
+        .map { vi =>
+          vi.init(validatedInput).map(_ ++ defaultVariables)
+        }
+        .getOrElse(Right(defaultVariables))
   end Initializer
 
   object OutMocker:

@@ -3,62 +3,63 @@ info:
   title: Invoice Example Process API
   version: '1.0'
   summary: "\n**This is for Postman - to have example requests. Be aware the Output\
-    \ is not provided!**\n\n\n\nCreated at 25/01/2024, 07:31\n\n**See the [Camundala\
+    \ is not provided!**\n\n\n\nCreated at 20/01/2024, 11:18\n\n**See the [Camundala\
     \ Documentation](https://pme123.github.io/camundala/)\n\nThere is no README.md\
-    \ in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>General Variables</i></b>\n\
+    \ in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>Supported General Variables</i></b>\n\
     </summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\nMock all the _ServiceWorkers_\
     \ in your process with their default Mock:\n\n- DSL:\n```scala\nprocess(..)\n\
-    \  .mockServices\n```\n\n- Json\n```json\n...\n\"servicesMocked\": true,\n...\n\
+    \  .mockServices\n```\n\n- Json\n```json\n...\n\"defaultMocked\": true,\n...\n\
     ```\n\n\n**mockedWorkers**:\n\nMock any Process- and/or ExternalTask-Worker with\
     \ their default Mocks.\nThis is a list of the _Worker topicNames or Process processNames_,\
     \ you want to mock.\nIt is also possible to use a _comma separated_ String,\n\
-    like `\"mySubProcess,myOtherSubProcess,myService\"`\n\n_Be aware_: For Sub-Processes,\
+    like `\"mySubProcess,myOtherSubProcess,myService\"`\n\n_Be aware_: For Processes,\
     \ this expects an _InitWorker_ where the _topicName_ is equal to the _processName_.\n\
     \n\n- DSL:\n```scala\nprocess(..)\n  .mockedWorkers(\"mySubProcess1\", \"mySubProcess2\"\
     ) // creates a list with SubProcessess\n  .mockedWorker(\"myOtherSubProcess\"\
     ) // adds a SubProcess\n```\n\n- Json\n```json\n...\n\"mockedWorkers\": [\"mySubProcess\"\
-    , \"myOtherSubProcess, myService\"],\n...\n```\n\n\n**outputMock**:\n\nMock the\
-    \ Process or ExternalTask (`Out`)\n - You find an example in every _Process_ and\
-    \ _ExternalTask_.\n\n\n- DSL:\n```scala\nprocess(..) // or serviceTask(..)/customTask(..)\n\
-    \  .mockWith(outputMock)\n```\n\n- Json\n```json\n...\n\"outputMock\": {..},\n\
-    ...\n```\n\n\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
-    \ - You find an example in every _ServiceTask_.\n\n\n- DSL:\n```scala\nserviceTask(..)\n\
-    \  .mockServiceWith(MockedServiceResponse\n     .success200(inOut.defaultServiceOutMock))\n\
-    ```\n\n- Json\n```json\n...\n\"outputServiceMock\": {\n  \"respStatus\" : 200,\n\
-    \  \"respBody\" : \"Example String Body\",\n  \"respHeaders\" : [\n  ]\n},\n...\n\
-    ```\n\n### Mapping\n**outputVariables**:\n\nYou can filter the Output with a list\
-    \ of variable names you are interested in.\nThis list may include all variables\
-    \ from the output (`Out`). We included an example for each Process or ExternalTask.\n\
-    It is also possible to use a _comma separated_ String,\nlike `\"name,firstName\"\
-    `\n\n\n- DSL:\n```scala\nprocess(..) // or serviceTask(..)/customTask(..)\n  .withOutputVariables(\"\
-    name\", \"firstName\") // creates a list with outputVariables\n  .withOutputVariable(\"\
-    nickname\") // adds a outputVariable\n```\n\n- Json\n```json\n...\n\"outputVariables\"\
-    : [\"name\", \"firstName\"],\n...\n```\n\n\n**manualOutMapping**:\n\nBy default\
-    \ all output Variables (`Out`) are on the Process for _External Tasks_.\nIf the\
-    \ filter _outputVariables_ is not enough,\nyou can set this variable - every output\
-    \ variable is then local.\n\n_Be aware_ that you must then manually have _output\
-    \ mappings_ for each output variable!\n\n\n- DSL:\n```scala\nserviceTask(..) //\
-    \ or customTask(..)\n  .manualOutMapping\n```\n\n- Json\n```json\n...\n\"manualOutMapping\"\
-    : true,\n...\n```\n\n### Mocking\n**handledErrors**:\n\nA list of error codes\
-    \ that are handled (`BpmnError`)\nIt is also possible to use a _comma separated_\
-    \ String,\nlike `\"validation-failed,404\"`\n\nAt the moment only _ServiceTasks_\
-    \ supported.\n\n\n- DSL:\n```scala\nserviceTask(..)\n  .handleErrors(ErrorCodes.`validation-failed`,\
-    \ \"404\") // create a list of handledErrors\n  .handleError(\"404\") // add a\
-    \ handledError\n```\n\n- Json\n```json\n...\n\"handledErrors\": [\"validation-failed\"\
-    , \"404\"],\n...\n```\n\n\n**regexHandledErrors**:\n\nYou can further filter Handled\
-    \ Errors with a list of Regex expressions that the body error message must match.\n\
-    It is also possible to use a _comma separated_ String,\nlike `\"SQL exception,\"\
-    errorNr\":\"20000\"\"`\n\nAt the moment only _ServiceTasks_ supported.\n\n\n-\
-    \ DSL:\n```scala\nserviceTask(..)\n  .handleErrorWithRegex(\"SQL exception\")\n\
-    \  .handleErrorWithRegex(\"\\\"errorNr\\\":\\\"20000\\\"\")\n```\n\n- Json\n```json\n\
-    ...\n\"regexHandledErrors\": [\"SQL exception\", \"\"errorNr\":\"20000\"\"],\n\
-    ...\n```\n\n### Authorization\n**impersonateUserId**:\n\nUser-ID of a User that\
-    \ should be taken to authenticate to the services.\nThis must be supported by\
-    \ your implementation. *Be caution: this may be a security issue!*.\nIt is helpful\
-    \ if you have Tokens that expire, but long running Processes.\n\n- DSL:\n```scala\n\
-    process(..) // or serviceTask(..)/customTask(..)\n  .withImpersonateUserId(impersonateUserId)\n\
-    ```\n\n- Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
-    \n</p>\n</details>\n<p/>\n        \n\n"
+    , \"myOtherSubProcess\"],\n...\n```\n\n\n**outputMock**:\n\nMock the Process or\
+    \ ExternalTask (`Out`)\n - You find an example in every _Process_ and _ExternalTask_.\n\
+    \n\n- DSL:\n```scala\nprocess(..) // or serviceTask(..)/customTask(..)\n  .mockWith(outputMock)\n\
+    ```\n\n- Json\n```json\n...\n\"outputMock\": {..},\n...\n```\n\n\n**outputServiceMock**:\n\
+    \nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n - You find an\
+    \ example in every _ServiceTask_.\n\n\n- DSL:\n```scala\nserviceTask(..)\n  .mockServiceWith(MockedServiceResponse\n\
+    \     .success200(inOut.defaultServiceOutMock))\n```\n\n- Json\n```json\n...\n\
+    \"outputServiceMock\": {\n  \"respStatus\" : 200,\n  \"respBody\" : \"Example\
+    \ String Body\",\n  \"respHeaders\" : [\n  ]\n},\n...\n```\n\n### Mapping\n**outputVariables**:\n\
+    \nYou can filter the Output with a list of variable names you are interested in.\n\
+    This list may include all variables from the output (`Out`). We included an example\
+    \ for each Process or ExternalTask.\nIt is also possible to use a _comma separated_\
+    \ String,\nlike `\"name,firstName\"`\n\n\n- DSL:\n```scala\nprocess(..) // or\
+    \ serviceTask(..)/customTask(..)\n  .withOutputVariables(\"name\", \"firstName\"\
+    ) // creates a list with outputVariables\n  .withOutputVariable(\"nickname\")\
+    \ // adds a outputVariable\n```\n\n- Json\n```json\n...\n\"outputVariables\":\
+    \ [\"name\", \"firstName\"],\n...\n```\n\n\n**manualOutMapping**:\n\nBy default\
+    \ all output Variables (`Out`) are on the Process.\nIf the filter _outputVariables_\
+    \ is not enough, you can set this variable.\n\nBe aware that you must then manually\
+    \ _output mappings_!\n\n\n- DSL:\n```scala\nprocess(..) // or serviceTask(..)/customTask(..)\n\
+    \  .withOutputVariables(\"name\", \"firstName\") // creates a list with outputVariables\n\
+    \  .withOutputVariable(\"nickname\") // adds a outputVariable\n```\n\n- Json\n\
+    ```json\n...\n\"outputVariables\": [\"name\", \"firstName\"],\n...\n```\n\n\n\
+    **handledErrors**:\n\nA list of error codes that are handled (`BpmnError`)\nIt\
+    \ is also possible to use a _comma separated_ String,\nlike `\"validation-failed,404\"\
+    `\n\nAt the moment only _ServiceTasks_ supported.\n\n\n- DSL:\n```scala\nserviceTask(..)\n\
+    \  .handleErrors(ErrorCodes.`validation-failed`, \"404\") // create a list of\
+    \ handledErrors\n  .handleError(\"404\") // add a handledError\n```\n\n- Json\n\
+    ```json\n...\n\"handledErrors\": [\"validation-failed\", \"404\"],\n...\n```\n\
+    \n\n**regexHandledErrors**:\n\nYou can further filter Handled Errors with a list\
+    \ of Regex expressions that the body error message must match.\nIt is also possible\
+    \ to use a _comma separated_ String,\nlike `\"SQL exception,\"errorNr\":\"20000\"\
+    \"`\n\nAt the moment only _ServiceTasks_ supported.\n\n\n- DSL:\n```scala\nserviceTask(..)\n\
+    \  .handleErrorWithRegex(\"SQL exception\")\n  .handleErrorWithRegex(\"\\\"errorNr\\\
+    \":\\\"20000\\\"\")\n```\n\n- Json\n```json\n...\n\"regexHandledErrors\": [\"\
+    SQL exception\", \"\"errorNr\":\"20000\"\"],\n...\n```\n\n### Authorization\n\
+    **impersonateUserId**:\n\nUser-ID of a User that should be taken to authenticate\
+    \ to the services.\nThis must be supported by your implementation. *Be caution:\
+    \ this may be a security issue!*.\nIt is helpful if you have Tokens that expire,\
+    \ but long running Processes.\n\n- DSL:\n```scala\nprocess(..) // or serviceTask(..)/customTask(..)\n\
+    \  .withImpersonateUserId(impersonateUserId)\n```\n\n- Json\n```json\n...\n\"\
+    impersonateUserId\": \"myUserName\",\n...\n```\n\n</p>\n</details>\n<p/>\n   \
+    \     \n\n"
 servers:
 - url: http://localhost:8034/engine-rest
   description: Local Developer Server
@@ -91,32 +92,6 @@ paths:
                     amount:
                       value: 300.0
                       type: Double
-                    invoiceCategory:
-                      value: Travel Expenses
-                      type: String
-                  businessKey: example-invoice-c7
-                  withVariablesInReturn: true
-              With InConfig:
-                value:
-                  variables:
-                    creditor:
-                      value: Great Pizza for Everyone Inc.
-                      type: String
-                    invoiceNumber:
-                      value: I-12345
-                      type: String
-                    amount:
-                      value: 300.0
-                      type: Double
-                    inConfig:
-                      value: |-
-                        {
-                          "shouldFail" : false,
-                          "invoiceReviewedMock" : {
-                            "clarified" : true
-                          }
-                        }
-                      type: Json
                     invoiceCategory:
                       value: Travel Expenses
                       type: String

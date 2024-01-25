@@ -17,8 +17,9 @@ sealed trait CApi:
 
 sealed trait GroupedApi extends CApi:
   def name: String
-  def apis: List[_ <: CApi]
-  def withApis(apis: List[_ <: CApi]): GroupedApi
+  def apis: List[? <: CApi]
+  def withApis(apis: List[? <: CApi]): GroupedApi
+end GroupedApi
 
 sealed trait InOutApi[
     In <: Product: InOutEncoder: InOutDecoder: Schema,
@@ -82,7 +83,7 @@ sealed trait InOutApi[
       diagramDownloadPath: String,
       diagramNameAdjuster: Option[String => String]
   ): String =
-    val postfix = if (typeName == "Process") "bpmn" else "dmn"
+    val postfix = if typeName == "Process" then "bpmn" else "dmn"
     val postfixUpper = postfix.head.toUpper + postfix.tail
     val pureDiagramName = diagramName.getOrElse(id)
     val name =
@@ -134,11 +135,12 @@ case class ProcessApi[
             .getOrElse("")
       }
        |${generalVariablesDescr(inOut.out, "")}""".stripMargin
+end ProcessApi
 
 object ProcessApi:
   def apply[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag
+      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
   ](name: String, inOut: Process[In, Out]): ProcessApi[In, Out] =
     ProcessApi(name, inOut, ApiExamples(name, inOut))
 
@@ -200,6 +202,7 @@ sealed trait ExternalTaskApi[
        |
        |You can test this worker using the generic process _**$GenericExternalTaskProcessName**_ (e.g. with Postman).
        |""".stripMargin
+end ExternalTaskApi
 
 case class ServiceWorkerApi[
     In <: Product: InOutEncoder: InOutDecoder: Schema,
@@ -244,6 +247,7 @@ case class ServiceWorkerApi[
       case seq: Seq[?] =>
         s"Seq[${seq.head.getClass.getName.replace("$", " > ")}]"
       case other => other.getClass.getName.replace("$", " > ")
+end ServiceWorkerApi
 
 object ServiceWorkerApi:
   def apply[
@@ -272,6 +276,7 @@ case class CustomWorkerApi[
       examples: ApiExamples[In, Out]
   ): InOutApi[In, Out] =
     copy(apiExamples = examples)
+end CustomWorkerApi
 
 object CustomWorkerApi:
   def apply[
@@ -313,6 +318,7 @@ case class DecisionDmnApi[
         .map(diagramFrame(_, diagramNameAdjuster))
         .getOrElse("")}
        |""".stripMargin
+end DecisionDmnApi
 
 object DecisionDmnApi:
   def apply[
@@ -345,6 +351,7 @@ case class ActivityApi[
       examples: ApiExamples[In, Out]
   ): ActivityApi[In, Out] =
     copy(apiExamples = examples)
+end ActivityApi
 
 object ActivityApi:
 
@@ -382,6 +389,7 @@ case class InOutExamples[T <: Product: InOutEncoder: InOutDecoder: Schema](
 
   lazy val fetchExamples: Seq[InOutExample[T]] =
     examples
+end InOutExamples
 
 object InOutExamples:
 
@@ -390,6 +398,7 @@ object InOutExamples:
       inOut: T
   ): InOutExamples[T] =
     InOutExamples(Seq(InOutExample(name, inOut)))
+end InOutExamples
 
 case class InOutExample[T <: Product: InOutEncoder: InOutDecoder: Schema](
     name: String,
@@ -397,3 +406,4 @@ case class InOutExample[T <: Product: InOutEncoder: InOutDecoder: Schema](
 ):
   // this function needs to be here as circe does not find theInOutEncoderin the extension method
   def toCamunda: FormVariables = CamundaVariable.toCamunda(example)
+end InOutExample

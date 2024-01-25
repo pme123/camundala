@@ -114,10 +114,10 @@ end ProcessOrExternalTask
 
 case class Process[
     In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema
+    Out <: Product: InOutEncoder: InOutDecoder: Schema,
 ](
     inOutDescr: InOutDescr[In, Out],
-    elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty,
+    protected val elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty,
     startEventType: StartEventType = StartEventType.None,
     protected val servicesMocked: Boolean = false,
     protected val mockedWorkers: Seq[String] = Seq.empty,
@@ -135,9 +135,7 @@ case class Process[
   def withInOutDescr(descr: InOutDescr[In, Out]): Process[In, Out] =
     copy(inOutDescr = descr)
 
-  def withElements(
-      elements: (ProcessNode | InOut[?, ?, ?])*
-  ): Process[In, Out] =
+  def withElements(elements: (ProcessNode | InOut[?, ?, ?])*): Process[In, Out] =
     this.copy(elements = elements)
 
   def withImpersonateUserId(impersonateUserId: String): Process[In, Out] =

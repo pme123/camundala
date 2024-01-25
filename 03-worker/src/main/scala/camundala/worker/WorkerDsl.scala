@@ -31,90 +31,18 @@ end WorkerDsl
 
 trait InitWorkerDsl[
     In <: Product: InOutCodec,
-    Out <: Product: InOutCodec
+    Out <: Product: InOutCodec,
+    InConfig <: Product: InOutCodec
 ] extends WorkerDsl,
       ValidateDsl[In],
-      InitProcessDsl[In]:
+      InitProcessDsl[In, InConfig]:
 
-  lazy val worker: InitWorker[In, Out] = InitWorker(inOut)
-    .validate(ValidationHandler(validate))
-    .initProcess(InitProcessHandler(initProcess))
+  protected def inOutExample: InOut[In, Out, ?]
 
-  protected def inOut: InOut[In, Out, ?]
-
-  /** initialize the config of the form of:
-    * ```
-    * case class InConfig(
-    *    timerIdentificationNotReceived: Option[String :| Iso8601Duration],
-    *    timerEBankingContractCheckOpened: Option[String :| CronExpr] =
-    *  ...
-    *  )
-    * ```
-    */
-  protected def initConfig[T <: Product: InOutEncoder](
-      configOpt: Option[T],
-      defaults: T
-  ): Map[String, Any] =
-    val defaultsJson = defaults.asJson
-    val r = configOpt.map {
-      config =>
-        val json = config.asJson
-        config.productElementNames
-          .map(k =>
-            k -> (json.hcursor
-              .downField(k).focus, defaultsJson.hcursor
-              .downField(k).focus)
-          ).collect {
-            case k -> (Some(j), Some(dj)) if j.isNull =>
-              k -> dj
-            case k -> (Some(j), _) =>
-              k -> j
-            case k -> (_, dj) =>
-              k -> dj.getOrElse(Json.Null)
-          }
-          .toMap
-    }.getOrElse { // get all defaults
-      defaults.productElementNames
-        .map(k =>
-          k -> defaultsJson.hcursor
-            .downField(k).focus
-        ).collect {
-          case k -> Some(j) =>
-            k -> j
-        }
-        .toMap
-    }
-    engineContext.toEngineObject(r)
-  end initConfig
-
-  /** initialize Mocks of the form:
-    * ```
-    * case class Mocks(
-    *  searchAccountMock: Option[MockedServiceResponse[GetAccountSearchReference.ServiceOut]],
-    *  getAccountHolderMock: Option[GetClientClientKey.Out],
-    *  ...
-    * )
-    * ```
-    */
-  protected def initMocks[T <: Product: InOutEncoder](mocksOpt: Option[T], defaults: T) =
-    mocksOpt.map {
-      mocks =>
-        val json = mocks.asJson
-        mocks.productElementNames
-          .map(k =>
-            k -> json.hcursor
-              .downField(k).focus
-          ).collect {
-            case k -> Some(j) =>
-              k -> (if j.isNull then
-                      null // because every variable used in an expression must be on the process
-                    else
-                      engineContext.toEngineObject(j)
-              )
-          }
-          .toMap
-    }.getOrElse(engineContext.toEngineObject(defaults))
-  end initMocks
+  lazy val worker: InitWorker[In, Out] =
+    InitWorker(inOutExample)
+      .validate(ValidationHandler(validate))
+      .initProcess(InitProcessHandler(initProcess))
 
 end InitWorkerDsl
 
@@ -164,10 +92,12 @@ trait ServiceWorkerDsl[
   protected def apiUri(in: In): Uri // input must be valid - so no errors
   // optional
   protected def method: Method = Method.GET
-  protected def querySegments(in: In): Seq[QuerySegmentOrParam] = Seq.empty  // input must be valid - so no errors
-  // mocking out from outService and headers
-  protected def inputMapper(in: In): Option[ServiceIn] = None  // input must be valid - so no errors
-  protected def inputHeaders(in: In): Map[String, String] = Map.empty // input must be valid - so no errors
+  protected def querySegments(in: In): Seq[QuerySegmentOrParam] =
+    Seq.empty // input must be valid - so no errors
+      // mocking out from outService and headers
+  protected def inputMapper(in: In): Option[ServiceIn] = None // input must be valid - so no errors
+  protected def inputHeaders(in: In): Map[String, String] =
+    Map.empty // input must be valid - so no errors
   protected def outputMapper(
       serviceOut: ServiceResponse[ServiceOut],
       in: In
@@ -210,10 +140,68 @@ private trait ValidateDsl[
 end ValidateDsl
 
 private trait InitProcessDsl[
-    In <: Product: InOutCodec
+    In <: Product: InOutCodec,
+    InConfig <: Product: InOutCodec
 ]:
+  protected def engineContext: EngineContext
 
-  def initProcess(in: In): Either[InitProcessError, Map[String, Any]] = Right(Map.empty)
+  // by default the InConfig is initialized
+  def initProcess(in: In): Either[InitProcessError, Map[String, Any]] =
+    val inConfig = in match
+      case i: WithConfig[?] =>
+        initConfig(
+          i.inConfig.asInstanceOf[Option[InConfig]],
+          i.defaultConfig.asInstanceOf[InConfig]
+        )
+      case _ => Map.empty
+    Right(inConfig)
+  end initProcess
+
+  /** initialize the config of the form of:
+    *
+    * ```
+    * case class InConfig(
+    * timerIdentificationNotReceived: Option[String :| Iso8601Duration],
+    * timerEBankingContractCheckOpened: Option[String :| CronExpr] =
+    * ...
+    * )
+    * ```
+    */
+  private def initConfig(
+                          optConfig: Option[InConfig],
+                          defaultConfig: InConfig
+  ): Map[String, Any] =
+    val defaultJson = defaultConfig.asJson
+    val r = optConfig.map {
+      config =>
+        val json = config.asJson
+        config.productElementNames
+          .map(k =>
+            k -> (json.hcursor
+              .downField(k).focus, defaultJson.hcursor
+              .downField(k).focus)
+          ).collect {
+            case k -> (Some(j), Some(dj)) if j.isNull =>
+              k -> dj
+            case k -> (Some(j), _) =>
+              k -> j
+            case k -> (_, dj) =>
+              k -> dj.getOrElse(Json.Null)
+          }
+          .toMap
+    }.getOrElse { // get all defaults
+      defaultConfig.productElementNames
+        .map(k =>
+          k -> defaultJson.hcursor
+            .downField(k).focus
+        ).collect {
+          case k -> Some(j) =>
+            k -> j
+        }
+        .toMap
+    }
+    engineContext.toEngineObject(r)
+  end initConfig
 
 end InitProcessDsl
 

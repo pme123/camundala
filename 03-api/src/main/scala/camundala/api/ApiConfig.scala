@@ -12,8 +12,6 @@ case class ApiConfig(
     endpoint: String = "http://localhost:8080/engine-rest",
     // Base Path of your project (if changed - all doc paths will be adjusted)
     basePath: os.Path = os.pwd,
-    // If your project is on cawemo, add here the Id of the folder of your bpmns.
-    cawemoFolder: Option[String] = None,
     openApiPath: os.Path = os.pwd / "openApi.yml",
     postmanOpenApiPath: os.Path = os.pwd / "postmanOpenApi.yml",
     openApiDocuPath: os.Path = os.pwd / "OpenApi.html",
@@ -48,9 +46,6 @@ case class ApiConfig(
 
   def withTenantId(tenantId: String): ApiConfig =
     copy(tenantId = Some(tenantId))
-
-  def withCawemoFolder(folderName: String): ApiConfig =
-    copy(cawemoFolder = Some(folderName))
 
   def withBasePath(path: os.Path): ApiConfig =
     copy(
@@ -122,6 +117,10 @@ case class ProjectsConfig(
     groupedConfigs.foreach(_.init(gitDir))
   end init
 
+  def initProject(projectName: String): Unit =
+    groupedConfigs.foreach(_.initProject(gitDir, projectName))
+  end initProject
+
   lazy val projectConfigs: Seq[ProjectConfig] = groupedConfigs.flatMap(_.projects)
 
   lazy val colors: Seq[(String, String)] = projectConfigs.map { project =>
@@ -154,7 +153,14 @@ case class GroupedProjectConfig(
         updateProject(project.absGitPath(gitDir), gitRepo)
       }
 
-  end init
+  def initProject(gitDir: os.Path, projectName: String): Unit =
+    projects.find(_.name == projectName)
+    .foreach{ project =>
+        val gitRepo = s"$cloneUrl/${project.name}.git"
+        updateProject(project.absGitPath(gitDir), gitRepo)
+      }
+  end initProject
+
   def containsProject(projectName: String): Boolean =
     projects.exists(_.name == projectName)
 

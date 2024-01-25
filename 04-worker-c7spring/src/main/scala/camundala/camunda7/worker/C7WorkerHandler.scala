@@ -8,7 +8,7 @@ import jakarta.annotation.PostConstruct
 import org.camunda.bpm.client.{ExternalTaskClient, task as camunda}
 import org.springframework.beans.factory.annotation.Autowired
 
-import jakarta.annotation.PostConstruct
+import java.util.Date
 import scala.jdk.CollectionConverters.*
 
 /** To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
@@ -29,12 +29,13 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
       externalTask: camunda.ExternalTask,
       externalTaskService: camunda.ExternalTaskService
   ): Unit =
+    val startDate = new Date()
     logger.info(
       s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) started > ${externalTask.getBusinessKey}"
     )
     executeWorker(externalTaskService)(using externalTask)
     logger.info(
-      s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) ended   > ${externalTask.getBusinessKey}"
+      s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) ended ${printTime(startDate)}   > ${externalTask.getBusinessKey}"
     )
   end execute
 
@@ -53,16 +54,17 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
   ): HelperContext[Unit] =
     val tryProcessVariables = ProcessVariablesExtractor.extract(worker.variableNames)
     val tryGeneralVariables = ProcessVariablesExtractor.extractGeneral()
-    try {
-      (for {
+    try
+      (for
           generalVariables <- tryGeneralVariables
           context = EngineRunContext(engineContext, generalVariables)
-          filteredOut <- worker.executor(using context).execute(tryProcessVariables)
-        } yield externalTaskService.handleSuccess(filteredOut, generalVariables.manualOutMapping) //
+          filteredOut <-
+            worker.executor(using context).execute(tryProcessVariables)
+        yield externalTaskService.handleSuccess(filteredOut, generalVariables.manualOutMapping) //
       ).left.map { ex =>
         externalTaskService.handleError(ex, tryGeneralVariables)
       }
-    } catch { // safety net
+    catch // safety net
       case ex: Throwable =>
         ex.printStackTrace()
         externalTaskService.handleError(
@@ -71,8 +73,16 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
           ),
           tryGeneralVariables
         )
-    }
+    end try
   end executeWorker
+
+  private def printTime(start: Date) =
+    val time = new Date().getTime - start.getTime
+    val color = if time > 1000 then Console.YELLOW_B
+    else if time > 250 then Console.MAGENTA
+    else Console.BLACK
+    s"($color$time ms${Console.RESET})"
+  end printTime
 
   extension (externalTaskService: camunda.ExternalTaskService)
 
@@ -80,11 +90,10 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
         filteredOutput: Map[String, Any],
         manualOutMapping: Boolean
     ): HelperContext[Unit] =
-      
       externalTaskService.complete(
         summon[camunda.ExternalTask],
         if manualOutMapping then Map.empty.asJava else filteredOutput.asJava, // Process Variables
-        if !manualOutMapping then Map.empty.asJava else filteredOutput.asJava, // local Variables
+        if !manualOutMapping then Map.empty.asJava else filteredOutput.asJava // local Variables
       )
 
     private def handleError(
@@ -92,7 +101,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
         tryGeneralVariables: Either[BadVariableError, GeneralVariables]
     ): HelperContext[Unit] =
       import CamundalaWorkerError.*
-      (for {
+      (for
         generalVariables <- tryGeneralVariables
         errorHandled = error.isMock || generalVariables.handledErrors.contains(
           error.errorCode.toString
@@ -100,7 +109,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
         errorRegexHandled = errorHandled && generalVariables.regexHandledErrors.forall(regex =>
           error.errorMsg.matches(s".*$regex.*")
         )
-      } yield (errorHandled, errorRegexHandled, generalVariables))
+      yield (errorHandled, errorRegexHandled, generalVariables))
         .flatMap {
           case (true, true, generalVariables) =>
             val mockedOutput = error match
@@ -109,11 +118,11 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
               case _ => Map.empty
             val filtered = filteredOutput(generalVariables.outputVariables, mockedOutput)
             Right(
-              if (
+              if
                 error.isMock && !generalVariables.handledErrors.contains(
                   error.errorCode.toString
                 )
-              )
+              then
                 handleSuccess(filtered, generalVariables.manualOutMapping)
               else
                 logger.info(s"Handled Error: ${error.causeMsg}")

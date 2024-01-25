@@ -18,13 +18,6 @@ def maybe[T](value: T | Option[T]): Option[T] = value match
   case v: Option[?] => v.asInstanceOf[Option[T]]
   case v => Some(v.asInstanceOf[T])
 
-def cawemoDescr(descr: String, cawemoLink: String) =
-  s"""
-     |$descr
-     |
-     |<iframe src="https://cawemo.com/embed/$cawemoLink" style="width:100%;height:500px;border:1px solid #ccc" allowfullscreen></iframe>
-     |""".stripMargin
-
 inline def nameOfVariable(inline x: Any): String = ${ NameOf.nameOfVariable('x) }
 inline def nameOfType[A]: String = ${ NameOf.nameOfType[A] }
 
@@ -41,8 +34,9 @@ enum InputParams:
   case regexHandledErrors
   // authorization
   case impersonateUserId
-  // special case
+  // special cases
   case topicName
+  case inConfig
 end InputParams
 
 type ErrorCodeType = ErrorCodes | String | Int
@@ -74,3 +68,13 @@ object GenericExternalTask:
     given ApiSchema[ProcessStatus] = deriveEnumApiSchema
     given InOutCodec[ProcessStatus] = deriveEnumInOutCodec
 end GenericExternalTask
+
+trait WithConfig[InConfig <: Product : InOutCodec]:
+  def inConfig: Option[InConfig]
+  def defaultConfig: InConfig
+  
+case class NoInConfig()
+
+object NoInConfig:
+  given InOutCodec[NoInConfig] = deriveCodec
+  given ApiSchema[NoInConfig] = deriveApiSchema

@@ -13,19 +13,12 @@ object InvoiceReceipt extends BpmnDsl:
       amount: Double = 300.0,
       invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`,
       invoiceNumber: String = "I-12345",
-      // removed due to problems with sttp client
-      /*   invoiceDocument: FileInOut = FileInOut(
-                                                       "invoice.pdf",
-                                                       read.bytes(
-                                                         os.resource / "invoice.pdf"
-                                                       ),
-                                                       Some("application/pdf")
-                                                     )*/
-      @description("You can let the Archive Service fail for testing.")
-      shouldFail: Option[Boolean] = None,
-      @description(serviceOrProcessMockDescr(ReviewInvoice.Out()))
-      invoiceReviewedMock: Option[ReviewInvoice.Out] = None
-  )
+      inConfig: Option[InConfig] = None
+  ) extends WithConfig[InConfig]:
+
+    lazy val defaultConfig: InConfig = InConfig()
+  end In
+
   object In:
     given ApiSchema[In] = deriveApiSchema
     given InOutCodec[In] = deriveCodec
@@ -48,12 +41,25 @@ object InvoiceReceipt extends BpmnDsl:
     given InOutCodec[Out] = deriveCodec
   end Out
 
-  lazy val example: Process[In, Out] =
+  case class InConfig(
+      @description("You can let the Archive Service fail for testing.")
+      shouldFail: Option[Boolean] = None,
+      @description(serviceOrProcessMockDescr(ReviewInvoice.Out()))
+      invoiceReviewedMock: Option[ReviewInvoice.Out] = None
+  )
+  object InConfig:
+    lazy val example: InConfig = InConfig(
+      shouldFail = Some(false),
+      invoiceReviewedMock = Some(ReviewInvoice.Out())
+    )
+    given ApiSchema[InConfig] = deriveApiSchema
+    given InOutCodec[InConfig] = deriveCodec
+  end InConfig
+
+  lazy val example =
     process(
       id = processName,
-      descr = // cawemoDescr(
-        "This starts the Invoice Receipt Process.",
-      // "e289c19a-8a57-4467-8583-de72a5e57488"      ),
+      descr = "This starts the Invoice Receipt Process.",
       in = In(),
       out = Out() // just for testing
     )
@@ -76,9 +82,7 @@ object InvoiceReceipt extends BpmnDsl:
         decisionDefinitionKey = "example-invoice-c7-assignApprover",
         in = In(),
         out = Seq(ApproverGroup.management),
-        descr = // cawemoDescr(
-          "Decision Table on who must approve the Invoice.",
-        // "155ba236-d5d1-42f7-8b56-3e90e0bb98d4" )
+        descr = "Decision Table on who must approve the Invoice."
       )
   end InvoiceAssignApproverDMN
 

@@ -122,8 +122,6 @@ case class ApiConfig(
     endpoint: String = "http://localhost:8080/engine-rest",
     // Base Path of your project (if changed - all doc paths will be adjusted)
     basePath: os.Path = os.pwd,
-    // If your project is on cawemo, add here the Id of the folder of your bpmns.
-    cawemoFolder: Option[String] = None,
     openApiPath: os.Path = os.pwd / "openApi.yml",
     postmanOpenApiPath: os.Path = os.pwd / "postmanOpenApi.yml",
     openApiDocuPath: os.Path = os.pwd / "OpenApi.html",
@@ -444,25 +442,6 @@ private lazy val InvoiceAssignApproverDMN =
       )
 ```
 
-### Cawemo description
-If you use Cawemo you can integrate the BPMN- and DMN-diagrams in your documentation.
-
-Example: 
-```scala
-process(
-  id = InvoiceReceiptPIdent,
-  descr = cawemoDescr(
-    "This starts the Invoice Receipt Process.",
-    "e289c19a-8a57-4467-8583-de72a5e57488"
-  ),
-  in = InvoiceReceipt(),
-  out = InvoiceReceiptCheck() 
-)
-```
-Just use the `cawemoDescr` function with the id of your diagram. 
-This is the identifier you get in the share link URL in Cawemo.
-
-![api_cawemoBpmn](images/api_cawemoBpmn.png)
 
 ### Project dependencies
 To know where your process is used and what processes your process is using, is very helpful.
