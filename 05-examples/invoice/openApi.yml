@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: "\n\nCreated at 25/01/2024, 07:31\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
+  summary: "\n\nCreated at 26/01/2024, 10:03\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
     \nThere is no README.md in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>General\
     \ Variables</i></b>\n</summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\
     \nMock all the _ServiceWorkers_ in your process with their default Mock:\n\n-\
@@ -65,9 +65,9 @@ paths:
       summary: 'Bpmn: example-invoice-c7'
       description: "This starts the Invoice Receipt Process.\n\n- Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt\
         \ > In`\n- Output: `camundala.examples.invoice.bpmn.InvoiceReceipt > Out`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-391\"\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-22649\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container:\
-        \ $('#example-invoice-c7-391'), height: '95%', width: '95%' }));\" src=\"\
+        \ $('#example-invoice-c7-22649'), height: '95%', width: '95%' }));\" src=\"\
         data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
@@ -125,8 +125,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-1133">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-1133'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-50876">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-50876'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -242,9 +242,9 @@ paths:
       summary: 'Bpmn: example-invoice-c7-review'
       description: "This starts the Review Invoice Process.\n\n- Input:  `camundala.examples.invoice.bpmn.ReviewInvoice\
         \ > In`\n- Output: `camundala.examples.invoice.bpmn.ReviewInvoice > Out`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-35086\"\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-70050\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({\
-        \ container: $('#example-invoice-c7-review-35086'), height: '95%', width:\
+        \ container: $('#example-invoice-c7-review-70050'), height: '95%', width:\
         \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
@@ -621,8 +621,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-6178">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-6178'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-48034">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-48034'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 

@@ -6,7 +6,7 @@ import sttp.apispec.openapi.*
 
 trait AbstractApiCreator extends ProcessReferenceCreator:
 
-  protected def apiConfig: ApiConfig = ApiConfig()
+  protected def apiConfig: ApiConfig
 
   protected given tenantId: Option[String] = apiConfig.tenantId
 
@@ -42,7 +42,7 @@ trait AbstractApiCreator extends ProcessReferenceCreator:
         case (serviceApi: ServiceWorkerApi[?, ?, ?, ?], _) => serviceApi.name
         case (_, gs: GenericServiceIn) => gs.serviceName
         case _ => inOutApi.id
-      s"${inOutApi.inOutType}: ${name.replace(s"$projectName-", "")}"
+      s"${inOutApi.inOutType}: ${refIdentShort(name, projectName)}"
   end extension
 
 end AbstractApiCreator

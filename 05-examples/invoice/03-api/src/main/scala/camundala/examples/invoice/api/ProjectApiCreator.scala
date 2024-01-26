@@ -12,6 +12,7 @@ import camundala.examples.invoice.bpmn.InvoiceReceipt.InvoiceAssignApproverDMN.*
 // define an object that extends from a common Api Creator
 // exampleInvoiceApi/run
 object ProjectApiCreator extends DefaultApiCreator:
+
   // technical name of the project
   val projectName = "invoice-example"
   // readable name of the project
@@ -48,14 +49,13 @@ object ProjectApiCreator extends DefaultApiCreator:
   )
 
   override protected lazy val apiConfig: ApiConfig =
-    super.apiConfig
+    ApiConfig("demoCompany")
       .withBasePath(os.pwd / "05-examples" / "invoice")
       .withDocProjectUrl(project =>
         s"https://webstor.ch/camundala/myCompany/$project"
       )
       .withPort(8034)
       .withDiagramDownloadPath("diagrams")
-//  .withCawemoFolder("a76e4b8e-8631-4d20-a8eb-258b000ff88a--camundala")
 
 
   private lazy val `Invoice Receipt` =

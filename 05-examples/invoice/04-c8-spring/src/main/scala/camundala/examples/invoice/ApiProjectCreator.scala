@@ -7,6 +7,7 @@ import camundala.api.*
 import camundala.bpmn.*
 
 object ApiProjectCreator extends DefaultApiCreator:
+  lazy val companyName = "MyCompany"
 
   val projectName = "invoice-example"
 

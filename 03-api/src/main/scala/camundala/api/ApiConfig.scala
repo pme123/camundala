@@ -4,6 +4,7 @@ package api
 import sttp.apispec.openapi.Contact
 
 case class ApiConfig(
+    companyId: String,
     // define tenant if you have one
     tenantId: Option[String] = None,
     // contact email / phone, if there are questions
@@ -93,7 +94,12 @@ case class ApiConfig(
 
   def withProjectRefId(projectRefId: String => (String, String)): ApiConfig =
     copy(projectRefId = projectRefId)
-    
+
+  def refIdentShort(refIdent: String): String =
+    projectsConfig.refIdentShort(refIdent, companyId)
+
+  def refIdentShort(refIdent: String, projectName: String): String =
+    projectsConfig.refIdentShort(refIdent, companyId, projectName)
 end ApiConfig
 
 case class ProjectsConfig(
@@ -136,6 +142,33 @@ case class ProjectsConfig(
       .find(_.name == projectName)
       .exists(_.group == projectGroup)
 
+  def refIdentShort(refIdent: String, companyId: String, projectName: String): String =
+    refIdent
+      .replace(s"$companyId-", "") // mycompany-myproject-myprocess -> myproject-myprocess
+      .replace(
+        s"${projectName.replace(s"$companyId-", "")}-",
+        ""
+      ) // myproject-myprocess -> myprocess
+  end refIdentShort
+
+  // if projectName is not known
+  def refIdentShort(refIdent: String, companyId: String): String =
+    val projectNames = projectConfigs.map(pc => pc.name)
+
+    projectNames.find(refIdent.startsWith)
+      .map(pn =>
+        refIdent.replace(s"$pn-", "") // case myCompany-myProject-myProcess
+          .replace(s"$companyId-", "") // case myCompany-myProject > where no myProcess
+      )
+      .orElse( // case myProject-myProcess
+        projectNames.map(_.replace(s"$companyId-", ""))
+          .find(refIdent.startsWith)
+          .map(pn =>
+            refIdent.replace(s"$pn-", "")
+          )).getOrElse( // or any other process
+        refIdent)
+  end refIdentShort
+
 end ProjectsConfig
 
 case class GroupedProjectConfig(
@@ -155,7 +188,7 @@ case class GroupedProjectConfig(
 
   def initProject(gitDir: os.Path, projectName: String): Unit =
     projects.find(_.name == projectName)
-    .foreach{ project =>
+      .foreach { project =>
         val gitRepo = s"$cloneUrl/${project.name}.git"
         updateProject(project.absGitPath(gitDir), gitRepo)
       }
@@ -171,13 +204,12 @@ case class GroupedProjectConfig(
     if !(gitProjectDir / ".gitignore").toIO.exists() then
       os.proc("git", "clone", gitRepo, gitProjectDir)
         .callOnConsole(gitProjectDir)
-    else {
+    else
       os
         .proc("git", "checkout", "develop")
         .callOnConsole(gitProjectDir)
       os.proc("git", "pull", "origin", "develop")
         .callOnConsole(gitProjectDir)
-    }
     end if
   end updateProject
 end GroupedProjectConfig

@@ -12,8 +12,13 @@ trait ProcessReferenceCreator:
 
   protected def projectName: String
   protected def apiConfig: ApiConfig
-  protected def gitBasePath: os.Path = apiConfig.projectsConfig.gitDir
 
+  protected def refIdentShort(refIdent: String): String =
+    apiConfig.refIdentShort(refIdent)
+  protected def refIdentShort(refIdent: String, projectName: String): String =
+    apiConfig.refIdentShort(refIdent, projectName)
+
+  protected def gitBasePath: os.Path = apiConfig.projectsConfig.gitDir
   private def docProjectUrl(project: String): String =
     apiConfig.docProjectUrl(project)
 
@@ -22,7 +27,7 @@ trait ProcessReferenceCreator:
 
   lazy val allBpmns: Seq[(String, Seq[(os.Path, String)])] =
     println(s"BPMN Reference Base Directory: $gitBasePath")
-    apiConfig.projectsConfig.initProject(projectName) // update all projects
+    apiConfig.projectsConfig.initProject(projectName) // update the project for references
     projectConfigs
       .map { pc =>
         val absBpmnPath = pc.absBpmnPath(gitBasePath)
@@ -110,8 +115,9 @@ trait ProcessReferenceCreator:
           .getOrElse(s"Id not found in $path")
       end extractId
 
-      val anchor = s"#operation/${InOutType.Bpmn}:%20${extractId.replace(s"$projectName-", "")}"
-      projectName -> s"[${InOutType.Bpmn}: $extractId](${docProjectUrl(projectName)}/OpenApi.html$anchor)"
+      val refId = refIdentShort(extractId, projectName)
+      val anchor = s"#operation/${InOutType.Bpmn}:%20$refId"
+      projectName -> s"[${InOutType.Bpmn}: $refId](${docProjectUrl(projectName)}/OpenApi.html$anchor)"
     end docuPath
 
     private def usedByTitle(processCount: Int): String =
@@ -142,7 +148,8 @@ trait ProcessReferenceCreator:
                 .attribute("http://camunda.org/schema/1.0/bpmn", "topic")
                 .get
               UsesRef(workerRef.toString, refType = InOutType.Worker)
-            }
+            }.filterNot(_.processRef == processName) // filter InitWorker
+
           val businessRuleTasks = (xml \\ "businessRuleTask")
             .map { br =>
               val decisionRef = br
@@ -185,7 +192,7 @@ trait ProcessReferenceCreator:
         .getOrElse("\n**Uses no other Processes.**\n")
     end create
 
-    class UsesRef(
+    case class UsesRef(
         processRef: String,
         serviceName: Option[String] = None,
         refType: InOutType = InOutType.Bpmn
@@ -195,14 +202,14 @@ trait ProcessReferenceCreator:
         apiConfig.projectRefId(processRef)
 
       lazy val processIdent: String = serviceName.getOrElse(processId)
-      lazy val anchor =
-        s"#operation/$refType:%20${processIdent.replace(s"$projectName-", "")}"
+      lazy val identShort = refIdentShort(processIdent)
+      lazy val anchor = s"#operation/$refType:%20$identShort"
 
       lazy val serviceStr: String =
         serviceName.map(_ => s" ($processId)").getOrElse("")
 
       lazy val asString: String =
-        s"_[$refType: $processIdent](${docProjectUrl(project)}/OpenApi.html$anchor)_ $serviceStr"
+        s"_[$refType: $identShort](${docProjectUrl(project)}/OpenApi.html$anchor)_ $serviceStr"
 
     end UsesRef
 

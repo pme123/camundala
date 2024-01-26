@@ -9,7 +9,7 @@ object TwitterApiCreator extends DefaultApiCreator:
   val projectName = "twitter-example-c8"
 
   override val apiConfig: ApiConfig =
-    super.apiConfig
+    ApiConfig("demoCompany")
       .withBasePath(os.pwd / "05-examples" / "twitter" / "camunda8")
       .withDocProjectUrl(project => s"https://webstor.ch/camundala/myCompany/$project")
       .withPort(8887)
