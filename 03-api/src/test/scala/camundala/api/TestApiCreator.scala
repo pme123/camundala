@@ -7,15 +7,13 @@ import camundala.bpmn.BpmnDsl
 
 object TestApiCreator extends DefaultApiCreator, App:
 
-  lazy val companyName = "MyCompany"
-
   lazy val projectName = "TestApi"
 
   def title = "Test API"
 
   def version = "1.0"
   override val apiConfig: ApiConfig =
-    super.apiConfig
+    ApiConfig("DemoConfig")
       .withDocProjectUrl(project => s"https://MYDOCHOST/$project")
       .withBasePath(os.pwd / "api")
 

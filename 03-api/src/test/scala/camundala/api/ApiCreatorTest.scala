@@ -5,8 +5,8 @@ import org.junit.Assert.*
 
 class ApiCreatorTest extends munit.FunSuite, DefaultApiCreator:
 
-  lazy val companyName = "MyCompany"
-  
+  lazy val apiConfig = ApiConfig("DemoConfig")
+
   lazy val projectName = "ApiCreatorTest"
 
   def jiraUrls: Map[String, String] = Map(
