@@ -3,7 +3,6 @@ package api
 
 import camundala.bpmn.*
 import camundala.domain.*
-import sttp.tapir.*
 import sttp.tapir.EndpointIO.Example
 
 trait TapirApiCreator extends AbstractApiCreator:
@@ -35,10 +34,8 @@ trait TapirApiCreator extends AbstractApiCreator:
         case aa @ ActivityApi(_, _, _) =>
           aa.createEndpoint(tag)
         case pa @ ProcessApi(name, _, _, apis, _)
-            if apis.isEmpty => // .forall(_.isInstanceOf[ActivityApi[?,?]]) =>
-          pa.createEndpoint(tag, pa.additionalDescr) ++ apis.flatMap(
-            _.create(tag)
-          )
+            if apis.isEmpty =>
+          pa.createEndpoint(tag, pa.additionalDescr)
         case spa: ExternalTaskApi[?, ?] =>
           spa.createEndpoint(tag, spa.additionalDescr)
         case ga =>
@@ -50,24 +47,38 @@ trait TapirApiCreator extends AbstractApiCreator:
 
   extension (inOutApi: InOutApi[?, ?])
     def createEndpoint(
-        tag: String,
+        tagFull: String,
         additionalDescr: Option[String] = None
     ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+      val companyId = apiConfig.companyId
+      val tagOrig = refIdentShort(tagFull)
+        tagFull
+        .replace(s"$companyId-", "") // mycompany-myproject-myprocess -> myproject-myprocess
+        .replace(s"${projectName.replace(s"$companyId-", "")}-", "") // myproject-myprocess -> myprocess
+      val tag =
+        if tagOrig == tagFull then
+          tagOrig
+        else
+          tagOrig.head.toUpper + tagOrig.tail.map {
+            case c: Char if c.isUpper => s" $c"
+            case c => s"$c"
+          }.mkString
+      val refId = refIdentShort(inOutApi.id, projectName)
       val tagPath = tag.replace(" ", "")
       val path: EndpointInput[Unit] = inOutApi.inOut.in match
         case gs: GenericServiceIn =>
-          inOutApi.inOutType.toString / inOutApi.id / gs.serviceName
-        case _ if tagPath == inOutApi.id =>
-          if inOutApi.name == inOutApi.id then
-            inOutApi.inOutType.toString / inOutApi.id
+          inOutApi.inOutType.toString / refId / gs.serviceName
+        case _ if tagPath == refId =>
+          if inOutApi.name == refId then
+            inOutApi.inOutType.toString / refId
           else
-            inOutApi.inOutType.toString / inOutApi.id / inOutApi.name
+            inOutApi.inOutType.toString / refId / inOutApi.name
               .replace(" ", "")
         case _ =>
-          if inOutApi.name == inOutApi.id then
-            inOutApi.inOutType.toString / tagPath / inOutApi.id
+          if inOutApi.name == refId then
+            inOutApi.inOutType.toString / tagPath / refId
           else
-            inOutApi.inOutType.toString / tagPath / inOutApi.id / inOutApi.name.replace(
+            inOutApi.inOutType.toString / tagPath / refId / inOutApi.name.replace(
               " ",
               ""
             )

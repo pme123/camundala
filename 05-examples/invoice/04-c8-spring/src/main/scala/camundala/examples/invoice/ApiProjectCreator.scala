@@ -15,11 +15,11 @@ object ApiProjectCreator extends DefaultApiCreator:
   protected val version = "1.0"
 
   override protected val apiConfig: ApiConfig =
-    super.apiConfig
+    ApiConfig("DemoConfig")
       .withBasePath(os.pwd / "05-examples" / "invoice" / "camunda8")
       .withPort(8034)
 
-  document (
+  document(
     api(`Invoice Receipt`)(
       InvoiceAssignApproverDMN,
       ApproveInvoiceUT,
@@ -31,7 +31,7 @@ object ApiProjectCreator extends DefaultApiCreator:
     ),
     group("DMNs")(
       InvoiceAssignApproverDMN
-    ),
+    )
   )
 
   private lazy val ApproveInvoiceUT =
@@ -43,3 +43,4 @@ object ApiProjectCreator extends DefaultApiCreator:
     bpmn.ReviewInvoiceUT
       .withOutExample("Invoice clarified", InvoiceReviewed())
       .withOutExample("Invoice NOT clarified", InvoiceReviewed(false))
+end ApiProjectCreator

@@ -2,7 +2,7 @@ package camundala.myCompany
 
 import camundala.api.*
 
-lazy val postmanApiConfig = ApiConfig()
+lazy val postmanApiConfig = ApiConfig("myCompany")
   .withEndpoint("http://localhost:9000/public/api")
 
 lazy val myCompanyConfig = postmanApiConfig
@@ -49,5 +49,3 @@ private lazy val myProjects: Seq[ProjectConfig] = Seq(
 private lazy val demos = ProjectGroup("demos", "purple")
 private lazy val invoices = ProjectGroup("demos", "green")
 private lazy val twitter = ProjectGroup("demos", "green")
-
-

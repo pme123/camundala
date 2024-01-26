@@ -7,6 +7,7 @@ import bpmn.*
 
 // exampleDemos/run
 object ProjectApiCreator extends DefaultApiCreator:
+  lazy val companyName = "MyCompany"
 
   val projectName = "demos-example"
 
@@ -15,7 +16,7 @@ object ProjectApiCreator extends DefaultApiCreator:
   protected val version = "1.0"
 
   override protected val apiConfig: ApiConfig =
-    super.apiConfig
+    ApiConfig("demoCompany")
       .withBasePath(os.pwd / "05-examples" / "demos")
       .withDocProjectUrl(project => s"https://webstor.ch/camundala/myCompany/$project")
       .withDiagramDownloadPath(

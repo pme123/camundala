@@ -23,7 +23,7 @@ object ProjectApiCreator extends DefaultApiCreator:
   )
 
   override lazy val apiConfig: ApiConfig =
-    super.apiConfig
+    ApiConfig("demoCompany")
       .withBasePath(os.pwd / "05-examples" / "twitter")
       .withPort(8887)
 

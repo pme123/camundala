@@ -13,7 +13,7 @@ object TestApiCreator extends DefaultApiCreator, App:
 
   def version = "1.0"
   override val apiConfig: ApiConfig =
-    super.apiConfig
+    ApiConfig("DemoConfig")
       .withDocProjectUrl(project => s"https://MYDOCHOST/$project")
       .withBasePath(os.pwd / "api")
 
