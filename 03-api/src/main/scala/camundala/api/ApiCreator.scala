@@ -18,9 +18,8 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
   def document(apis: CApi*): Unit =
     val apiDoc = ApiDoc(apis.toList)
     ModelerTemplGenerator(version, apiConfig.modelerTemplateConfig, Some(projectName)).generate(apiDoc)
-    //TODO uncomment
-    //writeOpenApis(apiDoc)
-    //writeCatalog(apiDoc)
+    writeOpenApis(apiDoc)
+    writeCatalog(apiDoc)
   end document
 
   private def writeOpenApis(apiDoc: ApiDoc): Unit =
