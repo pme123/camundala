@@ -80,8 +80,8 @@ case class WorkerExecutor[
     def mockOrProceed(in: In): Either[MockerError | MockedOutput, Option[Out]] =
       (
         context.generalVariables.isMockedWorker(worker.topic),
-        context.generalVariables.outputMockOpt,
-        context.generalVariables.outputServiceMockOpt
+        context.generalVariables.outputMock,
+        context.generalVariables.outputServiceMock
       ) match
         // if the outputMock is set than we mock
         case (_, Some(outputMock), _) =>

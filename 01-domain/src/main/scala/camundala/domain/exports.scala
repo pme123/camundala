@@ -26,7 +26,8 @@ inline def deriveInOutCodec[A](using inline A: Mirror.Of[A]): InOutCodec[A] =
 
 inline def deriveInOutCodec[A](discriminator: String)(using inline A: Mirror.Of[A]): InOutCodec[A] =
   io.circe.derivation.ConfiguredCodec.derived(using Configuration.default //.withDefaults
-    .withDiscriminator(discriminator))
+    .withDiscriminator(discriminator)
+  )
 
 inline def deriveEnumInOutCodec[A](using inline A: Mirror.SumOf[A]): InOutCodec[A] =
   io.circe.derivation.ConfiguredEnumCodec.derived(using Configuration.default //.withDefaults

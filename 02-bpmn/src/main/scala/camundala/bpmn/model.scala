@@ -13,7 +13,14 @@ case class InOutDescr[
     in: In = NoInput(),
     out: Out = NoOutput(),
     descr: Option[String] = None
-)
+):
+  lazy val niceName: String =
+    id.split("-")
+        .map: p =>
+          p.head.toUpper + p.tail
+        .mkString(" ")
+  end niceName
+end InOutDescr
 
 trait Activity[
     In <: Product: InOutEncoder: InOutDecoder: Schema,
@@ -114,7 +121,7 @@ end ProcessOrExternalTask
 
 case class Process[
     In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema,
+    Out <: Product: InOutEncoder: InOutDecoder: Schema
 ](
     inOutDescr: InOutDescr[In, Out],
     protected val elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty,

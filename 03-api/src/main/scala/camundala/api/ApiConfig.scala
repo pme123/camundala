@@ -21,6 +21,8 @@ case class ApiConfig(
     jiraUrls: Map[String, String] = Map.empty,
     // Configure your project setup
     projectsConfig: ProjectsConfig = ProjectsConfig(),
+    // Configure your template generation
+    modelerTemplateConfig: ModelerTemplateConfig = ModelerTemplateConfig(),
     // The URL of your published documentations
     // myProject => s"http://myCompany/bpmnDocs/${myProject}"
     docProjectUrl: String => String = proj => s"No URL defined for $proj",
@@ -71,6 +73,9 @@ case class ApiConfig(
 
   def withProjectsConfig(gitConfigs: ProjectsConfig): ApiConfig =
     copy(projectsConfig = gitConfigs)
+
+  def withModelerTemplateConfig(modelerTemplateConfig: ModelerTemplateConfig): ApiConfig =
+    copy(modelerTemplateConfig = modelerTemplateConfig)
 
   def addGitConfig(gitConfig: GroupedProjectConfig): ApiConfig =
     copy(projectsConfig =
@@ -232,3 +237,12 @@ case class ProjectGroup(
     color: String = "purple",
     fill: String = "#ddd"
 )
+
+case class ModelerTemplateConfig(
+    schemaVersion: String = "0.16.0",
+    templatePath: os.Path = os.pwd / ".camunda" / "element-templates",
+    generateGeneralVariables: Boolean = true
+):
+  lazy val schema =
+    s"https://unpkg.com/@camunda/element-templates-json-schema@$schemaVersion/resources/schema.json"
+end ModelerTemplateConfig

@@ -50,11 +50,7 @@ trait TapirApiCreator extends AbstractApiCreator:
         tagFull: String,
         additionalDescr: Option[String] = None
     ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
-      val companyId = apiConfig.companyId
       val tagOrig = refIdentShort(tagFull)
-        tagFull
-        .replace(s"$companyId-", "") // mycompany-myproject-myprocess -> myproject-myprocess
-        .replace(s"${projectName.replace(s"$companyId-", "")}-", "") // myproject-myprocess -> myprocess
       val tag =
         if tagOrig == tagFull then
           tagOrig
