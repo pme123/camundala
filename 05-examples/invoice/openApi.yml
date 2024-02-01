@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: "\n\nCreated at 26/01/2024, 10:03\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
+  summary: "\n\nCreated at 01/02/2024, 12:23\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
     \nThere is no README.md in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>General\
     \ Variables</i></b>\n</summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\
     \nMock all the _ServiceWorkers_ in your process with their default Mock:\n\n-\
@@ -58,16 +58,16 @@ info:
     ```\n\n- Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
     \n</p>\n</details>\n<p/>\n        \n"
 paths:
-  /Bpmn/example-invoice-c7:
+  /Bpmn/example-invoice-c7/c7/example-invoice-c7:
     head:
       tags:
       - example-invoice-c7
-      summary: 'Bpmn: example-invoice-c7'
+      summary: 'Bpmn: c7'
       description: "This starts the Invoice Receipt Process.\n\n- Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt\
         \ > In`\n- Output: `camundala.examples.invoice.bpmn.InvoiceReceipt > Out`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-22649\"\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-9503\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container:\
-        \ $('#example-invoice-c7-22649'), height: '95%', width: '95%' }));\" src=\"\
+        \ $('#example-invoice-c7-9503'), height: '95%', width: '95%' }));\" src=\"\
         data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
@@ -76,7 +76,7 @@ paths:
         ```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"approved\"\
         \ : true,\n  \"clarified\" : null,\n  \"archived\" : false\n},\n...\n```\n\
         \n</p>\n</details>\n</p>\n      "
-      operationId: 'Bpmn: example-invoice-c7'
+      operationId: 'Bpmn: c7'
       requestBody:
         content:
           application/json:
@@ -112,11 +112,11 @@ paths:
                   value:
                     approved: true
                     archived: false
-  /Dmn/example-invoice-c7/example-invoice-c7-assignApprover:
+  /Dmn/example-invoice-c7/c7-assignApprover/example-invoice-c7-assignApprover:
     head:
       tags:
       - example-invoice-c7
-      summary: 'Dmn: example-invoice-c7-assignApprover'
+      summary: 'Dmn: c7-assignApprover'
       description: |+
         Decision Table on who must approve the Invoice.
 
@@ -125,14 +125,14 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-50876">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-50876'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-38227">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-38227'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
         Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)
 
-      operationId: 'Dmn: example-invoice-c7-assignApprover'
+      operationId: 'Dmn: c7-assignApprover'
       requestBody:
         content:
           application/json:
@@ -235,16 +235,53 @@ paths:
       responses:
         '200':
           description: ''
-  /Bpmn/example-invoice-c7-review:
+  /Worker/example-invoice-c7/ArchiveInvoiceService:
+    head:
+      tags:
+      - example-invoice-c7
+      summary: 'Worker: ArchiveInvoiceService'
+      description: |2
+
+        **Topic:** `ArchiveInvoiceService` (to define in the _**Topic**_ of the _**External Task**_ > _Service Task_ of type _External_)
+
+        Archives the Receipt.
+
+        - Input:  `camundala.examples.invoice.bpmn.ArchiveInvoice > In`
+        - Output: `camundala.examples.invoice.bpmn.ArchiveInvoice > Out`
+
+        You can test this worker using the generic process _**camundala-externalTask-generic**_ (e.g. with Postman).
+      operationId: 'Worker: ArchiveInvoiceService'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In3'
+            examples:
+              ArchiveInvoiceService:
+                value:
+                  shouldFail: true
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Out3'
+              examples:
+                ArchiveInvoiceService:
+                  value:
+                    archived: true
+  /Bpmn/example-invoice-c7-review/c7-review/example-invoice-c7-review:
     head:
       tags:
       - example-invoice-c7-review
-      summary: 'Bpmn: example-invoice-c7-review'
+      summary: 'Bpmn: c7-review'
       description: "This starts the Review Invoice Process.\n\n- Input:  `camundala.examples.invoice.bpmn.ReviewInvoice\
         \ > In`\n- Output: `camundala.examples.invoice.bpmn.ReviewInvoice > Out`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-70050\"\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-69930\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({\
-        \ container: $('#example-invoice-c7-review-70050'), height: '95%', width:\
+        \ container: $('#example-invoice-c7-review-69930'), height: '95%', width:\
         \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
@@ -252,12 +289,12 @@ paths:
         ```json\n...\n\"outputVariables\": \"clarified\",\n...\n```\n\n**outputMock**:\n\
         \n```json\n...\n\"outputMock\": {\n  \"clarified\" : true\n},\n...\n```\n\n\
         </p>\n</details>\n</p>\n      "
-      operationId: 'Bpmn: example-invoice-c7-review'
+      operationId: 'Bpmn: c7-review'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/In3'
+              $ref: '#/components/schemas/In4'
             examples:
               example-invoice-c7-review:
                 value:
@@ -307,7 +344,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Out3'
+                $ref: '#/components/schemas/Out4'
               examples:
                 AssignReviewerUT:
                   value:
@@ -342,7 +379,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Out4'
+                $ref: '#/components/schemas/Out5'
               examples:
                 ReviewInvoiceUT:
                   value:
@@ -385,7 +422,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/In4'
+              $ref: '#/components/schemas/In5'
             examples:
               star-wars-api-people-detail:
                 value:
@@ -397,7 +434,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Out5'
+                $ref: '#/components/schemas/Out6'
               examples:
                 star-wars-api-people-detail:
                   value:
@@ -447,7 +484,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/In5'
+              $ref: '#/components/schemas/In3'
             examples:
               ArchiveInvoiceService:
                 value:
@@ -459,7 +496,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Out6'
+                $ref: '#/components/schemas/Out3'
               examples:
                 ArchiveInvoiceService:
                   value:
@@ -562,7 +599,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Out3'
+                $ref: '#/components/schemas/Out4'
               examples:
                 AssignReviewerUT:
                   value:
@@ -597,7 +634,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Out4'
+                $ref: '#/components/schemas/Out5'
               examples:
                 ReviewInvoiceUT:
                   value:
@@ -608,11 +645,11 @@ paths:
                 Invoice NOT clarified:
                   value:
                     clarified: false
-  /Dmn/DMNs/example-invoice-c7-assignApprover:
+  /Dmn/DMNs/c7-assignApprover/example-invoice-c7-assignApprover:
     head:
       tags:
       - DMNs
-      summary: 'Dmn: example-invoice-c7-assignApprover'
+      summary: 'Dmn: c7-assignApprover'
       description: |+
         Decision Table on who must approve the Invoice.
 
@@ -621,14 +658,14 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-48034">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-48034'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-3124">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-3124'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
         Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)
 
-      operationId: 'Dmn: example-invoice-c7-assignApprover'
+      operationId: 'Dmn: c7-assignApprover'
       requestBody:
         content:
           application/json:
@@ -726,6 +763,11 @@ components:
       description: Same Input as _InvoiceReceipt_, only without mocking - no mocking
         in UserTasks
     In3:
+      type: object
+      properties:
+        shouldFail:
+          type: boolean
+    In4:
       required:
       - creditor
       - amount
@@ -743,7 +785,7 @@ components:
         invoiceNumber:
           type: string
       description: Same Input as _InvoiceReceipt_, only different Mocking
-    In4:
+    In5:
       required:
       - id
       type: object
@@ -755,11 +797,6 @@ components:
           type: string
           description: Optional value to test querySegments
       description: Same Input as _InvoiceReceipt_, only different Mocking
-    In5:
-      type: object
-      properties:
-        shouldFail:
-          type: boolean
     InConfig:
       type: object
       properties:
@@ -823,13 +860,18 @@ components:
           description: If true, the Boss accepted the Invoice
       description: Every Invoice has to be accepted by the Boss.
     Out3:
+      type: object
+      properties:
+        archived:
+          type: boolean
+    Out4:
       required:
       - reviewer
       type: object
       properties:
         reviewer:
           type: string
-    Out4:
+    Out5:
       required:
       - clarified
       type: object
@@ -837,15 +879,10 @@ components:
         clarified:
           type: boolean
           description: Flag that is set by the Reviewer
-    Out5:
+    Out6:
       oneOf:
       - $ref: '#/components/schemas/Failure'
       - $ref: '#/components/schemas/Success'
-    Out6:
-      type: object
-      properties:
-        archived:
-          type: boolean
     People:
       required:
       - name

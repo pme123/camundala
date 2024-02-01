@@ -33,9 +33,6 @@ case class ApiConfig(
     diagramDownloadPath: Option[String] = None,
     // if you want to adjust the diagramName
     diagramNameAdjuster: Option[String => String] = None,
-    // by default the Api are optimized in a way that each Api is listed just ones.
-    // so for example, if you list your DMNs extra, they will be removed from the catalog.md
-    catalogOptimized: Boolean = true,
     // function to extract project and the reference id from a reference (CallActivity, Dmn or ExternalWorker)
     // default returns the first part of the reference as project (e.g. mycompany from mycompany-product)
     projectRefId: String => (String, String) =
@@ -90,12 +87,6 @@ case class ApiConfig(
 
   def withDiagramNameAdjuster(adjuster: String => String): ApiConfig =
     copy(diagramNameAdjuster = Some(adjuster))
-
-  def withCatalogOptimization(): ApiConfig =
-    copy(catalogOptimized = true)
-
-  def withoutCatalogOptimization(): ApiConfig =
-    copy(catalogOptimized = false)
 
   def withProjectRefId(projectRefId: String => (String, String)): ApiConfig =
     copy(projectRefId = projectRefId)

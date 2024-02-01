@@ -24,7 +24,8 @@ object ProjectApiCreator extends DefaultApiCreator:
     api(`Invoice Receipt`)(
       InvoiceAssignApproverDMN1,
       ApproveInvoiceUT,
-      InvoiceReceipt.PrepareBankTransferUT.example
+      InvoiceReceipt.PrepareBankTransferUT.example,
+      api(ArchiveInvoice.example)
     ),
     api(ReviewInvoice.example)(
       ReviewInvoice.AssignReviewerUT.example,
