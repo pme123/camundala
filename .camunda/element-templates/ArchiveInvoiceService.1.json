@@ -1,0 +1,147 @@
+{
+  "name" : "ArchiveInvoiceService",
+  "id" : "ArchiveInvoiceService",
+  "description" : "Archives the Receipt.",
+  "version" : 1,
+  "appliesTo" : [
+    "bpmn:Activity"
+  ],
+  "elementType" : {
+    "value" : "bpmn:ServiceTask"
+  },
+  "properties" : [
+    {
+      "value" : "#{shouldFail}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "shouldFail"
+      },
+      "label" : "shouldFail",
+      "description" : ""
+    },
+    {
+      "value" : "archived",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:outputParameter",
+        "source" : "#{archived}"
+      },
+      "label" : "archived",
+      "description" : ""
+    },
+    {
+      "value" : "ArchiveInvoiceService",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "property",
+        "name" : "camunda:topic"
+      },
+      "label" : "",
+      "description" : ""
+    },
+    {
+      "value" : "external",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "property",
+        "name" : "camunda:type"
+      },
+      "label" : "",
+      "description" : ""
+    },
+    {
+      "value" : "#{null}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "manualOutMapping"
+      },
+      "label" : "manualOutMapping",
+      "description" : ""
+    },
+    {
+      "value" : "#{null}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "outputVariables"
+      },
+      "label" : "outputVariables",
+      "description" : ""
+    },
+    {
+      "value" : "#{null}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "mockedWorkers"
+      },
+      "label" : "mockedWorkers",
+      "description" : ""
+    },
+    {
+      "value" : "#{null}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "outputMock"
+      },
+      "label" : "outputMock",
+      "description" : ""
+    },
+    {
+      "value" : "#{null}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "handledErrors"
+      },
+      "label" : "handledErrors",
+      "description" : ""
+    },
+    {
+      "value" : "#{null}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "regexHandledErrors"
+      },
+      "label" : "regexHandledErrors",
+      "description" : ""
+    },
+    {
+      "value" : "#{null}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "impersonateUserId"
+      },
+      "label" : "impersonateUserId",
+      "description" : ""
+    },
+    {
+      "value" : "#{execution.processBusinessKey}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:in:businessKey"
+      },
+      "label" : "",
+      "description" : ""
+    },
+    {
+      "value" : "ArchiveInvoiceService",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "property",
+        "name" : "name"
+      },
+      "label" : "",
+      "description" : ""
+    }
+  ],
+  "$schema" : "https://unpkg.com/@camunda/element-templates-json-schema@0.16.0/resources/schema.json",
+  "groups" : [
+  ],
+  "entriesVisible" : true
+}

@@ -143,26 +143,6 @@ case class ServiceWorker[
 
 end ServiceWorker
 
-// ApiCreator that describes these variables
-case class GeneralVariables(
-    // mocking
-    servicesMocked: Boolean = false,
-    mockedWorkers: Seq[String] = Seq.empty,
-    outputMockOpt: Option[Json] = None,
-    outputServiceMockOpt: Option[Json] = None,
-    // mapping
-    manualOutMapping: Boolean = false,
-    outputVariables: Seq[String] = Seq.empty,
-    handledErrors: Seq[String] = Seq.empty,
-    regexHandledErrors: Seq[String] = Seq.empty,
-    // authorization
-    impersonateUserIdOpt: Option[String] = None
-):
-  def isMockedWorker(workerTopicName: String): Boolean =
-    mockedWorkers.contains(workerTopicName)
-
-end GeneralVariables
-
 case class RunnableRequest[ServiceIn: InOutEncoder](
     httpMethod: Method,
     apiUri: Uri,

@@ -1,0 +1,187 @@
+{
+  "name" : "star-wars-api-people-detail",
+  "id" : "star-wars-api-people-detail",
+  "description" : "Get People Details from StarWars API",
+  "version" : 1,
+  "appliesTo" : [
+    "bpmn:Activity"
+  ],
+  "elementType" : {
+    "value" : "bpmn:ServiceTask"
+  },
+  "properties" : [
+    {
+      "value" : "#{id}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "id"
+      },
+      "label" : "id",
+      "description" : ""
+    },
+    {
+      "value" : "#{optName}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "optName"
+      },
+      "label" : "optName",
+      "description" : ""
+    },
+    {
+      "value" : "people",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:outputParameter",
+        "source" : "#{people}"
+      },
+      "label" : "people",
+      "description" : ""
+    },
+    {
+      "value" : "fromHeader",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:outputParameter",
+        "source" : "#{fromHeader}"
+      },
+      "label" : "fromHeader",
+      "description" : ""
+    },
+    {
+      "value" : "processStatus",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:outputParameter",
+        "source" : "#{processStatus}"
+      },
+      "label" : "processStatus",
+      "description" : ""
+    },
+    {
+      "value" : "star-wars-api-people-detail",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "property",
+        "name" : "camunda:topic"
+      },
+      "label" : "",
+      "description" : ""
+    },
+    {
+      "value" : "external",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "property",
+        "name" : "camunda:type"
+      },
+      "label" : "",
+      "description" : ""
+    },
+    {
+      "value" : "#{null}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "outputServiceMock"
+      },
+      "label" : "outputServiceMock",
+      "description" : ""
+    },
+    {
+      "value" : "#{null}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "manualOutMapping"
+      },
+      "label" : "manualOutMapping",
+      "description" : ""
+    },
+    {
+      "value" : "#{null}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "outputVariables"
+      },
+      "label" : "outputVariables",
+      "description" : ""
+    },
+    {
+      "value" : "#{null}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "mockedWorkers"
+      },
+      "label" : "mockedWorkers",
+      "description" : ""
+    },
+    {
+      "value" : "#{null}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "outputMock"
+      },
+      "label" : "outputMock",
+      "description" : ""
+    },
+    {
+      "value" : "#{null}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "handledErrors"
+      },
+      "label" : "handledErrors",
+      "description" : ""
+    },
+    {
+      "value" : "#{null}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "regexHandledErrors"
+      },
+      "label" : "regexHandledErrors",
+      "description" : ""
+    },
+    {
+      "value" : "#{null}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:inputParameter",
+        "name" : "impersonateUserId"
+      },
+      "label" : "impersonateUserId",
+      "description" : ""
+    },
+    {
+      "value" : "#{execution.processBusinessKey}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:in:businessKey"
+      },
+      "label" : "",
+      "description" : ""
+    },
+    {
+      "value" : "Star Wars Api People Detail",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "property",
+        "name" : "name"
+      },
+      "label" : "",
+      "description" : ""
+    }
+  ],
+  "$schema" : "https://unpkg.com/@camunda/element-templates-json-schema@0.16.0/resources/schema.json",
+  "groups" : [
+  ],
+  "entriesVisible" : true
+}

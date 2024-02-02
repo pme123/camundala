@@ -21,6 +21,8 @@ case class ApiConfig(
     jiraUrls: Map[String, String] = Map.empty,
     // Configure your project setup
     projectsConfig: ProjectsConfig = ProjectsConfig(),
+    // Configure your template generation
+    modelerTemplateConfig: ModelerTemplateConfig = ModelerTemplateConfig(),
     // The URL of your published documentations
     // myProject => s"http://myCompany/bpmnDocs/${myProject}"
     docProjectUrl: String => String = proj => s"No URL defined for $proj",
@@ -31,9 +33,6 @@ case class ApiConfig(
     diagramDownloadPath: Option[String] = None,
     // if you want to adjust the diagramName
     diagramNameAdjuster: Option[String => String] = None,
-    // by default the Api are optimized in a way that each Api is listed just ones.
-    // so for example, if you list your DMNs extra, they will be removed from the catalog.md
-    catalogOptimized: Boolean = true,
     // function to extract project and the reference id from a reference (CallActivity, Dmn or ExternalWorker)
     // default returns the first part of the reference as project (e.g. mycompany from mycompany-product)
     projectRefId: String => (String, String) =
@@ -72,6 +71,9 @@ case class ApiConfig(
   def withProjectsConfig(gitConfigs: ProjectsConfig): ApiConfig =
     copy(projectsConfig = gitConfigs)
 
+  def withModelerTemplateConfig(modelerTemplateConfig: ModelerTemplateConfig): ApiConfig =
+    copy(modelerTemplateConfig = modelerTemplateConfig)
+
   def addGitConfig(gitConfig: GroupedProjectConfig): ApiConfig =
     copy(projectsConfig =
       projectsConfig.copy(groupedConfigs = projectsConfig.groupedConfigs :+ gitConfig)
@@ -85,12 +87,6 @@ case class ApiConfig(
 
   def withDiagramNameAdjuster(adjuster: String => String): ApiConfig =
     copy(diagramNameAdjuster = Some(adjuster))
-
-  def withCatalogOptimization(): ApiConfig =
-    copy(catalogOptimized = true)
-
-  def withoutCatalogOptimization(): ApiConfig =
-    copy(catalogOptimized = false)
 
   def withProjectRefId(projectRefId: String => (String, String)): ApiConfig =
     copy(projectRefId = projectRefId)
@@ -232,3 +228,12 @@ case class ProjectGroup(
     color: String = "purple",
     fill: String = "#ddd"
 )
+
+case class ModelerTemplateConfig(
+    schemaVersion: String = "0.16.0",
+    templatePath: os.Path = os.pwd / ".camunda" / "element-templates",
+    generateGeneralVariables: Boolean = true
+):
+  lazy val schema =
+    s"https://unpkg.com/@camunda/element-templates-json-schema@$schemaVersion/resources/schema.json"
+end ModelerTemplateConfig

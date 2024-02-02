@@ -14,6 +14,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## 1.28.5 - 2024-02-02
+### Changed 
+- Fixing link in catalog generation. - see [Commit](https://github.com/pme123/camundala/commit/0f9568561c85c935c3e38fe8b42a09becd12b246)
+- Fixing and simplifying catalog generation. - see [Commit](https://github.com/pme123/camundala/commit/8a46f059a75ebc6a6f8e426d79d2b9d280f08dbf)
+- First Version of ModelerTemplates. - see [Commit](https://github.com/pme123/camundala/commit/d04000e2c02fc9c6af5faa2a0f1f0ad9fbf0543f)
+- First Version of ModelerTemplates. - see [Commit](https://github.com/pme123/camundala/commit/4530a5e38c483a09f6808a4b374a126cadf74d44)
+
 ## 1.28.4 - 2024-01-26
 ### Changed 
 - Fixed compile errors - see [Commit](https://github.com/pme123/camundala/commit/03b8df36a49ac301c7bb7e90b2aea6ddb54fa0b8)

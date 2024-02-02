@@ -14,7 +14,7 @@ import camundala.examples.invoice.bpmn.InvoiceReceipt.InvoiceAssignApproverDMN.*
 object ProjectApiCreator extends DefaultApiCreator:
 
   // technical name of the project
-  val projectName = "invoice-example"
+  val projectName = "example-invoice"
   // readable name of the project
   protected val title = "Invoice Example Process API"
   // version of your project
@@ -24,7 +24,8 @@ object ProjectApiCreator extends DefaultApiCreator:
     api(`Invoice Receipt`)(
       InvoiceAssignApproverDMN1,
       ApproveInvoiceUT,
-      InvoiceReceipt.PrepareBankTransferUT.example
+      InvoiceReceipt.PrepareBankTransferUT.example,
+      api(ArchiveInvoice.example)
     ),
     api(ReviewInvoice.example)(
       ReviewInvoice.AssignReviewerUT.example,

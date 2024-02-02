@@ -2,6 +2,7 @@ package camundala
 package worker
 
 import camundala.domain.*
+import camundala.bpmn.*
 import camundala.worker.CamundalaWorkerError.*
 import io.circe
 import sttp.model.Uri.QuerySegment
@@ -143,7 +144,7 @@ case class ServiceHandler[
   )(using context: EngineRunContext): Either[ServiceError, Option[Out]] =
     (
       context.generalVariables.servicesMocked,
-      context.generalVariables.outputServiceMockOpt
+      context.generalVariables.outputServiceMock
     ) match
       case (_, Some(json)) =>
         (for

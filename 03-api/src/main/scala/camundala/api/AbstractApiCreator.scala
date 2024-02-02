@@ -29,10 +29,10 @@ trait AbstractApiCreator extends ProcessReferenceCreator:
   ): String =
     val projName = apiConfig.docProjectUrl(projectName)
     val anchor = groupAnchor
-      .map(a =>
-        s"tag/${a.replace(" ", "-")}/operation/${name.replace(" ", "%20")}"
+      .map(_ =>
+        s"operation/${name.replace(" ", "%20")}"
       )
-      .getOrElse(s"tag/${name.replace(" ", "-")}")
+      .getOrElse(s"tag/${name.replace(" ", "-").replace("--", "-").replace("--", "-")}")
     s"[$name]($projName/OpenApi.html#$anchor)"
   end createLink
 

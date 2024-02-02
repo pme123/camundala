@@ -1,0 +1,156 @@
+{
+  "name" : "example-invoice-c7-review",
+  "id" : "example-invoice-c7-review",
+  "description" : "This starts the Review Invoice Process.",
+  "version" : 1,
+  "appliesTo" : [
+    "bpmn:Activity"
+  ],
+  "elementType" : {
+    "value" : "bpmn:CallActivity"
+  },
+  "properties" : [
+    {
+      "value" : "creditor",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:in",
+        "target" : "creditor",
+        "expression" : false
+      },
+      "label" : "creditor",
+      "description" : ""
+    },
+    {
+      "value" : "amount",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:in",
+        "target" : "amount",
+        "expression" : false
+      },
+      "label" : "amount",
+      "description" : ""
+    },
+    {
+      "value" : "invoiceCategory",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:in",
+        "target" : "invoiceCategory",
+        "expression" : false
+      },
+      "label" : "invoiceCategory",
+      "description" : ""
+    },
+    {
+      "value" : "invoiceNumber",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:in",
+        "target" : "invoiceNumber",
+        "expression" : false
+      },
+      "label" : "invoiceNumber",
+      "description" : ""
+    },
+    {
+      "value" : "clarified",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:out",
+        "source" : "clarified",
+        "expression" : false
+      },
+      "label" : "clarified",
+      "description" : ""
+    },
+    {
+      "value" : "example-invoice-c7-review",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "property",
+        "name" : "calledElement"
+      },
+      "label" : "",
+      "description" : ""
+    },
+    {
+      "value" : "deployment",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "property",
+        "name" : "camunda:calledElementBinding"
+      },
+      "label" : "",
+      "description" : ""
+    },
+    {
+      "value" : "servicesMocked",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:in",
+        "target" : "servicesMocked",
+        "expression" : false
+      },
+      "label" : "servicesMocked",
+      "description" : ""
+    },
+    {
+      "value" : "mockedWorkers",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:in",
+        "target" : "mockedWorkers",
+        "expression" : false
+      },
+      "label" : "mockedWorkers",
+      "description" : ""
+    },
+    {
+      "value" : "outputMock",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:in",
+        "target" : "outputMock",
+        "expression" : false
+      },
+      "label" : "outputMock",
+      "description" : ""
+    },
+    {
+      "value" : "impersonateUserId",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:in",
+        "target" : "impersonateUserId",
+        "expression" : false
+      },
+      "label" : "impersonateUserId",
+      "description" : ""
+    },
+    {
+      "value" : "#{execution.processBusinessKey}",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "camunda:in:businessKey"
+      },
+      "label" : "",
+      "description" : ""
+    },
+    {
+      "value" : "Example Invoice C7 Review",
+      "type" : "Hidden",
+      "binding" : {
+        "type" : "property",
+        "name" : "name"
+      },
+      "label" : "",
+      "description" : ""
+    }
+  ],
+  "$schema" : "https://unpkg.com/@camunda/element-templates-json-schema@0.16.0/resources/schema.json",
+  "groups" : [
+  ],
+  "entriesVisible" : true
+}

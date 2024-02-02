@@ -69,12 +69,49 @@ object GenericExternalTask:
     given InOutCodec[ProcessStatus] = deriveEnumInOutCodec
 end GenericExternalTask
 
-trait WithConfig[InConfig <: Product : InOutCodec]:
+trait WithConfig[InConfig <: Product: InOutCodec]:
   def inConfig: Option[InConfig]
   def defaultConfig: InConfig
-  
+
 case class NoInConfig()
 
 object NoInConfig:
   given InOutCodec[NoInConfig] = deriveCodec
   given ApiSchema[NoInConfig] = deriveApiSchema
+
+// ApiCreator that describes these variables
+case class GeneralVariables(
+    // mocking
+    servicesMocked: Boolean = false, // Process only
+    mockedWorkers: Seq[String] = Seq.empty, // Process only
+    outputMock: Option[Json] = None,
+    outputServiceMock: Option[Json] = None, // Service only
+    // mapping
+    manualOutMapping: Boolean = false, // Service only
+    outputVariables: Seq[String] = Seq.empty, // Service only
+    handledErrors: Seq[String] = Seq.empty, // Service only
+    regexHandledErrors: Seq[String] = Seq.empty, // Service only
+    // authorization
+    impersonateUserId: Option[String] = None
+):
+  def isMockedWorker(workerTopicName: String): Boolean =
+    mockedWorkers.contains(workerTopicName)
+
+end GeneralVariables
+
+object GeneralVariables:
+  def serviceWorkerVariables: Seq[String] = "outputServiceMock" +: customWorkerVariables
+  def customWorkerVariables: Seq[String] = Seq(
+    "manualOutMapping", "outputVariables", "mockedWorkers",
+    "outputMock", "handledErrors", "regexHandledErrors", "impersonateUserId"
+  )
+  def processVariables: Seq[String] = Seq(
+    "servicesMocked",
+    "mockedWorkers",
+    "outputMock",
+    "impersonateUserId"
+  )
+
+  given InOutCodec[GeneralVariables] = deriveCodec
+  given ApiSchema[GeneralVariables] = deriveApiSchema
+end GeneralVariables

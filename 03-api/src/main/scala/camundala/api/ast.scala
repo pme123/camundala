@@ -17,8 +17,8 @@ sealed trait CApi:
 
 sealed trait GroupedApi extends CApi:
   def name: String
-  def apis: List[? <: CApi]
-  def withApis(apis: List[? <: CApi]): GroupedApi
+  def apis: List[? <: InOutApi[?, ?]]
+  def withApis(apis: List[? <: InOutApi[?, ?]]): GroupedApi
 end GroupedApi
 
 sealed trait InOutApi[
@@ -110,12 +110,12 @@ case class ProcessApi[
     name: String,
     inOut: Process[In, Out],
     apiExamples: ApiExamples[In, Out],
-    apis: List[CApi] = List.empty,
+    apis: List[InOutApi[?,?]] = List.empty,
     override val diagramName: Option[String] = None
 ) extends InOutApi[In, Out],
       GroupedApi:
 
-  def withApis(apis: List[CApi]): ProcessApi[In, Out] = copy(apis = apis)
+  def withApis(apis: List[InOutApi[?,?]]): ProcessApi[In, Out] = copy(apis = apis)
   def withExamples(
       examples: ApiExamples[In, Out]
   ): InOutApi[In, Out] =
@@ -140,7 +140,7 @@ end ProcessApi
 object ProcessApi:
   def apply[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
+      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag
   ](name: String, inOut: Process[In, Out]): ProcessApi[In, Out] =
     ProcessApi(name, inOut, ApiExamples(name, inOut))
 
@@ -331,10 +331,10 @@ end DecisionDmnApi
 
 case class CApiGroup(
     name: String,
-    apis: List[CApi]
+    apis: List[InOutApi[?,?]]
 ) extends GroupedApi:
 
-  def withApis(apis: List[CApi]): CApiGroup = copy(apis = apis)
+  def withApis(apis: List[InOutApi[?,?]]): CApiGroup = copy(apis = apis)
 
 end CApiGroup
 

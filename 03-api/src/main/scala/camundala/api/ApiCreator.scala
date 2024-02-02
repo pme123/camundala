@@ -17,6 +17,9 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
 
   def document(apis: CApi*): Unit =
     val apiDoc = ApiDoc(apis.toList)
+    ModelerTemplGenerator(version, apiConfig.modelerTemplateConfig, Some(projectName)).generate(
+      apiDoc
+    )
     writeOpenApis(apiDoc)
     writeCatalog(apiDoc)
   end document
@@ -289,49 +292,30 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
   end writeCatalog
 
   private def toCatalog(apiDoc: ApiDoc): String =
-    val optimizedApis =
-      if apiConfig.catalogOptimized then
-        collectApis(apiDoc)
-      else apiDoc.apis
+    val optimizedApis = collectApis(apiDoc)
     s"""### $title
        |${toCatalog(optimizedApis)}
        |""".stripMargin
   end toCatalog
 
-  private def collectApis(apiDoc: ApiDoc): List[CApi] =
-    apiDoc.apis.foldLeft(List.empty[CApi]) {
+  // takes exactly one api
+  private def collectApis(apiDoc: ApiDoc): List[(InOutApi[?, ?], String)] =
+    apiDoc.apis.foldLeft(List.empty[(InOutApi[?, ?], String)]) {
+      case (result, groupedApi: ProcessApi[?, ?]) =>
+        result ++ (groupedApi.apis :+ groupedApi ).map(_ -> groupedApi.name)
       case (result, groupedApi: GroupedApi) =>
-        val filteredApis =
-          groupedApi.apis
-        if filteredApis.nonEmpty then
-          result :+ groupedApi.withApis(filteredApis)
-        else result
-      case (result, otherApi: CApi) =>
-        result :+ otherApi
-    }
+        result ++ groupedApi.apis.map(_ -> groupedApi.name)
+      case (result, _) =>
+        result
+    }.distinct
 
   private def toCatalog(
-      apis: List[CApi],
-      groupAnchor: Option[String] = None
+      apis: List[(InOutApi[?, ?], String)]
   ): String =
     apis
-      .map {
-        case pa @ ProcessApi(name, inOut, _, apis, _) =>
-          if groupAnchor.nonEmpty then
-            s"- ${createLink(pa.endpointName, groupAnchor)}"
-          else
-            s"""
-               |#### ${createLink(name)}
-               |- ${createLink(pa.endpointName, Some(name))}
-               |""".stripMargin + toCatalog(apis, Some(name))
-        case api: GroupedApi =>
-          s"\n#### ${createLink(api.name)}\n" + toCatalog(
-            api.apis,
-            Some(api.name)
-          )
-        case api: InOutApi[?, ?] =>
-          s"- ${createLink(api.endpointName, groupAnchor)}"
-      }
+      .map:
+        case api -> anchor =>
+          s"- ${createLink(api.endpointName, Some(anchor))}"
       .sorted
       .mkString("\n")
   end toCatalog

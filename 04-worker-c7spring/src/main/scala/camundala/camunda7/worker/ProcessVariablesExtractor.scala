@@ -50,13 +50,13 @@ object ProcessVariablesExtractor:
     } yield GeneralVariables(
       servicesMocked = servicesMocked,
       mockedWorkers = mockedWorkers,
-      outputMockOpt = outputMockOpt,
-      outputServiceMockOpt = outputServiceMockOpt,
+      outputMock = outputMockOpt,
+      outputServiceMock = outputServiceMockOpt,
       outputVariables = outputVariables,
       manualOutMapping = manualOutMapping,
       handledErrors = handledErrors,
       regexHandledErrors = regexHandledErrors,
-      impersonateUserIdOpt = impersonateUserIdOpt
+      impersonateUserId = impersonateUserIdOpt
     )
   end extractGeneral
   
