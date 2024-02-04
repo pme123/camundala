@@ -1,5 +1,6 @@
 package camundala.api
 
+import camundala.api.docs.ApiProjectConf
 import camundala.bpmn.InputParams
 import camundala.domain.MockedServiceResponse
 import sttp.apispec.openapi.*
@@ -18,8 +19,9 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
   def document(apis: CApi*): Unit =
     val apiDoc = ApiDoc(apis.toList)
     ModelerTemplGenerator(version, apiConfig.modelerTemplateConfig, Some(projectName)).generate(
-      apiDoc
+      collectApis(apiDoc)
     )
+    ModelerTemplUpdater(apiConfig).update()
     writeOpenApis(apiDoc)
     writeCatalog(apiDoc)
   end document
@@ -292,14 +294,14 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
   end writeCatalog
 
   private def toCatalog(apiDoc: ApiDoc): String =
-    val optimizedApis = collectApis(apiDoc)
+    val optimizedApis = collectApisWithGroup(apiDoc)
     s"""### $title
        |${toCatalog(optimizedApis)}
        |""".stripMargin
   end toCatalog
 
   // takes exactly one api
-  private def collectApis(apiDoc: ApiDoc): List[(InOutApi[?, ?], String)] =
+  private def collectApisWithGroup(apiDoc: ApiDoc): List[(InOutApi[?, ?], String)] =
     apiDoc.apis.foldLeft(List.empty[(InOutApi[?, ?], String)]) {
       case (result, groupedApi: ProcessApi[?, ?]) =>
         result ++ (groupedApi.apis :+ groupedApi ).map(_ -> groupedApi.name)
@@ -308,6 +310,12 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
       case (result, _) =>
         result
     }.distinct
+
+  // takes exactly one api
+  private def collectApis(apiDoc: ApiDoc): List[InOutApi[?, ?]] =
+    collectApisWithGroup(apiDoc)
+      .map:
+        _._1
 
   private def toCatalog(
       apis: List[(InOutApi[?, ?], String)]

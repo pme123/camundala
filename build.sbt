@@ -19,13 +19,13 @@ lazy val root = project
   )
   .aggregate(
     documentation,
-    helper,
     domain,
     bpmn,
     api,
     dmn,
     simulation,
     worker,
+    helper,
     // implementations
     camunda7Worker,
     // experiments
@@ -68,14 +68,6 @@ lazy val documentation =
       laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting)
     )
     .enablePlugins(LaikaPlugin)
-
-lazy val helper = project
-  .in(file("./00-helper"))
-  .configure(publicationSettings)
-  .settings(projectSettings("helper"))
-  .settings(
-    libraryDependencies += osLibDependency
-  )
 
 // layer 01
 lazy val domain = project
@@ -153,6 +145,16 @@ lazy val simulation = project
   .dependsOn(bpmn)
 
 // layer 04
+
+lazy val helper = project
+  .in(file("./04-helper"))
+  .configure(publicationSettings)
+  .settings(projectSettings("helper"))
+  .settings(unitTestSettings)
+  .settings(
+    libraryDependencies += osLibDependency
+  ).dependsOn(api)
+
 lazy val camunda7Worker = project
   .in(file("./04-worker-c7spring"))
   .configure(publicationSettings)
@@ -436,4 +438,4 @@ lazy val exampleMyCompany = project
   )
   .enablePlugins(LaikaPlugin, BuildInfoPlugin)
   .configure(preventPublication)
-  .dependsOn(api)
+  .dependsOn(api, helper)
