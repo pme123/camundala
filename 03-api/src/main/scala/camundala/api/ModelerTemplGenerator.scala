@@ -3,25 +3,30 @@ package camundala.api
 import camundala.bpmn.{GeneralVariables, InOutDescr}
 import camundala.domain.*
 
-final case class ModelerTemplGenerator(apiVersion: String, config: ModelerTemplateConfig, projectName: Option[String])
-  extends App:
+final case class ModelerTemplGenerator(
+    apiVersion: String,
+    config: ModelerTemplateConfig,
+    projectName: Option[String]
+) extends App:
 
   lazy val version = apiVersion.split("\\.").head.toInt
 
-  def generate(apiDoc: ApiDoc): Unit =
-    os.makeDir.all(config.templatePath)
-    apiDoc.apis.map:
-      case groupedApi: GroupedApi =>
-        groupedApi.generate()
-      case cApi: CApi => cApi.generate()
+  def generate(apis: List[InOutApi[?, ?]]): Unit =
+    apis.foreach:
+      case api: ExternalTaskApi[?, ?] =>
+        generateTempl(api)
+      case api: ProcessApi[?, ?] if !api.inOut.in.isInstanceOf[GenericServiceIn] =>
+        generateTempl(api)
+      case api =>
+        println(s"API not supported for Modeler Template: ${api.getClass.getSimpleName}")
   end generate
 
   private def generateTempl(
-                             inOut: InOutDescr[?, ?],
-                             appliesTo: Seq[AppliesTo],
-                             elementType: ElementType,
-                             properties: Seq[TemplProp]
-                           ): Unit =
+      inOut: InOutDescr[?, ?],
+      appliesTo: Seq[AppliesTo],
+      elementType: ElementType,
+      properties: Seq[TemplProp]
+  ): Unit =
     val mapProps = mappings(
       inOut.in,
       if elementType == ElementType.callActivity then PropType.`camunda:in`
@@ -43,7 +48,7 @@ final case class ModelerTemplGenerator(apiVersion: String, config: ModelerTempla
       config.schema
     )
     os.write.over(
-      config.templatePath / s"${inOut.id}.$version.json",
+      config.templatePath / s"${inOut.id}.json",
       templ.asJson.deepDropNullValues.toString
     )
   end generateTempl
@@ -86,21 +91,21 @@ final case class ModelerTemplGenerator(apiVersion: String, config: ModelerTempla
           value = if PropType.`camunda:inputParameter` == propType then s"#{$k}" else k,
           binding = propType match
             case PropType.`camunda:in` => PropBinding.`camunda:in`(
-              `type` = propType,
-              target = k
-            )
+                `type` = propType,
+                target = k
+              )
             case PropType.`camunda:out` => PropBinding.`camunda:out`(
-              `type` = propType,
-              source = k
-            )
+                `type` = propType,
+                source = k
+              )
             case PropType.`camunda:inputParameter` => PropBinding.`camunda:inputParameter`(
-              `type` = propType,
-              name = k
-            )
+                `type` = propType,
+                name = k
+              )
             case PropType.`camunda:outputParameter` => PropBinding.`camunda:outputParameter`(
-              `type` = propType,
-              source = s"#{$k}"
-            )
+                `type` = propType,
+                source = s"#{$k}"
+              )
             case _ =>
               throw new IllegalArgumentException(s"PropType not expected for mappings: $propType")
         )
@@ -127,30 +132,6 @@ final case class ModelerTemplGenerator(apiVersion: String, config: ModelerTempla
       Seq.empty
   end generalVariables
 
-  extension (groupedApi: GroupedApi)
-    def generate(): Unit =
-      println(s"Start Grouped Modeler Templ: ${groupedApi.name}")
-      groupedApi.apis.foreach(_.generate())
-      groupedApi match
-        case pa: ProcessApi[?, ?] => generateTempl(pa) // the main process
-        case _: CApiGroup => () // nothing to do
-
-  extension (api: CApi)
-    def generate(): Unit =
-      api match
-        case api: ExternalTaskApi[?, ?] =>
-          generateTempl(api)
-        case da@DecisionDmnApi(_, _, _, _) =>
-          println(s"API not supported for Modeler Template: ${api.getClass.getSimpleName}")
-        case aa@ActivityApi(_, _, _) =>
-          println(s"API not supported for Modeler Template: ${api.getClass.getSimpleName}")
-        case pa@ProcessApi(name, _, _, apis, _)
-          if apis.isEmpty =>
-          generateTempl(pa)
-        case ga =>
-          throw IllegalArgumentException(
-            s"Sorry, only one level of GroupedApi is allowed!\n - $ga"
-          )
 end ModelerTemplGenerator
 
 final case class MTemplate(
@@ -324,4 +305,3 @@ object AppliesTo:
   given InOutCodec[AppliesTo] = deriveEnumInOutCodec
   given ApiSchema[AppliesTo] = deriveApiSchema
 end AppliesTo
-

@@ -27,7 +27,6 @@ trait ProcessReferenceCreator:
 
   lazy val allBpmns: Seq[(String, Seq[(os.Path, String)])] =
     println(s"BPMN Reference Base Directory: $gitBasePath")
-    apiConfig.projectsConfig.initProject(projectName) // update the project for references
     projectConfigs
       .map { pc =>
         val absBpmnPath = pc.absBpmnPath(gitBasePath)
@@ -131,38 +130,7 @@ trait ProcessReferenceCreator:
       println(s"Uses for $processName")
       findBpmn(processName)
         .map { xmlStr =>
-          val xml = XML.load(new StringReader(xmlStr))
-          val callActivities = (xml \\ "callActivity")
-            .map { ca =>
-              val calledElement = ca \@ "calledElement"
-              val maybeServiceName = (ca \\ "in")
-                .filter(_ \@ "target" == "serviceName")
-                .map(_ \@ "sourceExpression")
-                .headOption
-              UsesRef(calledElement, maybeServiceName)
-            }
-          val externalWorkers = (xml \\ "serviceTask")
-            //  .filter(_ \@ "topic" nonEmpty)
-            .map { br =>
-              val workerRef = br
-                .attribute("http://camunda.org/schema/1.0/bpmn", "topic")
-                .get
-              UsesRef(workerRef.toString, refType = InOutType.Worker)
-            }.filterNot(_.processRef == processName) // filter InitWorker
-
-          val businessRuleTasks = (xml \\ "businessRuleTask")
-            .map { br =>
-              val decisionRef = br
-                .attribute("http://camunda.org/schema/1.0/bpmn", "decisionRef")
-                .get
-              UsesRef(decisionRef.toString, refType = InOutType.Dmn)
-            }
-
-          val refs = (callActivities ++ businessRuleTasks ++ externalWorkers)
-            .groupBy(_.project)
-            .toSeq
-            .sortBy(_._1)
-
+          val refs = extractUsesRefs(xmlStr)
           val refDoc = refs
             .map { case k -> processes =>
               println(s"- $k:\n -- ${processes.map(_.asString).mkString("\n  -- ")}")
@@ -210,8 +178,41 @@ trait ProcessReferenceCreator:
 
       lazy val asString: String =
         s"_[$refType: $identShort](${docProjectUrl(project)}/OpenApi.html$anchor)_ $serviceStr"
-
     end UsesRef
+    
+    private def extractUsesRefs(xmlStr: String) =
+      val xml = XML.load(new StringReader(xmlStr))
+      val callActivities = (xml \\ "callActivity")
+        .map { ca =>
+          val calledElement = ca \@ "calledElement"
+          val maybeServiceName = (ca \\ "in")
+            .filter(_ \@ "target" == "serviceName")
+            .map(_ \@ "sourceExpression")
+            .headOption
+          UsesRef(calledElement, maybeServiceName)
+        }
+      val externalWorkers = (xml \\ "serviceTask")
+        //  .filter(_ \@ "topic" nonEmpty)
+        .map { br =>
+          val workerRef = br
+            .attribute("http://camunda.org/schema/1.0/bpmn", "topic")
+            .get
+          UsesRef(workerRef.toString, refType = InOutType.Worker)
+        }.filterNot(_.processRef == processName) // filter InitWorker
+
+      val businessRuleTasks = (xml \\ "businessRuleTask")
+        .map { br =>
+          val decisionRef = br
+            .attribute("http://camunda.org/schema/1.0/bpmn", "decisionRef")
+            .get
+          UsesRef(decisionRef.toString, refType = InOutType.Dmn)
+        }
+
+      (callActivities ++ businessRuleTasks ++ externalWorkers)
+        .groupBy(_.project)
+        .toSeq
+        .sortBy(_._1)
+    end extractUsesRefs
 
     private def findBpmn(
         processName: String

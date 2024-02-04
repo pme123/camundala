@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.28.6 - 2024-02-04
+### Changed 
+- Adding Color Adjustment to Camunda Modeler Template Updater. - see [Commit](https://github.com/pme123/camundala/commit/7041cdb22ce0f4c65eed3432a9e94664b060913a)
+- Adding Camunda Modeler Template Updater. - see [Commit](https://github.com/pme123/camundala/commit/1465c0d3a1f84dec070b4053aaa4479ea520eb15)
+
 ## 1.28.5 - 2024-02-02
 ### Changed 
 - Fixing link in catalog generation. - see [Commit](https://github.com/pme123/camundala/commit/0f9568561c85c935c3e38fe8b42a09becd12b246)

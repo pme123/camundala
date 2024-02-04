@@ -1,6 +1,7 @@
 package camundala
 package api
 
+import os.Path
 import sttp.apispec.openapi.Contact
 
 case class ApiConfig(
@@ -96,6 +97,8 @@ case class ApiConfig(
 
   def refIdentShort(refIdent: String, projectName: String): String =
     projectsConfig.refIdentShort(refIdent, companyId, projectName)
+    
+  lazy val projectConfPath: Path = basePath / projectsConfig.projectConfPath  
 end ApiConfig
 
 case class ProjectsConfig(
@@ -122,6 +125,9 @@ case class ProjectsConfig(
   def initProject(projectName: String): Unit =
     groupedConfigs.foreach(_.initProject(gitDir, projectName))
   end initProject
+
+  def projectConfig(projectName: String): Option[ProjectConfig] =
+    projectConfigs.find(_.name == projectName)
 
   lazy val projectConfigs: Seq[ProjectConfig] = groupedConfigs.flatMap(_.projects)
 
@@ -231,9 +237,11 @@ case class ProjectGroup(
 
 case class ModelerTemplateConfig(
     schemaVersion: String = "0.16.0",
-    templatePath: os.Path = os.pwd / ".camunda" / "element-templates",
+    templateRelativePath: os.RelPath = os.rel / ".camunda" / "element-templates",
     generateGeneralVariables: Boolean = true
 ):
+  lazy val templatePath: Path = os.pwd / templateRelativePath
+
   lazy val schema =
     s"https://unpkg.com/@camunda/element-templates-json-schema@$schemaVersion/resources/schema.json"
 end ModelerTemplateConfig

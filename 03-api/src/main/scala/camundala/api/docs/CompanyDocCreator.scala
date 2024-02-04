@@ -139,14 +139,14 @@ trait CompanyDocCreator extends DependencyCreator:
         val isNew = l.toLowerCase().contains("// new")
         projectName -> (version, isNew)
       }
-    dependencies.map { case p -> v => fetchConf(p, v._1, v._2) }.flatten
+    dependencies.flatMap:
+      case p -> v => fetchConf(p, v._1, v._2)
   end setupDependencies
 
   private def fetchConf(project: String, version: String, isNew: Boolean) =
     for
-      projectCloneUrl <- apiConfig.projectsConfig.projectCloneUrl(project)
-      projectConfig <- projectConfigs.find(_.name == project)
-      projectPath = projectConfig.absGitPath(gitBasePath)
+      projConfig <- apiConfig.projectsConfig.projectConfig(project)
+      projectPath = projConfig.absGitPath(gitBasePath)
       _ = println(s"Project Git Path $projectPath")
       _ = os.makeDir.all(projectPath)
       _ = os.proc("git", "fetch", "--tags").callOnConsole(projectPath)
@@ -327,5 +327,5 @@ trait CompanyDocCreator extends DependencyCreator:
       text: String,
       ticket: Option[String] = None
   )
-  
+
 end CompanyDocCreator

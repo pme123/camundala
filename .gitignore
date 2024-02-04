@@ -35,3 +35,4 @@ meta.json
 /05-examples/camunda-h2-default/process-engine.mv.db
 /test.yml
 /camunda-h2-default/process-engine.mv.db
+/.camunda/
