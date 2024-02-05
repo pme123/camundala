@@ -12,6 +12,7 @@ final case class ModelerTemplGenerator(
   lazy val version = apiVersion.split("\\.").head.toInt
 
   def generate(apis: List[InOutApi[?, ?]]): Unit =
+    os.makeDir.all(config.templatePath)
     apis.foreach:
       case api: ExternalTaskApi[?, ?] =>
         generateTempl(api)
