@@ -3,7 +3,7 @@ info:
   title: Invoice Example Process API
   version: '1.0'
   summary: "\n**This is for Postman - to have example requests. Be aware the Output\
-    \ is not provided!**\n\n\n\nCreated at 05/02/2024, 17:12\n\n**See the [Camundala\
+    \ is not provided!**\n\n\n\nCreated at 06/02/2024, 15:59\n\n**See the [Camundala\
     \ Documentation](https://pme123.github.io/camundala/)\n\nThere is no README.md\
     \ in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>General Variables</i></b>\n\
     </summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\nMock all the _ServiceWorkers_\

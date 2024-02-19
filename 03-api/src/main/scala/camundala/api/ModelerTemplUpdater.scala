@@ -7,8 +7,8 @@ import io.circe.syntax.*
 
 import java.io.StringReader
 import scala.language.postfixOps
-import scala.xml.transform.{RewriteRule, RuleTransformer}
 import scala.xml.*
+import scala.xml.transform.{RewriteRule, RuleTransformer}
 
 case class ModelerTemplUpdater(apiConfig: ApiConfig):
 
@@ -17,13 +17,14 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
     updateBpmnColors()
 
   private def updateTemplates(): Unit =
-    os.makeDir.all(templConfig.templatePath)
     apiProjectConfig.dependencies
       .foreach: c =>
-        val path = projectsConfig.gitDir / c.name / templConfig.templateRelativePath
-        println(s"Fetch dependencies: ${c.name} > $path")
-        if os.exists(path) then
-          os.walk(path)
+        val toPath = templConfig.templatePath / "dependencies"
+        os.makeDir.all(toPath)
+        val fromPath = projectsConfig.gitDir / c.name / templConfig.templateRelativePath
+        println(s"Fetch dependencies: ${c.name} > $fromPath")
+        if os.exists(fromPath) then
+          os.walk(fromPath)
             .filter: p =>
               p.last.startsWith(c.name)
             .foreach: p =>
@@ -46,13 +47,13 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
                       ).asJson
                         .deepDropNullValues
                         .toString
-                    os.write.over(templConfig.templatePath / p.last, newTempl)
+                    os.write.over(toPath / p.last, newTempl)
 
                   case t =>
                     println(s" - Just copy Template: ${t.id}")
-                    os.copy(p, templConfig.templatePath / p.last, replaceExisting = true)
+                    os.copy(p, toPath / p.last, replaceExisting = true)
         else
-          println(s"No Modeler Templates for $path")
+          println(s"No Modeler Templates for $fromPath")
         end if
   end updateTemplates
 
