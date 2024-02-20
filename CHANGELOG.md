@@ -15,6 +15,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.28.7 - 2024-02-20
+### Changed 
+- Some adjustments in ModelerTemplGenerator. - see [Commit](https://github.com/pme123/camundala/commit/cea1cebc68f70291aed4360ece15549d09bd9da7)
+- Moved dependencies in ModelerTemplUpdater to dependency folder. - see [Commit](https://github.com/pme123/camundala/commit/d864100366e03f0eb20d98d9d4230922a919830b)
+- Added fix to get only the Variable from the process in simulation. - see [Commit](https://github.com/pme123/camundala/commit/a494edac929b8eb506655238246f04bd322b8966)
+- Fixed ProjectApiCreator of invoice example. - see [Commit](https://github.com/pme123/camundala/commit/c3a47557f336933c9940c49274a451eff435083a)
+
 ## 1.28.6 - 2024-02-04
 ### Changed 
 - Adding Color Adjustment to Camunda Modeler Template Updater. - see [Commit](https://github.com/pme123/camundala/commit/7041cdb22ce0f4c65eed3432a9e94664b060913a)

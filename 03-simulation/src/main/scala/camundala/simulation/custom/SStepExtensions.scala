@@ -58,7 +58,7 @@ trait SStepExtensions
     def checkVars()(using data: ScenarioData): ResultType =
       val processInstanceId = data.context.processInstanceId
       val uri =
-        uri"${config.endpoint}/history/variable-instance?processInstanceIdIn=$processInstanceId&deserializeValues=false"
+        uri"${config.endpoint}/history/variable-instance?processInstanceIdIn=$processInstanceId&executionIdIn=$processInstanceId&deserializeValues=false"
       val request = basicRequest
         .auth()
         .get(uri)

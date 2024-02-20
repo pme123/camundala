@@ -12,13 +12,16 @@ final case class ModelerTemplGenerator(
   lazy val version = apiVersion.split("\\.").head.toInt
 
   def generate(apis: List[InOutApi[?, ?]]): Unit =
+    os.makeDir.all(config.templatePath)
     apis.foreach:
       case api: ExternalTaskApi[?, ?] =>
+        println(s"ExternalTaskApi supported for Modeler Template: ${api.id}")
         generateTempl(api)
       case api: ProcessApi[?, ?] if !api.inOut.in.isInstanceOf[GenericServiceIn] =>
+        println(s"ProcessApi supported for Modeler Template: ${api.id} - ${api.name}")
         generateTempl(api)
       case api =>
-        println(s"API not supported for Modeler Template: ${api.getClass.getSimpleName}")
+        println(s"API NOT supported for Modeler Template: ${api.getClass.getSimpleName} - ${api.id}")
   end generate
 
   private def generateTempl(
@@ -40,7 +43,7 @@ final case class ModelerTemplGenerator(
     val templ = MTemplate(
       inOut.id,
       inOut.id,
-      inOut.descr.getOrElse(""),
+      inOut.descr.getOrElse("").split("---").head,
       version,
       appliesTo,
       elementType,
