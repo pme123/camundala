@@ -97,21 +97,7 @@ case class GeneralVariables(
   def isMockedWorker(workerTopicName: String): Boolean =
     mockedWorkers.contains(workerTopicName)
 
-end GeneralVariables
-
 object GeneralVariables:
-  def serviceWorkerVariables: Seq[String] = "outputServiceMock" +: customWorkerVariables
-  def customWorkerVariables: Seq[String] = Seq(
-    "manualOutMapping", "outputVariables", "mockedWorkers",
-    "outputMock", "handledErrors", "regexHandledErrors", "impersonateUserId"
-  )
-  def processVariables: Seq[String] = Seq(
-    "servicesMocked",
-    "mockedWorkers",
-    "outputMock",
-    "impersonateUserId"
-  )
-
   given InOutCodec[GeneralVariables] = deriveCodec
   given ApiSchema[GeneralVariables] = deriveApiSchema
 end GeneralVariables

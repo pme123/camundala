@@ -1,6 +1,6 @@
 package camundala.api
 
-import camundala.bpmn.{GeneralVariables, InOutDescr}
+import camundala.bpmn.*
 import camundala.domain.*
 
 final case class ModelerTemplGenerator(
@@ -21,7 +21,9 @@ final case class ModelerTemplGenerator(
         println(s"ProcessApi supported for Modeler Template: ${api.id} - ${api.name}")
         generateTempl(api)
       case api =>
-        println(s"API NOT supported for Modeler Template: ${api.getClass.getSimpleName} - ${api.id}")
+        println(
+          s"API NOT supported for Modeler Template: ${api.getClass.getSimpleName} - ${api.id}"
+        )
   end generate
 
   private def generateTempl(
@@ -64,14 +66,14 @@ final case class ModelerTemplGenerator(
       Seq(
         TemplProp.calledElement(inOut.id),
         TemplProp.calledElementBinding
-      ) ++ generalVariables(isCallActivity = true, GeneralVariables.processVariables)
+      ) ++ generalVariables(isCallActivity = true, TemplMapperHelper.processVariables, inOut)
     )
   end generateTempl
 
   private def generateTempl(inOut: ExternalTaskApi[?, ?]): Unit =
     val vars = inOut match
-      case _: ServiceWorkerApi[?, ?, ?, ?] => GeneralVariables.serviceWorkerVariables
-      case _ => GeneralVariables.customWorkerVariables
+      case _: ServiceWorkerApi[?, ?, ?, ?] => TemplMapperHelper.serviceWorkerVariables
+      case _ => TemplMapperHelper.customWorkerVariables
     generateTempl(
       inOut.inOutDescr,
       AppliesTo.activity,
@@ -79,58 +81,61 @@ final case class ModelerTemplGenerator(
       Seq(
         TemplProp.serviceTaskTopic(inOut.id),
         TemplProp.serviceTaskType
-      ) ++ generalVariables(isCallActivity = false, vars)
+      ) ++ generalVariables(isCallActivity = false, vars, inOut)
     )
   end generateTempl
 
   private def mappings[T <: Product](prod: T, propType: PropType): Seq[TemplProp] =
     prod.productElementNames.toSeq
+      .zip(prod.productIterator)
       .filterNot:
-        _ == "inConfig" // don't show configuration
-      .map: k =>
-        TemplProp(
-          `type` = TemplType.Hidden,
-          label = k,
-          value = if PropType.`camunda:inputParameter` == propType then s"#{$k}" else k,
-          binding = propType match
-            case PropType.`camunda:in` => PropBinding.`camunda:in`(
-                `type` = propType,
-                target = k
-              )
-            case PropType.`camunda:out` => PropBinding.`camunda:out`(
-                `type` = propType,
-                source = k
-              )
-            case PropType.`camunda:inputParameter` => PropBinding.`camunda:inputParameter`(
-                `type` = propType,
-                name = k
-              )
-            case PropType.`camunda:outputParameter` => PropBinding.`camunda:outputParameter`(
-                `type` = propType,
-                source = s"#{$k}"
-              )
-            case _ =>
-              throw new IllegalArgumentException(s"PropType not expected for mappings: $propType")
-        )
-  end mappings
-
-  private def generalVariables(isCallActivity: Boolean, vars: Seq[String]) =
-    if config.generateGeneralVariables then
-      vars
-        .map: k =>
+        case name -> _ => name == "inConfig" // don't show configuration
+      .map:
+        case name -> value =>
           TemplProp(
             `type` = TemplType.Hidden,
-            label = k,
-            value = if isCallActivity then k else s"#{null}",
-            binding = if isCallActivity then
-              PropBinding.`camunda:in`(
-                target = k
-              )
-            else
-              PropBinding.`camunda:inputParameter`(
-                name = k
-              )
+            label = name,
+            value = if PropType.`camunda:inputParameter` == propType then TemplMapperHelper.mapping(name, value) else name,
+            binding = propType match
+              case PropType.`camunda:in` => PropBinding.`camunda:in`(
+                  `type` = propType,
+                  target = name
+                )
+              case PropType.`camunda:out` => PropBinding.`camunda:out`(
+                  `type` = propType,
+                  source = name
+                )
+              case PropType.`camunda:inputParameter` => PropBinding.`camunda:inputParameter`(
+                  `type` = propType,
+                  name = name
+                )
+              case PropType.`camunda:outputParameter` => PropBinding.`camunda:outputParameter`(
+                  `type` = propType,
+                  source = TemplMapperHelper.mapping(name, value)
+                )
+              case _ =>
+                throw new IllegalArgumentException(s"PropType not expected for mappings: $propType")
           )
+  end mappings
+
+  private def generalVariables(isCallActivity: Boolean, vars: Seq[InputParamForTempl], inOutApi: InOutApi[?,?]) =
+    if config.generateGeneralVariables then
+      vars
+        .map: in =>
+            val k = in.inParam.toString
+            TemplProp(
+              `type` = TemplType.Hidden,
+              label = k,
+              value = if isCallActivity then k else in.mapping(inOutApi.inOut.in),
+              binding = if isCallActivity then
+                PropBinding.`camunda:in`(
+                  target = k
+                )
+              else
+                PropBinding.`camunda:inputParameter`(
+                  name = k
+                )
+            )
     else
       Seq.empty
   end generalVariables
@@ -308,3 +313,48 @@ object AppliesTo:
   given InOutCodec[AppliesTo] = deriveEnumInOutCodec
   given ApiSchema[AppliesTo] = deriveApiSchema
 end AppliesTo
+
+case class InputParamForTempl(inParam: InputParams, mapping: Product => String)
+
+object InputParamForTempl:
+  def apply(name: InputParams, inputMapValue: String): InputParamForTempl =
+    new InputParamForTempl(name, _ => inputMapValue)
+  def apply(name: InputParams, inputMapFunct: Product => String): InputParamForTempl =
+    new InputParamForTempl(name, inputMapFunct)
+
+object TemplMapperHelper:
+
+  import InputParams.*
+
+  def serviceWorkerVariables: Seq[InputParamForTempl] =
+    optionalMapping(outputServiceMock) +: customWorkerVariables
+
+  def customWorkerVariables: Seq[InputParamForTempl] = Seq(
+    InputParamForTempl(manualOutMapping, "#{true}"),
+    InputParamForTempl(outputVariables, _.productElementNames.mkString(", ")),
+    optionalMapping(mockedWorkers),
+    optionalMapping(outputMock),
+    InputParamForTempl(handledErrors, "handledError1, handledError2"),
+    InputParamForTempl(regexHandledErrors, "errorRegex1, errorRegex2"),
+    optionalMapping(impersonateUserId)
+  )
+
+  def processVariables: Seq[InputParamForTempl] = Seq(
+    optionalMapping(servicesMocked),
+    optionalMapping(mockedWorkers),
+    optionalMapping(outputMock),
+    optionalMapping(impersonateUserId)
+  )
+
+  def optionalMapping(name: InputParams): InputParamForTempl =
+    InputParamForTempl(name, optionalMapping(name.toString))
+
+  def optionalMapping(name: String): String =
+    s"#{execution.getVariable('$name')}"
+
+  def mapping(name: String, elem: Any): String =
+    elem match
+      case _: Option[?] => optionalMapping(name)
+      case _ => s"#{$name}"
+
+end TemplMapperHelper

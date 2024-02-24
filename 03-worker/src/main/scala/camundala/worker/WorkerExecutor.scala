@@ -13,7 +13,7 @@ case class WorkerExecutor[
 )(using context: EngineRunContext):
 
   def execute(
-      processVariables: Seq[Either[BadVariableError, (String, Option[Json])]],
+      processVariables: Seq[Either[BadVariableError, (String, Option[Json])]]
   ) =
     for
       validatedInput <- InputValidator.validate(processVariables)
@@ -66,7 +66,7 @@ case class WorkerExecutor[
     )
 
     def initVariables(
-                       validatedInput: In,
+        validatedInput: In
     ): Either[InitProcessError, Map[String, Any]] =
       worker.initProcessHandler
         .map { vi =>
