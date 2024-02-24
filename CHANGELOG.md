@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.28.8 - 2024-02-24
+### Changed 
+- Improved default values in mapping for ModelerTemplGenerator. - see [Commit](https://github.com/pme123/camundala/commit/aa490c49984adba356bfcbfdceffc50acd5abf25)
+
 ## 1.28.7 - 2024-02-20
 ### Changed 
 - Some adjustments in ModelerTemplGenerator. - see [Commit](https://github.com/pme123/camundala/commit/cea1cebc68f70291aed4360ece15549d09bd9da7)
