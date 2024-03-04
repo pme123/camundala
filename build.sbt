@@ -145,15 +145,16 @@ lazy val simulation = project
   .dependsOn(bpmn)
 
 // layer 04
-
+val swaggerOpenAPIDependency =   "io.swagger.parser.v3" % "swagger-parser" % swaggerOpenAPIVersion
 lazy val helper = project
   .in(file("./04-helper"))
   .configure(publicationSettings)
   .settings(projectSettings("helper"))
   .settings(unitTestSettings)
   .settings(
-    libraryDependencies += osLibDependency
-  ).dependsOn(api)
+    autoImportSetting,
+    libraryDependencies ++= Seq(osLibDependency, swaggerOpenAPIDependency)
+  ).dependsOn(api, simulation, worker)
 
 lazy val camunda7Worker = project
   .in(file("./04-worker-c7spring"))

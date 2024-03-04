@@ -70,3 +70,4 @@ trait BpmnWorkerDsl extends BpmnDsl:
         |---
         |""".stripMargin
 end BpmnWorkerDsl
+object BpmnWorkerDsl
