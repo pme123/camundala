@@ -12,10 +12,10 @@ case class ApiProjectConf(
     dependencies: Seq[DependencyConf],
     changelog: Seq[String],
     isNew: Boolean
-) {
+):
   lazy val minorVersion: String = version.split("\\.").take(2).mkString(".")
   lazy val fullName = s"$org:$name:$version"
-}
+end ApiProjectConf
 
 object ApiProjectConf:
 
@@ -42,18 +42,18 @@ end ApiProjectConf
 case class DependencyConf(
     org: String,
     name: String,
-    version: String,
-) :
+    version: String
+):
   lazy val minorVersion: String = version.split("\\.").take(2).mkString(".")
   lazy val fullName = s"$org:$name:$version"
 
   def equalTo(packageConf: ApiProjectConf): Boolean =
     packageConf.org == org && packageConf.name == name && packageConf.minorVersion == minorVersion
+end DependencyConf
 
-object DependencyConf :
-  def apply(dependency: String): DependencyConf = {
+object DependencyConf:
+  def apply(dependency: String): DependencyConf =
     val dArray = dependency.replace("\"", "").split(":")
     DependencyConf(dArray(0), dArray(1), dArray(2))
-  }
 
 end DependencyConf

@@ -105,7 +105,7 @@ case class ProjectsConfig(
     // Path, where the Git Projects are cloned.
     gitDir: os.Path = os.pwd / os.up / "git-temp",
     // Path to your ApiProjectConf
-    projectConfPath: os.RelPath = os.rel / "PROJECT.conf",
+    projectConfPath: os.RelPath = defaultProjectPath,
     groupedConfigs: Seq[GroupedProjectConfig] = Seq.empty
 ):
   lazy val isConfigured: Boolean = groupedConfigs.nonEmpty

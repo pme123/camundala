@@ -77,8 +77,16 @@ lazy val domain = project
   .settings(unitTestSettings)
   .settings(
     autoImportSetting,
-    libraryDependencies ++= tapirDependencies
-  )
+    libraryDependencies ++= tapirDependencies,
+    buildInfoPackage := "camundala",
+    buildInfoKeys := Seq[BuildInfoKey](
+      organization,
+      name,
+      version,
+      scalaVersion,
+      sbtVersion
+    )
+  ).enablePlugins(BuildInfoPlugin)
 // layer 02
 val osLibDependency = "com.lihaoyi" %% "os-lib" % osLibVersion
 lazy val bpmn = project
