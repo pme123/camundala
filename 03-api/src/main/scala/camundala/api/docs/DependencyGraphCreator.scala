@@ -119,7 +119,7 @@ case class DependencyGraphCreator()(using
         .map { aC => Package(aC.name, aC.minorVersion) }
       val toPackages = c.dependencies.map { cd =>
         Package(cd.name, cd.minorVersion)
-      }
+      }.toSeq
       println(s"mainPackage: $mainPackage")
       println(s"fromPackages: $fromPackages")
       println(s"toPackages: $toPackages")

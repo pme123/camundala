@@ -2,27 +2,45 @@ package camundala.helper.setup
 
 import camundala.helper.util.{CompanyVersionHelper, ReposConfig}
 
-case class HelperCreator(companyName: String)(using reposConfig: ReposConfig):
+case class ScriptCreator()(using config: SetupConfig):
 
-  lazy val companyHelper: String =
+  lazy val companyCreate =
+    s"""$helperHeader
+       |
+       |
+       |/**
+       | * Usage see `camundala.helper.DevHelper.createUpdateCompany`
+       | */
+       |@main(doc =
+       |  \"\"\"> Creates the directories and generic files for the company BPMN Projects
+       |   \"\"\")
+       |def update(
+       |): Unit =
+       |  DevHelper.updateCompany()
+       |
+       |""".stripMargin
+
+  lazy val projectCreate: String =
     s"""$helperHeader
        |
        |/**
-       | * Usage see `valiant.camundala.helper.SetupHelper#createCompany`
+       | * Usage see `$companyName.camundala.helper.SetupHelper#createCompany`
        | */
        |@main(doc =
        |  \"\"\"> Creates the directories and generic files for the company BPMN Projects
        |   \"\"\")
        |def create(
-       |    @arg(doc = "The company name - should be generated automatically after creation.")
-       |    companyName: String = $companyName,
-       |): Unit =
-       |  SetupHelper().createCompany(companyName)
-       |
+       |    @arg(doc = "The project name - should be generated automatically after creation.")
+       |    projectName: String
+       |): Unit = {
+       |  val config = ProjectDevHelper.config(projectName)
+       |  DevHelper.createProject(config)
+       |}
        |""".stripMargin
 
   def projectHelper(projectName: String) =
     s"""$helperHeader
+       |
        |/**
        | * Usage see `valiant.camundala.helper.PublishHelper`
        | */
@@ -84,6 +102,8 @@ case class HelperCreator(companyName: String)(using reposConfig: ReposConfig):
        |}
        |""".stripMargin
 
+  private lazy val companyName = config.companyName
+  private lazy val reposConfig = config.reposConfig
   private lazy val versionHelper = CompanyVersionHelper(companyName, reposConfig.repoSearch)
   private lazy val helperImport =
     s"""import $$ivy.`$companyName:$companyName-camundala-helper_3:${versionHelper.companyCamundalaVersion} compat`"""
@@ -98,11 +118,16 @@ case class HelperCreator(companyName: String)(using reposConfig: ReposConfig):
        |import coursierapi.{Credentials, MavenRepository}
        |
        |interp.repositories() ++= Seq(
-       |  ${reposConfig.ammoniteRepos
+       |  ${
+      reposConfig.ammoniteRepos
+        .map:
+          _.ammoniteRepo
         .mkString(",\n  ")}
        |)
        |@
        |
-       |$helperImport, $companyName.camundala.helper._
+       |$helperImport
+       |import $companyName.camundala.helper._
+       |import camundala.helper._
        |""".stripMargin
-end HelperCreator
+end ScriptCreator

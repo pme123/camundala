@@ -70,7 +70,7 @@ case class GenericFileGenerator()(using config: SetupConfig):
        |
        |""".stripMargin
 
-  private val helperSc = HelperCreator(config.apiProjectConf.org)(using config.repoConfig)
+  private val helperSc = ScriptCreator()
     .projectHelper(config.projectName)
 
 end GenericFileGenerator

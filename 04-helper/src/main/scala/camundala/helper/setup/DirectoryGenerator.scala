@@ -12,15 +12,10 @@ case class DirectoryGenerator()(using config: SetupConfig):
 
     def printMainAndTest(
         subProject: Option[String] = None,
-        generateSubModule: Boolean = false
     ): Unit =
       def modulePath(mainOrTest: String) =
-        val subPackage = subProject.toSeq
-        val subModule = if generateSubModule then subPackage else Seq.empty
         config.projectDir /
-          moduleConfig.nameWithLevel /
-          subModule / "src" / mainOrTest / "scala" /
-          config.projectPath / moduleConfig.name / subPackage
+          moduleConfig.packagePath(config.projectPath, mainOrTest, subProject)
       end modulePath
 
       if moduleConfig.hasMain then
@@ -33,7 +28,7 @@ case class DirectoryGenerator()(using config: SetupConfig):
     then
       config.subProjects
         .foreach: sp =>
-          printMainAndTest(Some(sp), moduleConfig.generateSubModule)
+          printMainAndTest(Some(sp))
     else printMainAndTest()
     end if
 

@@ -76,10 +76,10 @@ object VersionHelper:
     val versionRegex = """"latestVersion":"(\d+\.\d+\.\d+)"""".r
     val maybeVersion =
       versionRegex.findFirstMatchIn(searchResult.out.text()).map(_.group(1))
-    val version = maybeVersion.getOrElse(
-      s"NOT FOUND! - Result from Maven Central:\n ${searchResult.out.text()}"
-    )
-    println(s"- Last Version of camundala: $version")
+    val version = maybeVersion.getOrElse:
+      println(s"${Console.YELLOW_B}NOT FOUND!${Console.RESET} - Result from Maven Central:\n ${searchResult.out.text()}")
+      s"VERSION"
+    println(s"- Last Version of $project: $version")
     version
   end repoSearchMavenCentral
 end VersionHelper

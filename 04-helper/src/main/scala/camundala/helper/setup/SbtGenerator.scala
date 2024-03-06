@@ -8,13 +8,17 @@ case class SbtGenerator()(using
 
   lazy val generate: Unit =
     createOrUpdate(buildSbtDir, buildSbt)
-    createOrUpdate(config.sbtProjectDir / "build.properties", buildProperties)
-    createOrUpdate(config.sbtProjectDir / "plugins.sbt", pluginsSbt)
+    generateBuildProperties
+    generatePluginsSbt
     createOrUpdate(config.sbtProjectDir / "ProjectDef.scala", projectDefSbt)
   end generate
 
+  lazy val generateBuildProperties =
+    createOrUpdate(config.sbtProjectDir / "build.properties", buildProperties)
+  lazy val generatePluginsSbt =
+    createOrUpdate(config.sbtProjectDir / "plugins.sbt", pluginsSbt)
   private lazy val projectConf = config.apiProjectConf
-  private lazy val versionHelper = VersionHelper(projectConf, config.repoConfig.repoSearch)
+  private lazy val versionHelper = VersionHelper(projectConf, config.reposConfig.repoSearch)
   private lazy val buildSbtDir = config.projectDir / "build.sbt"
 
   private lazy val buildSbt =

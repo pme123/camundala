@@ -7,7 +7,7 @@ case class SbtSettingsGenerator()(using config: SetupConfig):
   end generate
 
   private lazy val versionConfig = config.versionConfig
-  private lazy val repoConfig = config.repoConfig
+  private lazy val repoConfig = config.reposConfig
   private lazy val settingsSbt =
     s"""// $doNotAdjust. This file is replaced by `amm helper.sc update`.
        |

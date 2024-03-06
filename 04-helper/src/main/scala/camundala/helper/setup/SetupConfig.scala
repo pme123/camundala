@@ -7,16 +7,18 @@ import camundala.helper.util.ReposConfig
 import os.{Path, RelPath}
 
 case class SetupConfig(
-    projectName: String,
-    baseDir: os.Path = os.pwd,
-    modules: Seq[ModuleConfig] = SetupConfig.modules,
-    subProjects: Seq[String] = Seq.empty,
-    apiProjectConf: ApiProjectConf =  SetupConfig.apiProjectConf,
-    versionConfig: VersionConfig = VersionConfig(),
-    repoConfig: ReposConfig = ReposConfig.dummyRepos,
-    sbtDockerSettings: String = ""
+                        projectName: String,
+                        baseDir: os.Path = os.pwd,
+                        modules: Seq[ModuleConfig] = SetupConfig.modules,
+                        subProjects: Seq[String] = Seq.empty,
+                        apiProjectConf: ApiProjectConf = SetupConfig.apiProjectConf,
+                        versionConfig: VersionConfig = VersionConfig(),
+                        reposConfig: ReposConfig = ReposConfig.dummyRepos,
+                        sbtDockerSettings: String = ""
 ):
-  lazy val projectDir: Path = if baseDir.toString.endsWith(projectName) then baseDir else baseDir / projectName
+  lazy val companyName = apiProjectConf.org
+  lazy val projectDir: Path =
+    if baseDir.toString.endsWith(projectName) then baseDir else baseDir / projectName
   lazy val projectPackage: String = projectName.split("-").mkString(".")
   lazy val projectPath: RelPath = os.rel / projectName.split("-")
   lazy val sbtProjectDir: Path = projectDir / "project"
@@ -33,11 +35,11 @@ case class SetupConfig(
 end SetupConfig
 
 object SetupConfig:
-  
+
   def defaultConfig(projectName: String) = SetupConfig(
     projectName
   )
-  
+
   lazy val modules = Seq(
     bpmnModule,
     apiModule,
@@ -46,7 +48,7 @@ object SetupConfig:
     workerModule,
     helperModule
   )
-  
+
   lazy val bpmnModule = ModuleConfig(
     "bpmn",
     level = 2,
@@ -102,6 +104,18 @@ case class ModuleConfig(
 ):
   lazy val nameWithLevel: String =
     s"${"%02d".format(level)}-$name"
+
+  def packagePath(
+      projectPath: os.RelPath,
+      mainOrTest: String = "main",
+      subProject: Option[String] = None,
+  ) =
+    val subPackage = subProject.toSeq
+    val subModule = if generateSubModule then subPackage else Seq.empty
+    os.rel / nameWithLevel /
+      subModule / "src" / mainOrTest / "scala" /
+      projectPath / name / subPackage
+  end packagePath
 end ModuleConfig
 
 case class VersionConfig(
