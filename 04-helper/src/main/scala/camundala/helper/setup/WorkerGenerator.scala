@@ -2,8 +2,6 @@ package camundala.helper.setup
 
 import camundala.api.docs.DependencyConf
 
-import scala.collection.Seq
-
 case class WorkerGenerator()(using config: SetupConfig):
 
   lazy val generate: Unit =
@@ -38,7 +36,7 @@ case class WorkerGenerator()(using config: SetupConfig):
        |import org.springframework.context.annotation.ComponentScan
        |import org.springframework.stereotype.Component
        |
-       |// sbt worker/run
+       |// sbt worker/${dependencies.map(_ => "test:").getOrElse("")}run
        |@SpringBootApplication
        |@Component("${config.projectClassName}$objName")
        |@ConfigurationPropertiesScan

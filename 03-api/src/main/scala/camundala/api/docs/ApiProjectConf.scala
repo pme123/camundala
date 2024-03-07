@@ -3,7 +3,6 @@ package docs
 
 import com.typesafe.config.ConfigFactory
 
-import scala.collection.Seq
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 case class ApiProjectConf(
@@ -52,11 +51,9 @@ object ApiProjectConf:
   end initDummy
 
   def init(projectName: String, newPackageFile: os.Path) =
-    println(s"!!!! $newPackageFile")
     if !os.exists(newPackageFile)
     then
-      println(s"make it")
-
+      println(s"Created initial $newPackageFile")
       os.makeDir.all(newPackageFile / os.up)
       os.write(
         newPackageFile,
