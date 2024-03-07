@@ -74,9 +74,10 @@ case class ScriptCreator()(using config: SetupConfig):
        |    @arg(doc = "The project name - should be generated automatically after creation.")
        |    projectName: String = "$projectName",
        |    @arg(doc = "SubProjects - should be generated automatically after creation.")
-       |    subProjects: Seq[String] = Seq.empty
+       |    subProjects: Seq[String] = Seq(${config.subProjects.mkString(", ")})
        |): Unit =
-       |  UpdateHelper().update(projectName, subProjects)
+       |  val config = ProjectDevHelper.config(projectName)
+       |  DevHelper.update(config, subProjects)
        |
        |/**
        | * Usage see `valiant.camundala.helper.DockerHelper`

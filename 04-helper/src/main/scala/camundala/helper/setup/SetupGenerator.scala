@@ -7,4 +7,5 @@ case class SetupGenerator()(using config: SetupConfig):
     SbtGenerator().generate
     SbtSettingsGenerator().generate
     GenericFileGenerator().generate
+    WorkerGenerator().generate
 end SetupGenerator

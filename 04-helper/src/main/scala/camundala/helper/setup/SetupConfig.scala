@@ -14,7 +14,9 @@ case class SetupConfig(
     reposConfig: ReposConfig = ReposConfig.dummyRepos,
     sbtDockerSettings: String = ""
 ):
-  lazy val companyName = apiProjectConf.org
+  lazy val companyName: String = apiProjectConf.org
+  lazy val projectClassName: String = projectName.split("-").map(n => n.head.toUpper + n.tail).mkString
+
   lazy val projectDir: os.Path = SetupConfig.projectDir(projectName, baseDir)
 
   lazy val projectPackage: String = projectName.split("-").mkString(".")

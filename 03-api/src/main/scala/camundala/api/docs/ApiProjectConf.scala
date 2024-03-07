@@ -82,7 +82,7 @@ case class DependencyConf(
 ):
   lazy val minorVersion: String = version.split("\\.").take(2).mkString(".")
   lazy val fullName = s"$org:$name:$version"
-
+  lazy val projectPackage = s"$org.${name.split("-").filterNot(_ == org).mkString(".")}"
   def equalTo(packageConf: ApiProjectConf): Boolean =
     packageConf.org == org && packageConf.name == name && packageConf.minorVersion == minorVersion
 end DependencyConf
