@@ -71,6 +71,6 @@ case class GenericFileGenerator()(using config: SetupConfig):
        |""".stripMargin
 
   private val helperSc = ScriptCreator()
-    .projectHelper(config.projectName)
+    .projectHelper
 
 end GenericFileGenerator

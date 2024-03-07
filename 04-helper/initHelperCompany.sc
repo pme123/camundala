@@ -5,23 +5,23 @@ import $ivy.`io.github.pme123:camundala-helper_3:1.29.0-SNAPSHOT compat`, camund
 import camundala.helper.*
 import camundala.helper.util.{RepoConfig, RepoCredentials}
 
-private lazy val swisscomCred = RepoCredentials.UserPassword(
-  "swisscom",
-  "bin.swisscom.com",
+private lazy val mycompanyCred = RepoCredentials.UserPassword(
+  "mycompany",
+  "bin.mycompany.com",
   "VALIANT_MVN_REPOSITORY_USERNAME",
   "VALIANT_MVN_REPOSITORY_PASSWORD"
 )
 
-private val swisscomHost = """https://bin.swisscom.com/artifactory"""
+private val mycompanyHost = """https://bin.mycompany.com/artifactory"""
 private lazy val releaseRepo = RepoConfig.Artifactory(
   "release",
-  swisscomHost,
-  "valiantagilefactorybpfpkgvaliantreleases-maven-local",
-  swisscomCred.usernameEnv,
-  swisscomCred.passwordEnv
+  mycompanyHost,
+  "myprojects-maven-local",
+  mycompanyCred.usernameEnv,
+  mycompanyCred.passwordEnv
 )
 
-/** Usage see `valiant.camundala.helper.UpdateHelper`
+/** Usage see `mycompany.camundala.helper.UpdateHelper`
   */
 @main(doc =
   """> Creates the directories and generic files for the company BPMN Projects

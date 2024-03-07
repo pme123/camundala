@@ -6,8 +6,3 @@ case class HelperConfig(
     setupConfig: SetupConfig
 )
 
-object ProjectHelper:
-  def config(projectName: String) = HelperConfig(
-    setupConfig = SetupConfig(projectName)
-  )
-end ProjectHelper

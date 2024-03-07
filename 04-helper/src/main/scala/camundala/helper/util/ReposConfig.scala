@@ -100,7 +100,7 @@ object RepoCredentials:
       s"""  lazy val tokenName = sys.env.get("CI_JOB_TOKEN").map(_ => "Job-Token").getOrElse("Private-Token")
          |  lazy val ${name}Credentials: Credentials = (for {
          |    value <- sys.env.get("CI_JOB_TOKEN").orElse(sys.env.get("$tokenEnv"))
-         |  } yield Credentials($realm, repoHost, tokenName, value))
+         |  } yield Credentials("$realm", "$repoHost", tokenName, value))
          |    .getOrElse(
          |      throw new IllegalArgumentException(
          |        "System Environment Variable $tokenEnv is not set."

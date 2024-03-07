@@ -1,27 +1,25 @@
 package camundala.helper.setup
 
 import camundala.BuildInfo
-import camundala.api.ApiConfig
 import camundala.api.docs.ApiProjectConf
 import camundala.helper.util.ReposConfig
-import os.{Path, RelPath}
 
 case class SetupConfig(
-                        projectName: String,
-                        baseDir: os.Path = os.pwd,
-                        modules: Seq[ModuleConfig] = SetupConfig.modules,
-                        subProjects: Seq[String] = Seq.empty,
-                        apiProjectConf: ApiProjectConf = SetupConfig.apiProjectConf,
-                        versionConfig: VersionConfig = VersionConfig(),
-                        reposConfig: ReposConfig = ReposConfig.dummyRepos,
-                        sbtDockerSettings: String = ""
+    projectName: String,
+    baseDir: os.Path = os.pwd,
+    modules: Seq[ModuleConfig] = SetupConfig.modules,
+    subProjects: Seq[String] = Seq.empty,
+    apiProjectConf: ApiProjectConf,
+    versionConfig: VersionConfig = VersionConfig(),
+    reposConfig: ReposConfig = ReposConfig.dummyRepos,
+    sbtDockerSettings: String = ""
 ):
   lazy val companyName = apiProjectConf.org
-  lazy val projectDir: Path =
-    if baseDir.toString.endsWith(projectName) then baseDir else baseDir / projectName
+  lazy val projectDir: os.Path = SetupConfig.projectDir(projectName, baseDir)
+
   lazy val projectPackage: String = projectName.split("-").mkString(".")
-  lazy val projectPath: RelPath = os.rel / projectName.split("-")
-  lazy val sbtProjectDir: Path = projectDir / "project"
+  lazy val projectPath: os.RelPath = os.rel / projectName.split("-")
+  lazy val sbtProjectDir: os.Path = projectDir / "project"
 
   def dependsOn(level: Int): String =
     val depsOn = modules
@@ -36,11 +34,29 @@ end SetupConfig
 
 object SetupConfig:
 
-  def defaultConfig(projectName: String) = SetupConfig(
-    projectName
+  def apply(
+      projectName: String,
+      packageConfRelPath: os.RelPath,
+      versionConfig: VersionConfig,
+      reposConfig: ReposConfig,
+      sbtDockerSettings: String
+  ): SetupConfig = new SetupConfig(
+    projectName,
+    apiProjectConf = ApiProjectConf.init(projectName, projectDir(projectName, os.pwd) / packageConfRelPath),
+    versionConfig = versionConfig,
+    reposConfig = reposConfig,
+    sbtDockerSettings = sbtDockerSettings
   )
 
-  lazy val modules = Seq(
+  def defaultConfig(projectName: String): SetupConfig = SetupConfig(
+    projectName,
+    apiProjectConf = ApiProjectConf.initDummy(projectName)
+  )
+
+  def projectDir(projectName: String, baseDir: os.Path): os.Path =
+    if baseDir.toString.endsWith(projectName) then baseDir else baseDir / projectName
+
+  lazy val modules: Seq[ModuleConfig] = Seq(
     bpmnModule,
     apiModule,
     dmnModule,
@@ -85,8 +101,7 @@ object SetupConfig:
     "helper",
     level = 4
   )
-  lazy val apiProjectConf =
-    ApiProjectConf(ApiConfig("myCompany").projectConfPath)
+
 end SetupConfig
 
 case class ModuleConfig(
@@ -108,7 +123,7 @@ case class ModuleConfig(
   def packagePath(
       projectPath: os.RelPath,
       mainOrTest: String = "main",
-      subProject: Option[String] = None,
+      subProject: Option[String] = None
   ) =
     val subPackage = subProject.toSeq
     val subModule = if generateSubModule then subPackage else Seq.empty

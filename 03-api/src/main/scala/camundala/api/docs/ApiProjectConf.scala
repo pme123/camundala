@@ -22,8 +22,8 @@ object ApiProjectConf:
   lazy val defaultVersion = "0.1.0-SNAPSHOT"
 
   def apply(
-             packageFile: os.Path
-           ): ApiProjectConf =
+      packageFile: os.Path
+  ): ApiProjectConf =
     apply(packageFile, Seq.empty, false)
   def apply(
       packageFile: os.Path,
@@ -42,11 +42,37 @@ object ApiProjectConf:
         .map(v => DependencyConf.apply(v.render()))
     ApiProjectConf(org, name, version, dependencies.toSeq, changelog, isNew)
   end apply
-  def init(projectName: String) =
+
+  def initDummy(projectName: String): ApiProjectConf =
     ApiProjectConf(
-      org = projectName.split("-").head,
-      name = projectName
+      projectName.split("-").head,
+      projectName,
+      ApiProjectConf.defaultVersion
     )
+  end initDummy
+
+  def init(projectName: String, newPackageFile: os.Path) =
+    println(s"!!!! $newPackageFile")
+    if !os.exists(newPackageFile)
+    then
+      println(s"make it")
+
+      os.makeDir.all(newPackageFile / os.up)
+      os.write(
+        newPackageFile,
+        s"""
+           |org = "${projectName.split("-").head}"
+           |name = "$projectName"
+           |version = "${ApiProjectConf.defaultVersion}"
+           |dependencies: {
+           |
+           |}
+           |""".stripMargin
+      )
+    end if
+    apply(newPackageFile)
+  end init
+
 end ApiProjectConf
 
 case class DependencyConf(

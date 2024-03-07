@@ -38,7 +38,8 @@ case class ScriptCreator()(using config: SetupConfig):
        |}
        |""".stripMargin
 
-  def projectHelper(projectName: String) =
+  lazy val projectHelper =
+    val projectName = config.projectName
     s"""$helperHeader
        |
        |/**

@@ -37,7 +37,7 @@ end SetupCompanyGenerator
 
 object SetupCompanyGenerator:
   def init(companyName: String, repoConfig: RepoConfig.Artifactory) =
-    createOrUpdate(os.pwd / api.defaultProjectPath, defaultProjectContent(companyName))
+    //createOrUpdate(os.pwd / api.defaultProjectPath, defaultProjectContent(companyName))
     SetupConfig.defaultConfig(s"$companyName-camundala")
       .copy(reposConfig =
         ReposConfig(
