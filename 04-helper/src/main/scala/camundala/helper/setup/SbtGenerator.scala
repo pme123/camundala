@@ -93,6 +93,34 @@ case class SbtGenerator()(using
         val name = modC.name
         val plugins = modC.sbtPlugins
         val sbtSettings = modC.sbtSettings
+        def sbtSubProjectName(subProject: String) =
+          name + subProject.head.toUpper + subProject.tail
+
+        val (subProjects, aggregateSubProjects) =
+          if modC.generateSubModule then
+            config.subProjects
+              .map: sp =>
+                s"""lazy val ${sbtSubProjectName(sp)} = project
+                   |  .in(file("${modC.nameWithLevel}/$sp"))
+                   |  .settings(
+                   |    projectSettings(Some("$name-$sp"), Some("$name")),
+                   |    publicationSettings
+                   |  )
+                   |  .dependsOn(${name}Base)
+                   |""".stripMargin
+              .mkString ->
+              s""".aggregate(${name}Base, ${config.subProjects.map(sbtSubProjectName).mkString(", ")})
+                 |  .dependsOn(${config.subProjects.map(sbtSubProjectName).mkString(", ")})
+                 |
+                 |lazy val ${name}Base = project
+                 |  .in(file("${modC.nameWithLevel}/_base"))
+                 |  .settings(
+                 |    projectSettings(Some("$name-base"), Some("$name")),
+                 |    preventPublication
+                 |  )
+                 |
+                 |""".stripMargin
+          else "" -> ""
         val enablePlugins =
           if plugins.isEmpty then ""
           else plugins.mkString(".enablePlugins(", ", ", ")")
@@ -107,7 +135,9 @@ case class SbtGenerator()(using
             else sbtSettings.mkString(",\n    ", ",\n    ", "")
           }${if modC.hasTest then testSetting else ""}
            |  )${config.dependsOn(modC.level)}
+           |  $aggregateSubProjects
            |  $enablePlugins
+           |$subProjects
            |""".stripMargin
       .mkString
 

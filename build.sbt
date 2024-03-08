@@ -277,7 +277,7 @@ lazy val exampleInvoiceC8 = project
   .settings(
     autoImportSetting
   )
-  .dependsOn(bpmn, api, /*exampleInvoiceBpmn,*/ camunda8)
+  .dependsOn(api, exampleInvoiceBpmn, camunda8)
 
 // TWITTER
 lazy val exampleTwitter = project

@@ -7,7 +7,7 @@ case class CompanyWrapperGenerator()(using config: SetupConfig):
 
   private lazy val companyName = config.companyName
   private lazy val helperPath =
-    config.projectDir / SetupConfig.helperModule.packagePath(config.projectPath)
+    config.projectDir / ModuleConfig.helperModule.packagePath(config.projectPath)
   private lazy val projectDevPath = helperPath / "ProjectDevHelper.scala"
 
   private lazy val helperConfig =

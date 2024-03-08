@@ -3,7 +3,9 @@ package camundala.examples.demos.bpmn
 import camundala.bpmn.*
 import camundala.domain.*
 
-object EnumExample extends BpmnDsl:
+object EnumExample extends BpmnProcessDsl:
+  val processName = "enum-example"
+  val descr = ""
 
   enum Input:
 
@@ -37,7 +39,6 @@ object EnumExample extends BpmnDsl:
     given InOutCodec[SimpleEnum] = deriveEnumInOutCodec
 
   lazy val enumExample = process(
-    "enum-example",
     in = Input.A(),
     out = Output.A()
   )

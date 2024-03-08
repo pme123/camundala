@@ -3,8 +3,10 @@ package camundala.examples.demos.bpmn
 import camundala.bpmn.*
 import camundala.domain.*
 
-object DecisionResultTypes extends BpmnDsl:
-
+object DecisionResultTypes extends BpmnProcessDsl:
+  val processName = "camundala-mapping-example"
+  val descr = ""
+  
   case class Input(letter: String)
 
   // Many Output Parameter
@@ -64,9 +66,7 @@ object DecisionResultTypes extends BpmnDsl:
     )
   )
 
-  lazy val demoProcess = process(
-    "camundala-mapping-example"
-  )
+  lazy val demoProcess = process()
 
   given ApiSchema[Input] = deriveApiSchema
   given InOutCodec[Input] = deriveCodec

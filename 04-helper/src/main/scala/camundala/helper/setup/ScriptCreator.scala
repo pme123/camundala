@@ -73,10 +73,9 @@ case class ScriptCreator()(using config: SetupConfig):
        |def update(
        |    @arg(doc = "The project name - should be generated automatically after creation.")
        |    projectName: String = "$projectName",
-       |    @arg(doc = "SubProjects - should be generated automatically after creation.")
-       |    subProjects: Seq[String] = Seq(${config.subProjects.mkString(", ")})
        |): Unit =
        |  val config = ProjectDevHelper.config(projectName)
+       |    val subProjects = Seq(${config.subProjects.map(sp => s"\"$sp\"").mkString("\n      ", ",\n      ",",\n    ") })
        |  DevHelper.update(config, subProjects)
        |
        |/**

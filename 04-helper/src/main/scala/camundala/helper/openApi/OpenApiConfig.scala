@@ -1,6 +1,7 @@
 package camundala.helper.openApi
 
 import camundala.bpmn.BpmnWorkerDsl
+import camundala.helper.setup.ModuleConfig
 import camundala.simulation.custom.BasicSimulationDsl
 
 case class OpenApiConfig(
@@ -11,18 +12,14 @@ case class OpenApiConfig(
     outputPath: String => os.Path = OpenApiConfig.outputPath(_),
     superBpmnClass: String = OpenApiConfig.superBpmnClass,
     superSimulationClass: String = OpenApiConfig.superSimulationClass,
-    superWorkerClass: String
+    superWorkerClass: String = OpenApiConfig.superWorkerClass
 ):
-  lazy val basePackage =
-    s"${projectName.replace('-', '.')}${subProjectName.map(n => s".$n").getOrElse("")}"
-  lazy val bpmnPath: os.Path = basePath(bpmnComp) / "bpmn"
-  lazy val schemaPath: os.Path = bpmnPath / "schema"
-  lazy val simulationPath: os.Path = basePath(simulationComp) / "simulation"
-  def workerPath: os.Path = basePath(workerComp) / "worker"
-  lazy val bpmnPackage: String = s"$basePackage.bpmn"
-  lazy val schemaPackage: String = s"$bpmnPackage.schema"
-  lazy val simulationPackage: String = s"$basePackage.simulation"
-  lazy val workerPackage: String = s"$basePackage.worker"
+  def bpmnPath(versionTag: String): os.Path = path(ModuleConfig.bpmnModule, versionTag)
+  def bpmnPackage(versionTag: String): String = pckg(ModuleConfig.bpmnModule.name, versionTag)
+  def simulationPath(versionTag: String): os.Path = path(ModuleConfig.simulationModule, versionTag)
+  def simulationPackage(versionTag: String): String = pckg(ModuleConfig.simulationModule.name, versionTag)
+  def workerPath(versionTag: String): os.Path = path(ModuleConfig.workerModule, versionTag)
+  def workerPackage(versionTag: String): String = pckg(ModuleConfig.workerModule.name, versionTag)
   lazy val projectTopicName: String =
     s"$projectName${subProjectName.map(n => s"-$n").getOrElse("")}"
   lazy val typeMapping =
@@ -37,20 +34,19 @@ case class OpenApiConfig(
       .distinct
       .toMap
 
-  private lazy val bpmnComp = "02-bpmn"
-  private lazy val simulationComp = "03-simulation"
-  private lazy val workerComp = "03-worker"
-
-  private def basePath(component: String) =
-    outputPath(component) / (projectName.split('-') ++ subProjectName.toSeq)
+  private def path(moduleConfig: ModuleConfig, versionTag: String) =
+    outputPath(moduleConfig.nameWithLevel) / projectName.split('-').toSeq / moduleConfig.name / subProjectName.toSeq / versionTag
+  private def pckg(moduleName: String, versionTag: String) =
+    s"${projectName.replace('-', '.')}.$moduleName${subProjectName.map(n => s".$n").getOrElse("")}.$versionTag"
 
 end OpenApiConfig
 
 object OpenApiConfig:
   lazy val openApiFile: os.RelPath = os.rel / "openApi.yml"
   lazy val outputPath: String => os.Path = os.pwd / _ / ".generated"
-  lazy val superBpmnClass: String = BpmnWorkerDsl.getClass.getName //"camundala.bpmn.BpmnWorkerDsl"
-  lazy val superSimulationClass: String = BasicSimulationDsl.getClass.getName
+  lazy val superBpmnClass: String = "CompanyBpmnServiceWorkerDsl"
+  lazy val superSimulationClass: String = "CompanySimulation"
+  lazy val superWorkerClass: String = "CompanyServiceWorkerDsl"
   lazy val generalTypeMapping = Seq(
     TypeMapper("array", "Seq", _.getOrElse("Seq.empty")),
     TypeMapper("set", "Set", _.getOrElse("Set.empty")),

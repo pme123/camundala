@@ -11,19 +11,18 @@ case class BpmnClassesGenerator()(using
         generateModel
       .foreach:
         case key -> content =>
-          os.write.over(config.bpmnPath / s"$key.scala", content)
+          os.write.over(bpmnPath / s"$key.scala", content)
   end generate
-
+  
   private def generateModel(serviceObj: BpmnServiceObject) =
-    val superClass = apiDefinition.superClass
     val name = serviceObj.name
     val topicName = s"${config.projectTopicName}${superClass.versionTag}"
     val printInOut: Option[ConstrField] => String =
       _.map(printField(_, serviceObj.name, "    ")).mkString("\n", "", "  ")
     val content =
-      s"""package ${config.bpmnPackage}
+      s"""package $bpmnPackage
          |
-         |import ${config.schemaPackage}.*
+         |import $bpmnPackage.schema.*
          |
          |object $name
          |  extends ${superClass.name}:
@@ -59,7 +58,7 @@ case class BpmnClassesGenerator()(using
          |  case class Out(${printInOut(serviceObj.out)})
          |${generateObject("Out", None, "  ")}
          |  lazy val example =
-         |    serviceTaskExample(
+         |    serviceTask(
          |      in = In(),
          |      out = Out(),
          |      serviceMock,

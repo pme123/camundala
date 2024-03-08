@@ -6,14 +6,14 @@ case class ServiceClassesGenerator()(using
 ) extends GeneratorHelper:
 
   lazy val generate: Unit =
-    os.makeDir.all(config.schemaPath)
+    os.makeDir.all(bpmnPath / "schema")
     apiDefinition
       .serviceClasses
       .map:
         generateSchema
       .foreach:
         case key -> content =>
-          os.write.over(config.schemaPath / s"$key.scala", content)
+          os.write.over(bpmnPath / "schema" / s"$key.scala", content)
   // println(content)
   end generate
 
@@ -21,9 +21,7 @@ case class ServiceClassesGenerator()(using
       classOrEnum: IsFieldType
   ): (String, String) =
     classOrEnum.name ->
-      s"""package ${config.schemaPackage}
-         |
-         |import camundala.domain.*
+      s"""package $bpmnPackage.schema
          |
          |${printDescr(classOrEnum)}
          |${

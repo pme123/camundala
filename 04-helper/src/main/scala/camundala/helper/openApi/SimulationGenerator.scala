@@ -1,33 +1,34 @@
 package camundala.helper.openApi
 
-import io.swagger.v3.oas.models.media.Schema
-
 import scala.jdk.CollectionConverters.*
 
-case class SimulationGenerator()(using config: OpenApiConfig, apiDefinition: ApiDefinition):
+case class SimulationGenerator()(using val config: OpenApiConfig, val apiDefinition: ApiDefinition)
+    extends GeneratorHelper:
 
   lazy val generate: Unit =
-    os.remove.all(config.simulationPath)
-    os.makeDir.all(config.simulationPath)
+    os.remove.all(simulationPath)
+    os.makeDir.all(simulationPath)
     apiDefinition.bpmnClasses
       .map:
         generateSimulation
       .map:
         case name -> content =>
-          os.write.over(config.simulationPath / s"${name}Simulation.scala", content)
+          os.write.over(simulationPath / s"${name}Simulation.scala", content)
   end generate
 
+  protected lazy val simulationPath: os.Path = config.simulationPath(superClass.versionPackage)
+  protected lazy val simulationPackage: String = config.simulationPackage(superClass.versionPackage)
+
   private def generateSimulation(bpmnServiceObject: BpmnServiceObject) =
-    val name = bpmnServiceObject.name 
-    val niceName = bpmnServiceObject.niceName    
-      
+    val name = bpmnServiceObject.name
+    val niceName = bpmnServiceObject.niceName
     name ->
-      s"""package ${config.simulationPackage}
+      s"""package $simulationPackage
          |
-         |import ${config.bpmnPackage}.$name.*
+         |import $bpmnPackage.$name.*
          |
          |// simulation/test
-         |// simulation/testOnly *${config.bpmnPackage}*
+         |// simulation/testOnly *$simulationPackage*
          |// simulation/testOnly *${name}Simulation
          |class ${name}Simulation 
          |  extends ${config.superSimulationClass}:

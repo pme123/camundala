@@ -3,6 +3,7 @@ package camundala.helper.setup
 import camundala.BuildInfo
 import camundala.api.docs.ApiProjectConf
 import camundala.helper.util.ReposConfig
+import os.RelPath
 
 case class SetupConfig(
     projectName: String,
@@ -15,7 +16,8 @@ case class SetupConfig(
     sbtDockerSettings: String = ""
 ):
   lazy val companyName: String = apiProjectConf.org
-  lazy val projectClassName: String = projectName.split("-").map(n => n.head.toUpper + n.tail).mkString
+  lazy val projectClassName: String =
+    projectName.split("-").map(n => n.head.toUpper + n.tail).mkString
 
   lazy val projectDir: os.Path = SetupConfig.projectDir(projectName, baseDir)
 
@@ -44,7 +46,8 @@ object SetupConfig:
       sbtDockerSettings: String
   ): SetupConfig = new SetupConfig(
     projectName,
-    apiProjectConf = ApiProjectConf.init(projectName, projectDir(projectName, os.pwd) / packageConfRelPath),
+    apiProjectConf =
+      ApiProjectConf.init(projectName, projectDir(projectName, os.pwd) / packageConfRelPath),
     versionConfig = versionConfig,
     reposConfig = reposConfig,
     sbtDockerSettings = sbtDockerSettings
@@ -58,6 +61,8 @@ object SetupConfig:
   def projectDir(projectName: String, baseDir: os.Path): os.Path =
     if baseDir.toString.endsWith(projectName) then baseDir else baseDir / projectName
 
+  import ModuleConfig.*
+  
   lazy val modules: Seq[ModuleConfig] = Seq(
     bpmnModule,
     apiModule,
@@ -67,6 +72,43 @@ object SetupConfig:
     helperModule
   )
 
+end SetupConfig
+
+case class ModuleConfig(
+    name: String,
+    level: Int,
+    hasMain: Boolean = true,
+    hasTest: Boolean = false,
+    generateSubModule: Boolean = false,
+    doPublish: Boolean = true,
+    sbtSettings: Seq[String] = Seq.empty,
+    sbtPlugins: Seq[String] = Seq.empty,
+    sbtDependencies: Seq[String] = Seq.empty,
+    hasProjectDependencies: Boolean = false,
+    projectDependenciesTestOnly: Boolean = false
+):
+  lazy val nameWithLevel: String =
+    s"${"%02d".format(level)}-$name"
+
+  def packagePath(
+      projectPath: os.RelPath,
+      mainOrTest: String = "main",
+      subProject: Option[String] = None,
+      isSourceDir: Boolean = true
+  ): RelPath =
+    val subPackage = subProject.toSeq
+    val subModule = if generateSubModule then subPackage else Seq.empty
+    val sourceOrResource =
+      if isSourceDir
+      then os.rel / "scala" / projectPath / name / subPackage
+      else os.rel / "resources"
+
+    os.rel / nameWithLevel /
+      subModule / "src" / mainOrTest / sourceOrResource
+  end packagePath
+end ModuleConfig
+
+object ModuleConfig:
   lazy val bpmnModule = ModuleConfig(
     "bpmn",
     level = 2,
@@ -103,38 +145,8 @@ object SetupConfig:
     "helper",
     level = 4
   )
-
-end SetupConfig
-
-case class ModuleConfig(
-    name: String,
-    level: Int,
-    hasMain: Boolean = true,
-    hasTest: Boolean = false,
-    generateSubModule: Boolean = false,
-    doPublish: Boolean = true,
-    sbtSettings: Seq[String] = Seq.empty,
-    sbtPlugins: Seq[String] = Seq.empty,
-    sbtDependencies: Seq[String] = Seq.empty,
-    hasProjectDependencies: Boolean = false,
-    projectDependenciesTestOnly: Boolean = false
-):
-  lazy val nameWithLevel: String =
-    s"${"%02d".format(level)}-$name"
-
-  def packagePath(
-      projectPath: os.RelPath,
-      mainOrTest: String = "main",
-      subProject: Option[String] = None
-  ) =
-    val subPackage = subProject.toSeq
-    val subModule = if generateSubModule then subPackage else Seq.empty
-    os.rel / nameWithLevel /
-      subModule / "src" / mainOrTest / "scala" /
-      projectPath / name / subPackage
-  end packagePath
+  
 end ModuleConfig
-
 case class VersionConfig(
     scalaVersion: String = BuildInfo.scalaVersion,
     camundalaVersion: String = BuildInfo.version,

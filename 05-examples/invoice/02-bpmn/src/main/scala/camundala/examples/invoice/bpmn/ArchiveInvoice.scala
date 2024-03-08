@@ -4,10 +4,11 @@ import camundala.bpmn.*
 import camundala.domain.*
 
 // example for service API description
-object ArchiveInvoice extends BpmnDsl:
+object ArchiveInvoice extends BpmnCustomWorkerDsl:
 
   final val topicName = "ArchiveInvoiceService"
-
+  val descr = "Archives the Receipt."
+  
   case class  In(
                   shouldFail: Option[Boolean] = Some(true),
                 )
@@ -28,10 +29,8 @@ object ArchiveInvoice extends BpmnDsl:
 
   lazy val example: CustomTask[In, Out] =
     customTask(
-      topicName,
       in = In(),
-      out = Out() ,
-      descr = "Archives the Receipt.",
+      out = Out()
     )
 
 end ArchiveInvoice

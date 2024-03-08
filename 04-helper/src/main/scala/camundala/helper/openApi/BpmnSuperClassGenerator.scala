@@ -4,18 +4,20 @@ case class BpmnSuperClassGenerator()(using
     val apiDefinition: ApiDefinition,
     val config: OpenApiConfig
 ) extends GeneratorHelper:
-  val superClass = apiDefinition.superClass
+
   val allSchemas = Map.empty[String, Schema[?]]
   val name = superClass.name
 
   def generate =
-    os.write.over(config.bpmnPath / s"$name.scala", content)
+    os.remove.all(bpmnPath)
+    os.makeDir.all(bpmnPath)
+    os.write.over(bpmnPath / s"$name.scala", content)
     // println(content)
     name
   end generate
 
   private lazy val content =
-    s"""package ${config.bpmnPackage}
+    s"""package $bpmnPackage
        |
        |object $name:
        |

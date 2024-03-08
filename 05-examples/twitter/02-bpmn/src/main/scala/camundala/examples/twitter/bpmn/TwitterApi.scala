@@ -3,9 +3,11 @@ package camundala.examples.twitter.bpmn
 import camundala.bpmn.*
 import camundala.domain.*
 
-object TwitterApi extends BpmnDsl:
+object TwitterApi extends BpmnProcessDsl:
   given tenantId: Option[String] = Some("{{tenantId}}")
-
+  val processName = "TwitterDemoP"
+  val descr = "This runs the Twitter Approvement Process."
+  
   @description("""Every employee may create a Tweet.
                  |
                  |- email:   The email address of the creator.
@@ -32,10 +34,7 @@ object TwitterApi extends BpmnDsl:
   end ReviewedTweet
 
   lazy val twitterDemoProcess =
-    val processId = "TwitterDemoP"
     process(
-      id = processId,
-      descr = "This runs the Twitter Approvement Process.",
       in = CreateTweet(),
       out = ReviewedTweet() // just for Testing
     )

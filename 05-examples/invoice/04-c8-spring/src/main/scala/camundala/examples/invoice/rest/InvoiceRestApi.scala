@@ -2,7 +2,6 @@ package camundala.examples.invoice
 package rest
 
 import bpmn.*
-import domain.*
 import camundala.camunda8.*
 import org.springframework.web.bind.annotation.*
 
@@ -15,8 +14,8 @@ class InvoiceRestApi extends RestEndpoint:
       json: String
   ): Response =
     createInstance(
-      InvoiceReceiptPIdent,
-      validate[CreateProcessInstanceIn[InvoiceReceipt, InvoiceReceiptCheck]](
+      InvoiceReceipt.processName,
+      validate[CreateProcessInstanceIn[InvoiceReceipt.In, InvoiceReceipt.Out]](
         json
       )//not sync: .map(_.syncProcess(classOf[InvoiceReceiptCheck]))
     )

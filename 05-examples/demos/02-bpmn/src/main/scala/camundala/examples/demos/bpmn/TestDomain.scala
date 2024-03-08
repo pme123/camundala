@@ -3,8 +3,11 @@ package camundala.examples.demos.bpmn
 import camundala.bpmn.*
 import camundala.domain.*
 
-object TestDomain extends BpmnDsl:
+object TestDomain extends BpmnProcessDsl:
 
+  lazy val processName: String = "simulation-TestOverrides"
+  lazy val descr: String = ""
+  
   case class SomeObj(tag: String = "okidoki", isOk: String = "false")
   object SomeObj:
     given ApiSchema[SomeObj] = deriveApiSchema
@@ -42,9 +45,7 @@ object TestDomain extends BpmnDsl:
   end Out
 
   // generate-test.bpmn
-  val CamundalaGenerateTestPIdent = "camundala-generate-test"
   lazy val CamundalaGenerateTestP = process(
-    CamundalaGenerateTestPIdent,
     in = In(),
     out = Out()
   )

@@ -96,6 +96,7 @@ case class GeneralVariables(
 ):
   def isMockedWorker(workerTopicName: String): Boolean =
     mockedWorkers.contains(workerTopicName)
+end GeneralVariables
 
 object GeneralVariables:
   given InOutCodec[GeneralVariables] = deriveCodec

@@ -3,8 +3,10 @@ package camundala.examples.demos.bpmn
 import camundala.bpmn.*
 import camundala.domain.*
 
-object VariablesExample extends BpmnDsl:
-
+object VariablesExample extends BpmnProcessDsl:
+  val processName = "NOT USED"
+  def descr = ""
+  
   case class Input(letters: Option[String] = Some("A_dynamic_2"),
                    inputVariable: DmnVariable[String] = DmnVariable("dynamic"),
                    outputVariable: DmnVariable[String] = DmnVariable("dynamicOut")

@@ -4,14 +4,27 @@ import camundala.domain.*
 
 trait BpmnWorkerDsl extends BpmnDsl:
 
-  def descr: String
+  def topicName: String
+
+trait BpmnCustomWorkerDsl extends BpmnWorkerDsl:
+  def customTask[
+    In <: Product : InOutEncoder : InOutDecoder : Schema,
+    Out <: Product : InOutEncoder : InOutDecoder : Schema
+  ](
+     in: In = NoInput(),
+     out: Out = NoOutput(),
+   ): CustomTask[In, Out] =
+    CustomTask(
+      InOutDescr(topicName, in, out, Some(descr))
+    )
+    
+trait BpmnServiceWorkerDsl extends BpmnWorkerDsl:
+
   def path: String
   def serviceLabel: String
   def serviceVersion: String
-  def additionalText: String = ""
-  def topicName: String
 
-  def serviceTaskExample[
+  def serviceTask[
       In <: Product: InOutCodec: ApiSchema,
       Out <: Product: InOutCodec: ApiSchema,
       ServiceIn: InOutEncoder: InOutDecoder,
@@ -22,13 +35,10 @@ trait BpmnWorkerDsl extends BpmnDsl:
       defaultServiceOutMock: MockedServiceResponse[ServiceOut],
       serviceInExample: ServiceIn
   ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
-    serviceTask(
-      topicName,
-      in,
-      out,
+    ServiceTask(
+      InOutDescr(topicName, in, out, Some(description(serviceInExample, defaultServiceOutMock))),
       defaultServiceOutMock,
-      serviceInExample,
-      description(serviceInExample, defaultServiceOutMock)
+      serviceInExample
     )
 
   private def description[ServiceIn: InOutEncoder, ServiceOut: InOutEncoder](
@@ -38,8 +48,6 @@ trait BpmnWorkerDsl extends BpmnDsl:
     s"""|$descr
         |
         |---
-        |
-        |$additionalText
         |
         |<details>
         |<summary><b>Wrapped Service:</b>
@@ -69,5 +77,6 @@ trait BpmnWorkerDsl extends BpmnDsl:
         |
         |---
         |""".stripMargin
-end BpmnWorkerDsl
-object BpmnWorkerDsl
+end BpmnServiceWorkerDsl
+
+

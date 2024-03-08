@@ -2,11 +2,12 @@ package camundala.examples.demos.bpmn
 
 import camundala.bpmn.*
 
-object TimerExample extends BpmnDsl:
+object TimerExample extends BpmnProcessDsl:
 
-  lazy val timerProcess = process(
-    "timer-example"
-  )
+  lazy val processName: String = "timer-example"
+  lazy val descr: String = ""
+
+  lazy val timerProcess = process()
 
   lazy val timer = timerEvent(
     "wait for one day"

@@ -7,8 +7,6 @@ import scala.jdk.CollectionConverters.*
 case class BpmnGenerator()(using config: OpenApiConfig, apiDefinition: ApiDefinition):
 
   lazy val generate: Unit =
-    os.remove.all(config.bpmnPath)
-    os.makeDir.all(config.bpmnPath)
     BpmnSuperClassGenerator().generate
     ServiceClassesGenerator().generate
     BpmnClassesGenerator().generate

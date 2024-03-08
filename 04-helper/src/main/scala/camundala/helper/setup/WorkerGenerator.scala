@@ -10,13 +10,13 @@ case class WorkerGenerator()(using config: SetupConfig):
 
   private lazy val companyName = config.companyName
   private lazy val workerPath =
-    config.projectDir / SetupConfig.workerModule.packagePath(config.projectPath)
+    config.projectDir / ModuleConfig.workerModule.packagePath(config.projectPath)
   private lazy val workerAppPath = workerPath / "WorkerApp.scala"
   private lazy val workerApp =
     objectContent("WorkerApp")
 
   private lazy val workerTestPath =
-    config.projectDir / SetupConfig.workerModule.packagePath(
+    config.projectDir / ModuleConfig.workerModule.packagePath(
       config.projectPath,
       mainOrTest = "test"
     )

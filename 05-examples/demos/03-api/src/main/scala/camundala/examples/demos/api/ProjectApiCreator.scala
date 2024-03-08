@@ -47,10 +47,10 @@ object ProjectApiCreator extends DefaultApiCreator:
     VariablesExample.VariablesExampleDMN,
     SimulationTestOverridesExample.simulationProcess,
     group("SignalMessageExample")(
-      SignalMessageExample.signalExample,
-      SignalMessageExample.messageExample,
-      SignalMessageExample.signalIntermediateExample,
-      SignalMessageExample.messageIntermediateExample
+      SignalExample.signalExample,
+      MessageForExample.messageExample,
+      SignalExample.signalIntermediateExample,
+      MessageForExample.messageIntermediateExample
     ),
     api(TimerExample.timerProcess)(
       TimerExample.timer

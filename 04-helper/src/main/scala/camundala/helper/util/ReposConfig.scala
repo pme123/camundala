@@ -58,7 +58,7 @@ object RepoConfig:
 
     lazy val sbtContent =
       s""" // $descr
-         |  lazy val ${name}RepoStr = "$artifactoryApiUrl"
+         |  lazy val ${name}RepoStr = "$artifactoryApiUrl/$repo"
          |  lazy val ${name}Repo: MavenRepository = "$realm" at ${name}RepoStr
          |""".stripMargin
 

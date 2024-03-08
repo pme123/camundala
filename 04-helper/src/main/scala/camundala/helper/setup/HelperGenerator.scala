@@ -10,19 +10,17 @@ case class HelperGenerator()(using config: SetupConfig):
 
   private lazy val companyName = config.companyName
   private lazy val helperPath =
-    config.projectDir / SetupConfig.helperModule.packagePath(config.projectPath)
+    config.projectDir / ModuleConfig.helperModule.packagePath(config.projectPath)
   private lazy val apiGeneratorPath = helperPath / "ProjectApiGenerator.scala"
   private lazy val apiGenerator =
     objectContent("ProjectApiGenerator")
 
   private def objectContent(
-                             objName: String,
-                             dependencies: Option[Seq[DependencyConf]] = None
+                             objName: String
                            ) =
-    s"""package $companyName.camundala.helper
+    s"""package ${config.projectPackage}.camundala.helper
        |
        |import camundala.helper.openApi.*
-       |import $companyName.camundala.helper.openApi.*
        |
        |object $objName extends App:
        |
@@ -30,6 +28,7 @@ case class HelperGenerator()(using config: SetupConfig):
        |
        |  private given OpenApiConfig = OpenApiConfig(
        |    projectName = "${config.projectName}",
+       |    
        |  )
        |  private given ApiDefinition = OpenApiCreator().create
        |

@@ -46,8 +46,9 @@ case class GenericFileGenerator()(using config: SetupConfig):
        |*.log
        |
        |target
-       |*/project/project
-       |project/target
+       |/project/project
+       |/project/target
+       |/project/.*
        |.cache
        |.classpath
        |.project
@@ -57,7 +58,9 @@ case class GenericFileGenerator()(using config: SetupConfig):
        |/.g8/
        |/project/metals.sbt
        |/.bloop/
+       |/.ammonite/
        |/.metals/
+       |/.vscode/
        |/.templUpdate/
        |/.camunda/element-templates/dependencies/
        |

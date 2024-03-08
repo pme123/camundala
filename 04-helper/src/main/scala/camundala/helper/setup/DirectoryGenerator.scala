@@ -13,15 +13,21 @@ case class DirectoryGenerator()(using config: SetupConfig):
     def printMainAndTest(
         subProject: Option[String] = None,
     ): Unit =
-      def modulePath(mainOrTest: String) =
+      def srcPath(mainOrTest: String) =
         config.projectDir /
           moduleConfig.packagePath(config.projectPath, mainOrTest, subProject)
-      end modulePath
+      end srcPath
+      def resourcesPath(mainOrTest: String) =
+        config.projectDir /
+          moduleConfig.packagePath(config.projectPath, mainOrTest, subProject, isSourceDir = false)
+      end resourcesPath
 
       if moduleConfig.hasMain then
-        os.makeDir.all(modulePath("main"))
+        os.makeDir.all(srcPath("main"))
+        os.makeDir.all(resourcesPath("main"))
       if moduleConfig.hasTest then
-        os.makeDir.all(modulePath("test"))
+        os.makeDir.all(srcPath("test"))
+        os.makeDir.all(resourcesPath("test"))
     end printMainAndTest
 
     if config.subProjects.nonEmpty

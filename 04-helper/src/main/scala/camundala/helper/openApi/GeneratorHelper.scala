@@ -1,9 +1,15 @@
 package camundala.helper.openApi
 
+import os.Path
+
 trait GeneratorHelper:
   protected def config: OpenApiConfig
 
   protected def apiDefinition: ApiDefinition
+
+  protected lazy val superClass: BpmnSuperClass = apiDefinition.superClass
+  protected lazy val bpmnPath: Path = config.bpmnPath(superClass.versionPackage)
+  protected lazy val bpmnPackage: String = config.bpmnPackage(superClass.versionPackage)
 
   protected def generateObject(
       name: String,
