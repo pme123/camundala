@@ -6,7 +6,7 @@ import camundala.worker.InitWorkerDsl
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class InvoiceReceiptWorker extends InvoiceWorkerHandler, InitWorkerDsl[In, Out, InConfig]:
+class InvoiceReceiptWorker extends CompanyInitWorkerDsl[In, Out, InConfig]:
 
   lazy val inOutExample = example
 

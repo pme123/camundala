@@ -1,6 +1,8 @@
 package camundala.examples.demos.simulation
 
-import camundala.examples.demos.bpmn.SignalMessageExample.*
+import camundala.examples.demos.bpmn.MessageForExample.messageExample
+import camundala.examples.demos.bpmn.SignalExample.*
+import camundala.examples.demos.bpmn.SignalMessageExampleIn
 import camundala.simulation.*
 
 // exampleDemosSimulation/test

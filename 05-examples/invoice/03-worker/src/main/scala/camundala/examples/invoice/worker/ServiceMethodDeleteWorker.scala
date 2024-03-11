@@ -15,7 +15,7 @@ import sttp.client3.UriContext
 import sttp.model.*
 
 @Configuration
-class ServiceMethodDeleteWorker extends InvoiceWorkerHandler,
+class ServiceMethodDeleteWorker extends CompanyWorkerHandler,
       ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]:
 
   lazy val serviceTask = example

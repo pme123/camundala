@@ -5,7 +5,7 @@ import camundala.domain.*
 trait BpmnWorkerDsl extends BpmnDsl:
 
   def topicName: String
-
+      
 trait BpmnCustomWorkerDsl extends BpmnWorkerDsl:
   def customTask[
     In <: Product : InOutEncoder : InOutDecoder : Schema,
@@ -33,7 +33,7 @@ trait BpmnServiceWorkerDsl extends BpmnWorkerDsl:
       in: In,
       out: Out,
       defaultServiceOutMock: MockedServiceResponse[ServiceOut],
-      serviceInExample: ServiceIn
+      serviceInExample: ServiceIn,
   ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     ServiceTask(
       InOutDescr(topicName, in, out, Some(description(serviceInExample, defaultServiceOutMock))),

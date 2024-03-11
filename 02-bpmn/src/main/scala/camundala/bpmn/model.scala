@@ -16,9 +16,9 @@ case class InOutDescr[
 ):
   lazy val niceName: String =
     id.split("-")
-        .map: p =>
-          p.head.toUpper + p.tail
-        .mkString(" ")
+      .map: p =>
+        p.head.toUpper + p.tail
+      .mkString(" ")
   end niceName
 end InOutDescr
 
@@ -40,6 +40,9 @@ trait InOut[
   // def constructor: InOutDescr[In, Out] => T
   def inOutType: InOutType
 
+  def otherEnumInExamples: Option[Seq[In]]
+  def otherEnumOutExamples: Option[Seq[Out]]
+
   lazy val id: String = inOutDescr.id
   lazy val descr: Option[String] = inOutDescr.descr
   lazy val in: In = inOutDescr.in
@@ -48,7 +51,8 @@ trait InOut[
     CamundaVariable.toCamunda(in)
   lazy val camundaOutMap: Map[String, CamundaVariable] =
     CamundaVariable.toCamunda(out)
-  def camundaToCheckMap: Map[String, CamundaVariable] = camundaOutMap
+  def camundaToCheckMap: Map[String, CamundaVariable] =
+    camundaOutMap.filterNot(_._1 == "type") // type used for Sum types - cannot be tested
 
   def withInOutDescr(inOutDescr: InOutDescr[In, Out]): T
 
@@ -126,6 +130,8 @@ case class Process[
     inOutDescr: InOutDescr[In, Out],
     protected val elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty,
     startEventType: StartEventType = StartEventType.None,
+    otherEnumInExamples: Option[Seq[In]] = None,
+    otherEnumOutExamples: Option[Seq[Out]] = None,
     protected val servicesMocked: Boolean = false,
     protected val mockedWorkers: Seq[String] = Seq.empty,
     protected val outputMock: Option[Out] = None,
@@ -162,6 +168,20 @@ case class Process[
 
   def mockWorker(workerName: String): Process[In, Out] =
     copy(mockedWorkers = mockedWorkers :+ workerName)
+
+  def withEnumInExample(
+      enumInExample: In
+  ): Process[In, Out] =
+    copy(otherEnumInExamples =
+      Some(otherEnumInExamples.getOrElse(Seq.empty) :+ enumInExample)
+    )
+
+  def withEnumOutExample(
+      enumOutExample: Out
+  ): Process[In, Out] =
+    copy(otherEnumOutExamples =
+      Some(otherEnumOutExamples.getOrElse(Seq.empty) :+ enumOutExample)
+    )
 
   override def camundaInMap: Map[String, CamundaVariable] =
     val camundaMockedWorkers =
@@ -219,6 +239,8 @@ case class ServiceTask[
     inOutDescr: InOutDescr[In, Out],
     defaultServiceOutMock: MockedServiceResponse[ServiceOut],
     serviceInExample: ServiceIn,
+    otherEnumInExamples: Option[Seq[In]] = None,
+    otherEnumOutExamples: Option[Seq[Out]] = None,
     @deprecated(
       "Default is _GenericExternalTaskProcessName_ - in future only used as External Task"
     )
@@ -294,6 +316,19 @@ case class ServiceTask[
   ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(impersonateUserId = Some(impersonateUserId))
 
+  def withEnumInExample(
+      enumInExample: In
+  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+    copy(otherEnumInExamples =
+      Some(otherEnumInExamples.getOrElse(Seq.empty) :+ enumInExample)
+    )
+  def withEnumOutExample(
+      enumOutExample: Out
+  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+    copy(otherEnumOutExamples =
+      Some(otherEnumOutExamples.getOrElse(Seq.empty) :+ enumOutExample)
+    )
+
   override def camundaInMap: Map[String, CamundaVariable] =
     val camundaOutputServiceMock = outputServiceMock
       .map(m =>
@@ -312,6 +347,8 @@ case class CustomTask[
     Out <: Product: InOutEncoder: InOutDecoder: Schema
 ](
     inOutDescr: InOutDescr[In, Out],
+    otherEnumInExamples: Option[Seq[In]] = None,
+    otherEnumOutExamples: Option[Seq[Out]] = None,
     protected val outputMock: Option[Out] = None,
     protected val outputVariables: Seq[String] = Seq.empty,
     protected val servicesMocked: Boolean = false,
@@ -354,13 +391,28 @@ case class CustomTask[
   ): CustomTask[In, Out] =
     copy(regexHandledErrors = regexHandledErrors :+ regex)
 
+  def withEnumInExample(
+      enumInExample: In
+  ): CustomTask[In, Out] =
+    copy(otherEnumInExamples =
+      Some(otherEnumInExamples.getOrElse(Seq.empty) :+ enumInExample)
+    )
+  def withEnumOutExample(
+      enumOutExample: Out
+  ): CustomTask[In, Out] =
+    copy(otherEnumOutExamples =
+      Some(otherEnumOutExamples.getOrElse(Seq.empty) :+ enumOutExample)
+    )
+
 end CustomTask
 
 case class UserTask[
     In <: Product: InOutEncoder: InOutDecoder: Schema,
     Out <: Product: InOutEncoder: InOutDecoder: Schema
 ](
-    inOutDescr: InOutDescr[In, Out]
+    inOutDescr: InOutDescr[In, Out],
+    otherEnumInExamples: Option[Seq[In]] = None,
+    otherEnumOutExamples: Option[Seq[Out]] = None
 ) extends ProcessNode,
       Activity[In, Out, UserTask[In, Out]]:
   lazy val inOutType: InOutType = InOutType.UserTask
@@ -370,6 +422,19 @@ case class UserTask[
 
   def withInOutDescr(descr: InOutDescr[In, Out]): UserTask[In, Out] =
     copy(inOutDescr = descr)
+
+  def withEnumInExample(
+      enumInExample: In
+  ): UserTask[In, Out] =
+    copy(otherEnumInExamples =
+      Some(otherEnumInExamples.getOrElse(Seq.empty) :+ enumInExample)
+    )
+  def withEnumOutExample(
+      enumOutExample: Out
+  ): UserTask[In, Out] =
+    copy(otherEnumOutExamples =
+      Some(otherEnumOutExamples.getOrElse(Seq.empty) :+ enumOutExample)
+    )
 end UserTask
 
 object UserTask:
@@ -384,18 +449,28 @@ sealed trait ReceiveEvent[
     In <: Product: InOutEncoder: InOutDecoder: Schema,
     T <: ReceiveEvent[In, T]
 ] extends ProcessNode,
-      Activity[In, NoOutput, T]
+      Activity[In, NoOutput, T]:
+  lazy val otherEnumOutExamples: Option[Seq[NoOutput]] = None
+end ReceiveEvent
 
 case class MessageEvent[
     In <: Product: InOutEncoder: InOutDecoder: Schema
 ](
     messageName: String,
-    inOutDescr: InOutDescr[In, NoOutput]
+    inOutDescr: InOutDescr[In, NoOutput],
+    otherEnumInExamples: Option[Seq[In]] = None
 ) extends ReceiveEvent[In, MessageEvent[In]]:
   lazy val inOutType: InOutType = InOutType.Message
 
   def withInOutDescr(descr: InOutDescr[In, NoOutput]): MessageEvent[In] =
     copy(inOutDescr = descr)
+
+  def withEnumInExample(
+      enumInExample: In
+  ): MessageEvent[In] =
+    copy(otherEnumInExamples =
+      Some(otherEnumInExamples.getOrElse(Seq.empty) :+ enumInExample)
+    )
 end MessageEvent
 
 object MessageEvent:
@@ -411,12 +486,21 @@ case class SignalEvent[
     In <: Product: InOutEncoder: InOutDecoder: Schema
 ](
     messageName: String,
-    inOutDescr: InOutDescr[In, NoOutput]
+    inOutDescr: InOutDescr[In, NoOutput],
+    otherEnumInExamples: Option[Seq[In]] = None
 ) extends ReceiveEvent[In, SignalEvent[In]]:
   lazy val inOutType: InOutType = InOutType.Signal
 
   def withInOutDescr(descr: InOutDescr[In, NoOutput]): SignalEvent[In] =
     copy(inOutDescr = descr)
+
+  def withEnumInExample(
+      enumInExample: In
+  ): SignalEvent[In] =
+    copy(otherEnumInExamples =
+      Some(otherEnumInExamples.getOrElse(Seq.empty) :+ enumInExample)
+    )
+
 end SignalEvent
 
 object SignalEvent:
@@ -433,6 +517,7 @@ case class TimerEvent(
     inOutDescr: InOutDescr[NoInput, NoOutput]
 ) extends ReceiveEvent[NoInput, TimerEvent]:
   lazy val inOutType: InOutType = InOutType.Timer
+  lazy val otherEnumInExamples: Option[Seq[NoInput]] = None
 
   def withInOutDescr(descr: InOutDescr[NoInput, NoOutput]): TimerEvent =
     copy(inOutDescr = descr)

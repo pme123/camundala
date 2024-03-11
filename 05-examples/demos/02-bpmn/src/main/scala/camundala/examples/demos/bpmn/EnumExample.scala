@@ -10,10 +10,13 @@ object EnumExample extends BpmnProcessDsl:
   enum Input:
 
     case A(
-        someValue: Option[String] = Some("hello"),
-        simpleEnum: SimpleEnum = SimpleEnum.One,
-        customMock: Option[Output] = Some(Output.A())
-    )
+            someValue: Option[String] = Some("hello"),
+            simpleEnum: SimpleEnum = SimpleEnum.One,
+            customMock: Option[Output] = Some(Output.A())
+          )
+    case B(
+            otherValue: String = "other"
+          )
   end Input
   object Input:
     given ApiSchema[Input] = deriveApiSchema
@@ -38,7 +41,7 @@ object EnumExample extends BpmnProcessDsl:
     given ApiSchema[SimpleEnum] = deriveEnumApiSchema
     given InOutCodec[SimpleEnum] = deriveEnumInOutCodec
 
-  lazy val enumExample = process(
+  lazy val example = process(
     in = Input.A(),
     out = Output.A()
   )

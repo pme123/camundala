@@ -8,8 +8,7 @@ import camundala.worker.CamundalaWorkerError.*
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class ServiceMethodListWorker extends InvoiceWorkerHandler,
-      ServiceWorkerDsl[In, Out, NoInput, ServiceOut]:
+class ServiceMethodListWorker extends CompanyServiceWorkerDsl[In, Out, NoInput, ServiceOut]:
 
   lazy val serviceTask = example
 

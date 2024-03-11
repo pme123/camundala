@@ -116,7 +116,8 @@ case class SbtGenerator()(using
                  |  .in(file("${modC.nameWithLevel}/_base"))
                  |  .settings(
                  |    projectSettings(Some("$name-base"), Some("$name")),
-                 |    preventPublication
+                 |    preventPublication,
+                 |    libraryDependencies ++= ${name}Deps
                  |  )
                  |
                  |""".stripMargin

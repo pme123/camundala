@@ -1,11 +1,11 @@
 package camundala
 package api
 
-import domain.*
-import camundala.api.Sample.{SampleOut, process, standardSample}
-import camundala.bpmn.BpmnDsl
+import camundala.api.Sample.{SampleOut, standardSample}
+import camundala.bpmn.{BpmnDsl, BpmnProcessDsl}
+import camundala.domain.*
 
-object TestApiCreator extends DefaultApiCreator, App:
+object TestApiCreator extends DefaultApiCreator, BpmnProcessDsl, App:
 
   lazy val projectName = "TestApi"
 
@@ -25,13 +25,16 @@ object TestApiCreator extends DefaultApiCreator, App:
   )
 
   private lazy val testProcess2 =
-    process("sample-process2", standardSample, SampleOut())
+    process(standardSample, SampleOut())
 
+  val processName: String = "sample-process2"
+
+  val descr: String = ""
 end TestApiCreator
 
-object Sample extends BpmnDsl:
-  val name = "sample-process"
-
+object Sample extends BpmnProcessDsl:
+  val processName = "sample-process"
+  
   @description("My Sample input object to make the point.")
   case class SampleIn(
       @description("Make sure it reflects the name of the Id.")
@@ -71,12 +74,12 @@ object Sample extends BpmnDsl:
   end SampleOut
 
   lazy val standardSample: SampleIn = SampleIn()
-  private val descr =
+  val descr =
     s"""This runs the Sample Process.
        |""".stripMargin
 
   lazy val testProcess =
-    process(name, standardSample, SampleOut(), descr)
+    process(standardSample, SampleOut())
 
   lazy val testUT =
     userTask("myUserTask")

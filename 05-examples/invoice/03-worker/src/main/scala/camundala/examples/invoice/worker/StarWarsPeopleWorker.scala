@@ -9,8 +9,7 @@ import sttp.client3.UriContext
 import sttp.model.Uri
 
 @Configuration
-class StarWarsPeopleWorker extends InvoiceWorkerHandler,
-      ServiceWorkerDsl[In, Out, NoInput, ServiceOut]:
+class StarWarsPeopleWorker extends CompanyServiceWorkerDsl[In, Out, NoInput, ServiceOut]:
 
   lazy val serviceTask = example
 

@@ -1,0 +1,35 @@
+package camundala.examples.demos.worker
+
+import camundala.domain.*
+import camundala.examples.demos.bpmn.EnumWorkerExample.*
+import camundala.worker.*
+import camundala.worker.CamundalaWorkerError.*
+import org.springframework.context.annotation.Configuration
+import sttp.client3.UriContext
+import sttp.model.Uri
+
+@Configuration
+class EnumExampleWorker extends CompanyServiceWorkerDsl[In, Out, NoInput, ServiceOut]:
+
+  lazy val serviceTask = example
+  println("VARS: " + example.otherEnumInExamples)
+  def apiUri(in: In) = 
+    in match
+      case In.A(someValue, enumEx, maybeOut) =>
+          uri"https://swapi.dev/api/people/$someValue"
+      case In.B(otherValue) =>
+          uri"https://swapi.dev/api/people/$otherValue"
+
+  override def outputMapper(
+      serviceOut: ServiceResponse[ServiceOut],
+      in: In
+  ): Either[ServiceMappingError, Out] =
+    in match
+      case In.A(someValue, enumEx, _) =>
+        Right(Out.A(someValue, 12, enumEx))
+      case In.B(otherValue) =>
+        Right(Out.B(Some(otherValue)))
+    
+    
+
+end EnumExampleWorker
