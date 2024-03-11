@@ -7,9 +7,8 @@ object EnumWorkerExample extends BpmnServiceWorkerDsl:
 
   val serviceLabel: String = "Demo for Enum as Inputs and Outputs in Worker"
   val serviceVersion: String = "1.4"
-  val topicName: String = "myEnumTopic"
+  val topicName: String = "myEnumWorkerTopic"
 
-  val processName = "enum-example"
   val descr = ""
   val path: String = "GET /people"
 
@@ -22,13 +21,13 @@ object EnumWorkerExample extends BpmnServiceWorkerDsl:
   enum In:
 
     case A(
-            someValue: Option[String] = Some("hello"),
-            simpleEnum: SimpleEnum = SimpleEnum.One,
-            customMock: Option[Out] = Some(Out.A())
-          )
+        someValue: Option[String] = Some("hello"),
+        simpleEnum: SimpleEnum = SimpleEnum.One,
+        customMock: Option[Out] = Some(Out.A())
+    )
     case B(
-            otherValue: String = "other"
-          )
+        otherValue: String = "other"
+    )
   end In
   object In:
     given ApiSchema[In] = deriveApiSchema
@@ -42,7 +41,7 @@ object EnumWorkerExample extends BpmnServiceWorkerDsl:
         simpleEnum: SimpleEnum = SimpleEnum.One
     )
     case B(
-        otherOut: Option[String] = Some("other"),
+        otherOut: Option[String] = Some("other")
     )
   end Out
   object Out:
@@ -62,6 +61,7 @@ object EnumWorkerExample extends BpmnServiceWorkerDsl:
     serviceMock,
     serviceInExample
   ).withEnumInExample(In.B())
+    .withEnumOutExample(Out.B())
 
   lazy val exampleB = serviceTask(
     in = In.B(),
