@@ -109,14 +109,20 @@ case class SbtGenerator()(using
                    |  .dependsOn(${name}Base)
                    |""".stripMargin
               .mkString ->
-              s""".aggregate(${name}Base, ${config.subProjects.map(sbtSubProjectName).mkString(", ")})
+              s""".aggregate(${
+                  if config.subProjects.nonEmpty
+                  then
+                    config.subProjects.map(sbtSubProjectName)
+                      .mkString(s"${name}Base, ", ", ", "")
+                  else ""
+                })
                  |  .dependsOn(${config.subProjects.map(sbtSubProjectName).mkString(", ")})
                  |
                  |lazy val ${name}Base = project
                  |  .in(file("${modC.nameWithLevel}/_base"))
                  |  .settings(
                  |    projectSettings(Some("$name-base"), Some("$name")),
-                 |    preventPublication,
+                 |    publicationSettings,
                  |    libraryDependencies ++= ${name}Deps
                  |  )
                  |
@@ -134,7 +140,7 @@ case class SbtGenerator()(using
            |    libraryDependencies ++= ${name}Deps${
             if sbtSettings.isEmpty then ""
             else sbtSettings.mkString(",\n    ", ",\n    ", "")
-          }${if modC.hasTest then testSetting else ""}
+          }${testSetting(modC)}
            |  )${config.dependsOn(modC.level)}
            |  $aggregateSubProjects
            |  $enablePlugins
@@ -142,9 +148,11 @@ case class SbtGenerator()(using
            |""".stripMargin
       .mkString
 
-  private lazy val testSetting =
-    """,
-      |    libraryDependencies += mUnit,
-      |    testFrameworks += new TestFramework(testFramework)""".stripMargin
-
+  private def testSetting(modC: ModuleConfig) =
+    if modC.hasTest
+    then s""",
+            |    libraryDependencies += mUnit,
+            |    Test / parallelExecution := true,
+            |    testFrameworks += new TestFramework(testFramework)""".stripMargin
+    else ""
 end SbtGenerator

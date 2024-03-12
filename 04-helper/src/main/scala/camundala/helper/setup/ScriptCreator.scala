@@ -75,7 +75,9 @@ case class ScriptCreator()(using config: SetupConfig):
        |    projectName: String = "$projectName",
        |): Unit =
        |  val config = ProjectDevHelper.config(projectName)
-       |    val subProjects = Seq(${config.subProjects.map(sp => s"\"$sp\"").mkString("\n      ", ",\n      ",",\n    ") })
+       |    val subProjects = Seq(
+       |      ${config.subProjects.map(sp => s"\"$sp\"").mkString(", ") }
+       |    )
        |  DevHelper.update(config, subProjects)
        |
        |/**

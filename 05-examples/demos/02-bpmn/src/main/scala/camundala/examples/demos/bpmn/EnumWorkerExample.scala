@@ -19,14 +19,17 @@ object EnumWorkerExample extends BpmnServiceWorkerDsl:
     MockedServiceResponse.success200(NoOutput())
 
   enum In:
-
     case A(
         someValue: Option[String] = Some("hello"),
         simpleEnum: SimpleEnum = SimpleEnum.One,
-        customMock: Option[Out] = Some(Out.A())
+        customMock: Option[Out] = Some(Out.A()),
+        @description(typeDescription(A))
+        `type`: String = enumType(A)
     )
     case B(
-        otherValue: String = "other"
+        otherValue: String = "other",
+        @description(typeDescription(B))
+        `type`: String = enumType(B)
     )
   end In
   object In:

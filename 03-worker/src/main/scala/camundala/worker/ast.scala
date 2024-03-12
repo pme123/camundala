@@ -28,11 +28,10 @@ sealed trait Worker[
   def runWorkHandler: Option[RunWorkHandler[In, Out]] = None
   // helper
   def variableNames: Seq[String] =
-    println(s"VARIABLESE: -  $otherEnumInExamples")
     (in.productElementNames.toSeq ++
       otherEnumInExamples
         .map:
-          _.flatMap(_.productElementNames) :+ "type"
+          _.flatMap(_.productElementNames)
         .toSeq.flatten).distinct
   def defaultMock(in: In)(using
       context: EngineRunContext
@@ -198,7 +197,7 @@ end RunnableRequest
 
 case class ServiceResponse[ServiceOut](
     outputBody: ServiceOut,
-    headers: Map[String, String]
+    headers: Map[String, String] = Map.empty
 )
 
 enum QuerySegmentOrParam:
