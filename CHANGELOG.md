@@ -15,6 +15,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.0 - 2024-03-12
+### Changed 
+- Some Improvements. - see [Commit](https://github.com/pme123/camundala/commit/cfdfde2a9aa0d81fc40034818d0a6c5b1f63cab4)
+- Added APi Examples with otherEnum Examples. - see [Commit](https://github.com/pme123/camundala/commit/fa4b756241cc95ce030e1661df90225f8e041ce2)
+- Added otherEnum Examples - to support In Enums in Workers (variable generation). - see [Commit](https://github.com/pme123/camundala/commit/eb2092a6fd5c3460c7c3257424accb38db438fb6)
+- Naming cleanup / Company-. - see [Commit](https://github.com/pme123/camundala/commit/6c3331986a17e676846c25cac9d02e4fcaf0b97f)
+- Added HelperGenerator. - see [Commit](https://github.com/pme123/camundala/commit/7fa3fa68412bfec2b43a39596654fc55e7e70240)
+- Added WorkerGenerator. - see [Commit](https://github.com/pme123/camundala/commit/a098511897000c00e070e71baf60a58b5384626e)
+- Some fixes in Project generation. - see [Commit](https://github.com/pme123/camundala/commit/3cf3b69d98f410d4feb0b56470d67df789a04862)
+- Working helperProject with Artifactory configuration in initHelperCompany.sc. - see [Commit](https://github.com/pme123/camundala/commit/21dd6f6164ce4d52fd0beebf064bbbcf63ba28eb)
+- Added Company Structure Generator to helper. - see [Commit](https://github.com/pme123/camundala/commit/2222cca70f8a7e7904f9ea7a5cbb4af03bede0a8)
+- Added OpenAPI Generator to helper. - see [Commit](https://github.com/pme123/camundala/commit/b5ccc55d8e693852745475f5733fd83da4b0cfc6)
+- Added BpmnWorkerDsl. - see [Commit](https://github.com/pme123/camundala/commit/65a5a2153c67a3502e758cddf2e932096275940c)
+
 ## 1.28.8 - 2024-02-24
 ### Changed 
 - Improved default values in mapping for ModelerTemplGenerator. - see [Commit](https://github.com/pme123/camundala/commit/aa490c49984adba356bfcbfdceffc50acd5abf25)
