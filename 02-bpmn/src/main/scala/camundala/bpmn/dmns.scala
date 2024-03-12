@@ -35,7 +35,9 @@ case class DecisionDmn[
     In <: Product: InOutEncoder: InOutDecoder: Schema,
     Out <: Product: InOutEncoder: InOutDecoder: Schema
 ](
-    inOutDescr: InOutDescr[In, Out]
+    inOutDescr: InOutDescr[In, Out],
+    otherEnumInExamples: Option[Seq[In]] = None,
+    otherEnumOutExamples: Option[Seq[Out]] = None
 ) extends ProcessNode,
       Activity[In, Out, DecisionDmn[In, Out]]:
   lazy val inOutType: InOutType = InOutType.Dmn
@@ -47,6 +49,19 @@ case class DecisionDmn[
 
   def withInOutDescr(descr: InOutDescr[In, Out]): DecisionDmn[In, Out] =
     copy(inOutDescr = descr)
+
+  def withEnumInExample(
+                         enumInExample: In
+                       ): DecisionDmn[In, Out] =
+    copy(otherEnumInExamples =
+      Some(otherEnumInExamples.getOrElse(Seq.empty) :+ enumInExample)
+    )
+  def withEnumOutExample(
+                          enumOutExample: Out
+                        ): DecisionDmn[In, Out] =
+    copy(otherEnumOutExamples =
+      Some(otherEnumOutExamples.getOrElse(Seq.empty) :+ enumOutExample)
+    )
 
 end DecisionDmn
 

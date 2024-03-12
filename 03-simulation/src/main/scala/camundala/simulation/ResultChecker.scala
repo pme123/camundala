@@ -9,6 +9,7 @@ import io.circe.*
 import io.circe.parser.*
 
 import scala.collection.mutable.ListBuffer
+import scala.deriving.Mirror.Sum
 
 trait ResultChecker:
 

@@ -96,8 +96,20 @@ case class GeneralVariables(
 ):
   def isMockedWorker(workerTopicName: String): Boolean =
     mockedWorkers.contains(workerTopicName)
+end GeneralVariables
 
 object GeneralVariables:
   given InOutCodec[GeneralVariables] = deriveCodec
   given ApiSchema[GeneralVariables] = deriveApiSchema
 end GeneralVariables
+
+lazy val regexHandledErrorsDescr =
+  """If you specified _handledErrors_, you can specify Regexes that all must match the error messages.
+Otherwise the error is thrown.
+
+Example: `['java.sql.SQLException', '"errorNr":20000']`
+"""
+def typeDescription(obj: AnyRef)=
+  s"The type of an Enum -> '**${enumType(obj)}**'. Just use the the enum type. This is needed for simple unmarshalling the JSON"
+def enumType(obj: AnyRef)  =
+  s"$obj"

@@ -6,13 +6,14 @@ import sttp.client3.*
 trait BasicSimulationDsl extends CustomSimulation:
   def username = "demo"
   def password = "demo"
-    
   override implicit def config
       : SimulationConfig[RequestT[Empty, Either[String, String], Any]] =
     super.config
       .withAuthHeader((r: RequestT[Empty, Either[String, String], Any]) =>
         r.auth.basic(username, password)
       )
+
+object BasicSimulationDsl
 
 case class Fsso(url: String, bodyForm: Map[String, String])
 

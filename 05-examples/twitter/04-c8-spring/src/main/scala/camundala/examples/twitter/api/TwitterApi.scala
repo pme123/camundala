@@ -3,14 +3,13 @@ package camundala.examples.twitter.api
 import camundala.bpmn.*
 import camundala.domain.*
 
-object TwitterApi extends BpmnDsl:
-  given tenantId: Option[String] = Some("{{tenantId}}")
+object TwitterApi extends BpmnProcessDsl:
+  val processName = "TwitterDemoP"
+  val descr = "This runs the Twitter Approvement Process."
+  val path: String = "DELETE /services/method"
 
   val twitterDemoProcess =
-    val processId = "TwitterDemoP"
     process(
-      id = processId,
-      descr = "This runs the Twitter Approvement Process.",
       in = Tweet(),
       out = ReviewedTweet() // just for Testing
     )

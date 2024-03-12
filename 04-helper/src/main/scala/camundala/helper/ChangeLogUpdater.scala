@@ -23,7 +23,6 @@ case class ChangeLogUpdater(
       true
     } else false
 
-  //private val valiantGit = "https://git.swisscom.com/projects/VAF/repos/valiant-cms/commits/"
   private lazy val changeLog = os.read(os.pwd / "CHANGELOG.md")
 
   private lazy val regex = """## (\d+\.\d+\.\d+) - (\d\d\d\d-\d\d-\d\d).*""".r

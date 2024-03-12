@@ -18,6 +18,7 @@ sealed trait Worker[
 
   def inOutExample: InOut[In, Out, ?]
   def topic: String
+  def otherEnumInExamples: Option[Seq[In]] = inOutExample.otherEnumInExamples
   lazy val in: In = inOutExample.in
   lazy val out: Out = inOutExample.out
   // handler
@@ -26,8 +27,12 @@ sealed trait Worker[
   // no handler for mocking - all done from the InOut Object
   def runWorkHandler: Option[RunWorkHandler[In, Out]] = None
   // helper
-  def variableNames: Seq[String] = in.productElementNames.toSeq
-
+  def variableNames: Seq[String] =
+    (in.productElementNames.toSeq ++
+      otherEnumInExamples
+        .map:
+          _.flatMap(_.productElementNames)
+        .toSeq.flatten).distinct
   def defaultMock(in: In)(using
       context: EngineRunContext
   ): MockerError | MockedOutput =
@@ -100,7 +105,7 @@ case class ServiceWorker[
 ](
     inOutExample: ServiceTask[In, Out, ServiceIn, ServiceOut],
     override val validationHandler: Option[ValidationHandler[In]] = None,
-    override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None
+    override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None,
 ) extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
   lazy val topic: String = inOutExample.topicName
 
@@ -192,7 +197,7 @@ end RunnableRequest
 
 case class ServiceResponse[ServiceOut](
     outputBody: ServiceOut,
-    headers: Map[String, String]
+    headers: Map[String, String] = Map.empty
 )
 
 enum QuerySegmentOrParam:

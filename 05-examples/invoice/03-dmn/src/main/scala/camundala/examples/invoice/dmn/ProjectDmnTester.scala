@@ -10,9 +10,11 @@ import bpmn.InvoiceReceipt.InvoiceAssignApproverDMN
 object ProjectDmnTester
     extends DmnTesterConfigCreator,
       DmnTesterStarter,
-      BpmnDsl,
+      BpmnProcessDsl,
       App:
-
+  val processName = "NOT USED"
+  val descr = ""
+  
   private lazy val localDmnConfigPath: os.Path =
     os.pwd / "05-examples" / "invoice" / "03-dmn" / "src" / "main" / "resources" / "dmnConfigs"
 

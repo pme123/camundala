@@ -28,7 +28,7 @@ camunda:
         enforceHistoryTimeToLive: false
 
 # Uncomment if you need to run the application on a non-standard port
-server.port: 8887
+server.port: 8034
 
 # logging:
 #   level.root: INFO

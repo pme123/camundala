@@ -4,9 +4,10 @@ import camundala.bpmn.*
 import camundala.domain.*
 import camundala.examples.invoice.bpmn.ReviewInvoice.Out
 
-object InvoiceReceipt extends BpmnDsl:
+object InvoiceReceipt extends BpmnProcessDsl:
 
   val processName = "example-invoice-c7"
+  val descr = "This starts the Invoice Receipt Process."
 
   case class In(
       creditor: String = "Great Pizza for Everyone Inc.",
@@ -58,8 +59,6 @@ object InvoiceReceipt extends BpmnDsl:
 
   lazy val example =
     process(
-      id = processName,
-      descr = "This starts the Invoice Receipt Process.",
       in = In(),
       out = Out() // just for testing
     )

@@ -10,9 +10,16 @@ import io.github.iltotore.iron.constraint.string.Alphanumeric
 import sttp.tapir.Schema.annotations.description
 import sttp.tapir.codec.iron.given
 
-object StarWarsPeople extends BpmnDsl:
+trait StarWarsApi extends BpmnServiceWorkerDsl:
+  val serviceLabel: String = "Star Wars API"
+  val serviceVersion: String = "1.0"
+
+object StarWarsPeople extends StarWarsApi:
 
   final val topicName = "star-wars-api-people"
+  val descr = "Get People from StarWars API"
+  val path: String = "GET /people"
+
   type ServiceIn = NoInput
   type ServiceOut = PeopleResults
   lazy val serviceInExample = NoInput()
@@ -53,8 +60,6 @@ object StarWarsPeople extends BpmnDsl:
 
   final lazy val example: ServiceTask[In, Out, ServiceIn, ServiceOut] =
     serviceTask(
-      topicName,
-      descr = "Get People from StarWars API",
       in = In(),
       out = Out.Success(),
       defaultServiceOutMock = serviceMock,
@@ -63,9 +68,12 @@ object StarWarsPeople extends BpmnDsl:
 
 end StarWarsPeople
 
-object StarWarsPeopleDetail extends BpmnDsl:
+object StarWarsPeopleDetail extends StarWarsApi:
 
   final val topicName = "star-wars-api-people-detail"
+  val descr = "Get People Details from StarWars API"
+  val path: String = "GET /people/${in.id}"
+
   type ServiceIn = NoInput
   type ServiceOut = People
   lazy val serviceInExample = NoInput()
@@ -101,8 +109,6 @@ object StarWarsPeopleDetail extends BpmnDsl:
   
   final lazy val example: ServiceTask[In, Out, ServiceIn, ServiceOut] =
     serviceTask(
-      topicName,
-      descr = "Get People Details from StarWars API",
       in = In(),
       out = Out.Success(),
       defaultServiceOutMock = serviceMock,

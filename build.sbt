@@ -77,8 +77,16 @@ lazy val domain = project
   .settings(unitTestSettings)
   .settings(
     autoImportSetting,
-    libraryDependencies ++= tapirDependencies
-  )
+    libraryDependencies ++= tapirDependencies,
+    buildInfoPackage := "camundala",
+    buildInfoKeys := Seq[BuildInfoKey](
+      organization,
+      name,
+      version,
+      scalaVersion,
+      sbtVersion
+    )
+  ).enablePlugins(BuildInfoPlugin)
 // layer 02
 val osLibDependency = "com.lihaoyi" %% "os-lib" % osLibVersion
 lazy val bpmn = project
@@ -145,15 +153,16 @@ lazy val simulation = project
   .dependsOn(bpmn)
 
 // layer 04
-
+val swaggerOpenAPIDependency =   "io.swagger.parser.v3" % "swagger-parser" % swaggerOpenAPIVersion
 lazy val helper = project
   .in(file("./04-helper"))
   .configure(publicationSettings)
   .settings(projectSettings("helper"))
   .settings(unitTestSettings)
   .settings(
-    libraryDependencies += osLibDependency
-  ).dependsOn(api)
+    autoImportSetting,
+    libraryDependencies ++= Seq(osLibDependency, swaggerOpenAPIDependency)
+  ).dependsOn(api, simulation, worker)
 
 lazy val camunda7Worker = project
   .in(file("./04-worker-c7spring"))
@@ -268,7 +277,7 @@ lazy val exampleInvoiceC8 = project
   .settings(
     autoImportSetting
   )
-  .dependsOn(bpmn, api, /*exampleInvoiceBpmn,*/ camunda8)
+  .dependsOn(api, exampleInvoiceBpmn, camunda8)
 
 // TWITTER
 lazy val exampleTwitter = project

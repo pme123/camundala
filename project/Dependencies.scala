@@ -9,7 +9,7 @@ object Dependencies {
   // 04-helper
   val osLibVersion = "0.9.3"
   // 01-domain
-  val tapirVersion = "1.9.6"
+  val tapirVersion = "1.9.11"
   val openapiCirceVersion = "0.7.3"
   val ironCirceVersion = "2.4.0"
   val mUnitVersion = "0.7.29"
@@ -50,7 +50,7 @@ object Dependencies {
   val springBootVersion = "2.7.15"
   val zeebeVersion = "8.2.4"
   val scalaJacksonVersion = "2.14.2"
-
+  val swaggerOpenAPIVersion = "2.1.20"
   // examples
   val h2Version = "2.1.214"
   val twitter4jVersion = "4.1.2"

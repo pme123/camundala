@@ -3,17 +3,20 @@ package camundala.examples.demos.bpmn
 import camundala.bpmn.*
 import camundala.domain.*
 
-object TestDomain extends BpmnDsl:
+object TestDomain extends BpmnProcessDsl:
 
+  lazy val processName: String = "simulation-TestOverrides"
+  lazy val descr: String = ""
+  
   case class SomeObj(tag: String = "okidoki", isOk: String = "false")
   object SomeObj:
     given ApiSchema[SomeObj] = deriveApiSchema
-    given InOutCodec[SomeObj] = deriveCodec
+    given InOutCodec[SomeObj] = deriveInOutCodec
   end SomeObj
   case class ValueWrapper(success: Boolean = false)
   object ValueWrapper:
     given ApiSchema[ValueWrapper] = deriveApiSchema
-    given InOutCodec[ValueWrapper] = deriveCodec
+    given InOutCodec[ValueWrapper] = deriveInOutCodec
   end ValueWrapper
 // process In
   case class In(
@@ -25,7 +28,7 @@ object TestDomain extends BpmnDsl:
   )
   object In:
     given ApiSchema[In] = deriveApiSchema
-    given InOutCodec[In] = deriveCodec
+    given InOutCodec[In] = deriveInOutCodec
   end In
 
   //  Out
@@ -38,13 +41,11 @@ object TestDomain extends BpmnDsl:
   )
   object Out:
     given ApiSchema[Out] = deriveApiSchema
-    given InOutCodec[Out] = deriveCodec
+    given InOutCodec[Out] = deriveInOutCodec
   end Out
 
   // generate-test.bpmn
-  val CamundalaGenerateTestPIdent = "camundala-generate-test"
   lazy val CamundalaGenerateTestP = process(
-    CamundalaGenerateTestPIdent,
     in = In(),
     out = Out()
   )

@@ -3,9 +3,10 @@ package camundala.examples.invoice.bpmn
 import camundala.bpmn.*
 import camundala.domain.*
 
-object ReviewInvoice extends BpmnDsl:
+object ReviewInvoice extends BpmnProcessDsl:
   final val processName = "example-invoice-c7-review"
-
+  val descr = "This starts the Review Invoice Process."
+  
   type InConfig = NoInConfig
 
   @description("Same Input as _InvoiceReceipt_, only different Mocking")
@@ -31,8 +32,6 @@ object ReviewInvoice extends BpmnDsl:
 
   lazy val example =
     process(
-      id = processName,
-      descr = "This starts the Review Invoice Process.",
       in = In(),
       out = Out(),
     )

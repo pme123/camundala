@@ -42,15 +42,16 @@ object ProjectApiCreator extends DefaultApiCreator:
       DecisionResultTypes.singleResultDMN.withDiagramName("DecisionResultTypes"),
       DecisionResultTypes.resultListDMN.withDiagramName("DecisionResultTypes")
     ),
-    EnumExample.enumExample,
+    EnumExample.example,
+    EnumWorkerExample.example,
     DateExample.DateExampleDMN,
     VariablesExample.VariablesExampleDMN,
     SimulationTestOverridesExample.simulationProcess,
     group("SignalMessageExample")(
-      SignalMessageExample.signalExample,
-      SignalMessageExample.messageExample,
-      SignalMessageExample.signalIntermediateExample,
-      SignalMessageExample.messageIntermediateExample
+      SignalExample.signalExample,
+      MessageForExample.messageExample,
+      SignalExample.signalIntermediateExample,
+      MessageForExample.messageIntermediateExample
     ),
     api(TimerExample.timerProcess)(
       TimerExample.timer

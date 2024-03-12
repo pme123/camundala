@@ -14,6 +14,7 @@ import scala.language.implicitConversions
 
 // circe JsonInOutEncoder/ Decoder
 export io.circe.{Codec as CirceCodec}
+export io.circe.Json
 
 type InOutCodec[T] = io.circe.Codec[T]
 type InOutEncoder[T] = io.circe.Encoder[T]
@@ -23,29 +24,59 @@ type InOutDecoder[T] = io.circe.Decoder[T]
 
 inline def deriveInOutCodec[A](using inline A: Mirror.Of[A]): InOutCodec[A] =
   deriveInOutCodec("type")
-
 inline def deriveInOutCodec[A](discriminator: String)(using inline A: Mirror.Of[A]): InOutCodec[A] =
-  io.circe.derivation.ConfiguredCodec.derived(using Configuration.default //.withDefaults
-    .withDiscriminator(discriminator)
-  )
+  io.circe.derivation.ConfiguredCodec.derived(using
+  Configuration.default // .withDefaults
+    .withDiscriminator(discriminator))
+inline def deriveInOutEncoder[A](using inline A: Mirror.Of[A]): InOutEncoder[A] =
+  deriveInOutEncoder("type")
+inline def deriveInOutEncoder[A](discriminator: String)(using
+    inline A: Mirror.Of[A]
+): InOutEncoder[A] =
+  io.circe.derivation.ConfiguredEncoder.derived(using
+  Configuration.default // .withDefaults
+    .withDiscriminator(discriminator))
+inline def deriveInOutDecoder[A](using inline A: Mirror.Of[A]): InOutDecoder[A] =
+  deriveInOutDecoder("type")
+inline def deriveInOutDecoder[A](discriminator: String)(using
+    inline A: Mirror.Of[A]
+): InOutDecoder[A] =
+  io.circe.derivation.ConfiguredDecoder.derived(using
+  Configuration.default // .withDefaults
+    .withDiscriminator(discriminator))
 
 inline def deriveEnumInOutCodec[A](using inline A: Mirror.SumOf[A]): InOutCodec[A] =
-  io.circe.derivation.ConfiguredEnumCodec.derived(using Configuration.default //.withDefaults
-    .withoutDiscriminator
-  )
+  io.circe.derivation.ConfiguredEnumCodec.derived(using
+  Configuration.default // .withDefaults
+    .withoutDiscriminator)
 
 // Tapir encoding / decoding
 export sttp.tapir.Schema.annotations.description
 
 type ApiSchema[T] = Schema[T]
 inline def deriveApiSchema[T](using
-                              m: Mirror.Of[T]
-                          ): Schema[T] =
+    m: Mirror.Of[T]
+): Schema[T] =
   Schema.derived[T]
 inline def deriveEnumApiSchema[T](using
-                                  m: Mirror.Of[T]
+    m: Mirror.Of[T]
 ): Schema[T] =
   Schema.derivedEnumeration[T].defaultStringBased
+
+given InOutCodec[String | Int] = CirceCodec.from(
+  new Decoder[String | Int]:
+    final def apply(c: HCursor): Decoder.Result[String | Int] =
+      if c.value.isString
+      then c.as[String]
+      else c.as[Int]
+  ,
+  new Encoder[String | Int]:
+    final def apply(a: String | Int): Json = a match
+      case s: String => Json.fromString(s)
+      case i: Int => Json.fromInt(i)
+)
+
+given ApiSchema[String | Int] = Schema.derivedUnion
 
 case class NoInput()
 object NoInput:

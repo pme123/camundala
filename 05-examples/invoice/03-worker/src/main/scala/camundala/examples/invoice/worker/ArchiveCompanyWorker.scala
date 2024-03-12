@@ -7,8 +7,8 @@ import camundala.worker.CustomWorkerDsl
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class ArchiveInvoiceWorker 
-  extends InvoiceWorkerHandler, // environment specific
+class ArchiveCompanyWorker 
+  extends CompanyWorkerHandler, // environment specific
     CustomWorkerDsl[In, Out]: // DSL for this type
 
   lazy val customTask = example
@@ -27,4 +27,4 @@ class ArchiveInvoiceWorker
       case _ =>
         Right(Out(Some(false)))
 
-end ArchiveInvoiceWorker
+end ArchiveCompanyWorker

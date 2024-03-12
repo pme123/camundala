@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Demos Example Process API
   version: '1.0'
-  summary: "\n\nCreated at 09/12/2023, 12:29\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
+  summary: "\n\nCreated at 12/03/2024, 08:03\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
     \n\n\n\n<details>\n<summary><b><i>CHANGELOG.md</i></b></summary>\n<p>\n\n\nAll\
     \ notable changes to this project will be documented in this file.\n\n* Types\
     \ of Changes (L3):\n  * Added: new features\n  * Changed: changes in existing\
@@ -11,59 +11,65 @@ info:
     \n\nThe format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),\n\
     and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).\n\
     \n### Unreleased\nInitial Version\n\n</p>\n</details>\n\n\n<p/>\n<details>\n<summary>\n\
-    <b><i>Supported General Variables</i></b>\n</summary>\n\n<p>\n\n### Processes\n\
-    \n**mockedWorkers**:\n\nMock the SubProcesses with their default Mocks.\n\
-    This is a list of the _SubProcesses processNames_ you want to mock.\nDepending\
-    \ on your implementation it is also possible to use a _comma separated_ String,\n\
-    like `\"mySubProcess,myOtherSubProcess\"`\n\n\n- DSL:\n```scala\nprocess(..)\n\
-    \  .mockedWorkers(\"mySubProcess1\", \"mySubProcess2\") // creates a list with\
-    \ SubProcessess\n  .mockedWorker(\"myOtherSubProcess\") // adds a SubProcess\n\
-    ```\n\n- Json\n```json\n...\n\"mockedWorkers\": [\"mySubProcess\", \"myOtherSubProcess\"\
-    ],\n...\n```\n\n### Processes and ExternalTasks\n**outputVariables**:\n\nYou can\
-    \ filter the Output with a list of variable names you are interested in.\nThis\
-    \ list may include all variables from the output (`Out`). We included an example\
-    \ for each Process or ExternalTask.\nDepending on your implementation it is also\
-    \ possible to use a _comma separated_ String,\nlike `\"name,firstName\"`\n\n\n\
-    - DSL:\n```scala\nprocess(..) // or serviceTask(..)/customTask(..)\n  .withOutputVariables(\"\
-    name\", \"firstName\") // creates a list with outputVariables\n  .withOutputVariable(\"\
-    nickname\") // adds a outputVariable\n```\n\n- Json\n```json\n...\n\"outputVariables\"\
-    : [\"name\", \"firstName\"],\n...\n```\n\n\n**outputMock**:\n\nMock the Process\
-    \ or ExternalTask (`Out`)\n - You find an example in every _Process_ and _ExternalTask_.\n\
-    \n\n- DSL:\n```scala\nprocess(..) // or serviceTask(..)/customTask(..)\n  .mockWith(outputMock)\n\
-    ```\n\n- Json\n```json\n...\n\"outputMock\": {..},\n...\n```\n\n\n**defaultMocked**:\n\
-    \nMock the ExternalTasks (Workers only) with their default Mock:\n\n- DSL:\n```scala\n\
-    process(..) // or serviceTask(..)/customTask(..)\n  .mockServices\n```\n\n- Json\n```json\n\
-    ...\n\"defaultMocked\": true,\n...\n```\n\n\n**impersonateUserId**:\n\nUser-ID\
-    \ of a User that should be taken to authenticate to the services.\nThis must be\
-    \ supported by your implementation. *Be caution: this may be a security issue!*.\n\
-    It is helpful if you have Tokens that expire, but long running Processes.\n\n\
-    - DSL:\n```scala\nprocess(..) // or serviceTask(..)/customTask(..)\n  .withImpersonateUserId(impersonateUserId)\n\
-    ```\n\n- Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
-    \n### ExternalTasks\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
-    \ - You find an example in every _ExternalTask_.\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
+    <b><i>General Variables</i></b>\n</summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\
+    \nMock all the _ServiceWorkers_ in your process with their default Mock:\n\n-\
+    \ DSL:\n```scala\nprocess(..)\n  .mockServices\n```\n\n- Json\n```json\n...\n\"\
+    servicesMocked\": true,\n...\n```\n\n\n**mockedWorkers**:\n\nMock any Process-\
+    \ and/or ExternalTask-Worker with their default Mocks.\nThis is a list of the\
+    \ _Worker topicNames or Process processNames_, you want to mock.\nIt is also possible\
+    \ to use a _comma separated_ String,\nlike `\"mySubProcess,myOtherSubProcess,myService\"\
+    `\n\n_Be aware_: For Sub-Processes, this expects an _InitWorker_ where the _topicName_\
+    \ is equal to the _processName_.\n\n\n- DSL:\n```scala\nprocess(..)\n  .mockedWorkers(\"\
+    mySubProcess1\", \"mySubProcess2\") // creates a list with SubProcessess\n  .mockedWorker(\"\
+    myOtherSubProcess\") // adds a SubProcess\n```\n\n- Json\n```json\n...\n\"mockedWorkers\"\
+    : [\"mySubProcess\", \"myOtherSubProcess, myService\"],\n...\n```\n\n\n**outputMock**:\n\
+    \nMock the Process or ExternalTask (`Out`)\n - You find an example in every _Process_\
+    \ and _ExternalTask_.\n\n\n- DSL:\n```scala\nprocess(..) // or serviceTask(..)/customTask(..)\n\
+    \  .mockWith(outputMock)\n```\n\n- Json\n```json\n...\n\"outputMock\": {..},\n\
+    ...\n```\n\n\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
+    \ - You find an example in every _ServiceTask_.\n\n\n- DSL:\n```scala\nserviceTask(..)\n\
     \  .mockServiceWith(MockedServiceResponse\n     .success200(inOut.defaultServiceOutMock))\n\
     ```\n\n- Json\n```json\n...\n\"outputServiceMock\": {\n  \"respStatus\" : 200,\n\
     \  \"respBody\" : \"Example String Body\",\n  \"respHeaders\" : [\n  ]\n},\n...\n\
-    ```\n\n\n**handledErrors**:\n\nA list of error codes that are handled (`BpmnError`)\n\
-    Depending on your implementation it is also possible to use a _comma separated_\
-    \ String,\nlike `\"validation-failed,404\"`\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
-    \  .handleErrors(ErrorCodes.`validation-failed`, \"404\") // create a list of\
-    \ handledErrors\n  .handleError(\"404\") // add a handledError\n```\n\n- Json\n\
-    ```json\n...\n\"handledErrors\": [\"validation-failed\", \"404\"],\n...\n```\n\
-    \n\n**regexHandledErrors**:\n\nYou can further filter Handled Errors with a list\
-    \ of Regex expressions that the body error message must match.\nDepending on your\
-    \ implementation it is also possible to use a _comma separated_ String,\nlike\
-    \ `\"SQL exception,\"errorNr\":\"20000\"\"`\n\n\n- DSL:\n```scala\nserviceProcess(..)\n\
-    \  .handleErrorWithRegex(\"SQL exception\")\n  .handleErrorWithRegex(\"\\\"errorNr\\\
-    \":\\\"20000\\\"\")\n```\n\n- Json\n```json\n...\n\"regexHandledErrors\": [\"\
-    SQL exception\", \"\"errorNr\":\"20000\"\"],\n...\n```\n\n</p>\n</details>\n<p/>\n\
-    \        \n"
+    ```\n\n### Mapping\n**outputVariables**:\n\nYou can filter the Output with a list\
+    \ of variable names you are interested in.\nThis list may include all variables\
+    \ from the output (`Out`). We included an example for each Process or ExternalTask.\n\
+    It is also possible to use a _comma separated_ String,\nlike `\"name,firstName\"\
+    `\n\n\n- DSL:\n```scala\nprocess(..) // or serviceTask(..)/customTask(..)\n  .withOutputVariables(\"\
+    name\", \"firstName\") // creates a list with outputVariables\n  .withOutputVariable(\"\
+    nickname\") // adds a outputVariable\n```\n\n- Json\n```json\n...\n\"outputVariables\"\
+    : [\"name\", \"firstName\"],\n...\n```\n\n\n**manualOutMapping**:\n\nBy default\
+    \ all output Variables (`Out`) are on the Process for _External Tasks_.\nIf the\
+    \ filter _outputVariables_ is not enough,\nyou can set this variable - every output\
+    \ variable is then local.\n\n_Be aware_ that you must then manually have _output\
+    \ mappings_ for each output variable!\n\n\n- DSL:\n```scala\nserviceTask(..) //\
+    \ or customTask(..)\n  .manualOutMapping\n```\n\n- Json\n```json\n...\n\"manualOutMapping\"\
+    : true,\n...\n```\n\n### Mocking\n**handledErrors**:\n\nA list of error codes\
+    \ that are handled (`BpmnError`)\nIt is also possible to use a _comma separated_\
+    \ String,\nlike `\"validation-failed,404\"`\n\nAt the moment only _ServiceTasks_\
+    \ supported.\n\n\n- DSL:\n```scala\nserviceTask(..)\n  .handleErrors(ErrorCodes.`validation-failed`,\
+    \ \"404\") // create a list of handledErrors\n  .handleError(\"404\") // add a\
+    \ handledError\n```\n\n- Json\n```json\n...\n\"handledErrors\": [\"validation-failed\"\
+    , \"404\"],\n...\n```\n\n\n**regexHandledErrors**:\n\nYou can further filter Handled\
+    \ Errors with a list of Regex expressions that the body error message must match.\n\
+    It is also possible to use a _comma separated_ String,\nlike `\"SQL exception,\"\
+    errorNr\":\"20000\"\"`\n\nAt the moment only _ServiceTasks_ supported.\n\n\n-\
+    \ DSL:\n```scala\nserviceTask(..)\n  .handleErrorWithRegex(\"SQL exception\")\n\
+    \  .handleErrorWithRegex(\"\\\"errorNr\\\":\\\"20000\\\"\")\n```\n\n- Json\n```json\n\
+    ...\n\"regexHandledErrors\": [\"SQL exception\", \"\"errorNr\":\"20000\"\"],\n\
+    ...\n```\n\n### Authorization\n**impersonateUserId**:\n\nUser-ID of a User that\
+    \ should be taken to authenticate to the services.\nThis must be supported by\
+    \ your implementation. *Be caution: this may be a security issue!*.\nIt is helpful\
+    \ if you have Tokens that expire, but long running Processes.\n\n- DSL:\n```scala\n\
+    process(..) // or serviceTask(..)/customTask(..)\n  .withImpersonateUserId(impersonateUserId)\n\
+    ```\n\n- Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
+    \n</p>\n</details>\n<p/>\n        \n"
 paths:
-  /decisiondmn//singleEntry:
+  /Dmn//singleEntry:
     head:
       tags:
       - ''
-      summary: 'DecisionDmn: singleEntry'
+      summary: 'Dmn: singleEntry'
       description: |2+
 
 
@@ -72,14 +78,14 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-36447">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-36447'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-81541">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-81541'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
         Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
 
-      operationId: 'DecisionDmn: singleEntry'
+      operationId: 'Dmn: singleEntry'
       requestBody:
         content:
           application/json:
@@ -102,11 +108,11 @@ paths:
               examples:
                 singleEntry:
                   value: 1
-  /decisiondmn//collectEntries:
+  /Dmn//collectEntries:
     head:
       tags:
       - ''
-      summary: 'DecisionDmn: collectEntries'
+      summary: 'Dmn: collectEntries'
       description: |2+
 
 
@@ -115,14 +121,14 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-70338">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-70338'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-98509">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-98509'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
         Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
 
-      operationId: 'DecisionDmn: collectEntries'
+      operationId: 'Dmn: collectEntries'
       requestBody:
         content:
           application/json:
@@ -147,11 +153,11 @@ paths:
                   value:
                   - 1
                   - 2
-  /decisiondmn//singleResult:
+  /Dmn//singleResult:
     head:
       tags:
       - ''
-      summary: 'DecisionDmn: singleResult'
+      summary: 'Dmn: singleResult'
       description: |2+
 
 
@@ -160,14 +166,14 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-22073">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-22073'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-67719">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-67719'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
         Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
 
-      operationId: 'DecisionDmn: singleResult'
+      operationId: 'Dmn: singleResult'
       requestBody:
         content:
           application/json:
@@ -184,17 +190,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SingleResult_camundala.examples.demos.bpmn.DecisionResultTypes.ManyOutResult[]'
+                $ref: '#/components/schemas/SingleResult_ManyOutResult'
               examples:
                 singleResult:
                   value:
                     index: 1
                     emoji: 🤩
-  /decisiondmn//resultList:
+  /Dmn//resultList:
     head:
       tags:
       - ''
-      summary: 'DecisionDmn: resultList'
+      summary: 'Dmn: resultList'
       description: |2+
 
 
@@ -203,14 +209,14 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-34401">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-34401'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-29682">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-29682'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
         Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
 
-      operationId: 'DecisionDmn: resultList'
+      operationId: 'Dmn: resultList'
       requestBody:
         content:
           application/json:
@@ -227,7 +233,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResultList_camundala.examples.demos.bpmn.DecisionResultTypes.ManyOutResult[]'
+                $ref: '#/components/schemas/ResultList_ManyOutResult'
               examples:
                 resultList:
                   value:
@@ -235,30 +241,32 @@ paths:
                     emoji: 🤩
                   - index: 2
                     emoji: 😂
-  /process/camundala-mapping-example:
+  /Bpmn/camundala-mapping-example:
     head:
       tags:
       - camundala-mapping-example
-      summary: 'Process: camundala-mapping-example'
-      description: "\n\n- Input:  `camundala.domain.NoInput`\n- Output: `camundala.domain.NoOutput`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"mapping-example-34262\"\
-        >\n    <img onLoad=\"openFromUrl('mapping-example.bpmn', new BpmnJS({ container:\
-        \ $('#mapping-example-34262'), height: '95%', width: '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
+      summary: 'Bpmn: camundala-mapping-example'
+      description: "\n\n- **Called Element**: `camundala-mapping-example` (to define\
+        \ in the Call Activity)\n\n\n\n- Input:  `camundala.domain.NoInput`\n- Output:\
+        \ `camundala.domain.NoOutput`\n\n\n<div class=\"diagramCanvas\">\n  <div class=\"\
+        diagram\" id=\"mapping-example-56417\">\n    <img onLoad=\"openFromUrl('mapping-example.bpmn',\
+        \ new BpmnJS({ container: $('#mapping-example-56417'), height: '95%', width:\
+        \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [mapping-example.bpmn](src/main/resources/mapping-example.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
         \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
         ```json\n...\n\"outputVariables\": \"\",\n...\n```\n\n**outputMock**:\n\n\
         ```json\n...\n\"outputMock\": {\n  \n},\n...\n```\n\n</p>\n</details>\n</p>\n\
         \      "
-      operationId: 'Process: camundala-mapping-example'
+      operationId: 'Bpmn: camundala-mapping-example'
       responses:
         '200':
           description: ''
-  /decisiondmn/camundala-mapping-example/singleEntry:
+  /Dmn/camundala-mapping-example/singleEntry:
     head:
       tags:
       - camundala-mapping-example
-      summary: 'DecisionDmn: singleEntry'
+      summary: 'Dmn: singleEntry'
       description: |2+
 
 
@@ -267,14 +275,14 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-79357">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-79357'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-8512">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-8512'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
         Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
 
-      operationId: 'DecisionDmn: singleEntry'
+      operationId: 'Dmn: singleEntry'
       requestBody:
         content:
           application/json:
@@ -297,11 +305,11 @@ paths:
               examples:
                 singleEntry:
                   value: 1
-  /decisiondmn/camundala-mapping-example/collectEntries:
+  /Dmn/camundala-mapping-example/collectEntries:
     head:
       tags:
       - camundala-mapping-example
-      summary: 'DecisionDmn: collectEntries'
+      summary: 'Dmn: collectEntries'
       description: |2+
 
 
@@ -310,14 +318,14 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-98073">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-98073'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-47839">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-47839'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
         Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
 
-      operationId: 'DecisionDmn: collectEntries'
+      operationId: 'Dmn: collectEntries'
       requestBody:
         content:
           application/json:
@@ -342,11 +350,11 @@ paths:
                   value:
                   - 1
                   - 2
-  /decisiondmn/camundala-mapping-example/singleResult:
+  /Dmn/camundala-mapping-example/singleResult:
     head:
       tags:
       - camundala-mapping-example
-      summary: 'DecisionDmn: singleResult'
+      summary: 'Dmn: singleResult'
       description: |2+
 
 
@@ -355,14 +363,14 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-25845">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-25845'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-97136">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-97136'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
         Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
 
-      operationId: 'DecisionDmn: singleResult'
+      operationId: 'Dmn: singleResult'
       requestBody:
         content:
           application/json:
@@ -379,17 +387,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SingleResult_camundala.examples.demos.bpmn.DecisionResultTypes.ManyOutResult[]'
+                $ref: '#/components/schemas/SingleResult_ManyOutResult'
               examples:
                 singleResult:
                   value:
                     index: 1
                     emoji: 🤩
-  /decisiondmn/camundala-mapping-example/resultList:
+  /Dmn/camundala-mapping-example/resultList:
     head:
       tags:
       - camundala-mapping-example
-      summary: 'DecisionDmn: resultList'
+      summary: 'Dmn: resultList'
       description: |2+
 
 
@@ -398,14 +406,14 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DecisionResultTypes-41071">
-            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-41071'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DecisionResultTypes-98732">
+            <img onLoad="openFromUrl('DecisionResultTypes.dmn', new DmnJS({ container: $('#DecisionResultTypes-98732'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
         Download: [DecisionResultTypes.dmn](src/main/resources/DecisionResultTypes.dmn)
 
-      operationId: 'DecisionDmn: resultList'
+      operationId: 'Dmn: resultList'
       requestBody:
         content:
           application/json:
@@ -422,7 +430,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResultList_camundala.examples.demos.bpmn.DecisionResultTypes.ManyOutResult[]'
+                $ref: '#/components/schemas/ResultList_ManyOutResult'
               examples:
                 resultList:
                   value:
@@ -430,16 +438,18 @@ paths:
                     emoji: 🤩
                   - index: 2
                     emoji: 😂
-  /process/enum-example:
+  /Bpmn/enum-example:
     head:
       tags:
       - enum-example
-      summary: 'Process: enum-example'
-      description: "\n\n- Input:  `camundala.examples.demos.bpmn.EnumExample > Input\
-        \ > A`\n- Output: `camundala.examples.demos.bpmn.EnumExample > Output > A`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"enum-example-41093\"\
-        >\n    <img onLoad=\"openFromUrl('enum-example.bpmn', new BpmnJS({ container:\
-        \ $('#enum-example-41093'), height: '95%', width: '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
+      summary: 'Bpmn: enum-example'
+      description: "\n\n- **Called Element**: `enum-example` (to define in the Call\
+        \ Activity)\n\n\n\n- Input:  `camundala.examples.demos.bpmn.EnumExample >\
+        \ Input > A`\n- Output: `camundala.examples.demos.bpmn.EnumExample > Output\
+        \ > A`\n\n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"\
+        enum-example-61053\">\n    <img onLoad=\"openFromUrl('enum-example.bpmn',\
+        \ new BpmnJS({ container: $('#enum-example-61053'), height: '95%', width:\
+        \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [enum-example.bpmn](src/main/resources/enum-example.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
         \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
@@ -447,7 +457,7 @@ paths:
         ```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"someOut\" :\
         \ \"hello\",\n  \"intValue\" : 12,\n  \"simpleEnum\" : \"One\",\n  \"type\"\
         \ : \"A\"\n},\n...\n```\n\n</p>\n</details>\n</p>\n      "
-      operationId: 'Process: enum-example'
+      operationId: 'Bpmn: enum-example'
       requestBody:
         content:
           application/json:
@@ -479,11 +489,76 @@ paths:
                     intValue: 12
                     simpleEnum: One
                     type: A
-  /decisiondmn//DateExample:
+  /Worker//myEnumWorkerTopic:
     head:
       tags:
       - ''
-      summary: 'DecisionDmn: DateExample'
+      summary: 'Worker: myEnumWorkerTopic'
+      description: "\n\n\n**Topic:** `myEnumWorkerTopic` (to define in the _**Topic**_\
+        \ of the _**External Task**_ > _Service Task_ of type _External_)\n\n\n\n\
+        ---\n\n<details>\n<summary><b>Wrapped Service:</b>\n\n(Demo for Enum as Inputs\
+        \ and Outputs in Worker - v1.4 - GET /people)\n</summary>\n<p>\nInput Body:\
+        \ `camundala.domain.NoInput`:\n\n\nExample Response: `camundala.domain.NoOutput`:\n\
+        \n```json\n{\n  \"respStatus\" : 200,\n  \"respBody\" : {\n    \n  },\n  \"\
+        respHeaders\" : [\n  ]\n}\n```\n</p>\n</details>\n</p>\n\n---\n\n\n- Input:\
+        \  `camundala.examples.demos.bpmn.EnumWorkerExample > In > A`\n- Output: `camundala.examples.demos.bpmn.EnumWorkerExample\
+        \ > Out > A`\n\nYou can test this worker using the generic process _**camundala-externalTask-generic**_\
+        \ (e.g. with Postman).\n\n- ServiceOut:  `camundala.domain.MockedServiceResponse`\n\
+        <p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
+        \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
+        ```json\n...\n\"outputVariables\": \"someOut,intValue,simpleEnum\",\n...\n\
+        ```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"someOut\" :\
+        \ \"hello\",\n  \"intValue\" : 12,\n  \"simpleEnum\" : \"One\",\n  \"type\"\
+        \ : \"A\"\n},\n...\n```\n\n**outputServiceMock**:\n```json\n...\n\"outputServiceMock\"\
+        : {\n  \"respStatus\" : 200,\n  \"respBody\" : {\n    \"respStatus\" : 200,\n\
+        \    \"respBody\" : {\n      \n    },\n    \"respHeaders\" : [\n    ]\n  },\n\
+        \  \"respHeaders\" : [\n  ]\n},\n...\n```\n</p>\n</details>\n</p>\n      \n\
+        \    "
+      operationId: 'Worker: myEnumWorkerTopic'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/In'
+            examples:
+              EnumWorkerExample > In > A:
+                value:
+                  someValue: hello
+                  simpleEnum: One
+                  customMock:
+                    someOut: hello
+                    intValue: 12
+                    simpleEnum: One
+                    type: A
+                  type: A
+              EnumWorkerExample > In > B:
+                value:
+                  otherValue: other
+                  type: B
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Out'
+              examples:
+                EnumWorkerExample > Out > A:
+                  value:
+                    someOut: hello
+                    intValue: 12
+                    simpleEnum: One
+                    type: A
+                EnumWorkerExample > Out > B:
+                  value:
+                    otherOut: other
+                    type: B
+  /Dmn//DateExample:
+    head:
+      tags:
+      - ''
+      summary: 'Dmn: DateExample'
       description: |2+
 
 
@@ -492,14 +567,14 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="DateExample-56689">
-            <img onLoad="openFromUrl('DateExample.dmn', new DmnJS({ container: $('#DateExample-56689'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="DateExample-27974">
+            <img onLoad="openFromUrl('DateExample.dmn', new DmnJS({ container: $('#DateExample-27974'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
         Download: [DateExample.dmn](src/main/resources/DateExample.dmn)
 
-      operationId: 'DecisionDmn: DateExample'
+      operationId: 'Dmn: DateExample'
       requestBody:
         content:
           application/json:
@@ -521,11 +596,11 @@ paths:
               examples:
                 DateExample:
                   value: 2012-12-12T12:12:12.000+0100
-  /decisiondmn//VariablesExample:
+  /Dmn//VariablesExample:
     head:
       tags:
       - ''
-      summary: 'DecisionDmn: VariablesExample'
+      summary: 'Dmn: VariablesExample'
       description: |2+
 
 
@@ -534,14 +609,14 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="VariablesExample-22514">
-            <img onLoad="openFromUrl('VariablesExample.dmn', new DmnJS({ container: $('#VariablesExample-22514'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="VariablesExample-79034">
+            <img onLoad="openFromUrl('VariablesExample.dmn', new DmnJS({ container: $('#VariablesExample-79034'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
         Download: [VariablesExample.dmn](src/main/resources/VariablesExample.dmn)
 
-      operationId: 'DecisionDmn: VariablesExample'
+      operationId: 'Dmn: VariablesExample'
       requestBody:
         content:
           application/json:
@@ -565,16 +640,17 @@ paths:
               examples:
                 VariablesExample:
                   value: OK dynamicOut
-  /process/simulation-TestOverrides:
+  /Bpmn/simulation-TestOverrides:
     head:
       tags:
       - simulation-TestOverrides
-      summary: 'Process: simulation-TestOverrides'
-      description: "\n\n- Input:  `camundala.examples.demos.bpmn.SimulationTestOverridesExample\
+      summary: 'Bpmn: simulation-TestOverrides'
+      description: "\n\n- **Called Element**: `simulation-TestOverrides` (to define\
+        \ in the Call Activity)\n\n\n\n- Input:  `camundala.examples.demos.bpmn.SimulationTestOverridesExample\
         \ > InOutput`\n- Output: `camundala.examples.demos.bpmn.SimulationTestOverridesExample\
         \ > InOutput`\n\n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\"\
-        \ id=\"simulation-TestOverrides-25892\">\n    <img onLoad=\"openFromUrl('simulation-TestOverrides.bpmn',\
-        \ new BpmnJS({ container: $('#simulation-TestOverrides-25892'), height: '95%',\
+        \ id=\"simulation-TestOverrides-13179\">\n    <img onLoad=\"openFromUrl('simulation-TestOverrides.bpmn',\
+        \ new BpmnJS({ container: $('#simulation-TestOverrides-13179'), height: '95%',\
         \ width: '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [simulation-TestOverrides.bpmn](src/main/resources/simulation-TestOverrides.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
@@ -587,7 +663,7 @@ paths:
         \      \"other\" : false\n    },\n    {\n      \"name\" : \"tschau\",\n  \
         \    \"other\" : true\n    }\n  ]\n},\n...\n```\n\n</p>\n</details>\n</p>\n\
         \      "
-      operationId: 'Process: simulation-TestOverrides'
+      operationId: 'Bpmn: simulation-TestOverrides'
       requestBody:
         content:
           application/json:
@@ -631,17 +707,17 @@ paths:
                       other: false
                     - name: tschau
                       other: true
-  /process/SignalMessageExample/signal-example:
+  /Bpmn/SignalMessageExample/signal-example:
     head:
       tags:
       - SignalMessageExample
-      summary: 'Process: signal-example'
-      description: "\n\n- Input:  `camundala.examples.demos.bpmn.SignalMessageExample\
-        \ > SignalMessageExampleIn`\n- Output: `camundala.examples.demos.bpmn.SignalMessageExample\
-        \ > SignalMessageExampleOut`\n\n\n<div class=\"diagramCanvas\">\n  <div class=\"\
-        diagram\" id=\"signal-example-42189\">\n    <img onLoad=\"openFromUrl('signal-example.bpmn',\
-        \ new BpmnJS({ container: $('#signal-example-42189'), height: '95%', width:\
-        \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
+      summary: 'Bpmn: signal-example'
+      description: "\n\n- **Called Element**: `signal-example` (to define in the Call\
+        \ Activity)\n\n\n\n- Input:  `camundala.examples.demos.bpmn.SignalMessageExampleIn`\n\
+        - Output: `camundala.examples.demos.bpmn.SignalMessageExampleOut`\n\n\n<div\
+        \ class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"signal-example-52489\"\
+        >\n    <img onLoad=\"openFromUrl('signal-example.bpmn', new BpmnJS({ container:\
+        \ $('#signal-example-52489'), height: '95%', width: '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [signal-example.bpmn](src/main/resources/signal-example.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
         \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
@@ -649,7 +725,7 @@ paths:
         **outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"someValue\" : \"hello\"\
         ,\n  \"endStatus\" : \"signalReceived\"\n},\n...\n```\n\n</p>\n</details>\n\
         </p>\n      "
-      operationId: 'Process: signal-example'
+      operationId: 'Bpmn: signal-example'
       requestBody:
         content:
           application/json:
@@ -672,17 +748,18 @@ paths:
                   value:
                     someValue: hello
                     endStatus: signalReceived
-  /process/SignalMessageExample/message-for-example:
+  /Bpmn/SignalMessageExample/message-for-example:
     head:
       tags:
       - SignalMessageExample
-      summary: 'Process: message-for-example'
-      description: "\n\n- Input:  `camundala.examples.demos.bpmn.SignalMessageExample\
-        \ > SignalMessageExampleIn`\n- Output: `camundala.examples.demos.bpmn.SignalMessageExample\
-        \ > SignalMessageExampleOut`\n\n\n<div class=\"diagramCanvas\">\n  <div class=\"\
-        diagram\" id=\"message-for-example-78330\">\n    <img onLoad=\"openFromUrl('message-for-example.bpmn',\
-        \ new BpmnJS({ container: $('#message-for-example-78330'), height: '95%',\
-        \ width: '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
+      summary: 'Bpmn: message-for-example'
+      description: "\n\n- **Called Element**: `message-for-example` (to define in\
+        \ the Call Activity)\n\n\n\n- Input:  `camundala.examples.demos.bpmn.SignalMessageExampleIn`\n\
+        - Output: `camundala.examples.demos.bpmn.SignalMessageExampleOut`\n\n\n<div\
+        \ class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"message-for-example-90818\"\
+        >\n    <img onLoad=\"openFromUrl('message-for-example.bpmn', new BpmnJS({\
+        \ container: $('#message-for-example-90818'), height: '95%', width: '95%'\
+        \ }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [message-for-example.bpmn](src/main/resources/message-for-example.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
         \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
@@ -690,7 +767,7 @@ paths:
         **outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"someValue\" : \"hello\"\
         ,\n  \"endStatus\" : \"messageReceived\"\n},\n...\n```\n\n</p>\n</details>\n\
         </p>\n      "
-      operationId: 'Process: message-for-example'
+      operationId: 'Bpmn: message-for-example'
       requestBody:
         content:
           application/json:
@@ -713,17 +790,17 @@ paths:
                   value:
                     someValue: hello
                     endStatus: messageReceived
-  /signalevent/SignalMessageExample/intermediate-signal-for-example:
+  /Signal/SignalMessageExample/intermediate-signal-for-example:
     head:
       tags:
       - SignalMessageExample
-      summary: 'SignalEvent: intermediate-signal-for-example'
+      summary: 'Signal: intermediate-signal-for-example'
       description: |-
         - _messageName_: `intermediate-signal-for-example`
 
-        - Input:  `camundala.examples.demos.bpmn.SignalMessageExample > SignalMessageExampleIn`
+        - Input:  `camundala.examples.demos.bpmn.SignalMessageExampleIn`
         - Output: `camundala.domain.NoOutput`
-      operationId: 'SignalEvent: intermediate-signal-for-example'
+      operationId: 'Signal: intermediate-signal-for-example'
       requestBody:
         content:
           application/json:
@@ -737,17 +814,17 @@ paths:
       responses:
         '200':
           description: ''
-  /messageevent/SignalMessageExample/intermediate-message-for-example:
+  /Message/SignalMessageExample/intermediate-message-for-example:
     head:
       tags:
       - SignalMessageExample
-      summary: 'MessageEvent: intermediate-message-for-example'
+      summary: 'Message: intermediate-message-for-example'
       description: |-
         - _messageName_: `intermediate-message-for-example`
 
-        - Input:  `camundala.examples.demos.bpmn.SignalMessageExample > SignalMessageExampleIn`
+        - Input:  `camundala.examples.demos.bpmn.SignalMessageExampleIn`
         - Output: `camundala.domain.NoOutput`
-      operationId: 'MessageEvent: intermediate-message-for-example'
+      operationId: 'Message: intermediate-message-for-example'
       requestBody:
         content:
           application/json:
@@ -761,36 +838,37 @@ paths:
       responses:
         '200':
           description: ''
-  /process/timer-example:
+  /Bpmn/timer-example:
     head:
       tags:
       - timer-example
-      summary: 'Process: timer-example'
-      description: "\n\n- Input:  `camundala.domain.NoInput`\n- Output: `camundala.domain.NoOutput`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"timer-example-21951\"\
+      summary: 'Bpmn: timer-example'
+      description: "\n\n- **Called Element**: `timer-example` (to define in the Call\
+        \ Activity)\n\n\n\n- Input:  `camundala.domain.NoInput`\n- Output: `camundala.domain.NoOutput`\n\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"timer-example-96943\"\
         >\n    <img onLoad=\"openFromUrl('timer-example.bpmn', new BpmnJS({ container:\
-        \ $('#timer-example-21951'), height: '95%', width: '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
+        \ $('#timer-example-96943'), height: '95%', width: '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [timer-example.bpmn](src/main/resources/timer-example.bpmn)\n\
         \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
         \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
         ```json\n...\n\"outputVariables\": \"\",\n...\n```\n\n**outputMock**:\n\n\
         ```json\n...\n\"outputMock\": {\n  \n},\n...\n```\n\n</p>\n</details>\n</p>\n\
         \      "
-      operationId: 'Process: timer-example'
+      operationId: 'Bpmn: timer-example'
       responses:
         '200':
           description: ''
-  /timerevent/timer-example/wait%20for%20one%20day:
+  /Timer/timer-example/wait%20for%20one%20day:
     head:
       tags:
       - timer-example
-      summary: 'TimerEvent: wait for one day'
+      summary: 'Timer: wait for one day'
       description: |2-
 
 
         - Input:  `camundala.domain.NoInput`
         - Output: `camundala.domain.NoOutput`
-      operationId: 'TimerEvent: wait for one day'
+      operationId: 'Timer: wait for one day'
       responses:
         '200':
           description: ''
@@ -820,11 +898,68 @@ components:
           format: int32
         simpleEnum:
           $ref: '#/components/schemas/SimpleEnum'
+    A2:
+      required:
+      - simpleEnum
+      - type
+      type: object
+      properties:
+        someValue:
+          type: string
+        simpleEnum:
+          $ref: '#/components/schemas/SimpleEnum1'
+        customMock:
+          $ref: '#/components/schemas/Out'
+        type:
+          type: string
+          description: The type of an Enum -> **'A'**. Just use the the enum type.
+            This is needed for simple unmarshalling the JSON
+    A3:
+      required:
+      - intValue
+      - simpleEnum
+      type: object
+      properties:
+        someOut:
+          type: string
+        intValue:
+          type: integer
+          format: int32
+        simpleEnum:
+          $ref: '#/components/schemas/SimpleEnum1'
+    B:
+      required:
+      - otherValue
+      type: object
+      properties:
+        otherValue:
+          type: string
+    B1:
+      type: object
+      properties:
+        otherOut:
+          type: string
+    B2:
+      required:
+      - otherValue
+      - type
+      type: object
+      properties:
+        otherValue:
+          type: string
+        type:
+          type: string
+          description: The type of an Enum -> **'B'**. Just use the the enum type.
+            This is needed for simple unmarshalling the JSON
     EndStatus:
       type: string
       enum:
       - messageReceived
       - signalReceived
+    In:
+      oneOf:
+      - $ref: '#/components/schemas/A2'
+      - $ref: '#/components/schemas/B2'
     InOutput:
       required:
       - simpleValue
@@ -853,6 +988,7 @@ components:
     Input1:
       oneOf:
       - $ref: '#/components/schemas/A'
+      - $ref: '#/components/schemas/B'
     Input2:
       required:
       - inDate
@@ -885,10 +1021,14 @@ components:
           format: int32
         emoji:
           type: string
+    Out:
+      oneOf:
+      - $ref: '#/components/schemas/A3'
+      - $ref: '#/components/schemas/B1'
     Output:
       oneOf:
       - $ref: '#/components/schemas/A1'
-    ResultList_camundala.examples.demos.bpmn.DecisionResultTypes.ManyOutResult[]:
+    ResultList_ManyOutResult:
       oneOf:
       - $ref: '#/components/schemas/ManyOutResult'
     SignalMessageExampleIn:
@@ -913,6 +1053,11 @@ components:
       enum:
       - One
       - Two
+    SimpleEnum1:
+      type: string
+      enum:
+      - One
+      - Two
     SimpleObject:
       required:
       - name
@@ -923,6 +1068,6 @@ components:
           type: string
         other:
           type: boolean
-    SingleResult_camundala.examples.demos.bpmn.DecisionResultTypes.ManyOutResult[]:
+    SingleResult_ManyOutResult:
       oneOf:
       - $ref: '#/components/schemas/ManyOutResult'

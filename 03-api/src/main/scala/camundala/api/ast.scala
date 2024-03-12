@@ -110,12 +110,12 @@ case class ProcessApi[
     name: String,
     inOut: Process[In, Out],
     apiExamples: ApiExamples[In, Out],
-    apis: List[InOutApi[?,?]] = List.empty,
+    apis: List[InOutApi[?, ?]] = List.empty,
     override val diagramName: Option[String] = None
 ) extends InOutApi[In, Out],
       GroupedApi:
 
-  def withApis(apis: List[InOutApi[?,?]]): ProcessApi[In, Out] = copy(apis = apis)
+  def withApis(apis: List[InOutApi[?, ?]]): ProcessApi[In, Out] = copy(apis = apis)
   def withExamples(
       examples: ApiExamples[In, Out]
   ): InOutApi[In, Out] =
@@ -331,10 +331,10 @@ end DecisionDmnApi
 
 case class CApiGroup(
     name: String,
-    apis: List[InOutApi[?,?]]
+    apis: List[InOutApi[?, ?]]
 ) extends GroupedApi:
 
-  def withApis(apis: List[InOutApi[?,?]]): CApiGroup = copy(apis = apis)
+  def withApis(apis: List[InOutApi[?, ?]]): CApiGroup = copy(apis = apis)
 
 end CApiGroup
 
@@ -376,7 +376,27 @@ object ApiExamples:
       In <: Product: InOutEncoder: InOutDecoder: Schema,
       Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag
   ](name: String, inOut: InOut[In, Out, ?]): ApiExamples[In, Out] =
-    ApiExamples(InOutExamples(name, inOut.in), InOutExamples(name, inOut.out))
+    val enumInExamples = inOut.otherEnumInExamples
+      .map: examples =>
+        InOutExample(inOut.in) +:
+          examples.map: ex =>
+            InOutExample(ex)
+      .getOrElse:
+        Seq(InOutExample(name, inOut.in))
+
+    val enumOutExamples = inOut.otherEnumOutExamples
+      .map: examples =>
+        InOutExample(inOut.out) +:
+          examples.map: ex =>
+            InOutExample(ex)
+      .getOrElse:
+        Seq(InOutExample(name, inOut.out))
+
+    ApiExamples(
+      InOutExamples(enumInExamples),
+      InOutExamples(enumOutExamples)
+    )
+  end apply
 
 end ApiExamples
 
@@ -391,19 +411,18 @@ case class InOutExamples[T <: Product: InOutEncoder: InOutDecoder: Schema](
     examples
 end InOutExamples
 
-object InOutExamples:
-
-  def apply[T <: Product: InOutEncoder: InOutDecoder: Schema](
-      name: String,
-      inOut: T
-  ): InOutExamples[T] =
-    InOutExamples(Seq(InOutExample(name, inOut)))
-end InOutExamples
-
 case class InOutExample[T <: Product: InOutEncoder: InOutDecoder: Schema](
     name: String,
     example: T
 ):
   // this function needs to be here as circe does not find theInOutEncoderin the extension method
   def toCamunda: FormVariables = CamundaVariable.toCamunda(example)
+
+
+object InOutExample:
+
+  def apply[T <: Product: InOutEncoder: InOutDecoder: Schema](inOut: T): InOutExample[T] =
+    val name = inOut.getClass.getName.replace("$", " > ").split('.').last
+    InOutExample(name, inOut)
+
 end InOutExample

@@ -3,8 +3,11 @@ package camundala.examples.demos.bpmn
 import camundala.bpmn.*
 import camundala.domain.*
 
-object SimulationTestOverridesExample extends BpmnDsl:
+object SimulationTestOverridesExample extends BpmnProcessDsl:
 
+  lazy val processName: String = "simulation-TestOverrides"
+  lazy val descr: String = ""
+  
   case class SimpleObject(name: String = "salu", other: Boolean = false)
 
   object SimpleObject:
@@ -22,9 +25,8 @@ object SimulationTestOverridesExample extends BpmnDsl:
     given InOutCodec[InOutput] = deriveCodec
 
   lazy val simulationProcess = process(
-    id = "simulation-TestOverrides",
     in = InOutput(),
     out = InOutput()
   )
-
+  
 end SimulationTestOverridesExample
