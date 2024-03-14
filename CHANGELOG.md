@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.1 - 2024-03-14
+### Changed 
+- fixed Compile error. - see [Commit](https://github.com/pme123/camundala/commit/d7bef7451fa7cc948a1c42d1eebf524a4eb19fe9)
+- Cosmetics / Fix in WorkerGenerator and C7WorkerHandler. - see [Commit](https://github.com/pme123/camundala/commit/1bf74aa33c5d5ff84eec62b940093d886f29d8ab)
+- Updated Scala / Added LocalDate to Camunda serialization. - see [Commit](https://github.com/pme123/camundala/commit/45af659a5077f3d2011c7ae17d3ee7ec988f7a2c)
+
 ## 1.29.0 - 2024-03-12
 ### Changed 
 - Some Improvements. - see [Commit](https://github.com/pme123/camundala/commit/cfdfde2a9aa0d81fc40034818d0a6c5b1f63cab4)

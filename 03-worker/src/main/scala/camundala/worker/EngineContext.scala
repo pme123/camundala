@@ -5,7 +5,7 @@ import camundala.domain.*
 import camundala.bpmn.*
 import camundala.worker.CamundalaWorkerError.ServiceError
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 
 trait EngineContext:
   def getLogger(clazz: Class[?]): WorkerLogger
@@ -59,6 +59,8 @@ trait EngineContext:
     value match
       case v: scala.reflect.Enum =>
         v.toString
+      case ld: LocalDate =>
+        ld.toString
       case ldt: LocalDateTime =>
         ldt.toString
       case other if other == null =>

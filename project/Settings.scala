@@ -9,7 +9,7 @@ object Settings {
 
   lazy val projectVersion =
     Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
-  val scala3Version = "3.3.1"
+  val scala3Version = "3.3.3"
   val org = "io.github.pme123"
 
   def projectSettings(projName: String) = Seq(

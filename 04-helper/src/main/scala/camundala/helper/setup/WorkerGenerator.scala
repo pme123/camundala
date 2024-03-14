@@ -61,7 +61,7 @@ case class WorkerGenerator()(using config: SetupConfig):
        |object $objName:
        |  
        |  def main(args: Array[String]): Unit =
-       |    SpringApplication.run(classOf[WorkerTestApp], args: _*)
+       |    SpringApplication.run(classOf[$objName], args: _*)
        |end $objName""".stripMargin
 
 end WorkerGenerator

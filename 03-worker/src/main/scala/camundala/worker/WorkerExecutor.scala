@@ -120,12 +120,13 @@ case class WorkerExecutor[
       internalVariables: Map[String, Any],
       output: Out | NoOutput
   ): Map[String, Any] =
-    context.toEngineObject(initializedInput) ++ internalVariables ++ (output match
-      case o: NoOutput =>
-        context.toEngineObject(o)
-      case o: Out =>
-        context.toEngineObject(o)
-    )
+    context.toEngineObject(initializedInput) ++ internalVariables ++
+      (output match
+        case o: NoOutput =>
+          context.toEngineObject(o)
+        case o: Out =>
+          context.toEngineObject(o)
+      )
   private def filteredOutput(
       allOutputs: Map[String, Any]
   ): Map[String, Any] =

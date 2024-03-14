@@ -53,7 +53,6 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
   private def executeWorker(
       externalTaskService: camunda.ExternalTaskService
   ): HelperContext[Unit] =
-    println(s"VARIABLESE NAMES: ${worker.topic} -  ${worker.variableNames}")
     val tryProcessVariables = ProcessVariablesExtractor.extract(worker.variableNames)
     val tryGeneralVariables = ProcessVariablesExtractor.extractGeneral()
     try
