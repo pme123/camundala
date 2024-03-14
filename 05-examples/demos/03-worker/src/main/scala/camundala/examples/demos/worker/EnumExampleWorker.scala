@@ -15,9 +15,9 @@ class EnumExampleWorker extends CompanyServiceWorkerDsl[In, Out, NoInput, Servic
   println("VARS: " + example.otherEnumInExamples)
   def apiUri(in: In) = 
     in match
-      case In.A(someValue, enumEx, maybeOut) =>
+      case In.A(someValue, enumEx, maybeOut, _) =>
           uri"https://swapi.dev/api/people/$someValue"
-      case In.B(otherValue) =>
+      case In.B(otherValue, _) =>
           uri"https://swapi.dev/api/people/$otherValue"
 
   override def outputMapper(
@@ -25,9 +25,9 @@ class EnumExampleWorker extends CompanyServiceWorkerDsl[In, Out, NoInput, Servic
       in: In
   ): Either[ServiceMappingError, Out] =
     in match
-      case In.A(someValue, enumEx, _) =>
+      case In.A(someValue, enumEx, _, _) =>
         Right(Out.A(someValue, 12, enumEx))
-      case In.B(otherValue) =>
+      case In.B(otherValue, _) =>
         Right(Out.B(Some(otherValue)))
     
     
