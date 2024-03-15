@@ -1,6 +1,6 @@
 package camundala.helper.setup
 
-import camundala.helper.util.{CompanyVersionHelper, ReposConfig}
+import camundala.helper.util.CompanyVersionHelper
 
 case class ScriptCreator()(using config: SetupConfig):
 
@@ -42,10 +42,25 @@ case class ScriptCreator()(using config: SetupConfig):
     val projectName = config.projectName
     s"""$helperHeader
        |
+       |lazy val projectName: String = "$projectName"
+       |lazy val subProjects = Seq(
+       |  ${config.subProjects.map(sp => s"\"$sp\"").mkString(", ")}
+       |)
+       |lazy val config: HelperConfig = ProjectDevHelper.config(projectName, subProjects)
+       |
+       |/**
+       | * Usage see `camundala.helper.DevHelper.update`
+       | */
+       |@main(doc =
+       |  \"\"\"> Updates your Project with latest versions and also updates generic files, that starts with '$doNotAdjust'.
+       |      - set in `helper.sc` the version you want: $helperImport
+       |   \"\"\")
+       |def update(): Unit =
+       |  DevHelper.update(using config.setupConfig)
+       |
        |/**
        | * Usage see `valiant.camundala.helper.PublishHelper`
        | */
-       |
        |@main(doc = "> Creates a new Release for the client and publishes to bpf-generic-release")
        |def publish(
        |             @arg(doc = "The Version you want to publish.")
@@ -63,22 +78,6 @@ case class ScriptCreator()(using config: SetupConfig):
        |  DeployHelper().deploy(integrationTest)
        |}
        |
-       |/**
-       | * Usage see `valiant.camundala.helper.UpdateHelper`
-       | */
-       |@main(doc =
-       |  \"\"\"> Updates your Project with latest versions and also updates generic files, that starts with '$doNotAdjust'.
-       |      - set in `helper.sc` the version you want: $helperImport
-       |   \"\"\")
-       |def update(
-       |    @arg(doc = "The project name - should be generated automatically after creation.")
-       |    projectName: String = "$projectName",
-       |): Unit =
-       |  val config = ProjectDevHelper.config(projectName)
-       |    val subProjects = Seq(
-       |      ${config.subProjects.map(sp => s"\"$sp\"").mkString(", ") }
-       |    )
-       |  DevHelper.update(config, subProjects)
        |
        |/**
        | * Usage see `valiant.camundala.helper.DockerHelper`
@@ -104,6 +103,7 @@ case class ScriptCreator()(using config: SetupConfig):
        |  DockerHelper().dockerDown()
        |}
        |""".stripMargin
+  end projectHelper
 
   private lazy val companyName = config.companyName
   private lazy val reposConfig = config.reposConfig
@@ -122,10 +122,11 @@ case class ScriptCreator()(using config: SetupConfig):
        |
        |interp.repositories() ++= Seq(
        |  ${
-      reposConfig.ammoniteRepos
-        .map:
-          _.ammoniteRepo
-        .mkString(",\n  ")}
+        reposConfig.ammoniteRepos
+          .map:
+            _.ammoniteRepo
+          .mkString(",\n  ")
+      }
        |)
        |@
        |

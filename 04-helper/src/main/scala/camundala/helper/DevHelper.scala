@@ -18,11 +18,9 @@ object DevHelper:
     SetupGenerator()(using config.setupConfig).generate
 
   // project (./projects/mycompany-myproject/helper.sc)
-  def update(config: HelperConfig, subProjects: Seq[String]): Unit =
-    given SetupConfig = config.setupConfig
-      .copy(subProjects = subProjects)
-    println(s"Update Project: ${config.setupConfig.projectName}")
-    println(s" - SubProjects: $subProjects")
+  def update(using config: SetupConfig): Unit =
+    println(s"Update Project: ${config.projectName}")
+    println(s" - with Subprojects: ${config.subProjects}")
     SetupGenerator().generate
 
 end DevHelper

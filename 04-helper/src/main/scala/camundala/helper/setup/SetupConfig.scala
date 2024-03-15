@@ -40,12 +40,14 @@ object SetupConfig:
 
   def apply(
       projectName: String,
+      subProjects: Seq[String],
       packageConfRelPath: os.RelPath,
       versionConfig: VersionConfig,
       reposConfig: ReposConfig,
       sbtDockerSettings: String
   ): SetupConfig = new SetupConfig(
     projectName,
+    subProjects = subProjects,
     apiProjectConf =
       ApiProjectConf.init(projectName, projectDir(projectName, os.pwd) / packageConfRelPath),
     versionConfig = versionConfig,
