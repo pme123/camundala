@@ -22,5 +22,9 @@ object DevHelper:
     println(s"Update Project: ${config.projectName}")
     println(s" - with Subprojects: ${config.subProjects}")
     SetupGenerator().generate
+    
+  def createCustomWorker(processName: String, workerName: String)(using config: SetupConfig): Unit =
+    println(s"Create Custom Worker: $workerName in ${config.projectName} / process: $processName")
+    SetupGenerator().createCustomWorker(processName, workerName)
 
 end DevHelper

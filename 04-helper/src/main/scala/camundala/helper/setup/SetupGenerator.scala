@@ -10,4 +10,9 @@ case class SetupGenerator()(using config: SetupConfig):
     WorkerGenerator().generate
     HelperGenerator().generate
   end generate
+  
+  def createCustomWorker(processName: String, workerName: String): Unit =
+    BpmnGenerator().createCustomWorker(processName, workerName)
+    WorkerGenerator().createCustomWorker(processName, workerName)
+
 end SetupGenerator
