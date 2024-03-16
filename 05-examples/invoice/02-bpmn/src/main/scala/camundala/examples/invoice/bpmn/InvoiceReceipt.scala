@@ -8,7 +8,7 @@ object InvoiceReceipt extends BpmnProcessDsl:
 
   val processName = "example-invoice-c7"
   val descr = "This starts the Invoice Receipt Process."
-
+  
   case class In(
       creditor: String = "Great Pizza for Everyone Inc.",
       amount: Double = 300.0,

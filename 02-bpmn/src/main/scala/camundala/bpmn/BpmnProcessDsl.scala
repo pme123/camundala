@@ -7,15 +7,16 @@ import scala.reflect.ClassTag
 trait BpmnProcessDsl extends BpmnDsl:
 
   def processName: String
+  def processLabels: ProcessLabels = ProcessLabels.none
 
   def process[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
       Out <: Product: InOutEncoder: InOutDecoder: Schema
   ](
       in: In = NoInput(),
-      out: Out = NoOutput(),
+      out: Out = NoOutput()
   ): Process[In, Out] =
-    Process(InOutDescr(processName, in, out, Some(description)))
+    Process(InOutDescr(processName, in, out, Some(description)), processLabels)
 
   private lazy val description: String =
     s"""|$descr
@@ -23,7 +24,7 @@ trait BpmnProcessDsl extends BpmnDsl:
         |- **Called Element**: `$processName` (to define in the Call Activity)
         |
         |""".stripMargin
-  
+
   // Use result strategy, like _singleEntry_, _collectEntries_, _singleResult_, _resultList_
   private def dmn[
       In <: Product: InOutEncoder: InOutDecoder: Schema,

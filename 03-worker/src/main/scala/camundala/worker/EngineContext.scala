@@ -35,6 +35,12 @@ trait EngineContext:
                     ): Map[String, Any] =
     variables
       .map { case (k, v) => k -> jsonToEngineValue(v) }
+    
+  def valuesToEngineObject(
+                      variables: Map[String, Any]
+                    ): Map[String, Any] =
+    variables
+      .map { case (k, v) => k -> valueToEngineObject(v) }
 
   def objectToEngineObject[T <: Product : InOutEncoder](
                                                     product: T,

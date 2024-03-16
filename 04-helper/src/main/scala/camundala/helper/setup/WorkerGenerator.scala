@@ -8,6 +8,18 @@ case class WorkerGenerator()(using config: SetupConfig):
     createOrUpdate(workerPath() / "WorkerApp.scala", workerApp)
     createOrUpdate(workerTestPath() / "WorkerTestApp.scala", workerTestApp)
 
+  def createProcess(processName: String): Unit =
+    val workerName = processName.head.toUpper + processName.tail
+    os.write.over(
+      workerPath (Some(processName)) / s"${workerName}Worker.scala",
+      processWorker(processName, workerName)
+    )
+    os.write.over(
+      workerTestPath(Some(processName)) / s"${workerName}WorkerTest.scala",
+      processWorkerTest(processName, workerName)
+    )
+  end createProcess
+
   def createCustomWorker(processName: String, workerName: String): Unit =
     os.write.over(
       workerPath (Some(processName)) / s"${workerName}Worker.scala",
@@ -66,6 +78,25 @@ case class WorkerGenerator()(using config: SetupConfig):
        |    SpringApplication.run(classOf[$objName], args: _*)
        |end $objName""".stripMargin
 
+  private def processWorker(
+      processName: String,
+      workerName: String
+  ) =
+    s"""package ${config.projectPackage}
+       |package worker.$processName
+       |
+       |import bpmn.$processName.$workerName.*
+       |
+       |@Configuration
+       |class ${workerName}Worker extends CompanyInitWorkerDsl[In, Out, InConfig]:
+       |
+       |  lazy val inOutExample = example
+       |
+       |  override def customInit(in: In): Map[String, Any] =
+       |    Map() //TODO add variable initialisation (to simplify the process expressions) or remove function
+       |  
+       |end ${workerName}Worker""".stripMargin
+
   private def customWorker(
       processName: String,
       workerName: String
@@ -83,8 +114,33 @@ case class WorkerGenerator()(using config: SetupConfig):
        |  def runWork(in: In): Either[CamundalaWorkerError.CustomError, Out] =
        |    ???
        |  end runWork
-       |  
+       |
        |end ${workerName}Worker""".stripMargin
+
+  private def processWorkerTest(
+      processName: String,
+      workerName: String
+  ) =
+    s"""package ${config.projectPackage}
+       |package worker.$processName
+       |
+       |import bpmn.$processName.$workerName.*
+       |import worker.$processName.${workerName}Worker
+       |
+       |class ${workerName}WorkerTest extends munit.FunSuite:
+       |
+       |  lazy val worker = ${workerName}Worker()
+       |
+       |  test("customInit $workerName"):
+       |    val in = In()
+       |    val out = Map.empty[String, Any]
+       |    assertEquals(
+       |      worker.customInit(in),
+       |      out
+       |    )
+       |        
+       |  
+       |end ${workerName}WorkerTest""".stripMargin
 
   private def customWorkerTest(
       processName: String,
@@ -100,15 +156,15 @@ case class WorkerGenerator()(using config: SetupConfig):
        |
        |  lazy val worker = ${workerName}Worker()
        |
-       |  test("Compare PersonToActivate with PoA Person"):
+       |  test("runWork $workerName"):
        |    val in = In()
        |    val out = Right(Out())
        |    assertEquals(
        |      worker.runWork(in),
        |      out
        |    )
-       |        
-       |  
+       |
+       |
        |end ${workerName}WorkerTest""".stripMargin
 
   private def workerPath(processName: Option[String] = None) =

@@ -48,6 +48,13 @@ case class ScriptCreator()(using config: SetupConfig):
        |   \"\"\")
        |def update(): Unit = DevHelper.update
        |
+       |@main(doc = "> Creates everything for a Process (bpmn, simulation, worker)")
+       |def process(
+       |             @arg(doc = "The name of the process (lowerCase, e.g. mySuperProcess).")
+       |             processName: String,
+       |             ): Unit =
+       |  DevHelper.createProcess(processName)
+       |
        |@main(doc = "> Creates everything for a CustomWorker (bpmn, simulation, worker)")
        |def customWorker(
        |             @arg(doc = "The name of the process.")
