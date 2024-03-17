@@ -22,7 +22,7 @@ case class SimulationGenerator()(using config: SetupConfig):
        |// amm helper.sc deploy ${name}Simulation
        |// simulation/test
        |// simulation/testOnly *${name}Simulation
-       |object ${name}Simulation extends CompanySimulation:
+       |class ${name}Simulation extends CompanySimulation:
        |
        |  simulate(
        |    scenario(`${config.projectShortClassName} $name`)(
