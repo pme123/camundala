@@ -5,21 +5,23 @@ case class SimulationGenerator()(using config: SetupConfig):
   def createProcess(processName: String): Unit =
     val name = processName.head.toUpper + processName.tail
     os.write.over(
-      simulationTestPath(processName) / s"${name}Simulation.scala",
+      simulationTestPath / s"${name}Simulation.scala",
       process(processName, name)
     )
   end createProcess
 
   private def process(
-                       processName: String,
-                       name: String
-                     ) =
+      processName: String,
+      name: String
+  ) =
     s"""package ${config.projectPackage}
        |package simulation
-       |package $processName
        |
        |import bpmn.$processName.$name.*
        |
+       |// amm helper.sc deploy ${name}Simulation
+       |// simulation/test
+       |// simulation/testOnly *${name}Simulation
        |object ${name}Simulation extends CompanySimulation:
        |
        |  simulate(
@@ -38,11 +40,11 @@ case class SimulationGenerator()(using config: SetupConfig):
        |
        |end ${name}Simulation""".stripMargin
 
-  private def simulationTestPath(processName: String) =
+  private lazy val simulationTestPath =
     val dir = config.projectDir / ModuleConfig.simulationModule.packagePath(
       config.projectPath,
-      mainOrTest = "test",
-    ) / processName
+      mainOrTest = "test"
+    )
     os.makeDir.all(dir)
     dir
   end simulationTestPath

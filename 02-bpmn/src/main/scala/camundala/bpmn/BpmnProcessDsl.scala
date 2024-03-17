@@ -19,10 +19,18 @@ trait BpmnProcessDsl extends BpmnDsl:
     Process(InOutDescr(processName, in, out, Some(description)), processLabels)
 
   private lazy val description: String =
-    s"""|$descr
+    s"""|
+        |$descr
+        |
+        |---
         |
         |- **Called Element**: `$processName` (to define in the Call Activity)
         |
+        |$processLabels.print
+        |
+        |---
+        |
+        |$companyDescr
         |""".stripMargin
 
   // Use result strategy, like _singleEntry_, _collectEntries_, _singleResult_, _resultList_

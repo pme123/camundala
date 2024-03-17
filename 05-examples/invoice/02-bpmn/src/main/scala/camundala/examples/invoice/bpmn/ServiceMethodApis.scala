@@ -7,7 +7,8 @@ import camundala.domain.*
 trait ServiceMethodServices extends BpmnServiceWorkerDsl:
   val serviceLabel: String = "TEST SERVICES for Service Methods"
   val serviceVersion: String = "0.1"
-  
+  val companyDescr = ""
+
 object ServiceMethodDeleteApi extends ServiceMethodServices:
 
   final val topicName = "service-method-delete"

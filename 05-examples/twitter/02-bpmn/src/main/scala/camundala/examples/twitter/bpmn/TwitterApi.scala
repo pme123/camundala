@@ -7,7 +7,8 @@ object TwitterApi extends BpmnProcessDsl:
   given tenantId: Option[String] = Some("{{tenantId}}")
   val processName = "TwitterDemoP"
   val descr = "This runs the Twitter Approvement Process."
-  
+  val companyDescr = ""
+
   @description("""Every employee may create a Tweet.
                  |
                  |- email:   The email address of the creator.

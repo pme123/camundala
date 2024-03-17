@@ -28,7 +28,7 @@ case class BpmnGenerator()(using config: SetupConfig):
        |object $name extends ${config.projectShortClassName}ProcessDsl:
        |
        |  val processName = "${config.projectName}-$processName"
-       |  lazy val processDescr = ""
+       |  lazy val descr = ""
        |
        |  case class In(
        |  )
