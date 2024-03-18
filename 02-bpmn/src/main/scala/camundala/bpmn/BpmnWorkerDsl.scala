@@ -49,6 +49,8 @@ trait BpmnServiceWorkerDsl extends BpmnWorkerDsl:
         |
         |---
         |
+        |$companyDescr
+        |
         |<details>
         |<summary><b>Wrapped Service:</b>
         |
