@@ -1,5 +1,7 @@
 package camundala.helper.setup
 
+import camundala.domain.niceName
+
 case class BpmnGenerator()(using config: SetupConfig):
 
   def createProcess(processName: String): Unit =
@@ -80,6 +82,38 @@ case class BpmnGenerator()(using config: SetupConfig):
        |    given InOutCodec[Out] = deriveInOutCodec
        |
        |  lazy val example = customTask(
+       |    In(),
+       |    Out()
+       |  )
+       |
+       |end $name""".stripMargin
+  
+  //TODO add generators for all process steps.
+  private def userTask(
+      processName: String,
+      name: String
+  ) =
+    s"""package ${config.projectPackage}
+       |package bpmn.$processName
+       |
+       |object $name extends CompanyBpmnUserTaskDsl:
+       |
+       |  val title = "${name.niceName}"
+       |  val descr: String = ""
+       |
+       |  case class In(
+       |  )
+       |  object In:
+       |    given ApiSchema[In] = deriveApiSchema
+       |    given InOutCodec[In] = deriveInOutCodec
+       |
+       |  case class Out(
+       |  )
+       |  object Out:
+       |    given ApiSchema[Out] = deriveApiSchema
+       |    given InOutCodec[Out] = deriveInOutCodec
+       |
+       |  lazy val example = userTask(
        |    In(),
        |    Out()
        |  )

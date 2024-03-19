@@ -82,6 +82,11 @@ case class NoInput()
 object NoInput:
   given ApiSchema[NoInput] = deriveApiSchema
   given InOutCodec[NoInput] = deriveCodec
+  
+case class NoConfig()
+object NoConfig:
+  given ApiSchema[NoConfig] = deriveApiSchema
+  given InOutCodec[NoConfig] = deriveCodec
 
 case class NoOutput()
 object NoOutput:
@@ -215,6 +220,20 @@ You can use a JSON Array of Strings or a comma-separated String.
 
 Example: `['java.sql.SQLException', '"errorNr":20000']` or 'java.sql.SQLException,"errorNr":20000'
 """
+  
+extension (str: String)
+  // changes ids to nice strings - the-coolDaddy -> The Cool Daddy
+  def niceName: String =
+    val result = str.foldLeft(""):
+        case r -> c if c.isUpper =>
+          s"$r $c"
+        case r -> c =>
+          s"$r$c"
+    result.split("-")
+      .map: p =>
+        p.head.toUpper + p.tail
+      .mkString(" ")      
+  end niceName
 
 def prettyUriString(uri: Uri) =
   URLDecoder.decode(

@@ -46,6 +46,19 @@ trait InitWorkerDsl[
 
 end InitWorkerDsl
 
+trait ValidationWorkerDsl[
+  In <: Product : InOutCodec,
+] extends WorkerDsl,
+  ValidateDsl[In]:
+
+  protected def inOutExample: ReceiveEvent[In, ?]
+
+  lazy val worker: InitWorker[In, NoOutput] =
+    InitWorker(inOutExample)
+      .validate(ValidationHandler(validate))
+
+end ValidationWorkerDsl
+
 trait CustomWorkerDsl[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec

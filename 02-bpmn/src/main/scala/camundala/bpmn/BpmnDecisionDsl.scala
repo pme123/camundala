@@ -6,7 +6,7 @@ import scala.reflect.ClassTag
 
 trait BpmnDecisionDsl extends BpmnDsl:
 
-  def decisionDefinitionKey: String
+  def decisionId: String
 
   // Use result strategy, like _singleEntry_, _collectEntries_, _singleResult_, _resultList_
   private def dmn[
@@ -17,7 +17,7 @@ trait BpmnDecisionDsl extends BpmnDsl:
       out: Out
   ): DecisionDmn[In, Out] =
     DecisionDmn[In, Out](
-      InOutDescr(decisionDefinitionKey, in, out, Some(dmnDescr))
+      InOutDescr(decisionId, in, out, Some(dmnDescr))
     )
 
   def singleEntry[
@@ -89,7 +89,7 @@ trait BpmnDecisionDsl extends BpmnDsl:
        |---
        |Choose Type DMN in Business Rule Task:
        |
-       |- Decision Reference: `$decisionDefinitionKey`
+       |- Decision Reference: `$decisionId`
        |
        |$companyDescr
        |""".stripMargin

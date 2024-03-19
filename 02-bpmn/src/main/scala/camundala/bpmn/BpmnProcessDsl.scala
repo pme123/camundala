@@ -47,6 +47,7 @@ trait BpmnProcessDsl extends BpmnDsl:
       InOutDescr(decisionDefinitionKey, in, out, descr.value)
     )
 
+  @deprecated("Use .. extends BpmnDecisionDsl")
   def singleEntry[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
       Out <: DmnValueType: InOutEncoder: InOutDecoder: Schema: ClassTag
@@ -61,7 +62,8 @@ trait BpmnProcessDsl extends BpmnDsl:
       "A singleEntry must look like `case class SingleEntry(result: DmnValueType)`"
     ) */
     dmn(decisionDefinitionKey, in, SingleEntry(out), descr.value)
-
+    
+  @deprecated("Use .. extends BpmnDecisionDsl")
   def collectEntries[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
       Out <: DmnValueType: InOutEncoder: InOutDecoder: Schema
@@ -81,6 +83,7 @@ trait BpmnProcessDsl extends BpmnDsl:
       : Conversion[Seq[Out], CollectEntries[Out]] =
     CollectEntries(_)
 
+  @deprecated("Use .. extends BpmnDecisionDsl")
   def singleResult[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
       Out <: Product: InOutEncoder: InOutDecoder: Schema
@@ -99,6 +102,7 @@ trait BpmnProcessDsl extends BpmnDsl:
     ) */
     dmn(decisionDefinitionKey, in, SingleResult(out), descr.value)
 
+  @deprecated("Use .. extends BpmnDecisionDsl")
   def resultList[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
       Out <: Product: InOutEncoder: InOutDecoder: Schema
@@ -117,6 +121,7 @@ trait BpmnProcessDsl extends BpmnDsl:
     )*/
     dmn(decisionDefinitionKey, in, ResultList(out), descr.value)
 
+  @deprecated("Use .. extends BpmnUserTaskDsl")
   def userTask[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
       Out <: Product: InOutEncoder: InOutDecoder: Schema
@@ -130,6 +135,7 @@ trait BpmnProcessDsl extends BpmnDsl:
       InOutDescr(id, in, out, descr.value)
     )
 
+  @deprecated("Use .. extends BpmnMessageEventDsl")
   def messageEvent[
       Msg <: Product: InOutEncoder: InOutDecoder: Schema
   ](
@@ -148,7 +154,7 @@ trait BpmnProcessDsl extends BpmnDsl:
       )
     )
 
-  @deprecated("Use messageEvent.")
+  @deprecated("Use .. extends BpmnMessageEventDsl")
   def receiveMessageEvent[
       Msg <: Product: InOutEncoder: InOutDecoder: Schema
   ](
@@ -159,6 +165,7 @@ trait BpmnProcessDsl extends BpmnDsl:
   ): MessageEvent[Msg] =
     messageEvent(messageName, in, id, descr)
 
+  @deprecated("Use .. extends BpmnSignalEventDsl")
   def signalEvent[
       Msg <: Product: InOutEncoder: InOutDecoder: Schema
   ](
@@ -177,7 +184,7 @@ trait BpmnProcessDsl extends BpmnDsl:
       )
     )
 
-  @deprecated("Use signalEvent.")
+  @deprecated("Use .. extends BpmnSignalEventDsl")
   def receiveSignalEvent[
       Msg <: Product: InOutEncoder: InOutDecoder: Schema
   ](
@@ -188,6 +195,7 @@ trait BpmnProcessDsl extends BpmnDsl:
   ): SignalEvent[Msg] =
     signalEvent(messageName, in, id, descr)
 
+  @deprecated("Use .. extends BpmnTimerDsl")
   def timerEvent(
       title: String,
       descr: Optable[String] = None

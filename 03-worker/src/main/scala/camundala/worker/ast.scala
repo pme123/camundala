@@ -47,7 +47,7 @@ case class InitWorker[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec
 ](
-    inOutExample: Process[In, Out],
+    inOutExample: InOut[In, Out, ?],
     override val validationHandler: Option[ValidationHandler[In]] = None,
     override val initProcessHandler: Option[InitProcessHandler[In]] = None
 ) extends Worker[In, Out, InitWorker[In, Out]]:
