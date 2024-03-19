@@ -8,6 +8,7 @@ import camundala.domain.*
 object TestApiCreator extends DefaultApiCreator, BpmnProcessDsl, App:
 
   lazy val projectName = "TestApi"
+  val companyDescr = ""
 
   def title = "Test API"
 
@@ -34,6 +35,7 @@ end TestApiCreator
 
 object Sample extends BpmnProcessDsl:
   val processName = "sample-process"
+  val companyDescr = ""
   
   @description("My Sample input object to make the point.")
   case class SampleIn(

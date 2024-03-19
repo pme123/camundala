@@ -16,8 +16,9 @@ case class SetupConfig(
     sbtDockerSettings: String = ""
 ):
   lazy val companyName: String = apiProjectConf.org
-  lazy val projectClassName: String =
-    projectName.split("-").map(n => n.head.toUpper + n.tail).mkString
+  lazy val projectClassNames: Seq[String] = projectName.split("-").map(n => n.head.toUpper + n.tail)
+  lazy val projectShortClassName: String = projectClassNames.last
+  lazy val projectClassName: String = projectClassNames.mkString
 
   lazy val projectDir: os.Path = SetupConfig.projectDir(projectName, baseDir)
 
@@ -40,12 +41,14 @@ object SetupConfig:
 
   def apply(
       projectName: String,
+      subProjects: Seq[String],
       packageConfRelPath: os.RelPath,
       versionConfig: VersionConfig,
       reposConfig: ReposConfig,
       sbtDockerSettings: String
   ): SetupConfig = new SetupConfig(
     projectName,
+    subProjects = subProjects,
     apiProjectConf =
       ApiProjectConf.init(projectName, projectDir(projectName, os.pwd) / packageConfRelPath),
     versionConfig = versionConfig,
@@ -62,7 +65,7 @@ object SetupConfig:
     if baseDir.toString.endsWith(projectName) then baseDir else baseDir / projectName
 
   import ModuleConfig.*
-  
+
   lazy val modules: Seq[ModuleConfig] = Seq(
     bpmnModule,
     apiModule,
@@ -145,7 +148,7 @@ object ModuleConfig:
     "helper",
     level = 4
   )
-  
+
 end ModuleConfig
 case class VersionConfig(
     scalaVersion: String = BuildInfo.scalaVersion,

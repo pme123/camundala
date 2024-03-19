@@ -132,10 +132,10 @@ lazy val dmn = project
 lazy val worker = project
   .in(file("./03-worker"))
   .configure(publicationSettings)
-  .settings(projectSettings("worker"))
-  .settings(unitTestSettings)
   .settings(
-    autoImportSetting
+    projectSettings("worker"),
+    unitTestSettings,
+    autoImportSetting,
   )
   .dependsOn(bpmn)
 

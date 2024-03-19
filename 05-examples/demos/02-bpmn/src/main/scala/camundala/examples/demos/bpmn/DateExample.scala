@@ -9,6 +9,7 @@ object DateExample extends BpmnProcessDsl:
 
   val processName = "NOT USED"
   def descr = ""
+  val companyDescr = ""
 
   case class Input(inDate: LocalDateTime = LocalDateTime.parse("2013-12-12T12:12:12"))
 

@@ -37,14 +37,27 @@ trait InitWorkerDsl[
       ValidateDsl[In],
       InitProcessDsl[In, InConfig]:
 
-  protected def inOutExample: InOut[In, Out, ?]
+  protected def inOutExample: Process[In, Out]
 
   lazy val worker: InitWorker[In, Out] =
     InitWorker(inOutExample)
       .validate(ValidationHandler(validate))
-      .initProcess(InitProcessHandler(initProcess))
+      .initProcess(InitProcessHandler(initProcess, inOutExample.processLabels))
 
 end InitWorkerDsl
+
+trait ValidationWorkerDsl[
+  In <: Product : InOutCodec,
+] extends WorkerDsl,
+  ValidateDsl[In]:
+
+  protected def inOutExample: ReceiveEvent[In, ?]
+
+  lazy val worker: InitWorker[In, NoOutput] =
+    InitWorker(inOutExample)
+      .validate(ValidationHandler(validate))
+
+end ValidationWorkerDsl
 
 trait CustomWorkerDsl[
     In <: Product: InOutCodec,
@@ -145,6 +158,8 @@ private trait InitProcessDsl[
 ]:
   protected def engineContext: EngineContext
 
+  protected def customInit(in: In): Map[String, Any] = Map.empty
+
   // by default the InConfig is initialized
   def initProcess(in: In): Either[InitProcessError, Map[String, Any]] =
     val inConfig = in match
@@ -154,7 +169,8 @@ private trait InitProcessDsl[
           i.defaultConfig.asInstanceOf[InConfig]
         )
       case _ => Map.empty
-    Right(inConfig)
+    val custom = engineContext.valuesToEngineObject(customInit(in))
+    Right(inConfig ++ custom)
   end initProcess
 
   /** initialize the config of the form of:
@@ -168,8 +184,8 @@ private trait InitProcessDsl[
     * ```
     */
   private def initConfig(
-                          optConfig: Option[InConfig],
-                          defaultConfig: InConfig
+      optConfig: Option[InConfig],
+      defaultConfig: InConfig
   ): Map[String, Any] =
     val defaultJson = defaultConfig.asJson
     val r = optConfig.map {

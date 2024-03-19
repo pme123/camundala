@@ -15,6 +15,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.2 - 2024-03-19
+### Changed 
+- Adjustments in DSLs for BPMN Process Steps. - see [Commit](https://github.com/pme123/camundala/commit/430feac7eef951b19abc27daf932a59b2947b898)
+- Added DSLs for BPMN Process Steps. - see [Commit](https://github.com/pme123/camundala/commit/5e8cdd0379f30f8e38959e5f86ad2375fb9d4e2d)
+- Fixed test:compile errors / fixed SimulationGenerator. - see [Commit](https://github.com/pme123/camundala/commit/61ed82030668f0a6750d706be6e0709e63438fd4)
+- Added process generated. - see [Commit](https://github.com/pme123/camundala/commit/92c0e552e8ded2e5dfc1c6c3ae61f957a9257063)
+- Added process generated. - see [Commit](https://github.com/pme123/camundala/commit/96940d536c945e569de6d8361a7c1e01093e9dfd)
+- Added customWorker generated. - see [Commit](https://github.com/pme123/camundala/commit/f60830da195378d443e2dd5045e9ada3fb020790)
+- Cleanup DevHelper.update. - see [Commit](https://github.com/pme123/camundala/commit/3edb681978a4aa6c196853e58ec0fbb5de124aec)
+
 ## 1.29.1 - 2024-03-14
 ### Changed 
 - fixed Compile error. - see [Commit](https://github.com/pme123/camundala/commit/d7bef7451fa7cc948a1c42d1eebf524a4eb19fe9)

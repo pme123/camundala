@@ -13,7 +13,8 @@ import sttp.tapir.codec.iron.given
 trait StarWarsApi extends BpmnServiceWorkerDsl:
   val serviceLabel: String = "Star Wars API"
   val serviceVersion: String = "1.0"
-
+  val companyDescr = ""
+  
 object StarWarsPeople extends StarWarsApi:
 
   final val topicName = "star-wars-api-people"

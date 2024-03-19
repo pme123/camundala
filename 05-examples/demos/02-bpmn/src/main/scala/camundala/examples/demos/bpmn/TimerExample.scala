@@ -6,6 +6,7 @@ object TimerExample extends BpmnProcessDsl:
 
   lazy val processName: String = "timer-example"
   lazy val descr: String = ""
+  val companyDescr = ""
 
   lazy val timerProcess = process()
 

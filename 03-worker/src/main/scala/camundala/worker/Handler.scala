@@ -79,10 +79,13 @@ end InitProcessHandler
 object InitProcessHandler:
   def apply[
       In <: Product: InOutCodec,
-  ](funct: In => Either[InitProcessError, Map[String, Any]]): InitProcessHandler[In] =
+  ](funct: In => Either[InitProcessError, Map[String, Any]], processLabels: ProcessLabels): InitProcessHandler[In] =
     new InitProcessHandler[In]:
       override def init(in: In): Either[InitProcessError, Map[String, Any]] =
         funct(in)
+          .map:
+            _ ++ processLabels.toMap
+
 end InitProcessHandler
 
 trait RunWorkHandler[

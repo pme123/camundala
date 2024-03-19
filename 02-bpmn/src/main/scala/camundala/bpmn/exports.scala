@@ -109,7 +109,54 @@ Otherwise the error is thrown.
 
 Example: `['java.sql.SQLException', '"errorNr":20000']`
 """
-def typeDescription(obj: AnyRef)=
+def typeDescription(obj: AnyRef) =
   s"The type of an Enum -> '**${enumType(obj)}**'. Just use the the enum type. This is needed for simple unmarshalling the JSON"
-def enumType(obj: AnyRef)  =
+def enumType(obj: AnyRef) =
   s"$obj"
+
+case class ProcessLabels(labels: Option[Seq[ProcessLabel]]):
+  lazy val toMap: Map[String, String] =
+    labels.toSeq.flatten
+      .map:
+        case ProcessLabel(k, v) => k -> v
+      .toMap
+
+  lazy val print: String =
+    labels
+      .map:
+        case ProcessLabel(k,v) => s" - $k: $v"
+      .mkString
+  lazy val de: String =
+    labels.toSeq.flatten
+      .collectFirst:
+        case ProcessLabel(k,v) if k == ProcessLabels.labelKeyDe =>
+            v
+      .getOrElse("-")
+  lazy val fr: String =
+    labels.toSeq.flatten
+      .collectFirst:
+        case ProcessLabel(k,v) if k == ProcessLabels.labelKeyFr =>
+            v
+      .getOrElse("-")
+
+end ProcessLabels
+
+object ProcessLabels:
+  val labelKeyDe = "callingProcessKeyDE"
+  val labelKeyFr = "callingProcessKeyFR"
+
+  lazy val none: ProcessLabels = ProcessLabels(None)
+
+  def apply(label: ProcessLabel, labels: ProcessLabel*): ProcessLabels =
+    ProcessLabels(Some(label +: labels))
+
+  def apply(valueDe: String, valueFr: String): ProcessLabels =
+    ProcessLabels(ProcessLabel(labelKeyDe, valueDe), ProcessLabel(labelKeyFr, valueFr))
+
+end ProcessLabels
+
+case class ProcessLabel(key: String, value: String)
+
+object ProcessLabel:
+  def none(label: String): ProcessLabel = ProcessLabel(label, "-")
+end ProcessLabel

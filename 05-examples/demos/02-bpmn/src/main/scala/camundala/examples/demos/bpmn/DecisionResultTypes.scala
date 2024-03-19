@@ -6,7 +6,8 @@ import camundala.domain.*
 object DecisionResultTypes extends BpmnProcessDsl:
   val processName = "camundala-mapping-example"
   val descr = ""
-  
+  val companyDescr = ""
+
   case class Input(letter: String)
 
   // Many Output Parameter
