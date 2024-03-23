@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.3 - 2024-03-23
+### Changed 
+- Renamed BpmnWorkerDsl to BpmnExternalTaskDsl / added generators for process steps. - see [Commit](https://github.com/pme123/camundala/commit/6afca149d688263267b51c9eca89a91c06e3df39)
+- Fixes in Template Generation. - see [Commit](https://github.com/pme123/camundala/commit/0e84d3acbcea580d3c28ca00df41f5362f0eb18b)
+
 ## 1.29.2 - 2024-03-19
 ### Changed 
 - Adjustments in DSLs for BPMN Process Steps. - see [Commit](https://github.com/pme123/camundala/commit/430feac7eef951b19abc27daf932a59b2947b898)

@@ -10,7 +10,7 @@ import io.github.iltotore.iron.constraint.string.Alphanumeric
 import sttp.tapir.Schema.annotations.description
 import sttp.tapir.codec.iron.given
 
-trait StarWarsApi extends BpmnServiceWorkerDsl:
+trait StarWarsApi extends BpmnServiceTaskDsl:
   val serviceLabel: String = "Star Wars API"
   val serviceVersion: String = "1.0"
   val companyDescr = ""

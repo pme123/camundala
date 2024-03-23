@@ -4,7 +4,7 @@ import camundala.bpmn.*
 import camundala.bpmn.GenericExternalTask.ProcessStatus
 import camundala.domain.*
 
-trait ServiceMethodServices extends BpmnServiceWorkerDsl:
+trait ServiceMethodServices extends BpmnServiceTaskDsl:
   val serviceLabel: String = "TEST SERVICES for Service Methods"
   val serviceVersion: String = "0.1"
   val companyDescr = ""

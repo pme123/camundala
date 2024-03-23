@@ -2,11 +2,11 @@ package camundala.bpmn
 
 import camundala.domain.*
 
-trait BpmnWorkerDsl extends BpmnDsl:
+trait BpmnExternalTaskDsl extends BpmnDsl:
 
   def topicName: String
       
-trait BpmnCustomWorkerDsl extends BpmnWorkerDsl:
+trait BpmnCustomTaskDsl extends BpmnExternalTaskDsl:
   def customTask[
     In <: Product : InOutEncoder : InOutDecoder : Schema,
     Out <: Product : InOutEncoder : InOutDecoder : Schema
@@ -18,7 +18,7 @@ trait BpmnCustomWorkerDsl extends BpmnWorkerDsl:
       InOutDescr(topicName, in, out, Some(descr))
     )
     
-trait BpmnServiceWorkerDsl extends BpmnWorkerDsl:
+trait BpmnServiceTaskDsl extends BpmnExternalTaskDsl:
 
   def path: String
   def serviceLabel: String
@@ -79,6 +79,6 @@ trait BpmnServiceWorkerDsl extends BpmnWorkerDsl:
         |
         |---
         |""".stripMargin
-end BpmnServiceWorkerDsl
+end BpmnServiceTaskDsl
 
 

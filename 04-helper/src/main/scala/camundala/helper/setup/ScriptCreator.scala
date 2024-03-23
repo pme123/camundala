@@ -55,14 +55,17 @@ case class ScriptCreator()(using config: SetupConfig):
        |             ): Unit =
        |  DevHelper.createProcess(processName)
        |
-       |@main(doc = "> Creates everything for a CustomWorker (bpmn, simulation, worker)")
-       |def customWorker(
-       |             @arg(doc = "The name of the process.")
-       |             processName: String,
-       |             @arg(doc = "The name of the Worker (without 'Worker').")
-       |             workerName: String,
-       |             ): Unit =
-       |  DevHelper.createCustomWorker(processName, workerName)
+       |${createMethod("CustomTask")}
+       |
+       |${createMethod("ServiceTask")}
+       |
+       |${createMethod("UserTask")}
+       |
+       |${createMethod("SignalEvent")}
+       |
+       |${createMethod("MessageEvent")}
+       |
+       |${createMethod("TimerEvent")}
        |
        |@main(doc = "> Creates a new Release for the client and publishes to bpf-generic-release")
        |def publish(
@@ -125,4 +128,16 @@ case class ScriptCreator()(using config: SetupConfig):
        |import $companyName.camundala.helper._
        |import camundala.helper._
        |""".stripMargin
+
+  private def createMethod(objectType: String) = {
+    val objectName = objectType.head.toLower + objectType.tail
+    s"""@main(doc = "> Creates everything needed for a $objectType (e.g. bpmn, simulation, worker)")
+       |def $objectName(
+       |             @arg(doc = "The name of the process.")
+       |             processName: String,
+       |             @arg(doc = "The domain name of the object to create.")
+       |             ${objectName}Name: String,
+       |             ): Unit =
+       |  DevHelper.create${objectType}(processName, ${objectName}Name)""".stripMargin
+  }
 end ScriptCreator

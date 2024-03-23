@@ -9,10 +9,9 @@ trait BpmnTimerEventDsl extends BpmnDsl:
   def title: String
 
   def timerEvent(
-                  title: String,
                 ): TimerEvent =
     TimerEvent(
       title,
-      InOutDescr(title, descr = defaultDescr)
+      InOutDescr(title, descr = Some(descr))
     )
 end BpmnTimerEventDsl

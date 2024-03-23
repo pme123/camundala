@@ -4,7 +4,7 @@ import camundala.bpmn.*
 import camundala.domain.*
 
 // example for service API description
-object ArchiveInvoice extends BpmnCustomWorkerDsl:
+object ArchiveInvoice extends BpmnCustomTaskDsl:
 
   final val topicName = "ArchiveInvoiceService"
   val descr = "Archives the Receipt."

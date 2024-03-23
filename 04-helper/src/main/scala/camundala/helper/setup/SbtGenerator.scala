@@ -118,15 +118,17 @@ case class SbtGenerator()(using
                 })
                  |  .dependsOn(${config.subProjects.map(sbtSubProjectName).mkString(", ")})
                  |
-                 |lazy val ${name}Base = project
-                 |  .in(file("${modC.nameWithLevel}/_base"))
-                 |  .settings(
-                 |    projectSettings(Some("$name-base"), Some("$name")),
-                 |    publicationSettings,
-                 |    libraryDependencies ++= ${name}Deps
-                 |  )
-                 |
-                 |""".stripMargin
+                 |${
+                  if config.subProjects.nonEmpty
+                  then s"""lazy val ${name}Base = project
+                          |  .in(file("${modC.nameWithLevel}/_base"))
+                          |  .settings(
+                          |    projectSettings(Some("$name-base"), Some("$name")),
+                          |    publicationSettings,
+                          |    libraryDependencies ++= ${name}Deps
+                          |  )""".stripMargin
+                  else ""
+                }""".stripMargin
           else "" -> ""
         val enablePlugins =
           if plugins.isEmpty then ""
