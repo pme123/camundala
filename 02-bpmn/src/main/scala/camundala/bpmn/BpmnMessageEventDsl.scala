@@ -20,7 +20,7 @@ trait BpmnMessageEventDsl extends BpmnDsl:
         id.getOrElse(messageName),
         in,
         NoOutput(),
-        msgNameDescr(messageName)
+        msgNameDescr(messageName),
       )
     )
 end BpmnMessageEventDsl

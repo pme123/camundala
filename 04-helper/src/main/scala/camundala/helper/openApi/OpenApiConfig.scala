@@ -1,6 +1,6 @@
 package camundala.helper.openApi
 
-import camundala.bpmn.BpmnWorkerDsl
+import camundala.bpmn.BpmnExternalTaskDsl
 import camundala.helper.setup.ModuleConfig
 import camundala.simulation.custom.BasicSimulationDsl
 

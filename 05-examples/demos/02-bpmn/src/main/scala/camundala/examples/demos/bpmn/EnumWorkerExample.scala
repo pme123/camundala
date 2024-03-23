@@ -3,7 +3,7 @@ package camundala.examples.demos.bpmn
 import camundala.bpmn.*
 import camundala.domain.*
 
-object EnumWorkerExample extends BpmnServiceWorkerDsl:
+object EnumWorkerExample extends BpmnServiceTaskDsl:
 
   val serviceLabel: String = "Demo for Enum as Inputs and Outputs in Worker"
   val serviceVersion: String = "1.4"

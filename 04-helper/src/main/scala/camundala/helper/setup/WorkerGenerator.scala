@@ -11,7 +11,7 @@ case class WorkerGenerator()(using config: SetupConfig):
   def createProcess(processName: String): Unit =
     val workerName = processName.head.toUpper + processName.tail
     os.write.over(
-      workerPath (Some(processName)) / s"${workerName}Worker.scala",
+      workerPath(Some(processName)) / s"${workerName}Worker.scala",
       processWorker(processName, workerName)
     )
     os.write.over(
@@ -22,7 +22,7 @@ case class WorkerGenerator()(using config: SetupConfig):
 
   def createCustomWorker(processName: String, workerName: String): Unit =
     os.write.over(
-      workerPath (Some(processName)) / s"${workerName}Worker.scala",
+      workerPath(Some(processName)) / s"${workerName}Worker.scala",
       customWorker(processName, workerName)
     )
     os.write.over(
@@ -30,6 +30,17 @@ case class WorkerGenerator()(using config: SetupConfig):
       customWorkerTest(processName, workerName)
     )
   end createCustomWorker
+
+  def createServiceWorker(processName: String, workerName: String): Unit =
+    os.write.over(
+      workerPath(Some(processName)) / s"${workerName}Worker.scala",
+      serviceWorker(processName, workerName)
+    )
+    os.write.over(
+      workerTestPath(Some(processName)) / s"${workerName}WorkerTest.scala",
+      serviceWorkerTest(processName, workerName)
+    )
+  end createServiceWorker
 
   private lazy val companyName = config.companyName
   private lazy val workerApp =
@@ -117,7 +128,7 @@ case class WorkerGenerator()(using config: SetupConfig):
        |
        |end ${workerName}Worker""".stripMargin
 
-  private def processWorkerTest(
+  private def serviceWorker(
       processName: String,
       workerName: String
   ) =
@@ -125,51 +136,118 @@ case class WorkerGenerator()(using config: SetupConfig):
        |package worker.$processName
        |
        |import bpmn.$processName.$workerName.*
-       |import worker.$processName.${workerName}Worker
+       |import camundala.worker.CamundalaWorkerError.*
        |
-       |class ${workerName}WorkerTest extends munit.FunSuite:
+       |@Configuration
+       |class ${workerName}Worker
+       |    extends CompanyServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]:
        |
-       |  lazy val worker = ${workerName}Worker()
+       |  lazy val serviceTask = example
        |
+       |  override lazy val method = ??? // default is Method.GET
+       |
+       |  def apiUri(in: In) = uri"your/path/TODO"
+       |
+       |  override def querySegments(in: In) = ???
+       |    // queryKeys(ks: String*)
+       |    // queryKeyValues(kvs: (String, Any)*)
+       |    // queryValues(vs: Any*)
+       |
+       |  override def inputHeaders(in: In) = ???
+       |
+       |  override def inputMapper(in: In): Option[ServiceIn] = ???
+       |
+       |  override def outputMapper(
+       |      out: ServiceResponse[ServiceOut],
+       |      in: In
+       |  ): Either[ServiceMappingError, Out] = ???
+       |
+       |
+       |end ${workerName}Worker""".stripMargin
+
+  private def processWorkerTest(
+      processName: String,
+      workerName: String
+  ) =
+    workerTest(
+      processName,
+      workerName
+    ):
+      s"""
        |  test("customInit $workerName"):
        |    val in = In()
        |    val out = Map.empty[String, Any]
        |    assertEquals(
        |      worker.customInit(in),
        |      out
-       |    )
-       |        
-       |  
-       |end ${workerName}WorkerTest""".stripMargin
+       |    )""".stripMargin
 
   private def customWorkerTest(
       processName: String,
       workerName: String
   ) =
+    workerTest(
+      processName,
+      workerName
+    ):
+      s"""
+         |  test("runWork $workerName"):
+         |    val in = In()
+         |    val out = Right(Out())
+         |    assertEquals(
+         |      worker.runWork(in),
+         |      out
+         |    )
+         |""".stripMargin
+
+  private def serviceWorkerTest(
+      processName: String,
+      workerName: String
+  ) =
+    workerTest(
+      processName,
+      workerName
+    ):
+      s"""
+         |  test("inputMapper"):
+         |    assertEquals(
+         |      worker.inputMapper(In()),
+         |      Some(ServiceIn())
+         |    )
+         |
+         |  test("outputMapper"):
+         |    assertEquals(
+         |      worker.outputMapper(
+         |        ServiceResponse(ServiceOut()),
+         |        In()
+         |      ),
+         |      Right(Out())
+         |    )
+         |""".stripMargin
+
+  private def workerTest(
+      processName: String,
+      workerName: String
+  )(tests: String) =
     s"""package ${config.projectPackage}
        |package worker.$processName
        |
        |import bpmn.$processName.$workerName.*
        |import worker.$processName.${workerName}Worker
        |
+       |//sbt worker/testOnly *${workerName}WorkerTest
        |class ${workerName}WorkerTest extends munit.FunSuite:
        |
        |  lazy val worker = ${workerName}Worker()
        |
-       |  test("runWork $workerName"):
-       |    val in = In()
-       |    val out = Right(Out())
-       |    assertEquals(
-       |      worker.runWork(in),
-       |      out
-       |    )
+       |$tests
        |
        |
        |end ${workerName}WorkerTest""".stripMargin
 
   private def workerPath(processName: Option[String] = None) =
     val dir = config.projectDir / ModuleConfig.workerModule.packagePath(
-      config.projectPath,
+      config.projectPath
     ) / processName.toSeq
     os.makeDir.all(dir)
     dir
@@ -178,7 +256,7 @@ case class WorkerGenerator()(using config: SetupConfig):
   private def workerTestPath(processName: Option[String] = None) =
     val dir = config.projectDir / ModuleConfig.workerModule.packagePath(
       config.projectPath,
-      mainOrTest = "test",
+      mainOrTest = "test"
     ) / processName.toSeq
     os.makeDir.all(dir)
     dir
