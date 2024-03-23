@@ -26,7 +26,7 @@ trait BpmnProcessDsl extends BpmnDsl:
         |
         |- **Called Element**: `$processName` (to define in the Call Activity)
         |
-        |$processLabels.print
+        |${processLabels.print}
         |
         |---
         |

@@ -95,7 +95,9 @@ final case class ModelerTemplGenerator(
           TemplProp(
             `type` = TemplType.Hidden,
             label = name,
-            value = if PropType.`camunda:inputParameter` == propType then TemplMapperHelper.mapping(name, value) else name,
+            value = if PropType.`camunda:inputParameter` == propType then
+              TemplMapperHelper.mapping(name, value)
+            else name,
             binding = propType match
               case PropType.`camunda:in` => PropBinding.`camunda:in`(
                   `type` = propType,
@@ -118,24 +120,28 @@ final case class ModelerTemplGenerator(
           )
   end mappings
 
-  private def generalVariables(isCallActivity: Boolean, vars: Seq[InputParamForTempl], inOutApi: InOutApi[?,?]) =
+  private def generalVariables(
+      isCallActivity: Boolean,
+      vars: Seq[InputParamForTempl],
+      inOutApi: InOutApi[?, ?]
+  ) =
     if config.generateGeneralVariables then
       vars
         .map: in =>
-            val k = in.inParam.toString
-            TemplProp(
-              `type` = TemplType.Hidden,
-              label = k,
-              value = if isCallActivity then k else in.mapping(inOutApi.inOut.in),
-              binding = if isCallActivity then
-                PropBinding.`camunda:in`(
-                  target = k
-                )
-              else
-                PropBinding.`camunda:inputParameter`(
-                  name = k
-                )
-            )
+          val k = in.inParam.toString
+          TemplProp(
+            `type` = TemplType.Hidden,
+            label = k,
+            value = if isCallActivity then k else in.defaultValue(inOutApi.inOut.out),
+            binding = if isCallActivity then
+              PropBinding.`camunda:in`(
+                target = k
+              )
+            else
+              PropBinding.`camunda:inputParameter`(
+                name = k
+              )
+          )
     else
       Seq.empty
   end generalVariables
@@ -314,13 +320,21 @@ object AppliesTo:
   given ApiSchema[AppliesTo] = deriveApiSchema
 end AppliesTo
 
-case class InputParamForTempl(inParam: InputParams, mapping: Product => String)
+case class InputParamForTempl(
+    inParam: InputParams,
+    // for the default value, you have:
+    //  - a simple value
+    //  - a mapping function out => ...
+    defaultValue: Product => String
+)
 
 object InputParamForTempl:
   def apply(name: InputParams, inputMapValue: String): InputParamForTempl =
     new InputParamForTempl(name, _ => inputMapValue)
+
   def apply(name: InputParams, inputMapFunct: Product => String): InputParamForTempl =
     new InputParamForTempl(name, inputMapFunct)
+end InputParamForTempl
 
 object TemplMapperHelper:
 

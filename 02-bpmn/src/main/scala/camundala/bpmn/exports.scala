@@ -122,7 +122,7 @@ case class ProcessLabels(labels: Option[Seq[ProcessLabel]]):
       .toMap
 
   lazy val print: String =
-    labels
+    labels.toSeq.flatten
       .map:
         case ProcessLabel(k,v) => s" - $k: $v"
       .mkString
