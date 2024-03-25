@@ -2,104 +2,80 @@ package camundala.helper.setup
 
 case class BpmnGenerator()(using config: SetupConfig):
 
-  def createProcess(processName: String): Unit =
+  def createProcess(processName: String, version: Option[Int]): Unit =
     val name = processName.head.toUpper + processName.tail
     os.write.over(
-      bpmnPath(processName) / s"$name.scala",
+      bpmnPath(processName, version) / s"$name.scala",
       objectDefinition(
-        "Process",
-        processName,
-        name,
+        SetupElement(
+          "Process",
+          processName,
+          name,
+          version
+        ),
         isProcess = true
       )
     )
   end createProcess
 
-  def createCustomTask(processName: String, bpmnName: String): Unit =
+  def createProcessElement(setupElement: SetupElement): Unit =
+    val processName = setupElement.processName
+    val version = setupElement.version
     os.write.over(
-      bpmnPath(processName) / s"$bpmnName.scala",
-      objectDefinition(
-        "CustomTask",
+      bpmnPath(
         processName,
-        bpmnName
-      )
+        version
+      ) / s"${setupElement.bpmnName}.scala",
+      objectDefinition(setupElement)
     )
-  end createCustomTask
+    if setupElement.label == "ServiceTask"
+    then
+      val superTrait = processName.head.toUpper + processName.tail + s"V${version.getOrElse(1)}"
+      createOrUpdate(
+        bpmnPath(
+          processName,
+          version
+        ) / s"$superTrait.scala",
+        serviceTaskTrait(processName, version, superTrait)
+      )
+    end if
+  end createProcessElement
 
-  def createServiceTask(processName: String, bpmnName: String): Unit =
+  def createEvent(setupElement: SetupElement): Unit =
     os.write.over(
-      bpmnPath(processName) / s"$bpmnName.scala",
-      objectDefinition(
-        "ServiceTask",
-        processName,
-        bpmnName
-      )
-    )
-  end createServiceTask
-
-  def createUserTask(processName: String, bpmnName: String): Unit =
-    os.write.over(
-      bpmnPath(processName) / s"$bpmnName.scala",
-      objectDefinition(
-        "UserTask",
-        processName,
-        bpmnName
-      )
-    )
-  def createSignalEvent(processName: String, bpmnName: String): Unit =
-    os.write.over(
-      bpmnPath(processName) / s"$bpmnName.scala",
-      eventDefinition(
-        "Signal",
-        processName,
-        bpmnName
-      )
-    )
-  def createMessageEvent(processName: String, bpmnName: String): Unit =
-    os.write.over(
-      bpmnPath(processName) / s"$bpmnName.scala",
-      eventDefinition(
-        "Message",
-        processName,
-        bpmnName
-      )
-    )
-  def createTimerEvent(processName: String, bpmnName: String): Unit =
-    os.write.over(
-      bpmnPath(processName) / s"$bpmnName.scala",
-      eventDefinition(
-        "Timer",
-        processName,
-        bpmnName
-      )
+      bpmnPath(setupElement.processName, setupElement.version) / s"${setupElement.bpmnName}.scala",
+      eventDefinition(setupElement)
     )
 
   private def objectDefinition(
-      objectType: String,
-      processName: String,
-      name: String,
+      setupObject: SetupElement,
       isProcess: Boolean = false
   ) =
+    val SetupElement(label, processName, bpmnName, version) = setupObject
     s"""package ${config.projectPackage}
-       |package bpmn.$processName
+       |package bpmn.$processName${version.versionPackage}
        |
-       |object $name extends CompanyBpmn${objectType}Dsl:
+       |object $bpmnName extends ${
+        if label == "ServiceTask"
+        then processName.head.toUpper + processName.tail + s"V${version.getOrElse(1)}:"
+        else s"CompanyBpmn${label}Dsl:"
+      }
        |
        |  val ${
-        objectType match
+        label match
           case "Process" => "processName"
           case "UserTask" => "name"
           case "Decision" => "decisionId"
           case "SignalEvent" | "MessageEvent" => "messageName"
           case "TimerEvent" => "title"
           case _ => "topicName"
-      } = "${config.projectName}-$processName${
-        if objectType == "Process" then "" else s".$name"
+      } = "${config.projectName}-$processName${version.versionPackage}${
+        if label == "Process" then "" else s".$bpmnName"
       }"
        |  val descr: String = ""
        |
        |${
-        if objectType == "ServiceTask" then
+        if label == "ServiceTask" then
           s"""  val path = "GET: my/path/TODO"
              |  type ServiceIn = NoInput
              |  type ServiceOut = NoOutput
@@ -110,53 +86,69 @@ case class BpmnGenerator()(using config: SetupConfig):
       }
        |${inOutDefinitions(isProcess)}
        |
-       |  lazy val example = ${objectType.head.toLower + objectType.tail}(
+       |  lazy val example = ${label.head.toLower + label.tail}(
        |    In(),
        |    Out()${
-        if objectType == "ServiceTask" then
+        if label == "ServiceTask" then
           s""",
              |    serviceMock,
              |    serviceInExample""".stripMargin
         else ""
       }
        |  )
-       |end $name""".stripMargin
+       |end $bpmnName""".stripMargin
+  end objectDefinition
 
-  private def eventDefinition(
-      eventType: String,
+  private def serviceTaskTrait(
       processName: String,
-      name: String,
-      isProcess: Boolean = false
+      version: Option[Int],
+      superTrait: String
   ) =
     s"""package ${config.projectPackage}
-       |package bpmn.$processName
+       |package bpmn.$processName${version.versionPackage}
        |
-       |object $name extends CompanyBpmn${eventType}EventDsl:
+       |trait $superTrait extends CompanyBpmnServiceTaskDsl:
+       |
+       |  def serviceLabel: String = "${processName.head.toUpper + processName.tail}"
+       |  def serviceVersion: String = "${version.getOrElse(1)}.0"
+       |
+       |end $superTrait
+       |""".stripMargin
+
+  private def eventDefinition(
+      setupObject: SetupElement
+  ) =
+    val SetupElement(label, processName, bpmnName, version) = setupObject
+    s"""package ${config.projectPackage}
+       |package bpmn.$processName${version.versionPackage}
+       |
+       |object $bpmnName extends CompanyBpmn${label}EventDsl:
        |
        |  val ${
-        if eventType == "Timer" then "title"
+        if label == "Timer" then "title"
         else "messageName"
-      } = "${config.projectName}-$processName.$name"
+      } = "${config.projectName}-$processName.$bpmnName"
        |  val descr: String = ""
        |${
-      if eventType == "Timer" then ""
-      else """  case class In(
-       |  )
-       |  object In:
-       |    given ApiSchema[In] = deriveApiSchema
-       |    given InOutCodec[In] = deriveInOutCodec
-       |""".stripMargin
-    }
-       |  lazy val example = ${eventType.head.toLower + eventType.tail}Event(${
-        if eventType == "Timer" then ""
+        if label == "Timer" then ""
+        else """  case class In(
+              |  )
+              |  object In:
+              |    given ApiSchema[In] = deriveApiSchema
+              |    given InOutCodec[In] = deriveInOutCodec
+              |""".stripMargin
+      }
+       |  lazy val example = ${label.head.toLower + label.tail}Event(${
+        if label == "Timer" then ""
         else "In()"
       })
-       |end $name""".stripMargin
+       |end $bpmnName""".stripMargin
+  end eventDefinition
 
-  private def bpmnPath(processName: String) =
+  private def bpmnPath(processName: String, version: Option[Int]) =
     val dir = config.projectDir / ModuleConfig.bpmnModule.packagePath(
       config.projectPath
-    ) / processName
+    ) / processName / version.versionPath
     os.makeDir.all(dir)
     dir
   end bpmnPath

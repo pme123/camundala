@@ -52,8 +52,10 @@ case class ScriptCreator()(using config: SetupConfig):
        |def process(
        |             @arg(doc = "The name of the process (lowerCase, e.g. mySuperProcess).")
        |             processName: String,
-       |             ): Unit =
-       |  DevHelper.createProcess(processName)
+       |             @arg(doc = "The version of the object to create.")
+       |             version: Option[Int] = None,
+       |           ): Unit =
+       |  DevHelper.createProcess(processName, version)
        |
        |${createMethod("CustomTask")}
        |
@@ -137,7 +139,9 @@ case class ScriptCreator()(using config: SetupConfig):
        |             processName: String,
        |             @arg(doc = "The domain name of the object to create.")
        |             ${objectName}Name: String,
+       |             @arg(doc = "The version of the object to create.")
+       |             version: Option[Int] = None,
        |             ): Unit =
-       |  DevHelper.create${objectType}(processName, ${objectName}Name)""".stripMargin
+       |  DevHelper.create${objectType}(processName, ${objectName}Name, version)""".stripMargin
   }
 end ScriptCreator

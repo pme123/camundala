@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.4 - 2024-03-25
+### Changed 
+- Fixes and adjustments in code generators. - see [Commit](https://github.com/pme123/camundala/commit/976ecd078e814a2d8b0570b902cf9033541d1005)
+
 ## 1.29.3 - 2024-03-23
 ### Changed 
 - Renamed BpmnWorkerDsl to BpmnExternalTaskDsl / added generators for process steps. - see [Commit](https://github.com/pme123/camundala/commit/6afca149d688263267b51c9eca89a91c06e3df39)

@@ -2,6 +2,12 @@ package camundala.helper.setup
 
 val doNotAdjust = "DO NOT ADJUST"
 
+case class SetupElement(
+                        label: String, processName: String, bpmnName: String, version: Option[Int]
+                      )(using setupConfig: SetupConfig):
+  
+  println(s"Create $label: $bpmnName in ${setupConfig.projectName} / process: $processName v$version")
+
 def createOrUpdate(file: os.Path, contentNew: String): Unit =
   val contentExisting =
     if os.exists(file)
@@ -15,3 +21,8 @@ def createOrUpdate(file: os.Path, contentNew: String): Unit =
   
 end createOrUpdate
 
+extension (version: Option[Int])
+  def versionPath: Seq[String] =
+    version.map(v => s"v$v").toSeq
+  def versionPackage: String =
+    version.map(v => s".v$v").getOrElse("")

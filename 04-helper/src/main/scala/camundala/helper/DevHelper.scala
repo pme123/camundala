@@ -23,34 +23,65 @@ object DevHelper:
     println(s" - with Subprojects: ${config.subProjects}")
     SetupGenerator().generate
 
-  def createProcess(processName: String)(using config: SetupConfig): Unit =
-    println(s"Create Process: $processName in ${config.projectName}")
-    SetupGenerator().createProcess(processName)
+  def createProcess(processName: String, version: Option[Int])(using config: SetupConfig): Unit =
+    println(s"Create Process: $processName v$version in ${config.projectName}")
+    SetupGenerator().createProcess(processName, version)
 
-  def createCustomTask(processName: String, workerName: String)(using config: SetupConfig): Unit =
-    print("Custom Task", config.projectName, processName, workerName)
-    SetupGenerator().createCustomTask(processName, workerName)
+  def createCustomTask(processName: String, workerName: String, version: Option[Int])(
+      using config: SetupConfig
+  ): Unit =
+    SetupGenerator().createProcessElement(SetupElement(
+      "CustomTask",
+      processName,
+      workerName,
+      version
+    ))
 
-  def createServiceTask(processName: String, workerName: String)(using
+  def createServiceTask(processName: String, workerName: String, version: Option[Int])(
+      using config: SetupConfig
+  ): Unit =
+    SetupGenerator().createProcessElement(SetupElement(
+      "ServiceTask",
+      processName,
+      workerName,
+      version
+    ))
+
+  def createUserTask(processName: String, workerName: String, version: Option[Int])(
+      using config: SetupConfig
+  ): Unit =
+    SetupGenerator().createUserTask(
+      SetupElement("UserTask", processName, workerName, version)
+    )
+
+  def createSignalEvent(processName: String, workerName: String, version: Option[Int])(
+      using config: SetupConfig
+  ): Unit =
+    SetupGenerator().createEvent(SetupElement(
+      "Signal",
+      processName,
+      workerName,
+      version
+    ))
+
+  def createMessageEvent(processName: String, workerName: String, version: Option[Int])(
+      using config: SetupConfig
+  ): Unit =
+    SetupGenerator().createEvent(SetupElement(
+      "Message",
+      processName,
+      workerName,
+      version
+    ))
+
+  def createTimerEvent(processName: String, workerName: String, version: Option[Int])(using
       config: SetupConfig
   ): Unit =
-    print("Service Task", config.projectName, processName, workerName)
-    SetupGenerator().createServiceTask(processName, workerName)
-
-  def createUserTask(processName: String, workerName: String)(using config: SetupConfig): Unit =
-    print("User Task", config.projectName, processName, workerName)
-    SetupGenerator().createUserTask(processName, workerName)
-  def createSignalEvent(processName: String, workerName: String)(using config: SetupConfig): Unit =
-    print("Signal Event", config.projectName, processName, workerName)
-    SetupGenerator().createSignalEvent(processName, workerName)
-  def createMessageEvent(processName: String, workerName: String)(using config: SetupConfig): Unit =
-    print("Message Event", config.projectName, processName, workerName)
-    SetupGenerator().createMessageEvent(processName, workerName)
-  def createTimerEvent(processName: String, workerName: String)(using config: SetupConfig): Unit =
-    print("Timer Event", config.projectName, processName, workerName)
-    SetupGenerator().createTimerEvent(processName, workerName)
-
-  private def print(label: String, projectName: String, processName: String, workerName: String) =
-    println(s"Create $label: $workerName in $projectName / process: $processName")
+    SetupGenerator().createEvent(SetupElement(
+      "Timer",
+      processName,
+      workerName,
+      version
+    ))
 
 end DevHelper

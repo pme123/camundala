@@ -11,27 +11,20 @@ case class SetupGenerator()(using config: SetupConfig):
     HelperGenerator().generate
   end generate
 
-  def createProcess(processName: String): Unit =
-    BpmnGenerator().createProcess(processName)
-    SimulationGenerator().createProcess(processName)
-    WorkerGenerator().createProcess(processName)
+  def createProcess(processName: String, version: Option[Int]): Unit =
+    BpmnGenerator().createProcess(processName, version)
+    SimulationGenerator().createProcess(processName, version)
+    WorkerGenerator().createProcess(processName, version)
   end createProcess
 
-  def createCustomTask(processName: String, workerName: String): Unit =
-    BpmnGenerator().createCustomTask(processName, workerName)
-    WorkerGenerator().createCustomWorker(processName, workerName)
-  def createServiceTask(processName: String, workerName: String): Unit =
-    BpmnGenerator().createServiceTask(processName, workerName)
-    WorkerGenerator().createServiceWorker(processName, workerName)
+  def createProcessElement(setupObject: SetupElement): Unit =
+    BpmnGenerator().createProcessElement(setupObject)
+    WorkerGenerator().createProcessElement(setupObject)
 
-  def createUserTask(processName: String, workerName: String): Unit =
-    BpmnGenerator().createUserTask(processName, workerName)
+  def createUserTask(setupObject: SetupElement): Unit =
+    BpmnGenerator().createProcessElement(setupObject)
 
-  def createSignalEvent(processName: String, workerName: String): Unit =
-    BpmnGenerator().createSignalEvent(processName, workerName)
-  def createMessageEvent(processName: String, workerName: String): Unit =
-    BpmnGenerator().createMessageEvent(processName, workerName)
-  def createTimerEvent(processName: String, workerName: String): Unit =
-    BpmnGenerator().createTimerEvent(processName, workerName)
+  def createEvent(setupObject: SetupElement): Unit =
+    BpmnGenerator().createEvent(setupObject)
 
 end SetupGenerator

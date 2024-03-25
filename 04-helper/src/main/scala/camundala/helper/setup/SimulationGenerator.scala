@@ -2,22 +2,23 @@ package camundala.helper.setup
 
 case class SimulationGenerator()(using config: SetupConfig):
 
-  def createProcess(processName: String): Unit =
+  def createProcess(processName: String, version: Option[Int]): Unit =
     val name = processName.head.toUpper + processName.tail
     os.write.over(
-      simulationTestPath / s"${name}Simulation.scala",
-      process(processName, name)
+      simulationTestPath(version) / s"${name}Simulation.scala",
+      process(processName, name, version)
     )
   end createProcess
 
   private def process(
       processName: String,
-      name: String
+      name: String,
+      version: Option[Int]
   ) =
     s"""package ${config.projectPackage}
-       |package simulation
+       |package simulation${version.versionPackage}
        |
-       |import bpmn.$processName.$name.*
+       |import ${config.projectPackage}.bpmn.$processName${version.versionPackage}.$name.*
        |
        |// amm helper.sc deploy ${name}Simulation
        |// simulation/test
@@ -40,11 +41,11 @@ case class SimulationGenerator()(using config: SetupConfig):
        |
        |end ${name}Simulation""".stripMargin
 
-  private lazy val simulationTestPath =
+  private def simulationTestPath(version: Option[Int]) =
     val dir = config.projectDir / ModuleConfig.simulationModule.packagePath(
       config.projectPath,
       mainOrTest = "test"
-    )
+    )  / version.versionPath
     os.makeDir.all(dir)
     dir
   end simulationTestPath
