@@ -107,11 +107,18 @@ case class BpmnGenerator()(using config: SetupConfig):
     s"""package ${config.projectPackage}
        |package bpmn.$processName${version.versionPackage}
        |
-       |trait $superTrait extends CompanyBpmnServiceTaskDsl:
+       |object $superTrait:
        |
-       |  def serviceLabel: String = "${processName.head.toUpper + processName.tail}"
-       |  def serviceVersion: String = "${version.getOrElse(1)}.0"
+       |  final val serviceLabel = "$superTrait"
+       |  val description = ""
+       |  val serviceVersion = "${version.getOrElse(1)}.0"
+       |  val externalDoc = ""
+       |  val externalUrl = ""
        |
+       |trait $superTrait
+       |  extends CompanyBpmnServiceTaskDsl:
+       |  final val serviceLabel = $superTrait.serviceLabel
+       |  val serviceVersion = $superTrait.serviceVersion
        |end $superTrait
        |""".stripMargin
 
