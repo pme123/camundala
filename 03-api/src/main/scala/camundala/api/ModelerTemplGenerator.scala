@@ -49,7 +49,7 @@ final case class ModelerTemplGenerator(
       version,
       appliesTo,
       elementType,
-      mapProps ++ properties :+ TemplProp.businessKey :+ TemplProp.name(inOut.niceName),
+      mapProps ++ properties :+ TemplProp.name(inOut.niceName),
       config.schema
     )
     os.write.over(
@@ -66,7 +66,11 @@ final case class ModelerTemplGenerator(
       Seq(
         TemplProp.calledElement(inOut.id),
         TemplProp.calledElementBinding
-      ) ++ generalVariables(isCallActivity = true, TemplMapperHelper.processVariables, inOut)
+      ) ++ generalVariables(
+        isCallActivity = true,
+        TemplMapperHelper.processVariables,
+        inOut
+      ) :+ TemplProp.businessKey
     )
   end generateTempl
 
