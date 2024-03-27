@@ -15,6 +15,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.5 - 2024-03-27
+### Changed 
+- Fixed Decoder for MockedServiceResponse. - see [Commit](https://github.com/pme123/camundala/commit/86f816bfcb2639a296d8f3bcc7d7bfd4d4b4a8e9)
+- Added InConfig to Process Generation. - see [Commit](https://github.com/pme123/camundala/commit/61170021ec93a44f6a15a28eee98de954a140db5)
+- Added missing Spring dependency. - see [Commit](https://github.com/pme123/camundala/commit/8f8b8982804e7f68ea5237b0cd9cd8eb5a09f775)
+- Business Key only for CallActivities in ModelerTemplGenerator. - see [Commit](https://github.com/pme123/camundala/commit/b8c7a1c5f0648d2d72d08fb3256566ddc89e539c)
+- Adjustment in Bpmn ServiceTask trait. - see [Commit](https://github.com/pme123/camundala/commit/ede49fc03db9e46dc9dd098b20a3b9c75821c588)
+- Adjustment in Bpmn ServiceTask trait. - see [Commit](https://github.com/pme123/camundala/commit/9192af095bb49511798cf8d67e71e3ba2428a590)
+
 ## 1.29.4 - 2024-03-25
 ### Changed 
 - Fixes and adjustments in code generators. - see [Commit](https://github.com/pme123/camundala/commit/976ecd078e814a2d8b0570b902cf9033541d1005)
