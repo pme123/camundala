@@ -164,13 +164,34 @@ case class BpmnGenerator()(using config: SetupConfig):
 
   private def inOutDefinitions(isProcess: Boolean = false) =
     s"""  case class In(
-      |  )
+      |     // input variables
+      |  ${
+        if isProcess then
+          """    @description(
+            |        "A way to override process configuration.\n\n**SHOULD NOT BE USED on Production!**"
+            |      )
+            |      inConfig: Option[InConfig] = None
+            |  ) extends WithConfig[InConfig]:
+            |    lazy val defaultConfig = InConfig()
+            |  end In""".stripMargin
+        else "  )"
+      }
       |  object In:
       |    given ApiSchema[In] = deriveApiSchema
       |    given InOutCodec[In] = deriveInOutCodec
       |${
         if isProcess then
           """  case class InConfig(
+            |    // Process Configuration
+            |    // @description("To test cancel from other processes you need to set this flag.")
+            |    //  waitForCancel: Boolean = false,
+            |    // Mocks
+            |    // outputServiceMock
+            |    // @description(serviceOrProcessMockDescr(GetRelationship.serviceMock))
+            |    // getRelationshipMock: Option[MockedServiceResponse[GetRelationship.ServiceOut]] = None,
+            |    // outputMock
+            |    // @description(serviceOrProcessMockDescr(GetContractContractKey.Out()))
+            |    // getContractMock: Option[GetContractContractKey.Out] = None
             |  )
             |  object InConfig:
             |    given ApiSchema[InConfig] = deriveApiSchema
@@ -179,6 +200,7 @@ case class BpmnGenerator()(using config: SetupConfig):
         else ""
       }
       |  case class Out(
+      |     // output variables
       |  )
       |  object Out:
       |    given ApiSchema[Out] = deriveApiSchema
