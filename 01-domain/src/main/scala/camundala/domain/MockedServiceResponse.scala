@@ -92,8 +92,8 @@ object MockedServiceResponse:
           if respStatus < 300 then
             cursor.downField("respBody").as[ServiceOut].map(Right(_))
           else cursor.downField("respBody").as[Option[Json]].map(Left(_))
-        respHeaders <- cursor.downField("respHeaders").as[Seq[Seq[String]]]
-      yield MockedServiceResponse(respStatus, respBody, respHeaders)
+        respHeaders <- cursor.downField("respHeaders").as[Option[Seq[Seq[String]]]]
+      yield MockedServiceResponse(respStatus, respBody, respHeaders.getOrElse(Seq.empty))
     }
 end MockedServiceResponse
 
