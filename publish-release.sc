@@ -18,6 +18,7 @@ import $ivy.`io.github.pme123:camundala-helper_3:1.15.13 compat`, camundala.help
 @main
 def release(version: String): Unit = {
   println(s"Publishing camundala: $version")
+  ChangeLogUpdater.verifyChangelog(version)
 
   val releaseVersion = """^(\d+)\.(\d+)\.(\d+)(-.*)?$"""
   if (!version.matches(releaseVersion))
@@ -31,7 +32,6 @@ def release(version: String): Unit = {
   os.proc("sbt", "-J-Xmx3G", "documentation/laikaSite").call()
 
   if (!isSnapshot) {
-    ChangeLogUpdater.verifyChangelog(version)
     os.proc("sbt", "-J-Xmx3G", "publishSigned").call()
     os.proc("git", "fetch", "--all").call()
     os.proc("git", "commit", "-a", "-m", s"Released Version $version").call()

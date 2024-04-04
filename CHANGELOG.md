@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.6 - 2024-04-04
+### Changed 
+- Added Decision to Code Generation. - see [Commit](https://github.com/pme123/camundala/commit/e26712d589dcf344a813b1993e87e112c532c1df)
+- Added withInOutExample to ApiBaseDsl. - see [Commit](https://github.com/pme123/camundala/commit/336e4634747f7bbacc4746def18fa5810d26b082)
+
 ## 1.29.5 - 2024-03-27
 ### Changed 
 - Fixed Decoder for MockedServiceResponse. - see [Commit](https://github.com/pme123/camundala/commit/86f816bfcb2639a296d8f3bcc7d7bfd4d4b4a8e9)
