@@ -24,6 +24,9 @@ case class SetupGenerator()(using config: SetupConfig):
   def createUserTask(setupObject: SetupElement): Unit =
     BpmnGenerator().createProcessElement(setupObject)
 
+  def createDecision(setupObject: SetupElement): Unit =
+    BpmnGenerator().createProcessElement(setupObject)
+
   def createEvent(setupObject: SetupElement): Unit =
     BpmnGenerator().createEvent(setupObject)
 

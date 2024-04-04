@@ -63,6 +63,8 @@ case class ScriptCreator()(using config: SetupConfig):
        |
        |${createMethod("UserTask")}
        |
+       |${createMethod("Decision")}
+       |
        |${createMethod("SignalEvent")}
        |
        |${createMethod("MessageEvent")}

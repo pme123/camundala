@@ -27,60 +27,67 @@ object DevHelper:
     println(s"Create Process: $processName v$version in ${config.projectName}")
     SetupGenerator().createProcess(processName, version)
 
-  def createCustomTask(processName: String, workerName: String, version: Option[Int])(
+  def createCustomTask(processName: String, bpmnName: String, version: Option[Int])(
       using config: SetupConfig
   ): Unit =
     SetupGenerator().createProcessElement(SetupElement(
       "CustomTask",
       processName,
-      workerName,
+      bpmnName,
       version
     ))
 
-  def createServiceTask(processName: String, workerName: String, version: Option[Int])(
+  def createServiceTask(processName: String, bpmnName: String, version: Option[Int])(
       using config: SetupConfig
   ): Unit =
     SetupGenerator().createProcessElement(SetupElement(
       "ServiceTask",
       processName,
-      workerName,
+      bpmnName,
       version
     ))
 
-  def createUserTask(processName: String, workerName: String, version: Option[Int])(
+  def createUserTask(processName: String, bpmnName: String, version: Option[Int])(
       using config: SetupConfig
   ): Unit =
     SetupGenerator().createUserTask(
-      SetupElement("UserTask", processName, workerName, version)
+      SetupElement("UserTask", processName, bpmnName, version)
+    )
+    
+  def createDecision(processName: String, bpmnName: String, version: Option[Int])(
+      using config: SetupConfig
+  ): Unit =
+    SetupGenerator().createDecision(
+      SetupElement("Decision", processName, bpmnName, version)
     )
 
-  def createSignalEvent(processName: String, workerName: String, version: Option[Int])(
+  def createSignalEvent(processName: String, bpmnName: String, version: Option[Int])(
       using config: SetupConfig
   ): Unit =
     SetupGenerator().createEvent(SetupElement(
       "Signal",
       processName,
-      workerName,
+      bpmnName,
       version
     ))
 
-  def createMessageEvent(processName: String, workerName: String, version: Option[Int])(
+  def createMessageEvent(processName: String, bpmnName: String, version: Option[Int])(
       using config: SetupConfig
   ): Unit =
     SetupGenerator().createEvent(SetupElement(
       "Message",
       processName,
-      workerName,
+      bpmnName,
       version
     ))
 
-  def createTimerEvent(processName: String, workerName: String, version: Option[Int])(using
+  def createTimerEvent(processName: String, bpmnName: String, version: Option[Int])(using
       config: SetupConfig
   ): Unit =
     SetupGenerator().createEvent(SetupElement(
       "Timer",
       processName,
-      workerName,
+      bpmnName,
       version
     ))
 
