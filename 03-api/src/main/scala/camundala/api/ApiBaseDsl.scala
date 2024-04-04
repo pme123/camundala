@@ -8,7 +8,7 @@ import scala.reflect.ClassTag
 
 trait ApiBaseDsl:
 
-  def group(name: String)(apis: InOutApi[?,?]*): CApiGroup =
+  def group(name: String)(apis: InOutApi[?, ?]*): CApiGroup =
     CApiGroup(name, apis.toList)
 
   def api[
@@ -21,7 +21,7 @@ trait ApiBaseDsl:
   def api[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
       Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag
-  ](pApi: ProcessApi[In, Out])(body: InOutApi[?,?]*): ProcessApi[In, Out] =
+  ](pApi: ProcessApi[In, Out])(body: InOutApi[?, ?]*): ProcessApi[In, Out] =
     pApi.withApis(body.toList)
 
   extension [
@@ -48,6 +48,10 @@ trait ApiBaseDsl:
 
     def withOutExample(label: String, example: Out): T =
       inOutApi.addOutExample(label, example).asInstanceOf[T]
+
+    def withInOutExample(label: String, inExample: In, outExample: Out): T =
+      inOutApi.addInExample(label, inExample).addOutExample(label, outExample).asInstanceOf[T]
+
   end extension
 
   extension [
