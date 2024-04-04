@@ -115,6 +115,7 @@ object ModuleConfig:
   lazy val bpmnModule = ModuleConfig(
     "bpmn",
     level = 2,
+    hasTest = true,
     generateSubModule = true,
     hasProjectDependencies = true
   )

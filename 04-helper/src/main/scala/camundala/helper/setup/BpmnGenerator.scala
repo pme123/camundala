@@ -86,9 +86,16 @@ case class BpmnGenerator()(using config: SetupConfig):
       }
        |${inOutDefinitions(isProcess)}
        |
-       |  lazy val example = ${label.head.toLower + label.tail}(
-       |    In(),
-       |    Out()${
+       |  lazy val example = ${
+        if label == "Decision" then
+          """singleResult( // singleEntry or collectEntries or  or resultList
+             |    In(),
+             |    Out() // Seq[Out] for collectEntries or  or resultList""".stripMargin
+        else
+          s"""${label.head.toLower + label.tail}(
+             |    In(),
+             |    Out()""".stripMargin
+      }    ${
         if label == "ServiceTask" then
           s""",
              |    serviceMock,
