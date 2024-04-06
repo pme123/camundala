@@ -14,7 +14,15 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
         case s: Seq[?] => s.collect { case ss: SScenario => ss }
         case s: SScenario => Seq(s)
 
-      run(SSimulation(scenarios.toList)) // runs Scenarios
+      val modScen =
+        if scenarios.exists(_.isOnly)
+        then
+          scenarios.map:
+            case s if s.isOnly => s
+            case s => s.ignored
+        else scenarios
+
+      run(SSimulation(modScen.toList)) // runs Scenarios
     catch
       case err => // there could be errors in the creation of the SScenarios
         err.printStackTrace()
@@ -247,5 +255,68 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     ): SScenario =
       scen.ignored
   end ignore
+  
+  object only:
+    
+    def scenario(scen: SScenario): SScenario =
+      scen.only
+
+    def scenario(scen: SScenario)(body: SStep*): SScenario =
+      scen.only
+
+    inline def serviceScenario[
+        In <: Product: InOutEncoder: InOutDecoder: Schema,
+        Out <: Product: InOutEncoder: InOutDecoder: Schema,
+        ServiceIn: InOutEncoder: InOutDecoder,
+        ServiceOut: InOutEncoder: InOutDecoder
+    ](
+        task: ServiceTask[In, Out, ServiceIn, ServiceOut],
+        outputMock: Out,
+        outputServiceMock: MockedServiceResponse[ServiceOut]
+    ): Seq[ExternalTaskScenario] =
+      Seq(ExternalTaskScenario(nameOfVariable(task) + " defaultMock", task).only)
+
+    inline def serviceScenario[
+        In <: Product: InOutEncoder: InOutDecoder: Schema,
+        Out <: Product: InOutEncoder: InOutDecoder: Schema,
+        ServiceIn: InOutEncoder: InOutDecoder,
+        ServiceOut: InOutEncoder: InOutDecoder
+    ](
+        task: ServiceTask[In, Out, ServiceIn, ServiceOut],
+        outputMock: Out,
+        outputServiceMock: ServiceOut,
+        respHeaders: Map[String, String] = Map.empty
+    ): Seq[ExternalTaskScenario] =
+      serviceScenario(
+        task,
+        outputMock,
+        MockedServiceResponse.success200(outputServiceMock).withHeaders(respHeaders)
+      )
+
+    inline def serviceScenario[
+        In <: Product: InOutEncoder: InOutDecoder: Schema,
+        Out <: Product: InOutEncoder: InOutDecoder: Schema,
+        ServiceIn: InOutEncoder: InOutDecoder,
+        ServiceOut: InOutEncoder: InOutDecoder
+    ](
+        task: ServiceTask[In, Out, ServiceIn, ServiceOut]
+    ): Seq[ExternalTaskScenario] =
+      serviceScenario(task, task.out, task.defaultServiceOutMock)
+
+    def badScenario(
+        scen: SScenario,
+        status: Int,
+        errorMsg: Optable[String] = None
+    ): SScenario =
+      scen.only
+
+    def incidentScenario(scen: SScenario, incidentMsg: String): SScenario =
+      scen.only
+
+    def incidentScenario(scen: SScenario, incidentMsg: String)(
+        body: SStep*
+    ): SScenario =
+      scen.only
+  end only
 
 end SimulationDsl

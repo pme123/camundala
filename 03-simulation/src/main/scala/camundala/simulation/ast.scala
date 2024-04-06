@@ -17,6 +17,7 @@ sealed trait WithTestOverrides[T <: WithTestOverrides[T]]:
     )
   lazy val camundaToCheckMap: Map[String, CamundaVariable] =
     inOut.camundaToCheckMap
+end WithTestOverrides
 
 sealed trait ScenarioOrStep:
   def name: String
@@ -26,7 +27,10 @@ sealed trait SScenario extends ScenarioOrStep:
   def inOut: InOut[?, ?, ?]
   def isIgnored: Boolean
   def ignored: SScenario
+  def isOnly: Boolean
+  def only: SScenario
   def withSteps(steps: List[SStep]): SScenario
+end SScenario
 
 sealed trait HasProcessSteps extends ScenarioOrStep:
   def process: ProcessOrExternalTask[?, ?, ?]
@@ -42,6 +46,7 @@ case class ProcessScenario(
     process: Process[?, ?],
     steps: List[SStep] = List.empty,
     isIgnored: Boolean = false,
+    isOnly: Boolean = false,
     testOverrides: Option[TestOverrides] = None,
     startType: ProcessStartType = ProcessStartType.START
 ) extends IsProcessScenario,
@@ -52,6 +57,7 @@ case class ProcessScenario(
     copy(testOverrides = addOverride(testOverride))
 
   def ignored: ProcessScenario = copy(isIgnored = true)
+  def only: ProcessScenario = copy(isOnly = true)
   def withSteps(steps: List[SStep]): SScenario =
     copy(steps = steps)
 end ProcessScenario
@@ -63,6 +69,7 @@ case class ExternalTaskScenario(
     name: String,
     process: ExternalTask[?, ?, ?],
     isIgnored: Boolean = false,
+    isOnly: Boolean = false,
     testOverrides: Option[TestOverrides] = None,
     startType: ProcessStartType = ProcessStartType.START
 ) extends IsProcessScenario,
@@ -76,6 +83,8 @@ case class ExternalTaskScenario(
 
   def ignored: ExternalTaskScenario = copy(isIgnored = true)
 
+  def only: ExternalTaskScenario = copy(isOnly = true)
+
   def withSteps(steps: List[SStep]): SScenario =
     this
 
@@ -85,6 +94,7 @@ case class DmnScenario(
     name: String,
     inOut: DecisionDmn[?, ?],
     isIgnored: Boolean = false,
+    isOnly: Boolean = false,
     testOverrides: Option[TestOverrides] = None
 ) extends SScenario,
       WithTestOverrides[DmnScenario]:
@@ -92,6 +102,8 @@ case class DmnScenario(
     copy(testOverrides = addOverride(testOverride))
 
   def ignored: DmnScenario = copy(isIgnored = true)
+
+  def only: DmnScenario = copy(isOnly = true)
 
   def withSteps(steps: List[SStep]): SScenario =
     this
@@ -102,11 +114,13 @@ case class BadScenario(
     process: Process[?, ?],
     status: Int,
     errorMsg: Option[String],
-    isIgnored: Boolean = false
+    isIgnored: Boolean = false,
+    isOnly: Boolean = false
 ) extends IsProcessScenario:
   lazy val inOut: Process[?, ?] = process
   lazy val steps: List[SStep] = List.empty
   def ignored: BadScenario = copy(isIgnored = true)
+  def only: BadScenario = copy(isOnly = true)
 
   def withSteps(steps: List[SStep]): SScenario =
     this
@@ -120,12 +134,15 @@ case class IncidentScenario(
     process: Process[?, ?],
     steps: List[SStep] = List.empty,
     incidentMsg: String,
-    isIgnored: Boolean = false
+    isIgnored: Boolean = false,
+    isOnly: Boolean = false
 ) extends IsIncidentScenario,
       HasProcessSteps:
   lazy val inOut: Process[?, ?] = process
 
   def ignored: IncidentScenario = copy(isIgnored = true)
+
+  def only: IncidentScenario = copy(isOnly = true)
 
   def withSteps(steps: List[SStep]): SScenario =
     copy(steps = steps)
@@ -136,12 +153,15 @@ case class IncidentServiceScenario(
     name: String,
     process: ExternalTask[?, ?, ?],
     incidentMsg: String,
-    isIgnored: Boolean = false
+    isIgnored: Boolean = false,
+    isOnly: Boolean = false
 ) extends IsIncidentScenario:
   lazy val inOut: ExternalTask[?, ?, ?] = process
   lazy val steps: List[SStep] = List.empty
 
   def ignored: IncidentServiceScenario = copy(isIgnored = true)
+
+  def only: IncidentServiceScenario = copy(isOnly = true)
 
   def withSteps(steps: List[SStep]): SScenario = this
 
@@ -157,6 +177,7 @@ sealed trait SInServiceOuttep
   lazy val descr: Option[String] = inOutDescr.descr
   lazy val camundaInMap: Map[String, CamundaVariable] = inOut.camundaInMap
   lazy val camundaOutMap: Map[String, CamundaVariable] = inOut.camundaOutMap
+end SInServiceOuttep
 
 case class SUserTask(
     name: String,
@@ -168,6 +189,7 @@ case class SUserTask(
 
   def add(testOverride: TestOverride): SUserTask =
     copy(testOverrides = addOverride(testOverride))
+end SUserTask
 
 case class SSubProcess(
     name: String,
@@ -182,6 +204,7 @@ case class SSubProcess(
 
   def add(testOverride: TestOverride): SSubProcess =
     copy(testOverrides = addOverride(testOverride))
+end SSubProcess
 
 sealed trait SEvent extends SInServiceOuttep:
   def readyVariable: String
@@ -203,6 +226,7 @@ case class SMessageEvent(
   // If you send a Message to start a process, there is no processInstanceId
   def start: SMessageEvent =
     copy(processInstanceId = false)
+end SMessageEvent
 
 case class SSignalEvent(
     name: String,

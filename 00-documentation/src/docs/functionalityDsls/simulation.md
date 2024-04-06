@@ -390,6 +390,29 @@ If you want to ignore all the Scenarios you can 'ignore' the Simulation like:
   )
 ```
 
+### Only a Scenario
+You can run only a scenario at the time by just prefix your Scenario with `only`.
+
+#### Examples:
+```scala
+simulate (
+    scenario(`Review Invoice`)(
+      AssignReviewerUT,
+      ReviewInvoiceUT
+    ),
+    only.incidentScenario(
+      `Invoice Receipt that fails`,
+      "Could not archive invoice..."
+    )(
+      ApproveInvoiceUT,
+      PrepareBankTransferUT
+    ),
+    scenario(InvoiceAssignApproverDMN)
+)
+```
+An only Scenario will create a Warning for all other Scenarios as they are ignored.
+
+
 ## Steps
 This is a List with Process Interactions like [User Task], [Receive Message Event] or [Receive Signal Event].
 Each Interaction is simply the Activity you define with the [BPMN DSL].
