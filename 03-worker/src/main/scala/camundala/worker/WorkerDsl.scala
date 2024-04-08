@@ -5,17 +5,27 @@ import camundala.bpmn.*
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 
-trait WorkerDsl:
+trait WorkerDsl[In <: Product: InOutCodec,
+  Out <: Product: InOutCodec]:
 
   protected def engineContext: EngineContext
 
   protected def logger: WorkerLogger
 
   // needed that it can be called from CSubscriptionPostProcessor
-  def worker: Worker[?, ?, ?]
+  def worker: Worker[In, Out, ?]
 
   def topic: String = worker.topic
 
+  def runWorkFromWorker(in: In)(using EngineRunContext): Option[Either[RunWorkError, Out]] =
+    worker.runWorkHandler
+      .map: handler =>
+        handler.runWork(in)
+
+  def runWorkFromWorkerUnsafe(in: In)(using EngineRunContext): Either[RunWorkError, Out] =
+    runWorkFromWorker(in)
+      .get //only if you are sure that there is a handler
+    
   extension [T](option: Option[T])
     def toEither[E <: CamundalaWorkerError](
         error: E
@@ -33,7 +43,7 @@ trait InitWorkerDsl[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
     InConfig <: Product: InOutCodec
-] extends WorkerDsl,
+] extends WorkerDsl[In, Out],
       ValidateDsl[In],
       InitProcessDsl[In, InConfig]:
 
@@ -48,7 +58,7 @@ end InitWorkerDsl
 
 trait ValidationWorkerDsl[
   In <: Product : InOutCodec,
-] extends WorkerDsl,
+] extends WorkerDsl[In, NoOutput],
   ValidateDsl[In]:
 
   protected def inOutExample: ReceiveEvent[In, ?]
@@ -62,7 +72,7 @@ end ValidationWorkerDsl
 trait CustomWorkerDsl[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec
-] extends WorkerDsl,
+] extends WorkerDsl[In, Out],
       ValidateDsl[In],
       RunWorkDsl[In, Out]:
 
@@ -80,7 +90,7 @@ trait ServiceWorkerDsl[
     Out <: Product: InOutCodec,
     ServiceIn <: Product: InOutEncoder,
     ServiceOut: InOutDecoder
-] extends WorkerDsl,
+] extends WorkerDsl[In, Out],
       ValidateDsl[In],
       RunWorkDsl[In, Out]:
 

@@ -28,23 +28,18 @@ class ComposedWorker
       EngineRunContext(engineContext, GeneralVariables())
 
     val peopleWorkerIn = StarWarsPeople.In()
-    val out = peopleWorker.worker.runWorkHandler
-      .map: handler =>
-        handler.runWork(peopleWorkerIn)
-          .left.map: error =>
-            CustomError(
-              s"Error while fetching Starwars People:\n- ${error.errorMsg}."
-            )
-      .getOrElse(Right(StarWarsPeople.Out.Failure()))
-    out
-      .map:
-        case StarWarsPeople.Out.Success(people, _) =>
-          logger.info(s"- Got People: $people")
-          Out()
-        case StarWarsPeople.Out.Failure(processStatus) =>
-          logger.info(s"- Got People failed with: $processStatus")
-          Out()
-
+    val out = peopleWorker.runWorkFromWorkerUnsafe(peopleWorkerIn)
+      .left.map: error =>
+        CustomError(
+          s"Error while fetching Starwars People:\n- ${error.errorMsg}."
+        )
+    out.map:
+      case StarWarsPeople.Out.Success(people, _) =>
+        logger.info(s"- Got People: $people")
+        Out()
+      case StarWarsPeople.Out.Failure(processStatus) =>
+        logger.info(s"- Got People failed with: $processStatus")
+        Out()
 
   end runWork
 
