@@ -15,6 +15,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.7 - 2024-04-08
+### Changed 
+- Changed worker project dependency to compile from test (to run workers within workers). - see [Commit](https://github.com/pme123/camundala/commit/d69d7af23de9535ebf75931c5558edb8939d23d6)
+- Added function to run worker from worker. - see [Commit](https://github.com/pme123/camundala/commit/f740d381a1a4ecd242d3564b4391b966d9fde381)
+- Adjusted ComposedWorker Example. - see [Commit](https://github.com/pme123/camundala/commit/9d2dd10e5edc8b32e14e7a9b6d8d183fc257dba9)
+- Added ComposedWorker. - see [Commit](https://github.com/pme123/camundala/commit/4271ba71f083f2ede7701c6c3ac94ef62320256f)
+- Implemented only Scenario. - see [Commit](https://github.com/pme123/camundala/commit/ea9bf6c9137939ce9fa15853db9d3423e7dc5022)
+
 ## 1.29.6 - 2024-04-04
 ### Changed 
 - Added Decision to Code Generation. - see [Commit](https://github.com/pme123/camundala/commit/e26712d589dcf344a813b1993e87e112c532c1df)

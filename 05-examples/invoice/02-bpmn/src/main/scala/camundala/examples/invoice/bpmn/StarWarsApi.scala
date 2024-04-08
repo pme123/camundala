@@ -4,11 +4,8 @@ import camundala.bpmn.*
 import camundala.bpmn.GenericExternalTask.ProcessStatus
 import camundala.domain.*
 import io.github.iltotore.iron.*
-import io.github.iltotore.iron.circe.given
 import io.github.iltotore.iron.constraint.all.*
-import io.github.iltotore.iron.constraint.string.Alphanumeric
 import sttp.tapir.Schema.annotations.description
-import sttp.tapir.codec.iron.given
 
 trait StarWarsApi extends BpmnServiceTaskDsl:
   val serviceLabel: String = "Star Wars API"
