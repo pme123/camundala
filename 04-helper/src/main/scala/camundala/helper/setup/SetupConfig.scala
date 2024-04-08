@@ -142,8 +142,7 @@ object ModuleConfig:
     sbtSettings = Seq("dockerSettings"),
     sbtPlugins = Seq("DockerPlugin", "JavaAppPackaging"),
     sbtDependencies = Seq("springBoot", "jaxbXml"),
-    hasProjectDependencies = true,
-    projectDependenciesTestOnly = true
+    hasProjectDependencies = true
   )
   lazy val helperModule = ModuleConfig(
     "helper",
