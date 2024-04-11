@@ -16,7 +16,9 @@ def createOrUpdate(file: os.Path, contentNew: String): Unit =
   val contentUpdated =
     if contentExisting.contains(doNotAdjust) 
     then contentNew
-    else contentExisting
+    else
+      println(s"${Console.RED}File $file was not updated! - if you want so add $doNotAdjust at the top of this file.${Console.RESET}")
+      contentExisting
   os.write.over(file, contentUpdated)
   
 end createOrUpdate
