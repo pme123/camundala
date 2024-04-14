@@ -26,5 +26,7 @@ end createOrUpdate
 extension (version: Option[Int])
   def versionPath: String =
     version.map(v => s"v$v").getOrElse("v1")
+  def versionLabel: String =
+    version.map(v => s"V$v").getOrElse("V1")
   def versionPackage: String =
     version.map(v => s".v$v").getOrElse(".v1")

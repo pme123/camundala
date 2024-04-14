@@ -15,6 +15,9 @@ object ProjectApiCreator extends DefaultApiCreator:
 
   protected val version = "1.0"
 
+  lazy val companyDescr: ExampleName = ""
+  lazy val projectDescr: ExampleName = ""
+
   override protected val apiConfig: ApiConfig =
     ApiConfig("demoCompany")
       .withBasePath(os.pwd / "05-examples" / "demos")

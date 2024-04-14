@@ -69,7 +69,7 @@ case class BpmnGenerator()(using config: SetupConfig):
           case "SignalEvent" | "MessageEvent" => "messageName"
           case "TimerEvent" => "title"
           case _ => "topicName"
-      } = "${config.projectName}-$processName${version.versionPackage}${
+      } = "${config.projectName}-$processName${version.versionLabel}${
         if label == "Process" then "" else s".$bpmnName"
       }"
        |  val descr: String = ""
@@ -94,7 +94,7 @@ case class BpmnGenerator()(using config: SetupConfig):
         else
           s"""${label.head.toLower + label.tail}(
              |    In(),
-             |    Out()""".stripMargin
+             |    ${if isProcess then "Out.Success" else "Out" }()""".stripMargin
       }    ${
         if label == "ServiceTask" then
           s""",

@@ -20,6 +20,9 @@ object ProjectApiCreator extends DefaultApiCreator:
   // version of your project
   protected val version = "1.0"
 
+  lazy val companyDescr: ExampleName = ""
+  lazy val projectDescr: ExampleName = ""
+
   document(
     api(`Invoice Receipt`)(
       InvoiceAssignApproverDMN1,

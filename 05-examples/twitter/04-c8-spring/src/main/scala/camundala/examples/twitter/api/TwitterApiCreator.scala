@@ -28,3 +28,7 @@ object TwitterApiCreator extends DefaultApiCreator:
     reviewTweetApprovedUT
       .withOutExample("Tweet accepted", ReviewedTweet(approved = true))
       .withOutExample("Tweet rejected", ReviewedTweet())
+
+  lazy val companyDescr: ExampleName = ""
+  lazy val projectDescr: ExampleName = ""
+end TwitterApiCreator

@@ -16,6 +16,9 @@ object ProjectApiCreator extends DefaultApiCreator:
 
   val version = "1.0"
 
+  lazy val companyDescr: ExampleName = ""
+  lazy val projectDescr: ExampleName = ""
+
   document(
     api(twitterDemoProcess)(
       ReviewTweetApprovedUT
