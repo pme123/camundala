@@ -252,7 +252,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
       "There is no README.md in the Project."
   end createReadme
 
-  protected def description: String = 
+  protected def description: String =
     s"""
        |$companyDescr
        |
@@ -290,7 +290,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
          |
          |$description
          |"""
-      
+
   private def writeOpenApi(
       path: os.Path,
       api: OpenAPI,
