@@ -3,8 +3,8 @@ info:
   title: Invoice Example Process API
   version: '1.0'
   summary: "\n**This is for Postman - to have example requests. Be aware the Output\
-    \ is not provided!**\n\n\n\nCreated at 24/02/2024, 12:03\n\n**See the [Camundala\
-    \ Documentation](https://pme123.github.io/camundala/)\n\nThere is no README.md\
+    \ is not provided!**\n\n\n\nCreated at 14/04/2024, 09:37\n\n**See the [Camundala\
+    \ Documentation](https://pme123.github.io/camundala/)**\n\nThere is no README.md\
     \ in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>General Variables</i></b>\n\
     </summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\nMock all the _ServiceWorkers_\
     \ in your process with their default Mock:\n\n- DSL:\n```scala\nprocess(..)\n\
@@ -58,7 +58,14 @@ info:
     \ if you have Tokens that expire, but long running Processes.\n\n- DSL:\n```scala\n\
     process(..) // or serviceTask(..)/customTask(..)\n  .withImpersonateUserId(impersonateUserId)\n\
     ```\n\n- Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
-    \n</p>\n</details>\n<p/>\n        \n\n"
+    \n</p>\n</details>\n<p/>\n        \n\n<script>\n        function downloadSVG(id)\
+    \ {\n            const container = document.getElementById(id);\n            const\
+    \ svg = container.getElementsByTagName('svg')[0];\n            console.log(svg)\n\
+    \            svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')\n       \
+    \     const blob = new Blob([svg.outerHTML.toString()]);\n            const element\
+    \ = document.createElement(\"a\");\n            element.download = \"w3c.svg\"\
+    ;\n            element.href = window.URL.createObjectURL(blob);\n            element.click();\n\
+    \            element.remove();\n        }\n</script>\n\n"
 servers:
 - url: http://localhost:8034/engine-rest
   description: Local Developer Server
@@ -68,8 +75,20 @@ paths:
       tags:
       - example-invoice-c7
       summary: 'Bpmn: c7'
-      description: |
+      description: |2
+
         This starts the Invoice Receipt Process.
+
+        ---
+
+        - **Called Element**: `example-invoice-c7` (to define in the Call Activity)
+
+
+
+        ---
+
+
+
 
         See API Doc: [Bpmn: c7](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Bpmn:%20c7)
       operationId: postProcess-definitionKeyExample-invoice-c7Start
@@ -436,8 +455,20 @@ paths:
       tags:
       - example-invoice-c7-review
       summary: 'Bpmn: c7-review'
-      description: |
+      description: |2
+
         This starts the Review Invoice Process.
+
+        ---
+
+        - **Called Element**: `example-invoice-c7-review` (to define in the Call Activity)
+
+
+
+        ---
+
+
+
 
         See API Doc: [Bpmn: c7-review](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Bpmn:%20c7-review)
       operationId: postProcess-definitionKeyExample-invoice-c7-reviewStart
@@ -713,6 +744,47 @@ paths:
       summary: 'Worker: star-wars-api-people-detail'
       description: |
         Get People Details from StarWars API
+
+        ---
+
+
+
+        <details>
+        <summary><b>Wrapped Service:</b>
+
+        (Star Wars API - v1.0 - GET /people/${in.id})
+        </summary>
+        <p>
+        Input Body: `camundala.domain.NoInput`:
+
+
+        Example Response: `camundala.examples.invoice.bpmn.People`:
+
+        ```json
+        {
+          "respStatus" : 200,
+          "respBody" : {
+            "name" : "Luke Skywalker",
+            "height" : "172",
+            "mass" : "77",
+            "hair_color" : "blond",
+            "skin_color" : "fair",
+            "eye_color" : "blue"
+          },
+          "respHeaders" : [
+            [
+              "fromHeader",
+              "okidoki"
+            ]
+          ]
+        }
+        ```
+        </p>
+        </details>
+        </p>
+
+        ---
+
 
         See API Doc: [Worker: star-wars-api-people-detail](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Worker:%20star-wars-api-people-detail)
       operationId: postProcess-definitionKeyCamundala-externaltask-genericStart--remove:star-wars-api-people-detail--

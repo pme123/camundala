@@ -9,6 +9,7 @@ case class SetupGenerator()(using config: SetupConfig):
     GenericFileGenerator().generate
     WorkerGenerator().generate
     HelperGenerator().generate
+    ApiGenerator().generate
   end generate
 
   def createProcess(processName: String, version: Option[Int]): Unit =
