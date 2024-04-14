@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: "\n\nCreated at 24/02/2024, 12:03\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)\n\
+  summary: "\n\nCreated at 14/04/2024, 09:37\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)**\n\
     \nThere is no README.md in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>General\
     \ Variables</i></b>\n</summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\
     \nMock all the _ServiceWorkers_ in your process with their default Mock:\n\n-\
@@ -56,24 +56,34 @@ info:
     \ if you have Tokens that expire, but long running Processes.\n\n- DSL:\n```scala\n\
     process(..) // or serviceTask(..)/customTask(..)\n  .withImpersonateUserId(impersonateUserId)\n\
     ```\n\n- Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
-    \n</p>\n</details>\n<p/>\n        \n"
+    \n</p>\n</details>\n<p/>\n        \n\n<script>\n        function downloadSVG(id)\
+    \ {\n            const container = document.getElementById(id);\n            const\
+    \ svg = container.getElementsByTagName('svg')[0];\n            console.log(svg)\n\
+    \            svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')\n       \
+    \     const blob = new Blob([svg.outerHTML.toString()]);\n            const element\
+    \ = document.createElement(\"a\");\n            element.download = \"w3c.svg\"\
+    ;\n            element.href = window.URL.createObjectURL(blob);\n            element.click();\n\
+    \            element.remove();\n        }\n</script>\n"
 paths:
   /Bpmn/example-invoice-c7/c7/example-invoice-c7:
     head:
       tags:
       - example-invoice-c7
       summary: 'Bpmn: c7'
-      description: "This starts the Invoice Receipt Process.\n\n- Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt\
-        \ > In`\n- Output: `camundala.examples.invoice.bpmn.InvoiceReceipt > Out`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-46158\"\
+      description: "\nThis starts the Invoice Receipt Process.\n\n---\n\n- **Called\
+        \ Element**: `example-invoice-c7` (to define in the Call Activity)\n\n\n\n\
+        ---\n\n\n\n\n- Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt > In`\n\
+        - Output: `camundala.examples.invoice.bpmn.InvoiceReceipt > Out`\n\n\n<div\
+        \ class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-66259\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container:\
-        \ $('#example-invoice-c7-46158'), height: '95%', width: '95%' }));\" src=\"\
+        \ $('#example-invoice-c7-66259'), height: '95%', width: '95%' }));\" src=\"\
         data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
-        \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)\n\
-        \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
-        \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
-        ```json\n...\n\"outputVariables\": \"approved,clarified,archived\",\n...\n\
-        ```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"approved\"\
+        \ />\n  </div>\n</div>\n\n<p>Download: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)</p\n\
+        <button onclick=\"downloadSVG('#example-invoice-c7-66259')\">Download Diagram\
+        \ as SVG</button>\n\n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n\
+        </summary>\n\n<p>\n\n**outputVariables**:\n\nJust take the variable you need\
+        \ in your process!\n```json\n...\n\"outputVariables\": \"approved,clarified,archived\"\
+        ,\n...\n```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"approved\"\
         \ : true,\n  \"clarified\" : null,\n  \"archived\" : false\n},\n...\n```\n\
         \n</p>\n</details>\n</p>\n      "
       operationId: 'Bpmn: c7'
@@ -125,12 +135,13 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-9938">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-9938'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-55774">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-55774'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
-        Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)
+        <p>Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)</p
+        <button onclick="downloadSVG('#example-invoice-c7-assignApprover-55774')">Download Diagram as SVG</button>
 
       operationId: 'Dmn: c7-assignApprover'
       requestBody:
@@ -162,7 +173,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CollectEntries_camundala.examples.invoice.bpmn.InvoiceReceipt$.ApproverGroup[]'
+                $ref: '#/components/schemas/CollectEntries_ApproverGroup'
               examples:
                 example-invoice-c7-assignApprover:
                   value:
@@ -277,18 +288,21 @@ paths:
       tags:
       - example-invoice-c7-review
       summary: 'Bpmn: c7-review'
-      description: "This starts the Review Invoice Process.\n\n- Input:  `camundala.examples.invoice.bpmn.ReviewInvoice\
+      description: "\nThis starts the Review Invoice Process.\n\n---\n\n- **Called\
+        \ Element**: `example-invoice-c7-review` (to define in the Call Activity)\n\
+        \n\n\n---\n\n\n\n\n- Input:  `camundala.examples.invoice.bpmn.ReviewInvoice\
         \ > In`\n- Output: `camundala.examples.invoice.bpmn.ReviewInvoice > Out`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-53121\"\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-81104\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({\
-        \ container: $('#example-invoice-c7-review-53121'), height: '95%', width:\
+        \ container: $('#example-invoice-c7-review-81104'), height: '95%', width:\
         \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
-        \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)\n\
-        \n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
-        \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
-        ```json\n...\n\"outputVariables\": \"clarified\",\n...\n```\n\n**outputMock**:\n\
-        \n```json\n...\n\"outputMock\": {\n  \"clarified\" : true\n},\n...\n```\n\n\
-        </p>\n</details>\n</p>\n      "
+        \ />\n  </div>\n</div>\n\n<p>Download: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)</p\n\
+        <button onclick=\"downloadSVG('#example-invoice-c7-review-81104')\">Download\
+        \ Diagram as SVG</button>\n\n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n\
+        </summary>\n\n<p>\n\n**outputVariables**:\n\nJust take the variable you need\
+        \ in your process!\n```json\n...\n\"outputVariables\": \"clarified\",\n...\n\
+        ```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"clarified\"\
+        \ : true\n},\n...\n```\n\n</p>\n</details>\n</p>\n      "
       operationId: 'Bpmn: c7-review'
       requestBody:
         content:
@@ -397,26 +411,34 @@ paths:
       summary: 'Worker: star-wars-api-people-detail'
       description: "\n\n\n**Topic:** `star-wars-api-people-detail` (to define in the\
         \ _**Topic**_ of the _**External Task**_ > _Service Task_ of type _External_)\n\
-        \nGet People Details from StarWars API\n\n- Input:  `camundala.examples.invoice.bpmn.StarWarsPeopleDetail\
-        \ > In`\n- Output: `camundala.examples.invoice.bpmn.StarWarsPeopleDetail >\
-        \ Out > Success`\n\nYou can test this worker using the generic process _**camundala-externalTask-generic**_\
+        \nGet People Details from StarWars API\n\n---\n\n\n\n<details>\n<summary><b>Wrapped\
+        \ Service:</b>\n\n(Star Wars API - v1.0 - GET /people/${in.id})\n</summary>\n\
+        <p>\nInput Body: `camundala.domain.NoInput`:\n\n\nExample Response: `camundala.examples.invoice.bpmn.People`:\n\
+        \n```json\n{\n  \"respStatus\" : 200,\n  \"respBody\" : {\n    \"name\" :\
+        \ \"Luke Skywalker\",\n    \"height\" : \"172\",\n    \"mass\" : \"77\",\n\
+        \    \"hair_color\" : \"blond\",\n    \"skin_color\" : \"fair\",\n    \"eye_color\"\
+        \ : \"blue\"\n  },\n  \"respHeaders\" : [\n    [\n      \"fromHeader\",\n\
+        \      \"okidoki\"\n    ]\n  ]\n}\n```\n</p>\n</details>\n</p>\n\n---\n\n\n\
+        - Input:  `camundala.examples.invoice.bpmn.StarWarsPeopleDetail > In`\n- Output:\
+        \ `camundala.examples.invoice.bpmn.StarWarsPeopleDetail > Out > Success`\n\
+        \nYou can test this worker using the generic process _**camundala-externalTask-generic**_\
         \ (e.g. with Postman).\n\n- ServiceOut:  `camundala.domain.MockedServiceResponse`\n\
         <p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n</summary>\n\
         \n<p>\n\n**outputVariables**:\n\nJust take the variable you need in your process!\n\
-        ```json\n...\n\"outputVariables\": \"people,fromHeader,justForShow,processStatus\"\
-        ,\n...\n```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"people\"\
+        ```json\n...\n\"outputVariables\": \"people,fromHeader,processStatus\",\n\
+        ...\n```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"people\"\
         \ : {\n    \"name\" : \"Luke Skywalker\",\n    \"height\" : \"172\",\n   \
         \ \"mass\" : \"77\",\n    \"hair_color\" : \"blond\",\n    \"skin_color\"\
         \ : \"fair\",\n    \"eye_color\" : \"blue\"\n  },\n  \"fromHeader\" : \"okidoki\"\
-        ,\n  \"justForShow\" : null,\n  \"processStatus\" : \"succeeded\",\n  \"type\"\
-        \ : \"Success\"\n},\n...\n```\n\n**outputServiceMock**:\n```json\n...\n\"\
-        outputServiceMock\": {\n  \"respStatus\" : 200,\n  \"respBody\" : {\n    \"\
-        respStatus\" : 200,\n    \"respBody\" : {\n      \"name\" : \"Luke Skywalker\"\
-        ,\n      \"height\" : \"172\",\n      \"mass\" : \"77\",\n      \"hair_color\"\
-        \ : \"blond\",\n      \"skin_color\" : \"fair\",\n      \"eye_color\" : \"\
-        blue\"\n    },\n    \"respHeaders\" : [\n      [\n        \"fromHeader\",\n\
-        \        \"okidoki\"\n      ]\n    ]\n  },\n  \"respHeaders\" : [\n  ]\n},\n\
-        ...\n```\n</p>\n</details>\n</p>\n      \n    "
+        ,\n  \"processStatus\" : \"succeeded\",\n  \"type\" : \"Success\"\n},\n...\n\
+        ```\n\n**outputServiceMock**:\n```json\n...\n\"outputServiceMock\": {\n  \"\
+        respStatus\" : 200,\n  \"respBody\" : {\n    \"respStatus\" : 200,\n    \"\
+        respBody\" : {\n      \"name\" : \"Luke Skywalker\",\n      \"height\" : \"\
+        172\",\n      \"mass\" : \"77\",\n      \"hair_color\" : \"blond\",\n    \
+        \  \"skin_color\" : \"fair\",\n      \"eye_color\" : \"blue\"\n    },\n  \
+        \  \"respHeaders\" : [\n      [\n        \"fromHeader\",\n        \"okidoki\"\
+        \n      ]\n    ]\n  },\n  \"respHeaders\" : [\n  ]\n},\n...\n```\n</p>\n</details>\n\
+        </p>\n      \n    "
       operationId: 'Worker: star-wars-api-people-detail'
       requestBody:
         content:
@@ -658,12 +680,13 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-79518">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-79518'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-81681">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-81681'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
-        Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)
+        <p>Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)</p
+        <button onclick="downloadSVG('#example-invoice-c7-assignApprover-81681')">Download Diagram as SVG</button>
 
       operationId: 'Dmn: c7-assignApprover'
       requestBody:
@@ -683,7 +706,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CollectEntries_camundala.examples.invoice.bpmn.InvoiceReceipt$.ApproverGroup[]'
+                $ref: '#/components/schemas/CollectEntries_ApproverGroup'
               examples:
                 example-invoice-c7-assignApprover:
                   value:
@@ -703,7 +726,7 @@ components:
       - accounting
       - management
       - sales
-    CollectEntries_camundala.examples.invoice.bpmn.InvoiceReceipt$.ApproverGroup[]:
+    CollectEntries_ApproverGroup:
       oneOf:
       - $ref: '#/components/schemas/ApproverGroup'
     Failure:
@@ -923,8 +946,6 @@ components:
         people:
           $ref: '#/components/schemas/People'
         fromHeader:
-          type: string
-        justForShow:
           type: string
         processStatus:
           $ref: '#/components/schemas/ProcessStatus'

@@ -69,7 +69,7 @@ case class BpmnGenerator()(using config: SetupConfig):
           case "SignalEvent" | "MessageEvent" => "messageName"
           case "TimerEvent" => "title"
           case _ => "topicName"
-      } = "${config.projectName}-$processName${version.versionPackage}${
+      } = "${config.projectName}-$processName${version.versionLabel}${
         if label == "Process" then "" else s".$bpmnName"
       }"
        |  val descr: String = ""
@@ -94,7 +94,7 @@ case class BpmnGenerator()(using config: SetupConfig):
         else
           s"""${label.head.toLower + label.tail}(
              |    In(),
-             |    Out()""".stripMargin
+             |    ${if isProcess then "Out.Success" else "Out" }()""".stripMargin
       }    ${
         if label == "ServiceTask" then
           s""",
@@ -171,7 +171,7 @@ case class BpmnGenerator()(using config: SetupConfig):
 
   private def inOutDefinitions(isProcess: Boolean = false) =
     s"""  case class In(
-      |     // input variables
+      |     //TODO input variables
       |  ${
         if isProcess then
           """    @description(
@@ -206,9 +206,22 @@ case class BpmnGenerator()(using config: SetupConfig):
             |""".stripMargin
         else ""
       }
-      |  case class Out(
-      |     // output variables
-      |  )
+      |${if isProcess then
+    """  enum Out:
+      |    case Success(
+      |        //TODO output variables
+      |        processStatus: ProcessEndStatus = ProcessEndStatus.succeeded
+      |    )
+      |
+      |    case NotValid(
+      |        processStatus: NotValidStatus = NotValidStatus.notValid,
+      |        validationErrors: Seq[ValidationError] = Seq(ValidationError())
+      |    )
+      |  end Out""".stripMargin
+  else """  case class Out(
+         |    //TODO output variables
+         |  )""".stripMargin
+  }
       |  object Out:
       |    given ApiSchema[Out] = deriveApiSchema
       |    given InOutCodec[Out] = deriveInOutCodec"""

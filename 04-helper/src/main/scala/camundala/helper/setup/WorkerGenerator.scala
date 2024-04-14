@@ -7,6 +7,8 @@ case class WorkerGenerator()(using config: SetupConfig):
   lazy val generate: Unit =
     createOrUpdate(workerPath() / "WorkerApp.scala", workerApp)
     createOrUpdate(workerTestPath() / "WorkerTestApp.scala", workerTestApp)
+    createOrUpdate(workerConfigPath / "application.yaml", applicationYaml)
+    createOrUpdate(workerConfigPath / "banner.txt", banner)
 
   def createProcess(processName: String, version: Option[Int]): Unit =
     val workerName = processName.head.toUpper + processName.tail
@@ -43,7 +45,7 @@ case class WorkerGenerator()(using config: SetupConfig):
       objName: String,
       dependencies: Option[Seq[DependencyConf]] = None
   ) =
-    s"""package $companyName.camundala.worker
+    s"""package ${config.projectPackage}.worker
        |
        |import org.springframework.boot.SpringApplication
        |import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -210,6 +212,48 @@ case class WorkerGenerator()(using config: SetupConfig):
        |end ${workerName}WorkerTest""".stripMargin
   end workerTest
 
+  private lazy val applicationYaml =
+    s"""# DO NOT ADJUST. This file is replaced by `amm helper.sc update`.
+       |
+       |server:
+       |  port: 8093
+       |camunda.bpm:
+       |  job-execution:
+       |    wait-time-in-millis: 200 # this is for speedup testing
+       |  client:
+       |    base-url: $${CAMUNDA_BASE_URL:http://localhost:8080/engine-rest}
+       |    worker-id: $${WORKER_ID:my-worker}
+       |    disable-backoff-strategy: true # only during testing - faster topic
+       |    async-response-timeout: 10000
+       |
+       |
+       |logging:
+       |  level:
+       |    root: warn
+       |    "camundala": info
+       |    "${config.companyName}": info
+       |    "org.camunda.bpm.client": info
+       |
+       |
+       |""".stripMargin
+
+  private lazy val banner =
+    s"""# DO NOT ADJUST. This file is replaced by `amm helper.sc update`.
+       |
+       |     _/_/_/                                                      _/            _/
+       |  _/          _/_/_/  _/_/_/  _/_/    _/    _/  _/_/_/      _/_/_/    _/_/_/  _/    _/_/_/
+       | _/        _/    _/  _/    _/    _/  _/    _/  _/    _/  _/    _/  _/    _/  _/  _/    _/
+       |_/        _/    _/  _/    _/    _/  _/    _/  _/    _/  _/    _/  _/    _/  _/  _/    _/
+       | _/_/_/    _/_/_/  _/    _/    _/    _/_/_/  _/    _/    _/_/_/    _/_/_/  _/    _/_/_/
+       |
+       | ${config.apiProjectConf.name} ${config.apiProjectConf.version}
+       |                                                          >>> the Scala DSL for Camunda
+       |
+       |  Spring-Boot: $${spring-boot.formatted-version}
+       |  Runs on port $${server.port}
+       |  Connects to $${camunda.bpm.client.base-url}
+       |""".stripMargin
+
   private def workerPath(setupElement: Option[SetupElement] = None) =
     val dir = config.projectDir / ModuleConfig.workerModule.packagePath(
       config.projectPath
@@ -241,4 +285,13 @@ case class WorkerGenerator()(using config: SetupConfig):
           os.rel / s"${se.bpmnName}WorkerTest.scala"
       .getOrElse(os.rel)
   end workerTestPath
+
+  private lazy val workerConfigPath =
+    val dir = config.projectDir / ModuleConfig.workerModule.packagePath(
+      config.projectPath,
+      isSourceDir = false
+    )
+    os.makeDir.all(dir)
+    dir
+  end workerConfigPath
 end WorkerGenerator

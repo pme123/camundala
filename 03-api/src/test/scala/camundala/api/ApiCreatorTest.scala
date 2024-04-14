@@ -16,6 +16,9 @@ class ApiCreatorTest extends munit.FunSuite, DefaultApiCreator:
   def title: String = ???
   def version: String = ???
 
+  lazy val companyDescr: String = ""
+  lazy val projectDescr: String = ""
+
   test("testReplaceJira") {
     assertEquals(
       "[MAP-123](https://myJira.ch/browse/MAP-123): My test ticket.",

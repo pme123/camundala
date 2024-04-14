@@ -16,13 +16,17 @@ def createOrUpdate(file: os.Path, contentNew: String): Unit =
   val contentUpdated =
     if contentExisting.contains(doNotAdjust) 
     then contentNew
-    else contentExisting
+    else
+      println(s"${Console.RED}File $file was not updated! - if you want so add $doNotAdjust at the top of this file.${Console.RESET}")
+      contentExisting
   os.write.over(file, contentUpdated)
   
 end createOrUpdate
 
 extension (version: Option[Int])
-  def versionPath: Seq[String] =
-    version.map(v => s"v$v").toSeq
+  def versionPath: String =
+    version.map(v => s"v$v").getOrElse("v1")
+  def versionLabel: String =
+    version.map(v => s"V$v").getOrElse("V1")
   def versionPackage: String =
-    version.map(v => s".v$v").getOrElse("")
+    version.map(v => s".v$v").getOrElse(".v1")

@@ -60,9 +60,12 @@ object CamundaVariable:
   def toCamunda[T <: Product: InOutEncoder](
       product: T
   ): Map[String, CamundaVariable] =
-    jsonToCamundaValue(product.asJson.deepDropNullValues) match
-      case r: Map[String, CamundaVariable] => r
-      case _ => Map.empty
+    product.productElementNames
+      .zip(product.productIterator)
+      .map:
+        case k -> v =>
+            k -> objectToCamunda(product, k, v)
+      .toMap
 
   @tailrec
   def objectToCamunda[T <: Product: InOutEncoder](

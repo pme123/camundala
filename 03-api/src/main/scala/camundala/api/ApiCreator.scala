@@ -13,6 +13,9 @@ import scala.util.matching.Regex
 
 trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
 
+  protected def companyDescr: String
+  protected def projectDescr: String
+
   def supportedVariables: Seq[InputParams] =
     InputParams.values.toSeq
 
@@ -49,13 +52,13 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
   protected def openApi(apiDoc: ApiDoc): OpenAPI =
     val endpoints = create(apiDoc)
     openAPIDocsInterpreter
-      .toOpenAPI(endpoints, info(title, description))
+      .toOpenAPI(endpoints, info(title, Some(description)))
   end openApi
 
   protected def postmanOpenApi(apiDoc: ApiDoc): OpenAPI =
     val endpoints = createPostman(apiDoc)
     openAPIDocsInterpreter
-      .toOpenAPI(endpoints, info(title, postmanDescription))
+      .toOpenAPI(endpoints, info(title, Some(postmanDescription)))
       .servers(servers)
   end postmanOpenApi
 
@@ -249,28 +252,30 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
       "There is no README.md in the Project."
   end createReadme
 
-  protected def description: Option[String] = Some(
+  protected def description: String =
     s"""
+       |$companyDescr
+       |
+       |$projectDescr
        |
        |Created at ${SimpleDateFormat().format(new Date())}
        |
-       |**See the [Camundala Documentation](https://pme123.github.io/camundala/)
+       |**See the [Camundala Documentation](https://pme123.github.io/camundala/)**
        |
        |${createReadme()}
        |
        |${createChangeLog()}
        |
        |${createGeneralVariables()}
+       |
        |""".stripMargin
-  )
-  protected def postmanDescription: Option[String] =
-    description.map(descr =>
+
+  protected def postmanDescription: String =
       s"""
          |**This is for Postman - to have example requests. Be aware the Output is not provided!**
          |
-         |$descr
-         |""".stripMargin
-    )
+         |$description
+         |"""
 
   private def writeOpenApi(
       path: os.Path,
