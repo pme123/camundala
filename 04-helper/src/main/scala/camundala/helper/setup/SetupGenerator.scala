@@ -4,6 +4,7 @@ case class SetupGenerator()(using config: SetupConfig):
 
   lazy val generate: Unit =
     DirectoryGenerator().generate
+    println("The following Files were not updated! - if you want so add $doNotAdjust at the top of these file.")
     SbtGenerator().generate
     SbtSettingsGenerator().generate
     GenericFileGenerator().generate
