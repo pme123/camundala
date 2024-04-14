@@ -24,7 +24,7 @@ def createOrUpdate(file: os.Path, contentNew: String): Unit =
 end createOrUpdate
 
 extension (version: Option[Int])
-  def versionPath: Seq[String] =
-    version.map(v => s"v$v").toSeq
+  def versionPath: String =
+    version.map(v => s"v$v").getOrElse("v1")
   def versionPackage: String =
-    version.map(v => s".v$v").getOrElse("")
+    version.map(v => s".v$v").getOrElse(".v1")

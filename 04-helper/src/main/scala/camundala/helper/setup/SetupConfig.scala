@@ -13,9 +13,12 @@ case class SetupConfig(
     apiProjectConf: ApiProjectConf,
     versionConfig: VersionConfig = VersionConfig(),
     reposConfig: ReposConfig = ReposConfig.dummyRepos,
+    // path where the BPMNs are - must be relative to the project path
+    bpmnPath: os.RelPath = os.rel / "src" / "main" / "resources",
     sbtDockerSettings: String = ""
 ):
   lazy val companyName: String = apiProjectConf.org
+  lazy val projectShortName: String = projectName.split("-").last
   lazy val projectClassNames: Seq[String] = projectName.split("-").map(n => n.head.toUpper + n.tail)
   lazy val projectShortClassName: String = projectClassNames.last
   lazy val projectClassName: String = projectClassNames.mkString
@@ -45,7 +48,8 @@ object SetupConfig:
       packageConfRelPath: os.RelPath,
       versionConfig: VersionConfig,
       reposConfig: ReposConfig,
-      sbtDockerSettings: String
+      sbtDockerSettings: String,
+      bpmnPath: os.RelPath
   ): SetupConfig = new SetupConfig(
     projectName,
     subProjects = subProjects,
@@ -53,7 +57,8 @@ object SetupConfig:
       ApiProjectConf.init(projectName, projectDir(projectName, os.pwd) / packageConfRelPath),
     versionConfig = versionConfig,
     reposConfig = reposConfig,
-    sbtDockerSettings = sbtDockerSettings
+    sbtDockerSettings = sbtDockerSettings,
+    bpmnPath = bpmnPath
   )
 
   def defaultConfig(projectName: String): SetupConfig = SetupConfig(

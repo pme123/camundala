@@ -13,6 +13,7 @@ case class SetupGenerator()(using config: SetupConfig):
 
   def createProcess(processName: String, version: Option[Int]): Unit =
     BpmnGenerator().createProcess(processName, version)
+    BpmnProcessGenerator().createBpmn(processName, version)
     SimulationGenerator().createProcess(processName, version)
     WorkerGenerator().createProcess(processName, version)
   end createProcess
