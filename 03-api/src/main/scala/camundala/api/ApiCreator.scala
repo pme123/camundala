@@ -13,6 +13,9 @@ import scala.util.matching.Regex
 
 trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
 
+  protected def companyDescr: String
+  protected def projectDescr: String
+
   def supportedVariables: Seq[InputParams] =
     InputParams.values.toSeq
 
@@ -49,7 +52,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
   protected def openApi(apiDoc: ApiDoc): OpenAPI =
     val endpoints = create(apiDoc)
     openAPIDocsInterpreter
-      .toOpenAPI(endpoints, info(title, description))
+      .toOpenAPI(endpoints, info(title, Some(description)))
   end openApi
 
   protected def postmanOpenApi(apiDoc: ApiDoc): OpenAPI =
@@ -249,20 +252,38 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
       "There is no README.md in the Project."
   end createReadme
 
-  protected def description: Option[String] = Some(
+  protected def description: String = 
     s"""
+       |$companyDescr
+       |
+       |$projectDescr
        |
        |Created at ${SimpleDateFormat().format(new Date())}
        |
-       |**See the [Camundala Documentation](https://pme123.github.io/camundala/)
+       |**See the [Camundala Documentation](https://pme123.github.io/camundala/)**
        |
        |${createReadme()}
        |
        |${createChangeLog()}
        |
        |${createGeneralVariables()}
+       |
+       |<script>
+       |        function downloadSVG(id) {
+       |            const container = document.getElementById(id);
+       |            const svg = container.getElementsByTagName('svg')[0];
+       |            console.log(svg)
+       |            svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+       |            const blob = new Blob([svg.outerHTML.toString()]);
+       |            const element = document.createElement("a");
+       |            element.download = "w3c.svg";
+       |            element.href = window.URL.createObjectURL(blob);
+       |            element.click();
+       |            element.remove();
+       |        }
+       |</script>
        |""".stripMargin
-  )
+
   protected def postmanDescription: Option[String] =
     description.map(descr =>
       s"""

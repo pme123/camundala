@@ -97,7 +97,8 @@ sealed trait InOutApi[
        |  </div>
        |</div>
        |
-       |Download: [$fileName]($diagramDownloadPath/$fileName)
+       |<p>Download: [$fileName]($diagramDownloadPath/$fileName)</p
+       |<button onclick="downloadSVG('#$name-$randomPostfix')">Download Diagram as SVG</button>
        |""".stripMargin
   end diagramFrame
 
