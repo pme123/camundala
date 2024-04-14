@@ -15,6 +15,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.8 - 2024-04-14
+### Changed 
+- Type Fix for descr. - see [Commit](https://github.com/pme123/camundala/commit/b2b8f51228db0b5f50faa9d1a77e6c64c7a81c02)
+- Added ApiGenerator HTMLs and download button for SVG BPMNs. - see [Commit](https://github.com/pme123/camundala/commit/bf24f4e3318832c5a1e6b542a1e755f8e3147cb7)
+- Merge remote-tracking branch 'origin/develop' into develop - see [Commit](https://github.com/pme123/camundala/commit/61e92d35cde0220847ae6d32cfcbfe95ba06a490)
+- Added ApiGenerator / adjusted description of ApiProjectGenerator - see [Commit](https://github.com/pme123/camundala/commit/65ffbf986c5ced7ede2b698ba02833a1bc2ebe60)
+- Added ApiGenerator / adjusted description of ApiProjectGenerator - see [Commit](https://github.com/pme123/camundala/commit/dbc40274fb0b22f7c2da689fd1852cf93816fa85)
+- Setup default Process Generation. - see [Commit](https://github.com/pme123/camundala/commit/863d1313660a83ea96ca8c80bb3a096f8c613d7d)
+- Added application.yaml and banner.txt for Worker generation. - see [Commit](https://github.com/pme123/camundala/commit/7e9e676369bc904446e89f2006bcf14ad7990a0c)
+- Fixed problem CamundaVariable toCamunda Long -> Int. - see [Commit](https://github.com/pme123/camundala/commit/40a915316c54a44e69bc922c795945ec0dd313fb)
+
 ## 1.29.7 - 2024-04-08
 ### Changed 
 - Changed worker project dependency to compile from test (to run workers within workers). - see [Commit](https://github.com/pme123/camundala/commit/d69d7af23de9535ebf75931c5558edb8939d23d6)
