@@ -14,7 +14,7 @@ object TestApiCreator extends DefaultApiCreator, BpmnProcessDsl, App:
 
   def version = "1.0"
 
-  lazy val projectDescr: ExampleName = ""
+  lazy val projectDescr: String = ""
 
   override val apiConfig: ApiConfig =
     ApiConfig("DemoConfig")

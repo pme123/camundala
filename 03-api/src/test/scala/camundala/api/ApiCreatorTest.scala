@@ -16,8 +16,8 @@ class ApiCreatorTest extends munit.FunSuite, DefaultApiCreator:
   def title: String = ???
   def version: String = ???
 
-  lazy val companyDescr: ExampleName = ""
-  lazy val projectDescr: ExampleName = ""
+  lazy val companyDescr: String = ""
+  lazy val projectDescr: String = ""
 
   test("testReplaceJira") {
     assertEquals(
