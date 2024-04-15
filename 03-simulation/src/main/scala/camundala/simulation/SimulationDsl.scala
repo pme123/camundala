@@ -255,14 +255,14 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     ): SScenario =
       scen.ignored
   end ignore
-  
+
   object only:
-    
+
     def scenario(scen: SScenario): SScenario =
       scen.only
 
     def scenario(scen: SScenario)(body: SStep*): SScenario =
-      scen.only(body)
+      scen.only.withSteps(body.toList)
 
     inline def serviceScenario[
         In <: Product: InOutEncoder: InOutDecoder: Schema,
