@@ -113,7 +113,7 @@ case class ApiGenerator()(using config: SetupConfig):
        |            svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
        |            const blob = new Blob([svg.outerHTML.toString()]);
        |            const element = document.createElement("a");
-       |            element.download = "w3c.svg";
+       |            element.download = id + ".svg";
        |            element.href = window.URL.createObjectURL(blob);
        |            element.click();
        |            element.remove();
