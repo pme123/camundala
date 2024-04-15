@@ -8,6 +8,7 @@ case class GenericFileGenerator()(using config: SetupConfig):
     createOrUpdate(config.projectDir / ".scalafmt.conf", scalafmt)
     createOrUpdate(config.projectDir / ".gitignore", gitignore)
     createOrUpdate(config.projectDir / "helper.sc", helperSc)
+    createOrUpdate(config.projectDir / "CHANGELOG.md", changeLog)
   end generate
 
   private lazy val scalafmt =
@@ -76,4 +77,22 @@ case class GenericFileGenerator()(using config: SetupConfig):
   private val helperSc = ScriptCreator()
     .projectHelper
 
+  private lazy val changeLog =
+    s"""# Changelog
+       |
+       |All notable changes to this project will be documented in this file.
+       |
+       |* Types of Changes (L3):
+       |  * Added: new features
+       |  * Changed: changes in existing functionality
+       |  * Deprecated: soon-to-be-removed features
+       |  * Removed: now removed features
+       |  * Fixed: any bug fixes
+       |  * Security: in case of vulnerabilities
+       |
+       |
+       |The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+       |and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+       |
+       |""".stripMargin
 end GenericFileGenerator
