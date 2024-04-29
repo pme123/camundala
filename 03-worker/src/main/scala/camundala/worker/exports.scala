@@ -26,7 +26,7 @@ def decodeTo[A: InOutDecoder](
           .mkString(
             "Decoding Error: Json is not valid:\n - ",
             "\n - ",
-            s"\n * Json: $jsonStr\n"
+            s"\n * Json: ${jsonStr.take(3500)}\n" // 4000 throws error in Camunda.
           )
       )
     }
