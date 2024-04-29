@@ -100,7 +100,7 @@ object ProcessEndStatus:
   given InOutCodec[ProcessEndStatus] = deriveEnumInOutCodec
 
 enum NotValidStatus:
-  case notValid
+  case notValid, canceled
 object NotValidStatus:
   given ApiSchema[NotValidStatus] = deriveEnumApiSchema
   given InOutCodec[NotValidStatus] = deriveEnumInOutCodec
