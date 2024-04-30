@@ -15,6 +15,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.9 - 2024-04-30
+### Changed 
+- Adjusted Event name with version in BpmnGenerator. - see [Commit](https://github.com/pme123/camundala/commit/c3c5c53b41f44da93d19a9eaade3bcfa119c4d48)
+- Limited Decoding Error Message to 3500 - to avoid Camunda Error. - see [Commit](https://github.com/pme123/camundala/commit/4b28160b8e10edb7cdb55777254a7e047e07fb0c)
+- Added cancel to NotValidStatus. - see [Commit](https://github.com/pme123/camundala/commit/c9a20c1d52818674b3045b5ba197fcfaac638f3c)
+- Adjusted download name in OpenApi.html generator. - see [Commit](https://github.com/pme123/camundala/commit/0d3c7511be39b49e535543b11d4aeefa0acfaf24)
+- Fixed bug in only if there are process steps. - see [Commit](https://github.com/pme123/camundala/commit/166ad52156ca22ae0db2474189c17b42cdb51be5)
+- Fixed bug in only if there are process steps. - see [Commit](https://github.com/pme123/camundala/commit/c0e6fe2feeed50f369c99dce23e87b86c59679dd)
+- Added CHANGELOG to SetupGenerator. - see [Commit](https://github.com/pme123/camundala/commit/048b2eabf85cbc261fc415280aac83874b77168a)
+- Adjusted logging files not updated. - see [Commit](https://github.com/pme123/camundala/commit/f91267ab1d66b0b357395bc26f1d11b442dc6bf3)
+
 ## 1.29.8 - 2024-04-14
 ### Changed 
 - Type Fix for descr. - see [Commit](https://github.com/pme123/camundala/commit/b2b8f51228db0b5f50faa9d1a77e6c64c7a81c02)

@@ -3,6 +3,7 @@ package camundala.helper.setup
 case class SetupGenerator()(using config: SetupConfig):
 
   lazy val generate: Unit =
+    println(s"The following Files (red) were not updated! - if you want so add $doNotAdjust at the top of these file.")
     DirectoryGenerator().generate
     SbtGenerator().generate
     SbtSettingsGenerator().generate

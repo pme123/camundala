@@ -108,12 +108,12 @@ case class ApiGenerator()(using config: SetupConfig):
        |    <script>
        |        function downloadSVG(id) {
        |            const container = document.getElementById(id);
-       |            const svg = container.getElementsByTagName('svg')[0];
+       |            const svg = container.getElementsByTagName('svg')[1];
        |            console.log(svg)
        |            svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
        |            const blob = new Blob([svg.outerHTML.toString()]);
        |            const element = document.createElement("a");
-       |            element.download = "w3c.svg";
+       |            element.download = id + ".svg";
        |            element.href = window.URL.createObjectURL(blob);
        |            element.click();
        |            element.remove();

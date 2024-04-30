@@ -13,10 +13,7 @@ case class CompanyVersionHelper(
     VersionHelper.repoSearchMavenCentral("camundala-api_3")
 
   lazy val companyCamundalaVersion: String =
-    val version = repoSearch(s"$companyName-camundala-api_3", companyName)
-    println(s"- Last Version of $companyName-camundala-api_3: $version")
-    version
-  end companyCamundalaVersion
+    repoSearch(s"$companyName-camundala-api_3", companyName)
 
 end CompanyVersionHelper
 
@@ -36,7 +33,9 @@ case class VersionHelper(
             )
           name -> lastVersion
       .toMap
-    println("Dependencies:")
+    if deps.nonEmpty then
+      println("Dependencies:")
+
     deps.foreach:
       case name -> lastVersion =>
         println(s"- $name -> $lastVersion")

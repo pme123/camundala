@@ -143,7 +143,7 @@ case class BpmnGenerator()(using config: SetupConfig):
        |  val ${
         if label == "Timer" then "title"
         else "messageName"
-      } = "${config.projectName}-$processName.$bpmnName"
+      } = "${config.projectName}-$processName${setupObject.version.versionLabel}.$bpmnName"
        |  val descr: String = ""
        |${
         if label == "Timer" then ""
