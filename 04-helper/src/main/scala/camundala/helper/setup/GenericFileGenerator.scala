@@ -56,6 +56,7 @@ case class GenericFileGenerator()(using config: SetupConfig):
        |.settings
        |bin
        |/.idea/
+       |/.ivy2/
        |/.g8/
        |/project/metals.sbt
        |/.bloop/

@@ -20,7 +20,7 @@ case class CompanyWrapperGenerator()(using config: SetupConfig):
   end helperConfig
 
   private def objectContent(objName: String)(body: String) =
-    s"""package $companyName.camundala.helper
+    s"""package $companyName.helper
        |
        |import camundala.helper.*
        |import camundala.helper.setup.*

@@ -18,7 +18,7 @@ case class HelperGenerator()(using config: SetupConfig):
   private def objectContent(
                              objName: String
                            ) =
-    s"""package ${config.projectPackage}.camundala.helper
+    s"""package ${config.projectPackage}.helper
        |
        |import camundala.helper.openApi.*
        |
