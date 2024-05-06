@@ -119,7 +119,6 @@ case class BpmnGenerator()(using config: SetupConfig):
        |  final val serviceVersion = "${version.getOrElse(1)}.0"
        |  final val serviceLabel = s"${processName.head.toUpper + processName.tail} $$serviceVersion"
        |
-       |  final val serviceLabel = "$superTrait"
        |  val description = ""
        |  val externalDoc = ""
        |  val externalUrl = ""

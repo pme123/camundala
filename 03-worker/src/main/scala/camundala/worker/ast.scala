@@ -100,7 +100,7 @@ end CustomWorker
 case class ServiceWorker[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
-    ServiceIn <: Product: InOutEncoder,
+    ServiceIn: InOutEncoder,
     ServiceOut: InOutDecoder
 ](
     inOutExample: ServiceTask[In, Out, ServiceIn, ServiceOut],
@@ -158,7 +158,7 @@ case class RunnableRequest[ServiceIn: InOutEncoder](
 
 object RunnableRequest:
 
-  def apply[In <: Product: InOutCodec, ServiceIn <: Product: InOutEncoder](
+  def apply[In <: Product: InOutCodec, ServiceIn: InOutEncoder](
       inputObject: In,
       httpMethod: Method,
       apiUri: Uri,

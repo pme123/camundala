@@ -44,7 +44,7 @@ end OpenApiConfig
 object OpenApiConfig:
   lazy val openApiFile: os.RelPath = os.rel / "openApi.yml"
   lazy val outputPath: String => os.Path = os.pwd / _ / ".generated"
-  lazy val superBpmnClass: String = "CompanyBpmnServiceWorkerDsl"
+  lazy val superBpmnClass: String = "CompanyBpmnServiceTaskDsl"
   lazy val superSimulationClass: String = "CompanySimulation"
   lazy val superWorkerClass: String = "CompanyServiceWorkerDsl"
   lazy val generalTypeMapping = Seq(
