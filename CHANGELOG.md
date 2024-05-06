@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.10 - 2024-05-06
+### Changed 
+- Removed type constraint Product from ServiceIn. - see [Commit](https://github.com/pme123/camundala/commit/87b352608e9a1c5e9b18b43eb480c0469febfb4e)
+- Adjustments in Generators. - see [Commit](https://github.com/pme123/camundala/commit/cce1cafe57523eb2e9e298e122a9b8dbe88e5be7)
+- Adjustments in Generators. - see [Commit](https://github.com/pme123/camundala/commit/ee01c168f4954d00481e3843e4a7d0e5e583842d)
+
 ## 1.29.9 - 2024-04-30
 ### Changed 
 - Adjusted Event name with version in BpmnGenerator. - see [Commit](https://github.com/pme123/camundala/commit/c3c5c53b41f44da93d19a9eaade3bcfa119c4d48)
