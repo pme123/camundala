@@ -101,7 +101,7 @@ end RunWorkHandler
 case class ServiceHandler[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
-    ServiceIn <: Product: InOutEncoder,
+    ServiceIn: InOutEncoder,
     ServiceOut: InOutDecoder
 ](
     httpMethod: Method,

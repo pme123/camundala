@@ -88,7 +88,7 @@ end CustomWorkerDsl
 trait ServiceWorkerDsl[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
-    ServiceIn <: Product: InOutEncoder,
+    ServiceIn: InOutEncoder,
     ServiceOut: InOutDecoder
 ] extends WorkerDsl[In, Out],
       ValidateDsl[In],
