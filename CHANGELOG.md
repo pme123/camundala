@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.11 - 2024-05-07
+### Changed 
+- Extended LocalDateTimeDecoder with ISO Datetime format. - see [Commit](https://github.com/pme123/camundala/commit/a1cf42126ac848cf4ad0e382f8d3db27fed6267d)
+
 ## 1.29.10 - 2024-05-06
 ### Changed 
 - Removed type constraint Product from ServiceIn. - see [Commit](https://github.com/pme123/camundala/commit/87b352608e9a1c5e9b18b43eb480c0469febfb4e)
