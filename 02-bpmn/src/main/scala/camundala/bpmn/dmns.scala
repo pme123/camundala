@@ -7,8 +7,9 @@ import io.circe.HCursor
 import sttp.tapir.*
 import sttp.tapir.SchemaType.SchemaWithValue
 
-import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
+import java.time.{Instant, LocalDate, LocalDateTime, ZoneId, ZonedDateTime}
 import scala.reflect.ClassTag
+import scala.util.{Failure, Success, Try}
 
 case class Dmns(dmns: Seq[Dmn]):
 
@@ -51,14 +52,14 @@ case class DecisionDmn[
     copy(inOutDescr = descr)
 
   def withEnumInExample(
-                         enumInExample: In
-                       ): DecisionDmn[In, Out] =
+      enumInExample: In
+  ): DecisionDmn[In, Out] =
     copy(otherEnumInExamples =
       Some(otherEnumInExamples.getOrElse(Seq.empty) :+ enumInExample)
     )
   def withEnumOutExample(
-                          enumOutExample: Out
-                        ): DecisionDmn[In, Out] =
+      enumOutExample: Out
+  ): DecisionDmn[In, Out] =
     copy(otherEnumOutExamples =
       Some(otherEnumOutExamples.getOrElse(Seq.empty) :+ enumOutExample)
     )
@@ -79,8 +80,14 @@ given LocalDateJsonDecoder: InOutDecoder[LocalDate] = new InOutDecoder[LocalDate
 given LocalDateTimeJsonDecoder: InOutDecoder[LocalDateTime] =
   new InOutDecoder[LocalDateTime]:
     final def apply(c: HCursor): Decoder.Result[LocalDateTime] =
-      for result <- c.as[String]
-      yield LocalDateTime.parse(result)
+      c.as[String]
+        .flatMap: dateStr =>
+          Try(LocalDateTime.parse(dateStr)) match
+            case Success(date) => Right(date)
+            case Failure(_) => 
+              Try(LocalDateTime.ofInstant(Instant.parse(dateStr), ZoneId.systemDefault())) match 
+                case Success(date) => Right(date)
+                case Failure(_) => Left(DecodingFailure(s"Could not parse LocalDateTime from $dateStr", c.history))
 
 given InOutDecoder[ZonedDateTime] =
   new InOutDecoder[ZonedDateTime]:
@@ -100,7 +107,8 @@ end SingleEntry
 
 object SingleEntry:
 
-  given schemaForSingleEntry[A <: DmnValueType: InOutEncoder: InOutDecoder: Schema]: Schema[SingleEntry[A]] =
+  given schemaForSingleEntry[A <: DmnValueType: InOutEncoder: InOutDecoder: Schema]
+      : Schema[SingleEntry[A]] =
     val sa = summon[Schema[A]]
     Schema[SingleEntry[A]](
       SchemaType.SCoproduct(List(sa), None) { case SingleEntry(x) =>
@@ -119,7 +127,8 @@ object SingleEntry:
     new InOutEncoder[SingleEntry[T]]:
       final def apply(sr: SingleEntry[T]): Json = sr.result.asJson
 
-  given SingleEntryJsonDecoder[T <: DmnValueType: InOutEncoder: InOutDecoder: ClassTag]: InOutDecoder[SingleEntry[T]] =
+  given SingleEntryJsonDecoder[T <: DmnValueType: InOutEncoder: InOutDecoder: ClassTag]
+      : InOutDecoder[SingleEntry[T]] =
     new InOutDecoder[SingleEntry[T]]:
       final def apply(c: HCursor): Decoder.Result[SingleEntry[T]] =
         for result <- c.as[T]
@@ -157,7 +166,8 @@ object CollectEntries:
     )
   end schemaForCollectEntries
 
-  given CollectEntriesJsonEncoder[T <: DmnValueType: InOutEncoder: InOutDecoder]: InOutEncoder[CollectEntries[T]] =
+  given CollectEntriesJsonEncoder[T <: DmnValueType: InOutEncoder: InOutDecoder]
+      : InOutEncoder[CollectEntries[T]] =
     new InOutEncoder[CollectEntries[T]]:
       final def apply(sr: CollectEntries[T]): Json = sr.result.asJson
 
@@ -179,7 +189,8 @@ case class SingleResult[Out <: Product: InOutEncoder: InOutDecoder: Schema](resu
 end SingleResult
 
 object SingleResult:
-  given schemaForSingleResult[A <: Product: InOutEncoder: InOutDecoder: Schema]: Schema[SingleResult[A]] =
+  given schemaForSingleResult[A <: Product: InOutEncoder: InOutDecoder: Schema]
+      : Schema[SingleResult[A]] =
     val sa = summon[Schema[A]]
     Schema[SingleResult[A]](
       SchemaType.SCoproduct(List(sa), None) { case SingleResult(x) =>
@@ -191,11 +202,13 @@ object SingleResult:
     )
   end schemaForSingleResult
 
-  given SingleResultJsonEncoder[T <: Product: InOutEncoder: InOutDecoder: Schema]: InOutEncoder[SingleResult[T]] =
+  given SingleResultJsonEncoder[T <: Product: InOutEncoder: InOutDecoder: Schema]
+      : InOutEncoder[SingleResult[T]] =
     new InOutEncoder[SingleResult[T]]:
       final def apply(sr: SingleResult[T]): Json = sr.result.asJson
 
-  given SingleResultJsonDecoder[T <: Product: InOutEncoder: InOutDecoder: Schema]: InOutDecoder[SingleResult[T]] =
+  given SingleResultJsonDecoder[T <: Product: InOutEncoder: InOutDecoder: Schema]
+      : InOutDecoder[SingleResult[T]] =
     new InOutDecoder[SingleResult[T]]:
       final def apply(c: HCursor): Decoder.Result[SingleResult[T]] =
         for result <- c.as[T]
@@ -221,7 +234,8 @@ object ResultList:
   ): ResultList[Out] =
     new ResultList[Out](result +: results)
 
-  given schemaForResultList[A <: Product: InOutEncoder: InOutDecoder: Schema]: Schema[ResultList[A]] =
+  given schemaForResultList[A <: Product: InOutEncoder: InOutDecoder: Schema]
+      : Schema[ResultList[A]] =
     val sa = summon[Schema[A]]
     Schema[ResultList[A]](
       SchemaType.SCoproduct(List(sa), None) { case ResultList(x) =>
@@ -233,11 +247,13 @@ object ResultList:
     )
   end schemaForResultList
 
-  given ResultListEncoder[T <: Product: InOutEncoder: InOutDecoder: Schema]: InOutEncoder[ResultList[T]] =
+  given ResultListEncoder[T <: Product: InOutEncoder: InOutDecoder: Schema]
+      : InOutEncoder[ResultList[T]] =
     new Encoder[ResultList[T]]:
       final def apply(sr: ResultList[T]): Json = sr.result.asJson
 
-  given ResultListDecoder[T <: Product: InOutEncoder: InOutDecoder: Schema]: InOutDecoder[ResultList[T]] =
+  given ResultListDecoder[T <: Product: InOutEncoder: InOutDecoder: Schema]
+      : InOutDecoder[ResultList[T]] =
     new Decoder[ResultList[T]]:
       final def apply(c: HCursor): Decoder.Result[ResultList[T]] =
         for result <- c.as[Seq[T]]
@@ -271,10 +287,12 @@ object DmnVariable:
     )
   end schemaForDmnVariable
 
-  given DmnVariableEncoder[T <: DmnValueType: InOutEncoder: ClassTag]: InOutEncoder[DmnVariable[T]] =
+  given DmnVariableEncoder[T <: DmnValueType: InOutEncoder: ClassTag]
+      : InOutEncoder[DmnVariable[T]] =
     new Encoder[DmnVariable[T]]:
       final def apply(sr: DmnVariable[T]): Json = sr.value.asJson
-  given DmnVariableDecoder[T <: DmnValueType: InOutDecoder: ClassTag]: InOutDecoder[DmnVariable[T]] =
+  given DmnVariableDecoder[T <: DmnValueType: InOutDecoder: ClassTag]
+      : InOutDecoder[DmnVariable[T]] =
     new Decoder[DmnVariable[T]]:
       final def apply(c: HCursor): Decoder.Result[DmnVariable[T]] =
         for value <- c.as[T]
