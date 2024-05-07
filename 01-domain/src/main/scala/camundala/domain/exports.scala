@@ -50,6 +50,20 @@ inline def deriveEnumInOutCodec[A](using inline A: Mirror.SumOf[A]): InOutCodec[
   Configuration.default // .withDefaults
     .withoutDiscriminator)
 
+def customDecodeAccumulating[T](c: HCursor)(using InOutDecoder[T]): Either[DecodingFailure, T] =
+  summon[InOutDecoder[T]].decodeAccumulating(c).toEither
+    .left.map:
+      case err if err.size == 1 =>
+        err.head
+      case errors =>
+        errors.head.copy(
+          message =
+            errors.foldLeft("")((result, error) =>
+              s"$result\n - ${error.getMessage.replace("DecodingFailure at ", "")}"
+            ),
+          c.history
+        )
+          
 // Tapir encoding / decoding
 export sttp.tapir.Schema.annotations.description
 
