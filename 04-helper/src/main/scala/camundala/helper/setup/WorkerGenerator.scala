@@ -246,7 +246,7 @@ case class WorkerGenerator()(using config: SetupConfig):
        |_/        _/    _/  _/    _/    _/  _/    _/  _/    _/  _/    _/  _/    _/  _/  _/    _/
        | _/_/_/    _/_/_/  _/    _/    _/    _/_/_/  _/    _/    _/_/_/    _/_/_/  _/    _/_/_/
        |
-       | ${config.apiProjectConf.name} ${config.apiProjectConf.version}
+       | ${config.apiProjectConf.name}
        |                                                          >>> the Scala DSL for Camunda
        |
        |  Spring-Boot: $${spring-boot.formatted-version}
