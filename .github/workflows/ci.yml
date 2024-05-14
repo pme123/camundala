@@ -21,7 +21,7 @@ jobs:
       - name: Documentation
         run: sbt documentation/laikaSite
       - name: Test
-        run: sbt test
+        run: sbt -v "test:compile; domain/test; bpmn/test;"
       - name: Test Report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed

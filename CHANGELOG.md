@@ -15,6 +15,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.12 - 2024-05-14
+### Changed 
+- Included Type in refined types, added percentage/ tests for refined types. - see [Commit](https://github.com/pme123/camundala/commit/8a408baf8dbdf4461309d1e814015ab62e9a4ec7)
+- Removed version from banner. - see [Commit](https://github.com/pme123/camundala/commit/a451cf15842cdd1f6f8be93cb830debd9b0f72ab)
+- Fixed timing test and adjusted sbt tasks in github action. - see [Commit](https://github.com/pme123/camundala/commit/b9e7ac87edbdd638c04d30a0e0c7dfcf45f739a8)
+- Added customDecodeAccumulating for custom decoders. - see [Commit](https://github.com/pme123/camundala/commit/ff083210cf3f1aaa00213bc33d2d15f407d808ee)
+
 ## 1.29.11 - 2024-05-07
 ### Changed 
 - Extended LocalDateTimeDecoder with ISO Datetime format. - see [Commit](https://github.com/pme123/camundala/commit/a1cf42126ac848cf4ad0e382f8d3db27fed6267d)
