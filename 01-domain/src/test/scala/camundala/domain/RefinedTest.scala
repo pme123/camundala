@@ -2,15 +2,22 @@ package camundala.domain
 
 import munit.FunSuite
 import io.github.iltotore.iron.*
+import io.github.iltotore.iron.circe.given
+import sttp.tapir.codec.iron.given
+import io.circe.syntax.*
 
 class RefinedTest extends FunSuite:
 
   test("Percentage"):
-    val _: Percentage = 80
-
+    val p: Percentage = 80
+    assertEquals(
+      p.asJson, Json.fromInt(80)
+    )
   test("Iso8601Day"):
-    val _: Iso8601Day = "2023-01-04"
-
+    val d: Iso8601Day = "2023-01-04"
+    assertEquals(
+      d.asJson, Json.fromString("2023-01-04")
+    )
   test("Iso8601DateTime"):
     val _: Iso8601DateTime = "2023-01-04T12:12:12Z"
 
