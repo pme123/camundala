@@ -5,7 +5,7 @@ import sttp.client3.*
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
-trait DmnTesterStarter extends DmnTesterHelpers:
+trait DmnTesterStarter extends DmnTesterHelpers, App:
 
   def startDmnTester(): Unit =
     println("Check logs in Docker Console!")
