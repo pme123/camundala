@@ -9,6 +9,7 @@ case class SetupGenerator()(using config: SetupConfig):
     SbtSettingsGenerator().generate
     GenericFileGenerator().generate
     WorkerGenerator().generate
+    DmnGenerator().generate
     HelperGenerator().generate
     ApiGenerator().generate
   end generate

@@ -161,9 +161,11 @@ case class BpmnGenerator()(using config: SetupConfig):
   end eventDefinition
 
   private def bpmnPath(processName: String, version: Option[Int]) =
+    val subProject = config.subProjects.find(_ == processName)
     val dir = config.projectDir / ModuleConfig.bpmnModule.packagePath(
-      config.projectPath
-    ) / processName / version.versionPath
+      config.projectPath,
+      subProject = subProject
+    ) / subProject.map(_ => os.rel).getOrElse(os.rel / processName) / version.versionPath
     os.makeDir.all(dir)
     dir
   end bpmnPath

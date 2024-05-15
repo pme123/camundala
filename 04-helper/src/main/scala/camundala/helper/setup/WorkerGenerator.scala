@@ -5,8 +5,8 @@ import camundala.api.docs.DependencyConf
 case class WorkerGenerator()(using config: SetupConfig):
 
   lazy val generate: Unit =
-    createOrUpdate(workerPath() / "WorkerApp.scala", workerApp)
-    createOrUpdate(workerTestPath() / "WorkerTestApp.scala", workerTestApp)
+    createIfNotExists(workerPath() / "WorkerApp.scala", workerApp)
+    createIfNotExists(workerTestPath() / "WorkerTestApp.scala", workerTestApp)
     createOrUpdate(workerConfigPath / "application.yaml", applicationYaml)
     createOrUpdate(workerConfigPath / "banner.txt", banner)
 

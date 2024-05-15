@@ -30,7 +30,7 @@ case class DirectoryGenerator()(using config: SetupConfig):
         os.makeDir.all(resourcesPath("test"))
     end printMainAndTest
 
-    if config.subProjects.nonEmpty
+    if config.subProjects.nonEmpty && moduleConfig.name == "bpmn"
     then
       config.subProjects
         .foreach: sp =>
