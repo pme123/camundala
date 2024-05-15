@@ -200,6 +200,17 @@ case class ServiceResponse[ServiceOut](
     headers: Map[String, String] = Map.empty
 )
 
+extension [ServiceOut](mocked: MockedServiceResponse[ServiceOut])
+  /**
+   * Simplifies testing, as there is already a successful service mock example.
+   */
+  def toServiceResponse: ServiceResponse[ServiceOut] =
+    ServiceResponse(
+      mocked.unsafeBody,
+      mocked.headersAsMap
+    )
+end extension
+
 enum QuerySegmentOrParam:
   case Key(key: String)
   case Value(value: String)
