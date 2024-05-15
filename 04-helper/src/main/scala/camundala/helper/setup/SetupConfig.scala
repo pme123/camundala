@@ -87,7 +87,7 @@ case class ModuleConfig(
     name: String,
     level: Int,
     hasMain: Boolean = true,
-    hasTest: Boolean = false,
+    testType: TestType = TestType.None,
     generateSubModule: Boolean = false,
     doPublish: Boolean = true,
     sbtSettings: Seq[String] = Seq.empty,
@@ -121,7 +121,7 @@ object ModuleConfig:
   lazy val bpmnModule = ModuleConfig(
     "bpmn",
     level = 2,
-    hasTest = true,
+    testType = TestType.MUnit,
     generateSubModule = true,
     hasProjectDependencies = true
   )
@@ -138,13 +138,13 @@ object ModuleConfig:
     "simulation",
     level = 3,
     hasMain = false,
-    hasTest = true,
+    testType = TestType.Simulation,
     doPublish = false
   )
   lazy val workerModule = ModuleConfig(
     "worker",
     level = 3,
-    hasTest = true,
+    testType = TestType.MUnit,
     sbtSettings = Seq("dockerSettings"),
     sbtPlugins = Seq("DockerPlugin", "JavaAppPackaging"),
     sbtDependencies = Seq("springBoot", "jaxbXml"),
@@ -156,6 +156,10 @@ object ModuleConfig:
   )
 
 end ModuleConfig
+
+enum TestType:
+  case MUnit, Simulation, None
+
 case class VersionConfig(
     scalaVersion: String = BuildInfo.scalaVersion,
     camundalaVersion: String = BuildInfo.version,

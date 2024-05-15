@@ -30,7 +30,6 @@ case class SbtGenerator()(using
        |ThisBuild / libraryDependencySchemes += "io.github.pme123" %% "camundala-api" % "early-semver"
        |ThisBuild / evictionErrorLevel := Level.Warn
        |
-       |val testFramework = "camundala.simulation.custom.SimulationTestFramework"
        |
        |$sbtRoot
        |$sbtModules
@@ -104,7 +103,7 @@ case class SbtGenerator()(using
                    |  .in(file("${modC.nameWithLevel}/$sp"))
                    |  .settings(
                    |    projectSettings(Some("$name-$sp"), Some("$name")),
-                   |    publicationSettings
+                   |    publicationSettings${testSetting(modC)}
                    |  )
                    |  .dependsOn(${name}Base)
                    |""".stripMargin
@@ -125,7 +124,8 @@ case class SbtGenerator()(using
                           |  .settings(
                           |    projectSettings(Some("$name-base"), Some("$name")),
                           |    publicationSettings,
-                          |    libraryDependencies ++= ${name}Deps
+                          |    libraryDependencies ++= ${name}Deps,
+                          |    testSettings
                           |  )""".stripMargin
                   else ""
                 }""".stripMargin
@@ -151,10 +151,13 @@ case class SbtGenerator()(using
       .mkString
 
   private def testSetting(modC: ModuleConfig) =
-    if modC.hasTest
-    then s""",
-            |    libraryDependencies += mUnit,
-            |    Test / parallelExecution := true,
-            |    testFrameworks += new TestFramework(testFramework)""".stripMargin
-    else ""
+    modC.testType match
+      case TestType.None => ""
+      case TestType.MUnit =>
+        s""",
+           |    testSettings""".stripMargin
+      case TestType.Simulation =>
+        s""",
+           |    Test / parallelExecution := true,
+           |    testFrameworks += new TestFramework("camundala.simulation.custom.SimulationTestFramework")""".stripMargin
 end SbtGenerator
