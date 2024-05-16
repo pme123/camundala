@@ -184,6 +184,20 @@ case class Process[
       Some(otherEnumOutExamples.getOrElse(Seq.empty) :+ enumOutExample)
     )
 
+  def withEnumInExamples(
+                          enumInExamples: In*
+                        ): Process[In, Out] =
+    copy(otherEnumInExamples =
+      Some(otherEnumInExamples.getOrElse(Seq.empty) ++ enumInExamples)
+    )
+
+  def withEnumOutExamples(
+                           enumOutExamples: Out*
+                         ): Process[In, Out] =
+    copy(otherEnumOutExamples =
+      Some(otherEnumOutExamples.getOrElse(Seq.empty) ++ enumOutExamples)
+    )
+
   override def camundaInMap: Map[String, CamundaVariable] =
     val camundaMockedWorkers =
       InputParams.mockedWorkers.toString -> CamundaVariable.valueToCamunda(
@@ -330,6 +344,20 @@ case class ServiceTask[
       Some(otherEnumOutExamples.getOrElse(Seq.empty) :+ enumOutExample)
     )
 
+  def withEnumInExamples(
+                          enumInExamples: In*
+                        ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+    copy(otherEnumInExamples =
+      Some(otherEnumInExamples.getOrElse(Seq.empty) ++ enumInExamples)
+    )
+
+  def withEnumOutExamples(
+                           enumOutExamples: Out*
+                         ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+    copy(otherEnumOutExamples =
+      Some(otherEnumOutExamples.getOrElse(Seq.empty) ++ enumOutExamples)
+    )
+
   override def camundaInMap: Map[String, CamundaVariable] =
     val camundaOutputServiceMock = outputServiceMock
       .map(m =>
@@ -405,6 +433,20 @@ case class CustomTask[
       Some(otherEnumOutExamples.getOrElse(Seq.empty) :+ enumOutExample)
     )
 
+  def withEnumInExamples(
+                          enumInExamples: In*
+                        ): CustomTask[In, Out] =
+    copy(otherEnumInExamples =
+      Some(otherEnumInExamples.getOrElse(Seq.empty) ++ enumInExamples)
+    )
+
+  def withEnumOutExamples(
+                           enumOutExamples: Out*
+                         ): CustomTask[In, Out] =
+    copy(otherEnumOutExamples =
+      Some(otherEnumOutExamples.getOrElse(Seq.empty) ++ enumOutExamples)
+    )
+
 end CustomTask
 
 case class UserTask[
@@ -436,6 +478,21 @@ case class UserTask[
     copy(otherEnumOutExamples =
       Some(otherEnumOutExamples.getOrElse(Seq.empty) :+ enumOutExample)
     )
+
+  def withEnumInExamples(
+                          enumInExamples: In*
+                        ): UserTask[In, Out] =
+    copy(otherEnumInExamples =
+      Some(otherEnumInExamples.getOrElse(Seq.empty) ++ enumInExamples)
+    )
+
+  def withEnumOutExamples(
+                           enumOutExamples: Out*
+                         ): UserTask[In, Out] =
+    copy(otherEnumOutExamples =
+      Some(otherEnumOutExamples.getOrElse(Seq.empty) ++ enumOutExamples)
+    )
+
 end UserTask
 
 object UserTask:
