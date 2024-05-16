@@ -4,6 +4,7 @@ package bpmn
 import camundala.domain.*
 
 import scala.compiletime.{constValue, constValueTuple}
+import scala.reflect.Enum
 
 val camundaVersion = "7.15"
 
@@ -18,6 +19,7 @@ def maybe[T](value: T | Option[T]): Option[T] = value match
   case v: Option[?] => v.asInstanceOf[Option[T]]
   case v => Some(v.asInstanceOf[T])
 
+inline def allFieldNames[T <: Enum | Product]: Seq[String] = ${ FieldNamesOf.allFieldNames[T] }
 inline def nameOfVariable(inline x: Any): String = ${ NameOf.nameOfVariable('x) }
 inline def nameOfType[A]: String = ${ NameOf.nameOfType[A] }
 
