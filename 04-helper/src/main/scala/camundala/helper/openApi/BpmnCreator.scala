@@ -36,16 +36,16 @@ case class BpmnCreator()(using config: OpenApiConfig):
       serviceClasses: Seq[IsFieldType],
       examples: Map[String, Json]
   ): Map[String, Json] =
-    val serviceClassMap: Map[String, IsFieldType] = serviceClasses.map(c => c.name -> c).toMap
+    val serviceClassMap: Map[String, IsFieldType] = serviceClasses.map(c => c.className -> c).toMap
     serviceClasses.foldLeft(Map.empty[String, Json]):
-      case result -> (serviceClass: BpmnClass) if examples.contains(serviceClass.name) =>
-        println(s"Example for: ${serviceClass.name}")
-        result ++ extractExample(serviceClass, serviceClassMap, examples(serviceClass.name))
+      case result -> (serviceClass: BpmnClass) if examples.contains(serviceClass.className) =>
+        println(s"Example for: ${serviceClass.className}")
+        result ++ extractExample(serviceClass, serviceClassMap, examples(serviceClass.className))
       case result -> (serviceClass: BpmnEnum) => // not supported yet
-        println(s"Example not supported for: ${serviceClass.name}")
+        println(s"Example not supported for: ${serviceClass.className}")
         result
       case result -> other =>
-        println(s"No Example for: ${other.name}")
+        println(s"No Example for: ${other.className}")
         result
   end extractExamples
 
@@ -88,7 +88,7 @@ case class BpmnCreator()(using config: OpenApiConfig):
   ): Seq[IsFieldType] =
     serviceClasses.foldLeft(Seq.empty[IsFieldType]):
       case result -> (serviceClass: BpmnClass) =>
-        val fields: Option[Seq[ConstrField]] = examples.get(serviceClass.name)
+        val fields: Option[Seq[ConstrField]] = examples.get(serviceClass.className)
           .map: json =>
             val cursor = json.deepDropNullValues.hcursor
             serviceClass.fields

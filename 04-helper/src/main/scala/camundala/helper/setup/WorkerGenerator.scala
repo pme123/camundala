@@ -176,6 +176,12 @@ case class WorkerGenerator()(using config: SetupConfig):
            |""".stripMargin
       else
         s"""
+           |  test("apiUri"):
+           |    assertEquals(
+           |      worker.apiUri(In()).toString,
+           |      s"NOT-SET/YourPath"
+           |    )
+           |
            |  test("inputMapper"):
            |    assertEquals(
            |      worker.inputMapper(In()),

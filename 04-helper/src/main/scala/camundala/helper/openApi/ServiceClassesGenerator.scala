@@ -20,7 +20,7 @@ case class ServiceClassesGenerator()(using
   private def generateSchema(
       classOrEnum: IsFieldType
   ): (String, String) =
-    classOrEnum.name ->
+    classOrEnum.className ->
       s"""package $bpmnPackage.schema
          |
          |${printDescr(classOrEnum)}
@@ -32,9 +32,9 @@ case class ServiceClassesGenerator()(using
                 case c: BpmnClass =>
                   c.fields
               .flatten
-            generateEnum(e) + generateObject(classOrEnum.name, Some(params))
+            generateEnum(e) + generateObject(classOrEnum.className, Some(params))
           case c: BpmnClass =>
-            generateCaseClass(c) + generateObject(classOrEnum.name, Some(c.fields))
+            generateCaseClass(c) + generateObject(classOrEnum.className, Some(c.fields))
         }
          |""".stripMargin
 
@@ -43,12 +43,12 @@ case class ServiceClassesGenerator()(using
       enumName: Option[String] = None,
       intent: String = ""
   ) =
-    val key = bpmnClass.name
+    val key = bpmnClass.className
     s"""${intent}case${enumName.map(_ => "").getOrElse(" class")} $key(
        |${
         bpmnClass.fields
           .map:
-            printField(_, enumName.getOrElse(bpmnClass.name), s"  $intent")
+            printField(_, enumName.getOrElse(bpmnClass.className), s"  $intent")
           .mkString
       }
        |$intent)
@@ -56,7 +56,7 @@ case class ServiceClassesGenerator()(using
   end generateCaseClass
 
   private def generateEnum(bpmnEnum: BpmnEnum, intent: String = ""): String =
-    val key = bpmnEnum.name
+    val key = bpmnEnum.className
     s"""$intent${printDescr(bpmnEnum)}
        |${intent}enum $key:
        |${
@@ -68,7 +68,7 @@ case class ServiceClassesGenerator()(using
               generateCaseClass(bpmnClass, Some(key), s"  $intent")
             case enumCase: EnumCase =>
               s"""$intent  ${printDescr(enumCase)}
-                 |$intent  case ${enumCase.name}""".stripMargin
+                 |$intent  case ${enumCase.className}""".stripMargin
           .mkString
       }
        |${intent}end $key

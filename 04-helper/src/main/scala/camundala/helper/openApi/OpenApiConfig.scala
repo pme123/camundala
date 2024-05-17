@@ -12,7 +12,12 @@ case class OpenApiConfig(
     outputPath: String => os.Path = OpenApiConfig.outputPath(_),
     superBpmnClass: String = OpenApiConfig.superBpmnClass,
     superSimulationClass: String = OpenApiConfig.superSimulationClass,
-    superWorkerClass: String = OpenApiConfig.superWorkerClass
+    superWorkerClass: String = OpenApiConfig.superWorkerClass,
+    // you can filter names from the path that you don't want in the name
+    // e.g. /clients/{id}/portfolios
+    // filterNames = Seq("clients", "{id}")
+    // creates name: Portfolios
+    filterNames: Seq[String] = Seq.empty,
 ):
   def bpmnPath(versionTag: String): os.Path = path(ModuleConfig.bpmnModule, versionTag)
   def bpmnPackage(versionTag: String): String = pckg(ModuleConfig.bpmnModule.name, versionTag)
@@ -33,6 +38,8 @@ case class OpenApiConfig(
         case TypeMapper(_, to, impl) => to -> impl
       .distinct
       .toMap
+
+  def superClassName(version: String) = subProjectName.map(n => s"${n.head.toUpper + n.tail}$version")
 
   private def path(moduleConfig: ModuleConfig, versionTag: String) =
     outputPath(moduleConfig.nameWithLevel) / projectName.split('-').toSeq / moduleConfig.name / subProjectName.toSeq / versionTag
