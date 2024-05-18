@@ -9,9 +9,14 @@ case class SetupElement(
     version: Option[Int]
 )(using setupConfig: SetupConfig):
 
+  lazy val versionLabel: String = version.versionLabel
+  lazy val identifier = s"${setupConfig.projectName}-$processName${version.versionLabel}$bpmnIdentifier"
+  lazy val identifierShort = s"${setupConfig.projectShortName}-$processName${version.versionLabel}$bpmnIdentifier"
   println(
-    s"Create $label: $bpmnName in ${setupConfig.projectName} / process: $processName v$version"
+    s"Create $label: $bpmnName in ${setupConfig.projectName} / process: $processName ${version.versionLabel}"
   )
+  private lazy val bpmnIdentifier = if processName.toLowerCase == bpmnName.toLowerCase then "" else s".$bpmnName"
+
 end SetupElement
 
 def createOrUpdate(file: os.Path, contentNew: String): Unit =

@@ -2,22 +2,22 @@ package camundala.helper.setup
 
 case class BpmnProcessGenerator()(using config: SetupConfig):
 
-  def createBpmn(processName: String, version: Option[Int]): Unit =
-    val name = s"${config.projectShortName}-$processName${version.versionLabel}.bpmn"
+  def createBpmn(setupElement: SetupElement): Unit =
+    val name = s"${setupElement.identifierShort}.bpmn"
     os.write.over(
-      bpmnPath(processName) / name,
-      bpmn(processName, version)
+      bpmnPath / name,
+      bpmn(setupElement)
     )
   end createBpmn
 
-  private def bpmnPath(processName: String) =
+  private lazy val bpmnPath =
     val dir = config.projectDir / config.bpmnPath
     os.makeDir.all(dir)
     dir
   end bpmnPath
 
-  private def bpmn(processName: String, version: Option[Int]) =
-    val processId = s"${config.projectName}-$processName${version.versionLabel}"
+  private def bpmn(setupElement: SetupElement) =
+    val processId = setupElement.identifier
     s"""<?xml version="1.0" encoding="UTF-8"?>
        |<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0phxlok" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.19.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
        |  <bpmn:collaboration id="Collaboration_1nchi5w">

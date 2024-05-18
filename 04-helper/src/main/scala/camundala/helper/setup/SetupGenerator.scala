@@ -14,11 +14,11 @@ case class SetupGenerator()(using config: SetupConfig):
     ApiGenerator().generate
   end generate
 
-  def createProcess(processName: String, version: Option[Int]): Unit =
-    BpmnGenerator().createProcess(processName, version)
-    BpmnProcessGenerator().createBpmn(processName, version)
-    SimulationGenerator().createProcess(processName, version)
-    WorkerGenerator().createProcess(processName, version)
+  def createProcess(setupElement: SetupElement): Unit =
+    BpmnGenerator().createProcess(setupElement)
+    BpmnProcessGenerator().createBpmn(setupElement)
+    SimulationGenerator().createProcess(setupElement)
+    WorkerGenerator().createProcess(setupElement)
   end createProcess
 
   def createProcessElement(setupObject: SetupElement): Unit =

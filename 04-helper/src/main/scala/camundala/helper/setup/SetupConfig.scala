@@ -19,7 +19,7 @@ case class SetupConfig(
 ):
   lazy val companyName: String = apiProjectConf.org
   lazy val companyClassName: String = companyName.head.toUpper + companyName.tail
-  lazy val projectShortName: String = projectName.split("-").last
+  lazy val projectShortName: String = projectName.split("-").tail.mkString("-")
   lazy val projectClassNames: Seq[String] = projectName.split("-").map(n => n.head.toUpper + n.tail)
   lazy val projectShortClassName: String = projectClassNames.last
   lazy val projectClassName: String = projectClassNames.mkString

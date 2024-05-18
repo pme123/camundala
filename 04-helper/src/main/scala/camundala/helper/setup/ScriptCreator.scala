@@ -54,8 +54,11 @@ case class ScriptCreator()(using config: SetupConfig):
        |             processName: String,
        |             @arg(doc = "The version of the object to create.")
        |             version: Option[Int] = None,
+       |             @arg(doc = "The name of the subProject (lowerCase, e.g. mySubProject).")
+       |             subProject: Option[String] = None
+       |
        |           ): Unit =
-       |  DevHelper.createProcess(processName, version)
+       |  DevHelper.createProcess(processName, version, subProject)
        |
        |${createMethod("CustomTask")}
        |
