@@ -24,7 +24,7 @@ case class BpmnProcessGenerator()(using config: SetupConfig):
        |    <bpmn:participant id="$processId-Participant" name="$processId" processRef="$processId" />
        |  </bpmn:collaboration>
        |  <bpmn:process id="$processId" name="$processId" isExecutable="true" camunda:historyTimeToLive="180">
-       |    <bpmn:startEvent id="PrintDocumentStartEvent" name="Print Document" camunda:asyncAfter="true">
+       |    <bpmn:startEvent id="ProcessStartEvent" name="Start Process" camunda:asyncAfter="true">
        |      <bpmn:outgoing>Flow_1jqb7g9</bpmn:outgoing>
        |      <bpmn:messageEventDefinition id="MessageEventDefinition_0uhyvc8" messageRef="Message_0q4quzr" />
        |    </bpmn:startEvent>
@@ -45,7 +45,7 @@ case class BpmnProcessGenerator()(using config: SetupConfig):
        |      <bpmn:incoming>Flow_1tnbvod</bpmn:incoming>
        |      <bpmn:linkEventDefinition id="LinkEventDefinition_147ix62" name="output-mocked" />
        |    </bpmn:intermediateThrowEvent>
-       |    <bpmn:endEvent id="RubrikUpdatedEndEvent" name="Rubrik updated">
+       |    <bpmn:endEvent id="SucceededEndEvent" name="succeeded">
        |      <bpmn:extensionElements>
        |        <camunda:executionListener expression="#{execution.setVariable(&#34;processStatus&#34;, &#34;succeeded&#34;)}" event="start" />
        |      </bpmn:extensionElements>
