@@ -8,7 +8,6 @@ case class OpenApiGenerator()(using config: OpenApiConfig, apiDefinition: ApiDef
 
   lazy val generate: Unit =
     BpmnGenerator().generate
-    SimulationGenerator().generate
     WorkerGenerator().generate
   end generate
 end OpenApiGenerator

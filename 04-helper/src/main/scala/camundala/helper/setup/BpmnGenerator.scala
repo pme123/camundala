@@ -2,17 +2,11 @@ package camundala.helper.setup
 
 case class BpmnGenerator()(using config: SetupConfig):
 
-  def createProcess(processName: String, version: Option[Int]): Unit =
-    val name = processName.head.toUpper + processName.tail
+  def createProcess(setupElement: SetupElement): Unit =
     os.write.over(
-      bpmnPath(processName, version) / s"$name.scala",
+      bpmnPath(setupElement.processName, setupElement.version) / s"${setupElement.bpmnName}.scala",
       objectDefinition(
-        SetupElement(
-          "Process",
-          processName,
-          name,
-          version
-        ),
+        setupElement,
         isProcess = true
       )
     )
@@ -57,7 +51,7 @@ case class BpmnGenerator()(using config: SetupConfig):
        |
        |object $bpmnName extends ${
         if label == "ServiceTask"
-        then processName.head.toUpper + processName.tail + s"V${version.getOrElse(1)}:"
+        then processName.head.toUpper + processName.tail + s"${version.versionLabel}:"
         else s"CompanyBpmn${label}Dsl:"
       }
        |
@@ -69,9 +63,7 @@ case class BpmnGenerator()(using config: SetupConfig):
           case "SignalEvent" | "MessageEvent" => "messageName"
           case "TimerEvent" => "title"
           case _ => "topicName"
-      } = "${config.projectName}-$processName${version.versionLabel}${
-        if label == "Process" then "" else s".$bpmnName"
-      }"
+      } = "${setupObject.identifier}"
        |  val descr: String = ""
        |
        |${
@@ -161,9 +153,11 @@ case class BpmnGenerator()(using config: SetupConfig):
   end eventDefinition
 
   private def bpmnPath(processName: String, version: Option[Int]) =
+    val subProject = config.subProjects.find(_ == processName)
     val dir = config.projectDir / ModuleConfig.bpmnModule.packagePath(
-      config.projectPath
-    ) / processName / version.versionPath
+      config.projectPath,
+      subProject = subProject
+    ) / subProject.map(_ => os.rel).getOrElse(os.rel / processName) / version.versionPath
     os.makeDir.all(dir)
     dir
   end bpmnPath

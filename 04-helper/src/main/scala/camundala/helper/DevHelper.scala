@@ -23,9 +23,19 @@ object DevHelper:
     println(s" - with Subprojects: ${config.subProjects}")
     SetupGenerator().generate
 
-  def createProcess(processName: String, version: Option[Int])(using config: SetupConfig): Unit =
-    println(s"Create Process: $processName v$version in ${config.projectName}")
-    SetupGenerator().createProcess(processName, version)
+  def createProcess(processName: String, version: Option[Int], subProject: Option[String])(using
+      config: SetupConfig
+  ): Unit =
+    val name = subProject.map(_ => processName).getOrElse(processName.head.toUpper + processName.tail)
+    val processOrSubProject = subProject.getOrElse(processName)
+
+    SetupGenerator().createProcess(SetupElement(
+      "Process",
+      processOrSubProject,
+      name,
+      version
+    ))
+  end createProcess
 
   def createCustomTask(processName: String, bpmnName: String, version: Option[Int])(
       using config: SetupConfig
@@ -36,7 +46,6 @@ object DevHelper:
       bpmnName,
       version
     ))
-
   def createServiceTask(processName: String, bpmnName: String, version: Option[Int])(
       using config: SetupConfig
   ): Unit =
@@ -53,7 +62,7 @@ object DevHelper:
     SetupGenerator().createUserTask(
       SetupElement("UserTask", processName, bpmnName, version)
     )
-    
+
   def createDecision(processName: String, bpmnName: String, version: Option[Int])(
       using config: SetupConfig
   ): Unit =

@@ -32,9 +32,14 @@ trait GeneratorHelper:
     s"""${intent}object $name:
        |$intent  given ApiSchema[$name] = deriveApiSchema
        |$intent  given InOutCodec[$name] = deriveInOutCodec
-       |$paramObjects
-       |${intent}end $name
-       |""".stripMargin
+       |${if paramObjects.nonEmpty
+         then
+           s"""
+         |$paramObjects
+         |${intent}end $name""".stripMargin
+         else
+           ""
+       }""".stripMargin
   end generateObject
 
   protected def printField(

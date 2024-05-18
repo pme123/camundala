@@ -38,6 +38,7 @@ case class SbtSettingsGenerator()(using config: SetupConfig):
        |$sbtPublish
        |$sbtRepos
        |$sbtDocker
+       |$testSettings
        |
        |  lazy val loadingMessage = s\"\"\"Successfully started
        |- Dependencies:
@@ -134,6 +135,13 @@ case class SbtSettingsGenerator()(using config: SetupConfig):
     s"""
       |  lazy val dockerSettings = ${config.sbtDockerSettings}
       |""".stripMargin
+  private lazy val testSettings =
+    s"""  lazy val testSettings = Seq(
+       |    libraryDependencies += mUnit,
+       |    Test / parallelExecution := true,
+       |    testFrameworks += new TestFramework("munit.Framework")
+       |  )
+       |""".stripMargin
 
   private lazy val sbtAutoImportSetting =
     """  def autoImportSetting(customAutoSettings: Seq[String]) =

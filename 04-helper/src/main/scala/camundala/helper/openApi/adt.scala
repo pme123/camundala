@@ -11,8 +11,9 @@ sealed trait OpenApiElem:
   def name: String
   def descr: Option[String]
 
+  lazy val className = name.head.toUpper + name.tail
   lazy val niceName: String = // e.g `Authorization Check Get`
-    name.foldLeft(""):
+    className.foldLeft(""):
       case result -> ch if ch.isUpper =>
         result + " " + ch
       case result -> ch =>

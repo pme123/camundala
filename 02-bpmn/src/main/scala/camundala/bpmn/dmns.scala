@@ -63,6 +63,18 @@ case class DecisionDmn[
     copy(otherEnumOutExamples =
       Some(otherEnumOutExamples.getOrElse(Seq.empty) :+ enumOutExample)
     )
+  def withEnumInExamples(
+      enumInExamples: In*
+  ): DecisionDmn[In, Out] =
+    copy(otherEnumInExamples =
+      Some(otherEnumInExamples.getOrElse(Seq.empty) ++ enumInExamples)
+    )
+  def withEnumOutExamples(
+      enumOutExamples: Out*
+  ): DecisionDmn[In, Out] =
+    copy(otherEnumOutExamples =
+      Some(otherEnumOutExamples.getOrElse(Seq.empty) ++ enumOutExamples)
+    )
 
 end DecisionDmn
 

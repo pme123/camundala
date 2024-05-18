@@ -15,43 +15,27 @@ case class BpmnClassesCreator(
 
   lazy val create: Seq[BpmnServiceObject] =
     pathMap
-      .map:
+      .flatMap:
         case key -> path =>
-          extractOperation(key, path)
-      .collect:
-        case o if o.nonEmpty =>
-          o.get
+          extractOperations(key, path)
       .map:
         case key -> method -> operation =>
           createModel(key, method, operation)
       .toSeq
   end create
 
-  private def extractOperation(key: String, path: PathItem) =
-    val operation = (
-      path.getGet,
-      path.getPost,
-      path.getPut,
-      path.getPatch,
-      path.getDelete
-    ) match
-    case (op: Operation, _, _, _, _) =>
-      Some(Method.GET -> op)
-    case (null, op: Operation, _, _, _) =>
-      Some(Method.POST -> op)
-    case (null, null, op: Operation, _, _) =>
-      Some(Method.PUT -> op)
-    case (null, null, null, op: Operation, _) =>
-      Some(Method.PATCH -> op)
-    case (null, null, null, null, op: Operation) =>
-      Some(Method.DELETE -> op)
-    case (null, null, null, null, null) =>
-      println(s"Unsupported Operation for: $key")
-      None
-    operation
-      .map:
-        case m -> op => key -> m -> op
-  end extractOperation
+  private def extractOperations(key: String, path: PathItem): Seq[((String, Method), Operation)] =
+
+    Map(
+      Method.GET -> path.getGet,
+      Method.POST -> path.getPost,
+      Method.PUT -> path.getPut,
+      Method.PATCH -> path.getPatch,
+      Method.DELETE -> path.getDelete
+    ).toSeq.collect:
+      case method -> (op: Operation) =>
+        key -> method -> op
+  end extractOperations
 
   private def createModel(key: String, method: Method, operation: Operation) =
     val name = generateServiceName(key, method)
@@ -78,8 +62,14 @@ case class BpmnClassesCreator(
     val methodStr = mStr.head + mStr.tail.toLowerCase
     val name = key
       .split("/")
-      .filterNot:
-        _.contains('{')
+      .filterNot(_.isBlank)
+      .filterNot: x =>
+        val f = (config.filterNames.contains(x))
+        f
+      .map:
+        case i if i.startsWith("{") =>
+          i.tail.init // {id} => id
+        case i => i
       .map: i =>
         i.split("-")
           .filter:
@@ -87,10 +77,11 @@ case class BpmnClassesCreator(
           .map: e =>
             e.head.toUpper + e.tail
           .mkString
+      .distinct
       .mkString
     if forTopic
     then name.head.toLower + name.tail + "." + methodStr.toLowerCase
-    else name + methodStr
+    else methodStr + name
   end generateServiceName
 
   private def extractRequestBodyType(operation: Operation): Option[ConstrField] =

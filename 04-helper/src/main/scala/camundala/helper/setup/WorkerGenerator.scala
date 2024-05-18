@@ -5,14 +5,12 @@ import camundala.api.docs.DependencyConf
 case class WorkerGenerator()(using config: SetupConfig):
 
   lazy val generate: Unit =
-    createOrUpdate(workerPath() / "WorkerApp.scala", workerApp)
-    createOrUpdate(workerTestPath() / "WorkerTestApp.scala", workerTestApp)
+    createIfNotExists(workerPath() / "WorkerApp.scala", workerApp)
+    createIfNotExists(workerTestPath() / "WorkerTestApp.scala", workerTestApp)
     createOrUpdate(workerConfigPath / "application.yaml", applicationYaml)
     createOrUpdate(workerConfigPath / "banner.txt", banner)
 
-  def createProcess(processName: String, version: Option[Int]): Unit =
-    val workerName = processName.head.toUpper + processName.tail
-    val setupElement = SetupElement("Process", processName, workerName, version)
+  def createProcess(setupElement: SetupElement): Unit =
     os.write.over(
       workerPath(Some(setupElement)),
       processWorker(setupElement)
@@ -176,6 +174,12 @@ case class WorkerGenerator()(using config: SetupConfig):
            |""".stripMargin
       else
         s"""
+           |  test("apiUri"):
+           |    assertEquals(
+           |      worker.apiUri(In()).toString,
+           |      s"NOT-SET/YourPath"
+           |    )
+           |
            |  test("inputMapper"):
            |    assertEquals(
            |      worker.inputMapper(In()),

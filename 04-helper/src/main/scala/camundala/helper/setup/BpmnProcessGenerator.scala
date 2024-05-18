@@ -2,29 +2,29 @@ package camundala.helper.setup
 
 case class BpmnProcessGenerator()(using config: SetupConfig):
 
-  def createBpmn(processName: String, version: Option[Int]): Unit =
-    val name = s"${config.projectShortName}-$processName${version.versionLabel}.bpmn"
+  def createBpmn(setupElement: SetupElement): Unit =
+    val name = s"${setupElement.identifierShort}.bpmn"
     os.write.over(
-      bpmnPath(processName) / name,
-      bpmn(processName, version)
+      bpmnPath / name,
+      bpmn(setupElement)
     )
   end createBpmn
 
-  private def bpmnPath(processName: String) =
+  private lazy val bpmnPath =
     val dir = config.projectDir / config.bpmnPath
     os.makeDir.all(dir)
     dir
   end bpmnPath
 
-  private def bpmn(processName: String, version: Option[Int]) =
-    val processId = s"${config.projectName}-$processName${version.versionLabel}"
+  private def bpmn(setupElement: SetupElement) =
+    val processId = setupElement.identifier
     s"""<?xml version="1.0" encoding="UTF-8"?>
        |<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0phxlok" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.19.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
        |  <bpmn:collaboration id="Collaboration_1nchi5w">
        |    <bpmn:participant id="$processId-Participant" name="$processId" processRef="$processId" />
        |  </bpmn:collaboration>
        |  <bpmn:process id="$processId" name="$processId" isExecutable="true" camunda:historyTimeToLive="180">
-       |    <bpmn:startEvent id="PrintDocumentStartEvent" name="Print Document" camunda:asyncAfter="true">
+       |    <bpmn:startEvent id="ProcessStartEvent" name="Start Process" camunda:asyncAfter="true">
        |      <bpmn:outgoing>Flow_1jqb7g9</bpmn:outgoing>
        |      <bpmn:messageEventDefinition id="MessageEventDefinition_0uhyvc8" messageRef="Message_0q4quzr" />
        |    </bpmn:startEvent>
@@ -45,7 +45,7 @@ case class BpmnProcessGenerator()(using config: SetupConfig):
        |      <bpmn:incoming>Flow_1tnbvod</bpmn:incoming>
        |      <bpmn:linkEventDefinition id="LinkEventDefinition_147ix62" name="output-mocked" />
        |    </bpmn:intermediateThrowEvent>
-       |    <bpmn:endEvent id="RubrikUpdatedEndEvent" name="Rubrik updated">
+       |    <bpmn:endEvent id="SucceededEndEvent" name="succeeded">
        |      <bpmn:extensionElements>
        |        <camunda:executionListener expression="#{execution.setVariable(&#34;processStatus&#34;, &#34;succeeded&#34;)}" event="start" />
        |      </bpmn:extensionElements>

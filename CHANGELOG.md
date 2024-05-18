@@ -15,6 +15,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.13 - 2024-05-18
+### Changed 
+- Added Process in subProcess in OpenAPI Generation. - see [Commit](https://github.com/pme123/camundala/commit/d3d685dcc0d9120060ccde5819a6c3dd12f7be12)
+- Improvements in OpenAPI Generation. - see [Commit](https://github.com/pme123/camundala/commit/c8aef1aa311c413a71f2810dfd65a2e04be05513)
+- Added macro to extract the fieldnames from Product or Enum - not working in runtime on generic Types. - see [Commit](https://github.com/pme123/camundala/commit/4aa15f54f9e2295d719ee199e8b234e9e862ff4e)
+- Added withEnumInExamples to BPMN Types. - see [Commit](https://github.com/pme123/camundala/commit/cee26b9aea0b6f4d2711441c06f2fa4c0560a53f)
+- Improvements and fixes in code generators. - see [Commit](https://github.com/pme123/camundala/commit/d28d968e99b2d133dd54f56cf3cbcc99ae4acbcd)
+- Added toServiceResponse to MockedServiceResponse for simpler testing. - see [Commit](https://github.com/pme123/camundala/commit/ff87139b689e3c315c0f94259d6f55d636583df3)
+- Added App to DmnTesterStarter. - see [Commit](https://github.com/pme123/camundala/commit/021335d54c1b055aeac28e495a7226f722239eb2)
+- Adjusted generating testSettings. - see [Commit](https://github.com/pme123/camundala/commit/8d48d1274f2bbdaba277c048362d0931d927634a)
+
 ## 1.29.12 - 2024-05-14
 ### Changed 
 - Included Type in refined types, added percentage/ tests for refined types. - see [Commit](https://github.com/pme123/camundala/commit/8a408baf8dbdf4461309d1e814015ab62e9a4ec7)

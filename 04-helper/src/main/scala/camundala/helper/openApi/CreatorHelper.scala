@@ -16,9 +16,11 @@ trait CreatorHelper:
         optDescr: Option[String] = None,
         optIsRequired: Option[Boolean] = None,
         optExample: Option[AnyRef] = None,
-        optExamples: Option[java.util.Map[String, Example]] = None
+        optExamples: Option[java.util.Map[String, Example]] = None,
+
     ): ConstrField =
-      val tpe = extractType(optKey.getOrElse("fieldKeyFromType"))
+      val fromType = extractType(optKey.getOrElse("fieldKeyFromType"))
+      val tpe = fromType.head.toUpper + fromType.tail
       val key = optKey.getOrElse(tpe.head.toLower + tpe.tail)
       val isOptional: Boolean =
         (Option(schema.getNullable), optIsRequired) match
@@ -80,6 +82,8 @@ trait CreatorHelper:
         case "int64" => "Long"
         case "date-time" => "LocalDateTime"
         case "date" => "LocalDate"
+        case _ if schema.getMaximum != null && schema.getMaximum.longValue() > Int.MaxValue =>
+          "Long"
         case _ => value
       case None if schema.get$ref() != null =>
         refType
