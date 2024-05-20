@@ -3,7 +3,7 @@ package camundala.helper.setup
 case class ApiGenerator()(using config: SetupConfig):
 
   lazy val generate: Unit =
-    createOrUpdate(
+    createIfNotExists(
       config.projectDir / ModuleConfig.apiModule.packagePath(
         config.projectPath
       ) / "ApiProjectCreator.scala",
