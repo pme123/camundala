@@ -3,10 +3,10 @@ package camundala.helper.setup
 import camundala.api.docs.DependencyConf
 
 
-case class HelperGenerator()(using config: SetupConfig):
+case class ApiGeneratorGenerator()(using config: SetupConfig):
 
   lazy val generate: Unit =
-    createOrUpdate(apiGeneratorPath, apiGenerator)
+    createIfNotExists(apiGeneratorPath, apiGenerator)
 
   private lazy val companyName = config.companyName
   private lazy val helperPath =
@@ -28,10 +28,10 @@ case class HelperGenerator()(using config: SetupConfig):
        |
        |  private given OpenApiConfig = OpenApiConfig(
        |    projectName = "${config.projectName}",
-       |    
+       |
        |  )
        |  private given ApiDefinition = OpenApiCreator().create
        |
        |end $objName""".stripMargin
 
-end HelperGenerator
+end ApiGeneratorGenerator

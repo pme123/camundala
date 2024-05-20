@@ -94,8 +94,8 @@ given InOutCodec[String | Int] = CirceCodec.from(
       case s: String => Json.fromString(s)
       case i: Int => Json.fromInt(i)
 )
-
-given ApiSchema[String | Int] = Schema.derivedUnion
+type IntOrString = String | Int
+given ApiSchema[IntOrString] = Schema.derivedUnion
 
 case class NoInput()
 object NoInput:

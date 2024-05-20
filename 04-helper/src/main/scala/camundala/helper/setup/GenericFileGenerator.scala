@@ -8,7 +8,7 @@ case class GenericFileGenerator()(using config: SetupConfig):
     createOrUpdate(config.projectDir / ".scalafmt.conf", scalafmt)
     createOrUpdate(config.projectDir / ".gitignore", gitignore)
     createOrUpdate(config.projectDir / "helper.sc", helperSc)
-    createOrUpdate(config.projectDir / "CHANGELOG.md", changeLog)
+    createIfNotExists(config.projectDir / "CHANGELOG.md", changeLog)
   end generate
 
   private lazy val scalafmt =

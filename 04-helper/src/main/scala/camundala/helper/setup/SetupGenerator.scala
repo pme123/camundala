@@ -10,7 +10,7 @@ case class SetupGenerator()(using config: SetupConfig):
     GenericFileGenerator().generate
     WorkerGenerator().generate
     DmnGenerator().generate
-    HelperGenerator().generate
+    ApiGeneratorGenerator().generate
     ApiGenerator().generate
   end generate
 
