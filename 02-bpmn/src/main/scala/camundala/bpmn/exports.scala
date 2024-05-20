@@ -162,3 +162,13 @@ case class ProcessLabel(key: String, value: String)
 object ProcessLabel:
   def none(label: String): ProcessLabel = ProcessLabel(label, "-")
 end ProcessLabel
+
+type ValueSimple = String | Boolean | Int | Long | Double
+given ApiSchema[ValueSimple] = Schema.derivedUnion
+
+given valueEncoder: InOutEncoder[ValueSimple] with
+  def apply(a: ValueSimple): Json = valueToJson(a)
+given valueDecoder: InOutDecoder[ValueSimple] with
+  def apply(c: io.circe.HCursor): Decoder.Result[ValueSimple] =
+    c.as[Int].orElse(c.as[Long]).orElse(c.as[Double]).orElse(c.as[String]).orElse(c.as[Boolean])
+given InOutCodec[ValueSimple] = CirceCodec.from(valueDecoder, valueEncoder)
