@@ -52,7 +52,7 @@ case class WorkerExecutor[
         })
       json
         .flatMap(jsonObj =>
-          decodeTo[In](jsonObj.asJson.toString).left
+          decodeTo[In](jsonObj.asJson.deepDropNullValues.toString).left
             .map(ex => ValidatorError(errorMsg = ex.errorMsg))
             .flatMap(in => validationHandler.map(h => h.validate(in)).getOrElse(Right(in)))
         )

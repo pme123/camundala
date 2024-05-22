@@ -201,7 +201,7 @@ def serviceOrProcessMockDescr[Out: InOutEncoder](mock: Out) =
      |Here an example:
      |
      |```scala
-     |${mock.asJson}
+     |${mock.asJson.deepDropNullValues}
      |```
      |
      |General to mocking:
@@ -224,7 +224,7 @@ def outputServiceMockDescr[ServiceOut: InOutEncoder](mock: ServiceOut) =
      |
      |```scala
      |MockedHttpResponse.success200(
-     |  ${mock.asJson}
+     |  ${mock.asJson.deepDropNullValues}
      |)
      |```
      |

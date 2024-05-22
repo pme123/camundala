@@ -166,7 +166,7 @@ case class ServiceHandler[
   private def decodeMock[Out: InOutDecoder](
       json: Json
   ): Either[ServiceMockingError, Out] =
-    decodeTo[Out](json.asJson.toString).left
+    decodeTo[Out](json.asJson.deepDropNullValues.toString).left
       .map(ex => ServiceMockingError(errorMsg = ex.causeMsg))
   end decodeMock
 
@@ -180,7 +180,7 @@ case class ServiceHandler[
           .getLogger(getClass)
           .info(s"""Mocked Service: ${niceClassName(this.getClass)}
                    |${requestMsg(runnableRequest)}
-                   | - mockedResponse: ${mock.asJson}
+                   | - mockedResponse: ${mock.asJson.deepDropNullValues}
                    |""".stripMargin)
         mock
       }
@@ -201,7 +201,7 @@ case class ServiceHandler[
             status,
             serviceErrorMsg(
               status,
-              s"Mocked Error: ${body.map(_.asJson).getOrElse("-")}",
+              s"Mocked Error: ${body.map(_.asJson.deepDropNullValues).getOrElse("-")}",
               runnableRequest
             )
           )

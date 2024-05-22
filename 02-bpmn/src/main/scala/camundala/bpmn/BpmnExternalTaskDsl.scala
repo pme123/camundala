@@ -63,7 +63,7 @@ trait BpmnServiceTaskDsl extends BpmnExternalTaskDsl:
          else
            s"""
               |```json
-              |${serviceInExample.asJson}
+              |${serviceInExample.asJson.deepDropNullValues}
               |```
               |""".stripMargin
        }
@@ -71,7 +71,7 @@ trait BpmnServiceTaskDsl extends BpmnExternalTaskDsl:
         |Example Response: `${defaultServiceOutMock.unsafeBody.getClass.getName}`:
         |
         |```json
-        |${defaultServiceOutMock.asJson}
+        |${defaultServiceOutMock.asJson.deepDropNullValues}
         |```
         |</p>
         |</details>

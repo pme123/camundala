@@ -55,11 +55,11 @@ sealed trait InOutApi[
 
   lazy val inJson: Option[Json] = inOut.in match
     case _: NoInput => None
-    case _ => Some(inOut.in.asJson)
+    case _ => Some(inOut.in.asJson.deepDropNullValues)
 
   lazy val outJson: Option[Json] = inOut.out match
     case _: NoInput => None
-    case _ => Some(inOut.out.asJson)
+    case _ => Some(inOut.out.asJson.deepDropNullValues)
 
   lazy val variableNamesIn: List[String] =
     inOut.in.productElementNames.toList
@@ -177,7 +177,7 @@ def generalVariablesDescr[Out <: Product: InOutEncoder](
      |
      |```json
      |...
-     |"outputMock": ${out.asJson},
+     |"outputMock": ${out.asJson.deepDropNullValues},
      |...
      |```
      |$serviceMock
@@ -241,7 +241,7 @@ case class ServiceWorkerApi[
        |...
        |"outputServiceMock": ${MockedServiceResponse
             .success200(inOut.defaultServiceOutMock)
-            .asJson},
+            .asJson.deepDropNullValues},
        |...
        |```"""
       )}
