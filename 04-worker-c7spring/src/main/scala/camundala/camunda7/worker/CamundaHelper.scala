@@ -14,7 +14,7 @@ object CamundaHelper:
 
   def variableTypedOpt(
       varKey: String | InputParams
-  ): HelperContext[Option[TypedValue]] =
+  )(using ExternalTask): HelperContext[Option[TypedValue]] =
     Option(summon[ExternalTask].getVariableTyped(varKey.toString))
 
   /** Returns the Variable in the Bag. If there is none it return `null`. It returns whatever
@@ -60,7 +60,7 @@ object CamundaHelper:
   // if not set it returns an empty Seq
   def extractSeqFromArrayOrString(
       varKey: String | InputParams,
-      defaultSeq: Seq[String | ErrorCodes]
+      defaultSeq: Seq[String | ErrorCodes] = Seq.empty
   ): HelperContext[Either[BadVariableError, Seq[String]]] =
     jsonVariableOpt(varKey)
       .flatMap {
