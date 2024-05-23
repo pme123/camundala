@@ -21,7 +21,7 @@ object CamundaVariable:
       case v: CDouble => v.asJson
       case v: CBoolean => v.asJson
       case v: CFile => v.asJson
-      case v: CJson => v.asJson
+      case v: CJson => v.asJson.deepDropNullValues
       case CNull => Json.Null
     }
 

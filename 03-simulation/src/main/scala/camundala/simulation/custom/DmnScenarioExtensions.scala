@@ -20,7 +20,7 @@ trait DmnScenarioExtensions extends SScenarioExtensions:
       val dmn = scenario.inOut
       val body = EvaluateDecisionIn(
         dmn.camundaInMap
-      ).asJson.toString
+      ).asJson.deepDropNullValues.toString
       val uri = config.tenantId match
         case Some(tenantId) =>
           uri"${config.endpoint}/decision-definition/key/${dmn.decisionDefinitionKey}/tenant-id/$tenantId/evaluate"

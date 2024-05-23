@@ -107,7 +107,7 @@ sealed trait ProcessOrExternalTask[
     val camundaOutputMock: Map[String, CamundaVariable] = outputMock
       .map(m =>
         InputParams.outputMock.toString -> CamundaVariable.valueToCamunda(
-          m.asJson
+          m.asJson.deepDropNullValues
         )
       )
       .toMap
@@ -201,7 +201,7 @@ case class Process[
   override def camundaInMap: Map[String, CamundaVariable] =
     val camundaMockedWorkers =
       InputParams.mockedWorkers.toString -> CamundaVariable.valueToCamunda(
-        mockedWorkers.asJson
+        mockedWorkers.asJson.deepDropNullValues
       )
 
     super.camundaInMap + camundaMockedWorkers
@@ -233,16 +233,16 @@ sealed trait ExternalTask[
   override def camundaInMap: Map[String, CamundaVariable] =
     super.camundaInMap +
       (InputParams.handledErrors.toString -> CamundaVariable.valueToCamunda(
-        handledErrors.map(_.toString).asJson
+        handledErrors.map(_.toString).asJson.deepDropNullValues
       )) +
       (InputParams.regexHandledErrors.toString -> CamundaVariable
-        .valueToCamunda(regexHandledErrors.asJson)) +
+        .valueToCamunda(regexHandledErrors.asJson.deepDropNullValues)) +
       (InputParams.topicName.toString -> CamundaVariable
         .valueToCamunda(topicName)) +
       (InputParams.manualOutMapping.toString -> CamundaVariable
         .valueToCamunda(manualOutMapping)) +
       (InputParams.outputVariables.toString -> CamundaVariable
-        .valueToCamunda(outputVariables.asJson))
+        .valueToCamunda(outputVariables.asJson.deepDropNullValues))
 end ExternalTask
 
 case class ServiceTask[
@@ -362,7 +362,7 @@ case class ServiceTask[
     val camundaOutputServiceMock = outputServiceMock
       .map(m =>
         InputParams.outputServiceMock.toString -> CamundaVariable.valueToCamunda(
-          m.asJson
+          m.asJson.deepDropNullValues
         )
       )
       .toMap

@@ -143,7 +143,7 @@ object CamundalaWorkerError:
   ): String =
     s""" - Request URL: ${prettyUriString(runnableRequest.apiUri.addQuerySegments(runnableRequest.qSegments))}
        | - Request Body: ${runnableRequest.requestBodyOpt
-        .map(_.asJson)
+        .map(_.asJson.deepDropNullValues)
         .getOrElse("")}
         | - Request Header: ${runnableRequest.headers.map{case k -> v => s"$k -> $v"}.mkString(", ")}""".stripMargin
 

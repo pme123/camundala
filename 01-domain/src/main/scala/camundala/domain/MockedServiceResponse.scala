@@ -75,7 +75,7 @@ object MockedServiceResponse:
         "respStatus" -> Json.fromInt(response.respStatus),
         "respBody" -> (
           response.respBody match
-            case Right(value) => value.asJson
+            case Right(value) => value.asJson.deepDropNullValues
             case Left(err) => err.getOrElse(Json.Null)
         ),
         "respHeaders" -> response.respHeaders

@@ -111,7 +111,7 @@ trait TestOverrideExtensions:
       add(
         None,
         TestOverrideType.Contains,
-        Some(CamundaVariable.valueToCamunda(expected.asJson))
+        Some(CamundaVariable.valueToCamunda(expected.asJson.deepDropNullValues))
       )
 
     private def add(

@@ -59,7 +59,7 @@ trait CreatorHelper:
                     case Some(v) =>
                       v
           .flatMap: ex =>
-            parser.parse(ex.toString).toOption.map(_.asJson)
+            parser.parse(ex.toString).toOption.map(_.asJson.deepDropNullValues)
 
       ConstrField(
         key,

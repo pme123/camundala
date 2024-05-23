@@ -102,7 +102,7 @@ trait RestEndpoint extends Validator:
         )
         ResponseEntity
           .status(HttpStatus.OK)
-          .body(result.asJson.toString)
+          .body(result.asJson.deepDropNullValues.toString)
       case Left(errorMsg) =>
         ResponseEntity
           .status(HttpStatus.BAD_REQUEST)

@@ -19,7 +19,7 @@ case class BpmnProcessGenerator()(using config: SetupConfig):
   private def bpmn(setupElement: SetupElement) =
     val processId = setupElement.identifier
     s"""<?xml version="1.0" encoding="UTF-8"?>
-       |<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0phxlok" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.19.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
+       |<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0phxlok" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.19.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
        |  <bpmn:collaboration id="Collaboration_1nchi5w">
        |    <bpmn:participant id="$processId-Participant" name="$processId" processRef="$processId" />
        |  </bpmn:collaboration>
@@ -80,8 +80,8 @@ case class BpmnProcessGenerator()(using config: SetupConfig):
        |      <bpmn:outgoing>Flow_1szk79c</bpmn:outgoing>
        |      <bpmn:errorEventDefinition id="ErrorEventDefinition_0ogxnq9" errorRef="Error_1k095oq" />
        |    </bpmn:boundaryEvent>
-       |    <bpmn:sequenceFlow id="Flow_1jqb7g9" sourceRef="PrintDocumentStartEvent" targetRef="InitProcessTask" />
-       |    <bpmn:sequenceFlow id="Flow_151h2k5" sourceRef="InitProcessTask" targetRef="RubrikUpdatedEndEvent" />
+       |    <bpmn:sequenceFlow id="Flow_1jqb7g9" sourceRef="ProcessStartEvent" targetRef="InitProcessTask" />
+       |    <bpmn:sequenceFlow id="Flow_151h2k5" sourceRef="InitProcessTask" targetRef="SucceededEndEvent" />
        |    <bpmn:sequenceFlow id="Flow_1szk79c" sourceRef="Event_1roicyw" targetRef="ValidationfailedEvent1" />
        |    <bpmn:sequenceFlow id="Flow_1tnbvod" sourceRef="MockedBoundaryEvent" targetRef="OutputmockedEvent1" />
        |    <bpmn:sequenceFlow id="Flow_0vdwlr8" sourceRef="OutputmockedEvent" targetRef="OutputmockedEndEvent" />
@@ -96,7 +96,7 @@ case class BpmnProcessGenerator()(using config: SetupConfig):
        |      <bpmndi:BPMNShape id="Participant_1wuaud6_di" bpmnElement="$processId-Participant" isHorizontal="true">
        |        <dc:Bounds x="160" y="80" width="1450" height="630" />
        |      </bpmndi:BPMNShape>
-       |      <bpmndi:BPMNShape id="Event_0ucqip2_di" bpmnElement="PrintDocumentStartEvent">
+       |      <bpmndi:BPMNShape id="Event_0ucqip2_di" bpmnElement="ProcessStartEvent">
        |        <dc:Bounds x="222" y="279" width="36" height="36" />
        |        <bpmndi:BPMNLabel>
        |          <dc:Bounds x="202" y="322" width="76" height="14" />
@@ -118,7 +118,7 @@ case class BpmnProcessGenerator()(using config: SetupConfig):
        |          <dc:Bounds x="374" y="442" width="73" height="14" />
        |        </bpmndi:BPMNLabel>
        |      </bpmndi:BPMNShape>
-       |      <bpmndi:BPMNShape id="Event_1vr44rw_di" bpmnElement="RubrikUpdatedEndEvent">
+       |      <bpmndi:BPMNShape id="Event_1vr44rw_di" bpmnElement="SucceededEndEvent">
        |        <dc:Bounds x="1502" y="279" width="36" height="36" />
        |        <bpmndi:BPMNLabel>
        |          <dc:Bounds x="1483" y="322" width="75" height="14" />

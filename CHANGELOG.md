@@ -15,6 +15,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.15 - 2024-05-23
+### Changed 
+- Added Graviton Schema for Testing ApiGeneration. - see [Commit](https://github.com/pme123/camundala/commit/d40b7bf257ac1582e7c7f26f1ce7aaac403ecc62)
+- Added color reference to generated BPMN. - see [Commit](https://github.com/pme123/camundala/commit/8ae40efacdfc80ffd2bf216f8a6127dbc9aea0aa)
+- Added deepDropNullValues to asJson. - see [Commit](https://github.com/pme123/camundala/commit/5aa975aaa3b977e37690c5580ec08fe9aba4ff86)
+- Fixed bad identifiers in BpmnProcessGenerator. - see [Commit](https://github.com/pme123/camundala/commit/bd37a8e31bc276c6b82601c86f1368a088fc8ba0)
+
 ## 1.29.14 - 2024-05-20
 ### Changed 
 - Added createIfNotExists to ApiGenerator. - see [Commit](https://github.com/pme123/camundala/commit/1e7e63564b358bf235407bc6e2ac9d1b2f133d75)

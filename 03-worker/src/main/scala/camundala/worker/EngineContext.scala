@@ -77,7 +77,7 @@ trait EngineContext:
         other
 
   def domainObjToEngineObject[A <: Product : InOutCodec](variable: A): Any =
-    toEngineObject(variable.asJson)
+    toEngineObject(variable.asJson.deepDropNullValues)
 
   def jsonToEngineValue(json: Json): Any =
     json match
@@ -90,7 +90,7 @@ trait EngineContext:
       case j if j.isBoolean => j.asBoolean.get
       case j if j.isString => j.asString.get
       case j =>
-        toEngineObject(j)
+        toEngineObject(j.deepDropNullValues)
   end jsonToEngineValue
 
 end EngineContext
