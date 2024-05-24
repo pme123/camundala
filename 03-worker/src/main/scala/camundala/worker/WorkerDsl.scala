@@ -139,6 +139,8 @@ trait ServiceWorkerDsl[
   ): Either[ServiceMappingError, Out] =
     serviceResponse.outputBody match
       case _: NoOutput => Right(serviceTask.out)
+      case Some(_: NoOutput) => Right(serviceTask.out)
+      case None => Right(serviceTask.out)
       case _ =>
         Left(ServiceMappingError(s"There is an outputMapper missing for '${getClass.getName}'."))
   end defaultOutMapper
