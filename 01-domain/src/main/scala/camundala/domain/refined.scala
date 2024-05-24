@@ -44,7 +44,7 @@ type Iban = String :| DescribedAs[
 ]
 val ibanDescr = "This must be a valid IBAN"
 
-type Postcode = Int :| DescribedAs[
+type PostcodeStr = String :| DescribedAs[
   Match["""(?i)^[a-z0-9][a-z0-9\- ]{0,10}[a-z0-9]$"""],
   "This must be a valid Postcode"
 ]

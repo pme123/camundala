@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.16 - 2024-05-24
+### Changed 
+- Fixed response of no body at all Option[NoOutput] - see [Commit](https://github.com/pme123/camundala/commit/b31bb293bbfdf5470a35d529d734357b1108c6c8)
+- Fixed Postcode to PostcodeStr. - see [Commit](https://github.com/pme123/camundala/commit/27bb356d1205f6e97b198f81fa91bf02a04f6f56)
+
 ## 1.29.15 - 2024-05-23
 ### Changed 
 - Added Graviton Schema for Testing ApiGeneration. - see [Commit](https://github.com/pme123/camundala/commit/d40b7bf257ac1582e7c7f26f1ce7aaac403ecc62)
