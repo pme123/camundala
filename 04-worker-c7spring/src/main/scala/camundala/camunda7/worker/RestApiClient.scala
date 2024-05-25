@@ -85,7 +85,7 @@ trait RestApiClient:
         runnableRequest.qSegments,
         runnableRequest.headers
       )
-    Try(runnableRequest.requestBodyOpt.map(b => request.body(b)).getOrElse(request)).toEither.left
+    Try(runnableRequest.requestBodyOpt.map(b => request.body(b.asJson.deepDropNullValues)).getOrElse(request)).toEither.left
       .map(err => ServiceBadBodyError(errorMsg = s"Problem creating body for request.\n$err"))
   end requestWithOptBody
 
