@@ -20,6 +20,9 @@ case class InOutDescr[
         p.head.toUpper + p.tail
       .mkString(" ")
   end niceName
+  lazy val shortName: String =
+    id.split("\\.")
+      .last
 end InOutDescr
 
 trait Activity[
@@ -185,15 +188,15 @@ case class Process[
     )
 
   def withEnumInExamples(
-                          enumInExamples: In*
-                        ): Process[In, Out] =
+      enumInExamples: In*
+  ): Process[In, Out] =
     copy(otherEnumInExamples =
       Some(otherEnumInExamples.getOrElse(Seq.empty) ++ enumInExamples)
     )
 
   def withEnumOutExamples(
-                           enumOutExamples: Out*
-                         ): Process[In, Out] =
+      enumOutExamples: Out*
+  ): Process[In, Out] =
     copy(otherEnumOutExamples =
       Some(otherEnumOutExamples.getOrElse(Seq.empty) ++ enumOutExamples)
     )
@@ -345,15 +348,15 @@ case class ServiceTask[
     )
 
   def withEnumInExamples(
-                          enumInExamples: In*
-                        ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+      enumInExamples: In*
+  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(otherEnumInExamples =
       Some(otherEnumInExamples.getOrElse(Seq.empty) ++ enumInExamples)
     )
 
   def withEnumOutExamples(
-                           enumOutExamples: Out*
-                         ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+      enumOutExamples: Out*
+  ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(otherEnumOutExamples =
       Some(otherEnumOutExamples.getOrElse(Seq.empty) ++ enumOutExamples)
     )
@@ -434,15 +437,15 @@ case class CustomTask[
     )
 
   def withEnumInExamples(
-                          enumInExamples: In*
-                        ): CustomTask[In, Out] =
+      enumInExamples: In*
+  ): CustomTask[In, Out] =
     copy(otherEnumInExamples =
       Some(otherEnumInExamples.getOrElse(Seq.empty) ++ enumInExamples)
     )
 
   def withEnumOutExamples(
-                           enumOutExamples: Out*
-                         ): CustomTask[In, Out] =
+      enumOutExamples: Out*
+  ): CustomTask[In, Out] =
     copy(otherEnumOutExamples =
       Some(otherEnumOutExamples.getOrElse(Seq.empty) ++ enumOutExamples)
     )
@@ -480,15 +483,15 @@ case class UserTask[
     )
 
   def withEnumInExamples(
-                          enumInExamples: In*
-                        ): UserTask[In, Out] =
+      enumInExamples: In*
+  ): UserTask[In, Out] =
     copy(otherEnumInExamples =
       Some(otherEnumInExamples.getOrElse(Seq.empty) ++ enumInExamples)
     )
 
   def withEnumOutExamples(
-                           enumOutExamples: Out*
-                         ): UserTask[In, Out] =
+      enumOutExamples: Out*
+  ): UserTask[In, Out] =
     copy(otherEnumOutExamples =
       Some(otherEnumOutExamples.getOrElse(Seq.empty) ++ enumOutExamples)
     )

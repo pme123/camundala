@@ -133,7 +133,9 @@ object CanceledStatus:
 @deprecated
 trait GenericServiceIn:
   def serviceName: String
-
+  def shortServiceName: String =
+    serviceName.split("\\.")
+      .last
 case class FileInOut(
     fileName: String,
     @description("The content of the File as a Byte Array.")
