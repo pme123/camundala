@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## 1.29.17 - 2024-05-25
+## 1.29.18 - 2024-05-25
 ### Changed 
 - Shortened names in Api documentation (endpointName - navigation link and title). - see [Commit](https://github.com/pme123/camundala/commit/37f0412660a29ed14e2329af9ca82a7fa6a37e40)
 - Try to get rid of null values in request bodies. - see [Commit](https://github.com/pme123/camundala/commit/a9abd9fcb5727f1709bab5b4f7a7fdf2d8923068)
