@@ -199,10 +199,10 @@ private trait InitProcessDsl[
       optConfig: Option[InConfig],
       defaultConfig: InConfig
   ): Map[String, Any] =
-    val defaultJson = defaultConfig.asJson.deepDropNullValues
+    val defaultJson = defaultConfig.asJson
     val r = optConfig.map {
       config =>
-        val json = config.asJson.deepDropNullValues
+        val json = config.asJson
         config.productElementNames
           .map(k =>
             k -> (json.hcursor
