@@ -16,5 +16,5 @@ class WorkerApp
 object WorkerApp:
 
   def main(args: Array[String]): Unit =
-    SpringApplication.run(classOf[WorkerApp], args: _*)
+    SpringApplication.run(classOf[WorkerApp], args*)
 end WorkerApp

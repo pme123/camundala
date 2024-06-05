@@ -20,7 +20,7 @@ trait RestEndpoint extends Validator:
     ResponseEntity[ProcessInstanceEvent | ProcessInstanceResult | String]
 
   @Autowired
-  protected var zeebeClient: ZeebeClient = _
+  protected var zeebeClient: ZeebeClient = scala.compiletime.uninitialized
 
   def createInstance[
       In <: Product: InOutCodec,

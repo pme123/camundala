@@ -19,5 +19,5 @@ class TwitterExampleApplication
 object TwitterExampleApplication :
 
   def main(args: Array[String]): Unit =
-    SpringApplication.run(classOf[TwitterExampleApplication], args:_*)
+    SpringApplication.run(classOf[TwitterExampleApplication], args*)
 

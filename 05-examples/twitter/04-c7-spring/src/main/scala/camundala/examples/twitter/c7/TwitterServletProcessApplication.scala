@@ -11,5 +11,5 @@ class TwitterServletProcessApplication
 object TwitterServletProcessApplication :
 
   def main(args: Array[String]): Unit =
-      SpringApplication.run(classOf[TwitterServletProcessApplication], args:_*)
+      SpringApplication.run(classOf[TwitterServletProcessApplication], args*)
 

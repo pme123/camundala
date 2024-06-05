@@ -65,6 +65,9 @@ case class SbtSettingsGenerator()(using config: SetupConfig):
        |    version := ProjectDef.version,
        |    scalaVersion := scalaV,
        |    scalacOptions ++= Seq(
+       |      "-deprecation", // Emit warning and location for usages of deprecated APIs.
+       |      "-feature", // Emit warning and location for usages of features that should be imported explicitly.
+       |      "-rewrite", "-source", "3.4-migration" // migrate automatically to scala 3.4
        |      "-Xmax-inlines:200" // is declared as erased, but is in fact used
        |      // "-Vprofile",
        |    ),

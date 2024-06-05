@@ -41,7 +41,7 @@ object ProjectDmnTester
       .testValues(
         _.inDate,
         Seq("2012-12-12T12:12:12", "2012-12-12T12:12:11", "2012-12-12T12:12:13")
-          .map(LocalDateTime.parse): _*
+          .map(LocalDateTime.parse)*
       ),
     VariablesExample.VariablesExampleDMN
       .testUnit

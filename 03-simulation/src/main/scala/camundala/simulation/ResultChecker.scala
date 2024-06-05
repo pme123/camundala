@@ -14,7 +14,7 @@ import scala.deriving.Mirror.Sum
 trait ResultChecker:
 
   def checkProps(
-      withOverrides: WithTestOverrides[_],
+      withOverrides: WithTestOverrides[?],
       result: Seq[CamundaProperty]
   ): Boolean =
     withOverrides.testOverrides match

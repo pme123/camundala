@@ -14,9 +14,9 @@ class ComposedWorker
     CustomWorkerDsl[In, Out]: // DSL for this type
 
   @Autowired
-  var peopleWorker: StarWarsPeopleWorker = _
+  var peopleWorker: StarWarsPeopleWorker = scala.compiletime.uninitialized
   @Autowired
-  var peopleDetailWorker: StarWarsPeopleDetailWorker = _
+  var peopleDetailWorker: StarWarsPeopleDetailWorker = scala.compiletime.uninitialized
 
   lazy val customTask = example
 
