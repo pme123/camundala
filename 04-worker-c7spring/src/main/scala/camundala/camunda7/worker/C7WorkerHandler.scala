@@ -18,10 +18,10 @@ import scala.jdk.CollectionConverters.*
 trait C7WorkerHandler extends camunda.ExternalTaskHandler:
 
   @Autowired()
-  protected var engineContext: EngineContext = _
+  protected var engineContext: EngineContext = scala.compiletime.uninitialized
 
   @Autowired()
-  protected var externalTaskClient: ExternalTaskClient = _
+  protected var externalTaskClient: ExternalTaskClient = scala.compiletime.uninitialized
 
   def worker: Worker[?, ?, ?]
   def topic: String

@@ -4,14 +4,14 @@ import camundala.simulation.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
+import scala.compiletime.uninitialized
 
 abstract class CustomSimulation
     extends SimulationDsl[Future[Seq[(LogLevel, Seq[ScenarioResult])]]],
       DmnScenarioExtensions {
 
   // needed that it can be called from the Test Framework and check the result
-  var simulation: Future[Seq[(LogLevel, Seq[ScenarioResult])]] = _
+  var simulation: Future[Seq[(LogLevel, Seq[ScenarioResult])]] = uninitialized
 
   protected def run(sim: SSimulation): Future[Seq[(LogLevel, Seq[ScenarioResult])]] =
     simulation = Future

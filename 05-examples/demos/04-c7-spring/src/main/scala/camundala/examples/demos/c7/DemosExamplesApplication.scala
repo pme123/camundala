@@ -11,4 +11,4 @@ class DemosExamplesApplication
 object DemosExamplesApplication:
 
   def main(args: Array[String]): Unit =
-    SpringApplication.run(classOf[DemosExamplesApplication], args: _*)
+    SpringApplication.run(classOf[DemosExamplesApplication], args*)

@@ -18,5 +18,5 @@ class InvoiceExampleApplication
 object InvoiceExampleApplication:
 
   def main(args: Array[String]): Unit =
-    SpringApplication.run(classOf[InvoiceExampleApplication], args: _*)
+    SpringApplication.run(classOf[InvoiceExampleApplication], args*)
 

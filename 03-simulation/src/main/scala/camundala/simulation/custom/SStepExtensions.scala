@@ -78,7 +78,7 @@ trait SStepExtensions
             .flatMap { value =>
               if (
                 checkProps(
-                  hasProcessSteps.asInstanceOf[WithTestOverrides[_]],
+                  hasProcessSteps.asInstanceOf[WithTestOverrides[?]],
                   value
                 )
               )

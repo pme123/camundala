@@ -24,7 +24,7 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
     println("Check it on http://localhost:8883")
   end createDmnConfigs
 
-  given [In <: Product]: Conversion[DecisionDmn[In, _], DmnTesterObject[In]] =
+  given [In <: Product]: Conversion[DecisionDmn[In, ?], DmnTesterObject[In]] =
     decisionDmn =>
       DmnTesterObject(
         decisionDmn,

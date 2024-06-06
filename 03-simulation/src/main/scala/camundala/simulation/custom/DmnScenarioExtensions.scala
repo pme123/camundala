@@ -53,9 +53,9 @@ trait DmnScenarioExtensions extends SScenarioExtensions:
         data: ScenarioData
     ): ResultType =
       val result = resultSeq
-      val decisionDmn: DecisionDmn[_, _] = scenario.inOut
+      val decisionDmn: DecisionDmn[?, ?] = scenario.inOut
       val check: ResultType = decisionDmn.out match
-        case expected: SingleEntry[_] =>
+        case expected: SingleEntry[?] =>
           for {
             given ScenarioData <-
               if (result.size == 1 && result.head.size == 1)
@@ -76,7 +76,7 @@ trait DmnScenarioExtensions extends SScenarioExtensions:
                   )
                 )
           } yield summon[ScenarioData]
-        case expected: SingleResult[_] =>
+        case expected: SingleResult[?] =>
           for {
             given ScenarioData <-
               if (
@@ -99,7 +99,7 @@ trait DmnScenarioExtensions extends SScenarioExtensions:
                   )
                 )
           } yield summon[ScenarioData]
-        case expected: CollectEntries[_] =>
+        case expected: CollectEntries[?] =>
           val resultValues = result.map(_.values.head)
           scenario.testOverrides match
             case None =>
@@ -127,7 +127,7 @@ trait DmnScenarioExtensions extends SScenarioExtensions:
                   )
                 )
 
-        case expected: ResultList[_] =>
+        case expected: ResultList[?] =>
           scenario.testOverrides match
             case None =>
               if (

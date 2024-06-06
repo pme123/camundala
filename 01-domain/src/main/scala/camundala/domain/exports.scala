@@ -4,7 +4,6 @@ package domain
 import io.circe.derivation.Configuration
 import io.circe.generic.semiauto.deriveCodec
 import sttp.model.Uri
-import sttp.tapir.generic
 
 import java.net.URLDecoder
 import java.nio.charset.Charset
@@ -82,19 +81,19 @@ inline def deriveEnumApiSchema[T](using
 ): Schema[T] =
   Schema.derivedEnumeration[T].defaultStringBased
 
-given InOutCodec[String | Int] = CirceCodec.from(
-  new Decoder[String | Int]:
-    final def apply(c: HCursor): Decoder.Result[String | Int] =
+given InOutCodec[IntOrString] = CirceCodec.from(
+  new Decoder[IntOrString]:
+    final def apply(c: HCursor): Decoder.Result[IntOrString] =
       if c.value.isString
       then c.as[String]
       else c.as[Int]
   ,
-  new Encoder[String | Int]:
-    final def apply(a: String | Int): Json = a match
+  new Encoder[IntOrString]:
+    final def apply(a: IntOrString): Json = a match
       case s: String => Json.fromString(s)
       case i: Int => Json.fromInt(i)
 )
-type IntOrString = String | Int
+type IntOrString = Int | String
 given ApiSchema[IntOrString] = Schema.derivedUnion
 
 case class NoInput()
