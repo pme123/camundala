@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.19 - 2024-06-06
+### Changed 
+- Back to Scala 3.3 / Scala Stuwart batch added - see [Commit](https://github.com/pme123/camundala/commit/4c346c27a65292cf8dc14f8bf946c705927953a6)
+- Updated to Scala 3.4.2 / fixed shortName for old pattern. - see [Commit](https://github.com/pme123/camundala/commit/97366e66b77f6b66a4d5b16d71024584d2e46ae8)
+- Removed deepDropNullValues for Config init. - see [Commit](https://github.com/pme123/camundala/commit/980f28b4fcb3b60e9596f0f050acad5e8a27d2a8)
+
 ## 1.29.18 - 2024-05-25
 ### Changed 
 - Shortened names in Api documentation (endpointName - navigation link and title). - see [Commit](https://github.com/pme123/camundala/commit/37f0412660a29ed14e2329af9ca82a7fa6a37e40)
