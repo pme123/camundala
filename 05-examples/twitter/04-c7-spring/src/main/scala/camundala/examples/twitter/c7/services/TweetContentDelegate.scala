@@ -6,16 +6,15 @@ import twitter4j.*
 
 import java.net.UnknownHostException
 
-/**
- * Publish content on Twitter.
- */
-class TweetContentDelegate extends JavaDelegate :
+/** Publish content on Twitter.
+  */
+class TweetContentDelegate extends JavaDelegate:
 
   @throws[Exception]
   override def execute(execution: DelegateExecution): Unit =
     val content = execution.getVariable("content").asInstanceOf[String]
     // Force a network error
-    if ("network error" == content) throw new UnknownHostException("demo twitter account")
+    if "network error" == content then throw new UnknownHostException("demo twitter account")
     val tokenSecret = "YOUR TOKEN SECRET"
     val consumerSecret = "YOUR CONSUMER SECRET"
 
@@ -24,4 +23,5 @@ class TweetContentDelegate extends JavaDelegate :
       .oAuthAccessToken("token key", tokenSecret)
       .build
     twitter.v1.tweets.updateStatus(content)
-
+  end execute
+end TweetContentDelegate

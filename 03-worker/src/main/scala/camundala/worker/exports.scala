@@ -10,7 +10,8 @@ export sttp.model.Uri.UriContext
 export sttp.model.Method
 export sttp.model.Uri
 
-type SendRequestType[ServiceOut] = EngineRunContext ?=> Either[ServiceError, ServiceResponse[ServiceOut]]
+type SendRequestType[ServiceOut] =
+  EngineRunContext ?=> Either[ServiceError, ServiceResponse[ServiceOut]]
 
 def decodeTo[A: InOutDecoder](
     jsonStr: String
@@ -38,8 +39,9 @@ sealed trait CamundalaWorkerError:
   def isMock = false
   def errorCode: ErrorCodeType
   def errorMsg: String
-  
+
   def causeMsg = s"$errorCode: $errorMsg"
+end CamundalaWorkerError
 
 sealed trait ErrorWithOutput extends CamundalaWorkerError:
   def output: Map[String, Any]
@@ -54,6 +56,7 @@ object CamundalaWorkerError:
   ) extends ErrorWithOutput:
     def output: Map[String, Any] =
       Map("validationErrors" -> errorMsg)
+  end ValidatorError
 
   case class MockedOutput(
       output: Map[String, Any],
@@ -61,6 +64,7 @@ object CamundalaWorkerError:
       errorMsg: String = "Output mocked"
   ) extends ErrorWithOutput:
     override val isMock = true
+  end MockedOutput
 
   case class InitProcessError(
       errorMsg: String = "Problems initialize default variables of the Process.",
@@ -94,6 +98,7 @@ object CamundalaWorkerError:
            |Original Error: ${error.errorCode} - ${error.errorMsg}
            |""".stripMargin
       )
+  end HandledRegexNotMatchedError
 
   case class BadVariableError(
       errorMsg: String,
@@ -141,11 +146,15 @@ object CamundalaWorkerError:
   def requestMsg[ServiceIn: InOutEncoder](
       runnableRequest: RunnableRequest[ServiceIn]
   ): String =
-    s""" - Request URL: ${prettyUriString(runnableRequest.apiUri.addQuerySegments(runnableRequest.qSegments))}
+    s""" - Request URL: ${prettyUriString(
+        runnableRequest.apiUri.addQuerySegments(runnableRequest.qSegments)
+      )}
        | - Request Body: ${runnableRequest.requestBodyOpt
         .map(_.asJson.deepDropNullValues)
         .getOrElse("")}
-        | - Request Header: ${runnableRequest.headers.map{case k -> v => s"$k -> $v"}.mkString(", ")}""".stripMargin
+       | - Request Header: ${runnableRequest.headers.map { case k -> v => s"$k -> $v" }.mkString(
+        ", "
+      )}""".stripMargin
 
   def serviceErrorMsg[ServiceIn: InOutEncoder](
       status: Int,
@@ -159,7 +168,3 @@ end CamundalaWorkerError
 
 def niceClassName(clazz: Class[?]) =
   clazz.getName.split("""\$""").head
-
-
-
-

@@ -13,12 +13,12 @@ class EnumExampleWorker extends CompanyServiceWorkerDsl[In, Out, NoInput, Servic
 
   lazy val serviceTask = example
   println("VARS: " + example.otherEnumInExamples)
-  def apiUri(in: In) = 
+  def apiUri(in: In) =
     in match
       case In.A(someValue, enumEx, maybeOut, _) =>
-          uri"https://swapi.dev/api/people/$someValue"
+        uri"https://swapi.dev/api/people/$someValue"
       case In.B(otherValue, _) =>
-          uri"https://swapi.dev/api/people/$otherValue"
+        uri"https://swapi.dev/api/people/$otherValue"
 
   override def outputMapper(
       serviceOut: ServiceResponse[ServiceOut],
@@ -29,7 +29,5 @@ class EnumExampleWorker extends CompanyServiceWorkerDsl[In, Out, NoInput, Servic
         Right(Out.A(someValue, 12, enumEx))
       case In.B(otherValue, _) =>
         Right(Out.B(Some(otherValue)))
-    
-    
 
 end EnumExampleWorker

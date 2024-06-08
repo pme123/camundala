@@ -32,7 +32,7 @@ class StarWarsPeopleSimulation extends CustomSimulation:
       mass = "136",
       hair_color = "none",
       skin_color = "white",
-      eye_color = "yellow",
+      eye_color = "yellow"
     ))))
 
 end StarWarsPeopleSimulation

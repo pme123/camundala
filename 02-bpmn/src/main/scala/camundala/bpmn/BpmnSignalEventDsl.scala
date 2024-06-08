@@ -9,10 +9,10 @@ trait BpmnSignalEventDsl extends BpmnDsl:
   def messageName: String
 
   def signalEvent[
-    Msg <: Product : InOutEncoder : InOutDecoder : Schema
+      Msg <: Product: InOutEncoder: InOutDecoder: Schema
   ](
-     in: Msg = NoInput(),
-   ): SignalEvent[Msg] =
+      in: Msg = NoInput()
+  ): SignalEvent[Msg] =
     SignalEvent(
       messageName,
       InOutDescr(

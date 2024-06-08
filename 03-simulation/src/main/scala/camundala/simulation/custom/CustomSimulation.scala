@@ -8,7 +8,7 @@ import scala.compiletime.uninitialized
 
 abstract class CustomSimulation
     extends SimulationDsl[Future[Seq[(LogLevel, Seq[ScenarioResult])]]],
-      DmnScenarioExtensions {
+      DmnScenarioExtensions:
 
   // needed that it can be called from the Test Framework and check the result
   var simulation: Future[Seq[(LogLevel, Seq[ScenarioResult])]] = uninitialized
@@ -43,11 +43,9 @@ abstract class CustomSimulation
           .sortBy(_._1)
       )
       .recover { ex =>
-        {
-          ex.printStackTrace()
-          throw ex
-        }
+        ex.printStackTrace()
+        throw ex
       }
     simulation
   end run
-}
+end CustomSimulation

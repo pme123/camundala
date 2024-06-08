@@ -22,3 +22,4 @@ class EnumExampleSimulation extends DemosSimulation:
     example
       .withIn(Input.A(someValue = Some("other")))
       .withOut(Output.A(someOut = Some("other")))
+end EnumExampleSimulation

@@ -32,14 +32,15 @@ trait GeneratorHelper:
     s"""${intent}object $name:
        |$intent  given ApiSchema[$name] = deriveApiSchema
        |$intent  given InOutCodec[$name] = deriveInOutCodec
-       |${if paramObjects.nonEmpty
-         then
-           s"""
-         |$paramObjects
-         |${intent}end $name""".stripMargin
-         else
-           ""
-       }""".stripMargin
+       |${
+        if paramObjects.nonEmpty
+        then
+          s"""
+             |$paramObjects
+             |${intent}end $name""".stripMargin
+        else
+          ""
+      }""".stripMargin
   end generateObject
 
   protected def printField(
@@ -66,8 +67,8 @@ trait GeneratorHelper:
 
   protected def printDescrTextOpt(elem: OpenApiElem, intent: String = ""): Option[String] =
     val format = elem match
-    case f: ConstrField if f.format.nonEmpty => s"\n- Format: ${f.format.mkString}"
-    case _ => ""
+      case f: ConstrField if f.format.nonEmpty => s"\n- Format: ${f.format.mkString}"
+      case _ => ""
     elem.descr
       .map: descr =>
         val descrWithFormat = descr + format
@@ -133,9 +134,13 @@ trait GeneratorHelper:
     val value = field.wrapperType
       .map:
         case WrapperType.Seq =>
-          exampleValue.map(ex => s"${WrapperType.Seq.impl}($ex)").getOrElse(s"Seq.empty[${field.tpeName}]")
+          exampleValue.map(ex => s"${WrapperType.Seq.impl}($ex)").getOrElse(
+            s"Seq.empty[${field.tpeName}]"
+          )
         case WrapperType.Set =>
-          exampleValue.map(ex => s"${WrapperType.Set.impl}($ex)").getOrElse(s"Set.empty[${field.tpeName}]")
+          exampleValue.map(ex => s"${WrapperType.Set.impl}($ex)").getOrElse(
+            s"Set.empty[${field.tpeName}]"
+          )
       .orElse(exampleValue)
 
     if field.isOptional then s"$value" else value.getOrElse("THIS SHOULD NOT HAPPEN")

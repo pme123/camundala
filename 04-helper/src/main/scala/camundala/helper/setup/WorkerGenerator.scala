@@ -9,6 +9,7 @@ case class WorkerGenerator()(using config: SetupConfig):
     createIfNotExists(workerTestPath() / "WorkerTestApp.scala", workerTestApp)
     createOrUpdate(workerConfigPath / "application.yaml", applicationYaml)
     createOrUpdate(workerConfigPath / "banner.txt", banner)
+  end generate
 
   def createProcess(setupElement: SetupElement): Unit =
     os.write.over(
@@ -108,8 +109,8 @@ case class WorkerGenerator()(using config: SetupConfig):
        |
        |@Configuration
        |class ${workerName}Worker extends Company${label.replace("Task", "")}WorkerDsl[In, Out${
-      if label == "CustomTask" then "" else ", ServiceIn, ServiceOut"
-    }]:
+        if label == "CustomTask" then "" else ", ServiceIn, ServiceOut"
+      }]:
        |
        |${
         if label == "CustomTask"
@@ -269,9 +270,9 @@ case class WorkerGenerator()(using config: SetupConfig):
 
     os.makeDir.all(dir)
     dir / setupElement
-            .map: se =>
-              os.rel / s"${se.bpmnName}Worker.scala"
-            .getOrElse(os.rel)
+      .map: se =>
+        os.rel / s"${se.bpmnName}Worker.scala"
+      .getOrElse(os.rel)
   end workerPath
 
   private def workerTestPath(setupElement: Option[SetupElement] = None) =
@@ -284,9 +285,9 @@ case class WorkerGenerator()(using config: SetupConfig):
           os.rel / se.processName / se.version.versionPath
         .getOrElse(os.rel)
     os.makeDir.all(dir)
-    dir  / setupElement
+    dir / setupElement
       .map: se =>
-          os.rel / s"${se.bpmnName}WorkerTest.scala"
+        os.rel / s"${se.bpmnName}WorkerTest.scala"
       .getOrElse(os.rel)
   end workerTestPath
 

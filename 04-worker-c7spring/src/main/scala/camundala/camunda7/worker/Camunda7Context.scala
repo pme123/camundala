@@ -20,7 +20,6 @@ trait Camunda7Context extends EngineContext:
   ): SendRequestType[ServiceOut] =
     DefaultRestApiClient.sendRequest(request)
 
-
 end Camunda7Context
 
 @Configuration
@@ -29,19 +28,19 @@ class DefaultCamunda7Context extends Camunda7Context
 case class Camunda7WorkerLogger(private val delegateLogger: Logger) extends WorkerLogger:
 
   def debug(message: String): Unit =
-    if (delegateLogger.isDebugEnabled)
+    if delegateLogger.isDebugEnabled then
       delegateLogger.debug(message)
 
   def info(message: String): Unit =
-    if (delegateLogger.isInfoEnabled)
+    if delegateLogger.isInfoEnabled then
       delegateLogger.info(message)
 
   def warn(message: String): Unit =
-    if (delegateLogger.isWarnEnabled)
+    if delegateLogger.isWarnEnabled then
       delegateLogger.warn(message)
 
   def error(err: CamundalaWorkerError): Unit =
-    if (delegateLogger.isErrorEnabled)
+    if delegateLogger.isErrorEnabled then
       delegateLogger.error(s"Error ${err.causeMsg}")
 
 end Camunda7WorkerLogger
