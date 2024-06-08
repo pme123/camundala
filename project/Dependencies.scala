@@ -1,7 +1,7 @@
 import sbt.*
 import sbt.Keys.*
 
-object Dependencies {
+object Dependencies:
 
   // dependency Versions
   // 00-documentation
@@ -52,10 +52,9 @@ object Dependencies {
   val scalaJacksonVersion = "2.14.2"
   val swaggerOpenAPIVersion = "2.1.20"
   // examples
-  val h2Version = "2.1.214"
+  val h2Version = "2.2.224"
   val twitter4jVersion = "4.1.2"
   val groovyVersion = "3.0.16"
-
 
   lazy val tapirDependencies = Seq(
     "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
@@ -78,8 +77,8 @@ object Dependencies {
 
   // examples
   val camundaDependencies = Seq(
-    "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude("org.slf4j", "slf4j-api"),
-    "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude("org.slf4j", "slf4j-api"),
+    "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
+    "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
     "io.netty" % "netty-all" % "4.1.73.Final", // needed for Spring Boot Version > 2.5.*
     "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
     "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
@@ -89,5 +88,5 @@ object Dependencies {
     // groovy support
     "org.codehaus.groovy" % "groovy-jsr223" % groovyVersion,
     "com.h2database" % "h2" % h2Version
-  ) //.map(_.exclude("org.slf4j", "slf4j-api"))
-}
+  ) // .map(_.exclude("org.slf4j", "slf4j-api"))
+end Dependencies
