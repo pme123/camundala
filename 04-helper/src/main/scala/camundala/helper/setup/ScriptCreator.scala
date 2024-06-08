@@ -90,8 +90,11 @@ case class ScriptCreator()(using config: SetupConfig):
        |
        |
        |@main(doc = "> Starts your development Docker - this assumes the Docker Files in `../../docker`.")
-       |def dockerUp(): Unit = {
-       |  DockerHelper().dockerUp()
+       |def dockerUp(
+       |             @arg(doc = "The Version you want to publish.")
+       |             imageVersion: Option[String] = None
+       |  ): Unit = {
+       |  DockerHelper().dockerUp(imageVersion)
        |}
        |
        |@main(doc = "> Stops your development Docker - this assumes the Docker Files in `../../docker`.")
