@@ -46,7 +46,7 @@ case class SbtGenerator()(using
        |addDependencyTreePlugin // sbt dependencyBrowseTreeHTML -> target/tree.html
        |
        |// docker image
-       |addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.9.16")
+       |addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.10.0")
        |
        |""".stripMargin
 
