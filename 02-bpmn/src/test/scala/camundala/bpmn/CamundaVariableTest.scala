@@ -22,27 +22,28 @@ class CamundaVariableTest extends FunSuite:
         "other" -> CJson(
           """{
             |  "other" : true
-            |}""".stripMargin)
+            |}""".stripMargin
+        )
       )
     )
 
 end CamundaVariableTest
 
 case class Out(
-                addressChangeCountryPolicy: Boolean = true,
-                expiresInDays: Int = 3,
-                staffMemberId: Long = 2L,
-                leadInstruction: String = "hello",
-                other: Option[Other] = Some(Other())
-              )
+    addressChangeCountryPolicy: Boolean = true,
+    expiresInDays: Int = 3,
+    staffMemberId: Long = 2L,
+    leadInstruction: String = "hello",
+    other: Option[Other] = Some(Other())
+)
 
 object Out:
   given ApiSchema[Out] = deriveApiSchema
   given InOutCodec[Out] = deriveInOutCodec
 
 case class Other(
-                other: Boolean = true,
-              )
+    other: Boolean = true
+)
 
 object Other:
   given ApiSchema[Other] = deriveApiSchema

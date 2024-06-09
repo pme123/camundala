@@ -7,7 +7,6 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Configuration
 
-
 @Configuration
 class AppConfig extends CaseClassJsonMapperConfig
 
@@ -16,8 +15,8 @@ class AppConfig extends CaseClassJsonMapperConfig
 @ZeebeDeployment(resources = Array("classpath*:twitter*.bpmn"))
 class TwitterExampleApplication
 
-object TwitterExampleApplication :
+object TwitterExampleApplication:
 
   def main(args: Array[String]): Unit =
     SpringApplication.run(classOf[TwitterExampleApplication], args*)
-
+end TwitterExampleApplication

@@ -2,7 +2,6 @@ package camundala.helper.setup
 
 import camundala.api.docs.DependencyConf
 
-
 case class ApiGeneratorGenerator()(using config: SetupConfig):
 
   lazy val generate: Unit =
@@ -16,8 +15,8 @@ case class ApiGeneratorGenerator()(using config: SetupConfig):
     objectContent("ProjectApiGenerator")
 
   private def objectContent(
-                             objName: String
-                           ) =
+      objName: String
+  ) =
     s"""package ${config.projectPackage}.helper
        |
        |import camundala.helper.openApi.*

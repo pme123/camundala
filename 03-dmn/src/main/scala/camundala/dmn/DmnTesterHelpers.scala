@@ -11,7 +11,6 @@ trait DmnTesterHelpers:
   protected lazy val apiUrl = s"http://localhost:$exposedPort/api"
   protected lazy val infoUrl = s"http://localhost:$exposedPort/info"
 
-
   protected case class DmnTesterStarterConfig(
       // the name of the container that will be started
       containerName: String = "camunda-dmn-tester",

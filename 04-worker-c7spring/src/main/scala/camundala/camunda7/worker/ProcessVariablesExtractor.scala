@@ -34,7 +34,7 @@ object ProcessVariablesExtractor:
   end extract
 
   def extractGeneral(): GeneralVariableType =
-    for {
+    for
       // mocking
       servicesMocked <- variable(InputParams.servicesMocked, false)
       mockedWorkers <- extractSeqFromArrayOrString(InputParams.mockedWorkers, Seq.empty)
@@ -47,7 +47,7 @@ object ProcessVariablesExtractor:
       regexHandledErrors <- extractSeqFromArrayOrString(InputParams.regexHandledErrors, Seq.empty)
       // authorization
       impersonateUserIdOpt <- variableOpt[String](InputParams.impersonateUserId)
-    } yield GeneralVariables(
+    yield GeneralVariables(
       servicesMocked = servicesMocked,
       mockedWorkers = mockedWorkers,
       outputMock = outputMockOpt,
@@ -59,5 +59,5 @@ object ProcessVariablesExtractor:
       impersonateUserId = impersonateUserIdOpt
     )
   end extractGeneral
-  
+
 end ProcessVariablesExtractor

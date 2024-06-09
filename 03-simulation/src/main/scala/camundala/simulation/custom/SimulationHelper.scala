@@ -11,8 +11,7 @@ import scala.util.Try
 trait SimulationHelper extends ResultChecker, Logging:
 
   // not possible to override given instance
-  implicit def config
-      : SimulationConfig[RequestT[Empty, Either[String, String], Any]] =
+  implicit def config: SimulationConfig[RequestT[Empty, Either[String, String], Any]] =
     SimulationConfig[RequestT[Empty, Either[String, String], Any]]()
 
   lazy val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
@@ -61,7 +60,7 @@ trait SimulationHelper extends ResultChecker, Logging:
       .debug(s"- Body: ${request.body}")
 
     val response = request.send(backend)
-    if (StatusCode.NoContent == response.code)
+    if StatusCode.NoContent == response.code then
       handleBody(Json.Null, summon[ScenarioData])
     else
       response.body.left
@@ -76,14 +75,16 @@ trait SimulationHelper extends ResultChecker, Logging:
             )
         )
         .flatMap(handleBody(_, summon[ScenarioData]))
+    end if
+  end runRequest
 
-  extension(step: ScenarioOrStep)
+  extension (step: ScenarioOrStep)
 
     protected def tryOrFail(
-        funct: ScenarioData => ResultType,
-    )(using data: ScenarioData): ResultType = {
+        funct: ScenarioData => ResultType
+    )(using data: ScenarioData): ResultType =
       val count = data.context.requestCount
-      if (count < config.maxCount) {
+      if count < config.maxCount then
         Try(Thread.sleep(1000)).toEither.left
           .map(_ =>
             data
@@ -91,7 +92,7 @@ trait SimulationHelper extends ResultChecker, Logging:
                 s"Interrupted Exception when waiting for ${step.name} (${step.typeName})."
               )
           ).flatMap { _ =>
-            if (!step.isInstanceOf[IsIncidentScenario])
+            if !step.isInstanceOf[IsIncidentScenario] then
               checkIfIncidentOccurred(data)
             else
               Right(data)
@@ -105,16 +106,15 @@ trait SimulationHelper extends ResultChecker, Logging:
                 )
             )
           }
-
-      } else {
+      else
         Left(
           data
             .error(
               s"Expected ${step.name} (${step.typeName}) was not found! Tried $count times."
             )
         )
-      }
-    }
+      end if
+    end tryOrFail
 
     protected def waitFor(
         seconds: Int
@@ -141,9 +141,9 @@ trait SimulationHelper extends ResultChecker, Logging:
                   Left(
                     data.error(
                       s"There is a NON-EXPECTED error occurred: ${
-                        incidentMessage
-                          .getOrElse("No incident message")
-                      }!"
+                          incidentMessage
+                            .getOrElse("No incident message")
+                        }!"
                     )
                   )
                 }
@@ -165,10 +165,10 @@ trait SimulationHelper extends ResultChecker, Logging:
       }
 
     protected def handleIncident(
-                        rootIncidentId: Option[String] = None
-                      )(data: ScenarioData)(
-                        handleBody: (Json, ScenarioData) => ResultType
-                      ): ResultType =
+        rootIncidentId: Option[String] = None
+    )(data: ScenarioData)(
+        handleBody: (Json, ScenarioData) => ResultType
+    ): ResultType =
       val processInstanceId = data.context.processInstanceId
       val uri = rootIncidentId match
         case Some(incId) =>
@@ -188,7 +188,7 @@ trait SimulationHelper extends ResultChecker, Logging:
     end handleIncident
 
     protected def extractIncidentMsg(body: Json)(
-      data: ScenarioData
+        data: ScenarioData
     ): Either[ScenarioData, (Option[String], String, String)] =
       val arr = body.hcursor.downArray
       (for

@@ -10,7 +10,7 @@ import camundala.simulation.custom.CustomSimulation
 // exampleTwitterSimulation/testOnly *TwitterSimulation
 class TwitterSimulation extends CustomSimulation:
 
-  simulate (
+  simulate(
     scenario(`Twitter - Approved`)(
       reviewTweetApprovedUT
     ),
@@ -27,4 +27,5 @@ class TwitterSimulation extends CustomSimulation:
     .withOut(ReviewedTweet(false))
 
   private lazy val `reviewTweet Not ApprovedUT` = reviewTweetApprovedUT
-  .withOut(ReviewedTweet(false))
+    .withOut(ReviewedTweet(false))
+end TwitterSimulation

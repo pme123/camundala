@@ -36,8 +36,8 @@ object ProjectApiCreator extends DefaultApiCreator:
     ),
     group("Workers")(
       StarWarsPeopleDetail.example
-      .withOutExample("Success", StarWarsPeopleDetail.Out.Success())
-      .withOutExample("Failure", StarWarsPeopleDetail.Out.Failure()),
+        .withOutExample("Success", StarWarsPeopleDetail.Out.Success())
+        .withOutExample("Failure", StarWarsPeopleDetail.Out.Failure()),
       api(ArchiveInvoice.example)
     ),
     group("User Tasks")(
@@ -48,7 +48,7 @@ object ProjectApiCreator extends DefaultApiCreator:
     ),
     group("DMNs")(
       api(InvoiceAssignApproverDMN2) // api( is optional)
-      //InvoiceAssignApproverDMN3 // want be shown as only one DMN with the same id is shown in the API.
+      // InvoiceAssignApproverDMN3 // want be shown as only one DMN with the same id is shown in the API.
     )
   )
 
@@ -61,11 +61,11 @@ object ProjectApiCreator extends DefaultApiCreator:
       .withPort(8034)
       .withDiagramDownloadPath("diagrams")
 
-
   private lazy val `Invoice Receipt` =
     InvoiceReceipt.example
       .withInExample(
-        "With InConfig", InvoiceReceipt.In(inConfig = Some(InConfig.example))
+        "With InConfig",
+        InvoiceReceipt.In(inConfig = Some(InConfig.example))
       )
   private lazy val ApproveInvoiceUT =
     InvoiceReceipt.ApproveInvoiceUT.example
@@ -122,3 +122,4 @@ object ProjectApiCreator extends DefaultApiCreator:
             Seq(ApproverGroup.accounting, ApproverGroup.sales)
           )
       )
+end ProjectApiCreator

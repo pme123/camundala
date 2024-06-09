@@ -22,10 +22,10 @@ object TestApiCreator extends DefaultApiCreator, BpmnProcessDsl, App:
       .withBasePath(os.pwd / "api")
 
   document(
-      api(Sample.testProcess)(
-        Sample.testUT
-      ),
-      testProcess2
+    api(Sample.testProcess)(
+      Sample.testUT
+    ),
+    testProcess2
   )
 
   private lazy val testProcess2 =
@@ -39,7 +39,7 @@ end TestApiCreator
 object Sample extends BpmnProcessDsl:
   val processName = "sample-process"
   val companyDescr = ""
-  
+
   @description("My Sample input object to make the point.")
   case class SampleIn(
       @description("Make sure it reflects the name of the Id.")
@@ -88,6 +88,7 @@ object Sample extends BpmnProcessDsl:
 
   lazy val testUT =
     userTask("myUserTask")
+end Sample
 /*  .startProcessInstance(
         name,
         name,
