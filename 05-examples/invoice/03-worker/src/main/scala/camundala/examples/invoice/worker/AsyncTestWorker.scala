@@ -20,13 +20,13 @@ lazy val backend = HttpClientFutureBackend()
 @Configuration
 @ExternalTaskSubscription(value = "testGrv.sync")
 class SyncTestWorker extends ExternalTaskHandler:
-  
+
   def execute(
       externalTask: ExternalTask,
       externalTaskService: ExternalTaskService
   ): Unit =
     println(s" SYNC start $servicePath")
-    try {
+    try
       val response = basicRequest
         .get(uri"$servicePath")
         .send(backend)
@@ -35,11 +35,11 @@ class SyncTestWorker extends ExternalTaskHandler:
       println(s" ASYNC Status ${resp.statusText}")
       println(s" SYNC Result ${resp.body}")
       externalTaskService.complete(externalTask, Map("result" -> resp.body).asJava)
-    } catch {
+    catch
       case ex: Throwable =>
         ex.printStackTrace()
         externalTaskService.handleFailure(externalTask, ex.getMessage, "SYNC TEST", 0, 0)
-    }
+    end try
   end execute
 
 end SyncTestWorker
@@ -53,7 +53,7 @@ class AsyncTestWorker extends ExternalTaskHandler:
       externalTaskService: ExternalTaskService
   ): Unit =
     println(s" ASYNC start $servicePath")
-    try {
+    try
       val response = basicRequest
         .get(uri"$servicePath")
         .send(backend)
@@ -72,11 +72,11 @@ class AsyncTestWorker extends ExternalTaskHandler:
             externalTaskService.handleFailure(externalTask, ex.getMessage, "SYNC TEST", 0, 0)
         }
 
-    } catch {
+    catch
       case ex: Throwable =>
         ex.printStackTrace()
         externalTaskService.handleFailure(externalTask, ex.getMessage, "SYNC TEST", 0, 0)
-    }
+    end try
   end execute
 
 end AsyncTestWorker

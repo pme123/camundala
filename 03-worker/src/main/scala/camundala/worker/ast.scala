@@ -105,7 +105,7 @@ case class ServiceWorker[
 ](
     inOutExample: ServiceTask[In, Out, ServiceIn, ServiceOut],
     override val validationHandler: Option[ValidationHandler[In]] = None,
-    override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None,
+    override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None
 ) extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
   lazy val topic: String = inOutExample.topicName
 
@@ -201,9 +201,8 @@ case class ServiceResponse[ServiceOut](
 )
 
 extension [ServiceOut](mocked: MockedServiceResponse[ServiceOut])
-  /**
-   * Simplifies testing, as there is already a successful service mock example.
-   */
+  /** Simplifies testing, as there is already a successful service mock example.
+    */
   def toServiceResponse: ServiceResponse[ServiceOut] =
     ServiceResponse(
       mocked.unsafeBody,

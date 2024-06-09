@@ -26,7 +26,8 @@ object DevHelper:
   def createProcess(processName: String, version: Option[Int], subProject: Option[String])(using
       config: SetupConfig
   ): Unit =
-    val name = subProject.map(_ => processName).getOrElse(processName.head.toUpper + processName.tail)
+    val name =
+      subProject.map(_ => processName).getOrElse(processName.head.toUpper + processName.tail)
     val processOrSubProject = subProject.getOrElse(processName)
 
     SetupGenerator().createProcess(SetupElement(

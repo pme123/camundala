@@ -25,7 +25,6 @@ case class BpmnClassesCreator(
   end create
 
   private def extractOperations(key: String, path: PathItem): Seq[((String, Method), Operation)] =
-
     Map(
       Method.GET -> path.getGet,
       Method.POST -> path.getPost,

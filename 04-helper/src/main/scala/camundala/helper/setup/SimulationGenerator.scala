@@ -10,7 +10,7 @@ case class SimulationGenerator()(using config: SetupConfig):
   end createProcess
 
   private def process(
-                       setupElement: SetupElement
+      setupElement: SetupElement
   ) =
     val SetupElement(_, processName, name, version) = setupElement
     s"""package ${config.projectPackage}
@@ -38,6 +38,7 @@ case class SimulationGenerator()(using config: SetupConfig):
        |    example.mockServices
        |
        |end ${name}Simulation""".stripMargin
+  end process
 
   private def simulationTestPath(setupElement: SetupElement) =
     val dir = config.projectDir / ModuleConfig.simulationModule.packagePath(

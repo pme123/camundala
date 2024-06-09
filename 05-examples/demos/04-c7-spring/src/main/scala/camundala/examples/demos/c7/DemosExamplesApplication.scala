@@ -12,3 +12,4 @@ object DemosExamplesApplication:
 
   def main(args: Array[String]): Unit =
     SpringApplication.run(classOf[DemosExamplesApplication], args*)
+end DemosExamplesApplication

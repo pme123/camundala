@@ -22,8 +22,8 @@ object CamundaHelper:
     */
   def variableOpt[A: InOutDecoder](
       varKey: String | InputParams
-  )(using ExternalTask):Either[BadVariableError, Option[A]] =
-    for {
+  )(using ExternalTask): Either[BadVariableError, Option[A]] =
+    for
       maybeJson <- jsonVariableOpt(varKey)
       obj <- maybeJson
         .map(_.as[Option[A]])
@@ -34,7 +34,7 @@ object CamundaHelper:
             s"Problem decoding Json to ${nameOfType[A]}: ${err.getMessage}"
           )
         )
-    } yield obj
+    yield obj
 
   def jsonVariableOpt(
       varKey: String | InputParams

@@ -111,7 +111,7 @@ lazy val api = project
     libraryDependencies ++=
       Seq(
         "org.scala-lang.modules" %% "scala-xml" % scalaXmlVersion,
-        "com.typesafe" % "config" % typesafeConfigVersion,
+        "com.typesafe" % "config" % typesafeConfigVersion
       )
   )
   .dependsOn(bpmn)
@@ -135,7 +135,7 @@ lazy val worker = project
   .settings(
     projectSettings("worker"),
     unitTestSettings,
-    autoImportSetting,
+    autoImportSetting
   )
   .dependsOn(bpmn)
 
@@ -153,7 +153,7 @@ lazy val simulation = project
   .dependsOn(bpmn)
 
 // layer 04
-val swaggerOpenAPIDependency =   "io.swagger.parser.v3" % "swagger-parser" % swaggerOpenAPIVersion
+val swaggerOpenAPIDependency = "io.swagger.parser.v3" % "swagger-parser" % swaggerOpenAPIVersion
 lazy val helper = project
   .in(file("./04-helper"))
   .configure(publicationSettings)
@@ -411,9 +411,10 @@ val currentVersion = config.getString("release.tag")
 val released = config.getBoolean("released")
 val olderVersions = config.getList("releases.older").asScala
 val versions = Versions
-.forCurrentVersion(Version(currentVersion, currentVersion)
-  .withLabel(if (released) "Stable" else "Dev")
-).withOlderVersions(olderVersions.map(_.unwrapped().toString).map(v => Version(v, v)) *)
+  .forCurrentVersion(
+    Version(currentVersion, currentVersion)
+      .withLabel(if released then "Stable" else "Dev")
+  ).withOlderVersions(olderVersions.map(_.unwrapped().toString).map(v => Version(v, v))*)
 lazy val exampleMyCompany = project
   .in(file("./05-examples/myCompany"))
   .settings(projectSettings("example-exampleDemos"))

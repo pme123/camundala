@@ -23,12 +23,12 @@ trait SStepExtensions
         case e: STimerEvent =>
           e.getAndExecute()
         case sp: SSubProcess =>
-          for {
+          for
             given ScenarioData <- sp.switchToSubProcess()
             given ScenarioData <- sp.runSteps()
             given ScenarioData <- sp.check()
             given ScenarioData <- sp.switchToMainProcess()
-          } yield summon[ScenarioData]
+          yield summon[ScenarioData]
         case SWaitTime(seconds) =>
           step.waitFor(seconds)
     end run
@@ -62,36 +62,35 @@ trait SStepExtensions
       val request = basicRequest
         .auth()
         .get(uri)
-      runRequest(request, s"Process '${hasProcessSteps.name}' checkVars")(
-        (body, data) =>
-          body
-            .as[Seq[CamundaProperty]]
-            .left
-            .map(exc =>
-              data
-                .error(
-                  s"!!! Problem parsing Result Body to a List of CamundaProperty."
-                )
-                .debug(s"Error: $exc")
-                .debug(s"Response Body: $body")
-            )
-            .flatMap { value =>
-              if (
-                checkProps(
-                  hasProcessSteps.asInstanceOf[WithTestOverrides[?]],
-                  value
-                )
+      runRequest(request, s"Process '${hasProcessSteps.name}' checkVars")((body, data) =>
+        body
+          .as[Seq[CamundaProperty]]
+          .left
+          .map(exc =>
+            data
+              .error(
+                s"!!! Problem parsing Result Body to a List of CamundaProperty."
               )
-                Right(data.info("Variables successful checked"))
-              else
-                (
-                  Left(
-                    data.error(
-                      "Variables do not match - see above in the Log (look for !!!)"
-                    )
+              .debug(s"Error: $exc")
+              .debug(s"Response Body: $body")
+          )
+          .flatMap { value =>
+            if
+              checkProps(
+                hasProcessSteps.asInstanceOf[WithTestOverrides[?]],
+                value
+              )
+            then
+              Right(data.info("Variables successful checked"))
+            else
+              (
+                Left(
+                  data.error(
+                    "Variables do not match - see above in the Log (look for !!!)"
                   )
                 )
-            }
+            )
+          }
       )
     end checkVars
 

@@ -5,15 +5,14 @@ import org.camunda.spin.Spin.*
 import io.circe.{Json, ParsingFailure, parser}
 import org.camunda.bpm.engine.delegate.DelegateExecution
 
-/** Check, if the variable `outputMock` is set and if it sets its values as
-  * process variables.
+/** Check, if the variable `outputMock` is set and if it sets its values as process variables.
   */
 trait Mocker:
 
   def mockOrProceed(execution: DelegateExecution): Unit =
     val outputMock = execution.getVariable("outputMock")
     val mocked =
-      if (Option(outputMock).isEmpty) false
+      if Option(outputMock).isEmpty then false
       else
         val parsedJson: Either[ParsingFailure, Json] =
           parser.parse(outputMock.toString)
@@ -32,6 +31,7 @@ trait Mocker:
             throw new IllegalArgumentException(
               s"The mock could not be parsed to Json Object:\n- $outputMock\n- $exception"
             )
+        end match
 
         true
     execution.setVariable("mocked", mocked)
