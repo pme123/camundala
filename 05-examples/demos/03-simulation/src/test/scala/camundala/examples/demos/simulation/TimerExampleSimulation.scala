@@ -11,7 +11,7 @@ class TimerExampleSimulation extends DemosSimulation:
     scenario(`timerProcess waiting for job`)(
       timer
     ),
-    scenario (`timerProcess waiting for variable`)(
+    scenario(`timerProcess waiting for variable`)(
       timer
         .waitFor("timerReady")
     )
@@ -19,3 +19,4 @@ class TimerExampleSimulation extends DemosSimulation:
 
   private lazy val `timerProcess waiting for job` = timerProcess
   private lazy val `timerProcess waiting for variable` = timerProcess
+end TimerExampleSimulation

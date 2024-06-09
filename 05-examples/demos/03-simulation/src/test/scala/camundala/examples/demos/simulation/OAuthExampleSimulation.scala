@@ -4,15 +4,17 @@ import camundala.examples.demos.bpmn.TestDomain.CamundalaGenerateTestP
 import camundala.simulation.*
 import camundala.simulation.custom.*
 
-/**
- * exampleDemos/It/testOnly *OAuthExampleSimulation
- * BE AWARE - for this must run a local Docker with FSSO setup.
- * no process is needed.
- */
-class OAuthExampleSimulation extends OAuthSimulationDsl :
+/** exampleDemos/It/testOnly *OAuthExampleSimulation BE AWARE - for this must run a local Docker
+  * with FSSO setup. no process is needed.
+  */
+class OAuthExampleSimulation extends OAuthSimulationDsl:
 
   simulate {
-    badScenario(CamundalaGenerateTestP, 404, "No matching process definition with key: camundala-generate-test and tenant-id: 0949")
+    badScenario(
+      CamundalaGenerateTestP,
+      404,
+      "No matching process definition with key: camundala-generate-test and tenant-id: 0949"
+    )
   }
 
   override implicit def config =
@@ -28,4 +30,6 @@ class OAuthExampleSimulation extends OAuthSimulationDsl :
       "username" -> "admin",
       "password" -> "admin",
       "scope" -> "fcs"
-    ))
+    )
+  )
+end OAuthExampleSimulation

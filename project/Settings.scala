@@ -5,7 +5,7 @@ import xerial.sbt.Sonatype.autoImport.sonatypeRepository
 
 import scala.util.Using
 
-object Settings {
+object Settings:
 
   lazy val projectVersion =
     Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
@@ -24,7 +24,7 @@ object Settings {
     javacOptions ++= Seq("-source", "17", "-target", "17")
   )
   lazy val unitTestSettings = Seq(
-    libraryDependencies +="org.scalameta" %% "munit" % mUnitVersion % Test,
+    libraryDependencies += "org.scalameta" %% "munit" % mUnitVersion % Test,
     testFrameworks += new TestFramework("munit.Framework")
   )
 
@@ -84,5 +84,4 @@ object Settings {
         "sttp.tapir",
         "sttp.tapir.json.circe"
       ).mkString(start = "-Yimports:", sep = ",", end = "")
-
-}
+end Settings

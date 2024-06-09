@@ -2,8 +2,8 @@ package camundala.api
 package docs
 
 case class DependencyValidator()(using
-                                 val apiConfig: ApiConfig,
-                                 val configs: Seq[ApiProjectConf],
+    val apiConfig: ApiConfig,
+    val configs: Seq[ApiProjectConf]
 ) extends DependencyCreator:
 
   @throws[IllegalStateException]
@@ -18,7 +18,7 @@ case class DependencyValidator()(using
           .map(_._1)
       }
       .filterNot { case _ -> v => v.isEmpty }
-      .map(f => s" - ${f._1} -> ${f._2.mkString("[", ", ", "]")}") match {
+      .map(f => s" - ${f._1} -> ${f._2.mkString("[", ", ", "]")}") match
       case Nil =>
         println(
           "All Packages have dependencies that are correctly configured in VERSION.conf."
@@ -26,18 +26,17 @@ case class DependencyValidator()(using
       case failures =>
         throw new IllegalStateException(
           s"There are Package Config dependencies that are not in the VERSION.conf listed:\n${failures
-            .mkString("\n")}\n"
+              .mkString("\n")}\n"
         )
-    }
 
-  //This harder to tell for sure, as the process can be used directly
-  //So we issue only a Warning
+  // This harder to tell for sure, as the process can be used directly
+  // So we issue only a Warning
   lazy val validateOrphans: Unit =
     val allDependencies = configs.flatMap(_.dependencies).distinct
     configs
       .groupBy(_.name)
       .map { case _ -> pcs =>
-        if (pcs.size > 1)
+        if pcs.size > 1 then
           pcs
             .map(pc => pc.fullName -> allDependencies.count(_.equalTo(pc)))
             .filterNot(_._2 == 1)
@@ -47,7 +46,7 @@ case class DependencyValidator()(using
       }
       .filterNot(_.isEmpty)
       .map(f => s" - ${f.mkString(", ")}")
-      .toSeq match {
+      .toSeq match
       case Nil => println("All Packages are needed - no orphans.")
       case orphans =>
         println(s"""${Console.YELLOW_B}
@@ -57,8 +56,9 @@ case class DependencyValidator()(using
                    |- Packages that are used by others may only exist if other packages still have them as a dependency.
                    |As they are difficult to separate, please check them:
                    |${orphans
-          .mkString("\n")}\n
+                    .mkString("\n")}\n
                    |${Console.RESET}""".stripMargin)
-    }
+    end match
+  end validateOrphans
 
 end DependencyValidator

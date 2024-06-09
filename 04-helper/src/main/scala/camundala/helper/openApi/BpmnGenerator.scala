@@ -12,7 +12,3 @@ case class BpmnGenerator()(using config: OpenApiConfig, apiDefinition: ApiDefini
     BpmnClassesGenerator().generate
   end generate
 end BpmnGenerator
-
-
-
-

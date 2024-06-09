@@ -11,7 +11,8 @@ trait StarWarsApi extends BpmnServiceTaskDsl:
   val serviceLabel: String = "Star Wars API"
   val serviceVersion: String = "1.0"
   val companyDescr = ""
-  
+end StarWarsApi
+
 object StarWarsPeople extends StarWarsApi:
 
   final val topicName = "star-wars-api-people"
@@ -104,7 +105,7 @@ object StarWarsPeopleDetail extends StarWarsApi:
     given ApiSchema[Out] = deriveApiSchema
     given InOutCodec[Out] = deriveInOutCodec
   end Out
-  
+
   final lazy val example: ServiceTask[In, Out, ServiceIn, ServiceOut] =
     serviceTask(
       in = In(),

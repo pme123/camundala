@@ -67,7 +67,9 @@ trait RestApiClient:
         case o if o.isInstanceOf[ServiceOut] =>
           Right(NoOutput().asInstanceOf[ServiceOut])
         case _ =>
-          Left(ServiceBadBodyError("There is no body in the response and the ServiceOut is not NoOutput."))
+          Left(ServiceBadBodyError(
+            "There is no body in the response and the ServiceOut is not NoOutput."
+          ))
     else
       parser
         .decodeAccumulating[ServiceOut](body)
@@ -85,7 +87,9 @@ trait RestApiClient:
         runnableRequest.qSegments,
         runnableRequest.headers
       )
-    Try(runnableRequest.requestBodyOpt.map(b => request.body(b.asJson.deepDropNullValues)).getOrElse(request)).toEither.left
+    Try(runnableRequest.requestBodyOpt.map(b =>
+      request.body(b.asJson.deepDropNullValues)
+    ).getOrElse(request)).toEither.left
       .map(err => ServiceBadBodyError(errorMsg = s"Problem creating body for request.\n$err"))
   end requestWithOptBody
 
