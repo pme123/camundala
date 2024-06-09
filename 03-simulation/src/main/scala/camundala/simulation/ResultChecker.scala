@@ -31,18 +31,18 @@ trait ResultChecker:
       .map {
         case TestOverride(Some(k), Exists, _) =>
           val matches = result.exists(_.key == k)
-          if (!matches)
+          if !matches then
             println(s"!!! $k did NOT exist in $result")
           matches
         case TestOverride(Some(k), NotExists, _) =>
           val matches = !result.exists(_.key == k)
-          if (!matches)
+          if !matches then
             println(s"!!! $k did EXIST in $result")
           matches
         case TestOverride(Some(k), IsEquals, Some(v)) =>
           val r = result.find(_.key == k)
           val matches = r.nonEmpty && r.exists(_.value == v)
-          if (!matches)
+          if !matches then
             println(s"!!! $v ($k) is NOT equal in $r")
           matches
         case TestOverride(Some(k), HasSize, Some(value)) =>
@@ -57,7 +57,7 @@ trait ResultChecker:
                     false
               case _ => false
           }
-          if (!matches)
+          if !matches then
             println(s"!!! $k has NOT Size $value in $r")
           matches
         case TestOverride(Some(k), Contains, Some(value)) =>
@@ -80,7 +80,7 @@ trait ResultChecker:
                     false
               case _ => false
           }
-          if (!matches)
+          if !matches then
             println(s"!!! $k does NOT contains $value in $r")
           matches
         case _ =>
@@ -100,7 +100,7 @@ trait ResultChecker:
       .map {
         case TestOverride(None, HasSize, Some(CInteger(size, _))) =>
           val matches = result.size == size
-          if (!matches)
+          if !matches then
             println(
               s"!!! Size '${result.size}' of collection is NOT equal to $size in $result"
             )
@@ -115,7 +115,7 @@ trait ResultChecker:
                   throwErr(s"Problem parsing Json: $jsonStr\n$ex")
             case other => other
           val matches = result.contains(exp)
-          if (!matches)
+          if !matches then
             println(
               s"!!! Result '$result' of collection does NOT contain to $expected"
             )
@@ -162,13 +162,14 @@ trait ResultChecker:
                     cFileName == pFileName
                   case o =>
                     false
-                if (!matches)
+                if !matches then
                   println(
                     s"<<< cFile: ${cValue.getClass} / expectedFile: ${expectedValue.getClass}"
                   )
                   println(
                     s"!!! The expected File value '${expectedValue}'\n of $key does not match the result variable: '$cFileValueInfo'."
                   )
+                end if
                 matches
               case CamundaProperty(key, CJson(cValue, _)) =>
                 val resultJson = toJson(cValue)
@@ -176,13 +177,14 @@ trait ResultChecker:
                 checkJson(expectedJson, resultJson, key)
               case CamundaProperty(_, cValue) =>
                 val matches: Boolean = cValue.value == expectedValue.value
-                if (!matches)
+                if !matches then
                   println(
                     s"<<< cValue: ${cValue.getClass} / expectedValue ${expectedValue.getClass}"
                   )
                   println(
                     s"!!! The expected value '$expectedValue' of $key does not match the result variable '${cValue}'.\n $result"
                   )
+                end if
                 matches
             }
             .getOrElse {
@@ -206,25 +208,25 @@ trait ResultChecker:
         expJson: io.circe.Json,
         resJson: io.circe.Json,
         path: String
-    ): Unit = {
-      if (expJson != resJson) {
-        (expJson, resJson) match {
+    ): Unit =
+      if expJson != resJson then
+        (expJson, resJson) match
           case _ if expJson.isArray && resJson.isArray =>
             val expJsonArray = expJson.asArray.toList.flatten
             val resJsonArray = resJson.asArray.toList.flatten
-            for (
+            for
               (expJson, resJson) <- expJsonArray.zipAll(
                 resJsonArray,
                 Json.Null,
                 Json.Null
               )
-            ) {
+            do
               compareJsons(
                 expJson,
                 resJson,
                 s"$path[${expJsonArray.indexOf(expJson)}]"
               )
-            }
+            end for
           case _ if expJson.isObject && resJson.isObject =>
             val expJsonObj = expJson.asObject.get
             val resJsonObj = resJson.asObject.get
@@ -232,15 +234,15 @@ trait ResultChecker:
             val resKeys = resJsonObj.keys.toSeq
             val commonKeys = expKeys.intersect(resKeys).toSet
             val uniqueKeys = (expKeys ++ resKeys).toSet.diff(commonKeys)
-            for (key <- commonKeys) {
+            for key <- commonKeys do
               compareJsons(
                 expJsonObj(key).get,
                 resJsonObj(key).get,
                 s"$path.$key"
               )
-            }
-            for (key <- uniqueKeys) {
-              if (expKeys.contains(key))
+            end for
+            for key <- uniqueKeys do
+              if expKeys.contains(key) then
                 expJsonObj(key).foreach { json =>
                   diffs += s"$path.$key: ${json.noSpaces} (expected field not in result)"
                 }
@@ -248,23 +250,19 @@ trait ResultChecker:
                 resJsonObj(key).foreach { json =>
                   diffs += s"$path.$key: ${json.noSpaces} (field in result not expected)"
                 }
-            }
+            end for
           case _ =>
             diffs += s"$path: ${expJson.noSpaces} (expected) != ${resJson.noSpaces} (result)"
-        }
-      }
-    }
 
     compareJsons(expectedJson, resultJson, "")
 
-    if (diffs.nonEmpty) {
+    if diffs.nonEmpty then
       println(
         s"!!! The JSON variable $key have the following different fields:"
       )
-      for (diff <- diffs) {
+      for diff <- diffs do
         println(diff)
-      }
-    }
+    end if
     diffs.isEmpty
   end checkJson
 

@@ -5,8 +5,7 @@ import camundala.bpmn.*
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 
-trait WorkerDsl[In <: Product: InOutCodec,
-  Out <: Product: InOutCodec]:
+trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
 
   protected def engineContext: EngineContext
 
@@ -24,8 +23,8 @@ trait WorkerDsl[In <: Product: InOutCodec,
 
   def runWorkFromWorkerUnsafe(in: In)(using EngineRunContext): Either[RunWorkError, Out] =
     runWorkFromWorker(in)
-      .get //only if you are sure that there is a handler
-    
+      .get // only if you are sure that there is a handler
+
   extension [T](option: Option[T])
     def toEither[E <: CamundalaWorkerError](
         error: E
@@ -57,9 +56,9 @@ trait InitWorkerDsl[
 end InitWorkerDsl
 
 trait ValidationWorkerDsl[
-  In <: Product : InOutCodec,
+    In <: Product: InOutCodec
 ] extends WorkerDsl[In, NoOutput],
-  ValidateDsl[In]:
+      ValidateDsl[In]:
 
   protected def inOutExample: ReceiveEvent[In, ?]
 

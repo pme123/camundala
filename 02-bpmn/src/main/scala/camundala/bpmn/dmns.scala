@@ -96,10 +96,11 @@ given LocalDateTimeJsonDecoder: InOutDecoder[LocalDateTime] =
         .flatMap: dateStr =>
           Try(LocalDateTime.parse(dateStr)) match
             case Success(date) => Right(date)
-            case Failure(_) => 
-              Try(LocalDateTime.ofInstant(Instant.parse(dateStr), ZoneId.systemDefault())) match 
+            case Failure(_) =>
+              Try(LocalDateTime.ofInstant(Instant.parse(dateStr), ZoneId.systemDefault())) match
                 case Success(date) => Right(date)
-                case Failure(_) => Left(DecodingFailure(s"Could not parse LocalDateTime from $dateStr", c.history))
+                case Failure(_) =>
+                  Left(DecodingFailure(s"Could not parse LocalDateTime from $dateStr", c.history))
 
 given InOutDecoder[ZonedDateTime] =
   new InOutDecoder[ZonedDateTime]:

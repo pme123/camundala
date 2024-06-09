@@ -18,7 +18,8 @@ case class CreateProcessInstanceIn[In, Out <: Product](
 end CreateProcessInstanceIn
 
 object CreateProcessInstanceIn:
-  given [In: InOutDecoder, Out <: Product: InOutDecoder]: InOutDecoder[CreateProcessInstanceIn[In, Out]] =
+  given [In: InOutDecoder, Out <: Product: InOutDecoder]
+      : InOutDecoder[CreateProcessInstanceIn[In, Out]] =
     deriveDecoder[CreateProcessInstanceIn[In, Out]]
 
   given [T <: Product: InOutDecoder]: InOutDecoder[Class[T]] =

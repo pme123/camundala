@@ -1,6 +1,6 @@
 package camundala.api.docs
 
-case class DevStatisticsCreator(gitBasePath: os.Path, basePath: os.Path) :
+case class DevStatisticsCreator(gitBasePath: os.Path, basePath: os.Path):
 
   def create(): Unit =
     val statistics =
@@ -13,23 +13,23 @@ case class DevStatisticsCreator(gitBasePath: os.Path, basePath: os.Path) :
          |Goes throw all projects and counts files and lines of code.
          |
          |${
-        Seq("bpmn", "dmn", "groovy", "scala")
-          .map(lineCount)
-          .map{ case ftc@FileTypeCount(fileType, projectCounts) =>
-            s"""
-               |${"*" * 20}
-               |
-               |File- and Line count for **$fileType** files:
-               |
-               |${projectCounts.map{
-              case ProjectCounts(project, fileCount, lineCount) =>
-                s" - $project: $lineCount of $fileCount Files"
-            }.mkString("\n")}
-               |
-               |**Total** $fileType: **${ftc.lineCount}** of **${ftc.fileCount}** Files
-               |""".stripMargin
-          }.mkString
-      }""".stripMargin
+          Seq("bpmn", "dmn", "groovy", "scala")
+            .map(lineCount)
+            .map { case ftc @ FileTypeCount(fileType, projectCounts) =>
+              s"""
+                 |${"*" * 20}
+                 |
+                 |File- and Line count for **$fileType** files:
+                 |
+                 |${projectCounts.map {
+                  case ProjectCounts(project, fileCount, lineCount) =>
+                    s" - $project: $lineCount of $fileCount Files"
+                }.mkString("\n")}
+                 |
+                 |**Total** $fileType: **${ftc.lineCount}** of **${ftc.fileCount}** Files
+                 |""".stripMargin
+            }.mkString
+        }""".stripMargin
     val path = basePath / "src" / "docs" / "devStatistics.md"
     os.write.over(path, statistics)
   end create
@@ -44,7 +44,6 @@ case class DevStatisticsCreator(gitBasePath: os.Path, basePath: os.Path) :
     FileTypeCount(fileType, projectCounts)
   end lineCount
 
-
   private def lineCountProject(fileType: String, project: String): ProjectCounts =
     val files = os.walk(gitBasePath / project)
       .filter(_.ext == fileType)
@@ -57,11 +56,12 @@ case class DevStatisticsCreator(gitBasePath: os.Path, basePath: os.Path) :
 
   end lineCountProject
 
-  case class FileTypeCount(fileType: String, projectCounts: Seq[ProjectCounts]) :
+  case class FileTypeCount(fileType: String, projectCounts: Seq[ProjectCounts]):
     lazy val lineCount =
       projectCounts.map(_.lineCount).sum
     lazy val fileCount =
       projectCounts.map(_.fileCount).sum
+  end FileTypeCount
 
   case class ProjectCounts(project: String, fileCount: Int, lineCount: Int)
 

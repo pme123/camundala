@@ -126,19 +126,19 @@ case class ProcessLabels(labels: Option[Seq[ProcessLabel]]):
   lazy val print: String =
     labels.toSeq.flatten
       .map:
-        case ProcessLabel(k,v) => s" - $k: $v"
+        case ProcessLabel(k, v) => s" - $k: $v"
       .mkString
   lazy val de: String =
     labels.toSeq.flatten
       .collectFirst:
-        case ProcessLabel(k,v) if k == ProcessLabels.labelKeyDe =>
-            v
+        case ProcessLabel(k, v) if k == ProcessLabels.labelKeyDe =>
+          v
       .getOrElse("-")
   lazy val fr: String =
     labels.toSeq.flatten
       .collectFirst:
-        case ProcessLabel(k,v) if k == ProcessLabels.labelKeyFr =>
-            v
+        case ProcessLabel(k, v) if k == ProcessLabels.labelKeyFr =>
+          v
       .getOrElse("-")
 
 end ProcessLabels

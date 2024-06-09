@@ -34,34 +34,33 @@ trait SScenarioExtensions extends SStepExtensions:
 
     def startProcess()(using
         data: ScenarioData
-    ): ResultType = {
+    ): ResultType =
       val request = prepareStartProcess()
 
-      runRequest(request, s"Process '${scenario.name}' startProcess")(
-        (body, data) =>
-          body.hcursor
-            .downField("id")
-            .as[String]
-            .map { processInstanceId =>
-              data
-                .withProcessInstanceId(processInstanceId)
-                .info(
-                  s"Process '${scenario.process.processName}' started (check $cockpitUrl/#/process-instance/$processInstanceId)"
-                )
-                .debug(s"- processInstanceId: $processInstanceId")
-                .debug(s"- body: $body")
-            }
-            .left
-            .map { ex =>
-              data
-                .error(s"Problem extracting processInstanceId from $body\n $ex")
-            }
+      runRequest(request, s"Process '${scenario.name}' startProcess")((body, data) =>
+        body.hcursor
+          .downField("id")
+          .as[String]
+          .map { processInstanceId =>
+            data
+              .withProcessInstanceId(processInstanceId)
+              .info(
+                s"Process '${scenario.process.processName}' started (check $cockpitUrl/#/process-instance/$processInstanceId)"
+              )
+              .debug(s"- processInstanceId: $processInstanceId")
+              .debug(s"- body: $body")
+          }
+          .left
+          .map { ex =>
+            data
+              .error(s"Problem extracting processInstanceId from $body\n $ex")
+          }
       )
-    }
+    end startProcess
 
     def sendMessage()(using
         data: ScenarioData
-    ): ResultType = {
+    ): ResultType =
       val process = scenario.process
       val body = CorrelateMessageIn(
         messageName = process.processName,
@@ -77,32 +76,31 @@ trait SScenarioExtensions extends SStepExtensions:
         .body(body)
         .post(uri)
 
-      runRequest(request, s"Process '${scenario.name}' start with message")(
-        (body, data) =>
-          body
-            .as[List[ProcessInstanceOrExecution]]
-            .map { pioe =>
-              val processInstanceId = pioe match
-                case ProcessInstanceOrExecution(Some(exec), None) :: _ =>
-                  exec.processInstanceId
-                case ProcessInstanceOrExecution(None, Some(procInst)) :: _ =>
-                  procInst.id
-                case other => s"PROCESS ID not found in $other"
-              data
-                .withProcessInstanceId(processInstanceId)
-                .info(
-                  s"Process '${process.processName}' started (check $cockpitUrl/#/process-instance/$processInstanceId)"
-                )
-                .debug(s"- processInstanceId: $processInstanceId")
-                .debug(s"- body: $body")
-            }
-            .left
-            .map { ex =>
-              data
-                .error(s"Problem extracting processInstanceId from $body\n $ex")
-            }
+      runRequest(request, s"Process '${scenario.name}' start with message")((body, data) =>
+        body
+          .as[List[ProcessInstanceOrExecution]]
+          .map { pioe =>
+            val processInstanceId = pioe match
+              case ProcessInstanceOrExecution(Some(exec), None) :: _ =>
+                exec.processInstanceId
+              case ProcessInstanceOrExecution(None, Some(procInst)) :: _ =>
+                procInst.id
+              case other => s"PROCESS ID not found in $other"
+            data
+              .withProcessInstanceId(processInstanceId)
+              .info(
+                s"Process '${process.processName}' started (check $cockpitUrl/#/process-instance/$processInstanceId)"
+              )
+              .debug(s"- processInstanceId: $processInstanceId")
+              .debug(s"- body: $body")
+          }
+          .left
+          .map { ex =>
+            data
+              .error(s"Problem extracting processInstanceId from $body\n $ex")
+          }
       )
-    }
+    end sendMessage
 
     private def prepareStartProcess() =
       val process = scenario.process
@@ -129,7 +127,7 @@ trait SScenarioExtensions extends SStepExtensions:
     def run(): Future[ResultType] =
       println(s"ProcessScenario started ${scenario.name}")
       scenario.logScenario { (data: ScenarioData) =>
-        if (scenario.process == null)
+        if scenario.process == null then
           Left(
             data.error(
               "The process is null! Check if your variable is LAZY (`lazy val myProcess = ...`)."
@@ -144,13 +142,14 @@ trait SScenarioExtensions extends SStepExtensions:
             given ScenarioData <- scenario.runSteps()
             given ScenarioData <- scenario.check()
           yield summon[ScenarioData]
+          end for
       }
   end extension
   extension (scenario: ExternalTaskScenario)
     def run(): Future[ResultType] =
       println(s"ExternalTaskScenario started ${scenario.name}")
       scenario.logScenario { (data: ScenarioData) =>
-        if (scenario.process == null)
+        if scenario.process == null then
           Left(
             data.error(
               "The process is null! Check if your variable is LAZY (`lazy val myProcess = ...`)."
@@ -164,6 +163,7 @@ trait SScenarioExtensions extends SStepExtensions:
               case ProcessStartType.MESSAGE => scenario.sendMessage()
             given ScenarioData <- scenario.check()
           yield summon[ScenarioData]
+          end for
       }
   end extension
 
@@ -176,9 +176,10 @@ trait SScenarioExtensions extends SStepExtensions:
           given ScenarioData <- scenario.startProcess()
           given ScenarioData <- scenario.runSteps()
           given ScenarioData <- checkIncident()(
-          summon[ScenarioData].withRequestCount(0)
+            summon[ScenarioData].withRequestCount(0)
           )
         yield summon[ScenarioData]
+        end for
       }
 
     def checkIncident(
@@ -241,7 +242,7 @@ trait SScenarioExtensions extends SStepExtensions:
 
     def startProcess()(using
         data: ScenarioData
-    ): ResultType = {
+    ): ResultType =
       val request = scenario.prepareStartProcess()
 
       given ScenarioData = data
@@ -279,14 +280,14 @@ trait SScenarioExtensions extends SStepExtensions:
           )
 
       }
-    }
+    end startProcess
   end extension
 
   extension (scenario: SScenario)
     def logScenario(body: ScenarioData => ResultType): Future[ResultType] =
       Future {
         val startTime = System.currentTimeMillis()
-        if (scenario.isIgnored)
+        if scenario.isIgnored then
           Right(
             ScenarioData(scenario.name)
               .warn(
@@ -300,17 +301,18 @@ trait SScenarioExtensions extends SStepExtensions:
             .map(
               _.info(
                 s"${Console.GREEN}${"*" * 4} Scenario '${scenario.name}' SUCCEEDED in ${System
-                  .currentTimeMillis() - startTime} ms ${"*" * 4}${Console.RESET}"
+                    .currentTimeMillis() - startTime} ms ${"*" * 4}${Console.RESET}"
               )
             )
             .left
             .map(
               _.error(
                 s"${Console.RED}${"*" * 4} Scenario '${scenario.name}' FAILED in ${System
-                  .currentTimeMillis() - startTime} ms ${"*" * 6}${Console.RESET}"
+                    .currentTimeMillis() - startTime} ms ${"*" * 6}${Console.RESET}"
               )
             )
         }
+        end if
       }
     end logScenario
   end extension

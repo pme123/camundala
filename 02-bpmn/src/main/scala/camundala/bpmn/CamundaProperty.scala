@@ -50,9 +50,9 @@ type FormVariables = Map[String, CamundaVariable]
     |""".stripMargin
 )
 case class CamundaProperty(
-                            key: String,
-                            value: CamundaVariable
-                          )
+    key: String,
+    value: CamundaVariable
+)
 
 object CamundaProperty:
 

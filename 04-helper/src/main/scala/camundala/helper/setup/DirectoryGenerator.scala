@@ -6,12 +6,10 @@ case class DirectoryGenerator()(using config: SetupConfig):
     config.modules.map:
       generateModule
 
-  
-
   private def generateModule(moduleConfig: ModuleConfig): Unit =
 
     def printMainAndTest(
-        subProject: Option[String] = None,
+        subProject: Option[String] = None
     ): Unit =
       def srcPath(mainOrTest: String) =
         config.projectDir /

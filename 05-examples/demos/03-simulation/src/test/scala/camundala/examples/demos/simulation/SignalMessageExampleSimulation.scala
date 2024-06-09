@@ -15,20 +15,20 @@ class SignalMessageExampleSimulation extends DemosSimulation:
       messageIntermediateExample
         .waitFor("messageReady", true)
     )
-    //TODO in doc:
+    // TODO in doc:
     // .startWithSignal not supported as it is fire and forget
     // - but we need the processInstanceId as reference
-    // 
-    scenario(signalExample) (
+    //
+    scenario(signalExample)(
       signalIntermediateExample
-      .waitFor("signalReady", true),
+        .waitFor("signalReady", true)
     )
 
   }
 
   private lazy val messageIntermediateExample = receiveMessageEvent(
     "intermediate-message-for-example",
-    in = SignalMessageExampleIn(),
+    in = SignalMessageExampleIn()
   )
 
 end SignalMessageExampleSimulation

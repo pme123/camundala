@@ -23,6 +23,6 @@ object ProjectApiGenerator extends App:
 
   private lazy val gravitonConf = OpenApiConfig(
     projectName = "valiant-graviton",
-    openApiFile = os.rel / "gravitonOpenApi.json",
+    openApiFile = os.rel / "gravitonOpenApi.json"
   )
 end ProjectApiGenerator

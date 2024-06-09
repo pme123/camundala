@@ -19,3 +19,4 @@ trait Validator:
         Left(error.show)
       case Right(p: T) =>
         Right(p)
+end Validator

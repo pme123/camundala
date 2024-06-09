@@ -6,12 +6,12 @@ import sttp.client3.*
 trait BasicSimulationDsl extends CustomSimulation:
   def username = "demo"
   def password = "demo"
-  override implicit def config
-      : SimulationConfig[RequestT[Empty, Either[String, String], Any]] =
+  override implicit def config: SimulationConfig[RequestT[Empty, Either[String, String], Any]] =
     super.config
       .withAuthHeader((r: RequestT[Empty, Either[String, String], Any]) =>
         r.auth.basic(username, password)
       )
+end BasicSimulationDsl
 
 object BasicSimulationDsl
 
@@ -21,13 +21,12 @@ trait OAuthSimulationDsl extends CustomSimulation:
 
   def fsso: Fsso
 
-  override implicit def config
-      : SimulationConfig[RequestT[Empty, Either[String, String], Any]] =
+  override implicit def config: SimulationConfig[RequestT[Empty, Either[String, String], Any]] =
     super.config
-      .withAuthHeader((r: RequestT[Empty, Either[String, String], Any]) => {
+      .withAuthHeader((r: RequestT[Empty, Either[String, String], Any]) =>
         val token = getToken
         r.header("Authorization", s"Bearer $token")
-      })
+      )
 
   private lazy val getToken: String =
     val uri = uri"${fsso.url}/token"
@@ -47,5 +46,6 @@ trait OAuthSimulationDsl extends CustomSimulation:
       case Right(token) => token
       case Left(err) =>
         throw new IllegalArgumentException(s"Could not get a token!\n$err")
+    end match
   end getToken
 end OAuthSimulationDsl
