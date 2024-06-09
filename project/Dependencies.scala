@@ -23,7 +23,7 @@ object Dependencies:
   // - mUnitVersion
   // 03-dmn
   // -> bpmn
-  val sttpClient3Version = "3.8.13"
+  val sttpClient3Version = "3.8.16"
   val dmnTesterVersion = "0.17.9"
   // - mUnitVersion
   // 03-simulation
