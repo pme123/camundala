@@ -36,7 +36,7 @@ object Dependencies:
   // --- Implementations
   // 04-worker-c7spring
   // -> worker
-  val camundaVersion = "7.20.0" // external task client
+  val camundaVersion = "7.21.0" // external task client
   val jaxbApiVersion = "2.3.1" // needed by the camunda client 7.20?!
   // - sttpClient3
 
