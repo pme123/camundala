@@ -12,7 +12,7 @@ object Dependencies:
   val tapirVersion = "1.9.11"
   val openapiCirceVersion = "0.7.3"
   val ironCirceVersion = "2.4.0"
-  val mUnitVersion = "0.7.29"
+  val mUnitVersion = "1.0.0"
   // 02-bpmn
   // -> domain
   // - osLib
