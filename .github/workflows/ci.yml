@@ -12,7 +12,7 @@ jobs:
       - name: Setup JDK
         uses: olafurpg/setup-scala@v14
         with:
-          java-version: '21'
+          java-version: '17'
           distribution: 'openjdk'
       - name: Coursier cache
         uses: coursier/cache-action@v6

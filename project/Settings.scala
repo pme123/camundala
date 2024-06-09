@@ -21,7 +21,7 @@ object Settings {
       //   "-Xmax-inlines:50", // is declared as erased, but is in fact used
       //   "-Wunused:imports"
     ),
-   // javacOptions ++= Seq("-source", "21", "-target", "21")
+    javacOptions ++= Seq("-source", "17", "-target", "17")
   )
 
   lazy val unitTestSettings = Seq(
