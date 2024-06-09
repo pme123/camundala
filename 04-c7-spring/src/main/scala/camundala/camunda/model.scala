@@ -8,27 +8,27 @@ case class Bpmn(path: Path, processes: BpmnProcess*)
 
 case class BpmnProcess(
     process: Process[?, ?],
-    elements: Seq[BpmnInOut[?,?]] = Seq.empty
+    elements: Seq[BpmnInOut[?, ?]] = Seq.empty
 ):
   lazy val id: String = process.id
 
   def withElements(
-                    elements:(InOut[?,?,?] | BpmnInOut[?,?])*
-                  ): BpmnProcess =
-
-    this.copy(elements = elements.map{
-      case inOut: InOut[?,?,?] => BpmnInOut(inOut.asInstanceOf[InOut[Product, Product, ?]])
-      case bpmnInOut: BpmnInOut[?,?] => bpmnInOut
+      elements: (InOut[?, ?, ?] | BpmnInOut[?, ?])*
+  ): BpmnProcess =
+    this.copy(elements = elements.map {
+      case inOut: InOut[?, ?, ?] => BpmnInOut(inOut.asInstanceOf[InOut[Product, Product, ?]])
+      case bpmnInOut: BpmnInOut[?, ?] => bpmnInOut
     })
+end BpmnProcess
 
 object BpmnProcess:
-  given Conversion[InOut[?,?, ?], BpmnInOut[?,?]] = BpmnInOut(_)
+  given Conversion[InOut[?, ?, ?], BpmnInOut[?, ?]] = BpmnInOut(_)
 
 case class BpmnInOut[
-  In <: Product,
-  Out <: Product,
+    In <: Product,
+    Out <: Product
 ](
-    inOut: InOut[In,Out, ?],
+    inOut: InOut[In, Out, ?],
     outMappers: Seq[PathMapper] = Seq.empty,
     inMappers: Seq[PathMapper] = Seq.empty
 ):
@@ -39,6 +39,7 @@ case class BpmnInOut[
 
   def withInMapper(pathMapper: PathMapper): BpmnInOut[In, Out] =
     copy(inMappers = inMappers :+ pathMapper)
+end BpmnInOut
 
 case class PathMapper(
     varName: String,
@@ -58,12 +59,11 @@ case class PathMapper(
 
   def printExpression(): String =
     toMappingEntries
-     .map(_.name) match
+      .map(_.name) match
       case Nil => throwErr("The Path is empty - It must have more than one element!")
-      case x::Nil => throwErr(s"The Path is '$x' - It must have more than one element!")
-      case x::xs =>
+      case x :: Nil => throwErr(s"The Path is '$x' - It must have more than one element!")
+      case x :: xs =>
         s"$${" + x + xs.mkString(".prop(\"", "\").prop(\"", s"\")${varType.expr}") + "}"
-
 
   def toMappingEntries: List[MappingEntry] =
     val head = path.headOption match
@@ -78,6 +78,8 @@ case class PathMapper(
       case result -> PathEntry.OptionalPath =>
         result.init :+ MappingEntry.OptionalElem(result.last.name)
     }
+  end toMappingEntries
+end PathMapper
 
 enum PathEntry:
   case OptionalPath
@@ -89,11 +91,12 @@ enum MapType(val expr: String):
   case Long extends MapType(".numberValue()")
   case Double extends MapType(".numberValue()")
   case String extends MapType(".stringValue()")
-  case Json  extends MapType("")
+  case Json extends MapType("")
+end MapType
 
 object MapType:
   def apply(className: String): MapType =
-    className match {
+    className match
       case n if n.contains("Boolean") => MapType.Boolean
       case n if n.contains("Int") => MapType.Int
       case n if n.contains("Long") => MapType.Long
@@ -101,8 +104,7 @@ object MapType:
       case n if n.contains("Double") => MapType.Double
       case n if n.contains("String") => MapType.String
       case n => MapType.Json
-
-    }
+end MapType
 
 sealed trait MappingEntry:
   def name: String
@@ -115,3 +117,4 @@ object MappingEntry:
     def printGroovy(): String = "SeqElem"
   case class ValueElem(name: String) extends MappingEntry:
     def printGroovy(): String = name
+end MappingEntry

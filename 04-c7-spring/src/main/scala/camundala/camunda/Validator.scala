@@ -4,16 +4,18 @@ import camundala.bpmn.{*, given}
 import camundala.domain.*
 
 import io.circe.generic.auto.*
-import org.camunda.bpm.engine.delegate. DelegateExecution
-import org.camunda.bpm.engine.variable.`type`.{FileValueType, PrimitiveValueType, SerializableValueType}
+import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.camunda.bpm.engine.variable.`type`.{
+  FileValueType,
+  PrimitiveValueType,
+  SerializableValueType
+}
 import org.camunda.bpm.engine.variable.impl.value.FileValueImpl
 import org.camunda.bpm.engine.variable.value.TypedValue
 
-
-/**
- * Validator to validate the input variables automatically.
- */
-trait Validator[T <: Product : InOutCodec] :
+/** Validator to validate the input variables automatically.
+  */
+trait Validator[T <: Product: InOutCodec]:
 
   def prototype: T
 
@@ -21,11 +23,12 @@ trait Validator[T <: Product : InOutCodec] :
     val ir = prototype.productElementNames.toSeq
       .map { k =>
         val typedValue: TypedValue = execution.getVariableTyped(k)
-        if (typedValue == null)
+        if typedValue == null then
           "NOT_SET"
         else
           val value = extractValue(typedValue)
           s""""$k": $value"""
+        end if
       }.filterNot(_ == "NOT_SET")
       .mkString("{", ",", "}")
 
@@ -35,7 +38,8 @@ trait Validator[T <: Product : InOutCodec] :
       case Left(ex) =>
         println(s"Validation Failed $ex (${prototype.getClass.getSimpleName})")
         throw new IllegalArgumentException(s"Validation Error: Input is not valid: $ex")
-
+    end match
+  end validate
 
   private def extractValue(typedValue: TypedValue): AnyRef =
     typedValue.getType match
@@ -59,3 +63,4 @@ trait Validator[T <: Product : InOutCodec] :
             ).asJson
           case o =>
             throwErr(s"Must be a FileValueImpl - but is ${o.getClass}")
+end Validator

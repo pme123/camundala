@@ -3,5 +3,4 @@ import sbt.Keys.*
 import Settings.*
 import Dependencies.*
 
-object Examples {
-}
+object Examples {}

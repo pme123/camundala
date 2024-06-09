@@ -11,7 +11,7 @@ import sttp.tapir.Schema.annotations.description
 import scala.collection.immutable
 
 type ExampleName = String
-  
+
 case class RequestErrorOutput(
     statusCode: StatusCode,
     examples: Map[ExampleName, CamundaError] = Map.empty
@@ -47,27 +47,26 @@ given ApiSchema[StatusCode] = Schema(SchemaType.SInteger())
 given InOutEncoder[StatusCode] = Encoder.instance(st => st.code.asJson)
 given InOutDecoder[StatusCode] = (c: HCursor) => c.value.as[Int].map(StatusCode(_))
 
-
 @description(
   "Same as ExecuteTimerIn."
 )
 case class GetActiveJobIn(
-                           @description(
-                             """
-                               |The id of the process - you want to get the active tasks.
-                               |> This is the result id of the `StartProcessOut`
-                               |
-                               |Add in the _Tests_ panel of _Postman_:
-                               |```
-                               |let result = pm.response.json();
-                               |pm.collectionVariables.set("processInstanceId", result.id)
-                               |```
-                               |""".stripMargin
-                           )
-                           processInstanceId: String = "{{processInstanceId}}",
-                           @description("We are only interested in the active Job(s)")
-                           active: Boolean = true
-                         )
+    @description(
+      """
+        |The id of the process - you want to get the active tasks.
+        |> This is the result id of the `StartProcessOut`
+        |
+        |Add in the _Tests_ panel of _Postman_:
+        |```
+        |let result = pm.response.json();
+        |pm.collectionVariables.set("processInstanceId", result.id)
+        |```
+        |""".stripMargin
+    )
+    processInstanceId: String = "{{processInstanceId}}",
+    @description("We are only interested in the active Job(s)")
+    active: Boolean = true
+)
 object GetActiveJobIn:
   given ApiSchema[GetActiveJobIn] = deriveApiSchema
   given InOutCodec[GetActiveJobIn] = deriveCodec
@@ -127,6 +126,7 @@ case class RequestInput[T](examples: Map[ExampleName, T]):
     copy(examples = examples + (label -> example))
   lazy val noInput: Boolean =
     examples.isEmpty
+end RequestInput
 
 object RequestInput:
   def apply[T <: Product](example: T) =
@@ -134,6 +134,7 @@ object RequestInput:
 
   def apply[T <: Product]() =
     new RequestInput[T](Map.empty)
+end RequestInput
 
 case class RequestOutput[T](
     statusCode: StatusCode,
@@ -143,8 +144,9 @@ case class RequestOutput[T](
     examples.isEmpty
   def :+(label: String, example: T): RequestOutput[T] =
     copy(examples = examples + (label -> example))
+end RequestOutput
 
-object RequestOutput {
+object RequestOutput:
 
   def apply[Out <: Product](): RequestOutput[Out] =
     new RequestOutput(StatusCode.Ok, Map.empty)
@@ -174,8 +176,7 @@ object RequestOutput {
       examples: Map[ExampleName, Out]
   ): RequestOutput[Out] =
     RequestOutput(StatusCode.Created, examples)
-
-}
+end RequestOutput
 
 @description(
   """A JSON object representing the newly created process instance.
@@ -231,5 +232,3 @@ object GetActiveTaskOut:
   given ApiSchema[GetActiveTaskOut] = deriveApiSchema
   given InOutCodec[GetActiveTaskOut] = deriveCodec
 end GetActiveTaskOut
-
-

@@ -139,7 +139,7 @@ case class ScriptCreator()(using config: SetupConfig):
        |import camundala.helper._
        |""".stripMargin
 
-  private def createMethod(objectType: String) = {
+  private def createMethod(objectType: String) =
     val objectName = objectType.head.toLower + objectType.tail
     s"""@main(doc = "> Creates everything needed for a $objectType (e.g. bpmn, simulation, worker)")
        |def $objectName(
@@ -151,5 +151,5 @@ case class ScriptCreator()(using config: SetupConfig):
        |             version: Option[Int] = None,
        |             ): Unit =
        |  DevHelper.create${objectType}(processName, ${objectName}Name, version)""".stripMargin
-  }
+  end createMethod
 end ScriptCreator

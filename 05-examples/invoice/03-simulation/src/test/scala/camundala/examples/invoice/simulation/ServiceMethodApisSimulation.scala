@@ -13,11 +13,11 @@ class ServiceMethodApisSimulation extends CustomSimulation:
 
   simulate(
     serviceScenario(
-      `Service Method Delete`,
+      `Service Method Delete`
     ),
     serviceScenario(
-      `Service Method List`,
-    ),
+      `Service Method List`
+    )
   )
 
   override implicit def config =

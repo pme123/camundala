@@ -16,7 +16,7 @@ class StarWarsPeopleDetailWorker extends CompanyWorkerHandler,
 
   def apiUri(in: In) = uri"https://swapi.dev/api/people/${in.id}"
 
-  override def querySegments(in:In): Seq[QuerySegmentOrParam] =
+  override def querySegments(in: In): Seq[QuerySegmentOrParam] =
     queryKeys("id", "optName") ++
       queryKeyValues("a" -> in.id, "b" -> true) ++
       queryValues(12, false, null)
@@ -29,7 +29,7 @@ class StarWarsPeopleDetailWorker extends CompanyWorkerHandler,
 
   override def inputHeaders(in: In): Map[String, String] =
     Map("test-db-id" -> in.id.toString)
-    
+
   override def outputMapper(
       serviceOut: ServiceResponse[ServiceOut],
       in: In

@@ -112,8 +112,13 @@ case class SbtSettingsGenerator()(using config: SetupConfig):
         val name = moduleConfig.name
         val dependencies = moduleConfig.sbtDependencies
         s"""
-           |  lazy val ${name}Deps = ${ if moduleConfig.hasProjectDependencies then s"ProjectDef.${name}Dependencies ++" else ""}
-           |    Seq(${if dependencies.nonEmpty then dependencies.mkString("\n      ", ",\n      ", ",") else ""}
+           |  lazy val ${name}Deps = ${
+            if moduleConfig.hasProjectDependencies then s"ProjectDef.${name}Dependencies ++" else ""
+          }
+           |    Seq(${
+            if dependencies.nonEmpty then dependencies.mkString("\n      ", ",\n      ", ",")
+            else ""
+          }
            |      customer %% s"$$customer-camundala-$name" % customerCamundalaV
            |    )
            |""".stripMargin
@@ -136,8 +141,8 @@ case class SbtSettingsGenerator()(using config: SetupConfig):
 
   private lazy val sbtDocker =
     s"""
-      |  lazy val dockerSettings = ${config.sbtDockerSettings}
-      |""".stripMargin
+       |  lazy val dockerSettings = ${config.sbtDockerSettings}
+       |""".stripMargin
   private lazy val testSettings =
     s"""  lazy val testSettings = Seq(
        |    libraryDependencies += mUnit,

@@ -179,7 +179,7 @@ trait ProcessReferenceCreator:
       lazy val asString: String =
         s"_[$refType: $identShort](${docProjectUrl(project)}/OpenApi.html$anchor)_ $serviceStr"
     end UsesRef
-    
+
     private def extractUsesRefs(xmlStr: String) =
       val xml = XML.load(new StringReader(xmlStr))
       val callActivities = (xml \\ "callActivity")

@@ -6,7 +6,6 @@ import camundala.api.*
 import camundala.examples.twitter.bpmn.*
 import camundala.examples.twitter.bpmn.TwitterApi.*
 
-
 // exampleTwitterApi/run
 object ProjectApiCreator extends DefaultApiCreator:
 
@@ -34,5 +33,4 @@ object ProjectApiCreator extends DefaultApiCreator:
   private lazy val ReviewTweetApprovedUT =
     `Tweet accepted`
       .withOutExample("Tweet rejected", ReviewedTweet(approved = false))
-
-
+end ProjectApiCreator

@@ -19,7 +19,8 @@ object ProjectDmnTester
   private lazy val localDmnConfigPath: os.Path =
     os.pwd / "05-examples" / "invoice" / "03-dmn" / "src" / "main" / "resources" / "dmnConfigs"
 
-  private lazy val localDmnPath = os.pwd / "05-examples" / "invoice" / "04-c7-spring" / "src" / "main" / "resources"
+  private lazy val localDmnPath =
+    os.pwd / "05-examples" / "invoice" / "04-c7-spring" / "src" / "main" / "resources"
 
   override def starterConfig: DmnTesterStarterConfig =
     DmnTesterStarterConfig(
@@ -42,8 +43,8 @@ object ProjectDmnTester
   )
 
   case class InvoiceAssignApproverDmnIn(
-                                         invoiceClassification: InvoiceClassification = InvoiceClassification.`day-to-day expense`,
-                           )
+      invoiceClassification: InvoiceClassification = InvoiceClassification.`day-to-day expense`
+  )
 
   object InvoiceAssignApproverDmnIn:
     given Schema[InvoiceAssignApproverDmnIn] = Schema.derived
@@ -61,7 +62,7 @@ object ProjectDmnTester
   private lazy val InvoiceAssignApproverDmnUnit =
     collectEntries(
       decisionDefinitionKey = "example-invoice-c7-assignApprover",
-      in = InvoiceAssignApproverDmnIn(),
+      in = InvoiceAssignApproverDmnIn()
     )
 
 end ProjectDmnTester

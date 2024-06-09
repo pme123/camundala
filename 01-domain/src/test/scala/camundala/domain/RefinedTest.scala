@@ -11,12 +11,14 @@ class RefinedTest extends FunSuite:
   test("Percentage"):
     val p: Percentage = 80
     assertEquals(
-      p.asJson, Json.fromInt(80)
+      p.asJson,
+      Json.fromInt(80)
     )
   test("Iso8601Day"):
     val d: Iso8601Day = "2023-01-04"
     assertEquals(
-      d.asJson, Json.fromString("2023-01-04")
+      d.asJson,
+      Json.fromString("2023-01-04")
     )
   test("Iso8601DateTime"):
     val _: Iso8601DateTime = "2023-01-04T12:12:12Z"
@@ -32,3 +34,4 @@ class RefinedTest extends FunSuite:
   test("Iban"):
     val _: Iban = "CH12 3123 1436 6943 0200 4"
     val _: Iban = "CH1231231436694302004"
+end RefinedTest

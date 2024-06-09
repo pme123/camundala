@@ -1,29 +1,29 @@
 import sbt.*
 import sbt.Keys.*
 
-object Dependencies {
+object Dependencies:
 
   // dependency Versions
   // 00-documentation
   // - Laika Plugin
   // 04-helper
-  val osLibVersion = "0.9.3"
+  val osLibVersion = "0.10.2"
   // 01-domain
-  val tapirVersion = "1.9.11"
-  val openapiCirceVersion = "0.7.3"
-  val ironCirceVersion = "2.4.0"
-  val mUnitVersion = "0.7.29"
+  val openapiCirceVersion = "0.7.4"
+  val tapirVersion = "1.10.8"
+  val ironCirceVersion = "2.5.0"
+  val mUnitVersion = "1.0.0"
   // 02-bpmn
   // -> domain
   // - osLib
   // 03-api
   // -> bpmn
-  val scalaXmlVersion = "2.1.0"
-  val typesafeConfigVersion = "1.4.2"
+  val typesafeConfigVersion = "1.4.3"
+  val scalaXmlVersion = "2.3.0"
   // - mUnitVersion
   // 03-dmn
   // -> bpmn
-  val sttpClient3Version = "3.8.13"
+  val sttpClient3Version = "3.8.16"
   val dmnTesterVersion = "0.17.9"
   // - mUnitVersion
   // 03-simulation
@@ -36,26 +36,25 @@ object Dependencies {
   // --- Implementations
   // 04-worker-c7spring
   // -> worker
-  val camundaVersion = "7.20.0" // external task client
+  val camundaVersion = "7.21.0" // external task client
   val jaxbApiVersion = "2.3.1" // needed by the camunda client 7.20?!
   // - sttpClient3
 
   // --- Experiments
   // 04-c7-spring
   // -> bpmn
-  val camundaSpinVersion = "1.18.1"
+  val camundaSpinVersion = "1.18.5"
   // camunda // server spring-boot
   // 04-c8-spring
   // -> bpmn
-  val springBootVersion = "2.7.15"
-  val zeebeVersion = "8.2.4"
-  val scalaJacksonVersion = "2.14.2"
-  val swaggerOpenAPIVersion = "2.1.20"
+  val scalaJacksonVersion = "2.14.3"
+  val zeebeVersion = "8.5.4"
+  val springBootVersion = "2.7.18"
+  val swaggerOpenAPIVersion = "2.1.22"
   // examples
-  val h2Version = "2.1.214"
+  val h2Version = "2.2.224"
   val twitter4jVersion = "4.1.2"
-  val groovyVersion = "3.0.16"
-
+  val groovyVersion = "3.0.21"
 
   lazy val tapirDependencies = Seq(
     "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
@@ -78,9 +77,9 @@ object Dependencies {
 
   // examples
   val camundaDependencies = Seq(
-    "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude("org.slf4j", "slf4j-api"),
-    "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude("org.slf4j", "slf4j-api"),
-    "io.netty" % "netty-all" % "4.1.73.Final", // needed for Spring Boot Version > 2.5.*
+    "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
+    "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
+    "io.netty" % "netty-all" % "4.1.110.Final", // needed for Spring Boot Version > 2.5.*
     "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
     "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
     // json support
@@ -89,5 +88,5 @@ object Dependencies {
     // groovy support
     "org.codehaus.groovy" % "groovy-jsr223" % groovyVersion,
     "com.h2database" % "h2" % h2Version
-  ) //.map(_.exclude("org.slf4j", "slf4j-api"))
-}
+  ) // .map(_.exclude("org.slf4j", "slf4j-api"))
+end Dependencies

@@ -10,10 +10,10 @@ case class ChangeLogUpdater(
 ):
 
   private def checkForNewCommits: Boolean =
-    if (
+    if
       (!lastVersion.contains(newVersion) && gitLogNew.nonEmpty) || changeLog
         .contains("---DRAFT")
-    ) {
+    then
       println(s"Commits Address: $commitsAddress")
       println(s"lastDate: $lastDate")
       println(s"newVersion: $newVersion")
@@ -21,7 +21,7 @@ case class ChangeLogUpdater(
       println(s"Missing Commits\n: $gitLogNew")
       os.write.over(os.pwd / "CHANGELOG.md", newChangeLog)
       true
-    } else false
+    else false
 
   private lazy val changeLog = os.read(os.pwd / "CHANGELOG.md")
 
@@ -67,21 +67,20 @@ case class ChangeLogUpdater(
       newLine: Seq[String]
   ) =
     result +
-      (if (newLine.last.startsWith("Released Version")) {
+      (if newLine.last.startsWith("Released Version") then
          val vArray = newLine.last.split(" ").last.split('.')
          val newVersionInt =
            vArray.head.toInt * 1000 * 1000 + vArray.tail.head.toInt * 1000 + vArray.last.toInt
          println(s"VERSION new: $newVersionInt - last: $lastVersionInt")
-         if (newVersionInt.compareTo(lastVersionInt) > 0)
+         if newVersionInt.compareTo(lastVersionInt) > 0 then
            s"\n\n## ${newLine.last.replace("Released Version ", "")} - ${newLine.head}\n### Changed"
          else
            "\nEXISTING VERSION" // flag for next lines that this version is already in the Changelog
-       } else {
-         if (result.endsWith("\nEXISTING VERSION"))
-           "" // skip all entries for an existing version
-         else
-           s"\n- ${newLine.last} - see [Commit]($commitsAddress${newLine.tail.head})"
-       })
+       else if result.endsWith("\nEXISTING VERSION") then
+         "" // skip all entries for an existing version
+       else
+         s"\n- ${newLine.last} - see [Commit]($commitsAddress${newLine.tail.head})"
+      )
   end createNewChangelogEntries
 
   private lazy val newChangeLog = lastVersionLine
@@ -105,6 +104,7 @@ case class ChangeLogUpdater(
                    |//---DRAFT end
                    |""".stripMargin)
   end newChangeLog
+end ChangeLogUpdater
 
 object ChangeLogUpdater:
   def verifyChangelog(
@@ -112,7 +112,7 @@ object ChangeLogUpdater:
       // standard for Github
       commitsAddress: String => String = _.replace(".git", "/commit/")
   ): Unit =
-    if (ChangeLogUpdater(newVersion, commitsAddress).checkForNewCommits)
+    if ChangeLogUpdater(newVersion, commitsAddress).checkForNewCommits then
       throw new IllegalStateException(
         "The CHANGELOG is still in a DRAFT version! Please adjust CHANGELOG.md"
       )

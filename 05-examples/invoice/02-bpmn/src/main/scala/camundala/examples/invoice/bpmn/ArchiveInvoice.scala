@@ -10,17 +10,17 @@ object ArchiveInvoice extends BpmnCustomTaskDsl:
   val descr = "Archives the Receipt."
   val companyDescr = ""
 
-  case class  In(
-                  shouldFail: Option[Boolean] = Some(true),
-                )
+  case class In(
+      shouldFail: Option[Boolean] = Some(true)
+  )
   object In:
     given ApiSchema[In] = deriveApiSchema
     given InOutCodec[In] = deriveCodec
   end In
 
   case class Out(
-                  archived: Option[Boolean] = Some(true),
-                )
+      archived: Option[Boolean] = Some(true)
+  )
   object Out:
     given ApiSchema[Out] = deriveApiSchema
     given InOutCodec[Out] = deriveCodec
@@ -35,4 +35,3 @@ object ArchiveInvoice extends BpmnCustomTaskDsl:
     )
 
 end ArchiveInvoice
-
