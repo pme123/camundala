@@ -16,6 +16,9 @@ class ServiceMethodListWorker extends CompanyServiceWorkerDsl[In, Out, NoInput, 
 
   def apiUri(in: In) = uri"https://JustSomeUrl.ch/${in.id}"
 
-  override def outputMapper(serviceOut: ServiceResponse[ServiceOut], in: In): Either[ServiceMappingError, Out] = 
+  override def outputMapper(
+      serviceOut: ServiceResponse[ServiceOut],
+      in: In
+  ): Either[ServiceMappingError, Out] =
     Right(Out(dummies = serviceOut.outputBody))
 end ServiceMethodListWorker

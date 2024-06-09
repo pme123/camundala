@@ -16,14 +16,14 @@ trait EngineContext:
   ): SendRequestType[ServiceOut]
 
   def jsonObjectToEngineObject(
-                                json: JsonObject
-                              ): Map[String, Any] =
+      json: JsonObject
+  ): Map[String, Any] =
     json.toMap
       .map { case (k, v) => k -> jsonToEngineValue(v) }
 
-  def toEngineObject[T <: Product : InOutEncoder](
-                                              product: T
-                                            ): Map[String, Any] =
+  def toEngineObject[T <: Product: InOutEncoder](
+      product: T
+  ): Map[String, Any] =
     product.productElementNames
       .zip(product.productIterator)
       // .filterNot { case _ -> v => v.isInstanceOf[None.type] } // don't send null
@@ -31,22 +31,22 @@ trait EngineContext:
       .toMap
 
   def toEngineObject(
-                      variables: Map[String, Json]
-                    ): Map[String, Any] =
+      variables: Map[String, Json]
+  ): Map[String, Any] =
     variables
       .map { case (k, v) => k -> jsonToEngineValue(v) }
-    
+
   def valuesToEngineObject(
-                      variables: Map[String, Any]
-                    ): Map[String, Any] =
+      variables: Map[String, Any]
+  ): Map[String, Any] =
     variables
       .map { case (k, v) => k -> valueToEngineObject(v) }
 
-  def objectToEngineObject[T <: Product : InOutEncoder](
-                                                    product: T,
-                                                    key: String,
-                                                    value: Any
-                                                  ): Any =
+  def objectToEngineObject[T <: Product: InOutEncoder](
+      product: T,
+      key: String,
+      value: Any
+  ): Any =
     value match
       case None | null => null
       case Some(v) => objectToEngineObject(product, key, v)
@@ -76,7 +76,7 @@ trait EngineContext:
       case other =>
         other
 
-  def domainObjToEngineObject[A <: Product : InOutCodec](variable: A): Any =
+  def domainObjToEngineObject[A <: Product: InOutCodec](variable: A): Any =
     toEngineObject(variable.asJson.deepDropNullValues)
 
   def jsonToEngineValue(json: Json): Any =
@@ -111,19 +111,19 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
   ): SendRequestType[ServiceOut] =
     engineContext.sendRequest(request)
 
-  def toEngineObject[T <: Product : InOutEncoder](
-                                              product: T
-                                            ): Map[String, Any] =
+  def toEngineObject[T <: Product: InOutEncoder](
+      product: T
+  ): Map[String, Any] =
     engineContext.toEngineObject(product)
 
   def toEngineObject(
-                      variables: Map[String, Json]
-                    ): Map[String, Any] =
+      variables: Map[String, Json]
+  ): Map[String, Any] =
     engineContext.toEngineObject(variables)
 
   def jsonObjectToEngineObject(
-                                json: JsonObject
-                              ): Map[String, Any] =
+      json: JsonObject
+  ): Map[String, Any] =
     engineContext.jsonObjectToEngineObject(json)
 
 end EngineRunContext

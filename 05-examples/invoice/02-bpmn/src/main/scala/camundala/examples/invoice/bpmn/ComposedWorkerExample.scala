@@ -10,9 +10,9 @@ object ComposedWorkerExample extends BpmnCustomTaskDsl:
   val descr = "Example to compose Workers."
   val companyDescr = ""
 
-  case class  In(
-                  justDoIt: Option[Boolean] = Some(true),
-                )
+  case class In(
+      justDoIt: Option[Boolean] = Some(true)
+  )
   object In:
     given ApiSchema[In] = deriveApiSchema
     given InOutCodec[In] = deriveCodec
@@ -20,8 +20,8 @@ object ComposedWorkerExample extends BpmnCustomTaskDsl:
 
   case class Out(
       people: Seq[People] = Seq(People()),
-                  success: Boolean = true,
-                )
+      success: Boolean = true
+  )
   object Out:
     given ApiSchema[Out] = deriveApiSchema
     given InOutCodec[Out] = deriveCodec
@@ -36,4 +36,3 @@ object ComposedWorkerExample extends BpmnCustomTaskDsl:
     )
 
 end ComposedWorkerExample
-

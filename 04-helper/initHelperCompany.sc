@@ -1,7 +1,6 @@
+import mainargs.*
 
-import mainargs._
-
-import $ivy.`io.github.pme123:camundala-helper_3:1.29.0-SNAPSHOT compat`, camundala.helper.setup._
+import $ivy.`io.github.pme123:camundala-helper_3:1.29.0-SNAPSHOT compat`, camundala.helper.setup.*
 import camundala.helper.*
 import camundala.helper.util.{RepoConfig, RepoCredentials}
 

@@ -37,6 +37,7 @@ trait ProjectPaths:
 
   def projectPath: Path
   lazy val generatedPath: Path = projectPath / "src" / "main" / "resources"
+end ProjectPaths
 
 trait AsString[A]:
   def asString(v: A): String
@@ -44,5 +45,5 @@ trait AsString[A]:
 given AsString[Boolean] with
   def asString(v: Boolean): String = v.toString
 
-extension(b: Boolean)
+extension (b: Boolean)
   def asString: String = b.toString

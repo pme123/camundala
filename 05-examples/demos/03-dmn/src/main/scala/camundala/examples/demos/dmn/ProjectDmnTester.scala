@@ -15,7 +15,8 @@ object ProjectDmnTester
   private lazy val localDmnConfigPath: os.Path =
     os.pwd / "05-examples" / "demos" / "03-dmn" / "src" / "main" / "resources" / "dmnConfigs"
 
-  private lazy val localDmnPath = os.pwd / "05-examples" / "demos" / "04-c7-spring" / "src" / "main" / "resources"
+  private lazy val localDmnPath =
+    os.pwd / "05-examples" / "demos" / "04-c7-spring" / "src" / "main" / "resources"
 
   override def starterConfig: DmnTesterStarterConfig =
     DmnTesterStarterConfig(
@@ -47,7 +48,9 @@ object ProjectDmnTester
       .testUnit
       .testValues(
         _.letters,
-        "A_dynamic_2", "B", "C"
+        "A_dynamic_2",
+        "B",
+        "C"
       )
   )
 

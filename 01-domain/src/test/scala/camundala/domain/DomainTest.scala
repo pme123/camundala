@@ -7,5 +7,5 @@ class DomainTest extends munit.FunSuite:
       "the-coolDaddy".niceName,
       "The Cool Daddy"
     )
-    
+
 end DomainTest

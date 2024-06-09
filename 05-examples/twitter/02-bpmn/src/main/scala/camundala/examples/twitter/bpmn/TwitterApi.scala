@@ -15,7 +15,7 @@ object TwitterApi extends BpmnProcessDsl:
                  |- content: The content of the Tweet.
                  |""".stripMargin)
   case class CreateTweet(
-      //@description("Variables cannot be described as it is only possible to have one description per type!")
+      // @description("Variables cannot be described as it is only possible to have one description per type!")
       email: String = "me@myself.com",
       content: String = "Test Tweet"
   )
@@ -49,5 +49,4 @@ object TwitterApi extends BpmnProcessDsl:
     in = NoInput(),
     out = ReviewedTweet(false)
   )
-
-
+end TwitterApi

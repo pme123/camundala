@@ -16,11 +16,11 @@ object SimulationTestOverridesExample extends BpmnProcessDsl:
     given InOutCodec[SimpleObject] = deriveCodec
 
   case class InOutput(
-                       simpleValue: String = "hello",
-                       collectionValue: Seq[String] = Seq("hello", "bye"),
-                       objectValue: SimpleObject = SimpleObject(),
-                       objectCollectionValue: Seq[SimpleObject] = Seq(SimpleObject(), SimpleObject("tschau", true)),
-                     )
+      simpleValue: String = "hello",
+      collectionValue: Seq[String] = Seq("hello", "bye"),
+      objectValue: SimpleObject = SimpleObject(),
+      objectCollectionValue: Seq[SimpleObject] = Seq(SimpleObject(), SimpleObject("tschau", true))
+  )
   object InOutput:
     given ApiSchema[InOutput] = deriveApiSchema
     given InOutCodec[InOutput] = deriveCodec
@@ -29,5 +29,5 @@ object SimulationTestOverridesExample extends BpmnProcessDsl:
     in = InOutput(),
     out = InOutput()
   )
-  
+
 end SimulationTestOverridesExample

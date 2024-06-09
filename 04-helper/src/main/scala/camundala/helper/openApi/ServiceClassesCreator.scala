@@ -63,11 +63,17 @@ case class ServiceClassesCreator(
       case _ -> refSch =>
         refSch
 
-  private def createProperties(properties: java.util.Map[String, Schema[?]], required: java.util.List[String]): Seq[ConstrField] =
+  private def createProperties(
+      properties: java.util.Map[String, Schema[?]],
+      required: java.util.List[String]
+  ): Seq[ConstrField] =
     Option(properties)
       .map:
         _.asScala.toSeq.map:
-          case key -> schema => schema.createField(Some(key), optIsRequired = Option(required).map(_.asScala.toSeq.contains(key)))
+          case key -> schema => schema.createField(
+              Some(key),
+              optIsRequired = Option(required).map(_.asScala.toSeq.contains(key))
+            )
       .toSeq
       .flatten
   private lazy val schemas = allSchemas

@@ -188,4 +188,5 @@ case class BpmnProcessGenerator()(using config: SetupConfig):
        |  </bpmndi:BPMNDiagram>
        |</bpmn:definitions>
        |""".stripMargin
+  end bpmn
 end BpmnProcessGenerator
