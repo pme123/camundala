@@ -47,8 +47,8 @@ object Dependencies:
   // camunda // server spring-boot
   // 04-c8-spring
   // -> bpmn
+  val zeebeVersion = "8.5.4"
   val springBootVersion = "2.7.18"
-  val zeebeVersion = "8.2.4"
   val scalaJacksonVersion = "2.14.2"
   val swaggerOpenAPIVersion = "2.1.22"
   // examples
