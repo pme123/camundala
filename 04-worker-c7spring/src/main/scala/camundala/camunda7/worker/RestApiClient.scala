@@ -25,7 +25,7 @@ trait RestApiClient:
       for
         reqWithOptBody <- requestWithOptBody(runnableRequest)
         req <- auth(reqWithOptBody)
-        response = req.send(backend)
+        response <- sendRequest(req)
         statusCode = response.code
         body <- readBody(statusCode, response, req)
         headers = response.headers.map(h => h.name -> h.value).toMap
@@ -33,8 +33,12 @@ trait RestApiClient:
       yield ServiceResponse(out, headers)
     catch
       case ex: Throwable =>
+        val unexpectedError =
+          s"""Unexpected error while sending request: ${ex.getMessage}.
+             | -> $runnableRequest
+             |""".stripMargin
         ex.printStackTrace()
-        Left(ServiceUnexpectedError(ex.getMessage))
+        Left(ServiceUnexpectedError(unexpectedError))
   end sendRequest
 
   protected def readBody(
@@ -56,6 +60,19 @@ trait RestApiClient:
       request: Request[Either[String, String], Any]
   )(using EngineRunContext): Either[ServiceAuthError, Request[Either[String, String], Any]] =
     Right(request)
+
+  protected def sendRequest(
+      request: Request[Either[String, String], Any]) =
+    try
+      Right(request.send(backend))
+    catch
+      case ex: Throwable =>
+        val unexpectedError =
+          s"""Unexpected error while sending request: ${ex.getMessage}.
+             | -> ${request.toCurl(Set("Authorization"))}
+             |""".stripMargin
+        ex.printStackTrace()
+        Left(ServiceUnexpectedError(unexpectedError))
 
   protected def decodeResponse[
       ServiceOut: InOutDecoder // output of service
@@ -79,7 +96,7 @@ trait RestApiClient:
 
   protected def requestWithOptBody[ServiceIn: InOutEncoder](
       runnableRequest: RunnableRequest[ServiceIn]
-  ) =
+  ): Either[ServiceBadBodyError, RequestT[Identity, Either[String, String], Any]] =
     val request =
       requestMethod(
         runnableRequest.httpMethod,
