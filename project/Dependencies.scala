@@ -52,7 +52,7 @@ object Dependencies:
   val scalaJacksonVersion = "2.14.2"
   val swaggerOpenAPIVersion = "2.1.22"
   // examples
-  val h2Version = "2.1.214"
+  val h2Version = "2.2.224"
   val twitter4jVersion = "4.1.2"
   val groovyVersion = "3.0.21"
 
