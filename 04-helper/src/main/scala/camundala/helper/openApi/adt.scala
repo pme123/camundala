@@ -35,7 +35,7 @@ case class BpmnSuperClass(
   lazy val name: String = titleName + versionTag
   lazy val versionTag: String = version.map("V" + _.split('.').head).getOrElse("")
   lazy val versionPackage: String = versionTag.toLowerCase
-  
+
   private lazy val titleName = title
     .replace(' ', '-')
     .split('-')

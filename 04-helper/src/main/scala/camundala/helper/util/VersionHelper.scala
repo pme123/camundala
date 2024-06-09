@@ -21,7 +21,7 @@ case class VersionHelper(
     projectConf: ApiProjectConf,
     repoSearch: (project: String, org: String) => String
 ):
-  
+
   lazy val dependencyVersions: Map[String, String] =
     val deps = projectConf.dependencies
       .map:
@@ -60,9 +60,9 @@ case class VersionHelper(
 
   private def variableName(name: String) = // company-project -> companyProject
     name.split("-").toList match
-    case head :: tail =>
-      head + tail.map(n => n.head.toUpper + n.tail).mkString
-    case other => other
+      case head :: tail =>
+        head + tail.map(n => n.head.toUpper + n.tail).mkString
+      case other => other
 
 end VersionHelper
 
@@ -76,7 +76,9 @@ object VersionHelper:
     val maybeVersion =
       versionRegex.findFirstMatchIn(searchResult.out.text()).map(_.group(1))
     val version = maybeVersion.getOrElse:
-      println(s"${Console.YELLOW_B}NOT FOUND!${Console.RESET} - Result from Maven Central:\n ${searchResult.out.text()}")
+      println(
+        s"${Console.YELLOW_B}NOT FOUND!${Console.RESET} - Result from Maven Central:\n ${searchResult.out.text()}"
+      )
       s"VERSION"
     println(s"- Last Version of $project: $version")
     version

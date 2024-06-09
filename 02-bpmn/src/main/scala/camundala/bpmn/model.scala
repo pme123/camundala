@@ -22,7 +22,7 @@ case class InOutDescr[
   end niceName
   lazy val OldName = """^.+\-(.+\.(post|get|patch|put|delete))$""".r
   lazy val shortName: String = id match
-    case OldName( name, _) =>
+    case OldName(name, _) =>
       name
     case _ =>
       id.split("\\.")

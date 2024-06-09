@@ -1,6 +1,9 @@
 package camundala.examples.demos.simulation
 
-import camundala.examples.demos.bpmn.SimulationTestOverridesExample.{SimpleObject, simulationProcess}
+import camundala.examples.demos.bpmn.SimulationTestOverridesExample.{
+  SimpleObject,
+  simulationProcess
+}
 import camundala.simulation.*
 
 // exampleDemosSimulation/test
@@ -27,3 +30,4 @@ class SimulationTestOverridesExampleSimulation extends DemosSimulation:
       .contains("collectionValue", "bye")
       .contains("objectCollectionValue", SimpleObject())
   )
+end SimulationTestOverridesExampleSimulation

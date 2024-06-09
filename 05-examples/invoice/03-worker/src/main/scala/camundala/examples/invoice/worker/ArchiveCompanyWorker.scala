@@ -7,14 +7,14 @@ import camundala.worker.CustomWorkerDsl
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class ArchiveCompanyWorker 
-  extends CompanyWorkerHandler, // environment specific
+class ArchiveCompanyWorker
+    extends CompanyWorkerHandler, // environment specific
     CustomWorkerDsl[In, Out]: // DSL for this type
 
   lazy val customTask = example
 
   def runWork(
-      inputObject: In,
+      inputObject: In
   ): Either[CustomError, Out] =
     logger.info("Do some crazy things running work...")
     inputObject.shouldFail match
@@ -26,5 +26,7 @@ class ArchiveCompanyWorker
         Left(err)
       case _ =>
         Right(Out(Some(false)))
+    end match
+  end runWork
 
 end ArchiveCompanyWorker

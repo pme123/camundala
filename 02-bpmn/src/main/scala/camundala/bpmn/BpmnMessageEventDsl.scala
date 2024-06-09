@@ -9,18 +9,18 @@ trait BpmnMessageEventDsl extends BpmnDsl:
   def messageName: String
 
   def messageEvent[
-    Msg <: Product : InOutEncoder : InOutDecoder : Schema
+      Msg <: Product: InOutEncoder: InOutDecoder: Schema
   ](
-     in: Msg = NoInput(),
-     id: Option[String] = None,
-   ): MessageEvent[Msg] =
+      in: Msg = NoInput(),
+      id: Option[String] = None
+  ): MessageEvent[Msg] =
     MessageEvent(
       messageName,
       InOutDescr(
         id.getOrElse(messageName),
         in,
         NoOutput(),
-        msgNameDescr(messageName),
+        msgNameDescr(messageName)
       )
     )
 end BpmnMessageEventDsl

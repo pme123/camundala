@@ -11,17 +11,20 @@ trait SUserTaskExtensions extends SimulationHelper:
 
     def getAndComplete()(using data: ScenarioData): ResultType =
       given ScenarioData = data.withTaskId(notSet)
-      for {
+      for
         given ScenarioData <- task()
         given ScenarioData <- checkForm()
-        given ScenarioData <- userTask.waitForSec.map(userTask.waitFor).getOrElse(Right(summon[ScenarioData]))
+        given ScenarioData <-
+          userTask.waitForSec.map(userTask.waitFor).getOrElse(Right(summon[ScenarioData]))
         given ScenarioData <- completeTask()
-      } yield summon[ScenarioData]
+      yield summon[ScenarioData]
+      end for
+    end getAndComplete
 
-    private def task()(using data: ScenarioData): ResultType = {
+    private def task()(using data: ScenarioData): ResultType =
       def getTask(
           processInstanceId: Any
-      )(data: ScenarioData): ResultType = {
+      )(data: ScenarioData): ResultType =
         val uri =
           uri"${config.endpoint}/task?processInstanceId=$processInstanceId"
         val request = basicRequest
@@ -53,13 +56,13 @@ trait SUserTaskExtensions extends SimulationHelper:
                 userTask.tryOrFail(getTask(processInstanceId))
               }
           )
-      }
+      end getTask
 
       val processInstanceId = data.context.processInstanceId
       getTask(processInstanceId)(data.withRequestCount(0))
-    }
+    end task
 
-    def checkForm()(using data: ScenarioData): ResultType = {
+    def checkForm()(using data: ScenarioData): ResultType =
       val processInstanceId = data.context.processInstanceId
       val uri =
         uri"${config.endpoint}/process-instance/$processInstanceId/variables?deserializeValues=false"
@@ -83,12 +86,12 @@ trait SUserTaskExtensions extends SimulationHelper:
             )
         )
         .flatMap(formVariables =>
-          if (
+          if
             checkProps(
               userTask,
               CamundaProperty.from(formVariables)
             )
-          )
+          then
             Right(
               summon[ScenarioData]
                 .info(s"UserTask Form is correct for ${userTask.name}")
@@ -100,7 +103,7 @@ trait SUserTaskExtensions extends SimulationHelper:
               )
             )
         )
-    }
+    end checkForm
 
     private def completeTask()(using data: ScenarioData): ResultType =
       val taskId = data.context.taskId
@@ -132,3 +135,4 @@ trait SUserTaskExtensions extends SimulationHelper:
     end completeTask
 
   end extension
+end SUserTaskExtensions

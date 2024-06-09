@@ -5,18 +5,18 @@ import bpmn.*
 import bpmn.CamundaVariable.*
 import domain.*
 
-
 case class TestOverride(
     key: Option[String],
     overrideType: TestOverrideType,
     value: Option[CamundaVariable] = None
 )
 
-case class TestOverrides(overrides: Seq[TestOverride]): //Seq[TestOverride])
+case class TestOverrides(overrides: Seq[TestOverride]): // Seq[TestOverride])
 
   def :+(testOverride: TestOverride): TestOverrides = TestOverrides(
     overrides :+ testOverride
   )
+end TestOverrides
 
 enum TestOverrideType:
   case Exists, NotExists, IsEquals, HasSize, Contains
@@ -40,6 +40,7 @@ def addOverride[
     case _ =>
       Seq(testOverride)
   TestOverrides(newOverrides)
+end addOverride
 
 object TestOverrides:
   given ApiSchema[TestOverrides] = deriveApiSchema
@@ -95,9 +96,9 @@ trait TestOverrideExtensions:
 
     // used for collections
     def contains[V: InOutEncoder](
-                              key: String,
-                              value: V
-                            ): T =
+        key: String,
+        value: V
+    ): T =
       add(
         Some(key),
         TestOverrideType.Contains,
@@ -121,12 +122,14 @@ trait TestOverrideExtensions:
     ): T =
       withOverride.add(TestOverride(key, overrideType, value))
 
-
     private def camundaVariable[V: InOutEncoder](
-                                             value: V
-                                           ) =
+        value: V
+    ) =
       val v = value match
         case _: scala.reflect.Enum => value
-        case _: (Seq[_] | Product) => value.asJson
+        case _: (Seq[?] | Product) => value.asJson
         case _ => value
       Some(CamundaVariable.valueToCamunda(v))
+    end camundaVariable
+  end extension
+end TestOverrideExtensions
