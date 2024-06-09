@@ -62,7 +62,7 @@ trait BpmnProcessDsl extends BpmnDsl:
       "A singleEntry must look like `case class SingleEntry(result: DmnValueType)`"
     ) */
     dmn(decisionDefinitionKey, in, SingleEntry(out), descr.value)
-    
+
   @deprecated("Use .. extends BpmnDecisionDsl")
   def collectEntries[
       In <: Product: InOutEncoder: InOutDecoder: Schema,

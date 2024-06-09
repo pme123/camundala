@@ -20,6 +20,7 @@ final class SimulationTestFramework extends sbt.testing.Framework:
   ): SimulationRunner =
     println("TestRunner started")
     new SimulationRunner(args, remoteArgs, testClassLoader)
+  end runner
 
 end SimulationTestFramework
 
@@ -27,6 +28,7 @@ object SimulationFingerprint extends sbt.testing.SubclassFingerprint:
   def superclassName(): String = "camundala.simulation.custom.CustomSimulation"
   final def isModule() = false
   final def requireNoArgConstructor() = true
+end SimulationFingerprint
 
 final class SimulationRunner(
     val args: Array[String],
@@ -37,7 +39,7 @@ final class SimulationRunner(
 
   override def tasks(
       taskDefs: Array[sbt.testing.TaskDef]
-  ): Array[sbt.testing.Task] = {
+  ): Array[sbt.testing.Task] =
     taskDefs.map { td =>
       Task(
         td,
@@ -58,44 +60,43 @@ final class SimulationRunner(
             val logLevel = simResults.head._1
             println(
               s"""${logLevel.color}${s"$line START $name $line"
-                .takeRight(maxLine)}${Console.RESET}
-                 |${simResults.reverse.flatMap((sr: (LogLevel, Seq[ScenarioResult])) => sr._2.map(_.log)).mkString("\n")}
+                  .takeRight(maxLine)}${Console.RESET}
+                 |${simResults.reverse.flatMap((sr: (LogLevel, Seq[ScenarioResult])) =>
+                  sr._2.map(_.log)
+                ).mkString("\n")}
                  |${simResults.map(sr => printResult(sr._1, sr._2)).mkString("\n")}
                  |${logLevel.color}${s"$line END $name in $timeInSec sec $line"
-                .takeRight(maxLine)}${Console.RESET}
+                  .takeRight(maxLine)}${Console.RESET}
                  |""".stripMargin
             )
 
             eventHandler.synchronized {
-              eventHandler.handle(new sbt.testing.Event {
+              eventHandler.handle(new sbt.testing.Event:
                 def fullyQualifiedName(): String = td.fullyQualifiedName()
 
                 def throwable(): sbt.testing.OptionalThrowable =
                   sbt.testing.OptionalThrowable()
 
-                def status(): sbt.testing.Status = logLevel match {
+                def status(): sbt.testing.Status = logLevel match
                   case LogLevel.ERROR =>
                     sbt.testing.Status.Failure
                   case _ =>
                     sbt.testing.Status.Success
-                }
 
-                def selector(): sbt.testing.NestedTestSelector = {
+                def selector(): sbt.testing.NestedTestSelector =
                   new sbt.testing.NestedTestSelector(
                     fullyQualifiedName(),
                     "Simulation"
                   )
-                }
 
                 def fingerprint(): sbt.testing.Fingerprint = td.fingerprint()
 
                 def duration(): Long = time
-              })
+              )
             }
           }
       )
     }
-  }
 
   override def done(): String =
     "All Simulations done - see the console above for more information"
@@ -107,8 +108,8 @@ final class SimulationRunner(
     s"""${"-" * maxLine}
        |${level.color}Scenarios with Level $level:${Console.RESET}
        |${scenarioResults
-      .map { scenRes => s"- ${scenRes.name}" }
-      .mkString("\n")}""".stripMargin
+        .map { scenRes => s"- ${scenRes.name}" }
+        .mkString("\n")}""".stripMargin
 
 end SimulationRunner
 
@@ -118,18 +119,18 @@ class Task(
         Seq[sbt.testing.Logger],
         sbt.testing.EventHandler
     ) => Future[Unit]
-) extends sbt.testing.Task {
+) extends sbt.testing.Task:
 
   def tags(): Array[String] = Array()
 
   def execute(
       eventHandler: sbt.testing.EventHandler,
       loggers: Array[sbt.testing.Logger]
-  ): Array[sbt.testing.Task] = {
+  ): Array[sbt.testing.Task] =
     Await.ready(
       runUTestTask(loggers, eventHandler),
       5.minutes
     )
     Array()
-  }
-}
+  end execute
+end Task

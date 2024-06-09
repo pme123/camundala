@@ -7,7 +7,7 @@ import camundala.simulation.*
 // exampleDemosSimulation/testOnly *DecisionResultTypesSimulation
 class DecisionResultTypesSimulation extends DemosSimulation:
 
-  simulate (
+  simulate(
     singleEntryDMN,
     singleResultDMN,
     collectEntriesDMN,
@@ -16,7 +16,7 @@ class DecisionResultTypesSimulation extends DemosSimulation:
     resultListDMNEmptySeq,
     /*  TestOverrides Example*/
     collectEntriesOverride,
-    resultListOverride,
+    resultListOverride
     /* bad cases
     singleResultDMNBadOutput,
     resultListDMNBadOutput,*/
@@ -35,3 +35,4 @@ class DecisionResultTypesSimulation extends DemosSimulation:
       .hasSize(2)
       .contains(ManyOutResult(1, "🤩"))
       .contains(ManyOutResult(2, "😂"))
+end DecisionResultTypesSimulation

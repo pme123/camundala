@@ -11,22 +11,22 @@ trait BpmnDsl:
 
   private[bpmn] def msgNameDescr(messageName: String) =
     Some(s"""
-       |$descr
-       |
-       |- _messageName_: `$messageName`
-       |
-       |---
-       |
-       |$companyDescr
-       |""".stripMargin)
-    
+            |$descr
+            |
+            |- _messageName_: `$messageName`
+            |
+            |---
+            |
+            |$companyDescr
+            |""".stripMargin)
+
   private[bpmn] lazy val defaultDescr =
     Some(s"""
-       |$descr
-       |
-       |---
-       |
-       |$companyDescr
-       |""".stripMargin)
+            |$descr
+            |
+            |---
+            |
+            |$companyDescr
+            |""".stripMargin)
 
 end BpmnDsl

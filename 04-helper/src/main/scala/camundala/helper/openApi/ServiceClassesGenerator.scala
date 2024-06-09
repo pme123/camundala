@@ -26,15 +26,15 @@ case class ServiceClassesGenerator()(using
          |${printDescr(classOrEnum)}
          |${
           classOrEnum match
-          case e: BpmnEnum =>
-            val params = e.cases
-              .collect:
-                case c: BpmnClass =>
-                  c.fields
-              .flatten
-            generateEnum(e) + generateObject(classOrEnum.className, Some(params))
-          case c: BpmnClass =>
-            generateCaseClass(c) + generateObject(classOrEnum.className, Some(c.fields))
+            case e: BpmnEnum =>
+              val params = e.cases
+                .collect:
+                  case c: BpmnClass =>
+                    c.fields
+                .flatten
+              generateEnum(e) + generateObject(classOrEnum.className, Some(params))
+            case c: BpmnClass =>
+              generateCaseClass(c) + generateObject(classOrEnum.className, Some(c.fields))
         }
          |""".stripMargin
 

@@ -422,7 +422,7 @@ case class InOutExample[T <: Product: InOutEncoder: InOutDecoder: Schema](
 ):
   // this function needs to be here as circe does not find theInOutEncoderin the extension method
   def toCamunda: FormVariables = CamundaVariable.toCamunda(example)
-
+end InOutExample
 
 object InOutExample:
 

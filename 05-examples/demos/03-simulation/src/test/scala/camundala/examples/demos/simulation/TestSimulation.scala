@@ -10,3 +10,4 @@ class TestSimulation extends DemosSimulation:
   simulate(
     CamundalaGenerateTestP
   )
+end TestSimulation

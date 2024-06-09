@@ -1,27 +1,25 @@
-import mainargs._
+import mainargs.*
 
-import $ivy.`io.github.pme123:camundala-helper_3:1.15.13 compat`, camundala.helper._
+import $ivy.`io.github.pme123:camundala-helper_3:1.15.13 compat`, camundala.helper.*
 
-/** <pre> Creates a new Release for the client and publishes to
-  * bpf-generic-release:
+/** <pre> Creates a new Release for the client and publishes to bpf-generic-release:
   *
   * amm ./publish-release.sc <VERSION>
   *
-  * # Example SNAPSHOT (only publish to bpf-generic-dev) amm
-  * ./publish-release.sc 0.2.5-SNAPSHOT
+  * # Example SNAPSHOT (only publish to bpf-generic-dev) amm ./publish-release.sc 0.2.5-SNAPSHOT
   *
-  * # Example (publish to bpf-generic-release and GIT Tagging and increasing
-  * Version to next minor Version) amm ./publish-release.sc 0.2.5
+  * # Example (publish to bpf-generic-release and GIT Tagging and increasing Version to next minor
+  * Version) amm ./publish-release.sc 0.2.5
   */
 
 @arg(doc = "> Creates a new Release and publishes to Maven Central")
 @main
-def release(version: String): Unit = {
+def release(version: String): Unit =
   println(s"Publishing camundala: $version")
   ChangeLogUpdater.verifyChangelog(version)
 
   val releaseVersion = """^(\d+)\.(\d+)\.(\d+)(-.*)?$"""
-  if (!version.matches(releaseVersion))
+  if !version.matches(releaseVersion) then
     throw new IllegalArgumentException(
       "Your Version has not the expected format (2.1.2(-SNAPSHOT))"
     )
@@ -31,7 +29,7 @@ def release(version: String): Unit = {
   val isSnapshot = version.contains("-")
   os.proc("sbt", "-J-Xmx3G", "documentation/laikaSite").call()
 
-  if (!isSnapshot) {
+  if !isSnapshot then
     os.proc("sbt", "-J-Xmx3G", "publishSigned").call()
     os.proc("git", "fetch", "--all").call()
     os.proc("git", "commit", "-a", "-m", s"Released Version $version").call()
@@ -42,19 +40,18 @@ def release(version: String): Unit = {
     os.proc("git", "checkout", "develop").call()
     val pattern = """^(\d+)\.(\d+)\.(\d+)$""".r
 
-    val newVersion = version match {
+    val newVersion = version match
       case pattern(major, minor, _) =>
         s"$major.${minor.toInt + 1}.0-SNAPSHOT"
-    }
     replaceVersion(newVersion)
     os.proc("git", "commit", "-a", "-m", s"Init new Version $newVersion").call()
     os.proc("git", "push", "--all").call()
     println(s"Published Version: $version")
-  } else
+  else
     os.proc("sbt", "-J-Xmx3G", "publishLocal").call()
+  end if
+end release
 
-}
-private def replaceVersion(newVersion: String) = {
+private def replaceVersion(newVersion: String) =
   val versionsPath = os.pwd / "version"
   os.write.over(versionsPath, newVersion)
-}

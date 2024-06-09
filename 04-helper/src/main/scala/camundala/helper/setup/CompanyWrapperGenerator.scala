@@ -1,7 +1,7 @@
 package camundala.helper.setup
 
 case class CompanyWrapperGenerator()(using config: SetupConfig):
-  
+
   lazy val generate: Unit =
     createOrUpdate(projectDevPath, helperConfig)
 

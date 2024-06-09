@@ -13,7 +13,7 @@ case class BpmnClassesGenerator()(using
         case key -> content =>
           os.write.over(bpmnPath / s"$key.scala", content)
   end generate
-  
+
   private def generateModel(serviceObj: BpmnServiceObject) =
     val name = serviceObj.className
     val topicName = s"${config.projectTopicName}${superClass.versionTag}"

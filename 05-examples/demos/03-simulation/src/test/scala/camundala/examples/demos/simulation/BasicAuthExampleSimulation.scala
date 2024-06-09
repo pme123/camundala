@@ -8,9 +8,10 @@ import camundala.simulation.custom.*
 // exampleDemosSimulation/testOnly *BasicAuthExampleSimulation
 class BasicAuthExampleSimulation extends BasicSimulationDsl:
 
-  simulate (
+  simulate(
     DateExampleDMN
   )
 
   override implicit def config =
     super.config.withPort(8033)
+end BasicAuthExampleSimulation

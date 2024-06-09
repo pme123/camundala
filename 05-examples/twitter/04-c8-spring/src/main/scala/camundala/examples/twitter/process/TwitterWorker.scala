@@ -8,25 +8,22 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class TwitterWorker :
+class TwitterWorker:
 
   @Autowired
   private var twitterService: TwitterService = null
 
   @JobWorker(`type` = "publish-tweet", autoComplete = true)
   @throws[Exception]
-  def handleTweet(@VariablesAsType variables: ReviewedTweet): Unit = {
+  def handleTweet(@VariablesAsType variables: ReviewedTweet): Unit =
     try twitterService.tweet(variables.tweet)
-    catch {
+    catch
       case ex: DuplicateTweetException =>
         throw new ZeebeBpmnError("duplicateMessage", "Could not post tweet, it is a duplicate.")
-    }
-  }
 
   @JobWorker(`type` = "send-rejection", autoComplete = true)
   @throws[Exception]
-  def sendRejection(@VariablesAsType variables: ReviewedTweet): Unit = {
+  def sendRejection(@VariablesAsType variables: ReviewedTweet): Unit =
     // same thing as above, do data transformation and delegate to real business code / service
     println(s"Sorry Tweet ${variables.tweet} rejected")
-  }
-
+end TwitterWorker
