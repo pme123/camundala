@@ -7,8 +7,7 @@ import io.camunda.zeebe.client.impl.ZeebeObjectMapper
 
 import org.springframework.context.annotation.Bean
 
-
-trait CaseClassJsonMapperConfig :
+trait CaseClassJsonMapperConfig:
   @Bean
   def jsonMapper: JsonMapper =
     new ZeebeObjectMapper(
@@ -16,3 +15,4 @@ trait CaseClassJsonMapperConfig :
         .addModule(DefaultScalaModule)
         .build() :: ClassTagExtensions
     )
+end CaseClassJsonMapperConfig

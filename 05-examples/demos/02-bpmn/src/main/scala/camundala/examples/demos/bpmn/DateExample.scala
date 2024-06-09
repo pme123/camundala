@@ -20,7 +20,8 @@ object DateExample extends BpmnProcessDsl:
   lazy val DateExampleDMN = singleEntry(
     decisionDefinitionKey = "DateExample",
     in = Input(),
-    out = "2012-12-12T12:12:12.000+0100" //Camunda returns String - LocalDateTime.parse("2012-12-12T12:12:12")
+    out =
+      "2012-12-12T12:12:12.000+0100" // Camunda returns String - LocalDateTime.parse("2012-12-12T12:12:12")
   )
 
 end DateExample

@@ -34,7 +34,7 @@ object ReviewInvoice extends BpmnProcessDsl:
   lazy val example =
     process(
       in = In(),
-      out = Out(),
+      out = Out()
     )
 
   object AssignReviewerUT:

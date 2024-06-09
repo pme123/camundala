@@ -10,16 +10,17 @@ trait DmnTesterStarter extends DmnTesterHelpers, App:
   def startDmnTester(): Unit =
     println("Check logs in Docker Console!")
     println(s"Open the browser: http://localhost:${starterConfig.exposedPort}")
-    if (checkIsRunning())
+    if checkIsRunning() then
       println(s"Port ${starterConfig.exposedPort} is running")
     else
       runDocker()
       waitForServer
+    end if
   end startDmnTester
 
   @tailrec
   protected final def waitForServer: Boolean =
-    if (checkIsRunning()) true
+    if checkIsRunning() then true
     else
       println("Waiting for server")
       Thread.sleep(1000)
@@ -64,8 +65,8 @@ trait DmnTesterStarter extends DmnTesterHelpers, App:
       s"STARTING_APP=${getClass.getName}",
       "-e",
       s"TESTER_CONFIG_PATHS=${starterConfig.dmnConfigPaths
-        .map(_.relativeTo(projectBasePath))
-        .mkString(",")}",
+          .map(_.relativeTo(projectBasePath))
+          .mkString(",")}",
       "-v",
       starterConfig.dmnPaths.map(p =>
         s"$p:/opt/docker/${p.relativeTo(projectBasePath)}"
@@ -87,3 +88,5 @@ trait DmnTesterStarter extends DmnTesterHelpers, App:
       "stop",
       starterConfig.containerName
     ).callOnConsole()
+  end stopDocker
+end DmnTesterStarter

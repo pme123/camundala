@@ -9,6 +9,8 @@ object NameOf:
       .replace(")", "") // attributes _.name -> returns name)
     println(s"Variable name: $name")
     Expr(name)
+  end nameOfVariable
 
   def nameOfType[A](using Type[A], Quotes): Expr[String] =
     Expr(Type.show[A])
+end NameOf

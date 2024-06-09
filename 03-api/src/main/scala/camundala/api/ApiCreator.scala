@@ -271,7 +271,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
        |""".stripMargin
 
   protected def postmanDescription: String =
-      s"""
+    s"""
          |**This is for Postman - to have example requests. Be aware the Output is not provided!**
          |
          |$description
@@ -310,7 +310,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
   private def collectApisWithGroup(apiDoc: ApiDoc): List[(InOutApi[?, ?], String)] =
     apiDoc.apis.foldLeft(List.empty[(InOutApi[?, ?], String)]) {
       case (result, groupedApi: ProcessApi[?, ?]) =>
-        result ++ (groupedApi.apis :+ groupedApi ).map(_ -> groupedApi.name)
+        result ++ (groupedApi.apis :+ groupedApi).map(_ -> groupedApi.name)
       case (result, groupedApi: GroupedApi) =>
         result ++ groupedApi.apis.map(_ -> groupedApi.name)
       case (result, _) =>

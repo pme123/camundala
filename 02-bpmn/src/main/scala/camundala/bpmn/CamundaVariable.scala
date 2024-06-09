@@ -64,7 +64,7 @@ object CamundaVariable:
       .zip(product.productIterator)
       .map:
         case k -> v =>
-            k -> objectToCamunda(product, k, v)
+          k -> objectToCamunda(product, k, v)
       .toMap
 
   @tailrec
@@ -87,11 +87,10 @@ object CamundaVariable:
       case v: (Product | Iterable[?] | Map[?, ?]) =>
         product.asJson.deepDropNullValues.hcursor
           .downField(key)
-          .as[Json] match {
-            case Right(str) if str.isString => CString(str.asString.get) // Pure Enum!
-            case Right(v) => CJson(v.toString)
-            case Left(ex) => throwErr(s"$key of $v could NOT be Parsed to a JSON!\n$ex")
-          }
+          .as[Json] match
+          case Right(str) if str.isString => CString(str.asString.get) // Pure Enum!
+          case Right(v) => CJson(v.toString)
+          case Left(ex) => throwErr(s"$key of $v could NOT be Parsed to a JSON!\n$ex")
 
       case v =>
         valueToCamunda(v)
@@ -125,6 +124,7 @@ object CamundaVariable:
     val value: Null = null
 
     private val `type`: String = "String"
+  end CNull
   case class CString(value: String, private val `type`: String = "String")
       extends CamundaVariable
   case class CInteger(value: Int, private val `type`: String = "Integer")
@@ -182,7 +182,7 @@ object CamundaVariable:
   def jsonToCamundaValue(json: Json): JsonToCamundaValue =
 
     val folder: Json.Folder[JsonToCamundaValue] =
-      new Json.Folder[JsonToCamundaValue] {
+      new Json.Folder[JsonToCamundaValue]:
         def onNull: CamundaVariable = CNull
 
         def onBoolean(value: Boolean): CamundaVariable = CBoolean(value)
@@ -213,7 +213,6 @@ object CamundaVariable:
                 case _: (Map[?, ?] | Seq[?]) => CJson(v.toString)
               )
             )
-      }
     json.foldWith(folder)
 
   end jsonToCamundaValue
