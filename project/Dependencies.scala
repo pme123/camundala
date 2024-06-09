@@ -54,7 +54,7 @@ object Dependencies:
   // examples
   val h2Version = "2.1.214"
   val twitter4jVersion = "4.1.2"
-  val groovyVersion = "3.0.16"
+  val groovyVersion = "3.0.21"
 
   lazy val tapirDependencies = Seq(
     "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
