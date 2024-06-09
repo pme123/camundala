@@ -12,7 +12,7 @@ trait DmnConfigWriter extends DmnTesterHelpers:
 
   def updateConfig(dmnConfig: DmnConfig, configPath: os.Path): Unit =
     val encodedPath =
-      URLEncoder.encode(configPath.relativeTo(projectBasePath).toString, StandardCharsets.UTF_8.name())
+      URLEncoder.encode(configPath.relativeTo(projectBasePath).toString, StandardCharsets.UTF_8)
     client.send(
       basicRequest
         .contentType("application/json")

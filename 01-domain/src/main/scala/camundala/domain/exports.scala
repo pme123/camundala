@@ -275,7 +275,7 @@ end extension
 def prettyUriString(uri: Uri) =
   URLDecoder.decode(
     uri.toString,
-    Charset.defaultCharset().name()
+    Charset.defaultCharset()
   )
 def prettyString(obj: Any, depth: Int = 0, paramName: Option[String] = None): String =
   val indent = "  " * depth
