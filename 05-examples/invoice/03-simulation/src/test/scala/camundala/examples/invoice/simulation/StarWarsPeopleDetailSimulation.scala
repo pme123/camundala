@@ -44,7 +44,7 @@ class StarWarsPeopleDetailSimulation extends CustomSimulation:
     scenario(`Star Wars Api People Detail outputMock handled`),
     scenario(`Star Wars Api People Detail outputServiceMock handled - not possible`),
     scenario(`Star Wars Api People Detail outputServiceMock handled 400`),
-    scenario(`Star Wars Api People Detail validation-failed handled`),
+    scenario(`Star Wars Api People Detail validation-failed handled`)
   )
 
   override implicit def config =

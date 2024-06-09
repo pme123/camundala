@@ -6,10 +6,7 @@ import domain.*
 import camundala.bpmn.CamundaVariable.CJson
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.api.response.{
-  ProcessInstanceEvent,
-  ProcessInstanceResult
-}
+import io.camunda.zeebe.client.api.response.{ProcessInstanceEvent, ProcessInstanceResult}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.{HttpStatus, ResponseEntity}
 import scala.jdk.CollectionConverters.*
@@ -48,7 +45,7 @@ trait RestEndpoint extends Validator:
       processId: String,
       startObj: CreateProcessInstanceIn[In, Out]
   ): Either[String, ProcessInstanceEvent | ProcessInstanceResult] =
-    try {
+    try
       val command =
         zeebeClient.newCreateInstanceCommand
           .bpmnProcessId(processId)
@@ -60,7 +57,7 @@ trait RestEndpoint extends Validator:
               .asJava
           )
       val endCommand =
-        if (startObj.fetchVariables.isEmpty) command
+        if startObj.fetchVariables.isEmpty then command
         else {
           val fetchedVariables = startObj.fetchVariables.get.getDeclaredFields
             .map(_.getName)
@@ -71,11 +68,10 @@ trait RestEndpoint extends Validator:
             .fetchVariables(fetchedVariables)
         }
       Right(endCommand.send.join)
-    } catch {
+    catch
       case ex: Throwable =>
         ex.printStackTrace()
         Left(s"Problem starting the Process: ${ex.getMessage}")
-    }
 
   end start
 
@@ -109,3 +105,4 @@ trait RestEndpoint extends Validator:
           .body(s"${errorMsg.getMessage} in body:\n${process.getVariables}")
 
   end extractBody
+end RestEndpoint

@@ -16,22 +16,21 @@ trait CreatorHelper:
         optDescr: Option[String] = None,
         optIsRequired: Option[Boolean] = None,
         optExample: Option[AnyRef] = None,
-        optExamples: Option[java.util.Map[String, Example]] = None,
-
+        optExamples: Option[java.util.Map[String, Example]] = None
     ): ConstrField =
       val fromType = extractType(optKey.getOrElse("fieldKeyFromType"))
       val tpe = fromType.head.toUpper + fromType.tail
       val key = optKey.getOrElse(tpe.head.toLower + tpe.tail)
       val isOptional: Boolean =
         (Option(schema.getNullable), optIsRequired) match
-        case Some(opt) -> _ => opt
-        case _ -> Some(req) => !req
-        case _ -> _ => true
+          case Some(opt) -> _ => opt
+          case _ -> Some(req) => !req
+          case _ -> _ => true
 
       val wrapperType = config.typeMapping.get(schema.getType) match
-      case Some("Set") => Some(WrapperType.Set)
-      case Some("Seq") => Some(WrapperType.Seq)
-      case _ => None
+        case Some("Set") => Some(WrapperType.Set)
+        case Some("Seq") => Some(WrapperType.Seq)
+        case _ => None
 
       val enumCases = Option(schema.getEnum)
         .map:
@@ -75,21 +74,21 @@ trait CreatorHelper:
 
     def extractType(key: String): String =
       config.typeMapping.get(schema.getType) match
-      case Some(value) if Seq("Seq", "Set").contains(value) =>
-        schema.getItems.extractType(s"$key.items")
-      case Some(value) =>
-        schema.getFormat match
-        case "int64" => "Long"
-        case "date-time" => "LocalDateTime"
-        case "date" => "LocalDate"
-        case _ if schema.getMaximum != null && schema.getMaximum.longValue() > Int.MaxValue =>
-          "Long"
-        case _ => value
-      case None if schema.get$ref() != null =>
-        refType
-      case None =>
-        println(s"Unsupported Type: $key - ${schema.get$ref()} - ${schema.getType}")
-        config.typeMapping("AnyType")
+        case Some(value) if Seq("Seq", "Set").contains(value) =>
+          schema.getItems.extractType(s"$key.items")
+        case Some(value) =>
+          schema.getFormat match
+            case "int64" => "Long"
+            case "date-time" => "LocalDateTime"
+            case "date" => "LocalDate"
+            case _ if schema.getMaximum != null && schema.getMaximum.longValue() > Int.MaxValue =>
+              "Long"
+            case _ => value
+        case None if schema.get$ref() != null =>
+          refType
+        case None =>
+          println(s"Unsupported Type: $key - ${schema.get$ref()} - ${schema.getType}")
+          config.typeMapping("AnyType")
     end extractType
 
     protected def refType: String =

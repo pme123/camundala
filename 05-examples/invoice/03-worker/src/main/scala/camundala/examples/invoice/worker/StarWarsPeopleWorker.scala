@@ -22,5 +22,6 @@ class StarWarsPeopleWorker extends CompanyServiceWorkerDsl[In, Out, NoInput, Ser
     val people = serviceOut.outputBody.results
       .filter(_.height.toInt > in.heightMoreThanInCm.getOrElse(0))
     Right(Out.Success(people))
+  end outputMapper
 
 end StarWarsPeopleWorker

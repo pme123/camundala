@@ -8,13 +8,14 @@ trait ServiceMethodServices extends BpmnServiceTaskDsl:
   val serviceLabel: String = "TEST SERVICES for Service Methods"
   val serviceVersion: String = "0.1"
   val companyDescr = ""
+end ServiceMethodServices
 
 object ServiceMethodDeleteApi extends ServiceMethodServices:
 
   final val topicName = "service-method-delete"
   val descr = "Delete Dummy - mocking test"
   val path: String = "DELETE /services/method"
-  
+
   type ServiceIn = NoInput
   type ServiceOut = NoOutput
   lazy val serviceInExample = NoInput()
@@ -54,7 +55,7 @@ object ServiceMethodDeleteApi extends ServiceMethodServices:
       defaultServiceOutMock = serviceMock,
       serviceInExample = serviceInExample
     )
-  
+
 end ServiceMethodDeleteApi
 
 object ServiceMethodListApi extends ServiceMethodServices:

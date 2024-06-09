@@ -14,7 +14,7 @@ trait ApiDsl extends ApiBaseDsl:
   // converters
   given [
       In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
+      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag
   ]: Conversion[Process[In, Out], ProcessApi[In, Out]] =
     process => ProcessApi(nameOfVariable(process), process)
 

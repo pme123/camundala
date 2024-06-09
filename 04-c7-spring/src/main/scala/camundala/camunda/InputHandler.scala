@@ -12,3 +12,5 @@ abstract class InputHandler[T <: Product: InOutCodec]
     new ExecutionEntity().getProcessInstanceId
     validate(execution)
     mockOrProceed(execution)
+  end notify
+end InputHandler

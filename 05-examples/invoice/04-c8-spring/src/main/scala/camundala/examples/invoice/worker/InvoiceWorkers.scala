@@ -5,12 +5,10 @@ import io.camunda.zeebe.spring.client.annotation.{JobWorker, VariablesAsType}
 import org.springframework.stereotype.Component
 
 @Component
-class InvoiceWorkers :
+class InvoiceWorkers:
 
   @JobWorker(`type` = "invoice-archive", autoComplete = true)
   @throws[Exception]
-  def archiveInvoice(@VariablesAsType variables: InvoiceReceipt.In): Unit = {
+  def archiveInvoice(@VariablesAsType variables: InvoiceReceipt.In): Unit =
     println(s"INVOICE ARCHIVED: ${variables.invoiceNumber}")
-  }
-
-
+end InvoiceWorkers
