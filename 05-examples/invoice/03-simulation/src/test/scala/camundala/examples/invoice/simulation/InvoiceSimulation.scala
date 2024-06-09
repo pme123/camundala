@@ -60,7 +60,7 @@ class InvoiceSimulation extends CustomSimulation:
     scenario(InvoiceAssignApproverDMN2),
     incidentScenario(
       BadValidationP,
-      "DecodingFailure at .creditor: Got value 'null' with wrong type, expecting string"
+      "- DecodingFailure at .creditor: Missing required field"
     ),
     // mocking
     scenario(`Invoice Receipt mocked invoiceReviewed`)(

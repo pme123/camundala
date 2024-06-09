@@ -5,11 +5,11 @@ import xerial.sbt.Sonatype.autoImport.sonatypeRepository
 
 import scala.util.Using
 
-object Settings:
+object Settings {
 
   lazy val projectVersion =
     Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
-  val scala3Version = "3.3.3"
+  val scala3Version = "3.4.2"
   val org = "io.github.pme123"
 
   def projectSettings(projName: String) = Seq(
@@ -21,8 +21,9 @@ object Settings:
       //   "-Xmax-inlines:50", // is declared as erased, but is in fact used
       //   "-Wunused:imports"
     ),
-    javacOptions ++= Seq("-source", "17", "-target", "17")
+    javacOptions ++= Seq("-source", "21", "-target", "21")
   )
+
   lazy val unitTestSettings = Seq(
     libraryDependencies += "org.scalameta" %% "munit" % mUnitVersion % Test,
     testFrameworks += new TestFramework("munit.Framework")
@@ -84,4 +85,4 @@ object Settings:
         "sttp.tapir",
         "sttp.tapir.json.circe"
       ).mkString(start = "-Yimports:", sep = ",", end = "")
-end Settings
+}

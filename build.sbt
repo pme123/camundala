@@ -173,7 +173,7 @@ lazy val camunda7Worker = project
     libraryDependencies ++= Seq(
       sttpDependency,
       "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion,
-      "javax.xml.bind" % "jaxb-api" % jaxbApiVersion
+      "jakarta.xml.bind" % "jakarta.xml.bind-api" % jaxbApiVersion
     )
   )
   .dependsOn(worker)
@@ -413,7 +413,7 @@ val olderVersions = config.getList("releases.older").asScala
 val versions = Versions
   .forCurrentVersion(
     Version(currentVersion, currentVersion)
-      .withLabel(if released then "Stable" else "Dev")
+      .withLabel(if(released) "Stable" else "Dev")
   ).withOlderVersions(olderVersions.map(_.unwrapped().toString).map(v => Version(v, v))*)
 lazy val exampleMyCompany = project
   .in(file("./05-examples/myCompany"))
