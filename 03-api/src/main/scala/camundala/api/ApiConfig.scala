@@ -97,8 +97,8 @@ case class ApiConfig(
 
   def refIdentShort(refIdent: String, projectName: String): String =
     projectsConfig.refIdentShort(refIdent, companyId, projectName)
-    
-  lazy val projectConfPath: Path = basePath / projectsConfig.projectConfPath  
+
+  lazy val projectConfPath: Path = basePath / projectsConfig.projectConfPath
 end ApiConfig
 
 case class ProjectsConfig(

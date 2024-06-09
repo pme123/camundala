@@ -16,8 +16,14 @@ class LocalDateTimeDecoderTest extends FunSuite:
 
   test("Date format ISO Format"):
     val date = "2024-04-23T14:54:19.505854264Z".asJson.as[LocalDateTime]
-    assert(date.toOption.get.toString.endsWith(":54:19.505854264")) // problem with other system time on CI
+    assert(
+      date.toOption.get.toString.endsWith(":54:19.505854264")
+    ) // problem with other system time on CI
 
   test("Date format bad"):
     val date = "2024-04-23T14:54:19.xyz".asJson.as[LocalDateTime]
-    assertEquals(date.left.toOption.get.toString, "DecodingFailure at : Could not parse LocalDateTime from 2024-04-23T14:54:19.xyz")
+    assertEquals(
+      date.left.toOption.get.toString,
+      "DecodingFailure at : Could not parse LocalDateTime from 2024-04-23T14:54:19.xyz"
+    )
+end LocalDateTimeDecoderTest

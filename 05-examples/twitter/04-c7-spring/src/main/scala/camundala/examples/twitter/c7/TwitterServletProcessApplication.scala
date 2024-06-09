@@ -8,8 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 @EnableProcessApplication
 class TwitterServletProcessApplication
 
-object TwitterServletProcessApplication :
+object TwitterServletProcessApplication:
 
   def main(args: Array[String]): Unit =
-      SpringApplication.run(classOf[TwitterServletProcessApplication], args*)
-
+    SpringApplication.run(classOf[TwitterServletProcessApplication], args*)
+end TwitterServletProcessApplication
