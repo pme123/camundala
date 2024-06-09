@@ -81,12 +81,12 @@ case class BpmnGenerator()(using config: SetupConfig):
        |  lazy val example = ${
         if label == "Decision" then
           """singleResult( // singleEntry or collectEntries or  or resultList
-             |    In(),
-             |    Out() // Seq[Out] for collectEntries or  or resultList""".stripMargin
+            |    In(),
+            |    Out() // Seq[Out] for collectEntries or  or resultList""".stripMargin
         else
           s"""${label.head.toLower + label.tail}(
              |    In(),
-             |    ${if isProcess then "Out.Success" else "Out" }()""".stripMargin
+             |    ${if isProcess then "Out.Success" else "Out"}()""".stripMargin
       }    ${
         if label == "ServiceTask" then
           s""",
@@ -199,22 +199,23 @@ case class BpmnGenerator()(using config: SetupConfig):
             |""".stripMargin
         else ""
       }
-      |${if isProcess then
-    """  enum Out:
-      |    case Success(
-      |        //TODO output variables
-      |        processStatus: ProcessEndStatus = ProcessEndStatus.succeeded
-      |    )
-      |
-      |    case NotValid(
-      |        processStatus: NotValidStatus = NotValidStatus.notValid,
-      |        validationErrors: Seq[ValidationError] = Seq(ValidationError())
-      |    )
-      |  end Out""".stripMargin
-  else """  case class Out(
-         |    //TODO output variables
-         |  )""".stripMargin
-  }
+      |${
+        if isProcess then
+          """  enum Out:
+            |    case Success(
+            |        //TODO output variables
+            |        processStatus: ProcessEndStatus = ProcessEndStatus.succeeded
+            |    )
+            |
+            |    case NotValid(
+            |        processStatus: NotValidStatus = NotValidStatus.notValid,
+            |        validationErrors: Seq[ValidationError] = Seq(ValidationError())
+            |    )
+            |  end Out""".stripMargin
+        else """  case class Out(
+              |    //TODO output variables
+              |  )""".stripMargin
+      }
       |  object Out:
       |    given ApiSchema[Out] = deriveApiSchema
       |    given InOutCodec[Out] = deriveInOutCodec"""

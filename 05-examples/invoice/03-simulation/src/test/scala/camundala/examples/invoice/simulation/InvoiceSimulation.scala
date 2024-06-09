@@ -102,7 +102,8 @@ class InvoiceSimulation extends CustomSimulation:
     `Invoice Receipt with Review`
       .withIn(InvoiceReceipt.In(inConfig =
         Some(InvoiceReceipt.InConfig(
-          invoiceReviewedMock = Some(ReviewInvoice.Out())))
+          invoiceReviewedMock = Some(ReviewInvoice.Out())
+        ))
       ))
 
   private lazy val ApproveInvoiceUT = InvoiceReceipt.ApproveInvoiceUT.example

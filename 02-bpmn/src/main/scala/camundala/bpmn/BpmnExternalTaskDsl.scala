@@ -5,19 +5,20 @@ import camundala.domain.*
 trait BpmnExternalTaskDsl extends BpmnDsl:
 
   def topicName: String
-      
+
 trait BpmnCustomTaskDsl extends BpmnExternalTaskDsl:
   def customTask[
-    In <: Product : InOutEncoder : InOutDecoder : Schema,
-    Out <: Product : InOutEncoder : InOutDecoder : Schema
+      In <: Product: InOutEncoder: InOutDecoder: Schema,
+      Out <: Product: InOutEncoder: InOutDecoder: Schema
   ](
-     in: In = NoInput(),
-     out: Out = NoOutput(),
-   ): CustomTask[In, Out] =
+      in: In = NoInput(),
+      out: Out = NoOutput()
+  ): CustomTask[In, Out] =
     CustomTask(
       InOutDescr(topicName, in, out, Some(descr))
     )
-    
+end BpmnCustomTaskDsl
+
 trait BpmnServiceTaskDsl extends BpmnExternalTaskDsl:
 
   def path: String
@@ -33,7 +34,7 @@ trait BpmnServiceTaskDsl extends BpmnExternalTaskDsl:
       in: In,
       out: Out,
       defaultServiceOutMock: MockedServiceResponse[ServiceOut],
-      serviceInExample: ServiceIn,
+      serviceInExample: ServiceIn
   ): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     ServiceTask(
       InOutDescr(topicName, in, out, Some(description(serviceInExample, defaultServiceOutMock))),
@@ -80,5 +81,3 @@ trait BpmnServiceTaskDsl extends BpmnExternalTaskDsl:
         |---
         |""".stripMargin
 end BpmnServiceTaskDsl
-
-

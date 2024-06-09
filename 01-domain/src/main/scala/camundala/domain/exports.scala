@@ -49,11 +49,9 @@ inline def deriveEnumInOutCodec[A](using inline A: Mirror.SumOf[A]): InOutCodec[
   Configuration.default // .withDefaults
     .withoutDiscriminator)
 
-/**
- * Decodes a JSON value into a value of type `T`.
- * It will collect all DecodingFailures and create a nice error message.
- * This is not the case when using ..as[MyType]
- */
+/** Decodes a JSON value into a value of type `T`. It will collect all DecodingFailures and create a
+  * nice error message. This is not the case when using ..as[MyType]
+  */
 def customDecodeAccumulating[T](c: HCursor)(using InOutDecoder[T]): Either[DecodingFailure, T] =
   summon[InOutDecoder[T]].decodeAccumulating(c).toEither
     .left.map:
@@ -67,7 +65,7 @@ def customDecodeAccumulating[T](c: HCursor)(using InOutDecoder[T]): Either[Decod
             ),
           c.history
         )
-          
+
 // Tapir encoding / decoding
 export sttp.tapir.Schema.annotations.description
 
@@ -135,6 +133,7 @@ trait GenericServiceIn:
   def shortServiceName: String =
     serviceName.split("\\.")
       .last
+end GenericServiceIn
 case class FileInOut(
     fileName: String,
     @description("The content of the File as a Byte Array.")

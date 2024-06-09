@@ -2,24 +2,23 @@ package camundala.api
 package docs
 
 case class DependencyLinkCreator()(using
-                                   val apiConfig: ApiConfig,
-                                   val configs: Seq[ApiProjectConf],
-) extends DependencyCreator {
+    val apiConfig: ApiConfig,
+    val configs: Seq[ApiProjectConf]
+) extends DependencyCreator:
 
-  def createIndex(dependencyGraph: String): Unit = {
+  def createIndex(dependencyGraph: String): Unit =
     val indexPage = create("Valiant Process Documentation", dependencyGraph)
     os.write.over(apiConfig.basePath / "src" / "docs" / "index.md", indexPage)
-  }
 
-  def createDependencies(dependencyGraph: String): Unit = {
+  def createDependencies(dependencyGraph: String): Unit =
     val depPage = create("Dependencies Overview", dependencyGraph)
     os.write.over(
       apiConfig.basePath / "src" / "docs" / "overviewDependencies.md",
       depPage
     )
-  }
+  end createDependencies
 
-  private def create(title: String, dependencyGraph: String): String = {
+  private def create(title: String, dependencyGraph: String): String =
     val packages: Seq[Package] = configs
       .groupBy(_.name)
       .map { case _ -> v =>
@@ -31,11 +30,11 @@ case class DependencyLinkCreator()(using
       s"""
          |## ${projectGroup.name}
          |${packages
-        .filter(p => apiConfig.projectsConfig.hasProjectGroup(p.name, projectGroup))
-        .map { co =>
-          s"""- **${co.name}** [API Doc](../${co.name}/OpenApi.html "${co.name} API Documentation") - [Dependencies](./dependencies/${co.name}.html "${co.name} Dependencies")"""
-        }
-        .mkString("\n")}
+          .filter(p => apiConfig.projectsConfig.hasProjectGroup(p.name, projectGroup))
+          .map { co =>
+            s"""- **${co.name}** [API Doc](../${co.name}/OpenApi.html "${co.name} API Documentation") - [Dependencies](./dependencies/${co.name}.html "${co.name} Dependencies")"""
+          }
+          .mkString("\n")}
          |""".stripMargin
 
     s"""
@@ -52,9 +51,8 @@ case class DependencyLinkCreator()(using
        |$printColorLegend
        |
        |${apiConfig.projectGroups.map { group =>
-      linkGroup(group)
-    }.mkString("\n")}
+        linkGroup(group)
+      }.mkString("\n")}
        |""".stripMargin
-  }
-
-}
+  end create
+end DependencyLinkCreator

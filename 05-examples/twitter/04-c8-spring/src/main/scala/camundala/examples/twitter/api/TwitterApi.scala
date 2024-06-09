@@ -25,13 +25,14 @@ object TwitterApi extends BpmnProcessDsl:
     in = Tweet(),
     out = ReviewedTweet(approved = false)
   )
+end TwitterApi
 
 @description("Every employee may create a Tweet.")
 case class Tweet(
-                  tweet: String = "Hello Tweet",
-                  author: String = "pme123",
-                  boss: String = "Great Master"
-                )
+    tweet: String = "Hello Tweet",
+    author: String = "pme123",
+    boss: String = "Great Master"
+)
 
 object Tweet:
   given ApiSchema[Tweet] = deriveApiSchema
@@ -39,11 +40,11 @@ object Tweet:
 
 @description("Every Tweet has to be accepted by the Boss.")
 case class ReviewedTweet(
-                          tweet: String = "Hello Tweet",
-                          author: String = "pme123",
-                          boss: String = "Great Master",
-                          approved: Boolean = false
-                        )
+    tweet: String = "Hello Tweet",
+    author: String = "pme123",
+    boss: String = "Great Master",
+    approved: Boolean = false
+)
 
 object ReviewedTweet:
   given ApiSchema[ReviewedTweet] = deriveApiSchema
@@ -51,18 +52,18 @@ object ReviewedTweet:
 
 @description("Every Tweet has to be accepted by the Boss.")
 case class TweetOut(
-                          tweet: String = "Hello Tweet",
-                          author: String = "pme123",
-                          boss: String = "Great Master",
-                          endStatus: EndStatus = EndStatus.published
-                        )
+    tweet: String = "Hello Tweet",
+    author: String = "pme123",
+    boss: String = "Great Master",
+    endStatus: EndStatus = EndStatus.published
+)
 
-enum EndStatus :
+enum EndStatus:
   case published, notPublished
 object EndStatus:
   given ApiSchema[EndStatus] = deriveApiSchema
   given InOutCodec[EndStatus] = deriveEnumInOutCodec
-  
+
 object TweetOut:
   given ApiSchema[TweetOut] = deriveApiSchema
   given InOutCodec[TweetOut] = deriveCodec

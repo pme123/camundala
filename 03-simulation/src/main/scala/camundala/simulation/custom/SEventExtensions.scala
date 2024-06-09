@@ -8,12 +8,12 @@ import sttp.client3.*
 trait SEventExtensions extends SimulationHelper:
 
   extension (sEvent: SEvent)
-    def loadVariable()(using data: ScenarioData): ResultType = {
+    def loadVariable()(using data: ScenarioData): ResultType =
       val variableName = sEvent.readyVariable
       val readyValue = sEvent.readyValue
       def loadVariable(
           processInstanceId: Any
-      )(data: ScenarioData): ResultType = {
+      )(data: ScenarioData): ResultType =
         val uri =
           uri"${config.endpoint}/history/variable-instance?variableName=$variableName&processInstanceId=$processInstanceId&deserializeValues=false"
         val request = basicRequest
@@ -28,7 +28,7 @@ trait SEventExtensions extends SimulationHelper:
             .downField("value")
             .as[Json]
             .flatMap { value =>
-              if (value.toString == readyValue.toString)
+              if value.toString == readyValue.toString then
                 Right(
                   data
                     .info(
@@ -48,7 +48,7 @@ trait SEventExtensions extends SimulationHelper:
               sEvent.tryOrFail(loadVariable(processInstanceId))
             }
         )
-      }
+      end loadVariable
 
       val processInstanceId = data.context.processInstanceId
       loadVariable(processInstanceId)(
@@ -56,7 +56,6 @@ trait SEventExtensions extends SimulationHelper:
           .debug(s"Load - Wait for $variableName with ready value: $readyValue")
           .withRequestCount(0)
       )
-    }
 
   end extension
 
@@ -64,21 +63,21 @@ trait SEventExtensions extends SimulationHelper:
     def event = sEvent.inOut
 
     def sendMessage()(using ScenarioData): ResultType =
-      for {
+      for
         // default: try until it returns status 200
         given ScenarioData <- sEvent.optReadyVariable
           .map(_ => sEvent.loadVariable())
           .getOrElse(Right(summon[ScenarioData]))
         given ScenarioData <- sendMsg()
-      } yield summon[ScenarioData]
+      yield summon[ScenarioData]
 
-    def sendMsg()(using data: ScenarioData): ResultType = {
+    def sendMsg()(using data: ScenarioData): ResultType =
       def correlate()(data: ScenarioData): ResultType =
         val processInstanceId: Option[String] =
-          if (sEvent.processInstanceId) Some(data.context.processInstanceId)
+          if sEvent.processInstanceId then Some(data.context.processInstanceId)
           else None
         val tenant = // only set if there is no processInstanceId
-          if (sEvent.processInstanceId) None
+          if sEvent.processInstanceId then None
           else summon[SimulationConfig[?]].tenantId
         val body = CorrelateMessageIn(
           messageName = event.messageName,
@@ -112,20 +111,20 @@ trait SEventExtensions extends SimulationHelper:
           }
       end correlate
       correlate()(data.withRequestCount(0))
-    }
+    end sendMsg
   end extension // SReceiveMessageEvent
 
   extension (sEvent: SSignalEvent)
     def event = sEvent.inOut
     def sendSignal()(using ScenarioData): ResultType =
-      for {
+      for
         given ScenarioData <- sEvent.loadVariable()
         given ScenarioData <- sndSgnl()
-      } yield summon[ScenarioData]
+      yield summon[ScenarioData]
 
     private def sndSgnl()(using
         data: ScenarioData
-    ): ResultType = {
+    ): ResultType =
       val body = SendSignalIn(
         name = event.messageName,
         variables = Some(event.camundaInMap)
@@ -141,7 +140,7 @@ trait SEventExtensions extends SimulationHelper:
       runRequest(request, s"Signal '${sEvent.name}' sent")((_, data) =>
         Right(data)
       )
-    }
+    end sndSgnl
   end extension // SReceiveSignalEvent
 
   extension (sEvent: STimerEvent)
@@ -149,19 +148,21 @@ trait SEventExtensions extends SimulationHelper:
     def getAndExecute()(using data: ScenarioData): ResultType =
       given ScenarioData = data.withTaskId(notSet)
 
-      for {
+      for
         // default it waits until there is a job ready
         given ScenarioData <- sEvent.optReadyVariable
           .map(_ => sEvent.loadVariable())
           .getOrElse(Right(summon[ScenarioData]))
         given ScenarioData <- job()
         given ScenarioData <- executeTimer()
-      } yield summon[ScenarioData]
+      yield summon[ScenarioData]
+      end for
+    end getAndExecute
 
-    private def job()(using data: ScenarioData): ResultType = {
+    private def job()(using data: ScenarioData): ResultType =
       def getJob(
           processInstanceId: Any
-      )(data: ScenarioData): ResultType = {
+      )(data: ScenarioData): ResultType =
         val uri =
           uri"${config.endpoint}/job?processInstanceId=$processInstanceId"
         val request = basicRequest
@@ -194,20 +195,20 @@ trait SEventExtensions extends SimulationHelper:
                 sEvent.tryOrFail(getJob(processInstanceId))
               }
           )
-      }
+      end getJob
 
       val processInstanceId = data.context.processInstanceId
       getJob(processInstanceId)(data.withRequestCount(0))
-    }
+    end job
 
     private def executeTimer()(using ScenarioData): ResultType =
-      for {
+      for
         given ScenarioData <- execEvent()
-      } yield summon[ScenarioData]
+      yield summon[ScenarioData]
 
     private def execEvent()(using
         data: ScenarioData
-    ): ResultType = {
+    ): ResultType =
 
       val uri = uri"${config.endpoint}/job/${data.context.jobId}/execute"
 
@@ -219,7 +220,7 @@ trait SEventExtensions extends SimulationHelper:
       runRequest(request, s"Timer '${sEvent.name}' sent")((_, data) =>
         Right(data)
       )
-    }
+    end execEvent
   end extension // SReceiveTimerEvent
 
 end SEventExtensions

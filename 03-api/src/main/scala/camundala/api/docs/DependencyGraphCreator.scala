@@ -8,23 +8,21 @@ case class DependencyGraphCreator()(using
     val configs: Seq[ApiProjectConf]
 ) extends DependencyCreator:
 
-  def createIndex: String = {
+  def createIndex: String =
     create(
       configs,
       pack =>
         s"""|   click ${pack.name} href "../${pack.name}/OpenApi.html" "${pack.name} API Documentation""""
     )
-  }
 
-  def createDependencies(using configs: Seq[ApiProjectConf]): String = {
+  def createDependencies(using configs: Seq[ApiProjectConf]): String =
     create(
       configs,
       pack =>
         s"""|   click ${pack.name} href "./dependencies/${pack.name}.html" "${pack.name} Dependencies""""
     )
-  }
 
-  def createProjectDependencies(using configs: Seq[ApiProjectConf]): Unit = {
+  def createProjectDependencies(using configs: Seq[ApiProjectConf]): Unit =
     val graphsForProjects = treeForEachProjects(configs)
     graphsForProjects.foreach(g =>
       write.over(
@@ -32,12 +30,12 @@ case class DependencyGraphCreator()(using
         g.graph
       )
     )
-  }
+  end createProjectDependencies
 
   private def create(
-                      versionedConfigs: Seq[ApiProjectConf],
-                      link: Package => String
-  ): String = {
+      versionedConfigs: Seq[ApiProjectConf],
+      link: Package => String
+  ): String =
     val configs = versionedConfigs
       .groupBy(_.name)
       .map { case _ -> v => v.maxBy(_.version) }
@@ -47,67 +45,67 @@ case class DependencyGraphCreator()(using
       s"""
          |    subgraph ${projectGroup.name}
          |    ${configs
-        .filter(p => apiConfig.projectsConfig.hasProjectGroup(p.name, projectGroup))
-        .map { co =>
-          s"${co.name}(${co.name})"
-        }
-        .mkString(" & ")}
+          .filter(p => apiConfig.projectsConfig.hasProjectGroup(p.name, projectGroup))
+          .map { co =>
+            s"${co.name}(${co.name})"
+          }
+          .mkString(" & ")}
          |    end
          |    """.stripMargin
 
     s"""
        |flowchart TB
        |${configs
-      .map { config =>
-        val color = colorMap.getOrElse(config.name, "#fff")
-        val depConfig = getUniqueDependencies(config, configs)
-        val tree =
-          if (depConfig.nonEmpty)
-            s"${config.name} --> ${depConfig
-               .map(d => d.name)
-               .mkString(" & ")}"
-          else config.name
-        s"""
-       |   $tree
-       |   ${link(Package(config.name, config.minorVersion))}
-       |   style ${config.name} fill:$color
-       |""".stripMargin
-      }
-      .mkString("\n")}
+        .map { config =>
+          val color = colorMap.getOrElse(config.name, "#fff")
+          val depConfig = getUniqueDependencies(config, configs)
+          val tree =
+            if depConfig.nonEmpty then
+              s"${config.name} --> ${depConfig
+                  .map(d => d.name)
+                  .mkString(" & ")}"
+            else config.name
+          s"""
+             |   $tree
+             |   ${link(Package(config.name, config.minorVersion))}
+             |   style ${config.name} fill:$color
+             |""".stripMargin
+        }
+        .mkString("\n")}
        |${apiConfig.projectGroups
-      .map { group =>
-        subgraph(group)
-      }
-      .mkString("\n\n")}
+        .map { group =>
+          subgraph(group)
+        }
+        .mkString("\n\n")}
        |$groupStyles
        |""".stripMargin
-  }
+  end create
 
   private def treeForEachProjects(
       configs: Seq[ApiProjectConf]
-  ): Seq[ProjectTree] = {
+  ): Seq[ProjectTree] =
     val groupedConfigs = configs.groupBy(_.name)
     groupedConfigs.map { case name -> gConfigs =>
       val trees = toPackageTree(gConfigs, configs)
       ProjectTree(name, treeForEachProject(trees))
     }.toSeq
-  }
+  end treeForEachProjects
 
   case class PackageTree(
       mainPackage: Package,
       fromPackages: Seq[Package],
       toPackages: Seq[Package]
-  ) {
+  ):
     lazy val allTrees: Seq[Package] =
       mainPackage +: (fromPackages ++ toPackages)
-  }
+  end PackageTree
 
   case class ProjectTree(name: String, graph: String)
 
   private def toPackageTree(
-                             configs: Seq[ApiProjectConf],
-                             allConfigs: Seq[ApiProjectConf]
-  ): Seq[PackageTree] = {
+      configs: Seq[ApiProjectConf],
+      allConfigs: Seq[ApiProjectConf]
+  ): Seq[PackageTree] =
     configs.map { c =>
       val mainPackage = Package(c.name, c.minorVersion)
       val fromPackages = allConfigs
@@ -125,9 +123,8 @@ case class DependencyGraphCreator()(using
       println(s"toPackages: $toPackages")
       PackageTree(mainPackage, fromPackages, toPackages)
     }
-  }
 
-  private def treeForEachProject(packageTrees: Seq[PackageTree]) = {
+  private def treeForEachProject(packageTrees: Seq[PackageTree]) =
     val packageName = packageTrees.head.mainPackage.name
     val trees = packageTrees.map(treeForEachVersion)
     s"""
@@ -137,31 +134,31 @@ case class DependencyGraphCreator()(using
        |_**[API Documentation](../../$packageName/OpenApi.html)**_
        |
        |${trees
-      .sortBy(_._1.versionNumber)
-      .reverse
-      .map { case pack -> treeAsStr =>
-        s"""## ${pack.show}
-       |
-       |${printGraph(treeAsStr)}
-       |""".stripMargin
-      }
-      .mkString}
+        .sortBy(_._1.versionNumber)
+        .reverse
+        .map { case pack -> treeAsStr =>
+          s"""## ${pack.show}
+             |
+             |${printGraph(treeAsStr)}
+             |""".stripMargin
+        }
+        .mkString}
        |$printColorLegend
        |""".stripMargin
-  }
+  end treeForEachProject
 
-  private def treeForEachVersion(packageTree: PackageTree) = {
+  private def treeForEachVersion(packageTree: PackageTree) =
     val mainPackage = packageTree.mainPackage
 
     def subgraph(projectGroup: ProjectGroup) =
       s"""
          |    subgraph ${projectGroup.name}
          |    ${packageTree.allTrees.distinct
-        .filter(p => apiConfig.projectsConfig.hasProjectGroup(p.name, projectGroup))
-        .map { p =>
-          p.showRect
-        }
-        .mkString(" & ")}
+          .filter(p => apiConfig.projectsConfig.hasProjectGroup(p.name, projectGroup))
+          .map { p =>
+            p.showRect
+          }
+          .mkString(" & ")}
          |    end
          |    """.stripMargin
 
@@ -169,37 +166,41 @@ case class DependencyGraphCreator()(using
       s"""
          |flowchart TB
          |${s"""
-         |    ${packageTree.fromPackages.map(_.show).mkString(" & ")} ${if (
+              |    ${packageTree.fromPackages.map(_.show).mkString(" & ")} ${
+               if
                  packageTree.fromPackages.nonEmpty
-               ) "-->"
-               else ""}
-         |    ${mainPackage.show} ${if (packageTree.toPackages.nonEmpty) "-->"
-               else ""}
-         |    ${packageTree.toPackages.map(_.show).mkString(" & ")}
-         |""".stripMargin}
+               then "-->"
+               else ""
+             }
+              |    ${mainPackage.show} ${
+               if packageTree.toPackages.nonEmpty then "-->"
+               else ""
+             }
+              |    ${packageTree.toPackages.map(_.show).mkString(" & ")}
+              |""".stripMargin}
          |${apiConfig.projectGroups
-        .map { group =>
-          subgraph(group)
-        }
-        .mkString("\n")}
+          .map { group =>
+            subgraph(group)
+          }
+          .mkString("\n")}
          |
          |$groupStyles
          |
          |${packageTree.allTrees.map { pT =>
-        val color = colorMap.getOrElse(pT.name, "#fff")
-        s"""
-         |    click ${pT.show} href "./${pT.name}.html#${pT.show}" "${pT.name} Dependencies"
-         |    style ${pT.show} fill:$color
-         |""".stripMargin
-      }.mkString}
+          val color = colorMap.getOrElse(pT.name, "#fff")
+          s"""
+             |    click ${pT.show} href "./${pT.name}.html#${pT.show}" "${pT.name} Dependencies"
+             |    style ${pT.show} fill:$color
+             |""".stripMargin
+        }.mkString}
 
          |""".stripMargin
-  }
+  end treeForEachVersion
 
   private def getUniqueDependencies(
-                                     toCheckConfig: ApiProjectConf,
-                                     configs: Seq[ApiProjectConf]
-  ) = {
+      toCheckConfig: ApiProjectConf,
+      configs: Seq[ApiProjectConf]
+  ) =
     val configsToCheck = configs.filter { c =>
       toCheckConfig.dependencies.exists(_.name == c.name)
 
@@ -211,7 +212,7 @@ case class DependencyGraphCreator()(using
         .exists(d => dep.name == d.name)
     }
     filteredConfigs
-  }
+  end getUniqueDependencies
 
   private def groupStyles =
     apiConfig.projectGroups

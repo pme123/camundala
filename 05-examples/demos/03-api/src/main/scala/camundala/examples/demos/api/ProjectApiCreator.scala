@@ -60,3 +60,4 @@ object ProjectApiCreator extends DefaultApiCreator:
       TimerExample.timer
     )
   )
+end ProjectApiCreator
