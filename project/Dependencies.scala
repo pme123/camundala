@@ -18,7 +18,7 @@ object Dependencies:
   // - osLib
   // 03-api
   // -> bpmn
-  val scalaXmlVersion = "2.1.0"
+  val scalaXmlVersion = "2.3.0"
   val typesafeConfigVersion = "1.4.2"
   // - mUnitVersion
   // 03-dmn
