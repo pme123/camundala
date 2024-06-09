@@ -11,7 +11,7 @@ object Dependencies:
   // 01-domain
   val tapirVersion = "1.9.11"
   val openapiCirceVersion = "0.7.3"
-  val ironCirceVersion = "2.4.0"
+  val ironCirceVersion = "2.5.0"
   val mUnitVersion = "1.0.0"
   // 02-bpmn
   // -> domain
