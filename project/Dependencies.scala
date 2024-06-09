@@ -7,7 +7,7 @@ object Dependencies:
   // 00-documentation
   // - Laika Plugin
   // 04-helper
-  val osLibVersion = "0.9.3"
+  val osLibVersion = "0.10.2"
   // 01-domain
   val openapiCirceVersion = "0.7.4"
   val tapirVersion = "1.10.8"
