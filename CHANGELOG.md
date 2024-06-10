@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.21 - 2024-06-10
+### Changed 
+- Redone Scala Version. - see [Commit](https://github.com/pme123/camundala/commit/4a1f091965ef9ce4e2b67c88b2257907d6ef7f54)
+
 ## 1.29.20 - 2024-06-10
 ### Changed 
 - Redone charset.name - see [Commit](https://github.com/pme123/camundala/commit/81820b91ded96c4f36b813ba83422c701be4c3e2)
