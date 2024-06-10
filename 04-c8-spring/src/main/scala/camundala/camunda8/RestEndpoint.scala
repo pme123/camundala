@@ -58,7 +58,7 @@ trait RestEndpoint extends Validator:
           )
       val endCommand =
         if startObj.fetchVariables.isEmpty then command
-        else {
+        else
           val fetchedVariables = startObj.fetchVariables.get.getDeclaredFields
             .map(_.getName)
             .toList
@@ -66,7 +66,6 @@ trait RestEndpoint extends Validator:
           command
             .withResult()
             .fetchVariables(fetchedVariables)
-        }
       Right(endCommand.send.join)
     catch
       case ex: Throwable =>

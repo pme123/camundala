@@ -294,7 +294,7 @@ trait SScenarioExtensions extends SStepExtensions:
                 s"${Console.MAGENTA}${"#" * 7} Scenario '${scenario.name}'  IGNORED ${"#" * 7}${Console.RESET}"
               )
           )
-        else {
+        else
           val data = ScenarioData(scenario.name)
             .info(s"${"#" * 7} Scenario '${scenario.name}' ${"#" * 7}")
           body(data)
@@ -311,7 +311,6 @@ trait SScenarioExtensions extends SStepExtensions:
                     .currentTimeMillis() - startTime} ms ${"*" * 6}${Console.RESET}"
               )
             )
-        }
         end if
       }
     end logScenario

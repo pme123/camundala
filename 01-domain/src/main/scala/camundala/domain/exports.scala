@@ -46,9 +46,10 @@ inline def deriveInOutDecoder[A](discriminator: String)(using
     .withDiscriminator(discriminator))
 
 inline def deriveEnumInOutCodec[A](using inline A: Mirror.SumOf[A]): InOutCodec[A] =
-  /*io.circe.derivation.ConfiguredEnumCodec.*/derived(using
-  Configuration.default // .withDefaults
-    .withoutDiscriminator)
+  /*io.circe.derivation.ConfiguredEnumCodec.*/ derived(using
+    Configuration.default // .withDefaults
+      .withoutDiscriminator
+  )
 
 //TODO workaround for bug in circe 0.14.7 - see https://discord.com/channels/632277896739946517/877550996191084554/1249352889042997338
 inline def derived[A](using conf: Configuration)(using Mirror.SumOf[A]): ConfiguredEnumCodec[A] =

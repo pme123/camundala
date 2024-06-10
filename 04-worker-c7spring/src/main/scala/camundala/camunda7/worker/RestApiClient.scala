@@ -62,7 +62,8 @@ trait RestApiClient:
     Right(request)
 
   protected def sendRequest(
-      request: Request[Either[String, String], Any]) =
+      request: Request[Either[String, String], Any]
+  ) =
     try
       Right(request.send(backend))
     catch

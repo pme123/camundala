@@ -413,8 +413,8 @@ val olderVersions = config.getList("releases.older").asScala
 val versions = Versions
   .forCurrentVersion(
     Version(currentVersion, currentVersion)
-      .withLabel(if(released) "Stable" else "Dev")
-  ).withOlderVersions(olderVersions.map(_.unwrapped().toString).map(v => Version(v, v))*)
+      .withLabel(if (released) "Stable" else "Dev")
+  ).withOlderVersions(olderVersions.map(_.unwrapped().toString).map(v => Version(v, v)) *)
 lazy val exampleMyCompany = project
   .in(file("./05-examples/myCompany"))
   .settings(projectSettings("example-exampleDemos"))
