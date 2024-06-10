@@ -219,6 +219,7 @@ case class WorkerGenerator()(using config: SetupConfig):
 
   private lazy val applicationYaml =
     s"""# DO NOT ADJUST. This file is replaced by `amm helper.sc update`.
+       |spring.application.name: ${config.projectName}-worker
        |
        |server:
        |  port: 8093
