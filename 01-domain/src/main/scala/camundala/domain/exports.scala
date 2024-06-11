@@ -46,19 +46,8 @@ inline def deriveInOutDecoder[A](discriminator: String)(using
     .withDiscriminator(discriminator))
 
 inline def deriveEnumInOutCodec[A](using inline A: Mirror.SumOf[A]): InOutCodec[A] =
-  /*io.circe.derivation.ConfiguredEnumCodec.*/derived(using
-  Configuration.default // .withDefaults
-    .withoutDiscriminator)
-
-//TODO workaround for bug in circe 0.14.7 - see https://discord.com/channels/632277896739946517/877550996191084554/1249352889042997338
-inline def derived[A](using conf: Configuration)(using Mirror.SumOf[A]): ConfiguredEnumCodec[A] =
-  val decoder = ConfiguredEnumDecoder.derived[A]
-  val encoder = ConfiguredEnumEncoder.derived[A]
-  new ConfiguredEnumCodec[A]:
-    override def apply(c: HCursor): Decoder.Result[A] = decoder(c)
-
-    override def apply(a: A): Json = encoder(a)
-end derived
+  given Configuration = Configuration.default
+  io.circe.derivation.ConfiguredEnumCodec.derived[A]
 
 /** Decodes a JSON value into a value of type `T`. It will collect all DecodingFailures and create a
   * nice error message. This is not the case when using ..as[MyType]
