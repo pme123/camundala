@@ -30,7 +30,6 @@ trait PostmanApiCreator extends AbstractApiCreator:
           cApi.createPostman(cApi.name, true)
       end match
 
-    end extension
   end extension
 
   extension (cApi: CApi)
