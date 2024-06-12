@@ -64,6 +64,8 @@ case class GenericFileGenerator()(using config: SetupConfig):
        |/.ammonite/
        |/.metals/
        |/.vscode/
+       |/.scala-build/
+       |/.vscode/settings.json
        |/.templUpdate/
        |/.camunda/element-templates/dependencies/
        |
