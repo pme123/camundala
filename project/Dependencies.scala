@@ -43,7 +43,7 @@ object Dependencies:
   // --- Experiments
   // 04-c7-spring
   // -> bpmn
-  val camundaSpinVersion = "1.18.5"
+  val camundaSpinVersion = "1.23.0"
   // camunda // server spring-boot
   // 04-c8-spring
   // -> bpmn
