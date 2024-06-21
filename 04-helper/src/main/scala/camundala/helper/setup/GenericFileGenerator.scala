@@ -9,6 +9,8 @@ case class GenericFileGenerator()(using config: SetupConfig):
     createOrUpdate(config.projectDir / ".gitignore", gitignore)
     createOrUpdate(config.projectDir / "helper.sc", helperSc)
     createIfNotExists(config.projectDir / "CHANGELOG.md", changeLog)
+    createOrUpdate(config.projectDir / ".run" / "WorkerTestApp.run.xml", workerTestAppIntellij)
+    createOrUpdate(config.projectDir / ".vscode" / "launch.json", workerTestAppVsCode)
   end generate
 
   private lazy val scalafmt =
@@ -99,4 +101,45 @@ case class GenericFileGenerator()(using config: SetupConfig):
        |and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
        |
        |""".stripMargin
+
+  private lazy val workerTestAppIntellij =
+    s"""|<!-- DO NOT ADJUST. This file is replaced by `amm helper.sc update` -->
+        |<component name="ProjectRunConfigurationManager">
+        |  <configuration default="false" name="WorkerTestApp" type="Application" factoryName="Application" nameIsGenerated="true">
+        |    <envs>
+        |      <env name="BPF_GATEWAY_URL" value="https://localhost:51051" />
+        |      <env name="FSSO_BASE_URL" value="http://host.lima.internal:8090/auth" />
+        |    </envs>
+        |    <option name="MAIN_CLASS_NAME" value="${config.projectPackage}.worker.WorkerTestApp" />
+        |    <module name="${config.projectName}.${config.projectName}-worker" />
+        |    <extension name="coverage">
+        |      <pattern>
+        |        <option name="PATTERN" value="${config.projectPackage}.worker.*" />
+        |        <option name="ENABLED" value="true" />
+        |      </pattern>
+        |    </extension>
+        |    <method v="2">
+        |      <option name="Make" enabled="true" />
+        |    </method>
+        |  </configuration>
+        |</component>
+        |""".stripMargin
+  private lazy val workerTestAppVsCode =
+    s"""|// DO NOT ADJUST. This file is replaced by `amm helper.sc update`.
+        |{
+        |    "version": "2.0.0",
+        |    "configurations": [
+        |
+        |        {
+        |            "type": "scala",
+        |            "request": "launch",
+        |            "name": "WorkerTestApp",
+        |            "mainClass": "${config.projectPackage}.worker.WorkerTestApp",
+        |            "args": [],
+        |            "jvmOptions": [],
+        |            "env": { "BPF_GATEWAY_URL": "https://localhost:51051", "FSSO_BASE_URL": "http://host.lima.internal:8090/auth"},
+        |        }
+        |    ]
+        |}
+        |""".stripMargin
 end GenericFileGenerator
