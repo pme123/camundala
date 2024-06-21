@@ -9,6 +9,8 @@ case class GenericFileGenerator()(using config: SetupConfig):
     createOrUpdate(config.projectDir / ".gitignore", gitignore)
     createOrUpdate(config.projectDir / "helper.sc", helperSc)
     createIfNotExists(config.projectDir / "CHANGELOG.md", changeLog)
+    os.makeDir.all(config.projectDir / ".run")
+    os.makeDir.all(config.projectDir / ".vscode")
     createOrUpdate(config.projectDir / ".run" / "WorkerTestApp.run.xml", workerTestAppIntellij)
     createOrUpdate(config.projectDir / ".vscode" / "launch.json", workerTestAppVsCode)
   end generate
