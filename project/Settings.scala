@@ -5,7 +5,7 @@ import xerial.sbt.Sonatype.autoImport.sonatypeRepository
 
 import scala.util.Using
 
-object Settings {
+object Settings:
 
   lazy val projectVersion =
     Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
@@ -85,4 +85,4 @@ object Settings {
         "sttp.tapir",
         "sttp.tapir.json.circe"
       ).mkString(start = "-Yimports:", sep = ",", end = "")
-}
+end Settings

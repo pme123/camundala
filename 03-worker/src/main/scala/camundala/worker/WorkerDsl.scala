@@ -115,8 +115,8 @@ trait ServiceWorkerDsl[
   // optional
   protected def method: Method = Method.GET
   protected def querySegments(in: In): Seq[QuerySegmentOrParam] =
-    Seq.empty // input must be valid - so no errors
-      // mocking out from outService and headers
+  Seq.empty // input must be valid - so no errors
+  // mocking out from outService and headers
   protected def inputMapper(in: In): Option[ServiceIn] = None // input must be valid - so no errors
   protected def inputHeaders(in: In): Map[String, String] =
     Map.empty // input must be valid - so no errors
@@ -204,9 +204,12 @@ private trait InitProcessDsl[
         val json = config.asJson
         config.productElementNames
           .map(k =>
-            k -> (json.hcursor
-              .downField(k).focus, defaultJson.hcursor
-              .downField(k).focus)
+            k -> (
+              json.hcursor
+                .downField(k).focus,
+              defaultJson.hcursor
+                .downField(k).focus
+            )
           ).collect {
             case k -> (Some(j), Some(dj)) if j.isNull =>
               k -> dj

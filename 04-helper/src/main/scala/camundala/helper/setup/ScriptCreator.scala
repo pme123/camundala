@@ -113,7 +113,8 @@ case class ScriptCreator()(using config: SetupConfig):
   private lazy val reposConfig = config.reposConfig
   private lazy val versionHelper = CompanyVersionHelper(companyName, reposConfig.repoSearch)
   private lazy val helperImport =
-    s"""import $$ivy.`$companyName:$companyName-camundala-helper_3:${versionHelper.companyCamundalaVersion} compat`"""
+    s"""import $$ivy.`$companyName:$companyName-camundala-helper_3:${versionHelper
+        .companyCamundalaVersion} compat`"""
   private lazy val helperHeader =
     s"""/* $doNotAdjust. This file is replaced by `amm helper.sc update`.
        |
