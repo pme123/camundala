@@ -48,9 +48,9 @@ class StarWarsPeopleDetailSimulation extends CustomSimulation:
   )
 
   override implicit def config =
-    super.config
-      .withPort(8034)
-    //  .withLogLevel(LogLevel.DEBUG)
+  super.config
+    .withPort(8034)
+  //  .withLogLevel(LogLevel.DEBUG)
 
   private lazy val `Star Wars Api People Detail` = example
 

@@ -71,7 +71,8 @@ trait DmnScenarioExtensions extends SScenarioExtensions:
               else
                 Left(
                   summon[ScenarioData].error(
-                    s"The ${expected.decisionResultType} did not match, \n- expected: ${expected.toCamunda} \n- result: ${result.head.head._2}"
+                    s"The ${expected.decisionResultType} did not match, \n- expected: ${expected
+                        .toCamunda} \n- result: ${result.head.head._2}"
                   )
                 )
           yield summon[ScenarioData]
@@ -94,7 +95,8 @@ trait DmnScenarioExtensions extends SScenarioExtensions:
               else
                 Left(
                   summon[ScenarioData].error(
-                    s"The ${expected.decisionResultType} did not match, \n- expected: ${expected.toCamunda} \n- result: ${result.head}"
+                    s"The ${expected.decisionResultType} did not match, \n- expected: ${expected
+                        .toCamunda} \n- result: ${result.head}"
                   )
                 )
           yield summon[ScenarioData]
