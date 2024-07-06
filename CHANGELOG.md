@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.23 - 2024-07-06
+### Changed 
+- Updated Versions - see [Commit](https://github.com/pme123/camundala/commit/9835c82254deff34737b4583b99f032c5774d127)
+- Take input variables to override InConfig variables. - see [Commit](https://github.com/pme123/camundala/commit/56308e9e67968395f37e7bff307b62c3ff228204)
+- Makedir added for app runner. - see [Commit](https://github.com/pme123/camundala/commit/f9c43b03c153b561a6ce21239123a56176c27bfa)
+
 ## 1.29.22 - 2024-06-21
 ### Changed 
 - Added Generator for WorkerTestApp runner for intellij and vscode. - see [Commit](https://github.com/pme123/camundala/commit/ed4883b951cbea6a2cae8516497d46f9e95d4627)
