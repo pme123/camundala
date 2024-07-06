@@ -74,6 +74,7 @@ end GenericExternalTask
 trait WithConfig[InConfig <: Product: InOutCodec]:
   def inConfig: Option[InConfig]
   def defaultConfig: InConfig
+  lazy val defaultConfigAsJson: Json = defaultConfig.asJson
 
 case class NoInConfig()
 

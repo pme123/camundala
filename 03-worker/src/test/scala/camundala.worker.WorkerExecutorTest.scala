@@ -1,0 +1,65 @@
+package camundala.worker
+
+import camundala.bpmn.GeneralVariables
+import camundala.bpmn.BpmnProcessDsl
+import camundala.domain.*
+import camundala.bpmn.WithConfig
+import camundala.worker.CamundalaWorkerError.*
+
+class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
+
+  def descr: String = "myDescr"
+  def companyDescr: String = "myCompany"
+
+  given EngineRunContext = EngineRunContext(new EngineContext {
+    override def getLogger(clazz: Class[?]): WorkerLogger = ???
+    override def toEngineObject: Json => Any = ???
+    override def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](request: RunnableRequest[ServiceIn]): SendRequestType[ServiceOut] = ???
+
+  }, GeneralVariables())
+
+  def processName: String = "test-process"
+  def example = process(In(), NoOutput())
+  def worker = InitWorker(example)
+
+  case class In(aValue: String = "ok", inConfig: Option[InConfig] = None)
+      extends WithConfig[InConfig]:
+    def defaultConfig: InConfig = InConfig()
+
+  object In:
+    given InOutCodec[In] = deriveInOutCodec[In]
+    given ApiSchema[In] = deriveApiSchema[In]
+
+  case class InConfig(
+      requiredValue: String = "required",
+      optionalValue: Option[String] = None
+  )
+
+  object InConfig:
+    given InOutCodec[InConfig] = deriveInOutCodec[InConfig]
+    given ApiSchema[InConfig] = deriveApiSchema[InConfig]
+
+  lazy val executor = WorkerExecutor(worker)
+
+  test("InputValidator WithConfig override InConfig"):
+    assertEquals(
+        executor.InputValidator.validate(Seq(Right("aValue" -> Some(Json.fromString("ok"))),
+        Right("inConfig" -> Some(Json.obj("requiredValue" -> Json.fromString("aso")))))),
+        Right(In(inConfig = Some(InConfig(requiredValue = "aso"))))
+    )
+  test("InputValidator WithConfig default InConfig"):
+    assertEquals(
+        executor.InputValidator.validate(Seq(Right("aValue" -> Some(Json.fromString("ok"))))),
+        Right(In(inConfig = Some(InConfig())))
+    )
+  test("InputValidator WithConfig override InConfig in In"):
+    assertEquals(
+        executor.InputValidator.validate(Seq(Right("aValue" -> Some(Json.fromString("ok"))),
+        Right("requiredValue" -> Some(Json.fromString("aso"))),
+        Right("optionalValue" -> Some(Json.fromString("nei"))),
+        )
+        ),
+        Right(In(inConfig = Some(InConfig(requiredValue = "aso", optionalValue = Some("nei")))))
+    )
+
+end WorkerExecutorTest

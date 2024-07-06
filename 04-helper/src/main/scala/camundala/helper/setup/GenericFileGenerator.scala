@@ -67,7 +67,6 @@ case class GenericFileGenerator()(using config: SetupConfig):
        |/.bloop/
        |/.ammonite/
        |/.metals/
-       |/.vscode/
        |/.scala-build/
        |/.vscode/settings.json
        |/.templUpdate/

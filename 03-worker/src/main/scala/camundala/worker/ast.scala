@@ -33,6 +33,13 @@ sealed trait Worker[
         .map:
           _.flatMap(_.productElementNames)
         .toSeq.flatten).distinct
+
+  def inConfigVariableNames: Seq[String] =
+    in match
+      case i: WithConfig[?] =>
+          i.defaultConfig.productElementNames.toSeq
+      case _ => Seq.empty
+
   def defaultMock(in: In)(using
       context: EngineRunContext
   ): MockerError | MockedOutput =
