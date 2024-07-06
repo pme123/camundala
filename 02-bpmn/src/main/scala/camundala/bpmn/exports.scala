@@ -6,8 +6,6 @@ import camundala.domain.*
 import scala.compiletime.{constValue, constValueTuple}
 import scala.reflect.Enum
 
-val camundaVersion = "7.15"
-
 // sttp
 export sttp.model.StatusCode
 

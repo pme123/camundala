@@ -10,8 +10,8 @@ object Dependencies {
   val osLibVersion = "0.10.2"
   // 01-domain
   val openapiCirceVersion = "0.10.0"
-  val tapirVersion = "1.10.8"
-  val ironCirceVersion = "2.5.0"
+  val tapirVersion = "1.10.12"
+  val ironCirceVersion = "2.6.0"
   val mUnitVersion = "1.0.0"
   // 02-bpmn
   // -> domain
@@ -47,14 +47,14 @@ object Dependencies {
   // camunda // server spring-boot
   // 04-c8-spring
   // -> bpmn
-  val scalaJacksonVersion = "2.17.1"
-  val zeebeVersion = "8.5.4"
-  val springBootVersion = "3.3.0"
+  val scalaJacksonVersion = "2.17.2"
+  val zeebeVersion = "8.5.7"
+  val springBootVersion = "3.3.1"
   val swaggerOpenAPIVersion = "2.1.22"
   // examples
   val h2Version = "2.2.224"
   val twitter4jVersion = "4.1.2"
-  val groovyVersion = "3.0.21"
+  val groovyVersion = "3.0.22"
 
   lazy val tapirDependencies = Seq(
     "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
