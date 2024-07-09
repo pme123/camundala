@@ -7,6 +7,7 @@ import io.circe.Json.*
 
 import java.time.LocalDateTime
 import scala.annotation.tailrec
+import java.time.LocalDate
 
 sealed trait CamundaVariable:
   def value: Any
@@ -111,6 +112,8 @@ object CamundaVariable:
         CDouble(v)
       case v: scala.reflect.Enum =>
         CString(v.toString)
+      case ld: LocalDate =>
+        CString(ld.toString)
       case ldt: LocalDateTime =>
         CString(ldt.toString)
       case other if other == null =>

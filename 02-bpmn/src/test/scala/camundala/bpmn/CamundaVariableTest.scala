@@ -3,12 +3,17 @@ package camundala.bpmn
 import camundala.bpmn.CamundaVariable.*
 import camundala.domain.*
 import munit.FunSuite
+import java.time.LocalDate
 
 class CamundaVariableTest extends FunSuite:
 
   test("CamundaVariable valueToCamunda"):
     val variable = CamundaVariable.valueToCamunda(12L)
     assertEquals(variable, CLong(12))
+
+  test("CamundaVariable valueToCamunda LocalDate"):
+    val variable = CamundaVariable.valueToCamunda(LocalDate.parse("2021-12-12"))
+    assertEquals(variable, CString("2021-12-12"))
 
   test("CamundaVariable toCamunda"):
     val variable = CamundaVariable.toCamunda(Out())
