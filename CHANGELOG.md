@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.25 - 2024-07-09
+### Changed 
+- Added LocalDate to CamundaVariable.valueToCamunda. - see [Commit](https://github.com/pme123/camundala/commit/34a5816fc0e1dcd5010eca8e9d9544cf6c6407d6)
+
 ## 1.29.24 - 2024-07-09
 ### Changed 
 - Fixed bad inConfig initialization if the inConfig was defined in In object. - see [Commit](https://github.com/pme123/camundala/commit/9d319a43d5c8fe4b32d7a76696b51a39719e0f83)
