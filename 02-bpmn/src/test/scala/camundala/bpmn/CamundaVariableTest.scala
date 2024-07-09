@@ -27,6 +27,15 @@ class CamundaVariableTest extends FunSuite:
       )
     )
 
+  test("CamundaVariable toCamunda"):
+    val variable = CamundaVariable.jsonToCamundaValue(Json.obj("other" -> Json.fromBoolean(true)))
+    assertEquals(
+      variable,
+      Map(
+        "other" -> CBoolean(true),
+      )
+    )  
+
 end CamundaVariableTest
 
 case class Out(

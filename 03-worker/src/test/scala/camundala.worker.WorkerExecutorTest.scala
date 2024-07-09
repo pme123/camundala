@@ -11,12 +11,16 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
   def descr: String = "myDescr"
   def companyDescr: String = "myCompany"
 
-  given EngineRunContext = EngineRunContext(new EngineContext {
-    override def getLogger(clazz: Class[?]): WorkerLogger = ???
-    override def toEngineObject: Json => Any = ???
-    override def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](request: RunnableRequest[ServiceIn]): SendRequestType[ServiceOut] = ???
-
-  }, GeneralVariables())
+  given EngineRunContext = EngineRunContext(
+    new EngineContext:
+      override def getLogger(clazz: Class[?]): WorkerLogger = ???
+      override def toEngineObject: Json => Any = ???
+      override def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
+          request: RunnableRequest[ServiceIn]
+      ): SendRequestType[ServiceOut] = ???
+    ,
+    GeneralVariables()
+  )
 
   def processName: String = "test-process"
   def example = process(In(), NoOutput())
@@ -43,23 +47,31 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
 
   test("InputValidator WithConfig override InConfig"):
     assertEquals(
-        executor.InputValidator.validate(Seq(Right("aValue" -> Some(Json.fromString("ok"))),
-        Right("inConfig" -> Some(Json.obj("requiredValue" -> Json.fromString("aso")))))),
-        Right(In(inConfig = Some(InConfig(requiredValue = "aso"))))
+      executor.InputValidator.validate(Seq(
+        Right("requiredValue" -> None),
+        Right("optionalValue" -> None),
+        Right("aValue" -> Some(Json.fromString("ok"))),
+        Right("inConfig" -> Some(Json.obj("requiredValue" -> Json.fromString("aso"))))
+      )),
+      Right(In(inConfig = Some(InConfig(requiredValue = "aso"))))
     )
   test("InputValidator WithConfig default InConfig"):
     assertEquals(
-        executor.InputValidator.validate(Seq(Right("aValue" -> Some(Json.fromString("ok"))))),
-        Right(In(inConfig = Some(InConfig())))
+      executor.InputValidator.validate(Seq(
+        Right("requiredValue" -> None),
+        Right("optionalValue" -> None),
+        Right("aValue" -> Some(Json.fromString("ok")))
+      )),
+      Right(In(inConfig = Some(InConfig())))
     )
   test("InputValidator WithConfig override InConfig in In"):
     assertEquals(
-        executor.InputValidator.validate(Seq(Right("aValue" -> Some(Json.fromString("ok"))),
+      executor.InputValidator.validate(Seq(
+        Right("aValue" -> Some(Json.fromString("ok"))),
         Right("requiredValue" -> Some(Json.fromString("aso"))),
-        Right("optionalValue" -> Some(Json.fromString("nei"))),
-        )
-        ),
-        Right(In(inConfig = Some(InConfig(requiredValue = "aso", optionalValue = Some("nei")))))
+        Right("optionalValue" -> Some(Json.fromString("nei")))
+      )),
+      Right(In(inConfig = Some(InConfig(requiredValue = "aso", optionalValue = Some("nei")))))
     )
 
 end WorkerExecutorTest

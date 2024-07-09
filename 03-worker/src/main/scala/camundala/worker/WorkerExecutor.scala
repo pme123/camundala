@@ -50,33 +50,37 @@ case class WorkerExecutor[
             )
       val json: Either[ValidatorError, JsonObject] = jsonResult
         .map(_.foldLeft(JsonObject()) { case (jsonObj, jsonKey -> jsonValue) =>
-          jsonObj.add(jsonKey, jsonValue.getOrElse(Json.Null))
+          if jsonValue.isDefined
+          then jsonObj.add(jsonKey, jsonValue.get)
+          else jsonObj
         })
-      def toIn(posJsonObj: Either[ValidatorError, JsonObject]): Either[ValidatorError, In] = posJsonObj
-        .flatMap(jsonObj =>
-          decodeTo[In](jsonObj.asJson.deepDropNullValues.toString).left
-            .map(ex => ValidatorError(errorMsg = ex.errorMsg))
-            .flatMap(in => validationHandler.map(h => h.validate(in)).getOrElse(Right(in)))
-        )
-      val in = toIn(json)  
+      def toIn(posJsonObj: Either[ValidatorError, JsonObject]): Either[ValidatorError, In] =
+        posJsonObj
+          .flatMap(jsonObj =>
+            decodeTo[In](jsonObj.asJson.deepDropNullValues.toString).left
+              .map(ex => ValidatorError(errorMsg = ex.errorMsg))
+              .flatMap(in => validationHandler.map(h => h.validate(in)).getOrElse(Right(in)))
+          )
+      val in = toIn(json)
       val result = in.flatMap:
         case i: WithConfig[?] =>
-          val newIn = for
-            jsonObj: JsonObject <- json
-            inputVariables = jsonObj.toMap
-            configJson: JsonObject = inputVariables.get("inConfig").getOrElse(i.defaultConfigAsJson).asObject.get
-            newJsonConfig = worker.inConfigVariableNames
-              .foldLeft(configJson) :
-                case (configJson, n) =>
-                  if jsonObj.contains(n) 
-                  then configJson.add(n, jsonObj(n).get)
-                  else configJson
-          yield jsonObj.add("inConfig", newJsonConfig.asJson) 
-          println(s"newIn: $newIn")
-          toIn(newIn)    
-        case x => 
+          val newIn =
+            for
+              jsonObj: JsonObject <- json
+              inputVariables = jsonObj.toMap
+              configJson: JsonObject =
+                inputVariables.get("inConfig").getOrElse(i.defaultConfigAsJson).asObject.get
+              newJsonConfig = worker.inConfigVariableNames
+                .foldLeft(configJson):
+                  case (configJson, n) =>
+                    if jsonObj.contains(n)
+                    then configJson.add(n, jsonObj(n).get)
+                    else configJson
+            yield jsonObj.add("inConfig", newJsonConfig.asJson)
+          toIn(newIn)
+        case x =>
           in
-      result    
+      result
     end validate
 
   end InputValidator
