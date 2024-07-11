@@ -10,7 +10,29 @@ import scala.annotation.tailrec
 import java.time.LocalDate
 
 sealed trait CamundaVariable:
+  
   def value: Any
+
+  def toJson: Json =
+    import CamundaVariable.*
+    this match
+      case CNull =>
+        Json.Null
+      case CString(value, _) =>
+        Json.fromString(value)
+      case CInteger(value, _) =>
+        Json.fromInt(value)
+      case CLong(value, _) =>
+        Json.fromLong(value)
+      case CBoolean(value, _) =>
+        Json.fromBoolean(value)
+      case CDouble(value, _) =>
+        Json.fromDoubleOrNull(value)
+      case file: CFile =>
+        file.asJson
+      case CJson(value, _) =>
+        parser.parse(value).getOrElse(Json.obj())
+end CamundaVariable
 
 object CamundaVariable:
 
@@ -207,17 +229,20 @@ object CamundaVariable:
           }
 
         def onObject(value: JsonObject): JsonToCamundaValue =
-          value
-            .filter { case (_, v) => !v.isNull }
-            .toMap
-            .map((k, v) =>
-              k -> (jsonToCamundaValue(v) match
-                case cv: CamundaVariable => cv
-                case _: (Map[?, ?] | Seq[?]) => CJson(v.toString)
-              )
-            )
+          jsonObjectToProcessVariables(value)
     json.foldWith(folder)
 
   end jsonToCamundaValue
+
+  def jsonObjectToProcessVariables(obj: JsonObject): Map[String, CamundaVariable] =
+    obj
+      .filter { case (_, v) => !v.isNull }
+      .toMap
+      .map((k, v) =>
+        k -> (jsonToCamundaValue(v) match
+          case cv: CamundaVariable => cv
+          case _: (Map[?, ?] | Seq[?]) => CJson(v.toString)
+        )
+      )
 
 end CamundaVariable
