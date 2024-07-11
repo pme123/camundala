@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.27 - 2024-07-11
+### Changed 
+- Fixed test:compile problem - see [Commit](https://github.com/pme123/camundala/commit/81f9677b33646d6537754c051afc1dd32adbbbd4)
+
 ## 1.29.26 - 2024-07-11
 ### Changed 
 - Adjusted naming for deriveEnumValue - see [Commit](https://github.com/pme123/camundala/commit/18bad4713d4caa66b3effb903171ce5bce291a0a)
