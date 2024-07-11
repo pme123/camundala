@@ -6,12 +6,13 @@ import camundala.bpmn.*
 import camundala.worker.CamundalaWorkerError.ServiceError
 
 import java.time.{LocalDate, LocalDateTime}
+import scala.reflect.ClassTag
 
 trait EngineContext:
   def getLogger(clazz: Class[?]): WorkerLogger
   def toEngineObject: Json => Any
 
-  def sendRequest[ServiceIn: InOutEncoder, ServiceOut: InOutDecoder](
+  def sendRequest[ServiceIn: InOutEncoder, ServiceOut: InOutDecoder: ClassTag](
       request: RunnableRequest[ServiceIn]
   ): SendRequestType[ServiceOut]
 
@@ -106,7 +107,7 @@ final case class EngineRunContext(engineContext: EngineContext, generalVariables
 
   def getLogger(clazz: Class[?]): WorkerLogger = engineContext.getLogger(clazz)
 
-  def sendRequest[ServiceIn: InOutEncoder, ServiceOut: InOutDecoder](
+  def sendRequest[ServiceIn: InOutEncoder, ServiceOut: InOutDecoder: ClassTag](
       request: RunnableRequest[ServiceIn]
   ): SendRequestType[ServiceOut] =
     engineContext.sendRequest(request)

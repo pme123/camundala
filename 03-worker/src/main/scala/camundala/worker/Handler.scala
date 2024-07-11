@@ -7,6 +7,7 @@ import camundala.worker.CamundalaWorkerError.*
 import io.circe
 import sttp.model.Uri.QuerySegment
 import sttp.model.{Method, Uri}
+import scala.reflect.ClassTag
 
 /** handler for Custom Validation (next to the automatic Validation of the In Object.
   *
@@ -105,7 +106,7 @@ case class ServiceHandler[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
     ServiceIn: InOutEncoder,
-    ServiceOut: InOutDecoder
+    ServiceOut: InOutDecoder: ClassTag
 ](
     httpMethod: Method,
     apiUri: In => Uri,

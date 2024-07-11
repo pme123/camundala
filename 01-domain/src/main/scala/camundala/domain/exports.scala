@@ -49,6 +49,19 @@ inline def deriveEnumInOutCodec[A](using inline A: Mirror.SumOf[A]): InOutCodec[
   given Configuration = Configuration.default
   io.circe.derivation.ConfiguredEnumCodec.derived[A]
 
+inline def deriveEnumValueEncoder[A]: Encoder[A] =
+  Encoder.instance: a =>
+    Json.fromString(a.toString)
+
+inline def deriveEnumValueDecoder[A]: Decoder[A] =
+  Decoder.decodeString.emap: str =>
+    if str == valueOf[A].toString
+    then Right(valueOf[A])
+    else Left(s"Invalid value: $str - expected: ${valueOf[A]}")
+
+inline def deriveEnumValueInOutCodec[A]: InOutCodec[A] =
+  CirceCodec.from(deriveEnumValueDecoder[A], deriveEnumValueEncoder[A])
+
 /** Decodes a JSON value into a value of type `T`. It will collect all DecodingFailures and create a
   * nice error message. This is not the case when using ..as[MyType]
   */

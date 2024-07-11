@@ -4,6 +4,7 @@ package worker
 import camundala.bpmn.*
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
+import scala.reflect.ClassTag
 
 trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
 
@@ -88,7 +89,7 @@ trait ServiceWorkerDsl[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
     ServiceIn: InOutEncoder,
-    ServiceOut: InOutDecoder
+    ServiceOut: InOutDecoder: ClassTag
 ] extends WorkerDsl[In, Out],
       ValidateDsl[In],
       RunWorkDsl[In, Out]:

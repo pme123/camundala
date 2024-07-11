@@ -12,12 +12,13 @@ import sttp.model.Uri.QuerySegment
 import sttp.model.{Header, Uri}
 
 import scala.util.Try
+import scala.reflect.ClassTag
 
 trait RestApiClient:
 
   def sendRequest[
       ServiceIn: InOutEncoder, // body of service
-      ServiceOut: InOutDecoder // output of service
+      ServiceOut: InOutDecoder: ClassTag // output of service
   ](
       runnableRequest: RunnableRequest[ServiceIn]
   ): SendRequestType[ServiceOut] =
@@ -76,15 +77,15 @@ trait RestApiClient:
         Left(ServiceUnexpectedError(unexpectedError))
 
   protected def decodeResponse[
-      ServiceOut: InOutDecoder // output of service
+      ServiceOut: InOutDecoder: ClassTag // output of service
   ](
       body: String
   ): Either[ServiceBadBodyError, ServiceOut] =
     if body.isBlank then
-      NoOutput() match
-        case o if o.isInstanceOf[ServiceOut] =>
+      if implicitly[ClassTag[ServiceOut]].runtimeClass == classOf[NoOutput]
+      then
           Right(NoOutput().asInstanceOf[ServiceOut])
-        case _ =>
+      else
           Left(ServiceBadBodyError(
             "There is no body in the response and the ServiceOut is not NoOutput."
           ))
