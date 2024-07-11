@@ -15,6 +15,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.26 - 2024-07-11
+### Changed 
+- Adjusted naming for deriveEnumValue - see [Commit](https://github.com/pme123/camundala/commit/18bad4713d4caa66b3effb903171ce5bce291a0a)
+- Added toJson to CamundaVariable that translates the result of the Camunda 7 Service to a json object. - see [Commit](https://github.com/pme123/camundala/commit/b067910a188e4189b487bd224ffd2b270f3994f7)
+- Added ClassTag to RestApiClient - to get rid of warning. - see [Commit](https://github.com/pme123/camundala/commit/0f66e1df4724a8e2fa9b8d7f1071d6a73fa329fb)
+- Merge commit '698338f79914b7bb7bb733dce853aab87e8f0a95' into develop - see [Commit](https://github.com/pme123/camundala/commit/79f310caa9125aee624ac2f0746f2c99f774ed3c)
+- Merge pull request #41 from scala-steward/update/sbt-1.10.1 - see [Commit](https://github.com/pme123/camundala/commit/698338f79914b7bb7bb733dce853aab87e8f0a95)
+- Update sbt, sbt-dependency-tree to 1.10.1 - see [Commit](https://github.com/pme123/camundala/commit/d2ea71fb00ae3fb33ffb5f3d4d85fa307c309d65)
+
 ## 1.29.25 - 2024-07-09
 ### Changed 
 - Added LocalDate to CamundaVariable.valueToCamunda. - see [Commit](https://github.com/pme123/camundala/commit/34a5816fc0e1dcd5010eca8e9d9544cf6c6407d6)
