@@ -5,6 +5,7 @@ import camundala.bpmn.BpmnProcessDsl
 import camundala.domain.*
 import camundala.bpmn.WithConfig
 import camundala.worker.CamundalaWorkerError.*
+import scala.reflect.ClassTag
 
 class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
 
@@ -15,7 +16,7 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
     new EngineContext:
       override def getLogger(clazz: Class[?]): WorkerLogger = ???
       override def toEngineObject: Json => Any = ???
-      override def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder](
+      override def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder: ClassTag](
           request: RunnableRequest[ServiceIn]
       ): SendRequestType[ServiceOut] = ???
     ,
