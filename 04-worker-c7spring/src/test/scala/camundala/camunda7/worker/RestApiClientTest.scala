@@ -17,7 +17,7 @@ class RestApiClientTest extends munit.FunSuite, RestApiClient:
 
   test("RestApiClientTest no NoOutput"):
     assertEquals(
-      Left(ServiceBadBodyError("There is no body in the response and the ServiceOut is not NoOutput.")),
+      Left(ServiceBadBodyError("There is no body in the response and the ServiceOut is neither NoOutput nor Option (Class is class java.lang.String).")),
       decodeResponse[String]("")
     )
 
@@ -25,6 +25,12 @@ class RestApiClientTest extends munit.FunSuite, RestApiClient:
     assertEquals(
       Right(MyClass()),
       decodeResponse[MyClass]("{ \"value\": 12}")
+    )
+
+  test("RestApiClientTest  with optional Output"):
+    assertEquals(
+      Right(None),
+      decodeResponse[Option[MyClass]]("")
     )
 
   case class MyClass(value:Int = 12)  

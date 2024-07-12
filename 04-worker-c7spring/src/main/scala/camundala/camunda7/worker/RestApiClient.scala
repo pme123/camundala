@@ -82,13 +82,15 @@ trait RestApiClient:
       body: String
   ): Either[ServiceBadBodyError, ServiceOut] =
     if body.isBlank then
-      if implicitly[ClassTag[ServiceOut]].runtimeClass == classOf[NoOutput]
-      then
-          println("NoOutput --- ")
+      val runtimeClass = implicitly[ClassTag[ServiceOut]].runtimeClass
+      runtimeClass match
+        case x if x == classOf[NoOutput] =>
           Right(NoOutput().asInstanceOf[ServiceOut])
-      else
+        case x if x == classOf[Option[?]] =>
+          Right(None.asInstanceOf[ServiceOut])
+        case other =>
           Left(ServiceBadBodyError(
-            "There is no body in the response and the ServiceOut is not NoOutput."
+            s"There is no body in the response and the ServiceOut is neither NoOutput nor Option (Class is $other)."
           ))
     else
       parser
