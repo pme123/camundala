@@ -168,6 +168,7 @@ lazy val camunda7Worker = project
   .in(file("./04-worker-c7spring"))
   .configure(publicationSettings)
   .settings(projectSettings("camunda7-worker"))
+  .settings(unitTestSettings)
   .settings(
     autoImportSetting,
     libraryDependencies ++= Seq(

@@ -84,6 +84,7 @@ trait RestApiClient:
     if body.isBlank then
       if implicitly[ClassTag[ServiceOut]].runtimeClass == classOf[NoOutput]
       then
+          println("NoOutput --- ")
           Right(NoOutput().asInstanceOf[ServiceOut])
       else
           Left(ServiceBadBodyError(
