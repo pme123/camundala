@@ -78,9 +78,7 @@ case class BpmnClassesCreator(
           .mkString
       .distinct
       .mkString
-    if forTopic
-    then name.head.toLower + name.tail + "." + methodStr.toLowerCase
-    else methodStr + name
+    methodStr + name
   end generateServiceName
 
   private def extractRequestBodyType(operation: Operation): Option[ConstrField] =
