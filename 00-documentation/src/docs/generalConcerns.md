@@ -59,7 +59,7 @@ with the `serviceMock` (`MockedServiceResponse[ServiceOut]`).
 
 #### 2. Mocked Worker
 
-- Variable: `mockedWorker: Seq[String]` - default: _Seq.empty_
+- Variable: `mockedWorkers: Seq[String]` - default: _Seq.empty_
 
 In a process, this mocks the _SubProcesses_ and _ServiceTasks_,
 if their _topicName_ or _processName_ is in this list.
