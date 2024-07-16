@@ -164,7 +164,11 @@ case class SbtSettingsGenerator()(using config: SetupConfig):
       |          "camundala.bpmn",
       |          s"$customer.camundala.bpmn",
       |          "io.circe.syntax", 
-      |          "sttp.tapir.json.circe"
+      |          "sttp.tapir.json.circe",
+      |          "io.github.iltotore.iron",
+      |          "io.github.iltotore.iron.constraint",
+      |          "io.github.iltotore.iron.circe",
+      |          "sttp.tapir.codec.iron"
       |        )).mkString(start = "-Yimports:", sep = ",", end = "")
       |""".stripMargin
 

@@ -14,7 +14,7 @@ case class SimulationGenerator()(using config: SetupConfig):
   ) =
     val SetupElement(_, processName, name, version) = setupElement
     s"""package ${config.projectPackage}
-       |package simulation${version.versionPackage}
+       |package simulation
        |
        |import ${config.projectPackage}.bpmn.$processName${version.versionPackage}.$name.*
        |
@@ -44,7 +44,7 @@ case class SimulationGenerator()(using config: SetupConfig):
     val dir = config.projectDir / ModuleConfig.simulationModule.packagePath(
       config.projectPath,
       mainOrTest = "test"
-    ) / setupElement.processName / setupElement.version.versionPath
+    )
     os.makeDir.all(dir)
     dir
   end simulationTestPath

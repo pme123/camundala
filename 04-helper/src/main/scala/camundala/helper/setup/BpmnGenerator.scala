@@ -204,12 +204,15 @@ case class BpmnGenerator()(using config: SetupConfig):
           """  enum Out:
             |    case Success(
             |        //TODO output variables
-            |        processStatus: ProcessEndStatus = ProcessEndStatus.succeeded
+            |        processStatus: ProcessStatus.succeeded.type = ProcessStatus.succeeded
             |    )
             |
             |    case NotValid(
-            |        processStatus: NotValidStatus = NotValidStatus.notValid,
+            |        processStatus: ProcessStatus.notValid.type = ProcessStatus.notValid,
             |        validationErrors: Seq[ValidationError] = Seq(ValidationError())
+            |    )
+            |    case Canceled(
+            |        processStatus: ProcessStatus.canceled.type = ProcessStatus.canceled
             |    )
             |  end Out""".stripMargin
         else """  case class Out(

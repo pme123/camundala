@@ -122,18 +122,38 @@ object NoOutput:
   given ApiSchema[NoOutput] = deriveApiSchema
   given InOutCodec[NoOutput] = deriveCodec
 
+
+enum ProcessStatus:
+  case succeeded, `output-mocked`, failed, notValid, canceled
+object ProcessStatus:
+  given ApiSchema[ProcessStatus] = deriveEnumApiSchema
+  given ApiSchema[ProcessStatus.succeeded.type] = deriveEnumApiSchema
+  given ApiSchema[ProcessStatus.`output-mocked`.type] = deriveEnumApiSchema
+  given ApiSchema[ProcessStatus.failed.type] = deriveEnumApiSchema
+  given ApiSchema[ProcessStatus.notValid.type] = deriveEnumApiSchema
+  given ApiSchema[ProcessStatus.canceled.type] = deriveEnumApiSchema
+  given InOutCodec[ProcessStatus] = deriveEnumInOutCodec
+  given InOutCodec[ProcessStatus.succeeded.type] = deriveEnumValueInOutCodec
+  given InOutCodec[ProcessStatus.`output-mocked`.type] = deriveEnumValueInOutCodec
+  given InOutCodec[ProcessStatus.failed.type] = deriveEnumValueInOutCodec
+  given InOutCodec[ProcessStatus.notValid.type] = deriveEnumValueInOutCodec
+  given InOutCodec[ProcessStatus.canceled.type] = deriveEnumValueInOutCodec
+
+@deprecated("Use _ProcessStatus_")  
 enum ProcessEndStatus:
   case succeeded, `output-mocked`
 object ProcessEndStatus:
   given ApiSchema[ProcessEndStatus] = deriveEnumApiSchema
   given InOutCodec[ProcessEndStatus] = deriveEnumInOutCodec
 
+@deprecated("Use _ProcessStatus_")  
 enum NotValidStatus:
   case notValid, canceled
 object NotValidStatus:
   given ApiSchema[NotValidStatus] = deriveEnumApiSchema
   given InOutCodec[NotValidStatus] = deriveEnumInOutCodec
 
+@deprecated("Use _ProcessStatus_")  
 enum CanceledStatus:
   case canceled
 object CanceledStatus:

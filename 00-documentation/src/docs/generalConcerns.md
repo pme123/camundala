@@ -57,7 +57,7 @@ We have four ways to mock. Each possibility is done with a dedicated Process Var
 In a process, this mocks every _ServiceTask_ (_ServiceWorker_),
 with the `serviceMock` (`MockedServiceResponse[ServiceOut]`).
 
-#### 2. Mocked Worker
+#### 2. Mocked Workers
 
 - Variable: `mockedWorkers: Seq[String]` - default: _Seq.empty_
 

@@ -125,7 +125,7 @@ case class ProcessLabels(labels: Option[Seq[ProcessLabel]]):
   lazy val print: String =
     labels.toSeq.flatten
       .map:
-        case ProcessLabel(k, v) => s" - $k: $v"
+        case ProcessLabel(k, v) => s" - $k: $v\n"
       .mkString
   lazy val de: String =
     labels.toSeq.flatten
@@ -168,6 +168,7 @@ given ApiSchema[ValueSimple] = Schema.derivedUnion
 given valueEncoder: InOutEncoder[ValueSimple] with
   def apply(a: ValueSimple): Json = valueToJson(a)
 given valueDecoder: InOutDecoder[ValueSimple] with
-  def apply(c: io.circe.HCursor): Decoder.Result[ValueSimple] =
+  def apply(c: HCursor): Decoder.Result[ValueSimple] =
     c.as[Int].orElse(c.as[Long]).orElse(c.as[Double]).orElse(c.as[String]).orElse(c.as[Boolean])
+    
 given InOutCodec[ValueSimple] = CirceCodec.from(valueDecoder, valueEncoder)
