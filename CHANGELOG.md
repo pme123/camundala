@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.29.29 - 2024-07-16
+### Changed 
+- General ProcessStatus modified / some adjustments in Generators. - see [Commit](https://github.com/pme123/camundala/commit/c8a2da1983a4fa21ae69a0d18ac41161508af924)
+- Fixed mockedWorker to mockedWorkers in docs. - see [Commit](https://github.com/pme123/camundala/commit/c911c3b96204fc92437ed304a635cca73f3b4876)
+- Adjusted Topic naming in API generation - see [Commit](https://github.com/pme123/camundala/commit/b29d88c697cfb14ffebb309d63275cbd59e6459f)
+
 ## 1.29.28 - 2024-07-12
 ### Changed 
 - Added also Option as valid response type for no response body. - see [Commit](https://github.com/pme123/camundala/commit/762bb497e39e396084e55112f51398a7bfab3802)

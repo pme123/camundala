@@ -77,7 +77,7 @@
   <ul class="nav-list">
     <li class="level1 nav-node"><a href="#mocking">Mocking</a></li>
     <li class="level2 nav-leaf"><a href="#_1-services-mocked">1. Services mocked</a></li>
-    <li class="level2 nav-leaf"><a href="#_2-mocked-worker">2. Mocked Worker</a></li>
+    <li class="level2 nav-leaf"><a href="#_2-mocked-workers">2. Mocked Workers</a></li>
     <li class="level2 nav-leaf"><a href="#_3-mocked-output">3. Mocked Output</a></li>
     <li class="level2 nav-leaf"><a href="#_4-mocked-service-output">4. Mocked Service Output</a></li>
     <li class="level2 nav-leaf"><a href="#mocking-input-outputmock-outputservicemock">Mocking Input (<em>outputMock</em> &amp; <em>outputServiceMock</em>)</a></li>
@@ -162,9 +162,9 @@
         <p>In a process, this mocks every <em>ServiceTask</em> (<em>ServiceWorker</em>),
         with the <code>serviceMock</code> (<code>MockedServiceResponse[ServiceOut]</code>).</p>
         
-        <h4 id="_2-mocked-worker" class="section"><a class="anchor-link left" href="#_2-mocked-worker"><i class="icofont-laika link">&#xef71;</i></a>2. Mocked Worker</h4>
+        <h4 id="_2-mocked-workers" class="section"><a class="anchor-link left" href="#_2-mocked-workers"><i class="icofont-laika link">&#xef71;</i></a>2. Mocked Workers</h4>
         <ul>
-          <li>Variable: <code>mockedWorker: Seq[String]</code> - default: <em>Seq.empty</em></li>
+          <li>Variable: <code>mockedWorkers: Seq[String]</code> - default: <em>Seq.empty</em></li>
         </ul>
         <p>In a process, this mocks the <em>SubProcesses</em> and <em>ServiceTasks</em>,
         if their <em>topicName</em> or <em>processName</em> is in this list.</p>
