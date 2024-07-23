@@ -2,6 +2,7 @@
 - [Bpmn: camundala-mapping-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Bpmn:%20camundala-mapping-example)
 - [Bpmn: enum-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Bpmn:%20enum-example)
 - [Bpmn: message-for-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Bpmn:%20message-for-example)
+- [Bpmn: myservice.api.v1.post](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Bpmn:%20myservice.api.v1.post)
 - [Bpmn: signal-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Bpmn:%20signal-example)
 - [Bpmn: simulation-TestOverrides](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Bpmn:%20simulation-TestOverrides)
 - [Bpmn: timer-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Bpmn:%20timer-example)

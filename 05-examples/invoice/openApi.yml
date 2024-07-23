@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: "\n\nCreated at 14/04/2024, 09:37\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)**\n\
+  summary: "\n\n\n\n\nCreated at 16.07.2024, 17:16\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)**\n\
     \nThere is no README.md in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>General\
     \ Variables</i></b>\n</summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\
     \nMock all the _ServiceWorkers_ in your process with their default Mock:\n\n-\
@@ -56,37 +56,30 @@ info:
     \ if you have Tokens that expire, but long running Processes.\n\n- DSL:\n```scala\n\
     process(..) // or serviceTask(..)/customTask(..)\n  .withImpersonateUserId(impersonateUserId)\n\
     ```\n\n- Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
-    \n</p>\n</details>\n<p/>\n        \n\n<script>\n        function downloadSVG(id)\
-    \ {\n            const container = document.getElementById(id);\n            const\
-    \ svg = container.getElementsByTagName('svg')[0];\n            console.log(svg)\n\
-    \            svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')\n       \
-    \     const blob = new Blob([svg.outerHTML.toString()]);\n            const element\
-    \ = document.createElement(\"a\");\n            element.download = \"w3c.svg\"\
-    ;\n            element.href = window.URL.createObjectURL(blob);\n            element.click();\n\
-    \            element.remove();\n        }\n</script>\n"
+    \n</p>\n</details>\n<p/>\n        \n\n"
 paths:
   /Bpmn/example-invoice-c7/c7/example-invoice-c7:
     head:
       tags:
       - example-invoice-c7
-      summary: 'Bpmn: c7'
+      summary: 'Bpmn: example-invoice-c7'
       description: "\nThis starts the Invoice Receipt Process.\n\n---\n\n- **Called\
         \ Element**: `example-invoice-c7` (to define in the Call Activity)\n\n\n\n\
         ---\n\n\n\n\n- Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt > In`\n\
         - Output: `camundala.examples.invoice.bpmn.InvoiceReceipt > Out`\n\n\n<div\
-        \ class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-66259\"\
+        \ class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-57013\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container:\
-        \ $('#example-invoice-c7-66259'), height: '95%', width: '95%' }));\" src=\"\
+        \ $('#example-invoice-c7-57013'), height: '95%', width: '95%' }));\" src=\"\
         data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
-        \ />\n  </div>\n</div>\n\n<p>Download: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)</p\n\
-        <button onclick=\"downloadSVG('#example-invoice-c7-66259')\">Download Diagram\
-        \ as SVG</button>\n\n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n\
-        </summary>\n\n<p>\n\n**outputVariables**:\n\nJust take the variable you need\
-        \ in your process!\n```json\n...\n\"outputVariables\": \"approved,clarified,archived\"\
-        ,\n...\n```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"approved\"\
-        \ : true,\n  \"clarified\" : null,\n  \"archived\" : false\n},\n...\n```\n\
-        \n</p>\n</details>\n</p>\n      "
-      operationId: 'Bpmn: c7'
+        \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)\n\
+        \n\n<div>\n  <button onclick=\"downloadSVG('example-invoice-c7-57013')\">Download\
+        \ Diagram as SVG</button>\n</div>\n\n<p/>\n\n<details>\n<summary>\n<b><i>General\
+        \ Variable(s)</i></b>\n</summary>\n\n<p>\n\n**outputVariables**:\n\nJust take\
+        \ the variable you need in your process!\n```json\n...\n\"outputVariables\"\
+        : \"approved,clarified,archived\",\n...\n```\n\n**outputMock**:\n\n```json\n\
+        ...\n\"outputMock\": {\n  \"approved\" : true,\n  \"archived\" : false\n},\n\
+        ...\n```\n\n</p>\n</details>\n</p>\n      "
+      operationId: 'Bpmn: example-invoice-c7'
       requestBody:
         content:
           application/json:
@@ -126,7 +119,7 @@ paths:
     head:
       tags:
       - example-invoice-c7
-      summary: 'Dmn: c7-assignApprover'
+      summary: 'Dmn: example-invoice-c7-assignApprover'
       description: |+
         Decision Table on who must approve the Invoice.
 
@@ -135,15 +128,19 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-55774">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-55774'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-78058">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-78058'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
-        <p>Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)</p
-        <button onclick="downloadSVG('#example-invoice-c7-assignApprover-55774')">Download Diagram as SVG</button>
+        Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)
 
-      operationId: 'Dmn: c7-assignApprover'
+
+        <div>
+          <button onclick="downloadSVG('example-invoice-c7-assignApprover-78058')">Download Diagram as SVG</button>
+        </div>
+
+      operationId: 'Dmn: example-invoice-c7-assignApprover'
       requestBody:
         content:
           application/json:
@@ -287,23 +284,24 @@ paths:
     head:
       tags:
       - example-invoice-c7-review
-      summary: 'Bpmn: c7-review'
+      summary: 'Bpmn: example-invoice-c7-review'
       description: "\nThis starts the Review Invoice Process.\n\n---\n\n- **Called\
         \ Element**: `example-invoice-c7-review` (to define in the Call Activity)\n\
         \n\n\n---\n\n\n\n\n- Input:  `camundala.examples.invoice.bpmn.ReviewInvoice\
         \ > In`\n- Output: `camundala.examples.invoice.bpmn.ReviewInvoice > Out`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-81104\"\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-80533\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({\
-        \ container: $('#example-invoice-c7-review-81104'), height: '95%', width:\
+        \ container: $('#example-invoice-c7-review-80533'), height: '95%', width:\
         \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
-        \ />\n  </div>\n</div>\n\n<p>Download: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)</p\n\
-        <button onclick=\"downloadSVG('#example-invoice-c7-review-81104')\">Download\
-        \ Diagram as SVG</button>\n\n<p/>\n\n<details>\n<summary>\n<b><i>General Variable(s)</i></b>\n\
-        </summary>\n\n<p>\n\n**outputVariables**:\n\nJust take the variable you need\
-        \ in your process!\n```json\n...\n\"outputVariables\": \"clarified\",\n...\n\
-        ```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\": {\n  \"clarified\"\
-        \ : true\n},\n...\n```\n\n</p>\n</details>\n</p>\n      "
-      operationId: 'Bpmn: c7-review'
+        \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)\n\
+        \n\n<div>\n  <button onclick=\"downloadSVG('example-invoice-c7-review-80533')\"\
+        >Download Diagram as SVG</button>\n</div>\n\n<p/>\n\n<details>\n<summary>\n\
+        <b><i>General Variable(s)</i></b>\n</summary>\n\n<p>\n\n**outputVariables**:\n\
+        \nJust take the variable you need in your process!\n```json\n...\n\"outputVariables\"\
+        : \"clarified\",\n...\n```\n\n**outputMock**:\n\n```json\n...\n\"outputMock\"\
+        : {\n  \"clarified\" : true\n},\n...\n```\n\n</p>\n</details>\n</p>\n    \
+        \  "
+      operationId: 'Bpmn: example-invoice-c7-review'
       requestBody:
         content:
           application/json:
@@ -671,7 +669,7 @@ paths:
     head:
       tags:
       - DMNs
-      summary: 'Dmn: c7-assignApprover'
+      summary: 'Dmn: example-invoice-c7-assignApprover'
       description: |+
         Decision Table on who must approve the Invoice.
 
@@ -680,15 +678,19 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-81681">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-81681'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-62270">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-62270'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
-        <p>Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)</p
-        <button onclick="downloadSVG('#example-invoice-c7-assignApprover-81681')">Download Diagram as SVG</button>
+        Download: [example-invoice-c7-assignApprover.dmn](diagrams/example-invoice-c7-assignApprover.dmn)
 
-      operationId: 'Dmn: c7-assignApprover'
+
+        <div>
+          <button onclick="downloadSVG('example-invoice-c7-assignApprover-62270')">Download Diagram as SVG</button>
+        </div>
+
+      operationId: 'Dmn: example-invoice-c7-assignApprover'
       requestBody:
         content:
           application/json:
@@ -721,28 +723,32 @@ paths:
 components:
   schemas:
     ApproverGroup:
+      title: ApproverGroup
       type: string
       enum:
       - accounting
       - management
       - sales
     CollectEntries_ApproverGroup:
+      title: CollectEntries_ApproverGroup
       oneOf:
       - $ref: '#/components/schemas/ApproverGroup'
     Failure:
+      title: Failure
+      type: object
       required:
       - processStatus
-      type: object
       properties:
         processStatus:
           $ref: '#/components/schemas/ProcessStatus'
     In:
+      title: In
+      type: object
       required:
       - creditor
       - amount
       - invoiceCategory
       - invoiceNumber
-      type: object
       properties:
         creditor:
           type: string
@@ -756,10 +762,11 @@ components:
         inConfig:
           $ref: '#/components/schemas/InConfig'
     In1:
+      title: In
+      type: object
       required:
       - amount
       - invoiceCategory
-      type: object
       properties:
         amount:
           type: number
@@ -767,12 +774,15 @@ components:
         invoiceCategory:
           $ref: '#/components/schemas/InvoiceCategory'
     In2:
+      title: In
+      description: Same Input as _InvoiceReceipt_, only without mocking - no mocking
+        in UserTasks
+      type: object
       required:
       - creditor
       - amount
       - invoiceCategory
       - invoiceNumber
-      type: object
       properties:
         creditor:
           type: string
@@ -783,20 +793,21 @@ components:
           $ref: '#/components/schemas/InvoiceCategory'
         invoiceNumber:
           type: string
-      description: Same Input as _InvoiceReceipt_, only without mocking - no mocking
-        in UserTasks
     In3:
+      title: In
       type: object
       properties:
         shouldFail:
           type: boolean
     In4:
+      title: In
+      description: Same Input as _InvoiceReceipt_, only different Mocking
+      type: object
       required:
       - creditor
       - amount
       - invoiceCategory
       - invoiceNumber
-      type: object
       properties:
         creditor:
           type: string
@@ -807,25 +818,26 @@ components:
           $ref: '#/components/schemas/InvoiceCategory'
         invoiceNumber:
           type: string
-      description: Same Input as _InvoiceReceipt_, only different Mocking
     In5:
+      title: In
+      description: Same Input as _InvoiceReceipt_, only different Mocking
+      type: object
       required:
       - id
-      type: object
       properties:
         id:
           type: integer
           format: int32
         optName:
-          type: string
           description: Optional value to test querySegments
-      description: Same Input as _InvoiceReceipt_, only different Mocking
+          type: string
     InConfig:
+      title: InConfig
       type: object
       properties:
         shouldFail:
-          type: boolean
           description: You can let the Archive Service fail for testing.
+          type: boolean
         invoiceReviewedMock:
           $ref: '#/components/schemas/Out'
           description: |
@@ -846,67 +858,77 @@ components:
             - `outputMock` mocks this process.
             - `someSubProcessMock` mocks a sub process
     InvoiceCategory:
+      title: InvoiceCategory
       type: string
       enum:
       - Misc
       - Software License Costs
       - Travel Expenses
     Out:
+      title: Out
+      type: object
       required:
       - clarified
-      type: object
       properties:
         clarified:
-          type: boolean
           description: Flag that is set by the Reviewer
+          type: boolean
     Out1:
+      title: Out
+      type: object
       required:
       - approved
-      type: object
       properties:
         approved:
-          type: boolean
           description: If true, the Boss accepted the Invoice
+          type: boolean
         clarified:
-          type: boolean
           description: Flag that is set by the Reviewer (only set if there was a review).
-        archived:
           type: boolean
+        archived:
           description: Flag that is set by the Archive Service.
+          type: boolean
     Out2:
+      title: Out
+      description: Every Invoice has to be accepted by the Boss.
+      type: object
       required:
       - approved
-      type: object
       properties:
         approved:
-          type: boolean
           description: If true, the Boss accepted the Invoice
-      description: Every Invoice has to be accepted by the Boss.
+          type: boolean
     Out3:
+      title: Out
       type: object
       properties:
         archived:
           type: boolean
     Out4:
+      title: Out
+      type: object
       required:
       - reviewer
-      type: object
       properties:
         reviewer:
           type: string
     Out5:
+      title: Out
+      type: object
       required:
       - clarified
-      type: object
       properties:
         clarified:
-          type: boolean
           description: Flag that is set by the Reviewer
+          type: boolean
     Out6:
+      title: Out
       oneOf:
       - $ref: '#/components/schemas/Failure'
       - $ref: '#/components/schemas/Success'
     People:
+      title: People
+      type: object
       required:
       - name
       - height
@@ -914,7 +936,6 @@ components:
       - hair_color
       - skin_color
       - eye_color
-      type: object
       properties:
         name:
           type: string
@@ -929,6 +950,7 @@ components:
         eye_color:
           type: string
     ProcessStatus:
+      title: ProcessStatus
       type: string
       enum:
       - '400'
@@ -937,11 +959,12 @@ components:
       - succeeded
       - validation-failed
     Success:
+      title: Success
+      type: object
       required:
       - people
       - fromHeader
       - processStatus
-      type: object
       properties:
         people:
           $ref: '#/components/schemas/People'

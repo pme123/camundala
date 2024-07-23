@@ -2,24 +2,24 @@ openapi: 3.1.0
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: "\n**This is for Postman - to have example requests. Be aware the Output\
-    \ is not provided!**\n\n\n\nCreated at 14/04/2024, 09:37\n\n**See the [Camundala\
-    \ Documentation](https://pme123.github.io/camundala/)**\n\nThere is no README.md\
-    \ in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>General Variables</i></b>\n\
-    </summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\nMock all the _ServiceWorkers_\
-    \ in your process with their default Mock:\n\n- DSL:\n```scala\nprocess(..)\n\
-    \  .mockServices\n```\n\n- Json\n```json\n...\n\"servicesMocked\": true,\n...\n\
-    ```\n\n\n**mockedWorkers**:\n\nMock any Process- and/or ExternalTask-Worker with\
-    \ their default Mocks.\nThis is a list of the _Worker topicNames or Process processNames_,\
-    \ you want to mock.\nIt is also possible to use a _comma separated_ String,\n\
-    like `\"mySubProcess,myOtherSubProcess,myService\"`\n\n_Be aware_: For Sub-Processes,\
-    \ this expects an _InitWorker_ where the _topicName_ is equal to the _processName_.\n\
-    \n\n- DSL:\n```scala\nprocess(..)\n  .mockedWorkers(\"mySubProcess1\", \"mySubProcess2\"\
-    ) // creates a list with SubProcessess\n  .mockedWorker(\"myOtherSubProcess\"\
-    ) // adds a SubProcess\n```\n\n- Json\n```json\n...\n\"mockedWorkers\": [\"mySubProcess\"\
-    , \"myOtherSubProcess, myService\"],\n...\n```\n\n\n**outputMock**:\n\nMock the\
-    \ Process or ExternalTask (`Out`)\n - You find an example in every _Process_ and\
-    \ _ExternalTask_.\n\n\n- DSL:\n```scala\nprocess(..) // or serviceTask(..)/customTask(..)\n\
+  summary: "\n         |**This is for Postman - to have example requests. Be aware\
+    \ the Output is not provided!**\n         |\n         |\n\n\n\n\nCreated at 16.07.2024,\
+    \ 17:16\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)**\n\
+    \nThere is no README.md in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>General\
+    \ Variables</i></b>\n</summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\
+    \nMock all the _ServiceWorkers_ in your process with their default Mock:\n\n-\
+    \ DSL:\n```scala\nprocess(..)\n  .mockServices\n```\n\n- Json\n```json\n...\n\"\
+    servicesMocked\": true,\n...\n```\n\n\n**mockedWorkers**:\n\nMock any Process-\
+    \ and/or ExternalTask-Worker with their default Mocks.\nThis is a list of the\
+    \ _Worker topicNames or Process processNames_, you want to mock.\nIt is also possible\
+    \ to use a _comma separated_ String,\nlike `\"mySubProcess,myOtherSubProcess,myService\"\
+    `\n\n_Be aware_: For Sub-Processes, this expects an _InitWorker_ where the _topicName_\
+    \ is equal to the _processName_.\n\n\n- DSL:\n```scala\nprocess(..)\n  .mockedWorkers(\"\
+    mySubProcess1\", \"mySubProcess2\") // creates a list with SubProcessess\n  .mockedWorker(\"\
+    myOtherSubProcess\") // adds a SubProcess\n```\n\n- Json\n```json\n...\n\"mockedWorkers\"\
+    : [\"mySubProcess\", \"myOtherSubProcess, myService\"],\n...\n```\n\n\n**outputMock**:\n\
+    \nMock the Process or ExternalTask (`Out`)\n - You find an example in every _Process_\
+    \ and _ExternalTask_.\n\n\n- DSL:\n```scala\nprocess(..) // or serviceTask(..)/customTask(..)\n\
     \  .mockWith(outputMock)\n```\n\n- Json\n```json\n...\n\"outputMock\": {..},\n\
     ...\n```\n\n\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
     \ - You find an example in every _ServiceTask_.\n\n\n- DSL:\n```scala\nserviceTask(..)\n\
@@ -58,14 +58,7 @@ info:
     \ if you have Tokens that expire, but long running Processes.\n\n- DSL:\n```scala\n\
     process(..) // or serviceTask(..)/customTask(..)\n  .withImpersonateUserId(impersonateUserId)\n\
     ```\n\n- Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
-    \n</p>\n</details>\n<p/>\n        \n\n<script>\n        function downloadSVG(id)\
-    \ {\n            const container = document.getElementById(id);\n            const\
-    \ svg = container.getElementsByTagName('svg')[0];\n            console.log(svg)\n\
-    \            svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')\n       \
-    \     const blob = new Blob([svg.outerHTML.toString()]);\n            const element\
-    \ = document.createElement(\"a\");\n            element.download = \"w3c.svg\"\
-    ;\n            element.href = window.URL.createObjectURL(blob);\n            element.click();\n\
-    \            element.remove();\n        }\n</script>\n\n"
+    \n</p>\n</details>\n<p/>\n        \n\n\n         |"
 servers:
 - url: http://localhost:8034/engine-rest
   description: Local Developer Server
@@ -74,7 +67,7 @@ paths:
     post:
       tags:
       - example-invoice-c7
-      summary: 'Bpmn: c7'
+      summary: 'Bpmn: example-invoice-c7'
       description: |2
 
         This starts the Invoice Receipt Process.
@@ -90,7 +83,7 @@ paths:
 
 
 
-        See API Doc: [Bpmn: c7](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Bpmn:%20c7)
+        See API Doc: [Bpmn: example-invoice-c7](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Bpmn:%20example-invoice-c7)
       operationId: postProcess-definitionKeyExample-invoice-c7Start
       requestBody:
         content:
@@ -149,7 +142,7 @@ paths:
     post:
       tags:
       - example-invoice-c7
-      summary: 'Dmn: c7-assignApprover'
+      summary: 'Dmn: example-invoice-c7-assignApprover'
       description: |2
 
         Decision Table on who must approve the Invoice.
@@ -158,7 +151,7 @@ paths:
         - _decisionDefinitionKey_: `example-invoice-c7-assignApprover`,
 
 
-        See API Doc: [Dmn: c7-assignApprover](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Dmn:%20c7-assignApprover)
+        See API Doc: [Dmn: example-invoice-c7-assignApprover](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Dmn:%20example-invoice-c7-assignApprover)
       operationId: postDecision-definitionKeyKey--remove:example-invoice-c7-assignapprover--Evaluate
       parameters:
       - name: key
@@ -166,8 +159,8 @@ paths:
         description: The Process- or Decision-DefinitionKey of the Process or Decision
         required: true
         schema:
-          type: string
           default: example-invoice-c7-assignApprover
+          type: string
       requestBody:
         content:
           application/json:
@@ -235,8 +228,8 @@ paths:
           ```
         required: true
         schema:
-          type: string
           default: '{{taskId}}'
+          type: string
       - name: variableNames
         in: query
         description: |-
@@ -245,14 +238,14 @@ paths:
           If the query parameter contains non-existent variable names, the variable names are ignored.
         required: false
         schema:
-          type: string
           default: name,example
+          type: string
       - name: deserializeValues
         in: query
         required: false
         schema:
-          type: boolean
           default: false
+          type: boolean
       responses:
         '200':
           description: ''
@@ -280,8 +273,8 @@ paths:
           ```
         required: true
         schema:
-          type: string
           default: '{{taskId}}'
+          type: string
       requestBody:
         content:
           application/json:
@@ -361,8 +354,8 @@ paths:
           ```
         required: true
         schema:
-          type: string
           default: '{{taskId}}'
+          type: string
       - name: variableNames
         in: query
         description: |-
@@ -371,14 +364,14 @@ paths:
           If the query parameter contains non-existent variable names, the variable names are ignored.
         required: false
         schema:
-          type: string
           default: name,example
+          type: string
       - name: deserializeValues
         in: query
         required: false
         schema:
-          type: boolean
           default: false
+          type: boolean
       responses:
         '200':
           description: ''
@@ -406,8 +399,8 @@ paths:
           ```
         required: true
         schema:
-          type: string
           default: '{{taskId}}'
+          type: string
       requestBody:
         content:
           application/json:
@@ -454,7 +447,7 @@ paths:
     post:
       tags:
       - example-invoice-c7-review
-      summary: 'Bpmn: c7-review'
+      summary: 'Bpmn: example-invoice-c7-review'
       description: |2
 
         This starts the Review Invoice Process.
@@ -470,7 +463,7 @@ paths:
 
 
 
-        See API Doc: [Bpmn: c7-review](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Bpmn:%20c7-review)
+        See API Doc: [Bpmn: example-invoice-c7-review](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Bpmn:%20example-invoice-c7-review)
       operationId: postProcess-definitionKeyExample-invoice-c7-reviewStart
       requestBody:
         content:
@@ -547,8 +540,8 @@ paths:
           ```
         required: true
         schema:
-          type: string
           default: '{{taskId}}'
+          type: string
       - name: variableNames
         in: query
         description: |-
@@ -557,14 +550,14 @@ paths:
           If the query parameter contains non-existent variable names, the variable names are ignored.
         required: false
         schema:
-          type: string
           default: name,example
+          type: string
       - name: deserializeValues
         in: query
         required: false
         schema:
-          type: boolean
           default: false
+          type: boolean
       responses:
         '200':
           description: ''
@@ -592,8 +585,8 @@ paths:
           ```
         required: true
         schema:
-          type: string
           default: '{{taskId}}'
+          type: string
       requestBody:
         content:
           application/json:
@@ -659,8 +652,8 @@ paths:
           ```
         required: true
         schema:
-          type: string
           default: '{{taskId}}'
+          type: string
       - name: variableNames
         in: query
         description: |-
@@ -669,14 +662,14 @@ paths:
           If the query parameter contains non-existent variable names, the variable names are ignored.
         required: false
         schema:
-          type: string
           default: name,example
+          type: string
       - name: deserializeValues
         in: query
         required: false
         schema:
-          type: boolean
           default: false
+          type: boolean
       responses:
         '200':
           description: ''
@@ -704,8 +697,8 @@ paths:
           ```
         required: true
         schema:
-          type: string
           default: '{{taskId}}'
+          type: string
       requestBody:
         content:
           application/json:
@@ -809,20 +802,22 @@ paths:
 components:
   schemas:
     CBoolean:
+      title: CBoolean
+      type: object
       required:
       - value
       - type
-      type: object
       properties:
         value:
           type: boolean
         type:
           type: string
     CDouble:
+      title: CDouble
+      type: object
       required:
       - value
       - type
-      type: object
       properties:
         value:
           type: number
@@ -830,33 +825,36 @@ components:
         type:
           type: string
     CFile:
+      title: CFile
+      type: object
       required:
       - value
       - valueInfo
       - type
-      type: object
       properties:
         value:
-          type: string
           description: The File's content as Base64 encoded String.
+          type: string
         valueInfo:
           $ref: '#/components/schemas/CFileValueInfo'
         type:
           type: string
     CFileValueInfo:
+      title: CFileValueInfo
+      type: object
       required:
       - filename
-      type: object
       properties:
         filename:
           type: string
         mimetype:
           type: string
     CInteger:
+      title: CInteger
+      type: object
       required:
       - value
       - type
-      type: object
       properties:
         value:
           type: integer
@@ -864,20 +862,22 @@ components:
         type:
           type: string
     CJson:
+      title: CJson
+      type: object
       required:
       - value
       - type
-      type: object
       properties:
         value:
           type: string
         type:
           type: string
     CLong:
+      title: CLong
+      type: object
       required:
       - value
       - type
-      type: object
       properties:
         value:
           type: integer
@@ -885,18 +885,21 @@ components:
         type:
           type: string
     CNull:
+      title: CNull
       type: object
     CString:
+      title: CString
+      type: object
       required:
       - value
       - type
-      type: object
       properties:
         value:
           type: string
         type:
           type: string
     CamundaVariable:
+      title: CamundaVariable
       oneOf:
       - $ref: '#/components/schemas/CBoolean'
       - $ref: '#/components/schemas/CDouble'
@@ -907,35 +910,38 @@ components:
       - $ref: '#/components/schemas/CNull'
       - $ref: '#/components/schemas/CString'
     CompleteTaskIn:
+      title: CompleteTaskIn
+      description: 'A JSON object with the following properties: (at least an empty
+        JSON object {} or an empty request body)'
+      type: object
       required:
       - variables
       - withVariablesInReturn
-      type: object
       properties:
         variables:
           $ref: '#/components/schemas/Map_CamundaVariable'
         withVariablesInReturn:
-          type: boolean
           description: Set to false will not return the Process Variables and the
             Result Status is 204.
-      description: 'A JSON object with the following properties: (at least an empty
-        JSON object {} or an empty request body)'
+          type: boolean
     EvaluateDecisionIn:
+      title: EvaluateDecisionIn
+      description: 'A JSON object with the following properties:'
+      type: object
       required:
       - variables
-      type: object
       properties:
         variables:
           $ref: '#/components/schemas/Map_CamundaVariable'
-      description: 'A JSON object with the following properties:'
     GetActiveTaskIn:
+      title: GetActiveTaskIn
+      description: Same as GetActiveJobIn.
+      type: object
       required:
       - processInstanceId
       - active
-      type: object
       properties:
         processInstanceId:
-          type: string
           description: |2
 
             The id of the process - you want to get the active tasks.
@@ -946,27 +952,29 @@ components:
             let result = pm.response.json();
             pm.collectionVariables.set("processInstanceId", result.id)
             ```
+          type: string
         active:
-          type: boolean
           description: We are only interested in the active Task(s)
-      description: Same as GetActiveJobIn.
+          type: boolean
     Map_CamundaVariable:
+      title: Map_CamundaVariable
       type: object
       additionalProperties:
         $ref: '#/components/schemas/CamundaVariable'
     StartProcessIn:
+      title: StartProcessIn
+      description: 'A JSON object with the following properties: (at least an empty
+        JSON object {} or an empty request body)'
+      type: object
       required:
       - variables
       - withVariablesInReturn
-      type: object
       properties:
         variables:
           $ref: '#/components/schemas/Map_CamundaVariable'
         businessKey:
-          type: string
           description: The business key of the process instance.
+          type: string
         withVariablesInReturn:
-          type: boolean
           description: Set to false will not return the Process Variables.
-      description: 'A JSON object with the following properties: (at least an empty
-        JSON object {} or an empty request body)'
+          type: boolean

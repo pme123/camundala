@@ -45,6 +45,7 @@ object ProjectApiCreator extends DefaultApiCreator:
       DecisionResultTypes.singleResultDMN.withDiagramName("DecisionResultTypes"),
       DecisionResultTypes.resultListDMN.withDiagramName("DecisionResultTypes")
     ),
+    GenericServiceExample.example,
     EnumExample.example,
     EnumWorkerExample.example,
     DateExample.DateExampleDMN,

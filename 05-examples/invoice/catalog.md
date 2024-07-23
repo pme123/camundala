@@ -1,8 +1,8 @@
 ### Invoice Example Process API
-- [Bpmn: c7-review](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Bpmn:%20c7-review)
-- [Bpmn: c7](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Bpmn:%20c7)
-- [Dmn: c7-assignApprover](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Dmn:%20c7-assignApprover)
-- [Dmn: c7-assignApprover](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Dmn:%20c7-assignApprover)
+- [Bpmn: example-invoice-c7-review](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Bpmn:%20example-invoice-c7-review)
+- [Bpmn: example-invoice-c7](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Bpmn:%20example-invoice-c7)
+- [Dmn: example-invoice-c7-assignApprover](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Dmn:%20example-invoice-c7-assignApprover)
+- [Dmn: example-invoice-c7-assignApprover](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/Dmn:%20example-invoice-c7-assignApprover)
 - [UserTask: ApproveInvoiceUT](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
 - [UserTask: ApproveInvoiceUT](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
 - [UserTask: AssignReviewerUT](https://webstor.ch/camundala/myCompany/example-invoice/OpenApi.html#operation/UserTask:%20AssignReviewerUT)

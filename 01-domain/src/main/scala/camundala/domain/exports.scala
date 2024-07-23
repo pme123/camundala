@@ -163,8 +163,8 @@ object CanceledStatus:
 @deprecated
 trait GenericServiceIn:
   def serviceName: String
-  def shortServiceName: String =
-    serviceName.split("\\.")
+  def shortServiceName: String = 
+    serviceName.split("-")
       .last
 end GenericServiceIn
 case class FileInOut(
