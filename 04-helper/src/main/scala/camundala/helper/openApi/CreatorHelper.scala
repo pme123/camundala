@@ -73,9 +73,18 @@ trait CreatorHelper:
     end createField
 
     def extractType(key: String): String =
-      config.typeMapping.get(schema.getType) match
+      config.typeMapping.get(schema.getType)
+        .orElse(
+          config.typeMapping.get(
+            Option(schema.getTypes).map(_.asScala.headOption).flatten.getOrElse("NOTYPEDEF")
+          )
+        ) match
         case Some(value) if Seq("Seq", "Set").contains(value) =>
-          schema.getItems.extractType(s"$key.items")
+          if schema.getItems == null then
+            println(s"Items is null for $key")
+            config.typeMapping("AnyType")
+          else
+            schema.getItems.extractType(s"$key.items")
         case Some(value) =>
           schema.getFormat match
             case "int64" => "Long"

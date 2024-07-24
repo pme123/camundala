@@ -68,8 +68,8 @@ case class ServiceClassesCreator(
       required: java.util.List[String]
   ): Seq[ConstrField] =
     Option(properties)
-      .map:
-        _.asScala.toSeq.map:
+      .map: props =>
+        props.asScala.toSeq.map:
           case key -> schema => schema.createField(
               Some(key),
               optIsRequired = Option(required).map(_.asScala.toSeq.contains(key))
@@ -78,8 +78,9 @@ case class ServiceClassesCreator(
       .flatten
   private lazy val schemas = allSchemas
     .filter:
-      case _ -> schema =>
+      case key -> schema =>
         schema.getAllOf != null ||
-        schema.getType == "object"
+        schema.getType == "object" ||
+        schema.getTypes().asScala.contains("object")
 
 end ServiceClassesCreator

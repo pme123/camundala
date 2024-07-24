@@ -7,6 +7,17 @@ class DomainTest extends munit.FunSuite:
       "the-coolDaddy".niceName,
       "The Cool Daddy"
     )
+  test("shortName of Generic Service simple"):
+    assertEquals(
+      GenericServiceIn.shortServiceName("loadClient-post"),
+      "loadClient-post"
+    )
+
+  test("shortName of Generic Service"):
+    assertEquals(
+      GenericServiceIn.shortServiceName("service-loader.post"),
+      "loader.post"
+    )
 
   test("enum derivation"):
     enum EE:
