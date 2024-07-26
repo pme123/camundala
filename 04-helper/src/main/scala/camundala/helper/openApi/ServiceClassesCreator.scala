@@ -81,6 +81,6 @@ case class ServiceClassesCreator(
       case key -> schema =>
         schema.getAllOf != null ||
         schema.getType == "object" ||
-        schema.getTypes().asScala.contains("object")
+        schema.getTypes() != null && schema.getTypes().asScala.contains("object")
 
 end ServiceClassesCreator
