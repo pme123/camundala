@@ -170,5 +170,5 @@ given valueEncoder: InOutEncoder[ValueSimple] with
 given valueDecoder: InOutDecoder[ValueSimple] with
   def apply(c: HCursor): Decoder.Result[ValueSimple] =
     c.as[Int].orElse(c.as[Long]).orElse(c.as[Double]).orElse(c.as[String]).orElse(c.as[Boolean])
-    
+
 given InOutCodec[ValueSimple] = CirceCodec.from(valueDecoder, valueEncoder)

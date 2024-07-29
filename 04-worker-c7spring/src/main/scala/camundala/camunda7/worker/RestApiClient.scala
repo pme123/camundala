@@ -92,6 +92,7 @@ trait RestApiClient:
           Left(ServiceBadBodyError(
             s"There is no body in the response and the ServiceOut is neither NoOutput nor Option (Class is $other)."
           ))
+      end match
     else
       parser
         .decodeAccumulating[ServiceOut](body)
