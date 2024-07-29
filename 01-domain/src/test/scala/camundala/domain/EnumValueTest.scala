@@ -3,7 +3,6 @@ package camundala.domain
 import io.circe.*
 import io.circe.Decoder.Result
 
-
 class EnumValueTest extends munit.FunSuite:
 
   inline def deriveEnumValueEncoder[A]: Encoder[A] =

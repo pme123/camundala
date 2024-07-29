@@ -37,7 +37,7 @@ sealed trait Worker[
   def inConfigVariableNames: Seq[String] =
     in match
       case i: WithConfig[?] =>
-          i.defaultConfig.productElementNames.toSeq
+        i.defaultConfig.productElementNames.toSeq
       case _ => Seq.empty
 
   def defaultMock(in: In)(using
