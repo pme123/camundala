@@ -113,7 +113,7 @@ case class ProcessApi[
     Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag
 ](
     name: String,
-    inOut: Process[In, Out],
+    inOut: Process[In, Out, In],
     apiExamples: ApiExamples[In, Out],
     apis: List[InOutApi[?, ?]] = List.empty,
     override val diagramName: Option[String] = None
@@ -146,7 +146,7 @@ object ProcessApi:
   def apply[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
       Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag
-  ](name: String, inOut: Process[In, Out]): ProcessApi[In, Out] =
+  ](name: String, inOut: Process[In, Out, In]): ProcessApi[In, Out] =
     ProcessApi(name, inOut, ApiExamples(name, inOut))
 
 end ProcessApi

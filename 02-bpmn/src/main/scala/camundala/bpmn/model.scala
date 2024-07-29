@@ -132,7 +132,8 @@ end ProcessOrExternalTask
 
 case class Process[
     In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema
+    Out <: Product: InOutEncoder: InOutDecoder: Schema,
+    InitIn <: Product: InOutEncoder: Schema
 ](
     inOutDescr: InOutDescr[In, Out],
     processLabels: ProcessLabels,
@@ -144,7 +145,7 @@ case class Process[
     protected val mockedWorkers: Seq[String] = Seq.empty,
     protected val outputMock: Option[Out] = None,
     protected val impersonateUserId: Option[String] = None
-) extends ProcessOrExternalTask[In, Out, Process[In, Out]]:
+) extends ProcessOrExternalTask[In, Out, Process[In, Out, InitIn]]:
   lazy val inOutType: InOutType = InOutType.Bpmn
 
   lazy val processName = inOutDescr.id
@@ -153,54 +154,54 @@ case class Process[
     io
   }
 
-  def withInOutDescr(descr: InOutDescr[In, Out]): Process[In, Out] =
+  def withInOutDescr(descr: InOutDescr[In, Out]): Process[In, Out, InitIn] =
     copy(inOutDescr = descr)
 
-  def withElements(elements: (ProcessNode | InOut[?, ?, ?])*): Process[In, Out] =
+  def withElements(elements: (ProcessNode | InOut[?, ?, ?])*): Process[In, Out, InitIn] =
     this.copy(elements = elements)
 
-  def withImpersonateUserId(impersonateUserId: String): Process[In, Out] =
+  def withImpersonateUserId(impersonateUserId: String): Process[In, Out, InitIn] =
     copy(impersonateUserId = Some(impersonateUserId))
 
-  def withStartEventType(startEventType: StartEventType): Process[In, Out] =
+  def withStartEventType(startEventType: StartEventType): Process[In, Out, InitIn] =
     copy(startEventType = startEventType)
 
-  def mockServices: Process[In, Out] =
+  def mockServices: Process[In, Out, InitIn] =
     copy(servicesMocked = true)
 
-  def mockWith(outputMock: Out): Process[In, Out] =
+  def mockWith(outputMock: Out): Process[In, Out, InitIn] =
     copy(outputMock = Some(outputMock))
 
-  def mockWorkers(workerNames: String*): Process[In, Out] =
+  def mockWorkers(workerNames: String*): Process[In, Out, InitIn] =
     copy(mockedWorkers = workerNames)
 
-  def mockWorker(workerName: String): Process[In, Out] =
+  def mockWorker(workerName: String): Process[In, Out, InitIn] =
     copy(mockedWorkers = mockedWorkers :+ workerName)
 
   def withEnumInExample(
       enumInExample: In
-  ): Process[In, Out] =
+  ): Process[In, Out, InitIn] =
     copy(otherEnumInExamples =
       Some(otherEnumInExamples.getOrElse(Seq.empty) :+ enumInExample)
     )
 
   def withEnumOutExample(
       enumOutExample: Out
-  ): Process[In, Out] =
+  ): Process[In, Out, InitIn] =
     copy(otherEnumOutExamples =
       Some(otherEnumOutExamples.getOrElse(Seq.empty) :+ enumOutExample)
     )
 
   def withEnumInExamples(
       enumInExamples: In*
-  ): Process[In, Out] =
+  ): Process[In, Out, InitIn] =
     copy(otherEnumInExamples =
       Some(otherEnumInExamples.getOrElse(Seq.empty) ++ enumInExamples)
     )
 
   def withEnumOutExamples(
       enumOutExamples: Out*
-  ): Process[In, Out] =
+  ): Process[In, Out, InitIn] =
     copy(otherEnumOutExamples =
       Some(otherEnumOutExamples.getOrElse(Seq.empty) ++ enumOutExamples)
     )

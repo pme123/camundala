@@ -15,7 +15,7 @@ trait BpmnProcessDsl extends BpmnDsl:
   ](
       in: In = NoInput(),
       out: Out = NoOutput()
-  ): Process[In, Out] =
+  ): Process[In, Out, In] =
     Process(InOutDescr(processName, in, out, Some(description)), processLabels)
 
   private lazy val description: String =

@@ -47,7 +47,7 @@ trait InitWorkerDsl[
       ValidateDsl[In],
       InitProcessDsl[In, InConfig]:
 
-  protected def inOutExample: Process[In, Out]
+  protected def inOutExample: Process[In, Out, In]
 
   lazy val worker: InitWorker[In, Out] =
     InitWorker(inOutExample)
