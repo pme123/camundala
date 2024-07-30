@@ -20,7 +20,17 @@ object ReviewInvoice extends BpmnProcessDsl:
   object In:
     given ApiSchema[In] = deriveApiSchema
     given InOutCodec[In] = deriveCodec
-  end In
+
+  case class InitIn(
+      creditor: String = "Great Pizza for Everyone Inc.",
+      amount: Double = 300.0,
+      invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`,
+      invoiceNumber: String = "I-12345",
+      justToTestInit: Double = 150.0
+  )
+  object InitIn:
+    given ApiSchema[InitIn] = deriveApiSchema
+    given InOutCodec[InitIn] = deriveCodec
 
   case class Out(
       @description("Flag that is set by the Reviewer")
@@ -34,7 +44,8 @@ object ReviewInvoice extends BpmnProcessDsl:
   lazy val example =
     process(
       in = In(),
-      out = Out()
+      out = Out(),
+      initIn = InitIn()
     )
 
   object AssignReviewerUT:

@@ -136,6 +136,7 @@ case class Process[
     InitIn <: Product: InOutEncoder: Schema
 ](
     inOutDescr: InOutDescr[In, Out],
+    InitIn: InitIn = NoInput(),
     processLabels: ProcessLabels,
     protected val elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty,
     startEventType: StartEventType = StartEventType.None,

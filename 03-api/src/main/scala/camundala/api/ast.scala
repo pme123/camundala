@@ -110,17 +110,18 @@ end InOutApi
 
 case class ProcessApi[
     In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag
+    Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
+    InitIn <: Product: InOutEncoder: InOutDecoder: Schema
 ](
     name: String,
-    inOut: Process[In, Out, In],
+    inOut: Process[In, Out, InitIn],
     apiExamples: ApiExamples[In, Out],
     apis: List[InOutApi[?, ?]] = List.empty,
     override val diagramName: Option[String] = None
 ) extends InOutApi[In, Out],
       GroupedApi:
 
-  def withApis(apis: List[InOutApi[?, ?]]): ProcessApi[In, Out] = copy(apis = apis)
+  def withApis(apis: List[InOutApi[?, ?]]): ProcessApi[In, Out, InitIn] = copy(apis = apis)
   def withExamples(
       examples: ApiExamples[In, Out]
   ): InOutApi[In, Out] =
@@ -145,8 +146,9 @@ end ProcessApi
 object ProcessApi:
   def apply[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag
-  ](name: String, inOut: Process[In, Out, In]): ProcessApi[In, Out] =
+      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
+      InitIn <: Product: InOutEncoder: InOutDecoder: Schema
+  ](name: String, inOut: Process[In, Out, InitIn]): ProcessApi[In, Out, InitIn] =
     ProcessApi(name, inOut, ApiExamples(name, inOut))
 
 end ProcessApi

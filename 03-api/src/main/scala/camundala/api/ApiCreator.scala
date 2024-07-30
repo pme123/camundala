@@ -309,7 +309,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
   // takes exactly one api
   private def collectApisWithGroup(apiDoc: ApiDoc): List[(InOutApi[?, ?], String)] =
     apiDoc.apis.foldLeft(List.empty[(InOutApi[?, ?], String)]) {
-      case (result, groupedApi: ProcessApi[?, ?]) =>
+      case (result, groupedApi: ProcessApi[?, ?, ?]) =>
         result ++ (groupedApi.apis :+ groupedApi).map(_ -> groupedApi.name)
       case (result, groupedApi: GroupedApi) =>
         result ++ groupedApi.apis.map(_ -> groupedApi.name)

@@ -11,12 +11,23 @@ trait BpmnProcessDsl extends BpmnDsl:
 
   def process[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema
+      Out <: Product: InOutEncoder: InOutDecoder: Schema,
+      InitIn <: Product: InOutEncoder: Schema,
   ](
       in: In = NoInput(),
-      out: Out = NoOutput()
+      out: Out = NoOutput(),
+      initIn: InitIn = NoInput(),
+  ): Process[In, Out, InitIn] =
+    Process(InOutDescr(processName, in, out, Some(description)), initIn, processLabels)
+  
+  def process[
+      In <: Product: InOutEncoder: InOutDecoder: Schema,
+      Out <: Product: InOutEncoder: InOutDecoder: Schema
+  ](
+      in: In,
+      out: Out
   ): Process[In, Out, In] =
-    Process(InOutDescr(processName, in, out, Some(description)), processLabels)
+    process(in, out, in)
 
   private lazy val description: String =
     s"""|

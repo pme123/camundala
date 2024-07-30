@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Invoice Example Process API
   version: '1.0'
-  summary: "\n\n\n\n\nCreated at 16.07.2024, 17:16\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)**\n\
+  summary: "\n\n\n\n\nCreated at 30.07.2024, 10:59\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)**\n\
     \nThere is no README.md in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>General\
     \ Variables</i></b>\n</summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\
     \nMock all the _ServiceWorkers_ in your process with their default Mock:\n\n-\
@@ -67,12 +67,12 @@ paths:
         \ Element**: `example-invoice-c7` (to define in the Call Activity)\n\n\n\n\
         ---\n\n\n\n\n- Input:  `camundala.examples.invoice.bpmn.InvoiceReceipt > In`\n\
         - Output: `camundala.examples.invoice.bpmn.InvoiceReceipt > Out`\n\n\n<div\
-        \ class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-57013\"\
+        \ class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-65080\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7.bpmn', new BpmnJS({ container:\
-        \ $('#example-invoice-c7-57013'), height: '95%', width: '95%' }));\" src=\"\
+        \ $('#example-invoice-c7-65080'), height: '95%', width: '95%' }));\" src=\"\
         data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7.bpmn](diagrams/example-invoice-c7.bpmn)\n\
-        \n\n<div>\n  <button onclick=\"downloadSVG('example-invoice-c7-57013')\">Download\
+        \n\n<div>\n  <button onclick=\"downloadSVG('example-invoice-c7-65080')\">Download\
         \ Diagram as SVG</button>\n</div>\n\n<p/>\n\n<details>\n<summary>\n<b><i>General\
         \ Variable(s)</i></b>\n</summary>\n\n<p>\n\n**outputVariables**:\n\nJust take\
         \ the variable you need in your process!\n```json\n...\n\"outputVariables\"\
@@ -128,8 +128,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-78058">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-78058'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-89537">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-89537'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -137,7 +137,7 @@ paths:
 
 
         <div>
-          <button onclick="downloadSVG('example-invoice-c7-assignApprover-78058')">Download Diagram as SVG</button>
+          <button onclick="downloadSVG('example-invoice-c7-assignApprover-89537')">Download Diagram as SVG</button>
         </div>
 
       operationId: 'Dmn: example-invoice-c7-assignApprover'
@@ -289,12 +289,12 @@ paths:
         \ Element**: `example-invoice-c7-review` (to define in the Call Activity)\n\
         \n\n\n---\n\n\n\n\n- Input:  `camundala.examples.invoice.bpmn.ReviewInvoice\
         \ > In`\n- Output: `camundala.examples.invoice.bpmn.ReviewInvoice > Out`\n\
-        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-80533\"\
+        \n\n<div class=\"diagramCanvas\">\n  <div class=\"diagram\" id=\"example-invoice-c7-review-25795\"\
         >\n    <img onLoad=\"openFromUrl('example-invoice-c7-review.bpmn', new BpmnJS({\
-        \ container: $('#example-invoice-c7-review-80533'), height: '95%', width:\
+        \ container: $('#example-invoice-c7-review-25795'), height: '95%', width:\
         \ '95%' }));\" src=\"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\"\
         \ />\n  </div>\n</div>\n\nDownload: [example-invoice-c7-review.bpmn](diagrams/example-invoice-c7-review.bpmn)\n\
-        \n\n<div>\n  <button onclick=\"downloadSVG('example-invoice-c7-review-80533')\"\
+        \n\n<div>\n  <button onclick=\"downloadSVG('example-invoice-c7-review-25795')\"\
         >Download Diagram as SVG</button>\n</div>\n\n<p/>\n\n<details>\n<summary>\n\
         <b><i>General Variable(s)</i></b>\n</summary>\n\n<p>\n\n**outputVariables**:\n\
         \nJust take the variable you need in your process!\n```json\n...\n\"outputVariables\"\
@@ -678,8 +678,8 @@ paths:
 
 
         <div class="diagramCanvas">
-          <div class="diagram" id="example-invoice-c7-assignApprover-62270">
-            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-62270'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
+          <div class="diagram" id="example-invoice-c7-assignApprover-37921">
+            <img onLoad="openFromUrl('example-invoice-c7-assignApprover.dmn', new DmnJS({ container: $('#example-invoice-c7-assignApprover-37921'), height: '95%', width: '95%' }));" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />
           </div>
         </div>
 
@@ -687,7 +687,7 @@ paths:
 
 
         <div>
-          <button onclick="downloadSVG('example-invoice-c7-assignApprover-62270')">Download Diagram as SVG</button>
+          <button onclick="downloadSVG('example-invoice-c7-assignApprover-37921')">Download Diagram as SVG</button>
         </div>
 
       operationId: 'Dmn: example-invoice-c7-assignApprover'

@@ -20,7 +20,7 @@ trait TapirApiCreator extends AbstractApiCreator:
       println(s"Start Grouped API: ${groupedApi.name}")
       val apis = groupedApi.apis.flatMap(_.create(groupedApi.name))
       groupedApi match
-        case pa: ProcessApi[?, ?] =>
+        case pa: ProcessApi[?, ?, ?] =>
           pa.createEndpoint(pa.name, pa.additionalDescr) ++ apis
         case _: CApiGroup => apis
 
@@ -131,7 +131,7 @@ trait TapirApiCreator extends AbstractApiCreator:
           )
   end extension
 
-  extension (pa: ProcessApi[?, ?] | ExternalTaskApi[?, ?])
+  extension (pa: ProcessApi[?, ?, ?] | ExternalTaskApi[?, ?])
     def processName: String =
       pa.inOut.in match
         case gs: GenericServiceIn =>
