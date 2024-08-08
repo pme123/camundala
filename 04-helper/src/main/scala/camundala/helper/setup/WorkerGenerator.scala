@@ -88,12 +88,12 @@ case class WorkerGenerator()(using config: SetupConfig):
        |import ${config.projectPackage}.bpmn.$processName${version.versionPackage}.$workerName.*
        |
        |@Configuration
-       |class ${workerName}Worker extends CompanyInitWorkerDsl[In, Out, InConfig]:
+       |class ${workerName}Worker extends CompanyInitWorkerDsl[In, Out, InitIn, InConfig]:
        |
        |  lazy val inOutExample = example
        |
-       |  override def customInit(in: In): Map[String, Any] =
-       |    Map() //TODO add variable initialisation (to simplify the process expressions) or remove function
+       |  override def customInit(in: In): InitIn =
+       |    InitIn() //TODO add variable initialisation (to simplify the process expressions) or remove function
        |  
        |end ${workerName}Worker""".stripMargin
   end processWorker
@@ -154,7 +154,7 @@ case class WorkerGenerator()(using config: SetupConfig):
       s"""
          |  test("customInit ${setupElement.bpmnName}"):
          |    val in = In()
-         |    val out = Map.empty[String, Any]
+         |    val out = InitIn()
          |    assertEquals(
          |      worker.customInit(in),
          |      out

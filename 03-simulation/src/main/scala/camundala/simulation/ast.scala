@@ -43,7 +43,7 @@ case class ProcessScenario(
     // this is message name in case of MESSAGE
     // this is signal name in case of SIGNAL
     name: String,
-    process: Process[?, ?],
+    process: Process[?, ?, ?],
     steps: List[SStep] = List.empty,
     isIgnored: Boolean = false,
     isOnly: Boolean = false,
@@ -111,13 +111,13 @@ end DmnScenario
 
 case class BadScenario(
     name: String,
-    process: Process[?, ?],
+    process: Process[?, ?, ?],
     status: Int,
     errorMsg: Option[String],
     isIgnored: Boolean = false,
     isOnly: Boolean = false
 ) extends IsProcessScenario:
-  lazy val inOut: Process[?, ?] = process
+  lazy val inOut: Process[?, ?, ?] = process
   lazy val steps: List[SStep] = List.empty
   def ignored: BadScenario = copy(isIgnored = true)
   def only: BadScenario = copy(isOnly = true)
@@ -131,14 +131,14 @@ trait IsIncidentScenario extends IsProcessScenario, HasProcessSteps:
 
 case class IncidentScenario(
     name: String,
-    process: Process[?, ?],
+    process: Process[?, ?, ?],
     steps: List[SStep] = List.empty,
     incidentMsg: String,
     isIgnored: Boolean = false,
     isOnly: Boolean = false
 ) extends IsIncidentScenario,
       HasProcessSteps:
-  lazy val inOut: Process[?, ?] = process
+  lazy val inOut: Process[?, ?, ?] = process
 
   def ignored: IncidentScenario = copy(isIgnored = true)
 
@@ -193,14 +193,14 @@ end SUserTask
 
 case class SSubProcess(
     name: String,
-    process: Process[?, ?],
+    process: Process[?, ?, ?],
     steps: List[SStep],
     testOverrides: Option[TestOverrides] = None
 ) extends SInServiceOuttep,
       HasProcessSteps:
 
   lazy val processName: String = process.processName
-  lazy val inOut: Process[?, ?] = process
+  lazy val inOut: Process[?, ?, ?] = process
 
   def add(testOverride: TestOverride): SSubProcess =
     copy(testOverrides = addOverride(testOverride))

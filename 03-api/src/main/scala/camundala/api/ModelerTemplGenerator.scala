@@ -17,7 +17,7 @@ final case class ModelerTemplGenerator(
       case api: ExternalTaskApi[?, ?] =>
         println(s"ExternalTaskApi supported for Modeler Template: ${api.id}")
         generateTempl(api)
-      case api: ProcessApi[?, ?] if !api.inOut.in.isInstanceOf[GenericServiceIn] =>
+      case api: ProcessApi[?, ?, ?] if !api.inOut.in.isInstanceOf[GenericServiceIn] =>
         println(s"ProcessApi supported for Modeler Template: ${api.id} - ${api.name}")
         generateTempl(api)
       case api =>
@@ -58,7 +58,7 @@ final case class ModelerTemplGenerator(
     )
   end generateTempl
 
-  private def generateTempl(inOut: ProcessApi[?, ?]): Unit =
+  private def generateTempl(inOut: ProcessApi[?, ?, ?]): Unit =
     generateTempl(
       inOut.inOutDescr,
       AppliesTo.activity,

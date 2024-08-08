@@ -15,6 +15,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.0 - 2024-08-08
+### Changed 
+- Added InitWorker to Api Config. - see [Commit](https://github.com/pme123/camundala/commit/11f10c095b66fe51f91c278c6da737d0d4e07dc3)
+- Adjusted BpmnGenerator and WorkerGenerator for InitIn. - see [Commit](https://github.com/pme123/camundala/commit/d06ad88e8048574c668ffd8d63b1028058d463fa)
+- Added InitIn Type - no compile errors. - see [Commit](https://github.com/pme123/camundala/commit/040b87de98e5f1bbb88f70a9626bde25d81c379e)
+- MAP-8900: Added InitIn Type to Process Class. - see [Commit](https://github.com/pme123/camundala/commit/31ee4c40d4cecb74bbc6eb479257531ee1cbfdb6)
+- fixed getTypes in SeviceClassesCreator. - see [Commit](https://github.com/pme123/camundala/commit/c27a8f002c92cdcd430963708271e95ccce44f16)
+- Adjusted shortName for GenericeServiceIn. - see [Commit](https://github.com/pme123/camundala/commit/8a7bbea4e4552d8a562d055d18d895a57601e766)
+- Adjustments in TopicName for API generation. - see [Commit](https://github.com/pme123/camundala/commit/c768e316880e0d0e8480a1365cb3b3d79890528b)
+
 ## 1.29.29 - 2024-07-16
 ### Changed 
 - General ProcessStatus modified / some adjustments in Generators. - see [Commit](https://github.com/pme123/camundala/commit/c8a2da1983a4fa21ae69a0d18ac41161508af924)
