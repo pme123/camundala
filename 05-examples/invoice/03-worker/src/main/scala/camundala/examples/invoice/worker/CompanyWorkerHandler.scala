@@ -9,8 +9,9 @@ trait CompanyWorkerHandler extends C7WorkerHandler
 trait CompanyInitWorkerDsl[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
+    InitIn <: Product: InOutCodec,
     InConfig <: Product: InOutCodec
-] extends CompanyWorkerHandler, InitWorkerDsl[In, Out, InConfig]
+] extends CompanyWorkerHandler, InitWorkerDsl[In, Out, InitIn, InConfig]
 
 trait CompanyCustomWorkerDsl[
     In <: Product: InOutCodec,

@@ -7,9 +7,9 @@ import camundala.worker.InitWorkerDsl
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class ReviewCompanyWorker extends CompanyWorkerHandler, InitWorkerDsl[In, Out, InConfig]:
+class ReviewCompanyWorker extends CompanyWorkerHandler, InitWorkerDsl[In, Out, InitIn, InConfig]:
 
-  lazy val inOutExample: bpmn.Process[In, Out] = example
+  lazy val inOutExample: bpmn.Process[In, Out, InitIn] = example
 
   override def validate(in: In): Either[ValidatorError, In] =
     logger.info(s"Do some custom validation...")
@@ -18,9 +18,14 @@ class ReviewCompanyWorker extends CompanyWorkerHandler, InitWorkerDsl[In, Out, I
     Right(in)
   end validate
 
-  override def initProcess(in: In): Either[InitProcessError, Map[String, Any]] =
-    // logger.info("Do some variable initialization...")
-    super.initProcess(in).map(_ + ("justToTestInit" -> in.amount))
-  end initProcess
+  override def customInit(in: In): InitIn =
+    InitIn(
+      in.creditor,
+      in.amount,
+      in.invoiceCategory,
+      in.invoiceNumber,
+      justToTestInit = in.amount / 2
+    )
+  end customInit
 
 end ReviewCompanyWorker

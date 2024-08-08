@@ -92,20 +92,20 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     scen.withSteps(body.toList)
 
   inline def badScenario(
-      inline process: Process[?, ?],
+      inline process: Process[?, ?, ?],
       status: Int,
       errorMsg: Optable[String] = None
   ): BadScenario =
     BadScenario(nameOfVariable(process), process, status, errorMsg.value)
 
   inline def incidentScenario(
-      inline process: Process[?, ?],
+      inline process: Process[?, ?, ?],
       incidentMsg: String
   )(body: SStep*): IncidentScenario =
     IncidentScenario(nameOfVariable(process), process, body.toList, incidentMsg)
 
   inline def incidentScenario(
-      inline process: Process[?, ?],
+      inline process: Process[?, ?, ?],
       incidentMsg: String
   ): IncidentScenario =
     incidentScenario(process, incidentMsg)()
@@ -116,13 +116,13 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
   ): IncidentServiceScenario =
     IncidentServiceScenario(nameOfVariable(process), process, incidentMsg)
 
-  inline def subProcess(inline process: Process[?, ?])(
+  inline def subProcess(inline process: Process[?, ?, ?])(
       body: SStep*
   ): SSubProcess =
     SSubProcess(nameOfVariable(process), process, body.toList)
 
-  inline given Conversion[Process[?, ?], ProcessScenario] with
-    inline def apply(process: Process[?, ?]): ProcessScenario =
+  inline given Conversion[Process[?, ?, ?], ProcessScenario] with
+    inline def apply(process: Process[?, ?, ?]): ProcessScenario =
       ProcessScenario(nameOfVariable(process), process)
 
   inline given Conversion[ServiceTask[?, ?, ?, ?], ExternalTaskScenario] with

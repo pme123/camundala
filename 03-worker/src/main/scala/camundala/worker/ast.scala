@@ -37,7 +37,7 @@ sealed trait Worker[
   def inConfigVariableNames: Seq[String] =
     in match
       case i: WithConfig[?] =>
-          i.defaultConfig.productElementNames.toSeq
+        i.defaultConfig.productElementNames.toSeq
       case _ => Seq.empty
 
   def defaultMock(in: In)(using
@@ -52,27 +52,28 @@ end Worker
 
 case class InitWorker[
     In <: Product: InOutCodec,
-    Out <: Product: InOutCodec
+    Out <: Product: InOutCodec,
+    InitIn <: Product: InOutEncoder
 ](
     inOutExample: InOut[In, Out, ?],
     override val validationHandler: Option[ValidationHandler[In]] = None,
     override val initProcessHandler: Option[InitProcessHandler[In]] = None
-) extends Worker[In, Out, InitWorker[In, Out]]:
+) extends Worker[In, Out, InitWorker[In, Out, InitIn]]:
   lazy val topic: String = inOutExample.id
 
   def validate(
       validator: ValidationHandler[In]
-  ): InitWorker[In, Out] =
+  ): InitWorker[In, Out, InitIn] =
     copy(validationHandler = Some(validator))
 
   def initProcess(
       init: InitProcessHandler[In]
-  ): InitWorker[In, Out] =
+  ): InitWorker[In, Out, InitIn] =
     copy(initProcessHandler = Some(init))
 
   def executor(using
       context: EngineRunContext
-  ): WorkerExecutor[In, Out, InitWorker[In, Out]] =
+  ): WorkerExecutor[In, Out, InitWorker[In, Out, InitIn]] =
     WorkerExecutor(this)
 
 end InitWorker

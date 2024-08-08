@@ -26,6 +26,8 @@ object InvoiceReceipt extends BpmnProcessDsl:
     given InOutCodec[In] = deriveCodec
   end In
 
+  type InitIn = In
+
   case class Out(
       @description("If true, the Boss accepted the Invoice")
       approved: Boolean = true,

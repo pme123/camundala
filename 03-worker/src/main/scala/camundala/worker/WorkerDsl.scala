@@ -42,14 +42,15 @@ end WorkerDsl
 trait InitWorkerDsl[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
+    InitIn <: Product: InOutEncoder,
     InConfig <: Product: InOutCodec
 ] extends WorkerDsl[In, Out],
       ValidateDsl[In],
-      InitProcessDsl[In, InConfig]:
+      InitProcessDsl[In, InitIn, InConfig]:
 
-  protected def inOutExample: Process[In, Out]
+  protected def inOutExample: Process[In, Out, InitIn]
 
-  lazy val worker: InitWorker[In, Out] =
+  lazy val worker: InitWorker[In, Out, InitIn] =
     InitWorker(inOutExample)
       .validate(ValidationHandler(validate))
       .initProcess(InitProcessHandler(initProcess, inOutExample.processLabels))
@@ -63,7 +64,7 @@ trait ValidationWorkerDsl[
 
   protected def inOutExample: ReceiveEvent[In, ?]
 
-  lazy val worker: InitWorker[In, NoOutput] =
+  lazy val worker: InitWorker[In, NoOutput, In] =
     InitWorker(inOutExample)
       .validate(ValidationHandler(validate))
 
@@ -166,14 +167,15 @@ end ValidateDsl
 
 private trait InitProcessDsl[
     In <: Product: InOutCodec,
+    InitIn <: Product: InOutCodec,
     InConfig <: Product: InOutCodec
 ]:
   protected def engineContext: EngineContext
 
-  protected def customInit(in: In): Map[String, Any] = Map.empty
+  protected def customInit(in: In): InitIn
 
   // by default the InConfig is initialized
-  def initProcess(in: In): Either[InitProcessError, Map[String, Any]] =
+  final def initProcess(in: In): Either[InitProcessError, Map[String, Any]] =
     val inConfig = in match
       case i: WithConfig[?] =>
         initConfig(
@@ -181,7 +183,7 @@ private trait InitProcessDsl[
           i.defaultConfig.asInstanceOf[InConfig]
         )
       case _ => Map.empty
-    val custom = engineContext.valuesToEngineObject(customInit(in))
+    val custom = engineContext.toEngineObject(customInit(in))
     Right(inConfig ++ custom)
   end initProcess
 
