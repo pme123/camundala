@@ -174,7 +174,9 @@ case class BpmnGenerator()(using config: SetupConfig):
             |  ) extends WithConfig[InConfig]:
             |    lazy val defaultConfig = InConfig()
             |  end In""".stripMargin
-        else "  )"
+        else """  )
+        |  //type In = NoInput // if no input is needed
+              |  """
       }
       |  object In:
       |    given ApiSchema[In] = deriveApiSchema
@@ -196,6 +198,15 @@ case class BpmnGenerator()(using config: SetupConfig):
             |  object InConfig:
             |    given ApiSchema[InConfig] = deriveApiSchema
             |    given InOutCodec[InConfig] = deriveInOutCodec
+            |
+            |  //type InitIn = In // if no initialisation is needed
+            |  case class InitIn(
+            |    //TODO init variables
+            |  )
+            |  object InitIn:
+            |    given ApiSchema[InitIn] = deriveApiSchema
+            |    given InOutCodec[InitIn] = deriveInOutCodec
+            |
             |""".stripMargin
         else ""
       }
@@ -215,7 +226,9 @@ case class BpmnGenerator()(using config: SetupConfig):
             |        processStatus: ProcessStatus.canceled.type = ProcessStatus.canceled
             |    )
             |  end Out""".stripMargin
-        else """  case class Out(
+        else """
+              |  //type Out = NoOutput // if no output is needed
+              |  case class Out(
               |    //TODO output variables
               |  )""".stripMargin
       }
