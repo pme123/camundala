@@ -136,12 +136,13 @@ case class Process[
     InitIn <: Product: InOutEncoder: Schema
 ](
     inOutDescr: InOutDescr[In, Out],
-    InitIn: InitIn = NoInput(),
+    initIn: InitIn = NoInput(),
     processLabels: ProcessLabels,
     protected val elements: Seq[ProcessNode | InOut[?, ?, ?]] = Seq.empty,
     startEventType: StartEventType = StartEventType.None,
     otherEnumInExamples: Option[Seq[In]] = None,
     otherEnumOutExamples: Option[Seq[Out]] = None,
+    initInDescr: Option[String] = None,
     protected val servicesMocked: Boolean = false,
     protected val mockedWorkers: Seq[String] = Seq.empty,
     protected val outputMock: Option[Out] = None,
@@ -206,6 +207,11 @@ case class Process[
     copy(otherEnumOutExamples =
       Some(otherEnumOutExamples.getOrElse(Seq.empty) ++ enumOutExamples)
     )
+
+  def withInitInDescr(
+      descr: String
+  ): Process[In, Out, InitIn] =
+    copy(initInDescr = Some(descr))
 
   override def camundaInMap: Map[String, CamundaVariable] =
     val camundaMockedWorkers =

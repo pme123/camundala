@@ -21,8 +21,11 @@ trait TapirApiCreator extends AbstractApiCreator:
       val apis = groupedApi.apis.flatMap(_.create(groupedApi.name))
       groupedApi match
         case pa: ProcessApi[?, ?, ?] =>
-          pa.createEndpoint(pa.name, pa.additionalDescr) ++ apis
+          pa.createEndpoint(pa.name, pa.additionalDescr) ++
+            pa.createInitEndpoint(pa.name) ++ apis
         case _: CApiGroup => apis
+      end match
+    end create
 
   end extension
 
@@ -45,23 +48,88 @@ trait TapirApiCreator extends AbstractApiCreator:
 
   end extension
 
+  extension (processApi: ProcessApi[?, ?, ?])
+    // creates the Init Worker Endpoint - each Process has one (not for GenericService)
+    def createInitEndpoint(tagFull: String): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+      if hasInitIn then
+        val eTag = processApi.tag(tagFull)
+        Seq(
+          endpoint
+            .name("Init Worker")
+            .tag(eTag)
+            .in(processApi.path(eTag) / "init")
+            .summary("Init Worker")
+            .description(
+              s"""|${processApi.inOut.initInDescr.mkString}
+                  |
+                  |The Init Worker has the following responsibilities:
+                  |
+                  |  - Validates the Process Input (`In`). -> by Camundala
+                  |  - Maps the Configuration to Process Variables (`InConfig`). -> by Camundala
+                  |  - Custom validation the Process Input (`In`, e.g. combining 2 variables). -> Process Specific
+                  |  - Initializes the default Variables. -> Process Specific
+                  |
+                  |The Result is defined in the `InitIn` class/enum.
+                  |""".stripMargin
+            )
+            .head
+        ).map(ep => processApi.toInput.map(ep.in).getOrElse(ep))
+          .map(ep => ep.out(processApi.toInitIn))
+      else
+        Seq.empty
+    end createInitEndpoint
+
+    private def hasInitIn: Boolean =
+      processApi.inOut.initIn match
+        case _: NoOutput =>
+          false
+        case i if i.getClass == processApi.inOut.in.getClass =>
+          false
+        case _ =>
+          true
+    end hasInitIn
+
+    private def toInitIn: EndpointOutput[?] =
+      processApi.initInMapper
+        .examples(
+          List(
+            Example(
+              processApi.inOut.initIn,
+              Some("InitIn"),
+              None
+            )
+          )
+        )
+  end extension
   extension (inOutApi: InOutApi[?, ?])
+
     def createEndpoint(
         tagFull: String,
         additionalDescr: Option[String] = None
     ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
-      val tagOrig = refIdentShort(tagFull)
-      val tag =
-        if tagOrig == tagFull then
-          tagOrig
-        else
-          tagOrig.head.toUpper + tagOrig.tail.map {
-            case c: Char if c.isUpper => s" $c"
-            case c => s"$c"
-          }.mkString
+      val eTag = tag(tagFull)
+      Seq(
+        endpoint
+          .name(inOutApi.endpointName)
+          .tag(eTag)
+          .in(path(eTag))
+          .summary(inOutApi.endpointName)
+          .description(
+            inOutApi.apiDescription(
+              apiConfig.diagramDownloadPath,
+              apiConfig.diagramNameAdjuster
+            ) + additionalDescr.getOrElse("")
+          )
+          .head
+      ).map(ep => inOutApi.toInput.map(ep.in).getOrElse(ep))
+        .map(ep => inOutApi.toOutput.map(ep.out).getOrElse(ep))
+    end createEndpoint
+
+    def path(tag: String): EndpointInput[Unit] =
       val refId = refIdentShort(inOutApi.id, projectName)
       val tagPath = tag.replace(" ", "")
-      val path: EndpointInput[Unit] = inOutApi.inOut.in match
+
+      inOutApi.inOut.in match
         case gs: GenericServiceIn =>
           inOutApi.inOutType.toString / refId / gs.serviceName
         case _ if tagPath == refId =>
@@ -78,23 +146,21 @@ trait TapirApiCreator extends AbstractApiCreator:
               " ",
               ""
             )
+      end match
+    end path
 
-      Seq(
-        endpoint
-          .name(inOutApi.endpointName)
-          .tag(tag)
-          .in(path)
-          .summary(inOutApi.endpointName)
-          .description(
-            inOutApi.apiDescription(
-              apiConfig.diagramDownloadPath,
-              apiConfig.diagramNameAdjuster
-            ) + additionalDescr.getOrElse("")
-          )
-          .head
-      ).map(ep => inOutApi.toInput.map(ep.in).getOrElse(ep))
-        .map(ep => inOutApi.toOutput.map(ep.out).getOrElse(ep))
-    end createEndpoint
+    def tag(tagFull: String) =
+      val tagOrig = refIdentShort(tagFull)
+
+      if tagOrig == tagFull then
+        tagOrig
+      else
+        tagOrig.head.toUpper + tagOrig.tail.map {
+          case c: Char if c.isUpper => s" $c"
+          case c => s"$c"
+        }.mkString
+      end if
+    end tag
 
     private def toInput: Option[EndpointInput[?]] =
       inOutApi.inOut.in match
@@ -129,6 +195,7 @@ trait TapirApiCreator extends AbstractApiCreator:
                   )
               }.toList)
           )
+
   end extension
 
   extension (pa: ProcessApi[?, ?, ?] | ExternalTaskApi[?, ?])

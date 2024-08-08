@@ -141,6 +141,10 @@ case class ProcessApi[
             .getOrElse("")
       }
        |${generalVariablesDescr(inOut.out, "")}""".stripMargin
+
+      // this function needs to be here as circe does not find the JsonEncoder in the extension method
+  lazy val initInMapper: EndpointIO.Body[String, InitIn] = jsonBody[InitIn]
+
 end ProcessApi
 
 object ProcessApi:
