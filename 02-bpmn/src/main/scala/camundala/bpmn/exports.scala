@@ -170,5 +170,19 @@ given valueEncoder: InOutEncoder[ValueSimple] with
 given valueDecoder: InOutDecoder[ValueSimple] with
   def apply(c: HCursor): Decoder.Result[ValueSimple] =
     c.as[Int].orElse(c.as[Long]).orElse(c.as[Double]).orElse(c.as[String]).orElse(c.as[Boolean])
-    
+
 given InOutCodec[ValueSimple] = CirceCodec.from(valueDecoder, valueEncoder)
+
+lazy val OldName = """^.+\-(.+\.(post|get|patch|put|delete))$""".r
+lazy val NewName = """^.+\-(.+V.+-(.+))$""".r
+lazy val OtherName = """^.+\-(.+-.+)$""".r
+
+def shortenName(name: String): String = name match
+  case OldName(n, _) =>
+    n.split("\\.").drop(1).mkString(".")
+  case NewName(_, n) =>
+    n
+  case OtherName(n) =>
+    n
+  case _ => // something else
+    name

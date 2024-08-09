@@ -53,7 +53,7 @@ end Worker
 case class InitWorker[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
-    InitIn <: Product: InOutEncoder
+    InitIn <: Product: InOutCodec
 ](
     inOutExample: InOut[In, Out, ?],
     override val validationHandler: Option[ValidationHandler[In]] = None,

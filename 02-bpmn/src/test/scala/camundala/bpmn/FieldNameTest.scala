@@ -2,7 +2,7 @@ package camundala.bpmn
 
 import scala.reflect.Enum
 
-class FielNameTest extends munit.FunSuite:
+class FieldNameTest extends munit.FunSuite:
 
   case class CaseClass(name: String = "peter", id: Int = 12)
 
@@ -21,4 +21,4 @@ class FielNameTest extends munit.FunSuite:
       allFieldNames[CaseEnum],
       Seq("name", "id")
     )
-end FielNameTest
+end FieldNameTest

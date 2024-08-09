@@ -11,36 +11,39 @@ trait TapirApiCreator extends AbstractApiCreator:
     println(s"Start API: ${apiDoc.apis.size} top level APIs")
     apiDoc.apis.flatMap {
       case groupedApi: GroupedApi => groupedApi.create()
-      case cApi: CApi => cApi.create("")
+      case cApi: CApi => throw IllegalArgumentException(
+            s"Sorry, the top level must be a GroupedApi (Group or Process)!\n - Not ${cApi.getClass}"
+          )
     }
   end create
 
   extension (groupedApi: GroupedApi)
     def create(): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       println(s"Start Grouped API: ${groupedApi.name}")
-      val apis = groupedApi.apis.flatMap(_.create(groupedApi.name))
       groupedApi match
         case pa: ProcessApi[?, ?, ?] =>
-          pa.createEndpoint(pa.name, pa.additionalDescr) ++
-            pa.createInitEndpoint(pa.name) ++ apis
-        case _: CApiGroup => apis
+          pa.createEndpoint(pa.id, false, pa.additionalDescr) ++
+            pa.createInitEndpoint(pa.id) ++ 
+            pa.apis.flatMap(_.create(pa.id, false))
+        case _: CApiGroup => 
+          groupedApi.apis.flatMap(_.create(groupedApi.name, true))
       end match
     end create
 
   end extension
 
   extension (cApi: CApi)
-    def create(tag: String): Seq[PublicEndpoint[?, Unit, ?, Any]] =
+    def create(tag: String, tagIsFix: Boolean): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       cApi match
         case da @ DecisionDmnApi(_, _, _, _) =>
-          da.createEndpoint(tag, da.additionalDescr)
+          da.createEndpoint(tag, tagIsFix, da.additionalDescr)
         case aa @ ActivityApi(_, _, _) =>
-          aa.createEndpoint(tag)
+          aa.createEndpoint(tag, tagIsFix)
         case pa @ ProcessApi(name, _, _, apis, _)
             if apis.isEmpty =>
-          pa.createEndpoint(tag, pa.additionalDescr)
+          pa.createEndpoint(tag, tagIsFix, pa.additionalDescr)
         case spa: ExternalTaskApi[?, ?] =>
-          spa.createEndpoint(tag, spa.additionalDescr)
+          spa.createEndpoint(tag, tagIsFix, spa.additionalDescr)
         case ga =>
           throw IllegalArgumentException(
             s"Sorry, only one level of GroupedApi is allowed!\n - $ga"
@@ -52,7 +55,7 @@ trait TapirApiCreator extends AbstractApiCreator:
     // creates the Init Worker Endpoint - each Process has one (not for GenericService)
     def createInitEndpoint(tagFull: String): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       if hasInitIn then
-        val eTag = processApi.tag(tagFull)
+        val eTag = shortenTag(tagFull)
         Seq(
           endpoint
             .name("Init Worker")
@@ -105,15 +108,18 @@ trait TapirApiCreator extends AbstractApiCreator:
 
     def createEndpoint(
         tagFull: String,
+        tagIsFix: Boolean,
         additionalDescr: Option[String] = None
     ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
-      val eTag = tag(tagFull)
+      val eTag = if tagIsFix then tagFull else shortenTag(tagFull)
+      println(s"createEndpoint: $tagIsFix $tagFull >> $eTag")
+      val endpointName = if inOutApi.name == tagFull then "Process" else inOutApi.endpointName      
       Seq(
         endpoint
-          .name(inOutApi.endpointName)
+          .name(endpointName)
           .tag(eTag)
           .in(path(eTag))
-          .summary(inOutApi.endpointName)
+          .summary(endpointName)
           .description(
             inOutApi.apiDescription(
               apiConfig.diagramDownloadPath,
@@ -149,18 +155,6 @@ trait TapirApiCreator extends AbstractApiCreator:
       end match
     end path
 
-    def tag(tagFull: String) =
-      val tagOrig = refIdentShort(tagFull)
-
-      if tagOrig == tagFull then
-        tagOrig
-      else
-        tagOrig.head.toUpper + tagOrig.tail.map {
-          case c: Char if c.isUpper => s" $c"
-          case c => s"$c"
-        }.mkString
-      end if
-    end tag
 
     private def toInput: Option[EndpointInput[?]] =
       inOutApi.inOut.in match

@@ -25,6 +25,7 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
 
   def processName: String = "test-process"
   def example = process(In(), NoOutput())
+  import In.given
   def worker = InitWorker(example)
 
   case class In(aValue: String = "ok", inConfig: Option[InConfig] = None)

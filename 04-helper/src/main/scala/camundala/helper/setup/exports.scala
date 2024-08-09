@@ -18,7 +18,7 @@ case class SetupElement(
     s"Create $label: $bpmnName in ${setupConfig.projectName} / process: $processName ${version.versionLabel}"
   )
   private lazy val bpmnIdentifier =
-    if processName.toLowerCase == bpmnName.toLowerCase then "" else s".$bpmnName"
+    if processName.toLowerCase == bpmnName.toLowerCase then "" else s"-$bpmnName"
 
 end SetupElement
 

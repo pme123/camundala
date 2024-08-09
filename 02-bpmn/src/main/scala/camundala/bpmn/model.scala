@@ -20,13 +20,9 @@ case class InOutDescr[
         p.head.toUpper + p.tail
       .mkString(" ")
   end niceName
-  lazy val OldName = """^.+\-(.+\.(post|get|patch|put|delete))$""".r
-  lazy val shortName: String = id match
-    case OldName(name, _) =>
-      name
-    case _ =>
-      id.split("\\.")
-        .last
+
+  lazy val shortName: String = shortenName(id)
+        
 end InOutDescr
 
 trait Activity[
