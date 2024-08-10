@@ -39,7 +39,7 @@ trait AbstractApiCreator extends ProcessReferenceCreator:
   extension (inOutApi: InOutApi[?, ?])
     def endpointName: String =
       val name = (inOutApi, inOutApi.inOut.in) match
-        case (serviceApi: ServiceWorkerApi[?, ?, ?, ?], _) => serviceApi.inOutDescr.shortName
+        case (_: ServiceWorkerApi[?, ?, ?, ?], _) => inOutApi.inOutDescr.shortName
         case (_, gs: GenericServiceIn) => gs.shortServiceName
         case _ => inOutApi.inOutDescr.shortName
       s"${inOutApi.inOutType}: $name"

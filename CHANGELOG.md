@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.1 - 2024-08-10
+### Changed 
+- Adjusted References to new naming in ProcessReferenceCreator. - see [Commit](https://github.com/pme123/camundala/commit/7d141e22e31ee7b624778cb829b2d08fe2c40f4d)
+- Fixed BPMN/DMN names for API Documentation - see [Commit](https://github.com/pme123/camundala/commit/166989553c38fe3adbee0e92dd4f53015c26445f)
+- Merge branch 'MAP-8900-InitIn-Type' into develop - see [Commit](https://github.com/pme123/camundala/commit/7cc07cd4c4043a430c7ffeab831ba0a849ac2a92)
+
 ## 1.30.0 - 2024-08-08
 ### Changed 
 - Added InitWorker to Api Config. - see [Commit](https://github.com/pme123/camundala/commit/11f10c095b66fe51f91c278c6da737d0d4e07dc3)

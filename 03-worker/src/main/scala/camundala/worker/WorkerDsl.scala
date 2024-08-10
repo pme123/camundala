@@ -42,7 +42,7 @@ end WorkerDsl
 trait InitWorkerDsl[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
-    InitIn <: Product: InOutEncoder,
+    InitIn <: Product: InOutCodec,
     InConfig <: Product: InOutCodec
 ] extends WorkerDsl[In, Out],
       ValidateDsl[In],
