@@ -14,7 +14,7 @@ jobs:
       - name: Setup JDK
         uses: coursier/setup-action@v1
         with:
-          jvm: zulu:22
+          jvm: zulu:21
       - name: Compile
         run: sbt compile
       - name: Documentation
