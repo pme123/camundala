@@ -41,6 +41,10 @@ In this project you find two examples that uses the Features.
 
 # Development
 
+## Update Dependencies
+
+Use https://github.com/kitlangton/given
+
 ## Releasing
 Just run `amm ./publish-release.sc VERSION`.
 
