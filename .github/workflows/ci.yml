@@ -13,6 +13,8 @@ jobs:
         uses: coursier/cache-action@v6  
       - name: Setup JDK
         uses: coursier/setup-action@v1
+        with:
+          jvm: zulu:22
       - name: Compile
         run: sbt compile
       - name: Documentation
