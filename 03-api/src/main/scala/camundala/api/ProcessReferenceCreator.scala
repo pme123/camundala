@@ -4,6 +4,7 @@ import camundala.bpmn.InOutType
 
 import java.io.StringReader
 import scala.xml.XML
+import camundala.bpmn.shortenName
 
 /** Checks all BPMNs if a process is used in another process. As result a list is created that can
   * be included in the Documentation.
@@ -115,7 +116,8 @@ trait ProcessReferenceCreator:
       end extractId
 
       val refId = refIdentShort(extractId, projectName)
-      val anchor = s"#operation/${InOutType.Bpmn}:%20$refId"
+      lazy val identShortProcess = shortenTag(extractId).replace(" ", "-")
+      val anchor = s"#tag/${identShortProcess}"
       projectName -> s"[${InOutType.Bpmn}: $refId](${docProjectUrl(projectName)}/OpenApi.html$anchor)"
     end docuPath
 
@@ -170,14 +172,20 @@ trait ProcessReferenceCreator:
         apiConfig.projectRefId(processRef)
 
       lazy val processIdent: String = serviceName.getOrElse(processId)
-      lazy val identShort = refIdentShort(processIdent)
-      lazy val anchor = s"#operation/$refType:%20$identShort"
+      lazy val identShort = shortenName(processIdent)
+      lazy val identShortProcess = shortenTag(processIdent).replace(" ", "-")
+      lazy val anchorOperation = s"#operation/$refType:%20$identShort"
+      lazy val anchorProcess = s"#tag/${identShortProcess}"
 
       lazy val serviceStr: String =
         serviceName.map(_ => s" ($processId)").getOrElse("")
 
       lazy val asString: String =
-        s"_[$refType: $identShort](${docProjectUrl(project)}/OpenApi.html$anchor)_ $serviceStr"
+        refType match
+          case  InOutType.Bpmn if serviceName.isEmpty =>
+                        s"_[$identShortProcess](${docProjectUrl(project)}/OpenApi.html$anchorProcess)_ $serviceStr"
+          case _ =>  
+            s"_[$refType: $identShort](${docProjectUrl(project)}/OpenApi.html$anchorOperation)_ $serviceStr"
     end UsesRef
 
     private def extractUsesRefs(xmlStr: String) =
