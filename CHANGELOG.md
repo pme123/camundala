@@ -15,6 +15,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.2 - 2024-08-11
+### Changed 
+- Updated missing dependencies. - see [Commit](https://github.com/pme123/camundala/commit/8fb12016fdf4d2e3695f466a7fddb499a7022ed1)
+- Updated Versions. - see [Commit](https://github.com/pme123/camundala/commit/731b5d0f5546c8c70aefc0df4a1358eb28f58e04)
+- adjusted jvm to 21 to be save in github action. - see [Commit](https://github.com/pme123/camundala/commit/4ae06c47e60f1492ab853b5837858b782880afc3)
+- fixing jvm version in Github action - see [Commit](https://github.com/pme123/camundala/commit/2a75444d7cb24f6ea106052c0a9c9cb9b7697a66)
+- Fixed Test failure and Github action warnings. - see [Commit](https://github.com/pme123/camundala/commit/a8645387515517749c243df5fc489a2379d05736)
+
 ## 1.30.1 - 2024-08-10
 ### Changed 
 - Adjusted References to new naming in ProcessReferenceCreator. - see [Commit](https://github.com/pme123/camundala/commit/7d141e22e31ee7b624778cb829b2d08fe2c40f4d)
