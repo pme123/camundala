@@ -4,8 +4,8 @@ class exportsTest extends munit.FunSuite:
 
   test("mycompany-myproject-myprocessV1.MyWorker NEW"):
     assertEquals(
-      shortenName("mycompany-myprocessV1-myprocess.MyWorker"),
-      "myprocess.MyWorker"
+      shortenName("mycompany-myproject-myprocessV1.MyWorker"),
+      "MyWorker"
     )
 
   test("mycompany-myproject-myprocessV1.MyWorker.get OLD"):
