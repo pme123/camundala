@@ -199,7 +199,7 @@ case class BpmnGenerator()(using config: SetupConfig):
             |    given ApiSchema[InConfig] = deriveApiSchema
             |    given InOutCodec[InConfig] = deriveInOutCodec
             |
-            |  //type InitIn = In // if no initialisation is needed
+            |  //type InitIn = NoInput // if no initialisation is needed
             |  case class InitIn(
             |    //TODO init variables
             |  )
