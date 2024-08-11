@@ -12,8 +12,8 @@ trait TapirApiCreator extends AbstractApiCreator:
     apiDoc.apis.flatMap {
       case groupedApi: GroupedApi => groupedApi.create()
       case cApi: CApi => throw IllegalArgumentException(
-            s"Sorry, the top level must be a GroupedApi (Group or Process)!\n - Not ${cApi.getClass}"
-          )
+          s"Sorry, the top level must be a GroupedApi (Group or Process)!\n - Not ${cApi.getClass}"
+        )
     }
   end create
 
@@ -23,9 +23,9 @@ trait TapirApiCreator extends AbstractApiCreator:
       groupedApi match
         case pa: ProcessApi[?, ?, ?] =>
           pa.createEndpoint(pa.id, false, pa.additionalDescr) ++
-            pa.createInitEndpoint(pa.id) ++ 
+            pa.createInitEndpoint(pa.id) ++
             pa.apis.flatMap(_.create(pa.id, false))
-        case _: CApiGroup => 
+        case _: CApiGroup =>
           groupedApi.apis.flatMap(_.create(groupedApi.name, true))
       end match
     end create
@@ -70,13 +70,13 @@ trait TapirApiCreator extends AbstractApiCreator:
                   |  - Validates the Process Input (`In`). -> by Camundala
                   |  - Maps the Configuration to Process Variables (`InConfig`). -> by Camundala
                   |  - Custom validation the Process Input (`In`, e.g. combining 2 variables). -> Process Specific
-                  |  - Initializes the default Variables. -> Process Specific
+                  |  - Initializes the default Variables with `In` as input (see _Process_ description) and `InitIn` as output. -> Process Specific
                   |
-                  |The Result is defined in the `InitIn` class/enum.
+                  |`NoInput` means there is no initialization needed.
                   |""".stripMargin
             )
             .head
-        ).map(ep => processApi.toInput.map(ep.in).getOrElse(ep))
+        )// renders `In` as input: .map(ep => processApi.toInput.map(ep.in).getOrElse(ep))
           .map(ep => ep.out(processApi.toInitIn))
       else
         Seq.empty
@@ -113,7 +113,7 @@ trait TapirApiCreator extends AbstractApiCreator:
     ): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       val eTag = if tagIsFix then tagFull else shortenTag(tagFull)
       println(s"createEndpoint: $tagIsFix $tagFull >> $eTag")
-      val endpointName = if inOutApi.name == tagFull then "Process" else inOutApi.endpointName      
+      val endpointName = if inOutApi.name == tagFull then "Process" else inOutApi.endpointName
       Seq(
         endpoint
           .name(endpointName)
@@ -154,7 +154,6 @@ trait TapirApiCreator extends AbstractApiCreator:
             )
       end match
     end path
-
 
     private def toInput: Option[EndpointInput[?]] =
       inOutApi.inOut.in match
