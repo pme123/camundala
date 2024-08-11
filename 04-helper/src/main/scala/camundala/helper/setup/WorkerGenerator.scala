@@ -94,6 +94,7 @@ case class WorkerGenerator()(using config: SetupConfig):
        |
        |  override def customInit(in: In): InitIn =
        |    InitIn() //TODO add variable initialisation (to simplify the process expressions) or remove function
+       |    // NoInput() // if no initialization is needed
        |  
        |end ${workerName}Worker""".stripMargin
   end processWorker
