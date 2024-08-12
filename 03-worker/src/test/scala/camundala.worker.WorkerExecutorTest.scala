@@ -76,4 +76,14 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
       Right(In(inConfig = Some(InConfig(requiredValue = "aso", optionalValue = Some("nei")))))
     )
 
+  test("Test optional values are null in JSON"):
+    val in = InConfig().asJson.hcursor
+      .downField("optionalValue")
+      .as[Json]
+    val out = Json.Null
+    assertEquals(
+      in,
+      Right(out)
+    )
+ 
 end WorkerExecutorTest

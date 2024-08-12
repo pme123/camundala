@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.5 - 2024-08-12
+### Changed 
+- Added tests null value serialisation / fixed tests - see [Commit](https://github.com/pme123/camundala/commit/ac2009c54160b22cece8a1f5e5c0c0e322696d93)
+- Keep null values in json for Camunda variables. - see [Commit](https://github.com/pme123/camundala/commit/f7e5dbd324dd6f9a79b5dec999d6fdc17663ee3e)
+
 ## 1.30.4 - 2024-08-12
 ### Changed 
 - Fixes in shortenName. - see [Commit](https://github.com/pme123/camundala/commit/8b3694307ffd3f4b74c37199c319ff816463e430)

@@ -52,7 +52,7 @@ trait EngineContext:
       case None | null => null
       case Some(v) => objectToEngineObject(product, key, v)
       case v: (Product | Iterable[?] | Map[?, ?]) =>
-        product.asJson.deepDropNullValues.hcursor
+        product.asJson.hcursor
           .downField(key)
           .as[Json] match
           case Right(v) => jsonToEngineValue(v)
