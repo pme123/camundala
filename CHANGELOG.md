@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.4 - 2024-08-12
+### Changed 
+- Fixes in shortenName. - see [Commit](https://github.com/pme123/camundala/commit/8b3694307ffd3f4b74c37199c319ff816463e430)
+- Fixed older naming in shortenName. - see [Commit](https://github.com/pme123/camundala/commit/18646117382ea715222ccc5d8043f971b5059678)
+
 ## 1.30.3 - 2024-08-11
 ### Changed 
 - Small adjustments to InitWorker api endpoint. - see [Commit](https://github.com/pme123/camundala/commit/cad1ccc0e9d07e3e2ae1f05b7d72e3fbb68a6d0b)

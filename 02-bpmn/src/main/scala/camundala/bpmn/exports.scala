@@ -173,16 +173,22 @@ given valueDecoder: InOutDecoder[ValueSimple] with
 
 given InOutCodec[ValueSimple] = CirceCodec.from(valueDecoder, valueEncoder)
 
-lazy val OldName = """^.+\-(.+\.(post|get|patch|put|delete))$""".r
-lazy val NewName = """^.+\-(.+V.+-(.+))$""".r
-lazy val OtherName = """^.+\-(.+-.+)$""".r
+lazy val NewName = """^.+\-(.+V.+\-(.+))$""".r // mycompany-myproject-myprocessV1-MyWorker
+lazy val OldName1 = """^.+\-(.+\.(post|get|patch|put|delete))$""".r // mycompany-myproject-myprocessV1.MyWorker.get - use NewName for the new naming convention
+lazy val OldName2 = """^.+\-(.+V.+\.(.+))$""".r // mycompany-myproject-myprocessV1.MyWorker - use NewName for the new naming convention
+lazy val OldName3 = """^.+\-.+\-.+\-(.+)$""".r // mycompany-myproject-myprocess-MyWorker - use NewName for the new naming convention
+lazy val OldName4 = """^.+\-.+\-(.+)$""".r // mycompany-myproject-myprocess.MyWorker - use NewName for the new naming convention
 
 def shortenName(name: String): String = name match
-  case OldName(n, _) =>
+  case OldName1(n, _) =>
     n.split("\\.").drop(1).mkString(".")
   case NewName(_, n) =>
     n
-  case OtherName(n) =>
+  case OldName2(_, n) =>
+    n
+  case OldName3(n) =>
+    n
+  case OldName4(n) =>
     n
   case _ => // something else
     name
