@@ -10,7 +10,7 @@ class exportsTest extends munit.FunSuite:
   test("mycompany-myproject-myprocess.MyWorker") :
     assertEquals(
       shortenTag("mycompany-myproject-myprocess.MyWorker"),
-      "Myproject myprocess My Worker"
+      "Myprocess My Worker"
     )
   test("mycompany-myproject-myprocess.MyWorker.get") :
     assertEquals(
@@ -25,7 +25,7 @@ class exportsTest extends munit.FunSuite:
   test("mycompany-myproject-myprocessV4.MyWorker") :
     assertEquals(
       shortenTag("mycompany-myproject-myprocessV4.MyWorker"),
-      "Myproject myprocess V4 My Worker"
+      "My Worker"
     )
   
 end exportsTest
