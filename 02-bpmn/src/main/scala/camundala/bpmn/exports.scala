@@ -173,10 +173,11 @@ given valueDecoder: InOutDecoder[ValueSimple] with
 
 given InOutCodec[ValueSimple] = CirceCodec.from(valueDecoder, valueEncoder)
 
-lazy val NewName = """^.+\-(.+V.+-(.+))$""".r // mycompany-myproject-myprocessV1-MyWorker
+lazy val NewName = """^.+\-(.+V.+\-(.+))$""".r // mycompany-myproject-myprocessV1-MyWorker
 lazy val OldName1 = """^.+\-(.+\.(post|get|patch|put|delete))$""".r // mycompany-myproject-myprocessV1.MyWorker.get - use NewName for the new naming convention
 lazy val OldName2 = """^.+\-(.+V.+\.(.+))$""".r // mycompany-myproject-myprocessV1.MyWorker - use NewName for the new naming convention
-lazy val OtherName = """^.+\-(.+-.+)$""".r // mycompany-myproject-myprocess.MyWorker - use NewName for the new naming convention
+lazy val OldName3 = """^.+\-.+\-.+\-(.+)$""".r // mycompany-myproject-myprocess-MyWorker - use NewName for the new naming convention
+lazy val OldName4 = """^.+\-.+\-(.+)$""".r // mycompany-myproject-myprocess.MyWorker - use NewName for the new naming convention
 
 def shortenName(name: String): String = name match
   case OldName1(n, _) =>
@@ -185,7 +186,9 @@ def shortenName(name: String): String = name match
     n
   case OldName2(_, n) =>
     n
-  case OtherName(n) =>
+  case OldName3(n) =>
+    n
+  case OldName4(n) =>
     n
   case _ => // something else
     name
