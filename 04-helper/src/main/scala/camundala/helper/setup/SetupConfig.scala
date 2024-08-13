@@ -167,6 +167,6 @@ case class VersionConfig(
     sbtVersion: String = BuildInfo.sbtVersion,
     springBootVersion: String = "3.1.2",
     jaxbXmlVersion: String = "2.3.1",
-    munitVersion: String = "1.0.0",
+    munitVersion: String = "1.0.1",
     otherVersions: Map[String, String] = Map.empty
 )
