@@ -81,23 +81,25 @@ trait RestApiClient:
   ](
       body: String
   ): Either[ServiceBadBodyError, ServiceOut] =
-    if body.isBlank then
-      val runtimeClass = implicitly[ClassTag[ServiceOut]].runtimeClass
-      runtimeClass match
-        case x if x == classOf[NoOutput] =>
-          Right(NoOutput().asInstanceOf[ServiceOut])
-        case x if x == classOf[Option[?]] =>
-          Right(None.asInstanceOf[ServiceOut])
-        case other =>
-          Left(ServiceBadBodyError(
-            s"There is no body in the response and the ServiceOut is neither NoOutput nor Option (Class is $other)."
-          ))
+    if hasNoOutput[ServiceOut]() 
+    then  Right(NoOutput().asInstanceOf[ServiceOut])
     else
-      parser
-        .decodeAccumulating[ServiceOut](body)
-        .toEither
-        .left
-        .map(err => ServiceBadBodyError(s"Problem creating body from response.\n$err\nBODY: $body"))
+      if  body.isBlank then
+        val runtimeClass = implicitly[ClassTag[ServiceOut]].runtimeClass
+        runtimeClass match
+          case x if x == classOf[Option[?]] =>
+            Right(None.asInstanceOf[ServiceOut])
+          case other =>
+            Left(ServiceBadBodyError(
+              s"There is no body in the response and the ServiceOut is neither NoOutput nor Option (Class is $other)."
+            ))
+        end match
+      else
+        parser
+          .decodeAccumulating[ServiceOut](body)
+          .toEither
+          .left
+          .map(err => ServiceBadBodyError(s"Problem creating body from response.\n$err\nBODY: $body"))
 
   protected def requestWithOptBody[ServiceIn: InOutEncoder](
       runnableRequest: RunnableRequest[ServiceIn]
@@ -128,6 +130,10 @@ trait RestApiClient:
         method = httpMethod
       )
   end requestMethod
+
+  private[worker] def hasNoOutput[ServiceOut: ClassTag](): Boolean =
+    val runtimeClass = implicitly[ClassTag[ServiceOut]].runtimeClass
+    runtimeClass == classOf[NoOutput]
 
 end RestApiClient
 
