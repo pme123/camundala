@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.6 - 2024-08-15
+### Changed 
+- Added possibility to ignore response body with NoOutput. - see [Commit](https://github.com/pme123/camundala/commit/c41fc22c16690b5504b47c72494ac0b028f02caf)
+- Added chimney mapping dependency to worker project. - see [Commit](https://github.com/pme123/camundala/commit/592538a7415f9814d2643feaa82d931782098114)
+
 ## 1.30.5 - 2024-08-12
 ### Changed 
 - Added tests null value serialisation / fixed tests - see [Commit](https://github.com/pme123/camundala/commit/ac2009c54160b22cece8a1f5e5c0c0e322696d93)
