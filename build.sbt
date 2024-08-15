@@ -135,7 +135,10 @@ lazy val worker = project
   .settings(
     projectSettings("worker"),
     unitTestSettings,
-    autoImportSetting
+    autoImportSetting,
+    libraryDependencies ++= Seq(
+      "io.scalaland" %% "chimney" % chimneyVersion, // mapping
+    )
   )
   .dependsOn(bpmn)
 

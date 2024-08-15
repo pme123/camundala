@@ -165,6 +165,7 @@ case class SbtSettingsGenerator()(using config: SetupConfig):
       |          s"$customer.camundala.bpmn",
       |          "io.circe.syntax", 
       |          "sttp.tapir.json.circe",
+      |          "io.scalaland.chimney.dsl",
       |          "io.github.iltotore.iron",
       |          "io.github.iltotore.iron.constraint",
       |          "io.github.iltotore.iron.circe",

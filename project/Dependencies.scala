@@ -33,6 +33,7 @@ object Dependencies {
   // 03-worker
   // -> bpmn
   // -mUnitVersion
+  val chimneyVersion = "1.2.0"
   // --- Implementations
   // 04-worker-c7spring
   // -> worker
