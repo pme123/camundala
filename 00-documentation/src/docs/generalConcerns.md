@@ -173,6 +173,8 @@ To handle an Exception in a Worker, we can do the following:
 To handle Errors in a _ServiceTask_, you need to define a list of error codes.
 If an error has this error code, it will complete with a _BpmnError_, instead a Failure.
 
+If you want to handle **all** Errors, you can use `CatchAll` instead listing all possible error codes.
+
 #### 2. List of Error Messages
 
 - Variable: `regexHandledErrors: Seq[String]` - default: _Seq.empty_

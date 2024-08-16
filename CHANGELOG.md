@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.7 - 2024-08-16
+### Changed 
+- Added possibility to add CatchAll to handledErrors (general variable) - see [Commit](https://github.com/pme123/camundala/commit/b3ca366f30738d8c01523374fd23c40c30f7c4e6)
+- Adjusting naming for API docs. - see [Commit](https://github.com/pme123/camundala/commit/b32feb75a86db3a0dc44af917562246ce3c6c31a)
+- Added color to bpmn schema BpmnProcessGenerator. - see [Commit](https://github.com/pme123/camundala/commit/2c9338b6eea79d64a28cac3ae57866702b98abdf)
+
 ## 1.30.6 - 2024-08-15
 ### Changed 
 - Added possibility to ignore response body with NoOutput. - see [Commit](https://github.com/pme123/camundala/commit/c41fc22c16690b5504b47c72494ac0b028f02caf)
