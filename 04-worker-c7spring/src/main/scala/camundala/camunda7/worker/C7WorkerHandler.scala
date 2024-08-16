@@ -53,7 +53,8 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
   private def executeWorker(
       externalTaskService: camunda.ExternalTaskService
   ): HelperContext[Unit] =
-    val tryProcessVariables = ProcessVariablesExtractor.extract(worker.variableNames ++ worker.inConfigVariableNames  )
+    val tryProcessVariables =
+      ProcessVariablesExtractor.extract(worker.variableNames ++ worker.inConfigVariableNames)
     val tryGeneralVariables = ProcessVariablesExtractor.extractGeneral()
     try
       (for
@@ -104,9 +105,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
       import CamundalaWorkerError.*
       (for
         generalVariables <- tryGeneralVariables
-        errorHandled = error.isMock || generalVariables.handledErrors.contains(
-          error.errorCode.toString
-        )
+        errorHandled = isErrorHandled(error, generalVariables.handledErrors)
         errorRegexHandled = errorHandled && generalVariables.regexHandledErrors.forall(regex =>
           error.errorMsg.matches(s".*$regex.*")
         )
@@ -118,15 +117,8 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
                 error.output
               case _ => Map.empty
             val filtered = filteredOutput(generalVariables.outputVariables, mockedOutput)
+            logger.info(s"Handled Error: ${error.causeMsg}")
             Right(
-              if
-                error.isMock && !generalVariables.handledErrors.contains(
-                  error.errorCode.toString
-                )
-              then
-                handleSuccess(filtered, generalVariables.manualOutMapping)
-              else
-                logger.info(s"Handled Error: ${error.causeMsg}")
                 externalTaskService.handleBpmnError(
                   summon[camunda.ExternalTask],
                   s"${error.errorCode}",
@@ -168,5 +160,11 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
 
   protected lazy val logger: WorkerLogger =
     engineContext.getLogger(getClass)
+
+  private[worker] def isErrorHandled(error: CamundalaWorkerError, handledErrors: Seq[String]) =
+    error.isMock || // if it is mocked, it is handled in the error, as it also could be a successful output
+      handledErrors.contains(error.errorCode.toString) || handledErrors.map(
+        _.toLowerCase
+      ).contains("catchall")
 
 end C7WorkerHandler
