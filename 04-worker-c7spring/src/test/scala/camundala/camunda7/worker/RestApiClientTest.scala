@@ -11,17 +11,24 @@ class RestApiClientTest extends munit.FunSuite, RestApiClient:
 
   test("RestApiClientTest NoOutput"):
     assertEquals(
-      Right(NoOutput()),
-      decodeResponse[ServiceOut]("")
+      decodeResponse[ServiceOut](""),
+      Right(NoOutput())
     )
   test("RestApiClientTest NoOutput OK"):
     assertEquals(
-      Right(NoOutput()),
-      decodeResponse[ServiceOut]("OK")
+      decodeResponse[ServiceOut]("OK"),
+      Right(NoOutput())
+    )
+
+  test("RestApiClientTest Seq OK"):
+    assertEquals(
+      decodeResponse[Seq[String]]("[\"hello\"]"),
+      Right(Seq("hello"))
     )
 
   test("RestApiClientTest Bad body OK"):
     assertEquals(
+      decodeResponse[MyClass]("OK"),
       Left(
         ServiceBadBodyError(
           errorMsg =
@@ -29,16 +36,15 @@ class RestApiClientTest extends munit.FunSuite, RestApiClient:
               |NonEmptyList(ParsingFailure: expected json value got 'OK' (line 1, column 1))
               |BODY: OK""".stripMargin
         )
-      ),
-      decodeResponse[MyClass]("OK")
+      )
     )
 
   test("RestApiClientTest no NoOutput"):
     assertEquals(
+      decodeResponse[String](""),
       Left(ServiceBadBodyError(
         "There is no body in the response and the ServiceOut is neither NoOutput nor Option (Class is class java.lang.String)."
-      )),
-      decodeResponse[String]("")
+      ))
     )
 
   test("RestApiClientTest  with Output"):
