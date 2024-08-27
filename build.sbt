@@ -9,7 +9,7 @@ import laika.helium.config.{Favicon, HeliumIcon, IconLink}
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
 ThisBuild / evictionErrorLevel := Level.Warn
-ThisBuild / usePipelining := true
+//Problems in Scala 3.5.0: ThisBuild / usePipelining := true
 
 lazy val root = project
   .in(file("."))
