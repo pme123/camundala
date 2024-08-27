@@ -9,6 +9,7 @@ import laika.helium.config.{Favicon, HeliumIcon, IconLink}
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
 ThisBuild / evictionErrorLevel := Level.Warn
+ThisBuild / usePipelining := true
 
 lazy val root = project
   .in(file("."))
@@ -89,6 +90,7 @@ lazy val domain = project
   ).enablePlugins(BuildInfoPlugin)
 // layer 02
 val osLibDependency = "com.lihaoyi" %% "os-lib" % osLibVersion
+val chimneyDependency = "io.scalaland" %% "chimney" % chimneyVersion
 lazy val bpmn = project
   .in(file("./02-bpmn"))
   .configure(publicationSettings)
@@ -96,8 +98,10 @@ lazy val bpmn = project
   .settings(unitTestSettings)
   .settings(
     autoImportSetting,
-    libraryDependencies += osLibDependency
-  )
+    libraryDependencies ++= Seq(
+      osLibDependency,     
+      chimneyDependency // mapping
+  ))
   .dependsOn(domain)
 
 // layer 03
@@ -136,9 +140,6 @@ lazy val worker = project
     projectSettings("worker"),
     unitTestSettings,
     autoImportSetting,
-    libraryDependencies ++= Seq(
-      "io.scalaland" %% "chimney" % chimneyVersion, // mapping
-    )
   )
   .dependsOn(bpmn)
 
