@@ -14,9 +14,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
-## 1.30.8 - 2024-08-26
+## 1.30.9 - 2024-08-27
 ### Changed 
+- Fixed bad mocking handling in case of success. - see [Commit](https://github.com/pme123/camundala/commit/f05cec8831a8498a0b1342263ae9e929cb3ae091)
 - Updated to Scala 3.5.0. - see [Commit](https://github.com/pme123/camundala/commit/110390600a2fdfadc3a0d1cb9c9ec3dce8b8c56a)
 - Moved chimney dependency to bpmn. - see [Commit](https://github.com/pme123/camundala/commit/765a2444a7966f73dbfb89642515dacc007ce812)
 
