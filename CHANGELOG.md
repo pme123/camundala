@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.8 - 2024-08-26
+### Changed 
+- Updated to Scala 3.5.0. - see [Commit](https://github.com/pme123/camundala/commit/110390600a2fdfadc3a0d1cb9c9ec3dce8b8c56a)
+- Moved chimney dependency to bpmn. - see [Commit](https://github.com/pme123/camundala/commit/765a2444a7966f73dbfb89642515dacc007ce812)
+
 ## 1.30.7 - 2024-08-16
 ### Changed 
 - Added possibility to add CatchAll to handledErrors (general variable) - see [Commit](https://github.com/pme123/camundala/commit/b3ca366f30738d8c01523374fd23c40c30f7c4e6)
