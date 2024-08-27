@@ -98,7 +98,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
         if !manualOutMapping then Map.empty.asJava else filteredOutput.asJava // local Variables
       )
 
-    private def handleError(
+    private[worker] def handleError(
         error: CamundalaWorkerError,
         tryGeneralVariables: Either[BadVariableError, GeneralVariables]
     ): HelperContext[Unit] =
@@ -117,8 +117,15 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
                 error.output
               case _ => Map.empty
             val filtered = filteredOutput(generalVariables.outputVariables, mockedOutput)
-            logger.info(s"Handled Error: ${error.causeMsg}")
             Right(
+              if
+                error.isMock && !generalVariables.handledErrors.contains(
+                  error.errorCode.toString
+                )
+              then
+                handleSuccess(filtered, generalVariables.manualOutMapping)
+              else
+                logger.info(s"Handled Error: ${error.causeMsg}")
                 externalTaskService.handleBpmnError(
                   summon[camunda.ExternalTask],
                   s"${error.errorCode}",
