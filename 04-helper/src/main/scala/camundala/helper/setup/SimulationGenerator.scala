@@ -18,7 +18,7 @@ case class SimulationGenerator()(using config: SetupConfig):
        |
        |import ${config.projectPackage}.bpmn.$processName${version.versionPackage}.$name.*
        |
-       |// amm helper.sc deploy ${name}Simulation
+       |// ./helper.scala deploy ${name}Simulation
        |// simulation/test
        |// simulation/testOnly *${name}Simulation
        |class ${name}Simulation extends CompanySimulation:

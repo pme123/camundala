@@ -22,14 +22,14 @@ case class SbtGenerator()(using
   private lazy val buildSbtDir = config.projectDir / "build.sbt"
 
   private lazy val buildSbt =
-    s"""// $doNotAdjust. This file is replaced by `amm helper.sc update`.
+    s"""// $doNotAdjust. This file is replaced by `./helper.scala update`.
        |import Settings.*
        |
        |ThisBuild / onLoadMessage := loadingMessage
        |ThisBuild / versionScheme := Some("semver-spec")
        |ThisBuild / libraryDependencySchemes += "io.github.pme123" %% "camundala-api" % "early-semver"
        |ThisBuild / evictionErrorLevel := Level.Warn
-       |
+       |ThisBuild / usePipelining := true
        |
        |$sbtRoot
        |$sbtModules
@@ -38,11 +38,11 @@ case class SbtGenerator()(using
   end buildSbt
 
   private lazy val buildProperties =
-    s"""// $doNotAdjust. This file is replaced by `amm helper.sc update`.
+    s"""// $doNotAdjust. This file is replaced by `./helper.scala update`.
        |sbt.version=${config.versionConfig.sbtVersion}
        |""".stripMargin
   private lazy val pluginsSbt =
-    s"""// $doNotAdjust. This file is replaced by `amm helper.sc update`.
+    s"""// $doNotAdjust. This file is replaced by `./helper.scala update`.
        |addDependencyTreePlugin // sbt dependencyBrowseTreeHTML -> target/tree.html
        |
        |// docker image
@@ -51,7 +51,7 @@ case class SbtGenerator()(using
        |""".stripMargin
 
   private lazy val projectDefSbt =
-    s"""// $doNotAdjust. This file is replaced by `amm helper.sc update`.
+    s"""// $doNotAdjust. This file is replaced by `./helper.scala update`.
        |import sbt.*
        |
        |object ProjectDef {
@@ -82,6 +82,7 @@ case class SbtGenerator()(using
        |lazy val root = project
        |  .in(file("."))
        |  .settings(
+       |    sourcesInBase := false,
        |    projectSettings(),
        |    publicationSettings, //Camunda artifacts
        |  ).aggregate(${config.modules.map(_.name).mkString(", ")})

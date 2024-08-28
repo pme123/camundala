@@ -9,7 +9,7 @@ case class SbtSettingsGenerator()(using config: SetupConfig):
   private lazy val versionConfig = config.versionConfig
   private lazy val repoConfig = config.reposConfig
   private lazy val settingsSbt =
-    s"""// $doNotAdjust. This file is replaced by `amm helper.sc update`.
+    s"""// $doNotAdjust. This file is replaced by `./helper.scala update`.
        |
        |import com.typesafe.sbt.SbtNativePackager.Docker
        |import com.typesafe.sbt.packager.Keys.*

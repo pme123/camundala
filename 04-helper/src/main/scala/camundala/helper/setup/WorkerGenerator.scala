@@ -219,7 +219,7 @@ case class WorkerGenerator()(using config: SetupConfig):
   end workerTest
 
   private lazy val applicationYaml =
-    s"""# DO NOT ADJUST. This file is replaced by `amm helper.sc update`.
+    s"""# DO NOT ADJUST. This file is replaced by `./helper.scala update`.
        |spring.application.name: ${config.projectName}-worker
        |
        |server:
@@ -245,7 +245,7 @@ case class WorkerGenerator()(using config: SetupConfig):
        |""".stripMargin
 
   private lazy val banner =
-    s"""# DO NOT ADJUST. This file is replaced by `amm helper.sc update`.
+    s"""# DO NOT ADJUST. This file is replaced by `./helper.scala update`.
        |
        |     _/_/_/                                                      _/            _/
        |  _/          _/_/_/  _/_/_/  _/_/    _/    _/  _/_/_/      _/_/_/    _/_/_/  _/    _/_/_/

@@ -43,7 +43,7 @@ case class ApiGenerator()(using config: SetupConfig):
        |""".stripMargin
   end api
   private lazy val openApiHtml =
-    s"""<!-- $doNotAdjust. This file is replaced by `amm helper.sc update` -->
+    s"""<!-- $doNotAdjust. This file is replaced by `./helper.scala update` -->
        |<!DOCTYPE html>
        |<html>
        |<head>
@@ -206,7 +206,7 @@ case class ApiGenerator()(using config: SetupConfig):
        |""".stripMargin
 
   private lazy val postmanOpenApiHtml =
-    s"""<!-- $doNotAdjust. This file is replaced by `amm helper.sc update` -->
+    s"""<!-- $doNotAdjust. This file is replaced by `./helper.scala update` -->
        |<!DOCTYPE html>
        |<html>
        |<head>
