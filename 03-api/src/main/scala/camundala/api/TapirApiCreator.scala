@@ -76,7 +76,7 @@ trait TapirApiCreator extends AbstractApiCreator:
                   |""".stripMargin
             )
             .head
-        )// renders `In` as input: .map(ep => processApi.toInput.map(ep.in).getOrElse(ep))
+        ) // renders `In` as input: .map(ep => processApi.toInput.map(ep.in).getOrElse(ep))
           .map(ep => ep.out(processApi.toInitIn))
       else
         Seq.empty

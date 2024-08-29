@@ -21,7 +21,7 @@ trait ApiBaseDsl:
   def api[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
       Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
-      InitIn <: Product: InOutEncoder: InOutDecoder: Schema,
+      InitIn <: Product: InOutEncoder: InOutDecoder: Schema
   ](pApi: ProcessApi[In, Out, InitIn])(body: InOutApi[?, ?]*): ProcessApi[In, Out, InitIn] =
     pApi.withApis(body.toList)
 

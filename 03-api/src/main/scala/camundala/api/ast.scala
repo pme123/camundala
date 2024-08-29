@@ -131,18 +131,18 @@ case class ProcessApi[
       diagramDownloadPath: Option[String],
       diagramNameAdjuster: Option[String => String]
   ): String =
-    s"""${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
-       |
-       |${inOut.in match
-        case _: GenericServiceIn => "" // no diagram if generic
-        case _ =>
-          diagramDownloadPath
-            .map(diagramFrame(_, diagramNameAdjuster))
-            .getOrElse("")
-      }
-       |${generalVariablesDescr(inOut.out, "")}""".stripMargin
+  s"""${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
+     |
+     |${inOut.in match
+      case _: GenericServiceIn => "" // no diagram if generic
+      case _ =>
+        diagramDownloadPath
+          .map(diagramFrame(_, diagramNameAdjuster))
+          .getOrElse("")
+    }
+     |${generalVariablesDescr(inOut.out, "")}""".stripMargin
 
-      // this function needs to be here as circe does not find the JsonEncoder in the extension method
+  // this function needs to be here as circe does not find the JsonEncoder in the extension method
   lazy val initInMapper: EndpointIO.Body[String, InitIn] = jsonBody[InitIn]
 
 end ProcessApi

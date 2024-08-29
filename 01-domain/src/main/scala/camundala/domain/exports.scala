@@ -172,8 +172,9 @@ object GenericServiceIn:
     val name = serviceName.split("-")
       .last
     if Seq("get", "post", "put", "delete").contains(name.toLowerCase)
-    then serviceName  // keep the name as it is
+    then serviceName // keep the name as it is
     else name
+  end shortServiceName
 
 end GenericServiceIn
 

@@ -32,7 +32,9 @@ case class DependencyLinkCreator()(using
          |${packages
           .filter(p => apiConfig.projectsConfig.hasProjectGroup(p.name, projectGroup))
           .map { co =>
-            s"""- **${co.name}** [API Doc](../${co.name}/OpenApi.html "${co.name} API Documentation") - [Dependencies](./dependencies/${co.name}.html "${co.name} Dependencies")"""
+            s"""- **${co.name}** [API Doc](../${co.name}/OpenApi.html "${co
+                .name} API Documentation") - [Dependencies](./dependencies/${co.name}.html "${co
+                .name} Dependencies")"""
           }
           .mkString("\n")}
          |""".stripMargin

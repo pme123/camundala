@@ -85,5 +85,5 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
       in,
       Right(out)
     )
- 
+
 end WorkerExecutorTest

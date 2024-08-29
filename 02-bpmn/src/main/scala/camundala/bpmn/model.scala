@@ -22,7 +22,7 @@ case class InOutDescr[
   end niceName
 
   lazy val shortName: String = shortenName(id)
-        
+
 end InOutDescr
 
 trait Activity[

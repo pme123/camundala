@@ -81,10 +81,10 @@ trait RestApiClient:
   ](
       body: String
   ): Either[ServiceBadBodyError, ServiceOut] =
-    if hasNoOutput[ServiceOut]() 
-    then  Right(NoOutput().asInstanceOf[ServiceOut])
+    if hasNoOutput[ServiceOut]()
+    then Right(NoOutput().asInstanceOf[ServiceOut])
     else
-      if  body.isBlank then
+      if body.isBlank then
         val runtimeClass = implicitly[ClassTag[ServiceOut]].runtimeClass
         runtimeClass match
           case x if x == classOf[Option[?]] =>
@@ -99,7 +99,9 @@ trait RestApiClient:
           .decodeAccumulating[ServiceOut](body)
           .toEither
           .left
-          .map(err => ServiceBadBodyError(s"Problem creating body from response.\n$err\nBODY: $body"))
+          .map(err =>
+            ServiceBadBodyError(s"Problem creating body from response.\n$err\nBODY: $body")
+          )
 
   protected def requestWithOptBody[ServiceIn: InOutEncoder](
       runnableRequest: RunnableRequest[ServiceIn]

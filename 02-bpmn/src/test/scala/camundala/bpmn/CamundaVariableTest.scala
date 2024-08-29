@@ -37,9 +37,9 @@ class CamundaVariableTest extends FunSuite:
     assertEquals(
       variable,
       Map(
-        "other" -> CBoolean(true),
+        "other" -> CBoolean(true)
       )
-    )  
+    )
 
 end CamundaVariableTest
 

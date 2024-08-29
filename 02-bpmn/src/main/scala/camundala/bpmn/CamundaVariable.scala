@@ -10,7 +10,7 @@ import scala.annotation.tailrec
 import java.time.LocalDate
 
 sealed trait CamundaVariable:
-  
+
   def value: Any
 
   def toJson: Json =
@@ -32,6 +32,8 @@ sealed trait CamundaVariable:
         file.asJson
       case CJson(value, _) =>
         parser.parse(value).getOrElse(Json.obj())
+    end match
+  end toJson
 end CamundaVariable
 
 object CamundaVariable:

@@ -12,14 +12,14 @@ trait BpmnProcessDsl extends BpmnDsl:
   def process[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
       Out <: Product: InOutEncoder: InOutDecoder: Schema,
-      InitIn <: Product: InOutEncoder: Schema,
+      InitIn <: Product: InOutEncoder: Schema
   ](
       in: In = NoInput(),
       out: Out = NoOutput(),
-      initIn: InitIn = NoInput(),
+      initIn: InitIn = NoInput()
   ): Process[In, Out, InitIn] =
     Process(InOutDescr(processName, in, out, Some(description)), initIn, processLabels)
-  
+
   def process[
       In <: Product: InOutEncoder: InOutDecoder: Schema,
       Out <: Product: InOutEncoder: InOutDecoder: Schema

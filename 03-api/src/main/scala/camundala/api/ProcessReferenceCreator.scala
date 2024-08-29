@@ -182,9 +182,9 @@ trait ProcessReferenceCreator:
 
       lazy val asString: String =
         refType match
-          case  InOutType.Bpmn if serviceName.isEmpty =>
-                        s"_[$identShortProcess](${docProjectUrl(project)}/OpenApi.html$anchorProcess)_ $serviceStr"
-          case _ =>  
+          case InOutType.Bpmn if serviceName.isEmpty =>
+            s"_[$identShortProcess](${docProjectUrl(project)}/OpenApi.html$anchorProcess)_ $serviceStr"
+          case _ =>
             s"_[$refType: $identShort](${docProjectUrl(project)}/OpenApi.html$anchorOperation)_ $serviceStr"
     end UsesRef
 

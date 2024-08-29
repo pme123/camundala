@@ -56,7 +56,8 @@ case class ScriptCreator()(using config: SetupConfig):
        |// $doNotAdjust. This file is replaced by `./helper.scala update`.
        |
        |//> using toolkit 0.5.0
-       |//> using dep $companyName::$companyName-camundala-helper:${versionHelper.companyCamundalaVersion}
+       |//> using dep $companyName::$companyName-camundala-helper:${versionHelper
+        .companyCamundalaVersion}
        |
        |import $companyName.camundala.helper.*
        |import camundala.helper.*
