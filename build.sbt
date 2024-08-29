@@ -99,9 +99,10 @@ lazy val bpmn = project
   .settings(
     autoImportSetting,
     libraryDependencies ++= Seq(
-      osLibDependency,     
+      osLibDependency,
       chimneyDependency // mapping
-  ))
+    )
+  )
   .dependsOn(domain)
 
 // layer 03
@@ -139,7 +140,7 @@ lazy val worker = project
   .settings(
     projectSettings("worker"),
     unitTestSettings,
-    autoImportSetting,
+    autoImportSetting
   )
   .dependsOn(bpmn)
 

@@ -8,7 +8,7 @@ object GenericServiceExample extends BpmnProcessDsl:
   val descr = ""
   val companyDescr = ""
 
-  case class Input(serviceName: String = "myservice.api.v1.post")extends GenericServiceIn
+  case class Input(serviceName: String = "myservice.api.v1.post") extends GenericServiceIn
   object Input:
     given ApiSchema[Input] = deriveApiSchema
     given InOutCodec[Input] = deriveInOutCodec

@@ -21,9 +21,9 @@ class ServiceMethodApisSimulation extends CustomSimulation:
   )
 
   override implicit def config =
-    super.config
-      .withPort(8034)
-    //  .withLogLevel(LogLevel.DEBUG)
+  super.config
+    .withPort(8034)
+  //  .withLogLevel(LogLevel.DEBUG)
 
   private lazy val `Service Method Delete` = ServiceMethodDeleteApi.example
   private lazy val `Service Method List` = ServiceMethodListApi.example
