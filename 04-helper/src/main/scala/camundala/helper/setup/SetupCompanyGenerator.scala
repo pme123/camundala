@@ -12,7 +12,7 @@ case class SetupCompanyGenerator()(using config: SetupConfig):
     CompanyWrapperGenerator().generate
     // scripts
     val scriptCreator = ScriptCreator()
-    createOrUpdate(projects / "helperProject.sc", scriptCreator.projectCreate)
+    createOrUpdate(projects / "helperProject.scala", scriptCreator.projectCreate)
     // override createCompany
     createOrUpdate(os.pwd / "helperCompany.sc", scriptCreator.companyCreate)
   end generate

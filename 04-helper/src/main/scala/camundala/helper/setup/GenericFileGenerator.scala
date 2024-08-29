@@ -7,7 +7,8 @@ case class GenericFileGenerator()(using config: SetupConfig):
   lazy val generate: Unit =
     createOrUpdate(config.projectDir / ".scalafmt.conf", scalafmt)
     createOrUpdate(config.projectDir / ".gitignore", gitignore)
-    createOrUpdate(config.projectDir / "helper.sc", helperSc)
+    createOrUpdate(config.projectDir / "helper.scala", helperScala)
+    os.proc("chmod", "+x", config.projectDir / "helper.scala").call()
     createIfNotExists(config.projectDir / "CHANGELOG.md", changeLog)
     os.makeDir.all(config.projectDir / ".run")
     os.makeDir.all(config.projectDir / ".vscode")
@@ -16,7 +17,7 @@ case class GenericFileGenerator()(using config: SetupConfig):
   end generate
 
   private lazy val scalafmt =
-    s"""# $doNotAdjust. This file is replaced by `amm helper.sc update`.
+    s"""# $doNotAdjust. This file is replaced by `./helper.scala update`.
        |
        |version = "3.7.15"
        |project.git = true
@@ -46,7 +47,7 @@ case class GenericFileGenerator()(using config: SetupConfig):
        |""".stripMargin
 
   private lazy val gitignore =
-    s"""# $doNotAdjust. This file is replaced by `amm helper.sc update`.
+    s"""# $doNotAdjust. This file is replaced by `./helper.scala update`.
        |*.class
        |*.log
        |
@@ -81,7 +82,7 @@ case class GenericFileGenerator()(using config: SetupConfig):
        |
        |""".stripMargin
 
-  private val helperSc = ScriptCreator()
+  private val helperScala = ScriptCreator()
     .projectHelper
 
   private lazy val changeLog =
@@ -104,7 +105,7 @@ case class GenericFileGenerator()(using config: SetupConfig):
        |""".stripMargin
 
   private lazy val workerTestAppIntellij =
-    s"""|<!-- DO NOT ADJUST. This file is replaced by `amm helper.sc update` -->
+    s"""|<!-- DO NOT ADJUST. This file is replaced by `./helper.scala update` -->
         |<component name="ProjectRunConfigurationManager">
         |  <configuration default="false" name="WorkerTestApp" type="Application" factoryName="Application" nameIsGenerated="true">
         |    <envs>
@@ -126,7 +127,7 @@ case class GenericFileGenerator()(using config: SetupConfig):
         |</component>
         |""".stripMargin
   private lazy val workerTestAppVsCode =
-    s"""|// DO NOT ADJUST. This file is replaced by `amm helper.sc update`.
+    s"""|// DO NOT ADJUST. This file is replaced by `./helper.scala update`.
         |{
         |    "version": "2.0.0",
         |    "configurations": [

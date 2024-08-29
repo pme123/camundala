@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.30.10 - 2024-08-29
+### Changed 
+- Migrated from Ammonite to scala-cli. - see [Commit](https://github.com/pme123/camundala/commit/ee2e81ab2d8577f8f318cc5ef70dd1919943886e)
+
 ## 1.30.9 - 2024-08-27
 ### Changed 
 - Fixed bad mocking handling in case of success. - see [Commit](https://github.com/pme123/camundala/commit/f05cec8831a8498a0b1342263ae9e929cb3ae091)
