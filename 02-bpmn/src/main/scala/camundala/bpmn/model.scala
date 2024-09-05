@@ -574,6 +574,7 @@ end SignalEvent
 
 object SignalEvent:
 
+  val Dynamic_ProcessInstance = "{processInstanceId}"
   def init(id: String): SignalEvent[NoInput] =
     SignalEvent(
       id,

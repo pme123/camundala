@@ -14,6 +14,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## 1.30.11 - 2024-09-05
+### Changed 
+- Updated Versions - see [Commit](https://github.com/pme123/camundala/commit/ad9b3f79bef8d8d375cd76fc4e774bef4d78d3da)
+- Added Worker to DevStatistics. - see [Commit](https://github.com/pme123/camundala/commit/13cf63f64dcaded909cb6851174dae49570c1ba8)
+- Support of dynamic signals with processInstanceId / fixed waitFor with String value. - see [Commit](https://github.com/pme123/camundala/commit/76a9e080fbb89e7c0ef5ab822e2d556342489de4)
+
 ## 1.30.10 - 2024-08-29
 ### Changed 
 - Migrated from Ammonite to scala-cli. - see [Commit](https://github.com/pme123/camundala/commit/ee2e81ab2d8577f8f318cc5ef70dd1919943886e)

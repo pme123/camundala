@@ -7,12 +7,12 @@ object Dependencies {
   // 00-documentation
   // - Laika Plugin
   // 04-helper
-  val osLibVersion = "0.10.3"
+  val osLibVersion = "0.10.5"
   // 01-domain
   val openapiCirceVersion = "0.11.3"
   val tapirVersion = "1.11.1"
   val ironCirceVersion = "2.6.0"
-  val mUnitVersion = "1.0.0"
+  val mUnitVersion = "1.0.1"
   // 02-bpmn
   // -> domain
   // - osLib
@@ -33,7 +33,7 @@ object Dependencies {
   // 03-worker
   // -> bpmn
   // -mUnitVersion
-  val chimneyVersion = "1.2.0"
+  val chimneyVersion = "1.4.0"
   // --- Implementations
   // 04-worker-c7spring
   // -> worker
@@ -49,11 +49,11 @@ object Dependencies {
   // 04-c8-spring
   // -> bpmn
   val scalaJacksonVersion = "2.17.2"
-  val zeebeVersion = "8.5.9"
-  val springBootVersion = "3.3.2"
+  val zeebeVersion = "8.5.10"
+  val springBootVersion = "3.3.3"
   val swaggerOpenAPIVersion = "2.1.22"
   // examples
-  val h2Version = "2.3.230"
+  val h2Version = "2.3.232"
   val twitter4jVersion = "4.1.2"
   val groovyVersion = "3.0.22"
 

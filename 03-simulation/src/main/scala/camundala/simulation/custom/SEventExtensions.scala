@@ -27,7 +27,8 @@ trait SEventExtensions extends SimulationHelper:
           body.hcursor.downArray
             .downField("value")
             .as[Json]
-            .flatMap { value =>
+            .flatMap { json =>
+              val value = if json.isString then json.asString.get else json
               if value.toString == readyValue.toString then
                 Right(
                   data
@@ -126,7 +127,8 @@ trait SEventExtensions extends SimulationHelper:
         data: ScenarioData
     ): ResultType =
       val body = SendSignalIn(
-        name = event.messageName,
+        // supports dynamic processInstanceId
+        name = event.messageName.replace(SignalEvent.Dynamic_ProcessInstance, data.context.processInstanceId),
         variables = Some(event.camundaInMap)
       ).asJson.deepDropNullValues.toString
       val uri = uri"${config.endpoint}/signal"
