@@ -111,6 +111,7 @@ case class GenericFileGenerator()(using config: SetupConfig):
         |    <envs>
         |      <env name="BPF_GATEWAY_URL" value="https://localhost:51051" />
         |      <env name="FSSO_BASE_URL" value="http://host.lima.internal:8090/auth" />
+        |      <env name="WORKER_TEST_MODE" value="true" />
         |    </envs>
         |    <option name="MAIN_CLASS_NAME" value="${config.projectPackage}.worker.WorkerTestApp" />
         |    <module name="${config.projectName}.${config.projectName}-worker" />
@@ -139,7 +140,7 @@ case class GenericFileGenerator()(using config: SetupConfig):
         |            "mainClass": "${config.projectPackage}.worker.WorkerTestApp",
         |            "args": [],
         |            "jvmOptions": [],
-        |            "env": { "BPF_GATEWAY_URL": "https://localhost:51051", "FSSO_BASE_URL": "http://host.lima.internal:8090/auth"},
+        |            "env": { "BPF_GATEWAY_URL": "https://localhost:51051", "FSSO_BASE_URL": "http://host.lima.internal:8090/auth", "WORKER_TEST_MODE": "true"},
         |        }
         |    ]
         |}
