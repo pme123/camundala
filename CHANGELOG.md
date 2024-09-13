@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.12 - 2024-09-13
+### Changed 
+- Only register Worker from the projects package in C7WorkerHandler, so no Worker from dependency is registered (that is used directly in a Worker). - see [Commit](https://github.com/pme123/camundala/commit/e93ac1b9347f09d2ae6370f045a7ff40627d6f80)
+- Fixed bad Seq/Set type generation in CreatorHelper. - see [Commit](https://github.com/pme123/camundala/commit/619b7080272217f354bf783fa0aa36d343532bbc)
+
 ## 1.30.11 - 2024-09-05
 ### Changed 
 - Updated Versions - see [Commit](https://github.com/pme123/camundala/commit/ad9b3f79bef8d8d375cd76fc4e774bef4d78d3da)

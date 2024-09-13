@@ -27,7 +27,7 @@ trait CreatorHelper:
           case _ -> Some(req) => !req
           case _ -> _ => true
 
-      val wrapperType = config.typeMapping.get(schema.getType) match
+      val wrapperType = schemaType match
         case Some("Set") => Some(WrapperType.Set)
         case Some("Seq") => Some(WrapperType.Seq)
         case _ => None
@@ -73,12 +73,7 @@ trait CreatorHelper:
     end createField
 
     def extractType(key: String): String =
-      config.typeMapping.get(schema.getType)
-        .orElse(
-          config.typeMapping.get(
-            Option(schema.getTypes).map(_.asScala.headOption).flatten.getOrElse("NOTYPEDEF")
-          )
-        ) match
+      schemaType match
         case Some(value) if Seq("Seq", "Set").contains(value) =>
           if schema.getItems == null then
             println(s"Items is null for $key")
@@ -99,6 +94,15 @@ trait CreatorHelper:
           println(s"Unsupported Type: $key - ${schema.get$ref()} - ${schema.getType}")
           config.typeMapping("AnyType")
     end extractType
+
+    protected def schemaType =
+      config.typeMapping.get(schema.getType)
+        .orElse(
+          config.typeMapping.get(
+            Option(schema.getType).getOrElse:
+              Option(schema.getTypes).flatMap(_.asScala.headOption).getOrElse("NOTYPEDEF")
+          )
+        )
 
     protected def refType: String =
       (for
