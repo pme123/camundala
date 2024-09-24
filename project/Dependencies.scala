@@ -1,7 +1,7 @@
 import sbt.*
 import sbt.Keys.*
 
-object Dependencies {
+object Dependencies:
 
   // dependency Versions
   // 00-documentation
@@ -49,7 +49,7 @@ object Dependencies {
   // 04-c8-spring
   // -> bpmn
   val scalaJacksonVersion = "2.17.2"
-  val zeebeVersion = "8.5.10"
+  val zeebeVersion = "8.5.11"
   val springBootVersion = "3.3.3"
   val swaggerOpenAPIVersion = "2.1.22"
   // examples
@@ -78,8 +78,8 @@ object Dependencies {
 
   // examples
   val camundaDependencies = Seq(
-    "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude("org.slf4j", "slf4j-api"),
-    "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude("org.slf4j", "slf4j-api"),
+    "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
+    "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
     "io.netty" % "netty-all" % "4.1.110.Final", // needed for Spring Boot Version > 2.5.*
     "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
     "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
@@ -90,4 +90,4 @@ object Dependencies {
     "org.codehaus.groovy" % "groovy-jsr223" % groovyVersion,
     "com.h2database" % "h2" % h2Version
   ) // .map(_.exclude("org.slf4j", "slf4j-api"))
-}
+end Dependencies
