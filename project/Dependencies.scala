@@ -1,7 +1,7 @@
 import sbt.*
 import sbt.Keys.*
 
-object Dependencies {
+object Dependencies:
 
   // dependency Versions
   // 00-documentation
@@ -37,7 +37,7 @@ object Dependencies {
   // --- Implementations
   // 04-worker-c7spring
   // -> worker
-  val camundaVersion = "7.21.0" // external task client
+  val camundaVersion = "7.22.0" // external task client
   val jaxbApiVersion = "4.0.2" // needed by the camunda client 7.21?!
   // - sttpClient3
 
@@ -78,8 +78,8 @@ object Dependencies {
 
   // examples
   val camundaDependencies = Seq(
-    "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude("org.slf4j", "slf4j-api"),
-    "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude("org.slf4j", "slf4j-api"),
+    "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
+    "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
     "io.netty" % "netty-all" % "4.1.110.Final", // needed for Spring Boot Version > 2.5.*
     "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
     "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
@@ -90,4 +90,4 @@ object Dependencies {
     "org.codehaus.groovy" % "groovy-jsr223" % groovyVersion,
     "com.h2database" % "h2" % h2Version
   ) // .map(_.exclude("org.slf4j", "slf4j-api"))
-}
+end Dependencies
