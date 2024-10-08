@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.13 - 2024-10-08
+### Changed 
+- Fixed bad Regex for multiple lines. - see [Commit](https://github.com/pme123/camundala/commit/17e22bad3b1750b1d41f5b3048b8df595a468871)
+
 ## 1.30.12 - 2024-09-13
 ### Changed 
 - Only register Worker from the projects package in C7WorkerHandler, so no Worker from dependency is registered (that is used directly in a Worker). - see [Commit](https://github.com/pme123/camundala/commit/e93ac1b9347f09d2ae6370f045a7ff40627d6f80)

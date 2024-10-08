@@ -115,11 +115,12 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
         tryGeneralVariables: Either[BadVariableError, GeneralVariables]
     ): HelperContext[Unit] =
       import CamundalaWorkerError.*
+      val errorMsg = error.errorMsg.replace("\n", "")
       (for
         generalVariables <- tryGeneralVariables
         errorHandled = isErrorHandled(error, generalVariables.handledErrors)
         errorRegexHandled = errorHandled && generalVariables.regexHandledErrors.forall(regex =>
-          error.errorMsg.matches(s".*$regex.*")
+          errorMsg.matches(s".*$regex.*")
         )
       yield (errorHandled, errorRegexHandled, generalVariables))
         .flatMap {
