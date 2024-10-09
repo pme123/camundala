@@ -8,7 +8,8 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 case class ApiProjectConf(
     org: String,
     name: String,
-    version: String = ApiProjectConf.defaultVersion,
+    version: String,
+    versionPrevious: Option[String] = None,
     dependencies: Seq[DependencyConf] = Seq.empty,
     changelog: Seq[String] = Seq.empty,
     isNew: Boolean = false,
@@ -24,10 +25,11 @@ object ApiProjectConf:
   def apply(
       packageFile: os.Path
   ): ApiProjectConf =
-    apply(packageFile, Seq.empty, false, false)
+    apply(packageFile, Seq.empty, versionPrevious = None, false, false)
   def apply(
       packageFile: os.Path,
       changelog: Seq[String],
+      versionPrevious: Option[String],
       isNew: Boolean,
       isPatched: Boolean
   ): ApiProjectConf =
@@ -41,7 +43,7 @@ object ApiProjectConf:
         .values()
         .asScala
         .map(v => DependencyConf.apply(v.render()))
-    ApiProjectConf(org, name, version, dependencies.toSeq, changelog, isNew, isPatched)
+    ApiProjectConf(org, name, version, versionPrevious, dependencies.toSeq, changelog, isNew, isPatched)
   end apply
 
   def initDummy(projectName: String): ApiProjectConf =

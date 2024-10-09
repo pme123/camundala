@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter
 trait CompanyDocCreator extends DependencyCreator:
 
   protected def gitBasePath: os.Path = apiConfig.projectsConfig.gitDir
-  protected given configs: Seq[ApiProjectConf] = setupDependencies()
+  protected given configs: Seq[ApiProjectConf] = setupVersions()
   lazy val projectConfigs: Seq[ProjectConfig] =
     apiConfig.projectsConfig.projectConfigs
 
@@ -93,7 +93,7 @@ trait CompanyDocCreator extends DependencyCreator:
   end createDynamicConf
 
   private def createReleasePage(): Unit =
-    given configs: Seq[ApiProjectConf] = setupDependencies()
+    given configs: Seq[ApiProjectConf] = setupVersions()
     given releaseC: ReleaseConfig = releaseConfig
     DependencyValidator().validateDependencies
     val indexGraph = DependencyGraphCreator().createIndex
@@ -124,11 +124,31 @@ trait CompanyDocCreator extends DependencyCreator:
     os.write.over(releasePath, table)
   end createReleasePage
 
-  private def setupDependencies(): Seq[ApiProjectConf] =
-    val packages = os.read.lines(apiConfig.basePath / "VERSIONS.conf")
-    val dependencies = packages
+  private def setupVersions(): Seq[ApiProjectConf] =
+    val versionsLines = os.read.lines(apiConfig.basePath / "VERSIONS.conf")
+    val versionsPreviousPath = apiConfig.basePath / "VERSIONS_PREVIOUS.conf"
+    val previousVersionsLines =
+      if os.exists(versionsPreviousPath)
+      then Some(os.read.lines(versionsPreviousPath))
+      else None
+
+    val versions = extractVersions(versionsLines)
+    val previousVersions = previousVersionsLines.map(extractVersions)
+
+    versions
+      .toSeq.flatMap:
+        case projectName -> (version, isNew, isPatched) =>
+          val previousVersion = previousVersions.flatMap(_.get(projectName)).map(_._1)
+          fetchConf(projectName, version, previousVersion, isNew, isPatched)
+
+  end setupVersions
+
+  private def extractVersions(
+      versions: Seq[String]
+  ): Map[String, (String, Boolean, Boolean)] =
+    versions
       .filter(_.contains("Version"))
-      .map { l =>
+      .map: l =>
         val projectName = l.trim
           .split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])")
           .map(_.toLowerCase)
@@ -139,12 +159,15 @@ trait CompanyDocCreator extends DependencyCreator:
         val isNew = l.toLowerCase().contains("// new")
         val isPatched = l.toLowerCase().contains("// patched")
         projectName -> (version, isNew, isPatched)
-      }
-    dependencies.flatMap:
-      case p -> v => fetchConf(p, v._1, v._2, v._3)
-  end setupDependencies
+      .toMap
 
-  private def fetchConf(project: String, version: String, isNew: Boolean, isPatched: Boolean) =
+  private def fetchConf(
+      project: String,
+      version: String,
+      versionPrevious: Option[String],
+      isNew: Boolean,
+      isPatched: Boolean
+  ) =
     for
       projConfig <- apiConfig.projectsConfig.projectConfig(project)
       projectPath = projConfig.absGitPath(gitBasePath)
@@ -157,6 +180,7 @@ trait CompanyDocCreator extends DependencyCreator:
     yield ApiProjectConf(
       projectPath / apiConfig.projectsConfig.projectConfPath,
       os.read.lines(projectPath / "CHANGELOG.md").toSeq,
+      versionPrevious,
       isNew,
       isPatched
     )
@@ -239,7 +263,11 @@ trait CompanyDocCreator extends DependencyCreator:
       .dropWhile(!_.trim.startsWith(s"## ${conf.version}"))
       // take only to the ones that belong to this version
       .takeWhile(l =>
-        !(l.matches(versionRegex) && !l.startsWith(s"## ${conf.minorVersion}"))
+        conf.versionPrevious
+          .map: v =>
+            !l.trim.startsWith(s"## $v")
+          .getOrElse:
+            !(l.matches(versionRegex) && !l.startsWith(s"## ${conf.minorVersion}"))
       )
       // remove all version titles
       .filterNot(_.matches(versionRegex))
