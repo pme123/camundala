@@ -116,9 +116,9 @@ trait CompanyDocCreator extends DependencyCreator:
          |
          |${dependencyTable(configs)}
          |
-         |(*) New in this Release - check below for the details
+         |(*) New in this Release / (**) Patched in this Release - check below for the details
          |
-         |${releaseNotes}
+         |$releaseNotes
          """.stripMargin
     val releasePath = apiConfig.basePath / "src" / "docs" / "release.md"
     os.write.over(releasePath, table)
@@ -137,13 +137,14 @@ trait CompanyDocCreator extends DependencyCreator:
         val regex = """"(\d+\.\d+\.\d+)"""".r
         val version = regex.findFirstMatchIn(l.trim).get.group(1)
         val isNew = l.toLowerCase().contains("// new")
-        projectName -> (version, isNew)
+        val isPatched = l.toLowerCase().contains("// patched")
+        projectName -> (version, isNew, isPatched)
       }
     dependencies.flatMap:
-      case p -> v => fetchConf(p, v._1, v._2)
+      case p -> v => fetchConf(p, v._1, v._2, v._3)
   end setupDependencies
 
-  private def fetchConf(project: String, version: String, isNew: Boolean) =
+  private def fetchConf(project: String, version: String, isNew: Boolean, isPatched: Boolean) =
     for
       projConfig <- apiConfig.projectsConfig.projectConfig(project)
       projectPath = projConfig.absGitPath(gitBasePath)
@@ -156,7 +157,8 @@ trait CompanyDocCreator extends DependencyCreator:
     yield ApiProjectConf(
       projectPath / apiConfig.projectsConfig.projectConfPath,
       os.read.lines(projectPath / "CHANGELOG.md").toSeq,
-      isNew
+      isNew,
+      isPatched
     )
 
   private def dependencyTable(configs: Seq[ApiProjectConf]) =
@@ -179,8 +181,15 @@ trait CompanyDocCreator extends DependencyCreator:
       configs
         .sortBy(_.name)
         .map { c =>
-          val name = if c.isNew then s"[${c.name}]*" else s"${c.name}"
-          val version = if c.isNew then s"**${c.version}**" else c.version
+          val (name, version) =
+            c match
+              case _ if c.isNew =>
+                (s"[${c.name}]*", s"**${c.version}**")
+              case _ if c.isPatched =>
+                (s"[${c.name}]**", s"_${c.version}_")
+              case _ =>
+                (s"${c.name}", s"${c.version}")
+
           s"|| **$name** | $version " +
             filteredConfigs
               .map(c2 =>
@@ -200,7 +209,7 @@ trait CompanyDocCreator extends DependencyCreator:
 
   private def setupReleaseNotes(using configs: Seq[ApiProjectConf]) =
     val projectChangelogs = configs
-      .filter(_.isNew) // take only the new ones
+      .filter(c => c.isNew || c.isPatched) // take only the new or patched ones
       .sortBy(_.name)
       .map(c => s"""
                    |## [${c.name}](${apiConfig.docProjectUrl(c.name)}/OpenApi.html)
