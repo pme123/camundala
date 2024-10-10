@@ -13,8 +13,13 @@ case class ApiProjectConf(
     dependencies: Seq[DependencyConf] = Seq.empty,
     changelog: Seq[String] = Seq.empty,
     isNew: Boolean = false,
-    isPatched: Boolean = false
+    isPatched: Boolean = false, 
+    isWorker: Boolean = false
 ):
+  lazy val versionAsInt = version.split("\\.") match
+    case Array(major, minor, patch) =>
+      major.toInt * 100000 + minor.toInt * 1000 + patch.toInt
+      
   lazy val minorVersion: String = version.split("\\.").take(2).mkString(".")
   lazy val fullName = s"$org:$name:$version"
 end ApiProjectConf
@@ -25,13 +30,14 @@ object ApiProjectConf:
   def apply(
       packageFile: os.Path
   ): ApiProjectConf =
-    apply(packageFile, Seq.empty, versionPrevious = None, false, false)
+    apply(packageFile, Seq.empty, versionPrevious = None, false, false, false)
   def apply(
       packageFile: os.Path,
       changelog: Seq[String],
       versionPrevious: Option[String],
       isNew: Boolean,
-      isPatched: Boolean
+      isPatched: Boolean,
+        isWorker: Boolean
   ): ApiProjectConf =
     val conf = ConfigFactory.parseFile(packageFile.toIO)
     val org = conf.getString("org")
@@ -43,7 +49,7 @@ object ApiProjectConf:
         .values()
         .asScala
         .map(v => DependencyConf.apply(v.render()))
-    ApiProjectConf(org, name, version, versionPrevious, dependencies.toSeq, changelog, isNew, isPatched)
+    ApiProjectConf(org, name, version, versionPrevious, dependencies.toSeq, changelog, isNew, isPatched, isWorker)
   end apply
 
   def initDummy(projectName: String): ApiProjectConf =

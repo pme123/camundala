@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter
 trait CompanyDocCreator extends DependencyCreator:
 
   protected def gitBasePath: os.Path = apiConfig.projectsConfig.gitDir
-  protected given configs: Seq[ApiProjectConf] = setupVersions()
+  protected given configs: Seq[ApiProjectConf] = setupConfigs()
   lazy val projectConfigs: Seq[ProjectConfig] =
     apiConfig.projectsConfig.projectConfigs
 
@@ -93,8 +93,8 @@ trait CompanyDocCreator extends DependencyCreator:
   end createDynamicConf
 
   private def createReleasePage(): Unit =
-    given configs: Seq[ApiProjectConf] = setupVersions()
-    given releaseC: ReleaseConfig = releaseConfig
+    given configs: Seq[ApiProjectConf] = setupConfigs()
+    given ReleaseConfig = releaseConfig
     DependencyValidator().validateDependencies
     val indexGraph = DependencyGraphCreator().createIndex
     DependencyLinkCreator().createIndex(indexGraph)
@@ -114,40 +114,54 @@ trait CompanyDocCreator extends DependencyCreator:
          |
          |${releaseConfig.jiraReleaseUrl.map(u => s"[JIRA Release Planing]($u)").getOrElse("")}
          |
-         |${dependencyTable(configs)}
+         |## Camunda Dependencies
+         |
+         |${dependencyTable(configs, isWorker = false)}
+         |
+         |## Worker Dependencies
+         |
+         |${dependencyTable(configs, isWorker = true)}
          |
          |(*) New in this Release / (**) Patched in this Release - check below for the details
          |
          |$releaseNotes
          """.stripMargin
+
     val releasePath = apiConfig.basePath / "src" / "docs" / "release.md"
     os.write.over(releasePath, table)
   end createReleasePage
 
-  private def setupVersions(): Seq[ApiProjectConf] =
-    val versionsLines = os.read.lines(apiConfig.basePath / "VERSIONS.conf")
-    val versionsPreviousPath = apiConfig.basePath / "VERSIONS_PREVIOUS.conf"
+  private def setupConfigs(): Seq[ApiProjectConf] =
+    val configsLines = os.read.lines(apiConfig.basePath / "VERSIONS.conf")
+    val configsPreviousPath = apiConfig.basePath / "VERSIONS_PREVIOUS.conf"
     val previousVersionsLines =
-      if os.exists(versionsPreviousPath)
-      then Some(os.read.lines(versionsPreviousPath))
+      if os.exists(configsPreviousPath)
+      then Some(os.read.lines(configsPreviousPath))
       else None
 
-    val versions = extractVersions(versionsLines)
+    val versions = extractVersions(configsLines)
     val previousVersions = previousVersionsLines.map(extractVersions)
 
     versions
       .toSeq.flatMap:
         case projectName -> (version, isNew, isPatched) =>
           val previousVersion = previousVersions.flatMap(_.get(projectName)).map(_._1)
-          fetchConf(projectName, version, previousVersion, isNew, isPatched)
+          fetchConf(
+            projectName.replace("-worker", ""),
+            version,
+            previousVersion,
+            isNew,
+            isPatched,
+            projectName.endsWith("worker")
+          )
 
-  end setupVersions
+  end setupConfigs
 
   private def extractVersions(
       versions: Seq[String]
   ): Map[String, (String, Boolean, Boolean)] =
     versions
-      .filter(_.contains("Version"))
+      .filter(l => l.contains("Version") && !l.contains("\"\""))
       .map: l =>
         val projectName = l.trim
           .split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])")
@@ -166,7 +180,8 @@ trait CompanyDocCreator extends DependencyCreator:
       version: String,
       versionPrevious: Option[String],
       isNew: Boolean,
-      isPatched: Boolean
+      isPatched: Boolean,
+      isWorker: Boolean
   ) =
     for
       projConfig <- apiConfig.projectsConfig.projectConfig(project)
@@ -179,15 +194,17 @@ trait CompanyDocCreator extends DependencyCreator:
         .callOnConsole(projectPath)
     yield ApiProjectConf(
       projectPath / apiConfig.projectsConfig.projectConfPath,
-      os.read.lines(projectPath / "CHANGELOG.md").toSeq,
+      os.read.lines(projectPath / "CHANGELOG.md"),
       versionPrevious,
       isNew,
-      isPatched
+      isPatched,
+      isWorker
     )
 
-  private def dependencyTable(configs: Seq[ApiProjectConf]) =
+  private def dependencyTable(configs: Seq[ApiProjectConf], isWorker: Boolean) =
     val filteredConfigs =
       configs
+        .filter(_.isWorker == isWorker)
         .filter(c =>
           configs.exists(c2 =>
             c.name != c2.name && c2.dependencies.exists(d => d.name == c.name)
@@ -202,7 +219,7 @@ trait CompanyDocCreator extends DependencyCreator:
       "\n||----| :----:  " + filteredConfigs
         .map(_ => s":----:")
         .mkString("| ", " | ", " |\n") +
-      configs
+      filteredConfigs
         .sortBy(_.name)
         .map { c =>
           val (name, version) =
@@ -232,8 +249,19 @@ trait CompanyDocCreator extends DependencyCreator:
   end dependencyTable
 
   private def setupReleaseNotes(using configs: Seq[ApiProjectConf]) =
-    val projectChangelogs = configs
+    val mergeConfigs = configs
       .filter(c => c.isNew || c.isPatched) // take only the new or patched ones
+      .foldLeft(Seq.empty[ApiProjectConf]):
+        case (result, c) =>
+          result
+            .find(_.name == c.name)
+            .map: mc =>
+              if c.versionAsInt > mc.versionAsInt
+              then result.filterNot(_.name == c.name) :+ c
+              else result
+            .getOrElse(result :+ c)
+
+    val projectChangelogs = mergeConfigs
       .sortBy(_.name)
       .map(c => s"""
                    |## [${c.name}](${apiConfig.docProjectUrl(c.name)}/OpenApi.html)

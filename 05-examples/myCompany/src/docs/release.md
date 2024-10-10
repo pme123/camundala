@@ -12,8 +12,73 @@ _Updated for Release ${release.tag} - created on ${created.day}_
 
 [JIRA Release Planing](https://myjira.ch/projects/MyCompany/versions/333)
 
-| **Package** | **Version** |  |
-|----| :----:  |  |
+## Camunda Dependencies
+
+
+ 
+*
+*
+P
+a
+c
+k
+a
+g
+e
+*
+*
+ 
+
+ 
+*
+*
+V
+e
+r
+s
+i
+o
+n
+*
+*
+ 
+
+ 
+ 
+
+
+
+
+
+-
+-
+-
+-
+
+ 
+:
+-
+-
+-
+-
+:
+ 
+ 
+
+ 
+ 
+
+
+
+L
+i
+s
+t
+(
+)
+
+## Worker Dependencies
+
 
 
 (*) New in this Release / (**) Patched in this Release - check below for the details
