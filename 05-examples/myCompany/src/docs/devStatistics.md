@@ -141,7 +141,7 @@ File- and Line count for **scala** files:
  - 00-documentation: 0 of 0 Files
  - 01-domain: 669 of 7 Files
  - 02-bpmn: 2327 of 20 Files
- - 03-api: 4212 of 27 Files
+ - 03-api: 4250 of 27 Files
  - 03-dmn: 318 of 4 Files
  - 03-simulation: 2620 of 17 Files
  - 03-worker: 1276 of 7 Files
@@ -153,7 +153,7 @@ File- and Line count for **scala** files:
  - docs: 0 of 0 Files
  - project: 187 of 3 Files
 
-**Total** scala: **19747** of **216** Files
+**Total** scala: **19785** of **216** Files
 
 
         

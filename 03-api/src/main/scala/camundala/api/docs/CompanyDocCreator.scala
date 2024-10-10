@@ -103,7 +103,8 @@ trait CompanyDocCreator extends DependencyCreator:
     DependencyGraphCreator().createProjectDependencies
     val releaseNotes = setupReleaseNotes
     DependencyValidator().validateOrphans
-    val tableFooter = "(\\*) New in this Release / (\\*\\*) Patched in this Release - check below for the details"
+    val tableFooter =
+      "(\\*) New in this Release / (\\*\\*) Patched in this Release - check below for the details"
     val table =
       s"""
          |{%
@@ -136,25 +137,19 @@ trait CompanyDocCreator extends DependencyCreator:
 
   private def setupConfigs(): Seq[ApiProjectConf] =
     val configsLines = os.read.lines(apiConfig.basePath / "VERSIONS.conf")
-    val configsPreviousPath = apiConfig.basePath / "VERSIONS_PREVIOUS.conf"
-    val previousVersionsLines =
-      if os.exists(configsPreviousPath)
-      then Some(os.read.lines(configsPreviousPath))
-      else None
-
+    val previousConfigsLines = os.read.lines(apiConfig.basePath / "VERSIONS_PREVIOUS.conf")
     val versions = extractVersions(configsLines)
-    val previousVersions = previousVersionsLines.map(extractVersions)
+    val previousVersions = extractVersions(previousConfigsLines)
 
     versions
       .toSeq.flatMap:
-        case projectName -> (version, isNew, isPatched) =>
-          val previousVersion = previousVersions.flatMap(_.get(projectName)).map(_._1)
+        case projectName -> version =>
+          val previousVersion =
+            previousVersions.get(projectName).map(_._1).getOrElse(ApiProjectConf.defaultVersion)
           fetchConf(
             projectName.replace("-worker", ""),
             version,
             previousVersion,
-            isNew,
-            isPatched,
             projectName.endsWith("worker")
           )
 
@@ -162,7 +157,7 @@ trait CompanyDocCreator extends DependencyCreator:
 
   private def extractVersions(
       versions: Seq[String]
-  ): Map[String, (String, Boolean, Boolean)] =
+  ): Map[String, String] =
     versions
       .filter(l => l.contains("Version") && !l.contains("\"\""))
       .map: l =>
@@ -173,17 +168,13 @@ trait CompanyDocCreator extends DependencyCreator:
           .mkString("-")
         val regex = """"(\d+\.\d+\.\d+)"""".r
         val version = regex.findFirstMatchIn(l.trim).get.group(1)
-        val isNew = l.toLowerCase().contains("// new")
-        val isPatched = l.toLowerCase().contains("// patched")
-        projectName -> (version, isNew, isPatched)
+        projectName -> version
       .toMap
 
   private def fetchConf(
       project: String,
       version: String,
-      versionPrevious: Option[String],
-      isNew: Boolean,
-      isPatched: Boolean,
+      versionPrevious: String,
       isWorker: Boolean
   ) =
     for
@@ -199,15 +190,14 @@ trait CompanyDocCreator extends DependencyCreator:
       projectPath / apiConfig.projectsConfig.projectConfPath,
       os.read.lines(projectPath / "CHANGELOG.md"),
       versionPrevious,
-      isNew,
-      isPatched,
       isWorker
     )
 
   private def dependencyTable(configs: Seq[ApiProjectConf], isWorker: Boolean) =
+    val selectedConfigs = configs
+      .filter(_.isWorker == isWorker)
     val filteredConfigs =
-      configs
-        .filter(_.isWorker == isWorker)
+      selectedConfigs
         .filter(c =>
           configs.exists(c2 =>
             c.name != c2.name && c2.dependencies.exists(d => d.name == c.name)
@@ -215,26 +205,26 @@ trait CompanyDocCreator extends DependencyCreator:
         )
         .sortBy(_.name)
 
-    "| **Package** | **Version** " +
+    "| **Package** | **Version** | Previous Version " +
       filteredConfigs
         .map(c => s"**${c.name}** ${c.version}")
         .mkString("| ", " | ", " |") +
-      "\n||----| :----:  " + filteredConfigs
+      "\n||----| :----:  | :----:  " + filteredConfigs
         .map(_ => s":----:")
         .mkString("| ", " | ", " |\n") +
-      filteredConfigs
+      selectedConfigs
         .sortBy(_.name)
         .map { c =>
-          val (name, version) =
+          val (name, version, versionPrevious) =
             c match
               case _ if c.isNew =>
-                (s"[${c.name}]*", s"**${c.version}**")
+                (s"[${c.name}]*", s"**${c.version}**", s"${c.versionPrevious}")
               case _ if c.isPatched =>
-                (s"[${c.name}]**", s"_${c.version}_")
+                (s"[${c.name}]**", s"_${c.version}_", s"${c.versionPrevious}")
               case _ =>
-                (s"${c.name}", s"${c.version}")
+                (s"${c.name}", s"${c.version}", s"${c.versionPrevious}")
 
-          s"|| **$name** | $version " +
+          s"|| **$name** | $version | $versionPrevious " +
             filteredConfigs
               .map(c2 =>
                 c.dependencies
@@ -293,13 +283,7 @@ trait CompanyDocCreator extends DependencyCreator:
       // start with the release version
       .dropWhile(!_.trim.startsWith(s"## ${conf.version}"))
       // take only to the ones that belong to this version
-      .takeWhile(l =>
-        conf.versionPrevious
-          .map: v =>
-            !l.trim.startsWith(s"## $v")
-          .getOrElse:
-            !(l.matches(versionRegex) && !l.startsWith(s"## ${conf.minorVersion}"))
-      )
+      .takeWhile(!_.trim.startsWith(s"## ${conf.versionPrevious}"))
       // remove all version titles
       .filterNot(_.matches(versionRegex))
       // remove empty lines

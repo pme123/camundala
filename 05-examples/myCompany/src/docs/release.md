@@ -14,74 +14,19 @@ _Updated for Release ${release.tag} - created on ${created.day}_
 
 ## Camunda Dependencies
 
-
- 
-*
-*
-P
-a
-c
-k
-a
-g
-e
-*
-*
- 
-
- 
-*
-*
-V
-e
-r
-s
-i
-o
-n
-*
-*
- 
-
- 
- 
+| **Package** | **Version** |  |
+|----| :----:  |  |
 
 
-
-
-
--
--
--
--
-
- 
-:
--
--
--
--
-:
- 
- 
-
- 
- 
-
-
-
-L
-i
-s
-t
-(
-)
+(\*) New in this Release / (\*\*) Patched in this Release - check below for the details
 
 ## Worker Dependencies
 
+| **Package** | **Version** |  |
+|----| :----:  |  |
 
 
-(*) New in this Release / (**) Patched in this Release - check below for the details
+(\*) New in this Release / (\*\*) Patched in this Release - check below for the details
 
 
 # Release Notes

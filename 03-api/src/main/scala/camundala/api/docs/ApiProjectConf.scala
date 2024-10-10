@@ -9,35 +9,35 @@ case class ApiProjectConf(
     org: String,
     name: String,
     version: String,
-    versionPrevious: Option[String] = None,
+    versionPrevious: String,
     dependencies: Seq[DependencyConf] = Seq.empty,
     changelog: Seq[String] = Seq.empty,
-    isNew: Boolean = false,
-    isPatched: Boolean = false, 
     isWorker: Boolean = false
 ):
-  lazy val versionAsInt = version.split("\\.") match
-    case Array(major, minor, patch) =>
-      major.toInt * 100000 + minor.toInt * 1000 + patch.toInt
-      
-  lazy val minorVersion: String = version.split("\\.").take(2).mkString(".")
+  lazy val versionConf = ConfVersion(version)
+  lazy val versionPreviousConf = ConfVersion(versionPrevious)
+
+  lazy val versionAsInt = versionConf.versionAsInt
+
+  lazy val isNew =
+    versionConf.isMajor(versionPreviousConf) || versionConf.isMinor(versionPreviousConf)
+  lazy val isPatched = !isNew && versionConf.isPatch(versionPreviousConf)
+  lazy val minorVersion: String = versionConf.minorVersion
   lazy val fullName = s"$org:$name:$version"
 end ApiProjectConf
 
 object ApiProjectConf:
-  lazy val defaultVersion = "0.1.0-SNAPSHOT"
+  lazy val defaultVersion = "0.1.0"
 
   def apply(
       packageFile: os.Path
   ): ApiProjectConf =
-    apply(packageFile, Seq.empty, versionPrevious = None, false, false, false)
+    apply(packageFile, Seq.empty, ApiProjectConf.defaultVersion, false)
   def apply(
       packageFile: os.Path,
       changelog: Seq[String],
-      versionPrevious: Option[String],
-      isNew: Boolean,
-      isPatched: Boolean,
-        isWorker: Boolean
+      versionPrevious: String,
+      isWorker: Boolean
   ): ApiProjectConf =
     val conf = ConfigFactory.parseFile(packageFile.toIO)
     val org = conf.getString("org")
@@ -49,13 +49,22 @@ object ApiProjectConf:
         .values()
         .asScala
         .map(v => DependencyConf.apply(v.render()))
-    ApiProjectConf(org, name, version, versionPrevious, dependencies.toSeq, changelog, isNew, isPatched, isWorker)
+    ApiProjectConf(
+      org,
+      name,
+      version,
+      versionPrevious,
+      dependencies.toSeq,
+      changelog,
+      isWorker
+    )
   end apply
 
   def initDummy(projectName: String): ApiProjectConf =
     ApiProjectConf(
       projectName.split("-").head,
       projectName,
+      ApiProjectConf.defaultVersion,
       ApiProjectConf.defaultVersion
     )
   end initDummy
@@ -81,6 +90,27 @@ object ApiProjectConf:
   end init
 
 end ApiProjectConf
+
+case class ConfVersion(major: Int, minor: Int, patch: Int):
+  def isMajor(version: ConfVersion): Boolean =
+    major != version.major
+
+  def isMinor(version: ConfVersion): Boolean =
+    major == version.major && minor != version.minor
+
+  def isPatch(version: ConfVersion): Boolean =
+    major == version.major && minor == version.minor && patch != version.patch
+
+  lazy val minorVersion: String = s"$major.$minor"
+  lazy val versionAsInt: Int =
+    major * 100000 + minor * 1000 + patch
+end ConfVersion
+
+object ConfVersion:
+  def apply(version: String): ConfVersion =
+    version.split("\\.").map(_.toInt) match
+      case Array(major, minor, patch) => ConfVersion(major, minor, patch)
+end ConfVersion
 
 case class DependencyConf(
     org: String,
