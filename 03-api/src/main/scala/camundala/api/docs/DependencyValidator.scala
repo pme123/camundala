@@ -34,6 +34,7 @@ case class DependencyValidator()(using
   lazy val validateOrphans: Unit =
     val allDependencies = configs.flatMap(_.dependencies).distinct
     configs
+      .filter(!_.isWorker)
       .groupBy(_.name)
       .map { case _ -> pcs =>
         if pcs.size > 1 then

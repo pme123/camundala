@@ -103,6 +103,7 @@ trait CompanyDocCreator extends DependencyCreator:
     DependencyGraphCreator().createProjectDependencies
     val releaseNotes = setupReleaseNotes
     DependencyValidator().validateOrphans
+    val tableFooter = "(\\*) New in this Release / (\\*\\*) Patched in this Release - check below for the details"
     val table =
       s"""
          |{%
@@ -118,11 +119,13 @@ trait CompanyDocCreator extends DependencyCreator:
          |
          |${dependencyTable(configs, isWorker = false)}
          |
+         |$tableFooter
+         |
          |## Worker Dependencies
          |
          |${dependencyTable(configs, isWorker = true)}
          |
-         |(*) New in this Release / (**) Patched in this Release - check below for the details
+         |$tableFooter
          |
          |$releaseNotes
          """.stripMargin
