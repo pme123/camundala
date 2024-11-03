@@ -5,6 +5,6 @@ addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.10.4")
 addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.6.1")
 addSbtPlugin("org.typelevel" % "laika-sbt" % "1.2.0")
 
-addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.12.0")
+addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.13.0")
 
 addDependencyTreePlugin // sbt dependencyBrowseTreeHTML -> target/tree.html
