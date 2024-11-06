@@ -22,7 +22,7 @@ case class InOutDescr[
   end niceName
 
   lazy val shortName: String = shortenName(id)
-        
+
 end InOutDescr
 
 trait Activity[
@@ -42,7 +42,6 @@ trait InOut[
   def inOutDescr: InOutDescr[In, Out]
   // def constructor: InOutDescr[In, Out] => T
   def inOutType: InOutType
-
   def otherEnumInExamples: Option[Seq[In]]
   def otherEnumOutExamples: Option[Seq[Out]]
 
@@ -50,6 +49,7 @@ trait InOut[
   lazy val descr: Option[String] = inOutDescr.descr
   lazy val in: In = inOutDescr.in
   lazy val out: Out = inOutDescr.out
+
   def camundaInMap: Map[String, CamundaVariable] =
     CamundaVariable.toCamunda(in)
   lazy val camundaOutMap: Map[String, CamundaVariable] =
@@ -100,6 +100,8 @@ sealed trait ProcessOrExternalTask[
 
   def topicName: String = processName
 
+  def dynamicOutMock: Option[In => Out]
+
   protected def servicesMocked: Boolean
   protected def outputMock: Option[Out]
   protected def impersonateUserId: Option[String]
@@ -139,6 +141,7 @@ case class Process[
     otherEnumInExamples: Option[Seq[In]] = None,
     otherEnumOutExamples: Option[Seq[Out]] = None,
     initInDescr: Option[String] = None,
+    dynamicOutMock: Option[In => Out] = None,
     protected val servicesMocked: Boolean = false,
     protected val mockedWorkers: Seq[String] = Seq.empty,
     protected val outputMock: Option[Out] = None,
@@ -169,6 +172,9 @@ case class Process[
 
   def mockWith(outputMock: Out): Process[In, Out, InitIn] =
     copy(outputMock = Some(outputMock))
+
+  def mockWith(outputMock: In => Out): Process[In, Out, InitIn] =
+    copy(dynamicOutMock = Some(outputMock))
 
   def mockWorkers(workerNames: String*): Process[In, Out, InitIn] =
     copy(mockedWorkers = workerNames)
@@ -267,6 +273,7 @@ case class ServiceTask[
     serviceInExample: ServiceIn,
     otherEnumInExamples: Option[Seq[In]] = None,
     otherEnumOutExamples: Option[Seq[Out]] = None,
+    dynamicServiceOutMock: Option[In => MockedServiceResponse[ServiceOut]] = None,
     @deprecated(
       "Default is _GenericExternalTaskProcessName_ - in future only used as External Task"
     )
@@ -280,7 +287,7 @@ case class ServiceTask[
     protected val regexHandledErrors: Seq[String] = Seq.empty,
     protected val impersonateUserId: Option[String] = None
 ) extends ExternalTask[In, Out, ServiceTask[In, Out, ServiceIn, ServiceOut]]:
-
+  lazy val dynamicOutMock: Option[In => Out] = None
   @deprecated("Use _topicName_")
   lazy val serviceName: String = inOutDescr.id
 
@@ -296,6 +303,9 @@ case class ServiceTask[
 
   def mockWith(outputMock: Out): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(outputMock = Some(outputMock))
+
+  def mockWith(outputMock: In => MockedServiceResponse[ServiceOut]): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+    copy(dynamicServiceOutMock = Some(outputMock))
 
   def mockServicesWithDefault: ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(servicesMocked = true)
@@ -389,6 +399,7 @@ case class CustomTask[
     inOutDescr: InOutDescr[In, Out],
     otherEnumInExamples: Option[Seq[In]] = None,
     otherEnumOutExamples: Option[Seq[Out]] = None,
+    dynamicOutMock: Option[In => Out] = None,
     protected val outputMock: Option[Out] = None,
     protected val outputVariables: Seq[String] = Seq.empty,
     protected val servicesMocked: Boolean = false,
@@ -409,6 +420,9 @@ case class CustomTask[
 
   def mockWith(outputMock: Out): CustomTask[In, Out] =
     copy(outputMock = Some(outputMock))
+
+  def mockWith(outputMock: In => Out): CustomTask[In, Out] =
+    copy(dynamicOutMock = Some(outputMock))
 
   def withOutputVariables(names: String*): CustomTask[In, Out] =
     copy(outputVariables = names)
