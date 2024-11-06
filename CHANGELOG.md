@@ -15,6 +15,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.14 - 2024-11-06
+### Changed 
+- Added dynamic mocking / documented . - see [Commit](https://github.com/pme123/camundala/commit/123b890775b3e2d08f7708ba2f415338f867b6d7)
+- Removed duplicate xmlns:color definition in BpmnProcessGenerator. - see [Commit](https://github.com/pme123/camundala/commit/7a180c23c8d7425931626a5dd47cc5e2ccfd77c2)
+- Updated Versions. - see [Commit](https://github.com/pme123/camundala/commit/0c5904ee82887312e0267689a4a76e6ffb841180)
+- Moved logic to ConfVersion / made versionPrevious required. - see [Commit](https://github.com/pme123/camundala/commit/773a4030c49e548a5cb97cb407da28d6954c97e2)
+- Fixes in Dependency generators - filter worker dependencies. - see [Commit](https://github.com/pme123/camundala/commit/b2fa224eab7adaef92bf40bd709d1919e537bf91)
+- Added worker versions to the dependency Tables. - see [Commit](https://github.com/pme123/camundala/commit/85afd1617108043cabcdb44a74c5c558c4102895)
+- Added VERSIONS_PREVIOUS to filter all needed Change Log entries. - see [Commit](https://github.com/pme123/camundala/commit/6a94b9239c9c0a82c08c12b45d204f92da3342b7)
+- Added patched to the CompanyDocCreator. - see [Commit](https://github.com/pme123/camundala/commit/767b217a6609bb4e56158c435b8e5a602f14121c)
+
 ## 1.30.13 - 2024-10-08
 ### Changed 
 - Fixed bad Regex for multiple lines. - see [Commit](https://github.com/pme123/camundala/commit/17e22bad3b1750b1d41f5b3048b8df595a468871)
