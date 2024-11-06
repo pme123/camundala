@@ -103,7 +103,11 @@
     <li class="level2 nav-leaf"><a href="#timer-event">Timer Event</a></li>
     <li class="level2 nav-leaf"><a href="#concrete-wait-time">Concrete wait time</a></li>
     <li class="level1 nav-node"><a href="#mocking">Mocking</a></li>
-    <li class="level2 nav-leaf"><a href="#just-return-the-mocked-output">Just return the mocked Output</a></li>
+    <li class="level2 nav-leaf"><a href="#generic-mocking">Generic Mocking</a></li>
+    <li class="level2 nav-leaf"><a href="#provide-default-mocks">Provide default Mocks</a></li>
+    <li class="level2 nav-leaf"><a href="#specific-mocking-in-the-process">Specific Mocking in the Process</a></li>
+    <li class="level2 nav-leaf"><a href="#priorities-order">Priorities / Order</a></li>
+    <li class="level1 nav-leaf"><a href="#load-testing">Load Testing</a></li>
   </ul>
 
   <p class="footer"></p>
@@ -118,7 +122,7 @@
           <p>This expects that your variables are simple values or JSON-objects/ -arrays.</p>
           <p>For now this only works for <strong><em>Camunda 7</em></strong>.</p>
         </div>
-        <p>Simulations let you run BPMNs and DMNs automatically on an installed Camunda 7 Platform. 
+        <p>Simulations let you run BPMNs and DMNs automatically on an installed Camunda 7 Platform.
         The diagrams must be deployed.</p>
         <div class="callout info">
           <i class="icofont-laika info">&#xef4e;</i>
@@ -131,7 +135,7 @@
           <li>If there are problems, you easily can check the Camunda Cockpit.</li>
           <li>I think they are easy to maintain.</li>
           <li>The in- and outputs are exactly the API of the BPMNs.</li>
-          <li>You can move to every part of your BPMN automatically, 
+          <li>You can move to every part of your BPMN automatically,
           for example to check a <em>UserTask</em>.</li>
           <li>It is great to develop test driven.</li>
           <li>With the heat map, you can check, if you tested already all paths.</li>
@@ -139,7 +143,7 @@
         <p>Of course most of these points are also true for Unit- and/or Scenario tests.</p>
         <div class="callout info">
           <i class="icofont-laika info">&#xef4e;</i>
-          <p>I also experimented with Unit- and Scenario Tests, and it would also be possible. But for now I concentrate 
+          <p>I also experimented with Unit- and Scenario Tests, and it would also be possible. But for now I concentrate
           my time on Simulations. I also think you should only do one of them, due to the work involved.</p>
         </div>
         
@@ -149,13 +153,17 @@
         <pre><code class="nohighlight"><span class="comment">// put your simulations in the simulation package of your project (it)
 </span><span class="keyword">package</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">examples</span><span>.</span><span class="identifier">invoice</span><span>.</span><span class="identifier">simulation</span><span>
 </span><span class="comment">// import the projects bpmns (Processes, UserTasks etc.)
+</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">examples</span><span>.</span><span class="identifier">invoice</span><span>.</span><span class="identifier">bpmn</span><span>.*
 </span><span class="comment">// import Camundala simulation DSL - for now this is the one and only
 </span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">simulation</span><span>.</span><span class="identifier">custom</span><span>.</span><span class="type-name">CustomSimulation</span><span>
-</span><span class="comment">// define a class that extends from a simulation DSL   
-</span><span class="keyword">class</span><span> </span><span class="type-name">InvoiceSimulation</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CustomSimulation</span><span>:
 
-  </span><span class="identifier">simulate</span><span> (
+</span><span class="comment">// define a class that extends from a simulation DSL   
+</span><span class="keyword">class</span><span> </span><span class="type-name">InvoiceSimulation</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CustomSimulation</span><span>
+
+:
+
+  </span><span class="identifier">simulate</span><span>(
     </span><span class="comment">// add scenarios (comma separated)
 </span><span>    </span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
       </span><span class="type-name">AssignReviewerUT</span><span>,
@@ -171,11 +179,11 @@
     ),
     </span><span class="comment">// more scenarios  ..
 </span><span>  )
-</span><span class="identifier">end</span><span> </span><span class="type-name">InvoiceSimulation</span></code></pre>
+  </span><span class="identifier">end</span><span> </span><span class="type-name">InvoiceSimulation</span></code></pre>
         
         <h4 id="simulate" class="section"><a class="anchor-link left" href="#simulate"><i class="icofont-laika link">&#xef71;</i></a>simulate</h4>
-        <p>This is the entry point for your Simulation. 
-        There is one Simulation per Simulation class (file). 
+        <p>This is the entry point for your Simulation.
+        There is one Simulation per Simulation class (file).
         A Simulation contains one or more Scenarios.</p>
         
         <h4 id="scenario-1" class="section"><a class="anchor-link left" href="#scenario-1"><i class="icofont-laika link">&#xef71;</i></a>scenario</h4>
@@ -187,7 +195,7 @@
         <p>In your <em>sbt-console</em>:</p>
         <ul>
           <li>
-            <p>run all simulations: </p>
+            <p>run all simulations:</p>
             <p><code>It/test</code></p>
           </li>
           <li>
@@ -205,7 +213,7 @@
         <p>Depending on the log level, the most important delimiters are in color:</p>
         <ul>
           <li><strong>Error: Red</strong></li>
-          <li><strong>Warning: Magenta</strong> </li>
+          <li><strong>Warning: Magenta</strong></li>
           <li><strong>Info: Green</strong></li>
         </ul>
         
@@ -222,32 +230,34 @@
         
         <h3 id="naming" class="section"><a class="anchor-link left" href="#naming"><i class="icofont-laika link">&#xef71;</i></a>Naming</h3>
         <p>The DSL is using the names of your BPMN objects like Processes and UserTasks.
-        As these objects can be reused in different Scenarios and Steps, we take the name 
-        of the variable. </p>
+        As these objects can be reused in different Scenarios and Steps, we take the name
+        of the variable.</p>
         <pre><code class="nohighlight"><span>  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">`Invoice Receipt with Review`</span><span> =
-    </span><span class="identifier">`Invoice Receipt`</span><span>
-      .</span><span class="identifier">withOut</span><span>(</span><span class="type-name">InvoiceReceiptCheck</span><span>(</span><span class="identifier">clarified</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="boolean-literal">true</span><span>)))
-  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">NotApproveInvoiceUT</span><span> =
-    </span><span class="type-name">ApproveInvoiceUT</span><span>
-            .</span><span class="identifier">withOut</span><span>(</span><span class="type-name">ApproveInvoice</span><span>(</span><span class="boolean-literal">false</span><span>))  
-    ...
-    </span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Invoice Receipt with Review`</span><span>)(
-      </span><span class="type-name">NotApproveInvoiceUT</span><span>,
-      </span><span class="identifier">subProcess</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
-        </span><span class="type-name">AssignReviewerUT</span><span>,
-        </span><span class="type-name">ReviewInvoiceUT</span><span> </span><span class="comment">// do clarify
-</span><span>      ),
-      </span><span class="type-name">ApproveInvoiceUT</span><span>, </span><span class="comment">// now approve
-</span><span>      </span><span class="type-name">PrepareBankTransferUT</span><span>
-    )
-    ...</span></code></pre>
+  </span><span class="identifier">`Invoice Receipt`</span><span>
+    .</span><span class="identifier">withOut</span><span>(</span><span class="type-name">InvoiceReceiptCheck</span><span>(</span><span class="identifier">clarified</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="boolean-literal">true</span><span>)))
+</span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">NotApproveInvoiceUT</span><span> =
+  </span><span class="type-name">ApproveInvoiceUT</span><span>
+    .</span><span class="identifier">withOut</span><span>(</span><span class="type-name">ApproveInvoice</span><span>(</span><span class="boolean-literal">false</span><span>))
+.
+..
+</span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Invoice Receipt with Review`</span><span>)(
+  </span><span class="type-name">NotApproveInvoiceUT</span><span>,
+  </span><span class="identifier">subProcess</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
+    </span><span class="type-name">AssignReviewerUT</span><span>,
+    </span><span class="type-name">ReviewInvoiceUT</span><span> </span><span class="comment">// do clarify
+</span><span>  ),
+  </span><span class="type-name">ApproveInvoiceUT</span><span>, </span><span class="comment">// now approve
+</span><span>  </span><span class="type-name">PrepareBankTransferUT</span><span>
+)
+...</span></code></pre>
         <p>In this example we have a ProcessScenario with the name <em>Invoice Receipt with Review</em>.
         The first Step has the name <em>NotApproveInvoiceUT</em>.</p>
         <div class="callout info">
           <i class="icofont-laika info">&#xef4e;</i>
-          <p>Use descriptive variable names. 
+          <p>Use descriptive variable names.
           If you use special characters, you need to use backticks, like:</p>
-          <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">`Invoice Receipt with Review`</span><span> = ...</span></code></pre>
+          <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">`Invoice Receipt with Review`</span><span> =
+...</span></code></pre>
         </div>
         <p>These names are then used in the output Log:</p>
         <p><img src="images/simulation_outputNaming.png" alt="simulation_outputNaming"></p>
@@ -255,26 +265,26 @@
         <h3 id="configuration" class="section"><a class="anchor-link left" href="#configuration"><i class="icofont-laika link">&#xef71;</i></a>Configuration</h3>
         <p>The following is the default configuration:</p>
         <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">SimulationConfig</span><span>[</span><span class="type-name">B</span><span>](
-       </span><span class="comment">// define tenant if you have one
-</span><span>       </span><span class="identifier">tenantId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">None</span><span>,
-       </span><span class="comment">// the Camunda Port
-</span><span>       </span><span class="comment">// there are Requests that wait until the process is ready - like getTask.
-</span><span>       </span><span class="comment">// the Simulation waits 1 second between the Requests.
-</span><span>       </span><span class="comment">// so with a timeout of 10 sec it will try 10 times (retryDuration = 1.second)
-</span><span>       </span><span class="identifier">maxCount</span><span>: </span><span class="type-name">Int</span><span> = </span><span class="number-literal">10</span><span>,
-       </span><span class="comment">// REST endpoint of Camunda
-</span><span>       </span><span class="identifier">endpoint</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;http://localhost:8080/engine-rest&quot;</span><span>,
-       </span><span class="comment">// you can add authentication with this - default there is none.
-</span><span>       </span><span class="comment">// see BasicSimulationDsl / OAuthSimulationDsl for examples
-</span><span>       </span><span class="identifier">authHeader</span><span>: </span><span class="type-name">B</span><span> =&gt; </span><span class="type-name">B</span><span> = (</span><span class="identifier">b</span><span>: </span><span class="type-name">B</span><span>) =&gt; </span><span class="identifier">b</span><span>,
-       </span><span class="comment">// the maximum LogLevel you want to print the LogEntries.
-</span><span>       </span><span class="identifier">logLevel</span><span>: </span><span class="type-name">LogLevel</span><span> = </span><span class="type-name">LogLevel</span><span>.</span><span class="type-name">INFO</span><span>
-   )</span></code></pre>
+                                </span><span class="comment">// define tenant if you have one
+</span><span>                                </span><span class="identifier">tenantId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">None</span><span>,
+                                </span><span class="comment">// the Camunda Port
+</span><span>                                </span><span class="comment">// there are Requests that wait until the process is ready - like getTask.
+</span><span>                                </span><span class="comment">// the Simulation waits 1 second between the Requests.
+</span><span>                                </span><span class="comment">// so with a timeout of 10 sec it will try 10 times (retryDuration = 1.second)
+</span><span>                                </span><span class="identifier">maxCount</span><span>: </span><span class="type-name">Int</span><span> = </span><span class="number-literal">10</span><span>,
+                                </span><span class="comment">// REST endpoint of Camunda
+</span><span>                                </span><span class="identifier">endpoint</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;http://localhost:8080/engine-rest&quot;</span><span>,
+                                </span><span class="comment">// you can add authentication with this - default there is none.
+</span><span>                                </span><span class="comment">// see BasicSimulationDsl / OAuthSimulationDsl for examples
+</span><span>                                </span><span class="identifier">authHeader</span><span>: </span><span class="type-name">B</span><span> =&gt; </span><span class="type-name">B</span><span> = (</span><span class="identifier">b</span><span>: </span><span class="type-name">B</span><span>) =&gt; </span><span class="identifier">b</span><span>,
+                                </span><span class="comment">// the maximum LogLevel you want to print the LogEntries.
+</span><span>                                </span><span class="identifier">logLevel</span><span>: </span><span class="type-name">LogLevel</span><span> = </span><span class="type-name">LogLevel</span><span>.</span><span class="type-name">INFO</span><span>
+                              )</span></code></pre>
         <p>You can easily override it in your Simulation:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">config</span><span> =
-    </span><span class="keyword">super</span><span>.</span><span class="identifier">config</span><span>
-      .</span><span class="identifier">withPort</span><span>(</span><span class="number-literal">8034</span><span>)
-      .</span><span class="identifier">withLogLevel</span><span>(</span><span class="type-name">LogLevel</span><span>.</span><span class="type-name">DEBUG</span><span>)</span></code></pre>
+  </span><span class="keyword">super</span><span>.</span><span class="identifier">config</span><span>
+    .</span><span class="identifier">withPort</span><span>(</span><span class="number-literal">8034</span><span>)
+    .</span><span class="identifier">withLogLevel</span><span>(</span><span class="type-name">LogLevel</span><span>.</span><span class="type-name">DEBUG</span><span>)</span></code></pre>
         
         <h2 id="scenarios" class="section"><a class="anchor-link left" href="#scenarios"><i class="icofont-laika link">&#xef71;</i></a>Scenarios</h2>
         <p>The following chapters explain the different scenario types:</p>
@@ -340,9 +350,9 @@
 ...</span></code></pre>
         
         <h4 id="badscenario" class="section"><a class="anchor-link left" href="#badscenario"><i class="icofont-laika link">&#xef71;</i></a>badScenario</h4>
-        <p>Yet another case is if the process never gets started. 
+        <p>Yet another case is if the process never gets started.
         For example you validate the input variables and they fail.
-        In this case Camunda throws an Error. 
+        In this case Camunda throws an Error.
         To handle this we need to do the following:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
 </span><span class="identifier">badScenario</span><span>(
@@ -365,13 +375,14 @@
 ...</span></code></pre>
         
         <h3 id="dmn-scenario" class="section"><a class="anchor-link left" href="#dmn-scenario"><i class="icofont-laika link">&#xef71;</i></a>DMN Scenario</h3>
-        <p><em>Camundala</em> uses the <a href="https://docs.camunda.org/manual/7.18/reference/rest/decision-definition/post-evaluate/">Evaluate Decision REST API</a>
+        <p><em>Camundala</em> uses
+        the <a href="https://docs.camunda.org/manual/7.18/reference/rest/decision-definition/post-evaluate/">Evaluate Decision REST API</a>
         from <em>Camunda</em>.</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">simulate</span><span> (
-    </span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>)
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">simulate</span><span>(
+  </span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>)
 )
 </span><span class="comment">// OR
-</span><span class="identifier">simulate</span><span> (
+</span><span class="identifier">simulate</span><span>(
   </span><span class="type-name">InvoiceAssignApproverDMN</span><span> </span><span class="comment">// scenario is created automatically
 </span><span>)</span></code></pre>
         <p>As this is a single request, all you need is to add your DMN description you did with the BPMN DSL.</p>
@@ -392,17 +403,20 @@
 )</span></code></pre>
         <p>This uses the following Inputs and outputs (domain):</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">SelectApproverGroup</span><span>(
-                                      </span><span class="identifier">amount</span><span>: </span><span class="type-name">Double</span><span> = </span><span class="number-literal">30.0</span><span>,
-                                      </span><span class="identifier">invoiceCategory</span><span>: </span><span class="type-name">InvoiceCategory</span><span> = 
-                                        </span><span class="type-name">InvoiceCategory</span><span>.</span><span class="identifier">`Software License Costs`</span><span>
+                                </span><span class="identifier">amount</span><span>: </span><span class="type-name">Double</span><span> = </span><span class="number-literal">30.0</span><span>,
+                                </span><span class="identifier">invoiceCategory</span><span>: </span><span class="type-name">InvoiceCategory</span><span> =
+                                </span><span class="type-name">InvoiceCategory</span><span>.</span><span class="identifier">`Software License Costs`</span><span>
                               )
 
 </span><span class="annotation">@description</span><span>(</span><span class="string-literal">&quot;These Groups can approve the invoice.&quot;</span><span>)
-</span><span class="identifier">enum</span><span> </span><span class="type-name">ApproverGroup</span><span> :
-  </span><span class="keyword">case</span><span> </span><span class="identifier">accounting</span><span>, </span><span class="identifier">sales</span><span>, </span><span class="identifier">management</span></code></pre>
+</span><span class="identifier">enum</span><span> </span><span class="type-name">ApproverGroup</span><span>:
+</span><span class="keyword">case</span><span> </span><span class="identifier">accounting</span><span>
+, </span><span class="identifier">sales</span><span>
+, </span><span class="identifier">management</span></code></pre>
         <ul>
           <li>Running this will use the inputs <code>amount</code> and <code>invoiceCategory</code> for the evaluation.</li>
-          <li>The result, a list of <code>ApproverGroup</code>s (<em>collectEntries</em>), will then be matched against our specified <code>ApproverGroup</code>s.</li>
+          <li>The result, a list of <code>ApproverGroup</code>s (<em>collectEntries</em>), will then be matched against our specified <code>ApproverGroup</code>
+          s.</li>
         </ul>
         <div class="callout info">
           <i class="icofont-laika info">&#xef4e;</i>
@@ -423,24 +437,24 @@
         <p>You can ignore a scenario by just prefix your Scenario with <code>ignore</code>.</p>
         
         <h4 id="examples-1" class="section"><a class="anchor-link left" href="#examples-1"><i class="icofont-laika link">&#xef71;</i></a>Examples:</h4>
-        <pre><code class="nohighlight"><span class="identifier">simulate</span><span> (
-    </span><span class="identifier">ignore</span><span>.</span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
-      </span><span class="type-name">AssignReviewerUT</span><span>,
-      </span><span class="type-name">ReviewInvoiceUT</span><span>
-    ),
-    </span><span class="identifier">ignore</span><span>.</span><span class="identifier">incidentScenario</span><span>(
-      </span><span class="identifier">`Invoice Receipt that fails`</span><span>,
-      </span><span class="string-literal">&quot;Could not archive invoice...&quot;</span><span>
-    )(
-      </span><span class="type-name">ApproveInvoiceUT</span><span>,
-      </span><span class="type-name">PrepareBankTransferUT</span><span>
-    ),
-    </span><span class="identifier">ignore</span><span>.</span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>),
-    </span><span class="identifier">ignore</span><span>.</span><span class="identifier">badScenario</span><span>(
-      </span><span class="type-name">BadValidationP</span><span>,
-      </span><span class="number-literal">500</span><span>,
-        </span><span class="string-literal">&quot;Validation Error: Input is not valid: DecodingFailure(Missing required field, List(DownField(creditor)))&quot;</span><span>
-    ),
+        <pre><code class="nohighlight"><span class="identifier">simulate</span><span>(
+  </span><span class="identifier">ignore</span><span>.</span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
+    </span><span class="type-name">AssignReviewerUT</span><span>,
+    </span><span class="type-name">ReviewInvoiceUT</span><span>
+  ),
+  </span><span class="identifier">ignore</span><span>.</span><span class="identifier">incidentScenario</span><span>(
+    </span><span class="identifier">`Invoice Receipt that fails`</span><span>,
+    </span><span class="string-literal">&quot;Could not archive invoice...&quot;</span><span>
+  )(
+    </span><span class="type-name">ApproveInvoiceUT</span><span>,
+    </span><span class="type-name">PrepareBankTransferUT</span><span>
+  ),
+  </span><span class="identifier">ignore</span><span>.</span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>),
+  </span><span class="identifier">ignore</span><span>.</span><span class="identifier">badScenario</span><span>(
+    </span><span class="type-name">BadValidationP</span><span>,
+    </span><span class="number-literal">500</span><span>,
+    </span><span class="string-literal">&quot;Validation Error: Input is not valid: DecodingFailure(Missing required field, List(DownField(creditor)))&quot;</span><span>
+  ),
 )</span></code></pre>
         <p>An ignored Scenario will create a Warning in the output Log, like this:</p>
         <p><img src="images/simulation_outputIgnore.png" alt="simulation_outputIgnore"></p>
@@ -448,27 +462,29 @@
         <h3 id="ignore-all-scenarios" class="section"><a class="anchor-link left" href="#ignore-all-scenarios"><i class="icofont-laika link">&#xef71;</i></a>Ignore all Scenarios</h3>
         <p>If you want to ignore all the Scenarios you can &#39;ignore&#39; the Simulation like:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="identifier">ignore</span><span>.</span><span class="identifier">simulate</span><span>(
-    </span><span class="identifier">scenario</span><span>(...),
-    </span><span class="identifier">scenario</span><span>(...),
-  )</span></code></pre>
+  </span><span class="identifier">scenario</span><span>(.
+..),
+</span><span class="identifier">scenario</span><span>(
+...),
+)</span></code></pre>
         
         <h3 id="only-a-scenario" class="section"><a class="anchor-link left" href="#only-a-scenario"><i class="icofont-laika link">&#xef71;</i></a>Only a Scenario</h3>
         <p>You can run only a scenario at the time by just prefix your Scenario with <code>only</code>.</p>
         
         <h4 id="examples-2" class="section"><a class="anchor-link left" href="#examples-2"><i class="icofont-laika link">&#xef71;</i></a>Examples:</h4>
-        <pre><code class="nohighlight"><span class="identifier">simulate</span><span> (
-    </span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
-      </span><span class="type-name">AssignReviewerUT</span><span>,
-      </span><span class="type-name">ReviewInvoiceUT</span><span>
-    ),
-    </span><span class="identifier">only</span><span>.</span><span class="identifier">incidentScenario</span><span>(
-      </span><span class="identifier">`Invoice Receipt that fails`</span><span>,
-      </span><span class="string-literal">&quot;Could not archive invoice...&quot;</span><span>
-    )(
-      </span><span class="type-name">ApproveInvoiceUT</span><span>,
-      </span><span class="type-name">PrepareBankTransferUT</span><span>
-    ),
-    </span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>)
+        <pre><code class="nohighlight"><span class="identifier">simulate</span><span>(
+  </span><span class="identifier">scenario</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
+    </span><span class="type-name">AssignReviewerUT</span><span>,
+    </span><span class="type-name">ReviewInvoiceUT</span><span>
+  ),
+  </span><span class="identifier">only</span><span>.</span><span class="identifier">incidentScenario</span><span>(
+    </span><span class="identifier">`Invoice Receipt that fails`</span><span>,
+    </span><span class="string-literal">&quot;Could not archive invoice...&quot;</span><span>
+  )(
+    </span><span class="type-name">ApproveInvoiceUT</span><span>,
+    </span><span class="type-name">PrepareBankTransferUT</span><span>
+  ),
+  </span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>)
 )</span></code></pre>
         <p>An only Scenario will create a Warning for all other Scenarios as they are ignored.</p>
         
@@ -479,7 +495,7 @@
 </span><span class="identifier">scenario</span><span>(</span><span class="type-name">PROCESS</span><span>)(
   </span><span class="type-name">STEP1</span><span>,
   </span><span class="type-name">STEP2</span><span>,
-  ...
+...
 )
 ...</span></code></pre>
         <p>See example in <a href="#process-scenarios">Process Scenarios</a>.</p>
@@ -488,33 +504,39 @@
         <p>A special case are sub processes. If your process contains sub processes, there are
         the following possibilities:</p>
         <ul>
-          <li>The sub process has no interactions:</li>
-        </ul>
-        <ul>
-          <li>Nothing to do.</li>
-          <li>The sub process contains interactions, but is mocked (returns a defined result, skipping the interactions):</li>
-        </ul>
-        <ul>
-          <li>Nothing to do.</li>
-          <li>The sub process contains interactions:</li>
-        </ul>
-        <ul>
           <li>
-            You can add a subProcess to your simulation, like:
-            <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
+            The sub process has no interactions:
+            <ul>
+              <li>Nothing to do.</li>
+            </ul>
+          </li>
+          <li>
+            The sub process contains interactions, but is mocked (returns a defined result, skipping the interactions):
+            <ul>
+              <li>Nothing to do.</li>
+            </ul>
+          </li>
+          <li>
+            The sub process contains interactions:
+            <ul>
+              <li>
+                You can add a subProcess to your simulation, like:
+                <pre class="keep-together pdf epub"><code class="nohighlight"><span>...
 </span><span class="identifier">subProcess</span><span>(</span><span class="identifier">`Review Invoice`</span><span>)(
 </span><span class="type-name">AssignReviewerUT</span><span>,
 </span><span class="type-name">ReviewInvoiceUT</span><span> </span><span class="comment">// do clarify
 </span><span>),
 ... </span></code></pre>
-            <p>This will change the context to the sub process and in the end switch it back to
-            the main process.</p>
+                <p>This will change the context to the sub process and in the end switch it back to
+                the main process.</p>
+              </li>
+            </ul>
           </li>
         </ul>
         <div class="callout info">
           <i class="icofont-laika info">&#xef4e;</i>
-          <p>This only works for one hierarchy of sub processes. 
-            When you have more complex sub processes, you must mock them.</p>
+          <p>This only works for one hierarchy of sub processes.
+          When you have more complex sub processes, you must mock them.</p>
         </div>
         
         <h2 id="validation" class="section"><a class="anchor-link left" href="#validation"><i class="icofont-laika link">&#xef71;</i></a>Validation</h2>
@@ -522,13 +544,16 @@
         It also uses the the input- and output domain objects to validate variables of the process.</p>
         <pre><code class="nohighlight"><span class="comment">// domain classes
 </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InvoiceReceipt</span><span>(
-  </span><span class="identifier">creditor</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Great Pizza for Everyone Inc.&quot;</span><span>,
-  </span><span class="identifier">amount</span><span>: </span><span class="type-name">Double</span><span> = </span><span class="number-literal">300.0</span><span>,
-  ...
+                           </span><span class="identifier">creditor</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Great Pizza for Everyone Inc.&quot;</span><span>,
+                           </span><span class="identifier">amount</span><span>: </span><span class="type-name">Double</span><span> = </span><span class="number-literal">300.0</span><span>,
+
+...
 )
+
 </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">ApproveInvoice</span><span>(
-   </span><span class="identifier">approved</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">true</span><span>
-)
+                           </span><span class="identifier">approved</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">true</span><span>
+                         )
+
 ...
 </span><span class="comment">// bpmn object
 </span><span class="identifier">process</span><span>(
@@ -538,7 +563,7 @@
   </span><span class="identifier">out</span><span> = </span><span class="type-name">InvoiceReviewed</span><span>()
 )</span></code></pre>
         <ul>
-          <li>in: The input of a BPMN object. </li>
+          <li>in: The input of a BPMN object.</li>
           <li>out: The output of a BPMN object.</li>
         </ul>
         <p>Each attribute of the in/out-objects represents a variable on the process.</p>
@@ -575,16 +600,16 @@
 ...
 </span><span class="keyword">private</span><span> </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">WithOverrideScenario</span><span> =
   </span><span class="identifier">`Invoice Receipt with Override`</span><span>
-        .</span><span class="identifier">exists</span><span>(</span><span class="string-literal">&quot;approved&quot;</span><span>)
-        .</span><span class="identifier">notExists</span><span>(</span><span class="string-literal">&quot;clarified&quot;</span><span>)
-        .</span><span class="identifier">isEquals</span><span>(</span><span class="string-literal">&quot;approved&quot;</span><span>, </span><span class="boolean-literal">true</span><span>)
+    .</span><span class="identifier">exists</span><span>(</span><span class="string-literal">&quot;approved&quot;</span><span>)
+    .</span><span class="identifier">notExists</span><span>(</span><span class="string-literal">&quot;clarified&quot;</span><span>)
+    .</span><span class="identifier">isEquals</span><span>(</span><span class="string-literal">&quot;approved&quot;</span><span>, </span><span class="boolean-literal">true</span><span>)
 
 </span><span class="keyword">private</span><span> </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">`ApproveInvoiceUT with Override`</span><span> =
   </span><span class="type-name">ApproveInvoiceUT</span><span>
-          .</span><span class="identifier">exists</span><span>(</span><span class="string-literal">&quot;amount&quot;</span><span>)
-          .</span><span class="identifier">notExists</span><span>(</span><span class="string-literal">&quot;amounts&quot;</span><span>)
-          .</span><span class="identifier">isEquals</span><span>(</span><span class="string-literal">&quot;amount&quot;</span><span>, </span><span class="number-literal">300.0</span><span>)</span></code></pre>
-        <p>As you see in this example, you can simply add checks. 
+    .</span><span class="identifier">exists</span><span>(</span><span class="string-literal">&quot;amount&quot;</span><span>)
+    .</span><span class="identifier">notExists</span><span>(</span><span class="string-literal">&quot;amounts&quot;</span><span>)
+    .</span><span class="identifier">isEquals</span><span>(</span><span class="string-literal">&quot;amount&quot;</span><span>, </span><span class="number-literal">300.0</span><span>)</span></code></pre>
+        <p>As you see in this example, you can simply add checks.
         Now only these checks are run by the validation.</p>
         <p>The following overrides are provided (for now):</p>
         
@@ -656,12 +681,10 @@
         <p>Example:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>!!! The expected value </span><span class="string-literal">&#39;CString(hello,String)&#39;</span><span> of someOut does not match the result variable </span><span class="string-literal">&#39;CString(other,String)&#39;</span><span>.
  List(CamundaProperty(.., CamundaProperty(simpleEnum,CString(One,String)), CamundaProperty(someValue,CString(hello,String)), ...))</span></code></pre>
-        <blockquote>
-          <p>It always lists all Variables of the Process below the message.</p>
-          
-          <h4 id="result-is-missing"><a class="anchor-link left" href="#result-is-missing"><i class="icofont-laika link">&#xef71;</i></a>Result is missing</h4>
-          <p>This is for optional variables, where you expect a value, but in the process there is no such variable.</p>
-        </blockquote>
+        <blockquote>It always lists all Variables of the Process below the message.</blockquote>
+        
+        <h4 id="result-is-missing" class="section"><a class="anchor-link left" href="#result-is-missing"><i class="icofont-laika link">&#xef71;</i></a>Result is missing</h4>
+        <p>This is for optional variables, where you expect a value, but in the process there is no such variable.</p>
         <p>Example:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>!!! The expected value </span><span class="string-literal">&#39;CString(hello,String)&#39;</span><span> of someOut does not match the result variable </span><span class="string-literal">&#39;CNull&#39;</span><span>.
  List(CamundaProperty(.., CamundaProperty(simpleEnum,CString(One,String)), CamundaProperty(someValue,CString(hello,String)), ...))</span></code></pre>
@@ -673,9 +696,9 @@
  List(CamundaProperty(.., CamundaProperty(simpleEnum,CString(One,String)), CamundaProperty(someValue,CString(hello,String)), ...))</span></code></pre>
         
         <h2 id="timing" class="section"><a class="anchor-link left" href="#timing"><i class="icofont-laika link">&#xef71;</i></a>Timing</h2>
-        <p>The interactions with a process are time relevant. 
+        <p>The interactions with a process are time relevant.
         For example you only can interact with a User Task if the process is actually at that User Task.</p>
-        <p>For this we check every second if the process is ready. 
+        <p>For this we check every second if the process is ready.
         The time on how long it should check can be configured. See <code>maxCount</code> in <a href="#configuration">Configuration</a>.
         Whenever this timeout is reached, it throws an exception and the scenario has failed.</p>
         <p>Here an example output:</p>
@@ -696,12 +719,12 @@
         <em>Receive Message Event</em> (we use the <code>processInstanceId</code>).</p>
         
         <h4 id="receive-signal-event" class="section"><a class="anchor-link left" href="#receive-signal-event"><i class="icofont-laika link">&#xef71;</i></a>Receive Signal Event</h4>
-        <p>The way of Correlate Messages does not work for Signals, as they are 
+        <p>The way of Correlate Messages does not work for Signals, as they are
         <em>fire and forget</em>.
         So you need to add an attribute with a certain value, we can check.</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">scenario</span><span>(</span><span class="identifier">signalExampleProcess</span><span>) (
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">scenario</span><span>(</span><span class="identifier">signalExampleProcess</span><span>)(
   </span><span class="identifier">signalExample</span><span>
-  .</span><span class="identifier">waitFor</span><span>(</span><span class="string-literal">&quot;signalReady&quot;</span><span>, </span><span class="boolean-literal">true</span><span>),
+    .</span><span class="identifier">waitFor</span><span>(</span><span class="string-literal">&quot;signalReady&quot;</span><span>, </span><span class="boolean-literal">true</span><span>),
 )</span></code></pre>
         <p>Just add the postfix <code>.waitFor(WAITFOR_VARIABLE_NAME, WAITFOR_VARIABLE_VALUE)</code> to the BPMN Signal definition.
         In your process you must now set this variable with the according value, when the process is at this event.</p>
@@ -714,14 +737,14 @@
         
         <h4 id="timer-event" class="section"><a class="anchor-link left" href="#timer-event"><i class="icofont-laika link">&#xef71;</i></a>Timer Event</h4>
         <p>You can execute an intermediate timer event immediately.</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">scenario</span><span>(</span><span class="identifier">timerExampleProcess</span><span>) (
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">scenario</span><span>(</span><span class="identifier">timerExampleProcess</span><span>)(
   </span><span class="identifier">timerExample</span><span>
     .</span><span class="identifier">waitFor</span><span>(</span><span class="string-literal">&quot;timerReady&quot;</span><span>, </span><span class="boolean-literal">true</span><span>),
 )</span></code></pre>
         
         <h3 id="concrete-wait-time" class="section"><a class="anchor-link left" href="#concrete-wait-time"><i class="icofont-laika link">&#xef71;</i></a>Concrete wait time</h3>
         <p>If you have a use case that is easier to just wait a bit (not recommended;), you can just add this step</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">scenario</span><span>(</span><span class="identifier">signalExampleProcess</span><span>) (
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">scenario</span><span>(</span><span class="identifier">signalExampleProcess</span><span>)(
   </span><span class="identifier">waitFor</span><span>(</span><span class="number-literal">2</span><span>),
   </span><span class="identifier">nextUserTask</span><span>,
 )</span></code></pre>
@@ -731,27 +754,152 @@
         <div class="callout info">
           <i class="icofont-laika info">&#xef4e;</i>
           <p>Mocking is handled directly in the processes itself.</p>
-          <p>So depending on the pattern you provide, you need to provide this logic in your process.</p>
-          <p>In the future we will provide helpers that supports these patterns.</p>
+          <p>This is especially useful in <em>Simulations</em>.</p>
+          <p>However, you can mock on any environment, like local or production (e.g. with <em>Postman</em>).</p>
         </div>
-        <p>We defined the following two Patterns.</p>
         
-        <h3 id="just-return-the-mocked-output" class="section"><a class="anchor-link left" href="#just-return-the-mocked-output"><i class="icofont-laika link">&#xef71;</i></a>Just return the mocked Output</h3>
-        <p>As you specify each Output of a Process, you just can use them for Mocking.</p>
-        <p>In our <em>Invoice</em> example, the process <em>Invoice Receipt</em> uses the <em>Review Invoice</em> process.</p>
+        <h3 id="generic-mocking" class="section"><a class="anchor-link left" href="#generic-mocking"><i class="icofont-laika link">&#xef71;</i></a>Generic Mocking</h3>
+        <p>Running a Process you have 2 possibilities to mock <em>ServiceTasks, CustomTasks, Sub Processes (Call Activities)</em> in a
+        generic way:</p>
         <ul>
           <li>
-            If we want to mock it, we need define this in the input class of the <em>Invoice Receipt</em> process:
-            <pre><code></code></pre>
+            <code>servicesMocked</code>:
+            <ul>
+              <li>
+                <p>Mocks all <em>ServiceTasks</em> in a <em>Process</em>.</p>
+              </li>
+              <li>
+                <p>This is a flag you can set to <code>true</code>, <code>false</code> is the default.</p>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                Example:
+                <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">example</span><span>
+  .</span><span class="identifier">mockServices</span></code></pre>
+              </li>
+            </ul>
           </li>
         </ul>
-        <pre><code>
-### Mock the wrapped Service Response.
-
-## Load Testing
-@:callout(info)
-At the moment this is not supported.
-@:@</code></pre>
+        <ul>
+          <li><code>mockedWorkers</code>:
+            - Mocks all specified <em>Sub Processes</em> and <em>Workers</em> in a <em>Process</em>.
+            - This is a list of <em>processNames</em> and/or <em>topicNames</em> you want to mock.
+            - Example:
+              <code>scala
+    example
+      .mockWorkers(ModuleGlobal.processName, MyWorker.topicName)</code></li>
+        </ul>
+        <p>For both you need to add an in-mapping in case of a <em>Sub Process</em> (<em>CallActivity</em>).
+        <img src="images/simulation_mockMapping.png" alt="simulation_mockMapping"></p>
+        
+        <h3 id="provide-default-mocks" class="section"><a class="anchor-link left" href="#provide-default-mocks"><i class="icofont-laika link">&#xef71;</i></a>Provide default Mocks</h3>
+        
+        <h4 id="process-or-customworker" class="section"><a class="anchor-link left" href="#process-or-customworker"><i class="icofont-laika link">&#xef71;</i></a>Process or CustomWorker</h4>
+        <p>In your <em>Process</em> or <em>CustomWorker</em> you define automatically a default Mock, with</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">example</span><span> = </span><span class="identifier">process</span><span>(
+  </span><span class="type-name">In</span><span>(),
+  </span><span class="type-name">Out</span><span>()
+)</span></code></pre>
+        <p>This is static and will always return <code>Out()</code>.</p>
+        <p>You can also define a dynamic Mock, that depends on the input:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">example</span><span> = </span><span class="identifier">process</span><span>(
+  </span><span class="type-name">In</span><span>(),
+  </span><span class="type-name">Out</span><span>.</span><span class="type-name">DoIt</span><span>()
+).</span><span class="identifier">mockWith</span><span>: </span><span class="identifier">in</span><span> =&gt;
+   </span><span class="keyword">if</span><span> </span><span class="identifier">in</span><span>.</span><span class="identifier">doIt</span><span> </span><span class="identifier">then</span><span> </span><span class="type-name">Out</span><span>.</span><span class="type-name">DoIt</span><span>() </span><span class="keyword">else</span><span> </span><span class="type-name">Out</span><span>.</span><span class="type-name">DontDoIt</span><span>() </span></code></pre>
+        <p>Here you can create the Mock depending on the input.</p>
+        
+        <h4 id="service-worker" class="section"><a class="anchor-link left" href="#service-worker"><i class="icofont-laika link">&#xef71;</i></a>Service Worker</h4>
+        <p>Analog to <em>Process</em> or <em>CustomWorker</em> you define automatically a default Mock for <em>ServiceWorker</em>, with</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">example</span><span> = </span><span class="identifier">serviceTask</span><span>(
+  </span><span class="type-name">In</span><span>(),
+  </span><span class="type-name">Out</span><span>(),
+  </span><span class="identifier">serviceMock</span><span>,
+  </span><span class="identifier">serviceInExample</span><span>
+)</span></code></pre>
+        <p>This is static and will always return <code>serviceMock.toServiceResponse</code>.</p>
+        <p>You can also define a dynamic Mock, that depends on the input:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">example</span><span> = </span><span class="identifier">serviceTask</span><span>(
+  </span><span class="type-name">In</span><span>(),
+  </span><span class="type-name">Out</span><span>(),
+  </span><span class="identifier">serviceMock</span><span>,
+  </span><span class="identifier">serviceInExample</span><span>
+).</span><span class="identifier">mockWith</span><span>: </span><span class="identifier">in</span><span> =&gt;
+    </span><span class="type-name">MockedServiceResponse</span><span>.</span><span class="identifier">success200</span><span>(</span><span class="type-name">Out</span><span>(
+      </span><span class="keyword">if</span><span> </span><span class="identifier">in</span><span>.</span><span class="identifier">value</span><span> == </span><span class="number-literal">1</span><span> </span><span class="identifier">then</span><span> </span><span class="boolean-literal">true</span><span> </span><span class="keyword">else</span><span> </span><span class="boolean-literal">false</span><span>
+    ))</span></code></pre>
+        <p>Here you can create the <em>MockedServiceResponse</em> depending on the input.</p>
+        
+        <h3 id="specific-mocking-in-the-process" class="section"><a class="anchor-link left" href="#specific-mocking-in-the-process"><i class="icofont-laika link">&#xef71;</i></a>Specific Mocking in the Process</h3>
+        <p>It is also possible to define a concrete Mock for a step in the process (Sub Process, Worker).</p>
+        
+        <h4 id="subprocess-or-worker" class="section"><a class="anchor-link left" href="#subprocess-or-worker"><i class="icofont-laika link">&#xef71;</i></a>SubProcess or Worker</h4>
+        <p>You can define the <code>outputMock</code> for any <em>SubProcess</em> or <em>Worker</em> in your <code>InConfig</code> class.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InConfig</span><span>(
+    ...
+    </span><span class="annotation">@description</span><span>(</span><span class="identifier">serviceOrProcessMockDescr</span><span>(</span><span class="type-name">GetPoa</span><span>.</span><span class="type-name">Out</span><span>()))
+    </span><span class="identifier">getPoasMock</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">GetPoa</span><span>.</span><span class="type-name">Out</span><span>] = </span><span class="type-name">None</span><span>,
+    </span><span class="annotation">@description</span><span>(</span><span class="identifier">serviceOrProcessMockDescr</span><span>(</span><span class="type-name">GetPoaPoaKey</span><span>.</span><span class="type-name">Out</span><span>()))
+    </span><span class="identifier">getPoaDetailMock</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">GetPoaPoaKey</span><span>.</span><span class="type-name">Out</span><span>] = </span><span class="type-name">None</span><span>,
+    </span><span class="annotation">@description</span><span>(</span><span class="identifier">serviceOrProcessMockDescr</span><span>(</span><span class="type-name">GetClientClientKey</span><span>.</span><span class="type-name">Out</span><span>.</span><span class="identifier">privateIndividual</span><span>()))
+    </span><span class="identifier">getPoaPersonMock</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">GetClientClientKey</span><span>.</span><span class="type-name">Out</span><span>] = </span><span class="type-name">None</span><span>
+)</span></code></pre>
+        <p>As you see, you just define the <code>Out</code> type of that service.</p>
+        <p>To provide a nice description, just use <code>@description(serviceOrProcessMockDescr(MyService.Out()))</code>.</p>
+        <p>In your Simulation you can then use this Mock:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">example</span><span>
+  .</span><span class="identifier">withIn</span><span>(
+      </span><span class="type-name">In</span><span>(
+        </span><span class="identifier">inConfig</span><span> =
+          </span><span class="type-name">Some</span><span>(</span><span class="type-name">InConfig</span><span>(
+            </span><span class="identifier">getPoaPersonMock</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="type-name">GetClientClientKey</span><span>.</span><span class="type-name">Out</span><span>(
+              ...
+            )),
+          ))
+   ))</span></code></pre>
+        
+        <h4 id="serviceworker" class="section"><a class="anchor-link left" href="#serviceworker"><i class="icofont-laika link">&#xef71;</i></a>ServiceWorker</h4>
+        <p>Additionally, to <code>outputMock</code>, you can define <code>outputServiceMock</code> for any <em>ServiceWorker</em> in your <code>InConfig</code> class.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InConfig</span><span>(
+  ...
+  </span><span class="annotation">@description</span><span>(</span><span class="identifier">serviceOrProcessMockDescr</span><span>(</span><span class="type-name">GetUserToken</span><span>.</span><span class="identifier">serviceMock</span><span>))
+  </span><span class="identifier">hasAuthMethodOfflineMock</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">MockedServiceResponse</span><span>[</span><span class="type-name">GetUserToken</span><span>.</span><span class="type-name">ServiceOut</span><span>]] = </span><span class="type-name">None</span><span>
+)</span></code></pre>
+        <p>As you see, you just define the <code>ServiceOut</code> type of that service wrapped in a <code>MockedServiceResponse</code>.</p>
+        <p>To provide a nice description, just use <code>@description(serviceOrProcessMockDescr(MyService.serviceMock))</code>.</p>
+        <p>In your Simulation you can then use this Mock:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">example</span><span>
+  .</span><span class="identifier">withIn</span><span>(
+      </span><span class="type-name">In</span><span>(
+        </span><span class="identifier">inConfig</span><span> =
+          </span><span class="type-name">Some</span><span>(</span><span class="type-name">InConfig</span><span>(
+            </span><span class="identifier">hasAuthMethodOfflineMock</span><span> = </span><span class="type-name">Some</span><span>(
+              </span><span class="type-name">MockedServiceResponse</span><span>.</span><span class="identifier">success200</span><span>(</span><span class="type-name">ServiceOut</span><span>(
+                </span><span class="type-name">UserTokenData</span><span>(..)
+              ))
+          ))
+      ))
+)</span></code></pre>
+        <p>With <code>outputMock</code> and <code>outputServiceMock</code>, you need an according mapping in the BPMN.</p>
+        <p><img src="images/simulation_outputServiceMock.png" alt="simulation_outputServiceMock"></p>
+        
+        <h3 id="priorities-order" class="section"><a class="anchor-link left" href="#priorities-order"><i class="icofont-laika link">&#xef71;</i></a>Priorities / Order</h3>
+        <p>There is a defined priority on how the Mocks are applied (from top).</p>
+        <ul>
+          <li>outputServiceMock (Service Worker only)</li>
+          <li>outputMock</li>
+          <li>mockedWorkers</li>
+          <li>servicesMocked (Service Worker only)</li>
+        </ul>
+        <p>So in general you can override a generic Mock with a specific Mock.</p>
+        
+        <h2 id="load-testing" class="section"><a class="anchor-link left" href="#load-testing"><i class="icofont-laika link">&#xef71;</i></a>Load Testing</h2>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>At the moment this is not supported.</p>
+          <p>As the simulations are run in parallel, you can add more scenarios to increase the load.</p>
+        </div>
 
         
 <hr class="footer-rule"/>
