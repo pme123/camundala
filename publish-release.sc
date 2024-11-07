@@ -26,31 +26,37 @@ def release(version: String): Unit =
   replaceVersion(version)
 
   val isSnapshot = version.contains("-")
-  os.proc("sbt", "-J-Xmx3G", "documentation/laikaSite").call()
+  runInConsole("sbt", "-J-Xmx3G", "documentation/laikaSite")
 
   if !isSnapshot then
-    os.proc("sbt", "-J-Xmx3G", "publishSigned").call()
-    os.proc("git", "fetch", "--all").call()
-    os.proc("git", "commit", "-a", "-m", s"Released Version $version").call()
-    os.proc("git", "tag", "-a", s"v$version", "-m", s"Version $version").call()
-    os.proc("git", "checkout", "master").call()
-    os.proc("git", "merge", "develop").call()
-    os.proc("git", "push", "--tags").call()
-    os.proc("git", "checkout", "develop").call()
+    runInConsole("sbt", "-J-Xmx3G", "publishSigned")
+    runInConsole("git", "fetch", "--all")
+    runInConsole("git", "commit", "-a", "-m", s"Released Version $version")
+    runInConsole("git", "tag", "-a", s"v$version", "-m", s"Version $version")
+    runInConsole("git", "checkout", "master")
+    runInConsole("git", "merge", "develop")
+    runInConsole("git", "push", "--tags")
+    runInConsole("git", "checkout", "develop")
     val pattern = """^(\d+)\.(\d+)\.(\d+)$""".r
 
     val newVersion = version match
       case pattern(major, minor, _) =>
         s"$major.${minor.toInt + 1}.0-SNAPSHOT"
     replaceVersion(newVersion)
-    os.proc("git", "commit", "-a", "-m", s"Init new Version $newVersion").call()
-    os.proc("git", "push", "--all").call()
+    runInConsole("git", "commit", "-a", "-m", s"Init new Version $newVersion")
+    runInConsole("git", "push", "--all")
     println(s"Published Version: $version")
   else
-    os.proc("sbt", "-J-Xmx3G", "publishLocal").call()
+    runInConsole("sbt", "-J-Xmx3G", "publishLocal")
   end if
 end release
 
 private def replaceVersion(newVersion: String) =
   val versionsPath = os.pwd / "version"
   os.write.over(versionsPath, newVersion)
+
+private def runInConsole(proc: String*) = {
+  println(proc.mkString(" "))
+  val result = os.proc(proc).call()
+  println(result.out.text())
+}

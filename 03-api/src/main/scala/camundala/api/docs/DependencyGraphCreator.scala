@@ -84,7 +84,7 @@ case class DependencyGraphCreator()(using
   private def treeForEachProjects(
       configs: Seq[ApiProjectConf]
   ): Seq[ProjectTree] =
-    val groupedConfigs = configs.groupBy(_.name)
+    val groupedConfigs = configs.filter(!_.isWorker).groupBy(_.name)
     groupedConfigs.map { case name -> gConfigs =>
       val trees = toPackageTree(gConfigs, configs)
       ProjectTree(name, treeForEachProject(trees))

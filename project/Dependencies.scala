@@ -7,12 +7,12 @@ object Dependencies {
   // 00-documentation
   // - Laika Plugin
   // 04-helper
-  val osLibVersion = "0.10.5"
+  val osLibVersion = "0.11.3"
   // 01-domain
   val openapiCirceVersion = "0.11.3"
-  val tapirVersion = "1.11.1"
+  val tapirVersion = "1.11.7"
   val ironCirceVersion = "2.6.0"
-  val mUnitVersion = "1.0.1"
+  val mUnitVersion = "1.0.2"
   // 02-bpmn
   // -> domain
   // - osLib
@@ -23,7 +23,7 @@ object Dependencies {
   // - mUnitVersion
   // 03-dmn
   // -> bpmn
-  val sttpClient3Version = "3.9.8"
+  val sttpClient3Version = "3.10.1"
   val dmnTesterVersion = "0.17.9"
   // - mUnitVersion
   // 03-simulation
@@ -33,24 +33,24 @@ object Dependencies {
   // 03-worker
   // -> bpmn
   // -mUnitVersion
-  val chimneyVersion = "1.4.0"
+  val chimneyVersion = "1.5.0"
   // --- Implementations
   // 04-worker-c7spring
   // -> worker
-  val camundaVersion = "7.21.0" // external task client
+  val camundaVersion = "7.22.0" // external task client
   val jaxbApiVersion = "4.0.2" // needed by the camunda client 7.21?!
   // - sttpClient3
 
   // --- Experiments
   // 04-c7-spring
   // -> bpmn
-  val camundaSpinVersion = "1.23.0"
+  val camundaSpinVersion = "7.22.0"
   // camunda // server spring-boot
   // 04-c8-spring
   // -> bpmn
-  val scalaJacksonVersion = "2.17.2"
+  val scalaJacksonVersion = "2.18.0"
   val zeebeVersion = "8.5.10"
-  val springBootVersion = "3.3.3"
+  val springBootVersion = "3.3.4"
   val swaggerOpenAPIVersion = "2.1.22"
   // examples
   val h2Version = "2.3.232"

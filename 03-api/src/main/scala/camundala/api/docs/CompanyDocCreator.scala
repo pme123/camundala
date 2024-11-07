@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter
 trait CompanyDocCreator extends DependencyCreator:
 
   protected def gitBasePath: os.Path = apiConfig.projectsConfig.gitDir
-  protected given configs: Seq[ApiProjectConf] = setupDependencies()
+  protected given configs: Seq[ApiProjectConf] = setupConfigs()
   lazy val projectConfigs: Seq[ProjectConfig] =
     apiConfig.projectsConfig.projectConfigs
 
@@ -93,8 +93,8 @@ trait CompanyDocCreator extends DependencyCreator:
   end createDynamicConf
 
   private def createReleasePage(): Unit =
-    given configs: Seq[ApiProjectConf] = setupDependencies()
-    given releaseC: ReleaseConfig = releaseConfig
+    given configs: Seq[ApiProjectConf] = setupConfigs()
+    given ReleaseConfig = releaseConfig
     DependencyValidator().validateDependencies
     val indexGraph = DependencyGraphCreator().createIndex
     DependencyLinkCreator().createIndex(indexGraph)
@@ -103,6 +103,8 @@ trait CompanyDocCreator extends DependencyCreator:
     DependencyGraphCreator().createProjectDependencies
     val releaseNotes = setupReleaseNotes
     DependencyValidator().validateOrphans
+    val tableFooter =
+      "(\\*) New in this Release / (\\*\\*) Patched in this Release - check below for the details"
     val table =
       s"""
          |{%
@@ -114,21 +116,51 @@ trait CompanyDocCreator extends DependencyCreator:
          |
          |${releaseConfig.jiraReleaseUrl.map(u => s"[JIRA Release Planing]($u)").getOrElse("")}
          |
-         |${dependencyTable(configs)}
+         |## Camunda Dependencies
          |
-         |(*) New in this Release - check below for the details
+         |${dependencyTable(configs, isWorker = false)}
          |
-         |${releaseNotes}
+         |$tableFooter
+         |
+         |## Worker Dependencies
+         |
+         |${dependencyTable(configs, isWorker = true)}
+         |
+         |$tableFooter
+         |
+         |$releaseNotes
          """.stripMargin
+
     val releasePath = apiConfig.basePath / "src" / "docs" / "release.md"
     os.write.over(releasePath, table)
   end createReleasePage
 
-  private def setupDependencies(): Seq[ApiProjectConf] =
-    val packages = os.read.lines(apiConfig.basePath / "VERSIONS.conf")
-    val dependencies = packages
-      .filter(_.contains("Version"))
-      .map { l =>
+  private def setupConfigs(): Seq[ApiProjectConf] =
+    val configsLines = os.read.lines(apiConfig.basePath / "VERSIONS.conf")
+    val previousConfigsLines = os.read.lines(apiConfig.basePath / "VERSIONS_PREVIOUS.conf")
+    val versions = extractVersions(configsLines)
+    val previousVersions = extractVersions(previousConfigsLines)
+
+    versions
+      .toSeq.flatMap:
+        case projectName -> version =>
+          val previousVersion =
+            previousVersions.get(projectName).map(_._1).getOrElse(ApiProjectConf.defaultVersion)
+          fetchConf(
+            projectName.replace("-worker", ""),
+            version,
+            previousVersion,
+            projectName.endsWith("worker")
+          )
+
+  end setupConfigs
+
+  private def extractVersions(
+      versions: Seq[String]
+  ): Map[String, String] =
+    versions
+      .filter(l => l.contains("Version") && !l.contains("\"\""))
+      .map: l =>
         val projectName = l.trim
           .split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])")
           .map(_.toLowerCase)
@@ -136,14 +168,15 @@ trait CompanyDocCreator extends DependencyCreator:
           .mkString("-")
         val regex = """"(\d+\.\d+\.\d+)"""".r
         val version = regex.findFirstMatchIn(l.trim).get.group(1)
-        val isNew = l.toLowerCase().contains("// new")
-        projectName -> (version, isNew)
-      }
-    dependencies.flatMap:
-      case p -> v => fetchConf(p, v._1, v._2)
-  end setupDependencies
+        projectName -> version
+      .toMap
 
-  private def fetchConf(project: String, version: String, isNew: Boolean) =
+  private def fetchConf(
+      project: String,
+      version: String,
+      versionPrevious: String,
+      isWorker: Boolean
+  ) =
     for
       projConfig <- apiConfig.projectsConfig.projectConfig(project)
       projectPath = projConfig.absGitPath(gitBasePath)
@@ -155,13 +188,16 @@ trait CompanyDocCreator extends DependencyCreator:
         .callOnConsole(projectPath)
     yield ApiProjectConf(
       projectPath / apiConfig.projectsConfig.projectConfPath,
-      os.read.lines(projectPath / "CHANGELOG.md").toSeq,
-      isNew
+      os.read.lines(projectPath / "CHANGELOG.md"),
+      versionPrevious,
+      isWorker
     )
 
-  private def dependencyTable(configs: Seq[ApiProjectConf]) =
+  private def dependencyTable(configs: Seq[ApiProjectConf], isWorker: Boolean) =
+    val selectedConfigs = configs
+      .filter(_.isWorker == isWorker)
     val filteredConfigs =
-      configs
+      selectedConfigs
         .filter(c =>
           configs.exists(c2 =>
             c.name != c2.name && c2.dependencies.exists(d => d.name == c.name)
@@ -169,19 +205,26 @@ trait CompanyDocCreator extends DependencyCreator:
         )
         .sortBy(_.name)
 
-    "| **Package** | **Version** " +
+    "| **Package** | **Version** | Previous Version " +
       filteredConfigs
         .map(c => s"**${c.name}** ${c.version}")
         .mkString("| ", " | ", " |") +
-      "\n||----| :----:  " + filteredConfigs
+      "\n||----| :----:  | :----:  " + filteredConfigs
         .map(_ => s":----:")
         .mkString("| ", " | ", " |\n") +
-      configs
+      selectedConfigs
         .sortBy(_.name)
         .map { c =>
-          val name = if c.isNew then s"[${c.name}]*" else s"${c.name}"
-          val version = if c.isNew then s"**${c.version}**" else c.version
-          s"|| **$name** | $version " +
+          val (name, version, versionPrevious) =
+            c match
+              case _ if c.isNew =>
+                (s"[${c.name}]*", s"**${c.version}**", s"${c.versionPrevious}")
+              case _ if c.isPatched =>
+                (s"[${c.name}]**", s"_${c.version}_", s"${c.versionPrevious}")
+              case _ =>
+                (s"${c.name}", s"${c.version}", s"${c.versionPrevious}")
+
+          s"|| **$name** | $version | $versionPrevious " +
             filteredConfigs
               .map(c2 =>
                 c.dependencies
@@ -199,8 +242,19 @@ trait CompanyDocCreator extends DependencyCreator:
   end dependencyTable
 
   private def setupReleaseNotes(using configs: Seq[ApiProjectConf]) =
-    val projectChangelogs = configs
-      .filter(_.isNew) // take only the new ones
+    val mergeConfigs = configs
+      .filter(c => c.isNew || c.isPatched) // take only the new or patched ones
+      .foldLeft(Seq.empty[ApiProjectConf]):
+        case (result, c) =>
+          result
+            .find(_.name == c.name)
+            .map: mc =>
+              if c.versionAsInt > mc.versionAsInt
+              then result.filterNot(_.name == c.name) :+ c
+              else result
+            .getOrElse(result :+ c)
+
+    val projectChangelogs = mergeConfigs
       .sortBy(_.name)
       .map(c => s"""
                    |## [${c.name}](${apiConfig.docProjectUrl(c.name)}/OpenApi.html)
@@ -229,9 +283,7 @@ trait CompanyDocCreator extends DependencyCreator:
       // start with the release version
       .dropWhile(!_.trim.startsWith(s"## ${conf.version}"))
       // take only to the ones that belong to this version
-      .takeWhile(l =>
-        !(l.matches(versionRegex) && !l.startsWith(s"## ${conf.minorVersion}"))
-      )
+      .takeWhile(!_.trim.startsWith(s"## ${conf.versionPrevious}"))
       // remove all version titles
       .filterNot(_.matches(versionRegex))
       // remove empty lines

@@ -115,6 +115,7 @@ case class ServiceHandler[
     inputHeaders: In => Map[String, String],
     outputMapper: (ServiceResponse[ServiceOut], In) => Either[ServiceMappingError, Out],
     defaultServiceOutMock: MockedServiceResponse[ServiceOut],
+    dynamicServiceOutMock: Option[In => MockedServiceResponse[ServiceOut]] = None,
     serviceInExample: ServiceIn
 ) extends RunWorkHandler[In, Out]:
 
@@ -160,7 +161,7 @@ case class ServiceHandler[
         yield out)
           .map(Some.apply)
       case (true, _) =>
-        handleServiceMock(defaultServiceOutMock, runnableRequest, in)
+        handleServiceMock(dynamicServiceOutMock.map(_(in)).getOrElse(defaultServiceOutMock), runnableRequest, in)
           .map(Some.apply)
       case _ =>
         Right(None)

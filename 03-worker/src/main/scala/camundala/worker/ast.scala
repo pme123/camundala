@@ -43,9 +43,14 @@ sealed trait Worker[
   def defaultMock(in: In)(using
       context: EngineRunContext
   ): MockerError | MockedOutput =
+    val outMock = inOutExample match
+      case e: ProcessOrExternalTask[In, Out, ?] =>
+        e.dynamicOutMock.map(_(in)).getOrElse(out)
+      case _ => out
     MockedOutput(
-      context.toEngineObject(out)
+      context.toEngineObject(outMock)
     )
+  end defaultMock
 
   def executor(using context: EngineRunContext): WorkerExecutor[In, Out, T]
 end Worker
@@ -135,10 +140,12 @@ case class ServiceWorker[
         .map(handler =>
           handler
             .outputMapper(
-              ServiceResponse(
-                inOutExample.defaultServiceOutMock.unsafeBody,
-                inOutExample.defaultServiceOutMock.headersAsMap
-              ),
+              inOutExample.dynamicServiceOutMock
+                .map:
+                  _(in).toServiceResponse
+                .getOrElse:
+                  inOutExample.defaultServiceOutMock.toServiceResponse
+              ,
               in
             ) match
             case Right(out) => MockedOutput(context.toEngineObject(out))

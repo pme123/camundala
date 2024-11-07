@@ -107,6 +107,7 @@ trait ServiceWorkerDsl[
           inputHeaders,
           outputMapper,
           serviceTask.defaultServiceOutMock,
+          serviceTask.dynamicServiceOutMock,
           serviceTask.serviceInExample
         )
       )

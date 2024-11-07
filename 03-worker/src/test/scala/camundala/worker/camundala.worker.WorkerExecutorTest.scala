@@ -1,10 +1,9 @@
 package camundala.worker
 
-import camundala.bpmn.GeneralVariables
-import camundala.bpmn.BpmnProcessDsl
+import camundala.bpmn.*
 import camundala.domain.*
-import camundala.bpmn.WithConfig
 import camundala.worker.CamundalaWorkerError.*
+
 import scala.reflect.ClassTag
 
 class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
