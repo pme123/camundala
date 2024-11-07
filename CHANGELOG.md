@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## 1.30.14 - 2024-11-06
+## 1.30.15 - 2024-11-06
 ### Changed 
 - Added dynamic mocking / documented . - see [Commit](https://github.com/pme123/camundala/commit/123b890775b3e2d08f7708ba2f415338f867b6d7)
 - Removed duplicate xmlns:color definition in BpmnProcessGenerator. - see [Commit](https://github.com/pme123/camundala/commit/7a180c23c8d7425931626a5dd47cc5e2ccfd77c2)
