@@ -42,13 +42,12 @@ sealed trait Worker[
 
   def defaultMock(in: In)(using
       context: EngineRunContext
-  ): MockerError | MockedOutput =
-    val outMock = inOutExample match
-      case e: ProcessOrExternalTask[In, Out, ?] =>
-        e.dynamicOutMock.map(_(in)).getOrElse(out)
-      case _ => out
-    MockedOutput(
-      context.toEngineObject(outMock)
+  ): Either[MockerError, Out] =
+    Right(
+      inOutExample match
+        case e: ProcessOrExternalTask[In, Out, ?] =>
+          e.dynamicOutMock.map(_(in)).getOrElse(out)
+        case _ => out
     )
   end defaultMock
 
@@ -134,8 +133,8 @@ case class ServiceWorker[
 
   override def defaultMock(in: In)(using
       context: EngineRunContext
-  ): MockerError | MockedOutput =
-    val mocked: Option[MockerError | MockedOutput] = // needed for Union Type
+  ): Either[MockerError, Out] =
+    val mocked: Option[Either[MockerError, Out]] = // needed for Union Type
       runWorkHandler
         .map(handler =>
           handler
@@ -147,13 +146,13 @@ case class ServiceWorker[
                   inOutExample.defaultServiceOutMock.toServiceResponse
               ,
               in
-            ) match
-            case Right(out) => MockedOutput(context.toEngineObject(out))
-            case Left(err) => MockerError(errorMsg = err.causeMsg)
+            ).left.map: error =>
+              MockerError(s"Error mapping ServiceResponse to Out: $error")
         )
-    mocked.getOrElse(
-      MockerError(s"There is no ServiceRunner defined for Worker: $topic")
-    )
+    mocked
+      .getOrElse(
+        Left(MockerError(s"There is no ServiceRunner defined for Worker: $topic"))
+      )
   end defaultMock
 
   def executor(using

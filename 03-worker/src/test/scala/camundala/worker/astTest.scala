@@ -34,8 +34,8 @@ class astTest extends munit.FunSuite, BpmnProcessDsl, BpmnServiceTaskDsl:
       inOutExample = proc
     )
 
-    assertEquals(worker.defaultMock(In(1)), MockedOutput(Map("value" -> true)))
-    assertEquals(worker.defaultMock(In(3)), MockedOutput(Map("value" -> false)))
+    assertEquals(worker.defaultMock(In(1)), Right(Out()))
+    assertEquals(worker.defaultMock(In(3)), Right(Out(false)))
   }
 
   test("defaultMock ServiceTask") {
@@ -69,8 +69,8 @@ class astTest extends munit.FunSuite, BpmnProcessDsl, BpmnServiceTaskDsl:
       )
     )
 
-    //  assertEquals(worker.defaultMock(In(1)), MockedOutput(Map("value" -> true)))
-    assertEquals(worker.defaultMock(In(3)), MockedOutput(Map("value" -> false)))
+    assertEquals(worker.defaultMock(In(1)), Right(Out()))
+    assertEquals(worker.defaultMock(In(3)), Right(Out(false)))
   }
 
   case class In(value: Int = 1)

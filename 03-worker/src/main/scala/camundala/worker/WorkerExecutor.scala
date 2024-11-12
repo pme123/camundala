@@ -20,10 +20,13 @@ case class WorkerExecutor[
     for
       validatedInput <- InputValidator.validate(processVariables)
       initializedOutput <- Initializer.initVariables(validatedInput)
-      _ <- OutMocker.mockOrProceed(validatedInput)
-      output <- WorkRunner.run(validatedInput)
+      mockedOutput <- OutMocker.mockedOutput(validatedInput)
+      // only run the work if it is not mocked
+      output <- if mockedOutput.isEmpty then WorkRunner.run(validatedInput) else Right(mockedOutput.get)
       allOutputs = camundaOutputs(validatedInput, initializedOutput, output)
       filteredOut = filteredOutput(allOutputs)
+      // make MockedOutput as error if mocked
+      _ <- if mockedOutput.isDefined then Left(MockedOutput(filteredOut)) else Right(())
     yield filteredOut
 
   object InputValidator:
@@ -102,7 +105,7 @@ case class WorkerExecutor[
 
   object OutMocker:
 
-    def mockOrProceed(in: In): Either[MockerError | MockedOutput, Option[Out]] =
+    def mockedOutput(in: In): Either[MockerError, Option[Out]] =
       (
         context.generalVariables.isMockedWorker(worker.topic),
         context.generalVariables.outputMock,
@@ -110,25 +113,23 @@ case class WorkerExecutor[
       ) match
         // if the outputMock is set than we mock
         case (_, Some(outputMock), _) =>
-          Left(decodeMock(outputMock))
+          decodeMock(outputMock)
         // if your worker is mocked we use the default mock
         case (true, None, None) =>
-          Left(worker.defaultMock(in))
+          worker.defaultMock(in).map(Some(_))
         // otherwise it is not mocked or it is a service mock which is handled in service Worker during running
         case (_, None, _) =>
           Right(None)
-    end mockOrProceed
+    end mockedOutput
 
     private def decodeMock(
         json: Json
-    )(using
-        context: EngineRunContext
-    ): MockerError | MockedOutput =
-      json.isObject match
-        case true =>
-          MockedOutput(output = context.jsonObjectToEngineObject(json.asObject.get))
-        case _ =>
-          MockerError(errorMsg = s"The mock must be a Json Object:\n- $json\n- ${json.getClass}")
+    ) =
+      json.as[Out]
+        .map:
+          Some(_)
+        .left.map: error =>
+          MockerError(errorMsg = s"$error:\n- $json")
     end decodeMock
 
   end OutMocker
