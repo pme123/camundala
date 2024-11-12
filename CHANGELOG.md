@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.16 - 2024-11-12
+### Changed 
+- Adjustments in Worker Template generation. - see [Commit](https://github.com/pme123/camundala/commit/ebd970b99abc7acc37e26ae7b3d27d0110da5327)
+- Adjusted BpmnProcessGenerator to newest basic pattern. - see [Commit](https://github.com/pme123/camundala/commit/2921a79c04c3723ebf71a32a7146a9dfbc0902df)
+- Adjusted mocking, that it returns the filteredOut for mocking. - see [Commit](https://github.com/pme123/camundala/commit/03bf8138a2de02bbc3c7685186c9c8012dd617b9)
+
 ## 1.30.15 - 2024-11-06
 ### Changed 
 - Added dynamic mocking / documented . - see [Commit](https://github.com/pme123/camundala/commit/123b890775b3e2d08f7708ba2f415338f867b6d7)
