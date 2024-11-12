@@ -350,11 +350,9 @@ object TemplMapperHelper:
   def customWorkerVariables: Seq[InputParamForTempl] = Seq(
     InputParamForTempl(manualOutMapping, "#{true}"),
     InputParamForTempl(outputVariables, _.productElementNames.mkString(", ")),
-    optionalMapping(mockedWorkers),
     optionalMapping(outputMock),
     InputParamForTempl(handledErrors, "handledError1, handledError2"),
     InputParamForTempl(regexHandledErrors, "errorRegex1, errorRegex2"),
-    optionalMapping(impersonateUserId)
   )
 
   def processVariables: Seq[InputParamForTempl] = Seq(
