@@ -1,7 +1,7 @@
 package camundala.domain
 
 @description(
-  "Mocks a REST Service Response (must be handled by the BPF package)."
+  "Mocks a REST Service Response."
 )
 case class MockedServiceResponse[
     ServiceOut // output of service

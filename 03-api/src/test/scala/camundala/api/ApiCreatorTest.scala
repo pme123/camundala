@@ -11,7 +11,7 @@ class ApiCreatorTest extends munit.FunSuite, DefaultApiCreator:
 
   def jiraUrls: Map[String, String] = Map(
     "MAP" -> "https://myJira.ch/browse",
-    "BPF" -> "https://finnovaJira.ch/browse"
+    "OTHER" -> "https://otherJira.ch/browse"
   )
   def title: String = ???
   def version: String = ???
@@ -34,8 +34,8 @@ class ApiCreatorTest extends munit.FunSuite, DefaultApiCreator:
   }
   test("testReplaceJiraMulti") {
     assertEquals(
-      "[MAP-123](https://myJira.ch/browse/MAP-123): My test ticket with [BPF-456](https://finnovaJira.ch/browse/BPF-456).",
-      replaceJira("MAP-123: My test ticket with BPF-456.", jiraUrls)
+      "[MAP-123](https://myJira.ch/browse/MAP-123): My test ticket with [OTHER-456](https://otherJira.ch/browse/OTHER-456).",
+      replaceJira("MAP-123: My test ticket with OTHER-456.", jiraUrls)
     )
   }
 end ApiCreatorTest

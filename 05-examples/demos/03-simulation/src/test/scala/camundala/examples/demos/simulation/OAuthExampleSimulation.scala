@@ -25,7 +25,7 @@ class OAuthExampleSimulation extends OAuthSimulationDsl:
     s"http://kubernetes.docker.internal:8090/auth/realms/${config.tenantId.get}/protocol/openid-connect",
     Map(
       "grant_type" -> "password",
-      "client_id" -> "bpf",
+      "client_id" -> "all",
       "client_secret" -> "6ec0e8ce-eff1-456f-bc2f-907b6fcb5157",
       "username" -> "admin",
       "password" -> "admin",
