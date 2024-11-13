@@ -43,6 +43,7 @@ case class SbtSettingsGenerator()(using config: SetupConfig):
        |  lazy val loadingMessage = s\"\"\"Successfully started
        |- Dependencies:
        |  - Camundala: ${versionConfig.camundalaVersion}
+       |  - Camunda: ${versionConfig.camundaVersion}
        |  - Customer-Camundala: $$customerCamundalaV
        |  - Scala: $$scalaV
        |${versionConfig.otherVersions.map { case k -> v => s"  - $k: $v" }.mkString("\n")}
