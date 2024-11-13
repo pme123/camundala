@@ -1,13 +1,13 @@
 import mainargs.*
 import $ivy.`io.github.pme123:camundala-helper_3:1.29.21 compat`, camundala.helper.*
 
-/** <pre> Creates a new Release for the client and publishes to bpf-generic-release:
+/** <pre> Creates a new Release for the client and publishes to Github/pme123/camundala:
   *
   * amm ./publish-release.sc <VERSION>
   *
-  * # Example SNAPSHOT (only publish to bpf-generic-dev) amm ./publish-release.sc 0.2.5-SNAPSHOT
+  * # Example SNAPSHOT (only publish to Github/pme123/camundala) amm ./publish-release.sc 0.2.5-SNAPSHOT
   *
-  * # Example (publish to bpf-generic-release and GIT Tagging and increasing Version to next minor
+  * # Example (publish to Github/pme123/camundala and GIT Tagging and increasing Version to next minor
   * Version) amm ./publish-release.sc 0.2.5
   */
 
