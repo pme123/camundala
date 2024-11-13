@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.20 - 2024-11-13
+### Changed 
+- Updated versions. - see [Commit](https://pme123@github.com/pme123/camundala/commit/00ea9117933deb68f555580f79c97300ca68bf42)
+- Cleanup repo. - see [Commit](https://pme123@github.com/pme123/camundala/commit/714d37e0f36ebb4e7bf7501d333b9fd206e69c17)
+
 ## 1.30.18 - 2024-11-13
 ### Changed 
 - Adjustments in Generation application.yaml for Workers. - see [Commit](https://github.com/pme123/camundala/commit/091419d3ba395f3cec0e260e39c02826bfe1f8d0)
