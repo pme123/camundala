@@ -85,7 +85,12 @@ lazy val domain = project
       name,
       version,
       scalaVersion,
-      sbtVersion
+      sbtVersion,
+      BuildInfoKey("camundaVersion", camundaVersion),
+      BuildInfoKey("springBootVersion", springBootVersion),
+      BuildInfoKey("jaxbApiVersion", jaxbApiVersion),
+      BuildInfoKey("osLibVersion", osLibVersion),
+      BuildInfoKey("mUnitVersion", mUnitVersion)
     )
   ).enablePlugins(BuildInfoPlugin)
 // layer 02

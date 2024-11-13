@@ -164,9 +164,10 @@ case class VersionConfig(
     scalaVersion: String = BuildInfo.scalaVersion,
     camundalaVersion: String = BuildInfo.version,
     customerCamundalaVersion: String = "0.1.0-SNAPSHOT",
+    camundaVersion: String = BuildInfo.camundaVersion,
     sbtVersion: String = BuildInfo.sbtVersion,
-    springBootVersion: String = "3.1.2",
-    jaxbXmlVersion: String = "2.3.1",
-    munitVersion: String = "1.0.0",
+    springBootVersion: String = BuildInfo.springBootVersion,
+    jaxbXmlVersion: String = BuildInfo.jaxbApiVersion,
+    munitVersion: String = BuildInfo.mUnitVersion,
     otherVersions: Map[String, String] = Map.empty
 )

@@ -241,6 +241,7 @@ case class WorkerGenerator()(using config: SetupConfig):
        |    "${config.companyName}": info
        |    "org.camunda.bpm.client": info
        |
+       |spring.profiles.include: camunda-default # adds your specific company spring boot configuration (application-camunda-default.yaml)
        |
        |""".stripMargin
 
@@ -253,7 +254,7 @@ case class WorkerGenerator()(using config: SetupConfig):
        |_/        _/    _/  _/    _/    _/  _/    _/  _/    _/  _/    _/  _/    _/  _/  _/    _/
        | _/_/_/    _/_/_/  _/    _/    _/    _/_/_/  _/    _/    _/_/_/    _/_/_/  _/    _/_/_/
        |
-       | ${config.apiProjectConf.name}
+       | $${spring.application.name}
        |                                                          >>> the Scala DSL for Camunda
        |
        |  Spring-Boot: $${spring-boot.formatted-version}
