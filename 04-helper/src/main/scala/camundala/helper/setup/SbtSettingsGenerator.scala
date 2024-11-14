@@ -24,13 +24,7 @@ case class SbtSettingsGenerator()(using config: SetupConfig):
        |
        |  // other dependencies
        |  // run worker
-       |  val springBootVersion = "${versionConfig.springBootVersion}"
-       |  val jaxbXmlVersion = "${versionConfig.jaxbXmlVersion}"
        |  val mUnitVersion = "${config.versionConfig.munitVersion}"
-       |    
-       |  // for running worker
-       |  val springBoot =  "org.springframework.boot" % "spring-boot-starter-oauth2-client" % springBootVersion % Provided
-       |  val jaxbXml =  "javax.xml.bind" % "jaxb-api" % jaxbXmlVersion % Provided
        |  val mUnit = "org.scalameta" %% "munit" % mUnitVersion % Test
        |    
        |$projectSettings
