@@ -49,7 +49,7 @@ object Dependencies {
   // 04-c8-spring
   // -> bpmn
   val scalaJacksonVersion = "2.18.1"
-  val zeebeVersion = "8.5.14"
+  val zeebeVersion = "8.5.9"
   val springBootVersion = "3.3.4"
   val swaggerOpenAPIVersion = "2.1.23"
   // examples
@@ -86,6 +86,7 @@ object Dependencies {
     // json support
     "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
     "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % camundaSpinVersion,
+    "jakarta.xml.bind" % "jakarta.xml.bind-api" % jaxbApiVersion,
     // groovy support
     "org.codehaus.groovy" % "groovy-jsr223" % groovyVersion,
     "com.h2database" % "h2" % h2Version
