@@ -222,17 +222,7 @@ case class WorkerGenerator()(using config: SetupConfig):
     s"""# DO NOT ADJUST. This file is replaced by `./helper.scala update`.
        |spring.application.name: ${config.projectName}-worker
        |
-       |server:
-       |  port: 8093
-       |camunda.bpm:
-       |  job-execution:
-       |    wait-time-in-millis: 200 # this is for speedup testing
-       |  client:
-       |    base-url: $${CAMUNDA_BASE_URL:http://localhost:8080/engine-rest}
-       |    worker-id: $${WORKER_ID:my-worker}
-       |    disable-backoff-strategy: true # only during testing - faster topic
-       |    async-response-timeout: 10000
-       |
+       |spring.profiles.include: company-defaults # adds your specific company spring boot configuration (camundala-company-worker -> application-company-defaults.yaml)
        |
        |logging:
        |  level:
@@ -240,9 +230,8 @@ case class WorkerGenerator()(using config: SetupConfig):
        |    "camundala": info
        |    "${config.companyName}": info
        |    "org.camunda.bpm.client": info
-       |
-       |spring.profiles.include: camunda-default # adds your specific company spring boot configuration (application-camunda-default.yaml)
-       |
+       |    
+       |# add here your specific configuration -> REMOVE # DO NOT ADJU...
        |""".stripMargin
 
   private lazy val banner =
