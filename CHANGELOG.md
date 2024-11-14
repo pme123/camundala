@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.23 - 2024-11-14
+### Changed 
+- Removed jaxb and springboot in SbtSettingsGenerator. - see [Commit](https://pme123@github.com/pme123/camundala/commit/3c7e349796eeed9fe908ad93b203734d4db158c7)
+
 ## 1.30.22 - 2024-11-14
 ### Changed 
 - Adjustments in Generation application.yaml for Workers. Fixed bad dependencies. - see [Commit](https://pme123@github.com/pme123/camundala/commit/9c01a75f9232c8c937dbdaf3412b14286f10b74c)
