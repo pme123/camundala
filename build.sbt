@@ -16,7 +16,8 @@ lazy val root = project
   .configure(preventPublication)
   .settings(
     name := "camundala",
-    organization := org
+    organization := org,
+    sourcesInBase := false
   )
   .aggregate(
     documentation,

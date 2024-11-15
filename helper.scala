@@ -1,17 +1,10 @@
-import mainargs.*
-import $ivy.`io.github.pme123:camundala-helper_3:1.29.21 compat`, camundala.helper.*
+#!/usr/bin/env -S scala shebang
 
-/** <pre> Creates a new Release for the client and publishes to Github/pme123/camundala:
-  *
-  * amm ./publish-release.sc <VERSION>
-  *
-  * # Example SNAPSHOT (only publish to Github/pme123/camundala) amm ./publish-release.sc 0.2.5-SNAPSHOT
-  *
-  * # Example (publish to Github/pme123/camundala and GIT Tagging and increasing Version to next minor
-  * Version) amm ./publish-release.sc 0.2.5
-  */
+//> using toolkit 0.5.0
+//> using dep io.github.pme123::camundala-helper:1.30.23
 
-@arg(doc = "> Creates a new Release and publishes to Maven Central")
+import camundala.helper.*
+
 @main
 def release(version: String): Unit =
   println(s"Publishing camundala: $version")
@@ -55,8 +48,7 @@ private def replaceVersion(newVersion: String) =
   val versionsPath = os.pwd / "version"
   os.write.over(versionsPath, newVersion)
 
-private def runInConsole(proc: String*) = {
+private def runInConsole(proc: String*) =
   println(proc.mkString(" "))
   val result = os.proc(proc).call()
   println(result.out.text())
-}
