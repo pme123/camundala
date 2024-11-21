@@ -51,7 +51,7 @@ object Dependencies {
   val scalaJacksonVersion = "2.18.1"
   val zeebeVersion = "8.5.9"
   val springBootVersion = "3.3.4"
-  val swaggerOpenAPIVersion = "2.1.23"
+  val swaggerOpenAPIVersion = "2.1.24"
   // examples
   val h2Version = "2.3.232"
   val twitter4jVersion = "4.1.2"
