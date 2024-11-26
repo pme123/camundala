@@ -142,12 +142,17 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
               then
                 handleSuccess(filtered, generalVariables.manualOutMapping)
               else
-                logger.info(s"Handled Error: ${error.causeMsg}")
+                val errorVars = Map(
+                  "errorCode" -> error.errorCode,
+                  "errorMsg" -> error.errorMsg
+                )
+                val variables = (filtered ++ errorVars).asJava
+                logger.info(s"Handled Error: $errorVars")
                 externalTaskService.handleBpmnError(
                   summon[camunda.ExternalTask],
                   s"${error.errorCode}",
                   error.errorMsg,
-                  filtered.asJava
+                  variables
                 )
             )
           case (true, false, _) =>
