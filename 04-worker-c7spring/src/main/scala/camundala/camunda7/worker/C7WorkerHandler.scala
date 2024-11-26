@@ -10,13 +10,15 @@ import org.camunda.bpm.client.{ExternalTaskClient, task as camunda}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 
 import java.util.Date
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.jdk.CollectionConverters.*
+import scala.util.{Failure, Success}
 
 /** To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
   * parameters.
   */
 trait C7WorkerHandler extends camunda.ExternalTaskHandler:
-
 
   @Value("${spring.application.name}")
   var applicationName: String = scala.compiletime.uninitialized
@@ -34,14 +36,15 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
       externalTask: camunda.ExternalTask,
       externalTaskService: camunda.ExternalTaskService
   ): Unit =
-    val startDate = new Date()
-    logger.info(
-      s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) started > ${externalTask.getBusinessKey}"
-    )
-    executeWorker(externalTaskService)(using externalTask)
-    logger.info(
-      s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) ended ${printTime(startDate)}   > ${externalTask.getBusinessKey}"
-    )
+    Future:
+      val startDate = new Date()
+      logger.info(
+        s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) started > ${externalTask.getBusinessKey}"
+      )
+      executeWorker(externalTaskService)(using externalTask)
+      logger.info(
+        s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) ended ${printTime(startDate)}   > ${externalTask.getBusinessKey}"
+      )
   end execute
 
   @PostConstruct
@@ -60,6 +63,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
       logger.info(
         s"Worker NOT registered: $topic -> ${worker.getClass.getSimpleName} (class starts not with $appPackageName)"
       )
+    end if
   end registerHandler
 
   private def executeWorker(
