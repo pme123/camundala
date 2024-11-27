@@ -88,7 +88,7 @@
     <li class="level1 nav-node"><a href="#exception-handling">Exception Handling</a></li>
     <li class="level2 nav-leaf"><a href="#_1-list-of-error-codes">1. List of Error Codes</a></li>
     <li class="level2 nav-leaf"><a href="#_2-list-of-error-messages">2. List of Error Messages</a></li>
-    <li class="level1 nav-node"><a href="#authorization">Authorization</a></li>
+    <li class="level2 nav-leaf"><a href="#error-variables">Error Variables</a></li>
     <li class="level2 nav-leaf"><a href="#impersonate-user">Impersonate User</a></li>
     <li class="level1 nav-leaf"><a href="#validation">Validation</a></li>
   </ul>
@@ -269,7 +269,16 @@
         <p>If the error code is not enough, you can also add a list of regex expressions, to filter the Errors you handle.</p>
         <p>For example, you want to handle a <em>400</em> error, but only if the message contains <em>bad response</em>.</p>
         
-        <h3 id="authorization" class="section"><a class="anchor-link left" href="#authorization"><i class="icofont-laika link">&#xef71;</i></a>Authorization</h3>
+        <h4 id="error-variables" class="section"><a class="anchor-link left" href="#error-variables"><i class="icofont-laika link">&#xef71;</i></a>Error Variables</h4>
+        <p>If an error is handled, the worker will add the following variables to the process:</p>
+        <ul>
+          <li><code>errorCode: String</code> - the error code (<code>CamundalaWorkerError.errorCode</code>)</li>
+          <li><code>errorMsg: String</code> - the error message (<code>CamundalaWorkerError.errorMsg</code>)</li>
+          <li>
+            
+            <h3 id="authorization"><a class="anchor-link left" href="#authorization"><i class="icofont-laika link">&#xef71;</i></a>Authorization</h3>
+          </li>
+        </ul>
         
         <h4 id="impersonate-user" class="section"><a class="anchor-link left" href="#impersonate-user"><i class="icofont-laika link">&#xef71;</i></a>Impersonate User</h4>
         <ul>

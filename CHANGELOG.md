@@ -15,6 +15,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.24 - 2024-11-27
+### Changed 
+- Removed TimeToLive in BpmnProcessGenerator. - see [Commit](https://pme123@github.com/pme123/camundala/commit/195d735f7a38d02ed94d6681ce1ff5d38b503910)
+- Improved result comparison of multiline strings. - see [Commit](https://pme123@github.com/pme123/camundala/commit/b14cdb0192227571043872d60448a6a11c111f9b)
+- Added variables errorCode and errorMsg to C7WorkerHandler. - see [Commit](https://pme123@github.com/pme123/camundala/commit/a4cadccf2aecf785c8d51bc332342ec8c469e53a)
+- Wrapped execution in a Future to handle workers in parallel. - see [Commit](https://pme123@github.com/pme123/camundala/commit/b7a83be64d04f83ec5ddc429f7c2c6067925f771)
+- Added deriveUnionApiSchema convenience function. - see [Commit](https://pme123@github.com/pme123/camundala/commit/f80e4955fc7b70a45492a842109a6477a42b5625)
+- Migrated to scala-cli for helper script. - see [Commit](https://pme123@github.com/pme123/camundala/commit/b7fe4287932aafe829de2e3634f0a266e2c3bcaa)
+
 ## 1.30.23 - 2024-11-14
 ### Changed 
 - Removed jaxb and springboot in SbtSettingsGenerator. - see [Commit](https://pme123@github.com/pme123/camundala/commit/3c7e349796eeed9fe908ad93b203734d4db158c7)
