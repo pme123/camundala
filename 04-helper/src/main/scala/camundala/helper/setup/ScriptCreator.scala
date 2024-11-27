@@ -55,7 +55,7 @@ case class ScriptCreator()(using config: SetupConfig):
     s"""#!/usr/bin/env -S scala shebang
        |// $doNotAdjust. This file is replaced by `./helper.scala update`.
        |
-       |//> using toolkit 0.5.0
+       |//> using toolkit 0.6.0
        |//> using dep $companyName::$companyName-camundala-helper:${versionHelper.companyCamundalaVersion}
        |
        |import $companyName.camundala.helper.*
