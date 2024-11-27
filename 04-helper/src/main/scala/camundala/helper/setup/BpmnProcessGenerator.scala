@@ -23,7 +23,7 @@ case class BpmnProcessGenerator()(using config: SetupConfig):
        |  <bpmn:collaboration id="Collaboration_1nchi5w">
        |    <bpmn:participant id="$processId-Participant" name="$processId" processRef="$processId" />
        |  </bpmn:collaboration>
-       |  <bpmn:process id="$processId" name="$processId" isExecutable="true" camunda:historyTimeToLive="180">
+       |  <bpmn:process id="$processId" name="$processId" isExecutable="true">
        |    <bpmn:serviceTask id="InitProcessTask" name="Init Process" camunda:type="external" camunda:topic="$processId">
        |      <bpmn:extensionElements>
        |        <camunda:inputOutput>

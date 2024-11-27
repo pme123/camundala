@@ -183,6 +183,13 @@ If the error code is not enough, you can also add a list of regex expressions, t
 
 For example, you want to handle a _400_ error, but only if the message contains _bad response_.
 
+#### Error Variables
+
+If an error is handled, the worker will add the following variables to the process:
+
+- `errorCode: String` - the error code (`CamundalaWorkerError.errorCode`)
+- `errorMsg: String` - the error message (`CamundalaWorkerError.errorMsg`)
+- 
 ### Authorization
 
 #### Impersonate User

@@ -30,10 +30,7 @@ trait ResultChecker:
     overrides
       .map {
         case TestOverride(Some(k), Exists, _) =>
-          val matches = result.exists(_.key == k)
-          if !matches then
-            println(s"!!! $k did NOT exist in $result")
-          matches
+          checkExistsInResult(result, k)
         case TestOverride(Some(k), NotExists, _) =>
           val matches = !result.exists(_.key == k)
           if !matches then
@@ -41,10 +38,7 @@ trait ResultChecker:
           matches
         case TestOverride(Some(k), IsEquals, Some(v)) =>
           val r = result.find(_.key == k)
-          val matches = r.nonEmpty && r.exists(_.value == v)
-          if !matches then
-            println(s"!!! $v ($k) is NOT equal in $r")
-          matches
+          checkExistsInResult(result, k) && checkIsEqualValue(k, v, r.get.value)
         case TestOverride(Some(k), HasSize, Some(value)) =>
           val r = result.find(_.key == k)
           val matches = r.exists {
@@ -176,16 +170,7 @@ trait ResultChecker:
                 val expectedJson = toJson(expectedValue.value.toString)
                 checkJson(expectedJson, resultJson, key)
               case CamundaProperty(_, cValue) =>
-                val matches: Boolean = cValue.value == expectedValue.value
-                if !matches then
-                  println(
-                    s"<<< cValue: ${cValue.getClass} / expectedValue ${expectedValue.getClass}"
-                  )
-                  println(
-                    s"!!! The expected value '$expectedValue' of $key does not match the result variable '${cValue}'.\n $result"
-                  )
-                end if
-                matches
+                checkIsEqualValue(key, expectedValue, cValue)
             }
             .getOrElse {
               println(
@@ -197,6 +182,47 @@ trait ResultChecker:
       .forall(_ == true)
 
   end checkP
+
+  private def checkExistsInResult(result: Seq[CamundaProperty], key: String) =
+    val matches = result.exists(_.key == key)
+    if !matches then
+      println(s"!!! $key did NOT exist in $result")
+    matches
+
+  private def checkIsEqualValue[T <: Product](
+      key: String,
+      expectedValue: CamundaVariable,
+      resultValue: CamundaVariable
+  ) =
+    val matches: Boolean = resultValue.value == expectedValue.value
+    if !matches then
+      if resultValue.getClass != expectedValue.getClass then
+        println(
+          s"""!!! The type of $key is different:
+             | - expected: ${expectedValue.getClass} 
+             | - result  : ${resultValue.getClass}""".stripMargin
+        )
+      else
+        println(
+          s"""!!! The value of $key is different:
+             | - expected: ${expectedValue.value}
+             | - result  : ${resultValue.value}""".stripMargin
+        )
+        if expectedValue.value.toString.contains("\n") then // compare each line for complex strings
+          val result = resultValue.value.toString.split("\n")
+          val expected = expectedValue.value.toString.split("\n")
+          result.zip(expected).foreach:
+            case (r, e) =>
+              if r != e then
+                println(
+                  s""">>> Bad Line:
+                     | - expected: '$e'
+                     | - result  : '$r'""".stripMargin
+                )
+        end if
+    end if
+    matches
+  end checkIsEqualValue
 
   private def checkJson(
       expectedJson: io.circe.Json,
