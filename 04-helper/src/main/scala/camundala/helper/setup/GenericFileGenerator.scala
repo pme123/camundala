@@ -31,6 +31,9 @@ case class GenericFileGenerator()(using config: SetupConfig):
        |# Recommended, to not penalize `match` statements
        |indent.matchSite = 0
        |
+       |# align arrows in for comprehensions
+       |align.preset = most
+       |
        |newlines.source = keep
        |rewrite.scala3.convertToNewSyntax = true
        |rewrite.scala3.removeOptionalBraces = yes
