@@ -97,6 +97,25 @@ object MyProcess extends CompanyBpmnProcessDsl:
   )
 end MyProcess
 ```
+Next to the _In_ and _Out_ classes we have an _InitIn_  and _InConfig_ class.
+
+### InitIn
+Each process has an _InitWorker_ that is the first worker that is called when the process is started.
+
+Use this class to:
+- init the _Process Variables_ that are needed in the process (e.g. counters, variables used in expressions that must be defined (Camunda 7 restriction)).
+- init the _Process Variables_ with default values, that are not provided by the client. 
+  So you can be sure that they are always set - from Option to required in the process.
+
+### InConfig
+These are technical _Process Variables_, like:
+- Control the process flow (e.g. timers).
+- Mocking of services and sub-processes.
+
+@:callout(info)
+The _InitWorker_ will automatically put these variables on the process.
+That means you can override them for example in _Postman_.
+@:@
 
 ## Business Rule Tasks (Decision DMNs)
 
@@ -127,7 +146,6 @@ This is a single result with one _simple value_.
 
 ```scala
 singleEntry(
-    decisionDefinitionKey = "singleEntry",
     in = Input("A"),
     out = 1
   )
@@ -139,7 +157,6 @@ This is a single result with more than one value (_domain object_).
 
 ```scala
 singleResult(
-    decisionDefinitionKey = "singleResult",
     in = Input("A"),
     out = ManyOutResult(1, "🤩")
 )
@@ -151,7 +168,6 @@ This is a list of _simple values_.
 
 ```scala
 collectEntries(
-    decisionDefinitionKey = "collectEntries",
     in = Input("A"),
     out = Seq(1, 2)
   )
@@ -163,7 +179,6 @@ This is a list of _domain objects_.
 
 ```scala
 resultList(
-    decisionDefinitionKey = "resultList",
     in = Input("A"),
     out = List(ManyOutResult(1, "🤩"), ManyOutResult(2, "😂"))
   )
