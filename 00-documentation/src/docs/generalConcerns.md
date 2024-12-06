@@ -189,7 +189,7 @@ If an error is handled, the worker will add the following variables to the proce
 
 - `errorCode: String` - the error code (`CamundalaWorkerError.errorCode`)
 - `errorMsg: String` - the error message (`CamundalaWorkerError.errorMsg`)
-- 
+
 ### Authorization
 
 #### Impersonate User

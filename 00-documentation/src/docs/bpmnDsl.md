@@ -2,60 +2,100 @@
 
 This _DSL_ will bring your domain into your _BPMN-Process_.
 
-Its elements are more or less constructors with the same structure:
+As the pattern is always the same, we can setup each _BPMN Element_ in the same way.
 
 ```scala
-BPMN_ELEMENT(
-  id: String,
-  in: Input,
-  out: Output,
-  descr: Optable[String]
-)
+object BpmnElement extends CompanyBpmn<Element>Dsl:
+
+  val processName = "mycompany-myproject-myelement" // depending on the element this can be different
+  lazy val descr = "my element..."
+
+  case class In(...)
+  object In:
+    given ApiSchema[In] = deriveApiSchema
+    given InOutCodec[In] = deriveInOutCodec
+
+  case class Out(...)
+  object Out:
+    given ApiSchema[Out] = deriveApiSchema
+    given InOutCodec[Out] = deriveInOutCodec
+
+  lazy val example = <bpmnElement>(
+    In(),
+    Out(),
+  )
+end BpmnElement
 ```
 
 So each BPMN Element has:
 
-- _id_: a unique identifier, depending on the element it must be unique within its process, or within a Camunda Instance (_process, dmn_).
-- _in_: an input object that we descibed in the [_Domain Specification_](specification.md).
-- _out_: an output object that we descibed in the [_Domain Specification_](specification.md).
-- _descr_: an optional description of this element.
+- _id_: a unique identifier, it must be unique within a Camunda Instance.
+    Depending on the element this is named differently, e.g. `processName`, `messageName` etc.
+- _descr_: a description of this element.
+- _In_: an input class with the input process variables that we descibed in the [_Domain Specification_](specification.md).
+- _Out_: an output class with the output process variables that we descibed in the [_Domain Specification_](specification.md).
+- _example_: a method that creates an example of this element.
 
-Here is an example:
-```scala
-process(
-  id = InvoiceReceiptPIdent,
-  descr = "This starts the Invoice Receipt Process.",
-  in = InvoiceReceipt(),
-  out = InvoiceReceiptCheck() // just for testing
-)
-```
-
-The element is a _process_ with its inputs and outputs. As we also want to test its execution, 
-we defined also an output, also the process does not have one.
-
-@:callout(info)
-If your element has no Input and/or Output, just leave it empty, as this is the default case.
+### Special Case Enums
+If you have an _Enum_ as an In or Out class, you need to define the example like this:
 
 ```scala
-process(
-  id = MyDoItItselfProcess
-)
-```
-@:@
 
-We only support elements you can interact with. The next subchapters describe them with an example.
+lazy val example = <bpmnElement>(
+  In.CaseA(),
+  Out.CaseA(),
+  ).withEnumInExamples(In.CaseB())
+  .withEnumOutExamples(Out.CaseB())
+```
+- This is needed to document both cases and also to handle them correctly in the _Workers_.
+
+We support the following elements:
 
 ## Process
 
-We already showed a process example above. Here the sub process _Review Invoice_:
+The Process is the main element of a BPMN. 
+It is the most complex element and looks like this:
 
 ```scala
-process(
-  id = "example-invoice-c7-review",
-  descr = "This starts the Review Invoice Process.",
-  in = InvoiceReceipt(),
-  out = InvoiceReviewed()
-)
+object MyProcess extends CompanyBpmnProcessDsl:
+
+  val processName = "mycompany-myproject-myprocess"
+  lazy val descr = "my process..."
+  
+  case class In(
+    ...
+    inConfig: Option[InConfig] = None
+  ) extends WithConfig[InConfig]
+  
+  object In:
+    given ApiSchema[In] = deriveApiSchema
+    given InOutCodec[In] = deriveInOutCodec
+  
+  case class InConfig(
+    // Process Configuration
+    ...
+    // Mocks
+    ... )
+  object InConfig:
+    given ApiSchema[InConfig] = deriveApiSchema
+    given InOutCodec[InConfig] = deriveInOutCodec
+    
+  case class InitIn(...)
+  object InitIn:
+    given ApiSchema[InitIn] = deriveApiSchema
+    given InOutCodec[InitIn] = deriveInOutCodec
+  
+  case class Out(...)
+  object Out:
+    given ApiSchema[Out] = deriveApiSchema
+    given InOutCodec[Out] = deriveInOutCodec
+  
+  lazy val example = process(
+    In(),
+    Out(),
+    InitIn()
+  )
+end MyProcess
 ```
 
 ## Business Rule Tasks (Decision DMNs)
@@ -134,13 +174,31 @@ resultList(
 A _User Task_ describes its form values that it offers and the values it must be completed with.
 
 ```scala
-userTask(
-    id = "ApproveInvoiceUT",
-    descr = "Approve the invoice (or not).",
-    in = InvoiceReceipt(),
-    out = ApproveInvoice()
+object MyUserTask extends CompanyBpmnUserTaskDsl:
+
+  val name = "mycompany-myproject-myusertask"
+  val descr: String = "my user task..."
+  
+  case class In(...)
+  object In:
+    given ApiSchema[In] = deriveApiSchema
+    given InOutCodec[In] = deriveInOutCodec
+  
+  case class Out(...)
+  object Out:
+    given ApiSchema[Out] = deriveApiSchema
+    given InOutCodec[Out] = deriveInOutCodec
+  
+  lazy val example = userTask(
+    In(),
+    Out()
   )
+end MyUserTask
 ```
+- The `name` is the name of the user task, **be aware** at the moment this is only for documentation.
+- A _UserTask_ extends _CompanyBpmnUserTaskDsl_.
+- The `In` object are the input variables you expect for the UI-Form of the _UserTask_.
+- The `Out` object are the process variables, the UI-Form sends, when it completes the _UserTask_.
 
 ## Receive Message Event
 A _Receive Message Event_ represents a catching message event. 
@@ -149,11 +207,24 @@ This works only as intermediate event.
 As we don't support _throwing Message events_ we can simplify this to _messageEvent_:
 
 ```scala
-lazy val messageExample = messageEvent(
-  "message-for-example",
-  in = MessageExampleIn(),
-)
+object MyMessageEvent extends CompanyBpmnMessageEventDsl:
+
+  val messageName = "mycompany-myproject-mymessage"
+  val descr: String = "my message..."
+  
+  case class In(...)
+  object In:
+    given ApiSchema[In] = deriveApiSchema
+    given InOutCodec[In] = deriveInOutCodec
+  
+  lazy val example = messageEvent(In())
+end MyMessageEvent
 ```
+- The `messageName` is the name of the message you expect.
+  The correlation can be the business key or the process instance id.
+  In the _Simulation_ we will use the _processInstanceId_.
+- You can send process variables with the `In` object.
+- A _MessageEvent_ extends _CompanyBpmnMessageEventDsl_.
 
 ## Receive Signal Event
 A _Receive Signal Event_ represents a catching signal event.
@@ -162,21 +233,23 @@ This works only as intermediate event.
 As we don't support _Throwing Signal events_ we can simplify this to _signalEvent_:
 
 ```scala
-lazy val signalExample = signalEvent(
-  "signal-for-example",
-  in = SignalExampleIn(),
-)
+object MySignalEvent extends CompanyBpmnSignalEventDsl:
+
+  val messageName = "mycompany-myproject-mysignal-{processInstanceId}"
+  val descr: String = "my signal..."
+
+  case class In(...)
+  object In:
+    given ApiSchema[In] = deriveApiSchema
+    given InOutCodec[In] = deriveInOutCodec
+  
+  lazy val example = signalEvent(In())
+end MySignalEvent
 ```
+- The `messageName` is the name of the signal you expect. 
+  To correlate the signal to a certain process instance, you can use the `{processInstanceId}` as a part in the signal name.
+  This will be replaced in the _Simulation_ with the actual _processInstanceId_.
+- You can send process variables with the `In` object.
+- A _SignalEvent_ extends _CompanyBpmnSignalEventDsl_.
 
-
-## Timer Event
-A _Timer Event_ represents a timer event.
-There is no input needed, you can use it to describe the timers in your API doc, or using them in the Simulations to execute the job of the timer immediately.
-This works only as intermediate event.
-
-```scala
-lazy val timerExample = timerEvent(
-  "timer-for-example",
-)
-```
 

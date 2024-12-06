@@ -67,9 +67,13 @@ lazy val documentation =
       //  .renderMessages(MessageFilter.None)
       ,
       laikaSite / target := baseDirectory.value / ".." / "docs",
-      laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting)
+      laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting),
+      mdocIn := baseDirectory.value / "src" / "main" / "mdoc",
+      mdocVariables := Map(
+        "VERSION" -> version.value
+      )
     )
-    .enablePlugins(LaikaPlugin)
+    .enablePlugins(LaikaPlugin, MdocPlugin)
 
 // layer 01
 lazy val domain = project
@@ -105,9 +109,10 @@ lazy val bpmn = project
   .settings(
     autoImportSetting,
     libraryDependencies ++= Seq(
-      osLibDependency,     
+      osLibDependency,
       chimneyDependency // mapping
-  ))
+    )
+  )
   .dependsOn(domain)
 
 // layer 03
@@ -145,7 +150,7 @@ lazy val worker = project
   .settings(
     projectSettings("worker"),
     unitTestSettings,
-    autoImportSetting,
+    autoImportSetting
   )
   .dependsOn(bpmn)
 
