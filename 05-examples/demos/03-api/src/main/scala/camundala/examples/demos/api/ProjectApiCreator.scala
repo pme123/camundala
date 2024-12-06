@@ -56,9 +56,6 @@ object ProjectApiCreator extends DefaultApiCreator:
       MessageForExample.messageExample,
       SignalExample.signalIntermediateExample,
       MessageForExample.messageIntermediateExample
-    ),
-    api(TimerExample.timerProcess)(
-      TimerExample.timer
     )
   )
 end ProjectApiCreator
