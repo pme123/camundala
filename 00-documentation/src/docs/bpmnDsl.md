@@ -97,7 +97,7 @@ object MyProcess extends CompanyBpmnProcessDsl:
   )
 end MyProcess
 ```
-Next to the _In_ and _Out_ classes we have an _InitIn_  and _InConfig_ class.
+Next to the _In_ and _Out_ classes we have an _InitIn_-  and _InConfig_ class.
 
 ### InitIn
 Each process has an _InitWorker_ that is the first worker that is called when the process is started.
@@ -106,6 +106,7 @@ Use this class to:
 - init the _Process Variables_ that are needed in the process (e.g. counters, variables used in expressions that must be defined (Camunda 7 restriction)).
 - init the _Process Variables_ with default values, that are not provided by the client. 
   So you can be sure that they are always set - from Option to required in the process.
+- extract some information from the input variables to simplify the process.
 
 ### InConfig
 These are technical _Process Variables_, like:
@@ -114,7 +115,8 @@ These are technical _Process Variables_, like:
 
 @:callout(info)
 The _InitWorker_ will automatically put these variables on the process.
-That means you can override them for example in _Postman_.
+That means you can override them for example in _Postman_ 
+- just set them as _process variables_ (`inConfig` object is not needed).
 @:@
 
 ## Business Rule Tasks (Decision DMNs)
@@ -214,6 +216,106 @@ end MyUserTask
 - A _UserTask_ extends _CompanyBpmnUserTaskDsl_.
 - The `In` object are the input variables you expect for the UI-Form of the _UserTask_.
 - The `Out` object are the process variables, the UI-Form sends, when it completes the _UserTask_.
+
+## External Task
+An _External Task_ describes a worker.
+We distinguish different types of Tasks, which are described in the next subchapters.
+
+```scala
+### Custom Task
+A _Custom Task_ is a description for a worker that does some business logic, like mapping.
+
+In General, you can do whatever you want with a _Custom Task_. See also _CustomWorker_.
+
+```scala
+object MyCustomTask extends CompanyBpmnCustomTaskDsl:
+
+  val topicName = "mycompany-myproject-myprocessV1.MyCustomTask"
+  val descr: String = "my custom task..."
+  
+  case class In(...)
+  object In:
+    given ApiSchema[In] = deriveApiSchema
+    given InOutCodec[In] = deriveInOutCodec
+  
+  case class Out(...)
+  object Out:
+    given ApiSchema[Out] = deriveApiSchema
+    given InOutCodec[Out] = deriveInOutCodec
+  
+  lazy val example = customTask(
+    In(),
+    Out()
+  )
+end MyCustomTask
+```
+
+### Init Task
+An _Init Task_ is a description for a worker that initializes a _Process_.
+
+In General, you map the `In` object to the `InitIn` object like init process variables.
+See also _InitWorker_.
+
+So no extra BPMN Element is needed for this, it is automatically defined by the _Process_.
+
+```scala
+object MyProcess extends CompanyBpmnProcessDsl:
+  ...
+  case class In(
+    ...
+    inConfig: Option[InConfig] = None
+  ) extends WithConfig[InConfig]
+  ...  
+  case class InitIn(...)
+  ...
+end MyProcess
+```
+
+### Service Task
+A _Service Task_ is a description for a worker that provides a REST API request.
+
+See also _ServiceWorker_.
+
+```scala
+object MyServiceTask extends CompanyBpmnServiceTaskDsl:
+
+  val topicName = "mycompany-myproject-myservicetask"
+  val descr: String = "my service task..."
+  val path = "POST: /myService"
+
+  type ServiceIn = MyServiceBody
+  type ServiceOut = NoOutput
+  lazy val serviceInExample = MyServiceBody()
+  lazy val serviceMock = MockedServiceResponse.success204
+
+  case class In(...)
+  object In:
+    given ApiSchema[In] = deriveApiSchema
+    given InOutCodec[In] = deriveInOutCodec
+  
+  case class Out(...)
+  object Out:
+    given ApiSchema[Out] = deriveApiSchema
+    given InOutCodec[Out] = deriveInOutCodec
+  
+  lazy val example = serviceTask(
+    In(),
+    Out(),
+    serviceMock,
+    serviceInExample
+  )
+end MyServiceTask
+```
+This task is more specific, and so we need to define
+- The method and the path of the REST service for the documentation.
+- The _ServiceIn_ and _ServiceOut_ types.
+  They represent the bodies of the service-request and -response.
+- In the _example_ we define also the _serviceInExample_ and the _serviceMock_.
+
+@:callout(info)
+At the moment we only support these 3 types of _External Tasks_.
+Depending on the use case we can add more types.
+@:@
 
 ## Receive Message Event
 A _Receive Message Event_ represents a catching message event. 
