@@ -221,7 +221,6 @@ end MyUserTask
 An _External Task_ describes a worker.
 We distinguish different types of Tasks, which are described in the next subchapters.
 
-```scala
 ### Custom Task
 A _Custom Task_ is a description for a worker that does some business logic, like mapping.
 
@@ -369,4 +368,17 @@ end MySignalEvent
 - You can send process variables with the `In` object.
 - A _SignalEvent_ extends _CompanyBpmnSignalEventDsl_.
 
+## Timer Event
+A _Timer Event_ represents a timer event.
+There is no input needed, you can use it to describe the timers in your API doc, or using them in the Simulations to execute the job of the timer immediately.
+This works only as intermediate event.
 
+```scala
+object MyTimerEvent extends CompanyBpmnTimerEventDsl:
+
+  val title = "mycompany-myproject-mytimer"
+  val descr: String = "my timer..."
+  
+  lazy val example = timerEvent()
+end MyTimerEvent  
+```

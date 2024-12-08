@@ -3,8 +3,8 @@ info:
   title: Demos Example Process API
   version: '1.0'
   summary: "\n         |**This is for Postman - to have example requests. Be aware\
-    \ the Output is not provided!**\n         |\n         |\n\n\n\n\nCreated at 16.07.2024,\
-    \ 17:42\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)**\n\
+    \ the Output is not provided!**\n         |\n         |\n\n\n\n\nCreated at 07.12.2024,\
+    \ 15:33\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)**\n\
     \n\n\n\n<details>\n<summary><b><i>CHANGELOG.md</i></b></summary>\n<p>\n\n\nAll\
     \ notable changes to this project will be documented in this file.\n\n* Types\
     \ of Changes (L3):\n  * Added: new features\n  * Changed: changes in existing\
@@ -70,10 +70,35 @@ servers:
 - url: http://localhost:8034/engine-rest
   description: Local Developer Server
 paths:
+  /process-definition/key/camundala-mapping-example/start:
+    post:
+      tags:
+      - camundala-mapping-example
+      summary: 'Bpmn: example'
+      description: |2
+
+
+
+        ---
+
+        - **Called Element**: `camundala-mapping-example` (to define in the Call Activity)
+
+
+
+        ---
+
+
+
+
+        See API Doc: [Bpmn: example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Bpmn:%20example)
+      operationId: postProcess-definitionKeyCamundala-mapping-exampleStart
+      responses:
+        '200':
+          description: ''
   /decision-definition/key/{key}/--REMOVE:singleEntry--/evaluate:
     post:
       tags:
-      - singleEntry
+      - camundala-mapping-example
       summary: 'Dmn: singleEntry'
       description: |2
 
@@ -112,7 +137,7 @@ paths:
   /decision-definition/key/{key}/--REMOVE:collectEntries--/evaluate:
     post:
       tags:
-      - collectEntries
+      - camundala-mapping-example
       summary: 'Dmn: collectEntries'
       description: |2
 
@@ -151,7 +176,7 @@ paths:
   /decision-definition/key/{key}/--REMOVE:singleResult--/evaluate:
     post:
       tags:
-      - singleResult
+      - camundala-mapping-example
       summary: 'Dmn: singleResult'
       description: |2
 
@@ -190,7 +215,7 @@ paths:
   /decision-definition/key/{key}/--REMOVE:resultList--/evaluate:
     post:
       tags:
-      - resultList
+      - camundala-mapping-example
       summary: 'Dmn: resultList'
       description: |2
 
@@ -223,31 +248,6 @@ paths:
                       value: A
                       type: String
         required: true
-      responses:
-        '200':
-          description: ''
-  /process-definition/key/camundala-mapping-example/start:
-    post:
-      tags:
-      - camundala-mapping-example
-      summary: 'Bpmn: camundala-mapping-example'
-      description: |2
-
-
-
-        ---
-
-        - **Called Element**: `camundala-mapping-example` (to define in the Call Activity)
-
-
-
-        ---
-
-
-
-
-        See API Doc: [Bpmn: camundala-mapping-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Bpmn:%20camundala-mapping-example)
-      operationId: postProcess-definitionKeyCamundala-mapping-exampleStart
       responses:
         '200':
           description: ''
@@ -346,14 +346,14 @@ paths:
   /process-definition/key/camundala-externalTask-generic/start--REMOVE:myEnumWorker.Topic--:
     post:
       tags:
-      - myEnumWorker.Topic
-      summary: 'Worker: Topic'
+      - enum-example
+      summary: 'Worker: myEnumWorker.Topic'
       description: "\n\n---\n\n\n\n<details>\n<summary><b>Wrapped Service:</b>\n\n\
         (Demo for Enum as Inputs and Outputs in Worker - v1.4 - GET /people)\n</summary>\n\
         <p>\nInput Body: `camundala.domain.NoInput`:\n\n\nExample Response: `camundala.domain.NoOutput`:\n\
         \n```json\n{\n  \"respStatus\" : 200,\n  \"respBody\" : {\n    \n  },\n  \"\
         respHeaders\" : [\n  ]\n}\n```\n</p>\n</details>\n</p>\n\n---\n\n\nSee API\
-        \ Doc: [Worker: Topic](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Worker:%20Topic)\n"
+        \ Doc: [Worker: myEnumWorker.Topic](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Worker:%20myEnumWorker.Topic)\n"
       operationId: postProcess-definitionKeyCamundala-externaltask-genericStart--remove:myenumworker.topic--
       requestBody:
         content:
@@ -402,7 +402,7 @@ paths:
   /decision-definition/key/{key}/--REMOVE:DateExample--/evaluate:
     post:
       tags:
-      - DateExample
+      - enum-example
       summary: 'Dmn: DateExample'
       description: |2
 
@@ -441,7 +441,7 @@ paths:
   /decision-definition/key/{key}/--REMOVE:VariablesExample--/evaluate:
     post:
       tags:
-      - VariablesExample
+      - enum-example
       summary: 'Dmn: VariablesExample'
       description: |2
 
@@ -594,7 +594,7 @@ paths:
     post:
       tags:
       - SignalMessageExample
-      summary: 'Bpmn: message-for-example'
+      summary: 'Bpmn: example'
       description: |2
 
 
@@ -610,7 +610,7 @@ paths:
 
 
 
-        See API Doc: [Bpmn: message-for-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Bpmn:%20message-for-example)
+        See API Doc: [Bpmn: example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Bpmn:%20example)
       operationId: postProcess-definitionKeyMessage-for-example--removemessage-for-example--Start
       requestBody:
         content:
@@ -634,7 +634,7 @@ paths:
     post:
       tags:
       - SignalMessageExample
-      summary: 'Signal: intermediate-signal-for-example'
+      summary: 'Signal: for-example'
       description: |2
 
         - _messageName_: `intermediate-signal-for-example`
@@ -643,7 +643,7 @@ paths:
         - _messageName_: `intermediate-signal-for-example`,
 
 
-        See API Doc: [Signal: intermediate-signal-for-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Signal:%20intermediate-signal-for-example)
+        See API Doc: [Signal: for-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Signal:%20for-example)
       operationId: postSignal--remove:intermediate-signal-for-example--
       requestBody:
         content:
@@ -666,7 +666,7 @@ paths:
     post:
       tags:
       - SignalMessageExample
-      summary: 'Message: intermediate-message-for-example'
+      summary: 'Message: for-example'
       description: |2
 
         - _messageName_: `intermediate-message-for-example`
@@ -675,7 +675,7 @@ paths:
         - _messageName_: `intermediate-message-for-example`,
 
 
-        See API Doc: [Message: intermediate-message-for-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Message:%20intermediate-message-for-example)
+        See API Doc: [Message: for-example](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Message:%20for-example)
       operationId: postMessage--remove:intermediate-message-for-example--
       requestBody:
         content:
@@ -723,29 +723,29 @@ paths:
       responses:
         '200':
           description: ''
-  /job/--REMOVE:wait%20for%20one%20day--:
+  /job/--REMOVE:the%20timer%20event--:
     post:
       tags:
       - timer-example
-      summary: 'Timer: wait for one day'
+      summary: 'Timer: the timer event'
       description: |2
 
 
-        See API Doc: [Timer: wait for one day](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Timer:%20wait%20for%20one%20day)
-      operationId: postJob--remove:wait for one day--
+        See API Doc: [Timer: the timer event](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Timer:%20the%20timer%20event)
+      operationId: postJob--remove:the timer event--
       responses:
         '200':
           description: ''
-  /job/{jobId}/execute/--REMOVE:wait%20for%20one%20day--:
+  /job/{jobId}/execute/--REMOVE:the%20timer%20event--:
     post:
       tags:
       - timer-example
-      summary: 'Timer: wait for one day'
+      summary: 'Timer: the timer event'
       description: |2
 
 
-        See API Doc: [Timer: wait for one day](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Timer:%20wait%20for%20one%20day)
-      operationId: postJobJobidExecute--remove:wait for one day--
+        See API Doc: [Timer: the timer event](https://webstor.ch/camundala/myCompany/demos-example/OpenApi.html#operation/Timer:%20the%20timer%20event)
+      operationId: postJobJobidExecute--remove:the timer event--
       parameters:
       - name: jobId
         in: path

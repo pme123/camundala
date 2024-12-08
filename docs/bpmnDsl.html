@@ -86,10 +86,12 @@
     <li class="level2 nav-leaf"><a href="#resultlist">resultList</a></li>
     <li class="level1 nav-leaf"><a href="#user-task">User Task</a></li>
     <li class="level1 nav-node"><a href="#external-task">External Task</a></li>
+    <li class="level2 nav-leaf"><a href="#custom-task">Custom Task</a></li>
     <li class="level2 nav-leaf"><a href="#init-task">Init Task</a></li>
     <li class="level2 nav-leaf"><a href="#service-task">Service Task</a></li>
     <li class="level1 nav-leaf"><a href="#receive-message-event">Receive Message Event</a></li>
     <li class="level1 nav-leaf"><a href="#receive-signal-event">Receive Signal Event</a></li>
+    <li class="level1 nav-leaf"><a href="#timer-event">Timer Event</a></li>
   </ul>
 
   <p class="footer"></p>
@@ -293,13 +295,11 @@
         <h2 id="external-task" class="section"><a class="anchor-link left" href="#external-task"><i class="icofont-laika link">&#xef71;</i></a>External Task</h2>
         <p>An <em>External Task</em> describes a worker.
         We distinguish different types of Tasks, which are described in the next subchapters.</p>
-        <pre><code class="nohighlight"><span>### </span><span class="type-name">Custom</span><span> </span><span class="type-name">Task</span><span>
-</span><span class="type-name">A</span><span> </span><span class="identifier">_Custom</span><span> </span><span class="type-name">Task_</span><span> </span><span class="identifier">is</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">description</span><span> </span><span class="keyword">for</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">worker</span><span> </span><span class="identifier">that</span><span> </span><span class="identifier">does</span><span> </span><span class="identifier">some</span><span> </span><span class="identifier">business</span><span> </span><span class="identifier">logic</span><span>, </span><span class="identifier">like</span><span> </span><span class="identifier">mapping</span><span>.
-
-</span><span class="type-name">In</span><span> </span><span class="type-name">General</span><span>, </span><span class="identifier">you</span><span> </span><span class="identifier">can</span><span> </span><span class="identifier">do</span><span> </span><span class="identifier">whatever</span><span> </span><span class="identifier">you</span><span> </span><span class="identifier">want</span><span> </span><span class="keyword">with</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">_Custom</span><span> </span><span class="type-name">Task_</span><span>. </span><span class="type-name">See</span><span> </span><span class="identifier">also</span><span> </span><span class="identifier">_CustomWorker_</span><span>.
-
-</span><span class="identifier">``</span><span>`</span><span class="identifier">scala</span><span>
-</span><span class="keyword">object</span><span> </span><span class="type-name">MyCustomTask</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CompanyBpmnCustomTaskDsl</span><span>:
+        
+        <h3 id="custom-task" class="section"><a class="anchor-link left" href="#custom-task"><i class="icofont-laika link">&#xef71;</i></a>Custom Task</h3>
+        <p>A <em>Custom Task</em> is a description for a worker that does some business logic, like mapping.</p>
+        <p>In General, you can do whatever you want with a <em>Custom Task</em>. See also <em>CustomWorker</em>.</p>
+        <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">MyCustomTask</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CompanyBpmnCustomTaskDsl</span><span>:
 
   </span><span class="keyword">val</span><span> </span><span class="identifier">topicName</span><span> = </span><span class="string-literal">&quot;mycompany-myproject-myprocessV1.MyCustomTask&quot;</span><span>
   </span><span class="keyword">val</span><span> </span><span class="identifier">descr</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;my custom task...&quot;</span><span>
@@ -429,6 +429,18 @@
           <li>You can send process variables with the <code>In</code> object.</li>
           <li>A <em>SignalEvent</em> extends <em>CompanyBpmnSignalEventDsl</em>.</li>
         </ul>
+        
+        <h2 id="timer-event" class="section"><a class="anchor-link left" href="#timer-event"><i class="icofont-laika link">&#xef71;</i></a>Timer Event</h2>
+        <p>A <em>Timer Event</em> represents a timer event.
+        There is no input needed, you can use it to describe the timers in your API doc, or using them in the Simulations to execute the job of the timer immediately.
+        This works only as intermediate event.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">MyTimerEvent</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CompanyBpmnTimerEventDsl</span><span>:
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">title</span><span> = </span><span class="string-literal">&quot;mycompany-myproject-mytimer&quot;</span><span>
+  </span><span class="keyword">val</span><span> </span><span class="identifier">descr</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;my timer...&quot;</span><span>
+  
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">example</span><span> = </span><span class="identifier">timerEvent</span><span>()
+</span><span class="identifier">end</span><span> </span><span class="type-name">MyTimerEvent</span><span>  </span></code></pre>
 
         
 <hr class="footer-rule"/>

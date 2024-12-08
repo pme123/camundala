@@ -206,6 +206,16 @@ trait BpmnProcessDsl extends BpmnDsl:
   ): SignalEvent[Msg] =
     signalEvent(messageName, in, id, descr)
 
+  @deprecated("Use .. extends BpmnTimerDsl")
+  def timerEvent(
+      title: String,
+      descr: Optable[String] = None
+  ): TimerEvent =
+    TimerEvent(
+      title,
+      InOutDescr(title, descr = descr.value)
+    )
+
   private def msgNameDescr(messageName: String, descr: Optable[String]) =
     val msgNameDescr = s"- _messageName_: `$messageName`"
     Some(descr.value.map(_ + s"\n$msgNameDescr").getOrElse(msgNameDescr))
