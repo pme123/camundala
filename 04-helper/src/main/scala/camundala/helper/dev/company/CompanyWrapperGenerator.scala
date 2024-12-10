@@ -15,14 +15,15 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
 
   private lazy val helperConfig =
     objectContent("CompanyDevHelper"):
-      """
-        |   def config(projectName: String): DevConfig =
+      s"""
+        |   def config(projectName: String, subProjects: Seq[String] = Seq.empty): DevConfig =
         |     DevConfig.defaultConfig(projectName) //TODO Implement your Config!
+        |       .copy(subProjects = subProjects)
         |""".stripMargin
   end helperConfig
 
   private def objectContent(objName: String)(body: String) =
-    s"""package $companyName.helper
+    s"""package $companyName.camundala.helper
        |
        |import camundala.helper.dev.*
        |import camundala.helper.util.*

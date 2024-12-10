@@ -63,5 +63,7 @@ chmod +x helperCompany.scala
 
 1. Open the `company-camundala` directory with your IDE (I use Intellij).
 1. Import the sbt project. The project should compile without errors.
+1. Update `build.sbt` with your repository settings.
+1. Release the `company-camundala` project to your repository.
 
 ### Next Step: [Create Project]

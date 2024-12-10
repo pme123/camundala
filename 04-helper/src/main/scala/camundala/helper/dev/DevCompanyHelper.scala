@@ -36,19 +36,16 @@ object DevCompanyHelper:
     case init, project
 
   def initCompany: Unit =
-    val companyName = os.pwd.last.replace("dev-", "")
     println(s"Init Company $companyName")
-    given config: DevConfig = InitCompanyGenerator.init(companyName) //, repoConfig)
+    given config: DevConfig = InitCompanyGenerator.init(companyName)
     InitCompanyGenerator().generate
 
-  def createCompany(companyName: String) = //, repoConfig: RepoConfig) =
-    println(s"Create/Update Company: $companyName")
-
-   // given config: DevConfig = SetupCompanyGenerator.init(companyName, repoConfig)
-
-  //  SetupCompanyGenerator().generate
 
   def createProject(projectName: String): Unit =
-    println(s"Update Project: $projectName")
-   // SetupGenerator()(using config.setupConfig).generate
+    println(s"Create Project: $projectName - Company: $companyName")
+    given config: DevConfig = DevConfig.defaultConfig(s"$companyName-$projectName")
+    InitCompanyGenerator().createProject
+
+  private lazy val companyName = os.pwd.last.replace("dev-", "")
+
 end DevCompanyHelper

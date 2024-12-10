@@ -4,32 +4,6 @@ import camundala.helper.util.CompanyVersionHelper
 
 case class ScriptCreator()(using config: DevConfig):
 
-  lazy val companyHelper =
-    s"""$helperHeader
-       |
-       |@main(doc =
-       |  \"\"\"> Creates the directories and generic files for the company BPMN Projects
-       |   \"\"\")
-       |def update(
-       |): Unit =
-       |  DevHelper.updateCompany()
-       |
-       |""".stripMargin
-
-  lazy val projectCreate: String =
-    s"""$helperHeader
-       |
-       |@main(doc =
-       |  \"\"\"> Creates the directories and generic files for the company BPMN Projects
-       |   \"\"\")
-       |def create(
-       |    @arg(doc = "The project name - should be generated automatically after creation.")
-       |    projectName: String
-       |): Unit = {
-       |  val config = ProjectDevHelper.config(projectName)
-       |  DevHelper.createProject(config)
-       |}
-       |""".stripMargin
 
   lazy val projectHelper =
     val projectName = config.projectName
@@ -39,12 +13,11 @@ case class ScriptCreator()(using config: DevConfig):
        |lazy val subProjects = Seq(
        |  ${config.subProjects.map(sp => s"\"$sp\"").mkString(", ")}
        |)
-       |lazy val config: HelperConfig = ProjectDevHelper.config(projectName, subProjects)
-       |given setup.DevConfig =  config.setupConfig
+       |given util.DevConfig = CompanyDevHelper.config(projectName, subProjects)
        |
        |@main
        |def run(command: String, arguments: String*): Unit =
-       |  ${config.companyClassName}DevHelper.run(command, arguments*)
+       |  dev.DevHelper.run(command, arguments*)
        |""".stripMargin
   end projectHelper
 

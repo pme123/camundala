@@ -119,8 +119,9 @@ case class CompanySbtGenerator()(using
        |
        |lazy val publicationSettings = Seq(
        |  isSnapshot := false,
-       |  //publishTo := Some(releaseRepo), //TODO define releaseRepo
-       |  // Enables publishing to maven repo
+       |  credentials ++= Seq(repoCredentials),
+       |  publishTo := Some(releaseRepo),
+       |  resolvers ++= Seq(releaseRepo), //TODO add additional resolvers
        |  publishMavenStyle := true,
        |  packageDoc / publishArtifact := false,
        |  // disable using the Scala version in output paths and artifacts
@@ -190,6 +191,21 @@ case class CompanySbtGenerator()(using
        |  testFrameworks += new TestFramework("munit.Framework")
        |)
        |
+       |lazy val releaseRepoStr: String =
+       |  s"https://bin.mycompany.com/artifactory/mycompany-maven-local" //TODO Change with yours
+       |lazy val releaseRepo: MavenRepository = "Artifactory Realm" at releaseRepoStr
+       |
+       |// TODO change with yours
+       |lazy val repoCredentials: Credentials = Credentials("Artifactory Realm", "bin.mycompany.com", "user", "pwd")
+       |/*(for {
+       |  user <- sys.env.get("MVN_REPOSITORY_USERNAME")
+       |  pwd <- sys.env.get("MVN_REPOSITORY_PASSWORD")
+       |} yield Credentials("Artifactory Realm", "bin.mycompany.com", user, pwd))
+       |  .getOrElse(
+       |    throw new IllegalArgumentException(
+       |      "System Environment Variables MVN_REPOSITORY_USERNAME and/ or REPOSITORY_PASSWORD are not set."
+       |    )
+       |  )*/
        |""".stripMargin
   end buildSbt
 
