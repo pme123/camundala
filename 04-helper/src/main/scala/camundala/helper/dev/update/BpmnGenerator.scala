@@ -1,6 +1,8 @@
-package camundala.helper.setup
+package camundala.helper.dev.update
 
-case class BpmnGenerator()(using config: SetupConfig):
+import camundala.helper.util.DevConfig
+
+case class BpmnGenerator()(using config: DevConfig):
 
   def createProcess(setupElement: SetupElement): Unit =
     os.write.over(

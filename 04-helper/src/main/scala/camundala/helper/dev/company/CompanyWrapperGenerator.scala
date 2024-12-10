@@ -1,6 +1,9 @@
-package camundala.helper.setup
+package camundala.helper.dev.company
 
-case class CompanyWrapperGenerator()(using config: SetupConfig):
+import camundala.helper.dev.update.createOrUpdate
+import camundala.helper.util.*
+
+case class CompanyWrapperGenerator()(using config: DevConfig):
 
   lazy val generate: Unit =
     createOrUpdate(projectDevPath, helperConfig)
@@ -8,22 +11,21 @@ case class CompanyWrapperGenerator()(using config: SetupConfig):
   private lazy val companyName = config.companyName
   private lazy val helperPath =
     config.projectDir / ModuleConfig.helperModule.packagePath(config.projectPath)
-  private lazy val projectDevPath = helperPath / "ProjectDevHelper.scala"
+  private lazy val projectDevPath = helperPath / "CompanyDevHelper.scala"
 
   private lazy val helperConfig =
-    objectContent("ProjectDevHelper"):
+    objectContent("CompanyDevHelper"):
       """
-        |   def config(projectName: String): HelperConfig = HelperConfig(
-        |     setupConfig = ProjectSetupConfig.config(projectName) //TODO Implement your Config!
-        |   )
+        |   def config(projectName: String): DevConfig =
+        |     DevConfig.defaultConfig(projectName) //TODO Implement your Config!
         |""".stripMargin
   end helperConfig
 
   private def objectContent(objName: String)(body: String) =
     s"""package $companyName.helper
        |
-       |import camundala.helper.*
-       |import camundala.helper.setup.*
+       |import camundala.helper.dev.*
+       |import camundala.helper.util.*
        |
        |object $objName:
        |

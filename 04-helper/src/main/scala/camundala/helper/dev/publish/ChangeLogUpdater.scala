@@ -1,4 +1,4 @@
-package camundala.helper
+package camundala.helper.dev.publish
 
 import java.time.LocalDate
 import scala.language.postfixOps

@@ -1,8 +1,8 @@
-package camundala.helper.setup
+package camundala.helper.dev.update
 
 import camundala.api.docs.DependencyConf
 
-case class WorkerGenerator()(using config: SetupConfig):
+case class WorkerGenerator()(using config: DevConfig):
 
   lazy val generate: Unit =
     createIfNotExists(workerPath() / "WorkerApp.scala", workerApp)

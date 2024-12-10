@@ -1,4 +1,7 @@
-package camundala.helper.setup
+package camundala.helper.dev.update
+
+export camundala.helper.util.DevConfig
+export camundala.helper.util.ModuleConfig
 
 val doNotAdjust = "DO NOT ADJUST"
 
@@ -7,7 +10,7 @@ case class SetupElement(
     processName: String,
     bpmnName: String,
     version: Option[Int]
-)(using setupConfig: SetupConfig):
+)(using setupConfig: DevConfig):
 
   lazy val versionLabel: String = version.versionLabel
   lazy val identifier =

@@ -1,6 +1,6 @@
-package camundala.helper.setup
+package camundala.helper.dev.update
 
-case class SimulationGenerator()(using config: SetupConfig):
+case class SimulationGenerator()(using config: DevConfig):
 
   def createProcess(setupElement: SetupElement): Unit =
     os.write.over(

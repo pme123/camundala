@@ -1,8 +1,9 @@
-package camundala.helper.setup
+package camundala.helper.dev.update
 
 import camundala.api.docs.DependencyConf
+import camundala.helper.util.DevConfig
 
-case class ApiGeneratorGenerator()(using config: SetupConfig):
+case class ApiGeneratorGenerator()(using config: DevConfig):
 
   lazy val generate: Unit =
     createIfNotExists(apiGeneratorPath, apiGenerator)

@@ -1,8 +1,8 @@
-package camundala.helper.setup
+package camundala.helper.dev.update
 
 import camundala.api.docs.DependencyConf
 
-case class DmnGenerator()(using config: SetupConfig):
+case class DmnGenerator()(using config: DevConfig):
 
   lazy val generate: Unit =
     createIfNotExists(dmnPath() / "ProjectDmnTester.scala", dmnTester)

@@ -1,6 +1,6 @@
-package camundala.helper.setup
+package camundala.helper.dev.update
 
-case class SbtSettingsGenerator()(using config: SetupConfig):
+case class SbtSettingsGenerator()(using config: DevConfig):
 
   lazy val generate: Unit =
     createOrUpdate(config.sbtProjectDir / "Settings.scala", settingsSbt)

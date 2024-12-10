@@ -1,20 +1,19 @@
-package camundala
-package helper.setup
+package camundala.helper.dev.company
 
-import camundala.helper.util.{RepoConfig, ReposConfig}
+import camundala.helper.dev.update.*
+import camundala.helper.util.*
 
-case class SetupCompanyGenerator()(using config: SetupConfig):
+case class InitCompanyGenerator()(using config: DevConfig):
 
   lazy val generate: Unit =
     generateDirectories
     DirectoryGenerator().generate // generates myCompany-camundala project
     // needed helper classes
     CompanyWrapperGenerator().generate
-    // scripts
-    val scriptCreator = ScriptCreator()
-    createOrUpdate(projects / "helperProject.scala", scriptCreator.projectCreate)
-    // override createCompany
-    createOrUpdate(os.pwd / "helperCompany.sc", scriptCreator.companyCreate)
+    // override helperCompany.scala
+    createOrUpdate(os.pwd / "helperCompany.scala", CompanyScriptCreator().companyHelper)
+    // sbt
+    CompanySbtGenerator().generate
   end generate
 
   private lazy val companyName = config.companyName
@@ -33,19 +32,19 @@ case class SetupCompanyGenerator()(using config: SetupConfig):
   private lazy val companyCamundala = os.pwd / s"$companyName-camundala"
   private lazy val projects = os.pwd / "projects"
 
-end SetupCompanyGenerator
+end InitCompanyGenerator
 
-object SetupCompanyGenerator:
-  def init(companyName: String, repoConfig: RepoConfig.Artifactory) =
+object InitCompanyGenerator:
+  def init(companyName: String) = //, repoConfig: RepoConfig.Artifactory) =
     // createOrUpdate(os.pwd / api.defaultProjectPath, defaultProjectContent(companyName))
-    SetupConfig.defaultConfig(s"$companyName-camundala")
-      .copy(reposConfig =
+    DevConfig.defaultConfig(s"$companyName-camundala")
+   /*   .copy(reposConfig =
         ReposConfig(
           repos = Seq(repoConfig),
           repoSearch = repoConfig.repoSearch,
           ammoniteRepos = Seq(repoConfig)
         )
-      )
+      ) */
   end init
 
   private def defaultProjectContent(companyName: String) =
@@ -57,4 +56,4 @@ object SetupCompanyGenerator:
        |  
        |}
        |""".stripMargin
-end SetupCompanyGenerator
+end InitCompanyGenerator

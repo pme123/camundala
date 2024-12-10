@@ -1,6 +1,6 @@
-package camundala.helper.setup
+package camundala.helper.dev.update
 
-case class BpmnProcessGenerator()(using config: SetupConfig):
+case class BpmnProcessGenerator()(using config: DevConfig):
 
   def createBpmn(setupElement: SetupElement): Unit =
     val name = s"${setupElement.identifierShort}.bpmn"

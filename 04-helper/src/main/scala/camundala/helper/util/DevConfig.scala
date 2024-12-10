@@ -1,21 +1,22 @@
-package camundala.helper.setup
+package camundala.helper.util
 
 import camundala.BuildInfo
 import camundala.api.docs.ApiProjectConf
+
 import camundala.helper.util.ReposConfig
 import os.RelPath
 
-case class SetupConfig(
-    projectName: String,
-    baseDir: os.Path = os.pwd,
-    modules: Seq[ModuleConfig] = SetupConfig.modules,
-    subProjects: Seq[String] = Seq.empty,
-    apiProjectConf: ApiProjectConf,
-    versionConfig: VersionConfig = VersionConfig(),
-    reposConfig: ReposConfig = ReposConfig.dummyRepos,
-    // path where the BPMNs are - must be relative to the project path
-    bpmnPath: os.RelPath = os.rel / "src" / "main" / "resources",
-    sbtDockerSettings: String = ""
+case class DevConfig(
+                      projectName: String,
+                      baseDir: os.Path = os.pwd,
+                      modules: Seq[ModuleConfig] = DevConfig.modules,
+                      subProjects: Seq[String] = Seq.empty,
+                      apiProjectConf: ApiProjectConf,
+                      versionConfig: VersionConfig = VersionConfig(),
+                      reposConfig: ReposConfig = ReposConfig.dummyRepos,
+                      // path where the BPMNs are - must be relative to the project path
+                      bpmnPath: os.RelPath = os.rel / "src" / "main" / "resources",
+                      sbtDockerSettings: String = ""
 ):
   lazy val companyName: String = apiProjectConf.org
   lazy val companyClassName: String = companyName.head.toUpper + companyName.tail
@@ -24,7 +25,7 @@ case class SetupConfig(
   lazy val projectShortClassName: String = projectClassNames.last
   lazy val projectClassName: String = projectClassNames.mkString
 
-  lazy val projectDir: os.Path = SetupConfig.projectDir(projectName, baseDir)
+  lazy val projectDir: os.Path = DevConfig.projectDir(projectName, baseDir)
 
   lazy val projectPackage: String = projectName.split("-").mkString(".")
   lazy val projectPath: os.RelPath = os.rel / projectName.split("-")
@@ -39,9 +40,9 @@ case class SetupConfig(
     else ""
   end dependsOn
 
-end SetupConfig
+end DevConfig
 
-object SetupConfig:
+object DevConfig:
 
   def apply(
       projectName: String,
@@ -51,7 +52,7 @@ object SetupConfig:
       reposConfig: ReposConfig,
       sbtDockerSettings: String,
       bpmnPath: os.RelPath
-  ): SetupConfig = new SetupConfig(
+  ): DevConfig = new DevConfig(
     projectName,
     subProjects = subProjects,
     apiProjectConf =
@@ -62,7 +63,7 @@ object SetupConfig:
     bpmnPath = bpmnPath
   )
 
-  def defaultConfig(projectName: String): SetupConfig = SetupConfig(
+  def defaultConfig(projectName: String): DevConfig = DevConfig(
     projectName,
     apiProjectConf = ApiProjectConf.initDummy(projectName)
   )
@@ -81,7 +82,7 @@ object SetupConfig:
     helperModule
   )
 
-end SetupConfig
+end DevConfig
 
 case class ModuleConfig(
     name: String,

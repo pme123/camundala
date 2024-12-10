@@ -1,6 +1,7 @@
-package camundala.helper.setup
+package camundala.helper.dev.update
+import camundala.helper.util.DevConfig
 
-case class SetupGenerator()(using config: SetupConfig):
+case class SetupGenerator()(using config: DevConfig):
 
   lazy val generate: Unit =
     println(

@@ -1,8 +1,8 @@
-package camundala.helper.setup
+package camundala.helper.dev.update
 
 import camundala.helper.util.VersionHelper
 
-case class GenericFileGenerator()(using config: SetupConfig):
+case class GenericFileGenerator()(using config: DevConfig):
 
   lazy val generate: Unit =
     createOrUpdate(config.projectDir / ".scalafmt.conf", scalafmt)

@@ -1,9 +1,9 @@
-package camundala.helper.setup
+package camundala.helper.dev.update
 
-import camundala.helper.util.VersionHelper
+import camundala.helper.util.{TestType, VersionHelper}
 
 case class SbtGenerator()(using
-    config: SetupConfig
+    config: DevConfig
 ):
 
   lazy val generate: Unit =
@@ -18,7 +18,7 @@ case class SbtGenerator()(using
   lazy val generatePluginsSbt =
     createOrUpdate(config.sbtProjectDir / "plugins.sbt", pluginsSbt)
   private lazy val projectConf = config.apiProjectConf
-  private lazy val versionHelper = VersionHelper(projectConf, config.reposConfig.repoSearch)
+  private lazy val versionHelper = VersionHelper(projectConf)
   private lazy val buildSbtDir = config.projectDir / "build.sbt"
 
   private lazy val buildSbt =

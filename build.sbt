@@ -48,7 +48,7 @@ lazy val documentation =
     .settings(
       laikaConfig := LaikaConfig.defaults
         .withConfigValue(LaikaKeys.excludeFromNavigation, Seq(Root))
-        .withConfigValue("projectVersion", projectVersion)
+        .withConfigValue("project.version", projectVersion)
         .withConfigValue(
           LinkConfig.empty
             .addTargets(
@@ -431,6 +431,7 @@ lazy val exampleMyCompany = project
   .settings(projectSettings("example-exampleDemos"))
   .settings(
     laikaConfig := LaikaConfig.defaults
+      .withConfigValue("projectVersion", projectVersion)
       .withConfigValue(LaikaKeys.excludeFromNavigation, Seq(Root))
       .withRawContent
     //  .failOnMessages(MessageFilter.None)

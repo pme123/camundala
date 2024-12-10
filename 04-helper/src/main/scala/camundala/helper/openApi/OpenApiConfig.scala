@@ -1,8 +1,6 @@
 package camundala.helper.openApi
 
-import camundala.bpmn.BpmnExternalTaskDsl
-import camundala.helper.setup.ModuleConfig
-import camundala.simulation.custom.BasicSimulationDsl
+import camundala.helper.util.ModuleConfig
 
 case class OpenApiConfig(
     projectName: String,

@@ -1,6 +1,8 @@
-package camundala.helper.setup
+package camundala.helper.dev.update
 
-case class DirectoryGenerator()(using config: SetupConfig):
+import camundala.helper.util.TestType
+
+case class DirectoryGenerator()(using config: DevConfig):
   lazy val generate =
     os.makeDir.all(config.sbtProjectDir)
     config.modules.map:
