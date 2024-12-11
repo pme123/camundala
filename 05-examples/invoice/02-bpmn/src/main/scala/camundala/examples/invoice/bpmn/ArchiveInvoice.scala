@@ -8,7 +8,6 @@ object ArchiveInvoice extends BpmnCustomTaskDsl:
 
   final val topicName = "ArchiveInvoiceService"
   val descr = "Archives the Receipt."
-  val companyDescr = ""
 
   case class In(
       shouldFail: Option[Boolean] = Some(true)

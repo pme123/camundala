@@ -18,7 +18,7 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
   private lazy val projectBpmnPath = ModuleConfig.bpmnModule.srcPath / "CompanyBpmnDsl.scala"
   private lazy val projectApiPath = ModuleConfig.apiModule.srcPath / "CompanyApiCreator.scala"
   private lazy val projectDmnPath = ModuleConfig.dmnModule.srcPath / "CompanyDmnTester.scala"
-  private lazy val projectSimulationPath = ModuleConfig.simulationModule.testPath / "CompanySimulation.scala"
+  private lazy val projectSimulationPath = ModuleConfig.simulationModule.srcPath / "CompanySimulation.scala"
   private lazy val projectWorkerPath = ModuleConfig.workerModule.srcPath / "CompanyWorkerHandler.scala"
   private lazy val projectHelperPath = ModuleConfig.helperModule.srcPath / "CompanyDevHelper.scala"
 
@@ -54,7 +54,7 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
        |trait CompanyApiCreator extends ApiCreator, ApiDsl, CamundaPostmanApiCreator:
        |
        |  // override the config if needed
-       |  //override protected def apiConfig: ApiConfig = ???
+       |  protected def apiConfig: ApiConfig = ApiConfig(companyId = "$companyName")
        |
        |  lazy val companyDescr = ??? //TODO Add your Company Description!
        |""".stripMargin
@@ -145,10 +145,5 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
     def srcPath: os.Path =
       config.projectDir / module.packagePath(
         config.projectPath
-      )
-    def testPath: os.Path =
-      config.projectDir / module.packagePath(
-        config.projectPath,
-        mainOrTest = "test"
       )
 end CompanyWrapperGenerator

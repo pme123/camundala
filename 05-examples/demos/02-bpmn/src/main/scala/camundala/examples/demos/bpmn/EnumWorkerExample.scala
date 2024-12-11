@@ -8,7 +8,6 @@ object EnumWorkerExample extends BpmnServiceTaskDsl:
   val serviceLabel: String = "Demo for Enum as Inputs and Outputs in Worker"
   val serviceVersion: String = "1.4"
   val topicName: String = "myEnumWorker.Topic"
-  val companyDescr = ""
 
   val descr = ""
   val path: String = "GET /people"

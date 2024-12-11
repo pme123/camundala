@@ -25,12 +25,14 @@ So try to stick to the conventions, whenever possible.
 
 1. Create a directory for your company development:
 ```bash
-mkdir ~/dev-myCompany
+mkdir ~/dev-mycompany
 ```
+
+  Be aware that the company name (_mycompany_) must be lowercase to work properly.
 
 1. Create `helperCompany.scala` in your company directory and open it.
 ```bash
-cd ~/dev-myCompany
+cd ~/dev-mycompany
 touch helperCompany.scala
 open helperCompany.scala
 ```

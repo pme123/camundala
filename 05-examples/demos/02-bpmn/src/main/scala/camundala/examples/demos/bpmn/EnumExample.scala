@@ -6,7 +6,6 @@ import camundala.domain.*
 object EnumExample extends BpmnProcessDsl:
   val processName = "enum-example"
   val descr = ""
-  val companyDescr = ""
 
   enum Input:
 

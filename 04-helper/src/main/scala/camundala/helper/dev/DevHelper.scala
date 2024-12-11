@@ -22,73 +22,71 @@ object DevHelper:
   private def runCommand(command: Command, args: Seq[String])(using DevConfig): Unit =
     command match
       case Command.update =>
-        DevHelper.update
+        update
       case Command.process =>
         args match
           case Seq(processName) =>
-            DevHelper.createProcess(processName, None, None)
+            createProcess(processName, None)
           case Seq(processName, version) if version.toIntOption.isDefined =>
-            DevHelper.createProcess(processName, version.toIntOption, None)
-          case Seq(processName, version, subProject) if version.toIntOption.isDefined =>
-            DevHelper.createProcess(processName, version.toIntOption, Some(subProject))
+            createProcess(processName, version.toIntOption)
           case other =>
             println(s"Invalid arguments for command $command: $other")
-            println("Usage: process <processName> [version: Int] [subProject]")
-            println("Example: process myProcess 1 subProject1")
+            println("Usage: process <processName> [version: Int]")
+            println("Example: process myProcess 1")
       case Command.customTask =>
         args match
           case Seq(processName, bpmnName) =>
-            DevHelper.createCustomTask(processName, bpmnName, None)
+            createCustomTask(processName, bpmnName, None)
           case Seq(processName, bpmnName, version) if version.toIntOption.isDefined =>
-            DevHelper.createCustomTask(processName, bpmnName, version.toIntOption)
+            createCustomTask(processName, bpmnName, version.toIntOption)
           case other =>
             printBadActivity(command, other)
       case Command.serviceTask =>
         args match
           case Seq(processName, bpmnName) =>
-            DevHelper.createServiceTask(processName, bpmnName, None)
+            createServiceTask(processName, bpmnName, None)
           case Seq(processName, bpmnName, version) if version.toIntOption.isDefined =>
-            DevHelper.createServiceTask(processName, bpmnName, version.toIntOption)
+            createServiceTask(processName, bpmnName, version.toIntOption)
           case other =>
             printBadActivity(command, other)
       case Command.userTask =>
         args match
           case Seq(processName, bpmnName) =>
-            DevHelper.createUserTask(processName, bpmnName, None)
+            createUserTask(processName, bpmnName, None)
           case Seq(processName, bpmnName, version) if version.toIntOption.isDefined =>
-            DevHelper.createUserTask(processName, bpmnName, version.toIntOption)
+            createUserTask(processName, bpmnName, version.toIntOption)
           case other =>
             printBadActivity(command, other)
       case Command.decision =>
         args match
           case Seq(processName, bpmnName) =>
-            DevHelper.createDecision(processName, bpmnName, None)
+            createDecision(processName, bpmnName, None)
           case Seq(processName, bpmnName, version) if version.toIntOption.isDefined =>
-            DevHelper.createDecision(processName, bpmnName, version.toIntOption)
+            createDecision(processName, bpmnName, version.toIntOption)
           case other =>
             printBadActivity(command, other)
       case Command.signalEvent =>
         args match
           case Seq(processName, bpmnName) =>
-            DevHelper.createSignalEvent(processName, bpmnName, None)
+            createSignalEvent(processName, bpmnName, None)
           case Seq(processName, bpmnName, version) if version.toIntOption.isDefined =>
-            DevHelper.createSignalEvent(processName, bpmnName, version.toIntOption)
+            createSignalEvent(processName, bpmnName, version.toIntOption)
           case other =>
             printBadActivity(command, other)
       case Command.messageEvent =>
         args match
           case Seq(processName, bpmnName) =>
-            DevHelper.createMessageEvent(processName, bpmnName, None)
+            createMessageEvent(processName, bpmnName, None)
           case Seq(processName, bpmnName, version) if version.toIntOption.isDefined =>
-            DevHelper.createMessageEvent(processName, bpmnName, version.toIntOption)
+            createMessageEvent(processName, bpmnName, version.toIntOption)
           case other =>
             printBadActivity(command, other)
       case Command.timerEvent =>
         args match
           case Seq(processName, bpmnName) =>
-            DevHelper.createTimerEvent(processName, bpmnName, None)
+            createTimerEvent(processName, bpmnName, None)
           case Seq(processName, bpmnName, version) if version.toIntOption.isDefined =>
-            DevHelper.createTimerEvent(processName, bpmnName, version.toIntOption)
+            createTimerEvent(processName, bpmnName, version.toIntOption)
           case other =>
             printBadActivity(command, other)
             /*
@@ -134,17 +132,13 @@ object DevHelper:
     println(s" - with Subprojects: ${config.subProjects}")
     SetupGenerator().generate
 
-  def createProcess(processName: String, version: Option[Int], subProject: Option[String])(using
+  def createProcess(processName: String, version: Option[Int])(using
       config: DevConfig
   ): Unit =
-    val name =
-      subProject.map(_ => processName).getOrElse(processName.head.toUpper + processName.tail)
-    val processOrSubProject = subProject.getOrElse(processName)
-
     SetupGenerator().createProcess(SetupElement(
       "Process",
-      processOrSubProject,
-      name,
+      processName.asProcessName,
+      processName.asElemName,
       version
     ))
   end createProcess
@@ -154,8 +148,8 @@ object DevHelper:
   ): Unit =
     SetupGenerator().createProcessElement(SetupElement(
       "CustomTask",
-      processName,
-      bpmnName,
+      processName.asProcessName,
+      bpmnName.asElemName,
       version
     ))
 
@@ -164,8 +158,8 @@ object DevHelper:
   ): Unit =
     SetupGenerator().createProcessElement(SetupElement(
       "ServiceTask",
-      processName,
-      bpmnName,
+      processName.asProcessName,
+      bpmnName.asElemName,
       version
     ))
 
@@ -173,14 +167,14 @@ object DevHelper:
       using config: DevConfig
   ): Unit =
     SetupGenerator().createUserTask(
-      SetupElement("UserTask", processName, bpmnName, version)
+      SetupElement("UserTask", processName.asProcessName, bpmnName.asElemName, version)
     )
 
   def createDecision(processName: String, bpmnName: String, version: Option[Int])(
       using config: DevConfig
   ): Unit =
     SetupGenerator().createDecision(
-      SetupElement("Decision", processName, bpmnName, version)
+      SetupElement("Decision", processName.asProcessName, bpmnName.asElemName, version)
     )
 
   def createSignalEvent(processName: String, bpmnName: String, version: Option[Int])(
@@ -188,8 +182,8 @@ object DevHelper:
   ): Unit =
     SetupGenerator().createEvent(SetupElement(
       "Signal",
-      processName,
-      bpmnName,
+      processName.asProcessName,
+      bpmnName.asElemName,
       version
     ))
 
@@ -198,8 +192,8 @@ object DevHelper:
   ): Unit =
     SetupGenerator().createEvent(SetupElement(
       "Message",
-      processName,
-      bpmnName,
+      processName.asProcessName,
+      bpmnName.asElemName,
       version
     ))
 
@@ -208,8 +202,14 @@ object DevHelper:
   ): Unit =
     SetupGenerator().createEvent(SetupElement(
       "Timer",
-      processName,
-      bpmnName,
+      processName.asProcessName,
+      bpmnName.asElemName,
       version
     ))
+
+  extension (name: String)
+    def asProcessName: String =
+      name.head.toLower + name.tail
+    def asElemName: String =
+      name.head.toUpper + name.tail
 end DevHelper

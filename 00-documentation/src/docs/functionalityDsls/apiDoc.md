@@ -131,11 +131,11 @@ case class ApiConfig(
     // Configure your project setup
     projectsConfig: ProjectsConfig = ProjectsConfig(),
     // The URL of your published documentations
-    // myProject => s"http://myCompany/bpmnDocs/${myProject}"
+    // myProject => s"http://mycompany/bpmnDocs/${myProject}"
     docProjectUrl: String => String = proj => s"No URL defined for $proj",
     // If you want to integrate your BPMNs and DMNs in your Documentation.
     // Add the path the diagrams are located on your webserver.
-    // myProject => s"http://myCompany/bpmnDocs/${myProject}/${diagramDownloadPath}"
+    // myProject => s"http://mycompany/bpmnDocs/${myProject}/${diagramDownloadPath}"
     // if you want to have a diagram - you must define this!
     diagramDownloadPath: Option[String] = None,
     // if you want to adjust the diagramName
@@ -151,12 +151,12 @@ E.g. _company -> department -> project_ - see next chapter.
 ```scala
   override protected def apiConfig: ApiConfig =
     super.apiConfig
-      .withTenantId("myCompany")
-      .withDocProjectUrl(myProject => s"http://myCompany.ch/bpmnDocs/$myProject")
+      .withTenantId("mycompany")
+      .withDocProjectUrl(myProject => s"http://mycompany.ch/bpmnDocs/$myProject")
       .withLocalProjectPaths(
         os.pwd / os.up / os.up / "company-packages",
         os.pwd / os.up / os.up / "deparment-a-packages")
-      .withJiraUrls("COM" -> "https://issue.myCompany.ch/browse")  
+      .withJiraUrls("COM" -> "https://issue.mycompany.ch/browse")  
 ```
 
 ### Default ApiCreator
@@ -222,7 +222,7 @@ Configuration:
 ```
 
 - JIRA_PROJECT: The shortcut for the JIRA Project (prefix of jira ticket number).
-- JIRA_URL: The base URL to browse JIRA tickets, e.g. `https://issue.myCompany.ch/browse`.
+- JIRA_URL: The base URL to browse JIRA tickets, e.g. `https://issue.mycompany.ch/browse`.
 
 Now in the Change Log all occurrences of the regex `JIRA_PROJECT-(\\d+)` (-> `JIRA_TICKET`) 
 will be replaced with `[JIRA_TICKET]($url/JIRA_TICKET)`. 
@@ -475,7 +475,7 @@ GitConfigs(
   os.pwd / os.up / "git-temp",
   Seq(
     GitConfig(
-      cloneUrl = "https://github.com/myCompany",
+      cloneUrl = "https://github.com/mycompany",
       projects = Seq(
         "myHelperProject",
         "myProject",
@@ -487,7 +487,7 @@ GitConfigs(
 )
 ```
 This will clone or update these projects (`$cloneUrl/$project.git`) into `../git-temp`, 
-for example `https://github.com/myCompany/myProject.git`.
+for example `https://github.com/mycompany/myProject.git`.
 
 #### Used Dependency Resolution
 For each Process (BPMN):

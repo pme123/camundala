@@ -37,8 +37,9 @@ case class ApiGenerator()(using config: DevConfig):
        |
        |  private lazy val myProcessApi =
        |    import myProcess.v1.*
-       |    api(MyProcess.example)
-       |
+       |    api(MyProcess.example)(
+       |      // userTasks / workers etc.
+       |    )
        |end ApiProjectCreator
        |""".stripMargin
   end api

@@ -27,7 +27,7 @@ case class ApiProjectConf(
 end ApiProjectConf
 
 object ApiProjectConf:
-  lazy val defaultVersion = "0.1.0"
+  lazy val defaultVersion = "0.1.0-SNAPSHOT"
 
   def apply(
       packageFile: os.Path

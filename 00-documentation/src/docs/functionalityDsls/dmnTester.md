@@ -225,7 +225,7 @@ trait MyCompanyDmnTester extends DmnTesterConfigCreator, DmnTesterStarter:
       dmnPaths = Seq(localDmnPath)
   )
   override protected def defaultDmnPath(dmnName: String): os.Path =
-    val dmnPath = dmnBasePath / s"${dmnName.replace("myCompany-", "")}.dmn"
+    val dmnPath = dmnBasePath / s"${dmnName.replace("mycompany-", "")}.dmn"
     if(!dmnPath.toIO.exists())
       throw FileNotFoundException(s"There is no DMN in $dmnPath")
     dmnPath
@@ -238,7 +238,7 @@ end MyCompanyDmnTester
 So in the project you can focus on the creation of DMN Configurations, like:
 
 ```scala
-// runMain myCompany.nnk.dmn.ProjectDmnTester
+// runMain mycompany.nnk.dmn.ProjectDmnTester
 object ProjectDmnTester extends MyCompanyDmnTester, App:
 
   createDmnConfigs(

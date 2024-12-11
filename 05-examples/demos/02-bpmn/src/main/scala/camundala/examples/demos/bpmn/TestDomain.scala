@@ -7,7 +7,6 @@ object TestDomain extends BpmnProcessDsl:
 
   lazy val processName: String = "simulation-TestOverrides"
   lazy val descr: String = ""
-  val companyDescr = ""
 
   case class SomeObj(tag: String = "okidoki", isOk: String = "false")
   object SomeObj:

@@ -22,9 +22,8 @@ case class DirectoryGenerator()(using config: DevConfig):
           moduleConfig.packagePath(config.projectPath, mainOrTest, subProject, isSourceDir = false)
       end resourcesPath
 
-      if moduleConfig.hasMain then
-        os.makeDir.all(srcPath("main"))
-        os.makeDir.all(resourcesPath("main"))
+      os.makeDir.all(srcPath("main"))
+      os.makeDir.all(resourcesPath("main"))
       if moduleConfig.testType != TestType.None then
         os.makeDir.all(srcPath("test"))
         os.makeDir.all(resourcesPath("test"))

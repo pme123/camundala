@@ -77,7 +77,7 @@ case class WorkerGenerator()(using config: DevConfig):
        |object $objName:
        |  
        |  def main(args: Array[String]): Unit =
-       |    SpringApplication.run(classOf[$objName], args: _*)
+       |    SpringApplication.run(classOf[$objName], args*)
        |end $objName""".stripMargin
 
   private def processWorker(setupElement: SetupElement) =

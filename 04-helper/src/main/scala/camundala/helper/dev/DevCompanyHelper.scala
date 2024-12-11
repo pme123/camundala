@@ -46,6 +46,6 @@ object DevCompanyHelper:
     given config: DevConfig = DevConfig.defaultConfig(s"$companyName-$projectName")
     InitCompanyGenerator().createProject
 
-  private lazy val companyName = os.pwd.last.replace("dev-", "")
+  private lazy val companyName = os.pwd.last.replace("dev-", "").toLowerCase
 
 end DevCompanyHelper

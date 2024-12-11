@@ -87,7 +87,6 @@ end DevConfig
 case class ModuleConfig(
     name: String,
     level: Int,
-    hasMain: Boolean = true,
     testType: TestType = TestType.None,
     generateSubModule: Boolean = false,
     doPublish: Boolean = true,
@@ -116,13 +115,13 @@ case class ModuleConfig(
     os.rel / nameWithLevel /
       subModule / "src" / mainOrTest / sourceOrResource
   end packagePath
-  
+
   def emptyExportsFile(projPackage: String): String =
     s"""package $projPackage.$name
        |
        |// put here your exports - dummy file if you don't have any classes
        |""".stripMargin
-    
+
 end ModuleConfig
 
 object ModuleConfig:
@@ -145,7 +144,6 @@ object ModuleConfig:
   lazy val simulationModule = ModuleConfig(
     "simulation",
     level = 3,
-    hasMain = false,
     testType = TestType.Simulation,
     doPublish = false
   )

@@ -7,7 +7,6 @@ object SimulationTestOverridesExample extends BpmnProcessDsl:
 
   lazy val processName: String = "simulation-TestOverrides"
   lazy val descr: String = ""
-  val companyDescr = ""
 
   case class SimpleObject(name: String = "salu", other: Boolean = false)
 

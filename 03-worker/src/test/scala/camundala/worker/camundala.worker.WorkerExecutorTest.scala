@@ -9,7 +9,6 @@ import scala.reflect.ClassTag
 class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
 
   def descr: String = "myDescr"
-  def companyDescr: String = "myCompany"
 
   given EngineRunContext = EngineRunContext(
     new EngineContext:

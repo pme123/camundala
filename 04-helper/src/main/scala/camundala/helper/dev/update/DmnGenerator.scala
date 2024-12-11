@@ -13,7 +13,7 @@ case class DmnGenerator()(using config: DevConfig):
        |import ${config.projectPackage}.bpmn.*
        |
        |// dmn/run
-       |object ProjectDmnTester extends ValiantDmnTester:
+       |object ProjectDmnTester extends CompanyDmnTester:
        |
        |  createDmnConfigs(
        |    // myDmn

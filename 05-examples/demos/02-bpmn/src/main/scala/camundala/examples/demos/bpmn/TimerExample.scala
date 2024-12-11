@@ -6,7 +6,6 @@ object TimerExample extends BpmnProcessDsl:
 
   lazy val processName: String = "timer-example"
   lazy val descr: String = ""
-  val companyDescr = ""
 
   lazy val example = process()
 
@@ -16,7 +15,6 @@ object TheTimer extends BpmnTimerEventDsl:
 
   lazy val title: String = "the timer event"
   lazy val descr: String = ""
-  def companyDescr: String = ""
 
   lazy val example = timerEvent()
 

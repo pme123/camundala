@@ -5,7 +5,7 @@ import camundala.helper.util.DevConfig
 case class BpmnGenerator()(using config: DevConfig):
 
   def createProcess(setupElement: SetupElement): Unit =
-    os.write.over(
+    createIfNotExists(
       bpmnPath(setupElement.processName, setupElement.version) / s"${setupElement.bpmnName}.scala",
       objectDefinition(
         setupElement,
@@ -17,7 +17,7 @@ case class BpmnGenerator()(using config: DevConfig):
   def createProcessElement(setupElement: SetupElement): Unit =
     val processName = setupElement.processName
     val version = setupElement.version
-    os.write.over(
+    createIfNotExists(
       bpmnPath(
         processName,
         version
@@ -38,7 +38,7 @@ case class BpmnGenerator()(using config: DevConfig):
   end createProcessElement
 
   def createEvent(setupElement: SetupElement): Unit =
-    os.write.over(
+    createIfNotExists(
       bpmnPath(setupElement.processName, setupElement.version) / s"${setupElement.bpmnName}.scala",
       eventDefinition(setupElement)
     )
@@ -88,7 +88,7 @@ case class BpmnGenerator()(using config: DevConfig):
         else
           s"""${label.head.toLower + label.tail}(
              |    In(),
-             |    ${if isProcess then "Out.Success" else "Out"}()""".stripMargin
+             |    Out()${if isProcess then ",\n    InitIn()" else ""}""".stripMargin
       }    ${
         if label == "ServiceTask" then
           s""",
@@ -212,28 +212,13 @@ case class BpmnGenerator()(using config: DevConfig):
             |""".stripMargin
         else ""
       }
-      |${
+      |  case class Out(//TODO output variables
+            ${//TODO output variables
         if isProcess then
-          """  enum Out:
-            |    case Success(
-            |        //TODO output variables
-            |        processStatus: ProcessStatus.succeeded.type = ProcessStatus.succeeded
-            |    )
-            |
-            |    case NotValid(
-            |        processStatus: ProcessStatus.notValid.type = ProcessStatus.notValid,
-            |        validationErrors: Seq[ValidationError] = Seq(ValidationError())
-            |    )
-            |    case Canceled(
-            |        processStatus: ProcessStatus.canceled.type = ProcessStatus.canceled
-            |    )
-            |  end Out""".stripMargin
-        else """
-              |  //type Out = NoOutput // if no output is needed
-              |  case class Out(
-              |    //TODO output variables
-              |  )""".stripMargin
+          "        processStatus: ProcessStatus.succeeded.type = ProcessStatus.succeeded"
+        else ""
       }
+      |  )
       |  object Out:
       |    given ApiSchema[Out] = deriveApiSchema
       |    given InOutCodec[Out] = deriveInOutCodec"""

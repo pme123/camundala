@@ -11,13 +11,13 @@ Here we focus on the first step.
 
 1. We can use the same `helperCompany.scala` script, we created in the [Init Company] step.
     ```scala
-    cd ~/dev-myCompany
+    cd ~/dev-mycompany
     ./helperCompany.scala project myProject
     ```
     This creates:
     
     ```bash
-    dev-myCompany
+    dev-mycompany
       |  projects
       |    |  myProject
       |    |    |  helper.scala
@@ -29,7 +29,7 @@ cd ~/projects/myProject
 chmod +x helper.scala
 ```
 
-1. Open the `myCompany-myProject` directory with your IDE (I use Intellij).
+1. Open the `mycompany-myProject` directory with your IDE (I use Intellij).
 
 @:callout(info)
 If you haven't released `company-camundala` yet,
@@ -37,9 +37,9 @@ you need to run it at least locally (`sbt publishLocal`)
 and set the version in the `helper.scala` manually.
 
 ```scala
-//> using dep myCompany::myCompany-camundala-helper:VERSION NOT FOUND 
+//> using dep mycompany::mycompany-camundala-helper:VERSION NOT FOUND 
 // replace with:
-//> using dep myCompany::myCompany-camundala-helper:0.1.0-SNAPSHOT
+//> using dep mycompany::mycompany-camundala-helper:0.1.0-SNAPSHOT
 ```
 
 @:@

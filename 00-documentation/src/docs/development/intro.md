@@ -1,4 +1,4 @@
-# Development
+# Introduction
 
 ## Pre-Requisites
 **_Camundala_** is written in _**Scala**_ and provides _Scala DSLs_.

@@ -8,7 +8,6 @@ object ComposedWorkerExample extends BpmnCustomTaskDsl:
 
   final val topicName = "example-composedWorker"
   val descr = "Example to compose Workers."
-  val companyDescr = ""
 
   case class In(
       justDoIt: Option[Boolean] = Some(true)
