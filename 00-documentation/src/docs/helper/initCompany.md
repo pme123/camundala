@@ -28,19 +28,20 @@ So try to stick to the conventions, whenever possible.
 mkdir ~/dev-myCompany
 ```
 
-1. Create `helperCompany.scala` in your company directory.
+1. Create `helperCompany.scala` in your company directory and open it.
 ```bash
 cd ~/dev-myCompany
+touch helperCompany.scala
 open helperCompany.scala
 ```
 
 1. Copy the following content to `helperCompany.scala`:
-   ```scala
+   ```scala mdoc
    #!/usr/bin/env -S scala shebang
    // DO NOT ADJUST. This file is replaced by `./helper.scala update`.
 
    //> using toolkit 0.5.0
-   //> using dep io.github.pme123::camundala-helper:${project.version}
+   //> using dep io.github.pme123::camundala-helper:@VERSION@
    
    import camundala.helper.dev.DevCompanyHelper
    
@@ -48,8 +49,6 @@ open helperCompany.scala
    def run(command: String, arguments: String*): Unit =
      DevCompanyHelper.run(command, arguments*)
    ```
-
-1. Replace `${project.version}` with _${project.version}_.
 
 1. Make the file executable:
 ```bash

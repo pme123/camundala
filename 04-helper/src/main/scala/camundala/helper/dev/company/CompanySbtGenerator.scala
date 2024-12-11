@@ -5,7 +5,7 @@ import camundala.helper.dev.update.*
 import camundala.helper.util.{TestType, VersionHelper}
 
 case class CompanySbtGenerator()(using
-                                 config: DevConfig
+    config: DevConfig
 ):
   lazy val sbtGenerator = SbtGenerator()
   lazy val generate: Unit =
@@ -15,7 +15,7 @@ case class CompanySbtGenerator()(using
   end generate
 
   lazy val generatePluginsSbt =
-    createOrUpdate(config.sbtProjectDir / "plugins.sbt", pluginsSbt)
+    createIfNotExists(config.sbtProjectDir / "plugins.sbt", pluginsSbt)
   private lazy val projectConf = config.apiProjectConf
   private lazy val versionHelper = VersionHelper(projectConf)
   private lazy val buildSbtDir = config.projectDir / "build.sbt"
@@ -56,7 +56,8 @@ case class CompanySbtGenerator()(using
        |      scalaVersion,
        |      sbtVersion,
        |      BuildInfoKey("camundalaV", camundalaV)
-       |    )
+       |    ),
+       |    buildInfoPackage := s"$$companyName.camundala"
        |  )
        |  .settings(generalSettings())
        |  .settings(publicationSettings)

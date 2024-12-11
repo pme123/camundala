@@ -16,7 +16,7 @@ case class DevConfig(
                       reposConfig: ReposConfig = ReposConfig.dummyRepos,
                       // path where the BPMNs are - must be relative to the project path
                       bpmnPath: os.RelPath = os.rel / "src" / "main" / "resources",
-                      sbtDockerSettings: String = ""
+                      sbtDockerSettings: Option[String] = None
 ):
   lazy val companyName: String = apiProjectConf.org
   lazy val companyClassName: String = companyName.head.toUpper + companyName.tail
@@ -59,7 +59,7 @@ object DevConfig:
       ApiProjectConf.init(projectName, projectDir(projectName, os.pwd) / packageConfRelPath),
     versionConfig = versionConfig,
     reposConfig = reposConfig,
-    sbtDockerSettings = sbtDockerSettings,
+    sbtDockerSettings = Some(sbtDockerSettings),
     bpmnPath = bpmnPath
   )
 
@@ -116,6 +116,13 @@ case class ModuleConfig(
     os.rel / nameWithLevel /
       subModule / "src" / mainOrTest / sourceOrResource
   end packagePath
+  
+  def emptyExportsFile(projPackage: String): String =
+    s"""package $projPackage.$name
+       |
+       |// put here your exports - dummy file if you don't have any classes
+       |""".stripMargin
+    
 end ModuleConfig
 
 object ModuleConfig:

@@ -19,7 +19,7 @@ def release(version: String): Unit =
   replaceVersion(version)
 
   val isSnapshot = version.contains("-")
-  runInConsole("sbt", "-J-Xmx3G", "documentation/laikaSite")
+  runInConsole("sbt", "-J-Xmx3G", "documentation/mdoc", "documentation/laikaSite")
 
   if !isSnapshot then
     runInConsole("sbt", "-J-Xmx3G", "publishSigned")

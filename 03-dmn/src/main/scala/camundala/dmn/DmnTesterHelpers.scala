@@ -4,7 +4,7 @@ import os.CommandResult
 import sttp.client3.*
 
 trait DmnTesterHelpers:
-  protected def starterConfig: DmnTesterStarterConfig = DmnTesterStarterConfig()
+  protected def starterConfig: DmnTesterStarterConfig
   protected def projectBasePath: os.Path = os.pwd
   private lazy val exposedPort: Int = starterConfig.exposedPort
   protected lazy val client: SimpleHttpClient = SimpleHttpClient()
@@ -12,11 +12,12 @@ trait DmnTesterHelpers:
   protected lazy val infoUrl = s"http://localhost:$exposedPort/info"
 
   protected case class DmnTesterStarterConfig(
+      companyName: String,
       // the name of the container that will be started
       containerName: String = "camunda-dmn-tester",
       // path to where the configs should be created in
       dmnConfigPaths: Seq[os.Path] = Seq(
-        projectBasePath / "src" / "main" / "resources" / "dmnConfigs"
+        projectBasePath / "03-dmn" / "src" / "main" / "resources" / "dmnConfigs"
       ),
       // paths where the DMNs are (could be different places)
       dmnPaths: Seq[os.Path] = Seq(

@@ -5,6 +5,7 @@ import camundala.domain.*
 import camundala.bpmn.*
 import pme123.camunda.dmn.tester.shared.*
 
+import java.io.FileNotFoundException
 import java.time.LocalDateTime
 import scala.language.reflectiveCalls
 import scala.reflect.ClassTag
@@ -16,7 +17,11 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
   // the path where the DMN Configs are
   protected def dmnConfigPath: os.Path = starterConfig.dmnConfigPaths.head
   // creating the Path to the DMN - by default the _dmnName_ is `decisionDmn.decisionDefinitionKey`.
-  protected def defaultDmnPath(dmnName: String): os.Path = dmnBasePath / s"$dmnName.dmn"
+  protected def defaultDmnPath(dmnName: String): os.Path =
+    val dmnPath = dmnBasePath / s"${dmnName.replace(s"${starterConfig.companyName}-", "")}.dmn"
+    if (!dmnPath.toIO.exists())
+      throw FileNotFoundException(s"There is no DMN in $dmnPath")
+    dmnPath
 
   protected def createDmnConfigs(dmnTesterObjects: DmnTesterObject[?]*): Unit =
     dmnConfigs(dmnTesterObjects)

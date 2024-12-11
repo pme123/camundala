@@ -45,31 +45,9 @@ lazy val documentation =
   (project in file("./00-documentation"))
     .configure(preventPublication)
     .settings(projectSettings("documentation"))
-    .settings(
-      laikaConfig := LaikaConfig.defaults
-        .withConfigValue(LaikaKeys.excludeFromNavigation, Seq(Root))
-        .withConfigValue("project.version", projectVersion)
-        .withConfigValue(
-          LinkConfig.empty
-            .addTargets(
-              TargetDefinition.external("bpmn specification", "https://www.bpmn.org"),
-              TargetDefinition.external("camunda", "https://camunda.com")
-            ).addSourceLinks(
-              SourceLinks(
-                baseUri =
-                  "https://github.com/pme123/camundala/tree/master/05-examples/invoice/camunda7/src/main/scala/",
-                suffix = "scala"
-              )
-            )
-        )
-        .withRawContent
-      // .failOnMessages(MessageFilter.None)
-      //  .renderMessages(MessageFilter.None)
-      ,
-      laikaSite / target := baseDirectory.value / ".." / "docs",
-      laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting)
-    )
-    .enablePlugins(LaikaPlugin)
+    .settings(laikaSettings)
+    .settings(mdocSettings)
+    .enablePlugins(LaikaPlugin, MdocPlugin)
 
 // layer 01
 lazy val domain = project
@@ -105,9 +83,10 @@ lazy val bpmn = project
   .settings(
     autoImportSetting,
     libraryDependencies ++= Seq(
-      osLibDependency,     
+      osLibDependency,
       chimneyDependency // mapping
-  ))
+    )
+  )
   .dependsOn(domain)
 
 // layer 03
@@ -145,7 +124,7 @@ lazy val worker = project
   .settings(
     projectSettings("worker"),
     unitTestSettings,
-    autoImportSetting,
+    autoImportSetting
   )
   .dependsOn(bpmn)
 

@@ -135,9 +135,10 @@ case class SbtSettingsGenerator()(using config: DevConfig):
       }""".stripMargin
 
   private lazy val sbtDocker =
-    s"""
-       |  lazy val dockerSettings = ${config.sbtDockerSettings}
-       |""".stripMargin
+    s"  lazy val dockerSettings = " +
+    config.sbtDockerSettings
+      .getOrElse("Seq()")
+
   private lazy val testSettings =
     s"""  lazy val testSettings = Seq(
        |    libraryDependencies += mUnit,
