@@ -10,7 +10,6 @@ trait Helpers:
     println(s"Working Directory: $wd")
     wd
   end workDir
-  protected val dockerDir: os.Path = workDir / os.up / os.up / "docker"
 
   protected def check(label: String, port: Int): Unit =
     var checking = true

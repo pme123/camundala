@@ -148,6 +148,7 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
        |
        |  lazy val publishConfig: Option[PublishConfig] = None //TODO If you have a webdav server to publish the docs, add the config here
        |  lazy val deployConfig: Option[DeployConfig] = None //TODO If you have a Postman account, add the config here
+       |  lazy val dockerConfig: DockerConfig = DockerConfig() //TODO Adjust the DockerConfig if needed
        |""".stripMargin
   end helperWrapper
 

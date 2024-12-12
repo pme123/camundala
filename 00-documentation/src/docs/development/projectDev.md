@@ -15,6 +15,7 @@ The `version` is optional and defaults to `1`.
 Whenever you have changes in the `company-camundala` project or in one of your dependencies, 
 you can update the project with the following command:
 
+Usage / example:
 ```bash
 ./helper.scala update
 ```
@@ -28,6 +29,11 @@ You will get a warning, but the file will not be replaced.
 ## publish
 
 Creates a new Release for the BPMN project and publishes to the repository(e.g. Artifactory)
+
+@:callout(info)
+Adjust the `CompanyDevHelper.publishConfig` configuration.
+
+@:@
 
 Usage:
 ```
@@ -252,3 +258,39 @@ This creates the following files:
 02-bpmn - main -> mycompany.myproject.bpmn.myProcess.v1.MyTimerEvent      
 ```
 
+## Docker
+To run the Camunda Server locally, you can use `docker-compose`.
+
+@:callout(info)
+**Precondition**: 
+- You have to have `docker` and `docker-compose` installed.
+- You need to have a `docker-compose.yml` in `dev-company/docker` directory.
+- Adjust the `CompanyDevHelper.dockerConfig` configuration.
+
+@:@
+
+### dockerUp
+Starts the server with `docker-compose`.
+
+Usage / example:
+```
+./helper.scala dockerUp
+```
+
+### dockerStop
+Stops the server with `docker-compose`.
+
+Usage / example:
+```
+./helper.scala dockerStop
+```
+
+### dockerDown
+Stops and removes the server with `docker-compose`. 
+
+**Be aware** that all data will be lost - you have to deploy again.
+
+Usage / example:
+```
+./helper.scala dockerDown
+```

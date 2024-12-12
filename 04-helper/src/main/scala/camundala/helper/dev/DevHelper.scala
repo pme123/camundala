@@ -2,8 +2,9 @@ package camundala.helper.dev
 
 import camundala.api.ApiConfig
 import camundala.helper.dev.deploy.DeployHelper
+import camundala.helper.dev.docker.DockerHelper
 import camundala.helper.dev.publish.PublishHelper
-import camundala.helper.util.{DeployConfig, DevConfig, PublishConfig}
+import camundala.helper.util.*
 import camundala.helper.dev.update.*
 
 import scala.util.{Failure, Success, Try}
@@ -13,6 +14,7 @@ trait DevHelper:
   def devConfig: DevConfig
   def publishConfig: Option[PublishConfig]
   def deployConfig: Option[DeployConfig]
+  def dockerConfig: DockerConfig
   given DevConfig = devConfig
   given ApiConfig = apiConfig
   given Option[PublishConfig] = publishConfig
@@ -119,18 +121,15 @@ trait DevHelper:
           case other =>
             println(s"Invalid arguments for command $command: $other")
             println(s"Usage: $command <simulation>")
-            println(s"Example: $command OpenAccountSimulation") /*
+            println(s"Example: $command OpenAccountSimulation")
+      // docker
       case Command.dockerUp =>
-        args match
-          case Seq(imageVersion) =>
-            DockerHelper().dockerUp(Some(imageVersion))
-          case _ =>
-            DockerHelper().dockerUp(None)
+        DockerHelper(dockerConfig).dockerUp()
       case Command.dockerStop =>
-        DockerHelper().dockerStop()
+        DockerHelper(dockerConfig).dockerStop()
       case Command.dockerDown =>
-        DockerHelper().dockerDown()
-             */
+        DockerHelper(dockerConfig).dockerDown()
+
   private def printBadActivity(command: Command, args: Seq[String]): Unit =
     println(s"Invalid arguments for command $command: $args")
     println(s"Usage: $command <processName> <bpmnName> [version: Int]")
