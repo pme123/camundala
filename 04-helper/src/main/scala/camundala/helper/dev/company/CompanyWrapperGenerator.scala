@@ -54,9 +54,12 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
        |trait CompanyApiCreator extends ApiCreator, ApiDsl, CamundaPostmanApiCreator:
        |
        |  // override the config if needed
-       |  protected def apiConfig: ApiConfig = ApiConfig(companyId = "$companyName")
+       |  protected def apiConfig: ApiConfig = CompanyApiCreator.apiConfig
        |
        |  lazy val companyDescr = ??? //TODO Add your Company Description!
+       |
+       |object CompanyApiCreator:
+       |   lazy val apiConfig = ApiConfig(companyId = "$companyName")
        |""".stripMargin
 
   private lazy val dmnWrapper =
@@ -130,14 +133,20 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
   private lazy val helperWrapper =
     s"""package $companyName.camundala.helper
        |
+       |import camundala.api.ApiConfig
        |import camundala.helper.dev.*
        |import camundala.helper.util.*
+       |import mycompany.camundala.api.CompanyApiCreator
        |
-       |object CompanyDevHelper:
+       |case class CompanyDevHelper(projectName: String, subProjects: Seq[String] = Seq.empty) extends DevHelper:
        |
-       |   def config(projectName: String, subProjects: Seq[String] = Seq.empty): DevConfig =
-       |     DevConfig.defaultConfig(projectName) //TODO Implement your Config!
-       |       .copy(subProjects = subProjects)
+       |  lazy val apiConfig: ApiConfig = CompanyApiCreator.apiConfig
+       |
+       |  lazy val devConfig: DevConfig =
+       |    DevConfig.defaultConfig(projectName) //TODO Implement your Config!
+       |      .copy(subProjects = subProjects)
+       |
+       |  lazy val publishConfig: Option[PublishConfig] = None //TODO If you have a webdav server to publish the docs, add the config here
        |""".stripMargin
   end helperWrapper
 

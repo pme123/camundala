@@ -1,13 +1,21 @@
 package camundala.helper.dev
 
-import camundala.helper.util.DevConfig
+import camundala.api.ApiConfig
+import camundala.helper.dev.publish.PublishHelper
+import camundala.helper.util.{DevConfig, PublishConfig}
 import camundala.helper.dev.update.*
 
 import scala.util.{Failure, Success, Try}
 
-object DevHelper:
+trait DevHelper:
+  def apiConfig: ApiConfig
+  def devConfig: DevConfig
+  def publishConfig: Option[PublishConfig]
+  given DevConfig = devConfig
+  given ApiConfig = apiConfig
+  given Option[PublishConfig] = publishConfig
 
-  def run(command: String, arguments: String*)(using DevConfig): Unit =
+  def run(command: String, arguments: String*): Unit =
     val args = arguments.toSeq
     println(s"Running command: $command with args: $args")
     Try(Command.valueOf(command)) match
@@ -19,7 +27,7 @@ object DevHelper:
     end match
   end run
 
-  private def runCommand(command: Command, args: Seq[String])(using DevConfig): Unit =
+  private def runCommand(command: Command, args: Seq[String]): Unit =
     command match
       case Command.update =>
         update
@@ -89,7 +97,6 @@ object DevHelper:
             createTimerEvent(processName, bpmnName, version.toIntOption)
           case other =>
             printBadActivity(command, other)
-            /*
       case Command.publish =>
         args match
           case Seq(version) =>
@@ -97,7 +104,8 @@ object DevHelper:
           case other =>
             println(s"Invalid arguments for command $command: $other")
             println(s"Usage: $command <version>")
-            println(s"Example: $command 1.23.3")
+            println(s"Example: $command 1.23.3")/*
+
       case Command.deploy =>
         args match
           case Seq(simulation) =>
@@ -127,14 +135,12 @@ object DevHelper:
     case update, process, customTask, serviceTask, userTask, decision, signalEvent, messageEvent,
       timerEvent, publish, deploy, dockerUp, dockerStop, dockerDown
 
-  def update(using config: DevConfig): Unit =
-    println(s"Update Project: ${config.projectName}")
-    println(s" - with Subprojects: ${config.subProjects}")
+  def update: Unit =
+    println(s"Update Project: ${devConfig.projectName}")
+    println(s" - with Subprojects: ${devConfig.subProjects}")
     SetupGenerator().generate
 
-  def createProcess(processName: String, version: Option[Int])(using
-      config: DevConfig
-  ): Unit =
+  def createProcess(processName: String, version: Option[Int]): Unit =
     SetupGenerator().createProcess(SetupElement(
       "Process",
       processName.asProcessName,
@@ -143,9 +149,7 @@ object DevHelper:
     ))
   end createProcess
 
-  def createCustomTask(processName: String, bpmnName: String, version: Option[Int])(
-      using config: DevConfig
-  ): Unit =
+  def createCustomTask(processName: String, bpmnName: String, version: Option[Int]): Unit =
     SetupGenerator().createProcessElement(SetupElement(
       "CustomTask",
       processName.asProcessName,
@@ -153,9 +157,7 @@ object DevHelper:
       version
     ))
 
-  def createServiceTask(processName: String, bpmnName: String, version: Option[Int])(
-      using config: DevConfig
-  ): Unit =
+  def createServiceTask(processName: String, bpmnName: String, version: Option[Int]): Unit =
     SetupGenerator().createProcessElement(SetupElement(
       "ServiceTask",
       processName.asProcessName,
@@ -163,23 +165,17 @@ object DevHelper:
       version
     ))
 
-  def createUserTask(processName: String, bpmnName: String, version: Option[Int])(
-      using config: DevConfig
-  ): Unit =
+  def createUserTask(processName: String, bpmnName: String, version: Option[Int]): Unit =
     SetupGenerator().createUserTask(
       SetupElement("UserTask", processName.asProcessName, bpmnName.asElemName, version)
     )
 
-  def createDecision(processName: String, bpmnName: String, version: Option[Int])(
-      using config: DevConfig
-  ): Unit =
+  def createDecision(processName: String, bpmnName: String, version: Option[Int]): Unit =
     SetupGenerator().createDecision(
       SetupElement("Decision", processName.asProcessName, bpmnName.asElemName, version)
     )
 
-  def createSignalEvent(processName: String, bpmnName: String, version: Option[Int])(
-      using config: DevConfig
-  ): Unit =
+  def createSignalEvent(processName: String, bpmnName: String, version: Option[Int]): Unit =
     SetupGenerator().createEvent(SetupElement(
       "Signal",
       processName.asProcessName,
@@ -187,9 +183,7 @@ object DevHelper:
       version
     ))
 
-  def createMessageEvent(processName: String, bpmnName: String, version: Option[Int])(
-      using config: DevConfig
-  ): Unit =
+  def createMessageEvent(processName: String, bpmnName: String, version: Option[Int]): Unit =
     SetupGenerator().createEvent(SetupElement(
       "Message",
       processName.asProcessName,

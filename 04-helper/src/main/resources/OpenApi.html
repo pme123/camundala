@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ReDoc</title>
+    <!-- needed for adaptive design -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+
+    <!-- bpmn styles -->
+    <link rel="stylesheet" href="https://unpkg.com/bpmn-js@11.5.0/dist/assets/bpmn-js.css">
+    <!-- dmn styles -->
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@14.1.0/dist/assets/dmn-js-shared.css">
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@14.1.0/dist/assets/dmn-js-drd.css">
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@14.1.0/dist/assets/dmn-js-decision-table.css">
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@14.1.0/dist/assets/dmn-js-literal-expression.css">
+    <link rel="stylesheet" href="https://unpkg.com/dmn-js@14.1.0/dist/assets/dmn-font/css/dmn.css">
+
+    <!--
+    ReDoc doesn't change outer page styles
+    -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .diagramCanvas {
+            border: solid 1px grey;
+            height:500px;
+        }
+        .diagram {
+            padding: 5px;
+            height: 100%;
+        }
+    </style>
+    <script>
+        function downloadSVG(id) {
+            const container = document.getElementById(id);
+            const svg = container.getElementsByTagName('svg')[1];
+            console.log(svg)
+            svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+            const blob = new Blob([svg.outerHTML.toString()]);
+            const element = document.createElement("a");
+            element.download = id +".svg";
+            element.href = window.URL.createObjectURL(blob);
+            element.click();
+            element.remove();
+        }
+    </script>
+</head>
+<body>
+<!-- bpmn viewer -->
+<script src="https://unpkg.com/bpmn-js@11.5.0/dist/bpmn-viewer.development.js"></script>
+<!-- dmn viewer -->
+<script src="https://unpkg.com/dmn-js@14.1.0/dist/dmn-viewer.development.js"></script>
+<!-- jquery (required for bpmn / dmn example) -->
+<script src="https://unpkg.com/jquery@3.3.1/dist/jquery.js"></script>
+<script>
+    function openFromUrl(url, viewer) {
+        console.log('attempting to open <' + url + '>');
+        $.ajax("diagrams/" + url, {dataType: 'text'}).done(async function (xml) {
+
+            try {
+                await viewer.importXML(xml);
+                if(url.endsWith(".bpmn"))
+                    viewer.get('canvas').zoom('fit-viewport');
+                else {
+                    const activeEditor = viewer.getActiveViewer();
+                    activeEditor.get('canvas').zoom('fit-viewport');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+    }
+</script>
+<redoc spec-url='./openApi.yml'></redoc>
+<script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
+
+</body>
+</html>

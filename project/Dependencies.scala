@@ -35,6 +35,8 @@ object Dependencies {
   // -mUnitVersion
   val chimneyVersion = "1.5.0"
   // --- Implementations
+  // 04-helper
+  val sardineWebDavVersion = "5.12"
   // 04-worker-c7spring
   // -> worker
   val camundaVersion = "7.22.0" // external task client
@@ -91,4 +93,10 @@ object Dependencies {
     "org.codehaus.groovy" % "groovy-jsr223" % groovyVersion,
     "com.h2database" % "h2" % h2Version
   ) // .map(_.exclude("org.slf4j", "slf4j-api"))
+
+  lazy val osLib = "com.lihaoyi" %% "os-lib" % osLibVersion
+  lazy val chimney = "io.scalaland" %% "chimney" % chimneyVersion
+  lazy val swaggerOpenAPI = "io.swagger.parser.v3" % "swagger-parser" % swaggerOpenAPIVersion
+  lazy val sardineWebDav = "com.github.lookfirst" % "sardine" % sardineWebDavVersion
+
 }

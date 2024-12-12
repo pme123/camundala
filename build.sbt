@@ -73,8 +73,6 @@ lazy val domain = project
     )
   ).enablePlugins(BuildInfoPlugin)
 // layer 02
-val osLibDependency = "com.lihaoyi" %% "os-lib" % osLibVersion
-val chimneyDependency = "io.scalaland" %% "chimney" % chimneyVersion
 lazy val bpmn = project
   .in(file("./02-bpmn"))
   .configure(publicationSettings)
@@ -83,8 +81,8 @@ lazy val bpmn = project
   .settings(
     autoImportSetting,
     libraryDependencies ++= Seq(
-      osLibDependency,
-      chimneyDependency // mapping
+      osLib,
+      chimney // mapping
     )
   )
   .dependsOn(domain)
@@ -142,7 +140,6 @@ lazy val simulation = project
   .dependsOn(bpmn)
 
 // layer 04
-val swaggerOpenAPIDependency = "io.swagger.parser.v3" % "swagger-parser" % swaggerOpenAPIVersion
 lazy val helper = project
   .in(file("./04-helper"))
   .configure(publicationSettings)
@@ -150,7 +147,7 @@ lazy val helper = project
   .settings(unitTestSettings)
   .settings(
     autoImportSetting,
-    libraryDependencies ++= Seq(osLibDependency, swaggerOpenAPIDependency)
+    libraryDependencies ++= Seq(osLib, swaggerOpenAPI, sardineWebDav)
   ).dependsOn(api, simulation, worker)
 
 lazy val camunda7Worker = project

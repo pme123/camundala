@@ -196,3 +196,33 @@ This creates the following files:
 // the domain NoInput -> NoOutput
 02-bpmn - main -> mycompany.myproject.bpmn.myProcess.v1.MyTimerEvent      
 ```
+
+## publish
+
+Creates a new Release for the BPMN project and publishes to the repository(e.g. Artifactory)
+
+Usage:
+```
+./helper.scala publish <VERSION>
+```
+
+Example:
+```
+./helper.scala publish 0.2.5
+```
+
+The following steps are executed:
+- Check if there are no SNAPSHOTs as dependencies.
+    - Release your dependencies first.
+- Check if the `CHANGELOG.md` is updated.
+    - Check and adjust manually `CHANGELOG.md`.
+    - Remove `//---DRAFT start` / `//---DRAFT end`.
+    - Run the command again.
+- Push the `develop` branch.
+- Adjust the version in `ProjectDef.scala` and `ApiProjectCreator.scala`.
+- Run `ApiProjectCreator.scala`.
+- Publish the project to the repository.
+- Uploads the documentation to a webserver.
+- Merge the branch (`develop`) into `master`.
+- Tag the GIT repository with the version.
+- Increase the version to the next minor _SNAPSHOT_ version.
