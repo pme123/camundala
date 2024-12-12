@@ -1,8 +1,9 @@
 package camundala.helper.dev
 
 import camundala.api.ApiConfig
+import camundala.helper.dev.deploy.DeployHelper
 import camundala.helper.dev.publish.PublishHelper
-import camundala.helper.util.{DevConfig, PublishConfig}
+import camundala.helper.util.{DeployConfig, DevConfig, PublishConfig}
 import camundala.helper.dev.update.*
 
 import scala.util.{Failure, Success, Try}
@@ -11,6 +12,7 @@ trait DevHelper:
   def apiConfig: ApiConfig
   def devConfig: DevConfig
   def publishConfig: Option[PublishConfig]
+  def deployConfig: Option[DeployConfig]
   given DevConfig = devConfig
   given ApiConfig = apiConfig
   given Option[PublishConfig] = publishConfig
@@ -31,6 +33,7 @@ trait DevHelper:
     command match
       case Command.update =>
         update
+      // start code generation
       case Command.process =>
         args match
           case Seq(processName) =>
@@ -97,6 +100,7 @@ trait DevHelper:
             createTimerEvent(processName, bpmnName, version.toIntOption)
           case other =>
             printBadActivity(command, other)
+      // finish code generation
       case Command.publish =>
         args match
           case Seq(version) =>
@@ -104,16 +108,18 @@ trait DevHelper:
           case other =>
             println(s"Invalid arguments for command $command: $other")
             println(s"Usage: $command <version>")
-            println(s"Example: $command 1.23.3")/*
+            println(s"Example: $command 1.23.3")
 
       case Command.deploy =>
         args match
           case Seq(simulation) =>
-            DeployHelper().deploy(Some(simulation))
+            deployConfig
+              .map(DeployHelper(_).deploy(Some(simulation)))
+              .getOrElse(println("deploy is not supported as there is no deployConfig"))
           case other =>
             println(s"Invalid arguments for command $command: $other")
             println(s"Usage: $command <simulation>")
-            println(s"Example: $command OpenAccountSimulation")
+            println(s"Example: $command OpenAccountSimulation") /*
       case Command.dockerUp =>
         args match
           case Seq(imageVersion) =>
@@ -124,7 +130,7 @@ trait DevHelper:
         DockerHelper().dockerStop()
       case Command.dockerDown =>
         DockerHelper().dockerDown()
-*/
+             */
   private def printBadActivity(command: Command, args: Seq[String]): Unit =
     println(s"Invalid arguments for command $command: $args")
     println(s"Usage: $command <processName> <bpmnName> [version: Int]")
@@ -206,4 +212,5 @@ trait DevHelper:
       name.head.toLower + name.tail
     def asElemName: String =
       name.head.toUpper + name.tail
+  end extension
 end DevHelper

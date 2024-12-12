@@ -25,6 +25,61 @@ Files that contain the `DO NOT ADJUST` comment will be replaced.
 If you do adjust them, remove this comment. 
 You will get a warning, but the file will not be replaced.
 
+## publish
+
+Creates a new Release for the BPMN project and publishes to the repository(e.g. Artifactory)
+
+Usage:
+```
+./helper.scala publish <VERSION>
+```
+
+Example:
+```
+./helper.scala publish 0.2.5
+```
+
+The following steps are executed:
+- Check if there are no SNAPSHOTs as dependencies.
+  - Release your dependencies first.
+- Check if the `CHANGELOG.md` is updated.
+  - Check and adjust manually `CHANGELOG.md`.
+  - Remove `//---DRAFT start` / `//---DRAFT end`.
+  - Run the command again.
+- Push the `develop` branch.
+- Adjust the version in `ProjectDef.scala` and `ApiProjectCreator.scala`.
+- Run `ApiProjectCreator.scala`.
+- Publish the project to the repository.
+- Uploads the documentation to a WebDAV-webserver (optional).
+- Merge the branch (`develop`) into `master`.
+- Tag the GIT repository with the version.
+- Increase the version to the next minor _SNAPSHOT_ version.
+
+
+## deploy
+Deploys the BPMN project to the local Camunda server and runs the Simulation you're working on.
+
+@:callout(info)
+**Be aware** that `CompanyDevHelper.deployConfig` must be defined.
+
+At the moment, only deployment via _Postman Collection_ is supported (using Camunda REST API to deploy).
+@:@
+
+Usage:
+```
+./helper.scala deploy [simulation]
+```
+
+Example:
+```
+./helper.scala deploy MyProcessSimulation
+```
+
+The following steps are executed:
+- Publishes Local (`sbt publishLocal`)
+- runs the _deploy-collection_ of _Postman_
+- runs a Simulation (optional)
+
 ## Generate Process/-Elements
 To handle name conventions and to avoid errors, we generate as much as possible.
 
@@ -197,32 +252,3 @@ This creates the following files:
 02-bpmn - main -> mycompany.myproject.bpmn.myProcess.v1.MyTimerEvent      
 ```
 
-## publish
-
-Creates a new Release for the BPMN project and publishes to the repository(e.g. Artifactory)
-
-Usage:
-```
-./helper.scala publish <VERSION>
-```
-
-Example:
-```
-./helper.scala publish 0.2.5
-```
-
-The following steps are executed:
-- Check if there are no SNAPSHOTs as dependencies.
-    - Release your dependencies first.
-- Check if the `CHANGELOG.md` is updated.
-    - Check and adjust manually `CHANGELOG.md`.
-    - Remove `//---DRAFT start` / `//---DRAFT end`.
-    - Run the command again.
-- Push the `develop` branch.
-- Adjust the version in `ProjectDef.scala` and `ApiProjectCreator.scala`.
-- Run `ApiProjectCreator.scala`.
-- Publish the project to the repository.
-- Uploads the documentation to a webserver.
-- Merge the branch (`develop`) into `master`.
-- Tag the GIT repository with the version.
-- Increase the version to the next minor _SNAPSHOT_ version.

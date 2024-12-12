@@ -147,6 +147,7 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
        |      .copy(subProjects = subProjects)
        |
        |  lazy val publishConfig: Option[PublishConfig] = None //TODO If you have a webdav server to publish the docs, add the config here
+       |  lazy val deployConfig: Option[DeployConfig] = None //TODO If you have a Postman account, add the config here
        |""".stripMargin
   end helperWrapper
 
