@@ -1,6 +1,6 @@
 package camundala.helper.dev.update
 
-import camundala.api.docs.DependencyConf
+import camundala.api.DependencyConf
 
 case class WorkerGenerator()(using config: DevConfig):
 

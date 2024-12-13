@@ -1,6 +1,7 @@
 package camundala.helper.util
 
-import camundala.api.docs.*
+import camundala.api.ApiProjectConf
+import camundala.api.DependencyConf
 
 import scala.jdk.CollectionConverters.*
 

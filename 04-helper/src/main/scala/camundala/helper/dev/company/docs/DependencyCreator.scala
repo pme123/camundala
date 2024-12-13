@@ -1,5 +1,6 @@
-package camundala.api
-package docs
+package camundala.helper.dev.company.docs
+
+import camundala.api.{ApiConfig, ApiProjectConf}
 
 trait DependencyCreator:
 

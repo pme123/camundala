@@ -1,6 +1,5 @@
 package camundala.helper.dev.update
 
-import camundala.api.docs.DependencyConf
 import camundala.helper.util.DevConfig
 
 case class ApiGeneratorGenerator()(using config: DevConfig):

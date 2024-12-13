@@ -1,9 +1,9 @@
 package camundala.api
-package docs
 
 import com.typesafe.config.ConfigFactory
 
 import scala.jdk.CollectionConverters.CollectionHasAsScala
+import scala.util.Try
 
 case class ApiProjectConf(
     org: String,
@@ -14,8 +14,8 @@ case class ApiProjectConf(
     changelog: Seq[String] = Seq.empty,
     isWorker: Boolean = false
 ):
-  lazy val versionConf = ConfVersion(version)
-  lazy val versionPreviousConf = ConfVersion(versionPrevious)
+  lazy val versionConf = versionFor(version)
+  lazy val versionPreviousConf = versionFor(versionPrevious)
 
   lazy val versionAsInt = versionConf.versionAsInt
 
@@ -24,10 +24,17 @@ case class ApiProjectConf(
   lazy val isPatched = !isNew && versionConf.isPatch(versionPreviousConf)
   lazy val minorVersion: String = versionConf.minorVersion
   lazy val fullName = s"$org:$name:$version"
+
+  private def versionFor(version: String) =
+    Try(ConfVersion(version))
+      .getOrElse:
+        println(s"Version $version is not valid. for $org:$name")
+        ConfVersion(ApiProjectConf.defaultVersion)
+
 end ApiProjectConf
 
 object ApiProjectConf:
-  lazy val defaultVersion = "0.1.0-SNAPSHOT"
+  lazy val defaultVersion = "0.1.0"
 
   def apply(
       packageFile: os.Path

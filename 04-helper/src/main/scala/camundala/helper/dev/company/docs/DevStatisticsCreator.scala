@@ -1,4 +1,4 @@
-package camundala.api.docs
+package camundala.helper.dev.company.docs
 
 case class DevStatisticsCreator(gitBasePath: os.Path, basePath: os.Path):
 

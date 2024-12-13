@@ -1,4 +1,4 @@
-package camundala.api.docs
+package camundala.helper.dev.company.docs
 
 import com.typesafe.config.ConfigFactory
 

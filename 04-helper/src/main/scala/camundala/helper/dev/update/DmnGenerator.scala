@@ -1,6 +1,5 @@
 package camundala.helper.dev.update
 
-import camundala.api.docs.DependencyConf
 
 case class DmnGenerator()(using config: DevConfig):
 

@@ -1,5 +1,6 @@
-package camundala.api
-package docs
+package camundala.helper.dev.company.docs
+
+import camundala.api.{ApiConfig, ApiProjectConf, ProjectGroup}
 
 case class DependencyLinkCreator()(using
     val apiConfig: ApiConfig,

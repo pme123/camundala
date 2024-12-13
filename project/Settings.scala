@@ -1,14 +1,13 @@
 import Dependencies.mUnitVersion
 import laika.ast.Path.Root
 import laika.config.*
-import laika.config.LaikaKeys.versions
 import laika.format.Markdown.GitHubFlavor
 import laika.helium.Helium
-import laika.helium.config.{Favicon, HeliumIcon, IconLink}
+import laika.helium.config.{HeliumIcon, IconLink}
 import laika.sbt.LaikaPlugin.autoImport.*
 import mdoc.MdocPlugin.autoImport.*
-import sbt.Keys.*
 import sbt.*
+import sbt.Keys.*
 import xerial.sbt.Sonatype.autoImport.sonatypeRepository
 
 import scala.util.Using
@@ -127,7 +126,6 @@ object Settings {
           IconLink.external(githubUrl, HeliumIcon.github),
         )
       )
-
       .build,
   )
   lazy val mdocSettings = Seq(

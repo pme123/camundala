@@ -1,6 +1,6 @@
-package camundala.api
-package docs
+package camundala.helper.dev.company.docs
 
+import camundala.api.{ApiConfig, ApiProjectConf, ProjectGroup}
 import os.{pwd, write}
 
 case class DependencyGraphCreator()(using
@@ -26,7 +26,7 @@ case class DependencyGraphCreator()(using
     val graphsForProjects = treeForEachProjects(configs)
     graphsForProjects.foreach(g =>
       write.over(
-        pwd / "src" / "docs" / "dependencies" / s"${g.name}.md",
+        apiConfig.basePath / "src" / "docs" / "dependencies" / s"${g.name}.md",
         g.graph
       )
     )

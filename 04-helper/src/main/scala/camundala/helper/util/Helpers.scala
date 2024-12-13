@@ -1,7 +1,6 @@
 package camundala.helper.util
 
 import camundala.api.ApiConfig
-import camundala.api.docs.ApiProjectConf
 
 trait Helpers:
 

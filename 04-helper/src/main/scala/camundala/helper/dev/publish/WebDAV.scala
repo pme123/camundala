@@ -10,7 +10,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 abstract class WebDAV:
   def publishConfig: PublishConfig
-  val baseUrl = publishConfig.documentationUrl
+  val publishBaseUrl = publishConfig.documentationUrl
   val contentTypeHtml = "text/html"
   val contentTypeYaml = "text/yaml"
 
@@ -22,8 +22,9 @@ abstract class WebDAV:
       username <- sys.env.get(publishConfig.documentationEnvUsername)
       password <- sys.env.get(publishConfig.documentationEnvPassword)
     yield
-        println(s"Set Credentials for $username (${publishConfig.documentationEnvUsername})")
-        sardine.setCredentials(username, password))
+      println(s"Set Credentials for $username (${publishConfig.documentationEnvUsername})")
+      sardine.setCredentials(username, password)
+    )
       .getOrElse(
         throw new IllegalArgumentException(
           s"System Environment Variables ${publishConfig.documentationEnvUsername} and/ or ${publishConfig.documentationEnvPassword} are not set."
@@ -35,7 +36,7 @@ end WebDAV
 
 case class ProjectWebDAV(projectName: String, publishConfig: PublishConfig) extends WebDAV:
 
-  val projectUrl = s"$baseUrl/$projectName/"
+  val projectUrl = s"$publishBaseUrl/$projectName/"
 
   def upload(): Unit =
     println(s"Start $projectName: upload Documentation to ${publishConfig.documentationUrl}")
@@ -51,10 +52,9 @@ case class ProjectWebDAV(projectName: String, publishConfig: PublishConfig) exte
           sardine.delete(projectUrl)
       catch
         case ex: SardineException
-          if ex.getMessage.contains("Unexpected response (404 Not Found)") =>
+            if ex.getMessage.contains("Unexpected response (404 Not Found)") =>
           println(s"New Project will be created.")
       end try
-
       // create new
       sardine.createDirectory(projectUrl)
       sardine.put(s"$projectUrl/OpenApi.html", openApiHtml, contentTypeHtml)
@@ -98,6 +98,7 @@ case class ProjectWebDAV(projectName: String, publishConfig: PublishConfig) exte
       println(s"Finished $projectName: upload Documentation")
     finally sardine.shutdown()
     end try
+  end upload
 
   private lazy val openApiHtml =
     os.read.inputStream(publishConfig.openApiHtmlPath)
@@ -113,11 +114,12 @@ case class ProjectWebDAV(projectName: String, publishConfig: PublishConfig) exte
 
 end ProjectWebDAV
 
-case class DocsWebDAV(apiConfig: ApiConfig, publishConfig: PublishConfig) extends WebDAV with Helpers:
+case class DocsWebDAV(apiConfig: ApiConfig, publishConfig: PublishConfig) extends WebDAV
+    with Helpers:
   def upload(releaseTag: String): Unit =
     val sardine = startSession
     val directories = Seq("helium", "releases")
-    val docDir = os.pwd / "target" / "docs" / "site"
+    val docDir = apiConfig.basePath / "target" / "docs" / "site"
     if docDir.toIO.exists() then
       // symbolic links for dependencies
       os.proc(
@@ -126,34 +128,14 @@ case class DocsWebDAV(apiConfig: ApiConfig, publishConfig: PublishConfig) extend
         s"./$releaseTag/dependencies",
         docDir / "dependencies"
       ).callOnConsole()
-      os.proc("ln", "-s", s"./$releaseTag/helium", docDir / "helium")
-        .callOnConsole()
-      os.proc("ln", "-s", s"./$releaseTag/index.html", docDir / "index.html")
-        .callOnConsole()
-      os.proc(
-        "ln",
-        "-s",
-        s"./$releaseTag/overviewDependencies.html",
-        docDir / "overviewDependencies.html"
-      ).callOnConsole()
+      // create also top level links for versioned root pages
+      Seq("helium", "index.html", "release.html", "overviewDependencies.html")
+        .foreach: f =>
+          println(s"Create symbolic link $f")
+          os.proc("ln", "-s", s"./$releaseTag/$f", docDir / f)
+            .callOnConsole()
+
       try
-        // remove existing files if exists
-        val existingFiles = sardine.list(baseUrl)
-        val filteredFiles = existingFiles.asScala
-          .filter(r =>
-            r.getName.endsWith(".html") || directories.contains(r.getName)
-          )
-        println(s"Existing Files $existingFiles")
-        println(s"Filtered Files $filteredFiles")
-        filteredFiles
-          .filterNot(_.getName == "releases")
-          .foreach(f =>
-            val url =
-              if f.isDirectory then s"$baseUrl/${f.getName}/"
-              else s"$baseUrl/${f.getName}"
-            println(s"Delete: $url")
-            sardine.delete(url)
-          )
 
         def uploadFiles(url: String, docFiles: Seq[os.Path]): Unit =
           docFiles.foreach {
@@ -169,7 +151,7 @@ case class DocsWebDAV(apiConfig: ApiConfig, publishConfig: PublishConfig) extend
               println(s"Not supported file: $f")
           }
 
-        uploadFiles(baseUrl, os.list(docDir))
+        uploadFiles(publishBaseUrl, os.list(docDir))
         println(s"Finished upload Documentation")
 
       catch

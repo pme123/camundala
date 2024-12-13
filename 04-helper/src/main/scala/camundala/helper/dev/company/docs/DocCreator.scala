@@ -1,6 +1,7 @@
-package camundala.api
-package docs
+package camundala.helper.dev.company.docs
 
+import camundala.api.{ApiProjectConf, ProjectConfig, catalogFileName}
+import camundala.helper.util.Helpers
 import os.Path
 
 import java.time.LocalDate
@@ -10,7 +11,7 @@ import java.time.format.DateTimeFormatter
   *
   * For a Start you can create a Catalog.
   */
-trait CompanyDocCreator extends DependencyCreator:
+trait DocCreator extends DependencyCreator, Helpers:
 
   protected def gitBasePath: os.Path = apiConfig.projectsConfig.gitDir
   protected given configs: Seq[ApiProjectConf] = setupConfigs()
@@ -293,7 +294,8 @@ trait CompanyDocCreator extends DependencyCreator:
         case ((entries, activeGroup), line) =>
           line match
             case l if l.startsWith("### ") => // group
-              val group = ChangeLogGroup.withName(l.drop(4).trim)
+              val group = groups.map(_.toString).toSeq.findLast(_ == l.drop(4).trim)
+                .map(ChangeLogGroup.valueOf).getOrElse(ChangeLogGroup.Other)
               (entries, group)
             case l =>
               val regex = """(.*)(MAP-\d+)(:? )(.*)""".r
@@ -313,7 +315,7 @@ trait CompanyDocCreator extends DependencyCreator:
     val preparedGroups = groups
       // take only the groups that have entries
       .filter(g => changeLogEntries.exists(_.group == g))
-      .foldLeft(Map.empty[ChangeLogGroup.Value, Map[String, Seq[String]]]) {
+      .foldLeft(Map.empty[ChangeLogGroup, Map[String, Seq[String]]]) {
         case (result, group) =>
           // get the new entries for a group - group it by ticket
           val newEntries =
@@ -371,13 +373,13 @@ trait CompanyDocCreator extends DependencyCreator:
     else
       s"[$jiraTicket](https://issue.swisscom.ch/browse/$jiraTicket)"
 
-  private object ChangeLogGroup extends Enumeration:
-    val Added, Changed, Fixed, Deprecated, Removed, Security = Value
+  private enum ChangeLogGroup:
+    case Added, Changed, Fixed, Deprecated, Removed, Security, Other
 
   private case class ChangeLogEntry(
-      group: ChangeLogGroup.Value = ChangeLogGroup.Changed,
+      group: ChangeLogGroup = ChangeLogGroup.Changed,
       text: String,
       ticket: Option[String] = None
   )
 
-end CompanyDocCreator
+end DocCreator

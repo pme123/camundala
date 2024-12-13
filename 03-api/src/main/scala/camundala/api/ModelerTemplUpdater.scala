@@ -1,7 +1,5 @@
 package camundala.api
 
-import camundala.api.*
-import camundala.api.docs.ApiProjectConf
 import io.circe.parser
 import io.circe.syntax.*
 

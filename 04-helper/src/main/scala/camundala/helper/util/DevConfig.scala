@@ -1,8 +1,7 @@
 package camundala.helper.util
 
 import camundala.BuildInfo
-import camundala.api.docs.ApiProjectConf
-
+import camundala.api.ApiProjectConf
 import camundala.helper.util.ReposConfig
 import os.RelPath
 
