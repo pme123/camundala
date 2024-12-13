@@ -33,7 +33,10 @@ trait Helpers:
   end check
 
   extension (proc: os.proc)
-    def callOnConsole(path: os.Path = os.pwd): os.CommandResult =
-      proc.call(cwd = path, stdout = os.Inherit)
+
+    def callOnConsole(path: os.Path = os.pwd): Unit =
+      println(proc.command.mkString(" "))
+      val result = proc.call(cwd = path, stdout = os.Inherit)
+      println(result.out.text())
   end extension
 end Helpers

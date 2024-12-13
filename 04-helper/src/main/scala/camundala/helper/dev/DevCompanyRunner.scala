@@ -5,7 +5,8 @@ import camundala.helper.util.{DevConfig, RepoConfig}
 
 import scala.util.{Failure, Success, Try}
 
-object DevCompanyHelper:
+// dev-company/helperCompany.scala
+object DevCompanyRunner:
 
   def run(command: String, arguments: String*): Unit =
     val args = arguments.toSeq
@@ -30,7 +31,7 @@ object DevCompanyHelper:
           case other =>
             println(s"Invalid arguments for command $command: $other")
             println("Usage: project <projectName>")
-
+      // dev-company/company-camundala/helper.scala
 
   enum Command:
     case init, project
@@ -48,4 +49,4 @@ object DevCompanyHelper:
 
   private lazy val companyName = os.pwd.last.replace("dev-", "").toLowerCase
 
-end DevCompanyHelper
+end DevCompanyRunner

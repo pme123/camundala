@@ -45,11 +45,11 @@ open helperCompany.scala
    //> using toolkit 0.5.0
    //> using dep io.github.pme123::camundala-helper:@VERSION@
    
-   import camundala.helper.dev.DevCompanyHelper
+   import camundala.helper.dev.DevCompanyRunner
    
    @main
    def run(command: String, arguments: String*): Unit =
-     DevCompanyHelper.run(command, arguments*)
+     DevCompanyRunner.run(command, arguments*)
    ```
 
 1. Make the file executable:

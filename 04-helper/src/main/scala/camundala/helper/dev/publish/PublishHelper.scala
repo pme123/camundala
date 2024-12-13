@@ -11,19 +11,15 @@ case class PublishHelper()(using
     publishConfig: Option[PublishConfig]
 ) extends Helpers:
 
+  import PublishHelper.*
+
   def publish(version: String): Unit =
     println(s"Publishing BPF Package: $version")
-    // TODO uncomment: verifySnapshots()
+    verifyVersion(version)
+    verifySnapshots()
     verifyChangelog(version)
     pushDevelop()
     setApiVersion(version)
-
-    val releaseVersion = """^(\d+)\.(\d+)\.(\d+)(-.*)?$"""
-    if !version.matches(releaseVersion) then
-      throw new IllegalArgumentException(
-        "Your Version has not the expected format (2.1.2(-SNAPSHOT))"
-      )
-
     replaceVersion(version)
 
     lazy val sbtProcs = Seq(
@@ -49,27 +45,8 @@ case class PublishHelper()(using
     val isSnapshot = version.contains("-")
     if !isSnapshot then
       publishToWebserver()
+      git(version, replaceVersion)
 
-      os.proc("git", "fetch", "--all").callOnConsole()
-      os.proc("git", "commit", "-a", "-m", s"Released Version $version")
-        .callOnConsole()
-      os.proc("git", "tag", "-a", "--no-sign", s"v$version", "-m", s"Version $version")
-        .callOnConsole()
-      os.proc("git", "checkout", "master").callOnConsole()
-      os.proc("git", "merge", branch).callOnConsole()
-      os.proc("git", "push", "--tags").callOnConsole()
-      os.proc("git", "checkout", branch).callOnConsole()
-      val Pattern = """^(\d+)\.(\d+)\.(\d+)$""".r
-
-      val newVersion = version match
-        case Pattern(major, minor, _) =>
-          s"$major.${minor.toInt + 1}.0-SNAPSHOT"
-      replaceVersion(newVersion)
-
-      os.proc("git", "commit", "-a", "-m", s"Init new Version $newVersion")
-        .callOnConsole()
-      os.proc("git", "push", "--all").callOnConsole()
-      println(s"Published Version: $version")
     end if
   end publish
 
@@ -86,21 +63,9 @@ case class PublishHelper()(using
 
       os.write.over(apiFile, updatedFile)
 
-  private val projectFile: os.Path = workDir / "project" / "ProjectDef.scala"
-
   private def replaceVersion(newVersion: String): Unit =
-    replaceVersion(newVersion, projectFile)
-    replaceVersion(newVersion, apiConfig.projectConfPath)
-  end replaceVersion
-
-  private def replaceVersion(newVersion: String, versionFile: os.Path): Unit =
-    val versionFileStr = os.read(versionFile)
-
-    val regexPattern = """version = "(\d+\.\d+\.\d+(-.+)?)""""
-    val updatedFile = versionFileStr
-      .replaceAll(regexPattern, s"""version = "$newVersion"""") + "\n"
-
-    os.write.over(versionFile, updatedFile)
+    PublishHelper.replaceVersion(newVersion, projectFile)
+    PublishHelper.replaceVersion(newVersion, apiConfig.projectConfPath)
   end replaceVersion
 
   private def publishToWebserver(): Unit =
@@ -108,7 +73,28 @@ case class PublishHelper()(using
     publishConfig.foreach:
       ProjectWebDAV(devConfig.projectName, _).upload()
 
-  private def verifySnapshots(): Unit =
+end PublishHelper
+
+object PublishHelper extends Helpers:
+  val projectFile: os.Path = workDir / "project" / "ProjectDef.scala"
+
+  def verifyVersion(newVersion: String): Unit =
+    val releaseVersion = """^(\d+)\.(\d+)\.(\d+)(-.*)?$"""
+    if !newVersion.matches(releaseVersion) then
+      throw new IllegalArgumentException(
+        "Your Version has not the expected format (2.1.2(-SNAPSHOT))"
+      )
+  end verifyVersion
+
+  def verifyChangelog(newVersion: String): Unit =
+    ChangeLogUpdater.verifyChangelog(
+      newVersion,
+      commitsAddress = _.replace(".git", "/commit/") // git
+        .replace("ssh://git@", "https://") // ssh protocol
+        .replace(":2222", "") // ssh port
+    )
+
+  def verifySnapshots(): Unit =
     hasSnapshots("Settings")
     hasSnapshots("ProjectDef")
 
@@ -120,16 +106,42 @@ case class PublishHelper()(using
         s"There are SNAPSHOT dependencies in `project/$fileName.scala`"
       )
 
-  private def verifyChangelog(newVersion: String): Unit =
-    ChangeLogUpdater.verifyChangelog(
-      newVersion,
-      commitsAddress = _.replace(".git", "/commit/") // git
-        .replace("ssh://git@", "https://") // ssh protocol
-        .replace(":2222", "") // ssh port
-    )
-  // as projectUpdate for reference creation gets the newest changes from remote
-  private def pushDevelop(): Unit =
+    // as projectUpdate for reference creation gets the newest changes from remote
+  def pushDevelop(): Unit =
     os.proc("git", "push").callOnConsole()
 
-  private lazy val branch = "develop"
+  def replaceVersion(newVersion: String, versionFile: os.Path): Unit =
+    val versionFileStr = os.read(versionFile)
+
+    val regexPattern = """version = "(\d+\.\d+\.\d+(-.+)?)""""
+    val updatedFile = versionFileStr
+      .replaceAll(regexPattern, s"""version = "$newVersion"""") + "\n"
+
+    os.write.over(versionFile, updatedFile)
+  end replaceVersion
+
+  def git(version: String, replaceVersion: String => Unit): Unit =
+    val branch = "develop"
+    os.proc("git", "fetch", "--all").callOnConsole()
+    os.proc("git", "commit", "-a", "-m", s"Released Version $version")
+      .callOnConsole()
+    os.proc("git", "tag", "-a", "--no-sign", s"v$version", "-m", s"Version $version")
+      .callOnConsole()
+    os.proc("git", "checkout", "master").callOnConsole()
+    os.proc("git", "merge", branch).callOnConsole()
+    os.proc("git", "push", "--tags").callOnConsole()
+    os.proc("git", "checkout", branch).callOnConsole()
+    val Pattern = """^(\d+)\.(\d+)\.(\d+)$""".r
+
+    val newVersion = version match
+      case Pattern(major, minor, _) =>
+        s"$major.${minor.toInt + 1}.0-SNAPSHOT"
+    replaceVersion(newVersion)
+
+    os.proc("git", "commit", "-a", "-m", s"Init new Version $newVersion")
+      .callOnConsole()
+    os.proc("git", "push", "--all").callOnConsole()
+    println(s"Published Version: $version")
+  end git
+
 end PublishHelper

@@ -58,7 +58,6 @@ case class SbtGenerator()(using
        |  val org = "${projectConf.org}"
        |  val name = "${projectConf.name}"
        |  val version = "${projectConf.version}"
-       |  lazy val nameAsPackage = name.split("-").mkString(".")
        |
        |${versionHelper.dependencyVersionVars}
        |
