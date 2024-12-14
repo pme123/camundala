@@ -1,6 +1,6 @@
 package camundala.helper.dev
 
-import camundala.helper.dev.company.InitCompanyGenerator
+import camundala.helper.dev.company.CompanyGenerator
 import camundala.helper.util.{DevConfig, RepoConfig}
 
 import scala.util.{Failure, Success, Try}
@@ -36,16 +36,16 @@ object DevCompanyHelper:
   enum Command:
     case init, project
 
-  def initCompany: Unit =
+  private def initCompany: Unit =
     println(s"Init Company $companyName")
-    given config: DevConfig = InitCompanyGenerator.init(companyName)
-    InitCompanyGenerator().generate
+    given config: DevConfig = CompanyGenerator.init(companyName)
+    CompanyGenerator().generate
 
 
-  def createProject(projectName: String): Unit =
+  private def createProject(projectName: String): Unit =
     println(s"Create Project: $projectName - Company: $companyName")
     given config: DevConfig = DevConfig.defaultConfig(s"$companyName-$projectName")
-    InitCompanyGenerator().createProject
+    CompanyGenerator().createProject
 
   private lazy val companyName = os.pwd.last.replace("dev-", "").toLowerCase
 

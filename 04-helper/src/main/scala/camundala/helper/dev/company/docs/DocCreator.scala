@@ -113,6 +113,7 @@ trait DocCreator extends DependencyCreator, Helpers:
     val table =
       s"""
          |{%
+         |// auto generated - do not change!
          |laika.versioned = true
          |%}
          |

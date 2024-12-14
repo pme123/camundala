@@ -2,6 +2,7 @@ package camundala.myCompany
 
 import camundala.api.*
 import camundala.helper.dev.company.docs.DocCreator
+import camundala.helper.util.PublishConfig
 
 /*
 Starting point to use Camundala for Company wide documentation
@@ -14,4 +15,6 @@ object MyCompanyDocCreator extends DocCreator, App:
     println("Uploaded to Web Server")
 
   prepareDocs()
+
+  override protected def publishConfig: Option[PublishConfig] = None
 end MyCompanyDocCreator
