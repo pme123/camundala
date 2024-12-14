@@ -102,8 +102,9 @@ case class ApiConfig(
 end ApiConfig
 
 case class ProjectsConfig(
-    // Path, where the Git Projects are cloned.
-    gitDir: os.Path = os.pwd / os.up / "git-temp",
+    // Path, where the Git Projects are cloned - for dependency check.
+    // this for the structure: dev-myCompany/projects/myProject
+    gitDir: os.Path = os.pwd / os.up / os.up / "git-temp",
     // Path to your ApiProjectConf
     projectConfPath: os.RelPath = defaultProjectPath,
     groupedConfigs: Seq[GroupedProjectConfig] = Seq.empty

@@ -57,5 +57,5 @@ We use [mdoc](https://scalameta.org/mdoc/) to verify the documentation
 and [laika](https://typelevel.org/Laika/) to generate the htmls.
 
 Run mdoc:   `sbt "docs/mdoc --watch"`
-And laika:  `sbt docs/laikaPreview`
+And laika:  `sbt "~docs/laikaPreview"`
 Check the result in http://localhost:4242

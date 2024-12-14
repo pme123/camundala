@@ -4,10 +4,11 @@ import camundala.api.{ApiConfig, ApiProjectConf}
 
 trait DependencyCreator:
 
-  protected given apiConfig: ApiConfig
-  protected given configs: Seq[ApiProjectConf]
-  protected given releaseConfig: ReleaseConfig = readReleaseConfig
-
+  protected def apiConfig: ApiConfig
+  protected def configs: Seq[ApiProjectConf]
+  protected def releaseConfig: ReleaseConfig = readReleaseConfig
+  given ApiConfig = apiConfig
+  
   case class Package(name: String, minorVersion: String):
     lazy val show = s"$name:$minorVersion"
     lazy val showRect = s"$name:$minorVersion($name:$minorVersion)"

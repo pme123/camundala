@@ -35,7 +35,7 @@ trait Helpers:
   extension (proc: os.proc)
 
     def callOnConsole(path: os.Path = os.pwd): Unit =
-      println(proc.command.mkString(" "))
+      println(proc.command.flatMap(_._1).mkString(" "))
       val result = proc.call(cwd = path, stdout = os.Inherit)
       println(result.out.text())
   end extension

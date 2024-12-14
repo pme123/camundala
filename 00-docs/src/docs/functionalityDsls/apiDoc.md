@@ -486,7 +486,7 @@ GitConfigs(
   )
 )
 ```
-This will clone or update these projects (`$cloneUrl/$project.git`) into `../git-temp`, 
+This will clone or update these projects (`$cloneUrl/$project.git`) into `../../git-temp`, 
 for example `https://github.com/mycompany/myProject.git`.
 
 #### Used Dependency Resolution

@@ -1,6 +1,7 @@
 package camundala.helper.dev
 
 import camundala.api.ApiConfig
+import camundala.helper.dev.company.docs.DocCreator
 import camundala.helper.dev.publish.PublishHelper
 import camundala.helper.dev.publish.PublishHelper.*
 import camundala.helper.util.{DevConfig, Helpers, PublishConfig}
@@ -8,10 +9,8 @@ import camundala.helper.util.{DevConfig, Helpers, PublishConfig}
 import scala.util.{Failure, Success, Try}
 
 // dev-company/company-camundala/helper.scala
-trait DevCompanyCamundalaHelper extends Helpers:
-  def apiConfig: ApiConfig
+trait DevCompanyCamundalaHelper extends Helpers, DocCreator:
   def devConfig: DevConfig
-  def publishConfig: Option[PublishConfig]
 
   def runForCompany(command: String, arguments: String*): Unit =
     val args = arguments.toSeq
@@ -32,12 +31,12 @@ trait DevCompanyCamundalaHelper extends Helpers:
       case Command.publish =>
         println("Usage: publish <version>")
       case Command.prepareDocs =>
-       // DocCreator.prepareDocs()
-      case Command.releaseDocs =>
-      //  CompanyDocCreator.releaseDocs()
+        prepareDocs()
+      case Command.publishDocs =>
+        publishDocs()
 
   private enum Command:
-    case publish, prepareDocs, releaseDocs
+    case publish, prepareDocs, publishDocs
 
   private def publish(newVersion: String): Unit =
     println(s"Publishing ${devConfig.projectName}: $newVersion")

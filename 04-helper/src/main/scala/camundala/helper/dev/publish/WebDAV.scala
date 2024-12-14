@@ -6,6 +6,7 @@ import com.github.sardine.SardineFactory
 import com.github.sardine.impl.SardineException
 
 import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 abstract class WebDAV:
@@ -118,31 +119,18 @@ case class DocsWebDAV(apiConfig: ApiConfig, publishConfig: PublishConfig) extend
     with Helpers:
   def upload(releaseTag: String): Unit =
     val sardine = startSession
-    val directories = Seq("helium", "releases")
     val docDir = apiConfig.basePath / "target" / "docs" / "site"
     if docDir.toIO.exists() then
-      // symbolic links for dependencies
-      os.proc(
-        "ln",
-        "-s",
-        s"./$releaseTag/dependencies",
-        docDir / "dependencies"
-      ).callOnConsole()
-      // create also top level links for versioned root pages
-      Seq("helium", "index.html", "release.html", "overviewDependencies.html")
-        .foreach: f =>
-          println(s"Create symbolic link $f")
-          os.proc("ln", "-s", s"./$releaseTag/$f", docDir / f)
-            .callOnConsole()
-
       try
+        println(s"Delete $publishBaseUrl/$releaseTag/")
+        if sardine.exists(s"$publishBaseUrl/$releaseTag/") then
+          sardine.delete(s"$publishBaseUrl/$releaseTag/")
 
         def uploadFiles(url: String, docFiles: Seq[os.Path]): Unit =
           docFiles.foreach {
             case f if f.toIO.isDirectory && f.toIO.exists() =>
               println(s"Create Directory $url/${f.toIO.getName}")
-              //  if (!sardine.exists(s"$url/${f.toIO.getName}/"))
-              //    sardine.createDirectory(s"$url/${f.toIO.getName}/")
+              //sardine.createDirectory(s"$url/${f.toIO.getName}")
               uploadFiles(s"$url/${f.toIO.getName}", os.list(f))
             case f if f.toIO.exists() =>
               println(s"Uploading $url/${f.toIO.getName}")
@@ -151,6 +139,18 @@ case class DocsWebDAV(apiConfig: ApiConfig, publishConfig: PublishConfig) extend
               println(s"Not supported file: $f")
           }
 
+        def addSymbolicLinks =
+          // create top level links for versioned root pages / directories
+          Seq("index.html", "release.html", "overviewDependencies.html")
+            .foreach: f =>
+              println(s"Create symbolic link $f")
+              val symLink = docDir / f
+              Files.createSymbolicLink(symLink.toNIO, (docDir / releaseTag / f).toNIO)
+            //  os.proc("ln", "-s", s"./$releaseTag/$f", docDir / f)
+            //    .callOnConsole()
+            //  sardine.put(s"$publishBaseUrl/${f.replace("dependencies", "dependencies/")}", os.read.inputStream(symLink))
+
+        addSymbolicLinks
         uploadFiles(publishBaseUrl, os.list(docDir))
         println(s"Finished upload Documentation")
 
@@ -167,4 +167,6 @@ case class DocsWebDAV(apiConfig: ApiConfig, publishConfig: PublishConfig) extend
       )
     end if
   end upload
+
+
 end DocsWebDAV

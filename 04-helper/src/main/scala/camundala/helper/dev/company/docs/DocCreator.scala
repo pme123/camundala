@@ -1,7 +1,8 @@
 package camundala.helper.dev.company.docs
 
 import camundala.api.{ApiProjectConf, ProjectConfig, catalogFileName}
-import camundala.helper.util.Helpers
+import camundala.helper.dev.publish.DocsWebDAV
+import camundala.helper.util.{Helpers, PublishConfig}
 import os.Path
 
 import java.time.LocalDate
@@ -13,12 +14,11 @@ import java.time.format.DateTimeFormatter
   */
 trait DocCreator extends DependencyCreator, Helpers:
 
+  protected def publishConfig: Option[PublishConfig]
   protected def gitBasePath: os.Path = apiConfig.projectsConfig.gitDir
-  protected given configs: Seq[ApiProjectConf] = setupConfigs()
+  protected def configs: Seq[ApiProjectConf] = setupConfigs()
   lazy val projectConfigs: Seq[ProjectConfig] =
     apiConfig.projectsConfig.projectConfigs
-
-  protected def upload(releaseTag: String): Unit
 
   def prepareDocs(): Unit =
     println(s"API Config: $apiConfig")
@@ -30,7 +30,8 @@ trait DocCreator extends DependencyCreator, Helpers:
     createReleasePage()
   end prepareDocs
 
-  def releaseDocs(): Unit =
+  //noinspection ScalaUnusedExpression
+  def publishDocs(): Unit =
     createDynamicConf()
     println(s"Releasing Docs started")
     os.proc(
@@ -39,8 +40,11 @@ trait DocCreator extends DependencyCreator, Helpers:
       "clean",
       "laikaSite" // generate HTML pages from Markup
     ).callOnConsole()
-    upload(releaseConfig.releaseTag)
-  end releaseDocs
+    publishConfig
+      .map: config =>
+        DocsWebDAV(apiConfig, config).upload(releaseConfig.releaseTag)
+      .getOrElse(println("No Publish Config found"))  
+  end publishDocs
 
   protected def createCatalog(): Unit =
 
