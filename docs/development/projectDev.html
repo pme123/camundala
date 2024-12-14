@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en-CH">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Project Development</title>
+  
+  
+  <meta name="description" content="camundala-docs"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://github.com/pme123/camundala"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://github.com/pme123/camundala"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../">Intro</a></li>
+    <li class="level1 nav-leaf"><a href="../specification.html">Process &amp; Domain Specification</a></li>
+    <li class="level1 nav-leaf"><a href="../bpmnDsl.html">BPMN DSL</a></li>
+    <li class="level1 nav-leaf"><a href="../projectSetup.html">Project Setup</a></li>
+    <li class="level1 nav-leaf"><a href="../technologies.html">Technologies</a></li>
+    <li class="level1 nav-leaf"><a href="../generalConcerns.html">General Concerns</a></li>
+    <li class="level1 nav-header">Functional DSLs</li>
+    <li class="level2 nav-leaf"><a href="../functionalityDsls/apiDoc.html">API Documentation</a></li>
+    <li class="level2 nav-leaf"><a href="../functionalityDsls/simulation.html">Simulations</a></li>
+    <li class="level2 nav-leaf"><a href="../functionalityDsls/worker.html">Workers</a></li>
+    <li class="level2 nav-leaf"><a href="../functionalityDsls/dmnTester.html">DMN Tester</a></li>
+    <li class="level1 nav-header">development</li>
+    <li class="level2 nav-leaf"><a href="intro.html">Introduction</a></li>
+    <li class="level2 nav-leaf"><a href="initCompany.html">Init Company</a></li>
+    <li class="level2 nav-leaf"><a href="createProject.html">Create Project</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Project Development</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Project Development</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#update">update</a></li>
+    <li class="level1 nav-leaf"><a href="#publish">publish</a></li>
+    <li class="level1 nav-leaf"><a href="#deploy">deploy</a></li>
+    <li class="level1 nav-node"><a href="#generate-process-elements">Generate Process/-Elements</a></li>
+    <li class="level2 nav-leaf"><a href="#process">process</a></li>
+    <li class="level2 nav-leaf"><a href="#customtask">customTask</a></li>
+    <li class="level2 nav-leaf"><a href="#servicetask">serviceTask</a></li>
+    <li class="level2 nav-leaf"><a href="#usertask">userTask</a></li>
+    <li class="level2 nav-leaf"><a href="#decision">decision</a></li>
+    <li class="level2 nav-leaf"><a href="#signalevent">signalEvent</a></li>
+    <li class="level2 nav-leaf"><a href="#messageevent">messageEvent</a></li>
+    <li class="level2 nav-leaf"><a href="#timerevent">timerEvent</a></li>
+    <li class="level1 nav-node"><a href="#docker">Docker</a></li>
+    <li class="level2 nav-leaf"><a href="#dockerup">dockerUp</a></li>
+    <li class="level2 nav-leaf"><a href="#dockerstop">dockerStop</a></li>
+    <li class="level2 nav-leaf"><a href="#dockerdown">dockerDown</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="project-development" class="title">Project Development</h1>
+        <p><strong>Experimental</strong></p>
+        <p>The following chapters describe the tasks to support the project development.</p>
+        <p>We provide a <code>helper.scala</code> script that helps you with the most common tasks.</p>
+        <p>In general, you can type <code>./helper.scala x</code> to get a list of available commands.</p>
+        <p>And then you can type <code>./helper.scala &lt;command&gt;</code> to get help for a specific command.</p>
+        <p>The <code>version</code> is optional and defaults to <code>1</code>.</p>
+        
+        <h2 id="update" class="section"><a class="anchor-link left" href="#update"><i class="icofont-laika link">&#xef71;</i></a>update</h2>
+        <p>Whenever you have changes in the <code>company-camundala</code> project or in one of your dependencies, 
+        you can update the project with the following command:</p>
+        <p>Usage / example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>./helper.scala update</span></code></pre>
+        <p>This will create or update your project with the latest changes.</p>
+        <p>Files that contain the <code>DO NOT ADJUST</code> comment will be replaced.
+        If you do adjust them, remove this comment. 
+        You will get a warning, but the file will not be replaced.</p>
+        
+        <h2 id="publish" class="section"><a class="anchor-link left" href="#publish"><i class="icofont-laika link">&#xef71;</i></a>publish</h2>
+        <p>Creates a new Release for the BPMN project and publishes to the repository(e.g. Artifactory)</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Adjust the <code>CompanyDevHelper.publishConfig</code> configuration.</p>
+        </div>
+        <p>Usage:</p>
+        <pre><code>./helper.scala publish &lt;VERSION&gt;</code></pre>
+        <p>Example:</p>
+        <pre><code>./helper.scala publish 0.2.5</code></pre>
+        <p>The following steps are executed:</p>
+        <ul>
+          <li>Check if there are no SNAPSHOTs as dependencies.</li>
+        </ul>
+        <ul>
+          <li>Release your dependencies first.</li>
+          <li>Check if the <code>CHANGELOG.md</code> is updated.</li>
+        </ul>
+        <ul>
+          <li>Check and adjust manually <code>CHANGELOG.md</code>.</li>
+        </ul>
+        <ul>
+          <li>Remove <code>//---DRAFT start</code> / <code>//---DRAFT end</code>.</li>
+        </ul>
+        <ul>
+          <li>Run the command again.</li>
+          <li>Push the <code>develop</code> branch.</li>
+          <li>Adjust the version in <code>ProjectDef.scala</code> and <code>ApiProjectCreator.scala</code>.</li>
+          <li>Run <code>ApiProjectCreator.scala</code>.</li>
+          <li>Publish the project to the repository.</li>
+          <li>Uploads the documentation to a WebDAV-webserver (optional).</li>
+          <li>Merge the branch (<code>develop</code>) into <code>master</code>.</li>
+          <li>Tag the GIT repository with the version.</li>
+          <li>Increase the version to the next minor <em>SNAPSHOT</em> version.</li>
+        </ul>
+        
+        <h2 id="deploy" class="section"><a class="anchor-link left" href="#deploy"><i class="icofont-laika link">&#xef71;</i></a>deploy</h2>
+        <p>Deploys the BPMN project to the local Camunda server and runs the Simulation you&#39;re working on.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p><strong>Be aware</strong> that <code>CompanyDevHelper.deployConfig</code> must be defined.</p>
+          <p>At the moment, only deployment via <em>Postman Collection</em> is supported (using Camunda REST API to deploy).</p>
+        </div>
+        <p>Usage:</p>
+        <pre><code>./helper.scala deploy [simulation]</code></pre>
+        <p>Example:</p>
+        <pre><code>./helper.scala deploy MyProcessSimulation</code></pre>
+        <p>The following steps are executed:</p>
+        <ul>
+          <li>Publishes Local (<code>sbt publishLocal</code>)</li>
+          <li>runs the <em>deploy-collection</em> of <em>Postman</em></li>
+          <li>runs a Simulation (optional)</li>
+        </ul>
+        
+        <h2 id="generate-process-elements" class="section"><a class="anchor-link left" href="#generate-process-elements"><i class="icofont-laika link">&#xef71;</i></a>Generate Process/-Elements</h2>
+        <p>To handle name conventions and to avoid errors, we generate as much as possible.</p>
+        <p>So it is essential, not to change the generated names.</p>
+        <p>The following generators are provided:</p>
+        
+        <h3 id="process" class="section"><a class="anchor-link left" href="#process"><i class="icofont-laika link">&#xef71;</i></a>process</h3>
+        <p>Creates a new Process.</p>
+        <p>Usage:</p>
+        <pre><code>./helper.scala process &lt;processName&gt; [version: Int]</code></pre>
+        <p>Example:</p>
+        <pre><code>./helper.scala process myProcess 1</code></pre>
+        <p>This creates the following files:</p>
+        <pre><code>// the BPMN
+src           - main -&gt; myproject-myProcessV1.bpmn
+// the domain In -&gt; Out
+02-bpmn       - main -&gt; mycompany.myproject.bpmn.myProcess.v1.MyProcess      
+// the Simulation        
+03-simulation - test -&gt; mycompany.myproject.simulation.MyProcessSimulation           
+// the InitWorker    
+03-worker     - main -&gt; mycompany.myproject.worker.myProcess.v1.MyProcessWorker  
+              - test -&gt; mycompany.myproject.worker.myProcess.v1.MyProcessWorkerTest </code></pre>
+        
+        <h3 id="customtask" class="section"><a class="anchor-link left" href="#customtask"><i class="icofont-laika link">&#xef71;</i></a>customTask</h3>
+        <p>Creates a new Custom Task.</p>
+        <p>Usage:</p>
+        <pre><code>./helper.scala customTask &lt;processName&gt; &lt;bpmnName&gt; [version: Int]</code></pre>
+        <p>Example:</p>
+        <pre><code>./helper.scala customTask myProcess MyCustomTask 1</code></pre>
+        <p>This creates the following files:</p>
+        <pre><code>// the domain In -&gt; Out
+02-bpmn   - main -&gt; mycompany.myproject.bpmn.myProcess.v1.MyCustomTask   
+// the CustomWorker
+03-worker - main -&gt; mycompany.myproject.worker.myProcess.v1.MyCustomTaskWorker  
+          - test -&gt; mycompany.myproject.worker.myProcess.v1.MyCustomTaskWorkerTest    </code></pre>
+        
+        <h3 id="servicetask" class="section"><a class="anchor-link left" href="#servicetask"><i class="icofont-laika link">&#xef71;</i></a>serviceTask</h3>
+        <p>Creates a new Service Task.</p>
+        <p>Usage:</p>
+        <pre><code>./helper.scala serviceTask &lt;processName&gt; &lt;bpmnName&gt; [version: Int]</code></pre>
+        <p>Example:</p>
+        <pre><code>./helper.scala serviceTask myProcess MyServiceTask 1</code></pre>
+        <p>This creates the following files:</p>
+        <pre><code>// the domain In -&gt; Out (ServiceIn -&gt; ServiceOut)
+02-bpmn   - main -&gt; mycompany.myproject.bpmn.myProcess.v1.MyServiceTask
+// the ServiceWorker
+03-worker - main -&gt; mycompany.myproject.worker.myProcess.v1.MyServiceTaskWorker  
+          - test -&gt; mycompany.myproject.worker.myProcess.v1.MyServiceTaskWorkerTest    </code></pre>
+        
+        <h3 id="usertask" class="section"><a class="anchor-link left" href="#usertask"><i class="icofont-laika link">&#xef71;</i></a>userTask</h3>
+        <p>Creates a new User Task.</p>
+        <p>Usage:</p>
+        <pre><code>./helper.scala userTask &lt;processName&gt; &lt;bpmnName&gt; [version: Int]</code></pre>
+        <p>Example:</p>
+        <pre><code>./helper.scala userTask myProcess MyUserTask 1</code></pre>
+        <p>This creates the following files:</p>
+        <pre><code>// the domain In -&gt; Out
+02-bpmn - main -&gt; mycompany.myproject.bpmn.myProcess.v1.MyUserTask      </code></pre>
+        
+        <h3 id="decision" class="section"><a class="anchor-link left" href="#decision"><i class="icofont-laika link">&#xef71;</i></a>decision</h3>
+        <p>Creates a new Decision.</p>
+        <p>Usage:</p>
+        <pre><code>./helper.scala decision &lt;processName&gt; &lt;bpmnName&gt; [version: Int]</code></pre>
+        <p>Example:</p>
+        <pre><code>./helper.scala decision myProcess MyDecision 1</code></pre>
+        <p>This creates the following files:</p>
+        <pre><code>// the domain In -&gt; Out
+02-bpmn - main -&gt; mycompany.myproject.bpmn.myProcess.v1.MyDecision      </code></pre>
+        
+        <h3 id="signalevent" class="section"><a class="anchor-link left" href="#signalevent"><i class="icofont-laika link">&#xef71;</i></a>signalEvent</h3>
+        <p>Creates a new Signal Event.</p>
+        <p>Usage:</p>
+        <pre><code>./helper.scala signalEvent &lt;processName&gt; &lt;bpmnName&gt; [version: Int]</code></pre>
+        <p>Example:</p>
+        <pre><code>./helper.scala signalEvent myProcess MySignalEvent 1</code></pre>
+        <p>This creates the following files:</p>
+        <pre><code>// the domain In -&gt; NoOutput
+02-bpmn - main -&gt; mycompany.myproject.bpmn.myProcess.v1.MySignalEvent      </code></pre>
+        
+        <h3 id="messageevent" class="section"><a class="anchor-link left" href="#messageevent"><i class="icofont-laika link">&#xef71;</i></a>messageEvent</h3>
+        <p>Creates a new Message Event.</p>
+        <p>Usage:</p>
+        <pre><code>./helper.scala messageEvent &lt;processName&gt; &lt;bpmnName&gt; [version: Int]</code></pre>
+        <p>Example:</p>
+        <pre><code>./helper.scala messageEvent myProcess MyMessageEvent 1</code></pre>
+        <p>This creates the following files:</p>
+        <pre><code>// the domain In -&gt; NoOutput
+02-bpmn - main -&gt; mycompany.myproject.bpmn.myProcess.v1.MyMessageEvent      </code></pre>
+        
+        <h3 id="timerevent" class="section"><a class="anchor-link left" href="#timerevent"><i class="icofont-laika link">&#xef71;</i></a>timerEvent</h3>
+        <p>Creates a new Timer Event.</p>
+        <p>Usage:</p>
+        <pre><code>./helper.scala timerEvent &lt;processName&gt; &lt;bpmnName&gt; [version: Int]</code></pre>
+        <p>Example:</p>
+        <pre><code>./helper.scala timerEvent myProcess MyTimerEvent 1</code></pre>
+        <p>This creates the following files:</p>
+        <pre><code>// the domain NoInput -&gt; NoOutput
+02-bpmn - main -&gt; mycompany.myproject.bpmn.myProcess.v1.MyTimerEvent      </code></pre>
+        
+        <h2 id="docker" class="section"><a class="anchor-link left" href="#docker"><i class="icofont-laika link">&#xef71;</i></a>Docker</h2>
+        <p>To run the Camunda Server locally, you can use <code>docker-compose</code>.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p><strong>Precondition</strong>: </p>
+          <ul>
+            <li>You have to have <code>docker</code> and <code>docker-compose</code> installed.</li>
+            <li>You need to have a <code>docker-compose.yml</code> in <code>dev-company/docker</code> directory.</li>
+            <li>Adjust the <code>CompanyDevHelper.dockerConfig</code> configuration.</li>
+          </ul>
+        </div>
+        
+        <h3 id="dockerup" class="section"><a class="anchor-link left" href="#dockerup"><i class="icofont-laika link">&#xef71;</i></a>dockerUp</h3>
+        <p>Starts the server with <code>docker-compose</code>.</p>
+        <p>Usage / example:</p>
+        <pre><code>./helper.scala dockerUp</code></pre>
+        
+        <h3 id="dockerstop" class="section"><a class="anchor-link left" href="#dockerstop"><i class="icofont-laika link">&#xef71;</i></a>dockerStop</h3>
+        <p>Stops the server with <code>docker-compose</code>.</p>
+        <p>Usage / example:</p>
+        <pre><code>./helper.scala dockerStop</code></pre>
+        
+        <h3 id="dockerdown" class="section"><a class="anchor-link left" href="#dockerdown"><i class="icofont-laika link">&#xef71;</i></a>dockerDown</h3>
+        <p>Stops and removes the server with <code>docker-compose</code>. </p>
+        <p><strong>Be aware</strong> that all data will be lost - you have to deploy again.</p>
+        <p>Usage / example:</p>
+        <pre><code>./helper.scala dockerDown</code></pre>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

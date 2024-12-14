@@ -76,11 +76,11 @@
     <li class="level2 nav-leaf"><a href="simulation.html">Simulations</a></li>
     <li class="level2 nav-leaf"><a href="worker.html">Workers</a></li>
     <li class="level2 nav-leaf"><a href="dmnTester.html">DMN Tester</a></li>
-    <li class="level1 nav-header">helper</li>
-    <li class="level2 nav-leaf"><a href="../helper/development.html">Development</a></li>
-    <li class="level2 nav-leaf"><a href="../helper/initCompany.html">Init Company</a></li>
-    <li class="level2 nav-leaf"><a href="../helper/createProject.html">Create Project</a></li>
-    <li class="level2 nav-leaf"><a href="../helper/projectDev.html">Project Development</a></li>
+    <li class="level1 nav-header">development</li>
+    <li class="level2 nav-leaf"><a href="../development/intro.html">Introduction</a></li>
+    <li class="level2 nav-leaf"><a href="../development/initCompany.html">Init Company</a></li>
+    <li class="level2 nav-leaf"><a href="../development/createProject.html">Create Project</a></li>
+    <li class="level2 nav-leaf"><a href="../development/projectDev.html">Project Development</a></li>
   </ul>
 
 </nav>
@@ -255,11 +255,11 @@
     </span><span class="comment">// Configure your project setup
 </span><span>    </span><span class="identifier">projectsConfig</span><span>: </span><span class="type-name">ProjectsConfig</span><span> = </span><span class="type-name">ProjectsConfig</span><span>(),
     </span><span class="comment">// The URL of your published documentations
-</span><span>    </span><span class="comment">// myProject =&gt; s&quot;http://myCompany/bpmnDocs/${myProject}&quot;
+</span><span>    </span><span class="comment">// myProject =&gt; s&quot;http://mycompany/bpmnDocs/${myProject}&quot;
 </span><span>    </span><span class="identifier">docProjectUrl</span><span>: </span><span class="type-name">String</span><span> =&gt; </span><span class="type-name">String</span><span> = </span><span class="identifier">proj</span><span> =&gt; </span><span class="string-literal">s&quot;No URL defined for </span><span class="substitution">$proj</span><span class="string-literal">&quot;</span><span>,
     </span><span class="comment">// If you want to integrate your BPMNs and DMNs in your Documentation.
 </span><span>    </span><span class="comment">// Add the path the diagrams are located on your webserver.
-</span><span>    </span><span class="comment">// myProject =&gt; s&quot;http://myCompany/bpmnDocs/${myProject}/${diagramDownloadPath}&quot;
+</span><span>    </span><span class="comment">// myProject =&gt; s&quot;http://mycompany/bpmnDocs/${myProject}/${diagramDownloadPath}&quot;
 </span><span>    </span><span class="comment">// if you want to have a diagram - you must define this!
 </span><span>    </span><span class="identifier">diagramDownloadPath</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">None</span><span>,
     </span><span class="comment">// if you want to adjust the diagramName
@@ -273,12 +273,12 @@
         E.g. <em>company -&gt; department -&gt; project</em> - see next chapter.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">apiConfig</span><span>: </span><span class="type-name">ApiConfig</span><span> =
     </span><span class="keyword">super</span><span>.</span><span class="identifier">apiConfig</span><span>
-      .</span><span class="identifier">withTenantId</span><span>(</span><span class="string-literal">&quot;myCompany&quot;</span><span>)
-      .</span><span class="identifier">withDocProjectUrl</span><span>(</span><span class="identifier">myProject</span><span> =&gt; </span><span class="string-literal">s&quot;http://myCompany.ch/bpmnDocs/</span><span class="substitution">$myProject</span><span class="string-literal">&quot;</span><span>)
+      .</span><span class="identifier">withTenantId</span><span>(</span><span class="string-literal">&quot;mycompany&quot;</span><span>)
+      .</span><span class="identifier">withDocProjectUrl</span><span>(</span><span class="identifier">myProject</span><span> =&gt; </span><span class="string-literal">s&quot;http://mycompany.ch/bpmnDocs/</span><span class="substitution">$myProject</span><span class="string-literal">&quot;</span><span>)
       .</span><span class="identifier">withLocalProjectPaths</span><span>(
         </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="identifier">os</span><span>.</span><span class="identifier">up</span><span> / </span><span class="identifier">os</span><span>.</span><span class="identifier">up</span><span> / </span><span class="string-literal">&quot;company-packages&quot;</span><span>,
         </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="identifier">os</span><span>.</span><span class="identifier">up</span><span> / </span><span class="identifier">os</span><span>.</span><span class="identifier">up</span><span> / </span><span class="string-literal">&quot;deparment-a-packages&quot;</span><span>)
-      .</span><span class="identifier">withJiraUrls</span><span>(</span><span class="string-literal">&quot;COM&quot;</span><span> -&gt; </span><span class="string-literal">&quot;https://issue.myCompany.ch/browse&quot;</span><span>)  </span></code></pre>
+      .</span><span class="identifier">withJiraUrls</span><span>(</span><span class="string-literal">&quot;COM&quot;</span><span> -&gt; </span><span class="string-literal">&quot;https://issue.mycompany.ch/browse&quot;</span><span>)  </span></code></pre>
         
         <h3 id="default-apicreator" class="section"><a class="anchor-link left" href="#default-apicreator"><i class="icofont-laika link">&#xef71;</i></a>Default ApiCreator</h3>
         <p>The default Creator will create a standard documentation, that you can extend with Custom ApiCreators.</p>
@@ -332,7 +332,7 @@
       .</span><span class="identifier">withJiraUrls</span><span>(</span><span class="type-name">JIRA_PROJECT</span><span> -&gt; </span><span class="type-name">JIRA_URL</span><span>)  </span></code></pre>
         <ul>
           <li>JIRA_PROJECT: The shortcut for the JIRA Project (prefix of jira ticket number).</li>
-          <li>JIRA_URL: The base URL to browse JIRA tickets, e.g. <code>https://issue.myCompany.ch/browse</code>.</li>
+          <li>JIRA_URL: The base URL to browse JIRA tickets, e.g. <code>https://issue.mycompany.ch/browse</code>.</li>
         </ul>
         <p>Now in the Change Log all occurrences of the regex <code>JIRA_PROJECT-(\\d+)</code> (-&gt; <code>JIRA_TICKET</code>) 
         will be replaced with <code>[JIRA_TICKET]($url/JIRA_TICKET)</code>. 
@@ -555,7 +555,7 @@
   </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="identifier">os</span><span>.</span><span class="identifier">up</span><span> / </span><span class="string-literal">&quot;git-temp&quot;</span><span>,
   </span><span class="type-name">Seq</span><span>(
     </span><span class="type-name">GitConfig</span><span>(
-      </span><span class="identifier">cloneUrl</span><span> = </span><span class="string-literal">&quot;https://github.com/myCompany&quot;</span><span>,
+      </span><span class="identifier">cloneUrl</span><span> = </span><span class="string-literal">&quot;https://github.com/mycompany&quot;</span><span>,
       </span><span class="identifier">projects</span><span> = </span><span class="type-name">Seq</span><span>(
         </span><span class="string-literal">&quot;myHelperProject&quot;</span><span>,
         </span><span class="string-literal">&quot;myProject&quot;</span><span>,
@@ -565,8 +565,8 @@
     )
   )
 )</span></code></pre>
-        <p>This will clone or update these projects (<code>$cloneUrl/$project.git</code>) into <code>../git-temp</code>, 
-        for example <code>https://github.com/myCompany/myProject.git</code>.</p>
+        <p>This will clone or update these projects (<code>$cloneUrl/$project.git</code>) into <code>../../git-temp</code>, 
+        for example <code>https://github.com/mycompany/myProject.git</code>.</p>
         
         <h4 id="used-dependency-resolution" class="section"><a class="anchor-link left" href="#used-dependency-resolution"><i class="icofont-laika link">&#xef71;</i></a>Used Dependency Resolution</h4>
         <p>For each Process (BPMN):</p>

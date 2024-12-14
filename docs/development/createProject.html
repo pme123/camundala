@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="Typelevel Laika + Helium Theme" />
-  <title>Project Development</title>
+  <title>Create Project</title>
   
   
   <meta name="description" content="camundala-docs"/>
@@ -76,11 +76,11 @@
     <li class="level2 nav-leaf"><a href="../functionalityDsls/simulation.html">Simulations</a></li>
     <li class="level2 nav-leaf"><a href="../functionalityDsls/worker.html">Workers</a></li>
     <li class="level2 nav-leaf"><a href="../functionalityDsls/dmnTester.html">DMN Tester</a></li>
-    <li class="level1 nav-header">helper</li>
-    <li class="level2 nav-leaf"><a href="development.html">Development</a></li>
+    <li class="level1 nav-header">development</li>
+    <li class="level2 nav-leaf"><a href="intro.html">Introduction</a></li>
     <li class="level2 nav-leaf"><a href="initCompany.html">Init Company</a></li>
-    <li class="level2 nav-leaf"><a href="createProject.html">Create Project</a></li>
-    <li class="level2 active nav-leaf"><a href="#">Project Development</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Create Project</a></li>
+    <li class="level2 nav-leaf"><a href="projectDev.html">Project Development</a></li>
   </ul>
 
 </nav>
@@ -89,10 +89,10 @@
 
       
 <nav id="page-nav">
-  <p class="header"><a href="#">Project Development</a></p>
+  <p class="header"><a href="#">Create Project</a></p>
 
   <ul class="nav-list">
-    <li class="level1 nav-leaf"><a href="#update">update</a></li>
+    <li class="level1 nav-leaf"><a href="#next-step-project-development">Next Step: <a href="projectDev.html#project-development">Project Development</a></a></li>
   </ul>
 
   <p class="footer"></p>
@@ -101,18 +101,45 @@
 
       <main class="content">
 
-        <h1 id="project-development" class="title">Project Development</h1>
+        <h1 id="create-project" class="title">Create Project</h1>
         <p><strong>Experimental</strong></p>
-        <p>The following chapters describe the tasks to support the project development.</p>
+        <p>Creating a Project is done in two steps:</p>
+        <ol class="arabic">
+          <li>Create the project directory and the Helper Script.</li>
+          <li>Run the Helper Script to create the project structure.</li>
+        </ol>
+        <p>Here we focus on the first step.</p>
+        <ol class="arabic">
+          <li>
+            <p>We can use the same <code>helperCompany.scala</code> script, we created in the <a href="initCompany.html#init-company">Init Company</a> step.</p>
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">cd</span><span> ~/</span><span class="identifier">dev</span><span>-</span><span class="identifier">mycompany</span><span>
+./</span><span class="identifier">helperCompany</span><span>.</span><span class="identifier">scala</span><span> </span><span class="identifier">project</span><span> </span><span class="identifier">myProject</span></code></pre>
+            <p>This creates:</p>
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span>dev-mycompany
+  |  projects
+  |    |  myProject
+  |    |    |  helper.scala</span></code></pre>
+          </li>
+          <li>
+            <p>Make <code>helper.scala</code> executable:</p>
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">cd</span><span> ~/projects/myProject
+chmod +x helper.scala</span></code></pre>
+          </li>
+          <li>
+            <p>Open the <code>mycompany-myProject</code> directory with your IDE (I use Intellij).</p>
+          </li>
+        </ol>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>If you haven&#39;t released <code>company-camundala</code> yet,
+          you need to run it at least locally (<code>sbt publishLocal</code>) 
+          and set the version in the <code>helper.scala</code> manually.</p>
+          <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">//&gt; using dep mycompany::mycompany-camundala-helper:VERSION NOT FOUND 
+// replace with:
+//&gt; using dep mycompany::mycompany-camundala-helper:0.1.0-SNAPSHOT</span></code></pre>
+        </div>
         
-        <h2 id="update" class="section"><a class="anchor-link left" href="#update"><i class="icofont-laika link">&#xef71;</i></a>update</h2>
-        <p>Whenever you have changes in the <code>company-camundala</code> project or in one of your dependencies, 
-        you can update the project with the following command:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span>./helper.scala update</span></code></pre>
-        <p>This will create or update your project with the latest changes.</p>
-        <p>Files that contain the <code>DO NOT ADJUST</code> comment will be replaced.
-        If you do adjust them, remove this comment. 
-        You will get a warning, but the file will not be replaced.</p>
+        <h3 id="next-step-project-development" class="section"><a class="anchor-link left" href="#next-step-project-development"><i class="icofont-laika link">&#xef71;</i></a>Next Step: <a href="projectDev.html#project-development">Project Development</a></h3>
 
         
 <hr class="footer-rule"/>

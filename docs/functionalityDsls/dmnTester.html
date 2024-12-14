@@ -76,11 +76,11 @@
     <li class="level2 nav-leaf"><a href="simulation.html">Simulations</a></li>
     <li class="level2 nav-leaf"><a href="worker.html">Workers</a></li>
     <li class="level2 active nav-leaf"><a href="#">DMN Tester</a></li>
-    <li class="level1 nav-header">helper</li>
-    <li class="level2 nav-leaf"><a href="../helper/development.html">Development</a></li>
-    <li class="level2 nav-leaf"><a href="../helper/initCompany.html">Init Company</a></li>
-    <li class="level2 nav-leaf"><a href="../helper/createProject.html">Create Project</a></li>
-    <li class="level2 nav-leaf"><a href="../helper/projectDev.html">Project Development</a></li>
+    <li class="level1 nav-header">development</li>
+    <li class="level2 nav-leaf"><a href="../development/intro.html">Introduction</a></li>
+    <li class="level2 nav-leaf"><a href="../development/initCompany.html">Init Company</a></li>
+    <li class="level2 nav-leaf"><a href="../development/createProject.html">Create Project</a></li>
+    <li class="level2 nav-leaf"><a href="../development/projectDev.html">Project Development</a></li>
   </ul>
 
 </nav>
@@ -296,7 +296,7 @@
       </span><span class="identifier">dmnPaths</span><span> = </span><span class="type-name">Seq</span><span>(</span><span class="identifier">localDmnPath</span><span>)
   )
   </span><span class="keyword">override</span><span> </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">defaultDmnPath</span><span>(</span><span class="identifier">dmnName</span><span>: </span><span class="type-name">String</span><span>): </span><span class="identifier">os</span><span>.</span><span class="type-name">Path</span><span> =
-    </span><span class="keyword">val</span><span> </span><span class="identifier">dmnPath</span><span> = </span><span class="identifier">dmnBasePath</span><span> / </span><span class="string-literal">s&quot;</span><span class="substitution">${dmnName.replace(&quot;myCompany-&quot;, &quot;&quot;)}</span><span class="string-literal">.dmn&quot;</span><span>
+    </span><span class="keyword">val</span><span> </span><span class="identifier">dmnPath</span><span> = </span><span class="identifier">dmnBasePath</span><span> / </span><span class="string-literal">s&quot;</span><span class="substitution">${dmnName.replace(&quot;mycompany-&quot;, &quot;&quot;)}</span><span class="string-literal">.dmn&quot;</span><span>
     </span><span class="keyword">if</span><span>(!</span><span class="identifier">dmnPath</span><span>.</span><span class="identifier">toIO</span><span>.</span><span class="identifier">exists</span><span>())
       </span><span class="keyword">throw</span><span> </span><span class="type-name">FileNotFoundException</span><span>(</span><span class="string-literal">s&quot;There is no DMN in </span><span class="substitution">$dmnPath</span><span class="string-literal">&quot;</span><span>)
     </span><span class="identifier">dmnPath</span><span>
@@ -305,7 +305,7 @@
 
 </span><span class="identifier">end</span><span> </span><span class="type-name">MyCompanyDmnTester</span></code></pre>
         <p>So in the project you can focus on the creation of DMN Configurations, like:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// runMain myCompany.nnk.dmn.ProjectDmnTester
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// runMain mycompany.nnk.dmn.ProjectDmnTester
 </span><span class="keyword">object</span><span> </span><span class="type-name">ProjectDmnTester</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">MyCompanyDmnTester</span><span>, </span><span class="type-name">App</span><span>:
 
   </span><span class="identifier">createDmnConfigs</span><span>(

@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="Typelevel Laika + Helium Theme" />
-  <title>Development</title>
+  <title>Init Company</title>
   
   
   <meta name="description" content="camundala-docs"/>
@@ -76,9 +76,9 @@
     <li class="level2 nav-leaf"><a href="../functionalityDsls/simulation.html">Simulations</a></li>
     <li class="level2 nav-leaf"><a href="../functionalityDsls/worker.html">Workers</a></li>
     <li class="level2 nav-leaf"><a href="../functionalityDsls/dmnTester.html">DMN Tester</a></li>
-    <li class="level1 nav-header">helper</li>
-    <li class="level2 active nav-leaf"><a href="#">Development</a></li>
-    <li class="level2 nav-leaf"><a href="initCompany.html">Init Company</a></li>
+    <li class="level1 nav-header">development</li>
+    <li class="level2 nav-leaf"><a href="intro.html">Introduction</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Init Company</a></li>
     <li class="level2 nav-leaf"><a href="createProject.html">Create Project</a></li>
     <li class="level2 nav-leaf"><a href="projectDev.html">Project Development</a></li>
   </ul>
@@ -89,10 +89,10 @@
 
       
 <nav id="page-nav">
-  <p class="header"><a href="#">Development</a></p>
+  <p class="header"><a href="#">Init Company</a></p>
 
   <ul class="nav-list">
-    <li class="level1 nav-leaf"><a href="#pre-requisites">Pre-Requisites</a></li>
+    <li class="level1 nav-leaf"><a href="#next-step-create-project">Next Step: <a href="createProject.html#create-project">Create Project</a></a></li>
   </ul>
 
   <p class="footer"></p>
@@ -101,28 +101,71 @@
 
       <main class="content">
 
-        <h1 id="development" class="title">Development</h1>
-        
-        <h2 id="pre-requisites" class="section"><a class="anchor-link left" href="#pre-requisites"><i class="icofont-laika link">&#xef71;</i></a>Pre-Requisites</h2>
-        <p><strong><em>Camundala</em></strong> is written in <em><strong>Scala</strong></em> and provides <em>Scala DSLs</em>.
-        So far we only use it as a <em>sbt</em> projects.
-        Here is a video to get you started with a Scala dev environment:
-        <a href="https://www.youtube.com/watch?v=j-H6LSv2z_8&list=PLTx-VKTe8yLxYQfX_eGHCxaTuWvvG28Ml">Setting up a dev environment with Coursier</a>. </p>
-        <p>There are three phases in the development process:</p>
+        <h1 id="init-company" class="title">Init Company</h1>
+        <p><strong>Experimental</strong></p>
+        <p>Create the directory structure and common files to get you started with <em>Camundala</em>.</p>
+        <p>The Structure of the Process-Projects looks like this:</p>
+        <pre><code>myProject1  myProject2  ...
+      |         |         |
+     company-camundala
+            |  
+        camundala</code></pre>
+        <p>The idea is that you have a company layer, where you can override Company specific settings.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p><strong>Be aware</strong> that one of the main advantages is the concept of <em>Convention over Configuration</em>.</p>
+          <p>At the moment not everything is configurable.</p>
+          <p>So try to stick to the conventions, whenever possible.</p>
+        </div>
         <ol class="arabic">
           <li>
-            <p><strong><a href="initCompany.html#init-company">Init Company</a></strong></p>
-            <p>Create the directory structure and common files to get you started with <em>Camundala</em>.</p>
+            <p>Create a directory for your company development:</p>
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span>mkdir ~/dev-mycompany</span></code></pre>
+            <p>Be aware that the company name (<em>mycompany</em>) must be lowercase to work properly.</p>
           </li>
           <li>
-            <p><strong><a href="createProject.html#create-project">Create Project</a></strong></p>
-            <p>Create the project directory and the Helper Script for the project development.</p>
+            <p>Create <code>helperCompany.scala</code> in your company directory and open it.</p>
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">cd</span><span> ~/dev-mycompany
+touch helperCompany.scala
+open helperCompany.scala</span></code></pre>
           </li>
           <li>
-            <p><strong><a href="projectDev.html#project-development">Project Development</a></strong></p>
-            <p>Tasks to support the project development.</p>
+            <p>Copy the following content to <code>helperCompany.scala</code>:</p>
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span>#!/</span><span class="identifier">usr</span><span>/</span><span class="identifier">bin</span><span>/</span><span class="identifier">env</span><span> -</span><span class="type-name">S</span><span> </span><span class="identifier">scala</span><span> </span><span class="identifier">shebang</span><span>
+</span><span class="comment">// DO NOT ADJUST. This file is replaced by `./helper.scala update`.
+</span><span>
+</span><span class="comment">//&gt; using toolkit 0.5.0
+//&gt; using dep io.github.pme123::camundala-helper:1.31.0-SNAPSHOT
+</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">helper</span><span>.</span><span class="identifier">dev</span><span>.</span><span class="type-name">DevCompanyRunner</span><span>
+
+</span><span class="annotation">@main</span><span>
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">run</span><span>(</span><span class="identifier">command</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">arguments</span><span>: </span><span class="type-name">String</span><span>*): </span><span class="type-name">Unit</span><span> =
+ </span><span class="type-name">DevCompanyRunner</span><span>.</span><span class="identifier">run</span><span>(</span><span class="identifier">command</span><span>, </span><span class="identifier">arguments</span><span>*)</span></code></pre>
+          </li>
+          <li>
+            <p>Make the file executable:</p>
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span>chmod +x helperCompany.scala</span></code></pre>
+          </li>
+          <li>
+            <p>Create the company directory structure:</p>
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span>./helperCompany.scala init</span></code></pre>
+          </li>
+          <li>
+            <p>Open the <code>company-camundala</code> directory with your IDE (I use Intellij).</p>
+          </li>
+          <li>
+            <p>Import the sbt project. The project should compile without errors.</p>
+          </li>
+          <li>
+            <p>Update <code>build.sbt</code> with your repository settings.</p>
+          </li>
+          <li>
+            <p>Release the <code>company-camundala</code> project to your repository.</p>
           </li>
         </ol>
+        
+        <h3 id="next-step-create-project" class="section"><a class="anchor-link left" href="#next-step-create-project"><i class="icofont-laika link">&#xef71;</i></a>Next Step: <a href="createProject.html#create-project">Create Project</a></h3>
 
         
 <hr class="footer-rule"/>
