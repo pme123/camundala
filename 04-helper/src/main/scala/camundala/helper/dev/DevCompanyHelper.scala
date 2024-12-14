@@ -6,7 +6,7 @@ import camundala.helper.util.{DevConfig, RepoConfig}
 import scala.util.{Failure, Success, Try}
 
 // dev-company/helperCompany.scala
-object DevCompanyRunner:
+object DevCompanyHelper:
 
   def run(command: String, arguments: String*): Unit =
     val args = arguments.toSeq
@@ -49,4 +49,4 @@ object DevCompanyRunner:
 
   private lazy val companyName = os.pwd.last.replace("dev-", "").toLowerCase
 
-end DevCompanyRunner
+end DevCompanyHelper

@@ -1,17 +1,19 @@
 package camundala.helper.dev
 
+import camundala.api.ApiConfig
 import camundala.helper.dev.publish.PublishHelper
 import camundala.helper.dev.publish.PublishHelper.*
-import camundala.helper.util.{DevConfig, Helpers}
+import camundala.helper.util.{DevConfig, Helpers, PublishConfig}
 
 import scala.util.{Failure, Success, Try}
 
 // dev-company/company-camundala/helper.scala
-case class DevCompanyCamundalaRunner(
-    devConfig: DevConfig
-) extends Helpers:
+trait DevCompanyCamundalaHelper extends Helpers:
+  def apiConfig: ApiConfig
+  def devConfig: DevConfig
+  def publishConfig: Option[PublishConfig]
 
-  def run(command: String, arguments: String*): Unit =
+  def runForCompany(command: String, arguments: String*): Unit =
     val args = arguments.toSeq
     println(s"Running command: $command with args: $args")
     Try(Command.valueOf(command)) match
@@ -21,7 +23,7 @@ case class DevCompanyCamundalaRunner(
         println(s"Command not found: $command")
         println("Available commands: " + Command.values.mkString(", "))
     end match
-  end run
+  end runForCompany
 
   private def runCommand(command: Command, args: Seq[String]): Unit =
     command match
@@ -30,14 +32,11 @@ case class DevCompanyCamundalaRunner(
       case Command.publish =>
         println("Usage: publish <version>")
       case Command.prepareDocs =>
-      //   CompanyDocCreator.prepareDocs()
+       // DocCreator.prepareDocs()
       case Command.releaseDocs =>
       //  CompanyDocCreator.releaseDocs()
-      case other =>
-        println(s"Command not found: $other")
-        println("Available commands: publish, prepareDocs, releaseDocs")
 
-  enum Command:
+  private enum Command:
     case publish, prepareDocs, releaseDocs
 
   private def publish(newVersion: String): Unit =
@@ -56,4 +55,4 @@ case class DevCompanyCamundalaRunner(
     end if
   end publish
 
-end DevCompanyCamundalaRunner
+end DevCompanyCamundalaHelper

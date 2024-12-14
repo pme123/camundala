@@ -34,7 +34,7 @@ trait DevHelper:
   private def runCommand(command: Command, args: Seq[String]): Unit =
     command match
       case Command.update =>
-        update
+        update()
       // start code generation
       case Command.process =>
         args match
@@ -136,11 +136,11 @@ trait DevHelper:
     println(s"Example: $command myProcess My$command 1")
   end printBadActivity
 
-  enum Command:
+  private enum Command:
     case update, process, customTask, serviceTask, userTask, decision, signalEvent, messageEvent,
       timerEvent, publish, deploy, dockerUp, dockerStop, dockerDown
 
-  def update: Unit =
+  def update(): Unit =
     println(s"Update Project: ${devConfig.projectName}")
     println(s" - with Subprojects: ${devConfig.subProjects}")
     SetupGenerator().generate
@@ -154,7 +154,7 @@ trait DevHelper:
     ))
   end createProcess
 
-  def createCustomTask(processName: String, bpmnName: String, version: Option[Int]): Unit =
+  private def createCustomTask(processName: String, bpmnName: String, version: Option[Int]): Unit =
     SetupGenerator().createProcessElement(SetupElement(
       "CustomTask",
       processName.asProcessName,
@@ -162,7 +162,7 @@ trait DevHelper:
       version
     ))
 
-  def createServiceTask(processName: String, bpmnName: String, version: Option[Int]): Unit =
+  private def createServiceTask(processName: String, bpmnName: String, version: Option[Int]): Unit =
     SetupGenerator().createProcessElement(SetupElement(
       "ServiceTask",
       processName.asProcessName,
@@ -170,17 +170,17 @@ trait DevHelper:
       version
     ))
 
-  def createUserTask(processName: String, bpmnName: String, version: Option[Int]): Unit =
+  private def createUserTask(processName: String, bpmnName: String, version: Option[Int]): Unit =
     SetupGenerator().createUserTask(
       SetupElement("UserTask", processName.asProcessName, bpmnName.asElemName, version)
     )
 
-  def createDecision(processName: String, bpmnName: String, version: Option[Int]): Unit =
+  private def createDecision(processName: String, bpmnName: String, version: Option[Int]): Unit =
     SetupGenerator().createDecision(
       SetupElement("Decision", processName.asProcessName, bpmnName.asElemName, version)
     )
 
-  def createSignalEvent(processName: String, bpmnName: String, version: Option[Int]): Unit =
+  private def createSignalEvent(processName: String, bpmnName: String, version: Option[Int]): Unit =
     SetupGenerator().createEvent(SetupElement(
       "Signal",
       processName.asProcessName,
@@ -188,7 +188,7 @@ trait DevHelper:
       version
     ))
 
-  def createMessageEvent(processName: String, bpmnName: String, version: Option[Int]): Unit =
+  private def createMessageEvent(processName: String, bpmnName: String, version: Option[Int]): Unit =
     SetupGenerator().createEvent(SetupElement(
       "Message",
       processName.asProcessName,
@@ -196,8 +196,8 @@ trait DevHelper:
       version
     ))
 
-  def createTimerEvent(processName: String, bpmnName: String, version: Option[Int])(using
-      config: DevConfig
+  private def createTimerEvent(processName: String, bpmnName: String, version: Option[Int])(using
+                                                                                            config: DevConfig
   ): Unit =
     SetupGenerator().createEvent(SetupElement(
       "Timer",
@@ -207,9 +207,9 @@ trait DevHelper:
     ))
 
   extension (name: String)
-    def asProcessName: String =
+    private def asProcessName: String =
       name.head.toLower + name.tail
-    def asElemName: String =
+    private def asElemName: String =
       name.head.toUpper + name.tail
   end extension
 end DevHelper

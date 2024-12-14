@@ -4,7 +4,7 @@ import sbt.Keys.*
 object Dependencies {
 
   // dependency Versions
-  // 00-documentation
+  // 00-docs
   // - Laika Plugin
   // 04-helper
   val osLibVersion = "0.11.3"

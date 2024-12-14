@@ -3,7 +3,7 @@
 This generates HTML to _/docs_ (standard in Github)
 
 ### Development
-`sbt>~documentation/laikaPreview`
+`sbt>~docs/laikaPreview`
 
 ### Releasing
 Should be taken care by the normal release process.

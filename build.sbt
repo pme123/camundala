@@ -20,7 +20,7 @@ lazy val root = project
     sourcesInBase := false
   )
   .aggregate(
-    documentation,
+    docs,
     domain,
     bpmn,
     api,
@@ -41,10 +41,10 @@ lazy val root = project
   )
 
 // general independent
-lazy val documentation =
-  (project in file("./00-documentation"))
+lazy val docs =
+  (project in file("./00-docs"))
     .configure(preventPublication)
-    .settings(projectSettings("documentation"))
+    .settings(projectSettings("docs"))
     .settings(laikaSettings)
     .settings(mdocSettings)
     .enablePlugins(LaikaPlugin, MdocPlugin)
@@ -388,7 +388,7 @@ lazy val exampleDemosC7 = project
   )
   .dependsOn(bpmn, exampleDemosBpmn, camunda)
 
-// start company documentation example
+// start company docs example
 import com.typesafe.config.ConfigFactory
 
 import scala.jdk.CollectionConverters.*

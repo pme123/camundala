@@ -56,6 +56,6 @@ Just run `amm ./publish-release.sc VERSION`.
 We use [mdoc](https://scalameta.org/mdoc/) to verify the documentation 
 and [laika](https://typelevel.org/Laika/) to generate the htmls.
 
-Run mdoc:   `sbt "documentation/mdoc --watch"`
-And laika:  `sbt documentation/laikaPreview`
+Run mdoc:   `sbt "docs/mdoc --watch"`
+And laika:  `sbt docs/laikaPreview`
 Check the result in http://localhost:4242

@@ -11,7 +11,7 @@ Goes throw all projects and counts files and lines of code.
 
 File- and Line count for **InitWorkerDsl** files:
 
- - 00-documentation: 0 of 0 Files
+ - 00-docs: 0 of 0 Files
  - 01-domain: 0 of 0 Files
  - 02-bpmn: 0 of 0 Files
  - 03-api: 92 of 1 Files
@@ -32,7 +32,7 @@ File- and Line count for **InitWorkerDsl** files:
 
 File- and Line count for **CustomWorkerDsl** files:
 
- - 00-documentation: 0 of 0 Files
+ - 00-docs: 0 of 0 Files
  - 01-domain: 0 of 0 Files
  - 02-bpmn: 0 of 0 Files
  - 03-api: 92 of 1 Files
@@ -53,7 +53,7 @@ File- and Line count for **CustomWorkerDsl** files:
 
 File- and Line count for **ServiceWorkerDsl** files:
 
- - 00-documentation: 0 of 0 Files
+ - 00-docs: 0 of 0 Files
  - 01-domain: 0 of 0 Files
  - 02-bpmn: 0 of 0 Files
  - 03-api: 92 of 1 Files
@@ -75,7 +75,7 @@ File- and Line count for **ServiceWorkerDsl** files:
 
 File- and Line count for **bpmn** files:
 
- - 00-documentation: 0 of 0 Files
+ - 00-docs: 0 of 0 Files
  - 01-domain: 0 of 0 Files
  - 02-bpmn: 0 of 0 Files
  - 03-api: 0 of 0 Files
@@ -96,7 +96,7 @@ File- and Line count for **bpmn** files:
 
 File- and Line count for **dmn** files:
 
- - 00-documentation: 0 of 0 Files
+ - 00-docs: 0 of 0 Files
  - 01-domain: 0 of 0 Files
  - 02-bpmn: 0 of 0 Files
  - 03-api: 0 of 0 Files
@@ -117,7 +117,7 @@ File- and Line count for **dmn** files:
 
 File- and Line count for **groovy** files:
 
- - 00-documentation: 0 of 0 Files
+ - 00-docs: 0 of 0 Files
  - 01-domain: 0 of 0 Files
  - 02-bpmn: 0 of 0 Files
  - 03-api: 0 of 0 Files
@@ -138,7 +138,7 @@ File- and Line count for **groovy** files:
 
 File- and Line count for **scala** files:
 
- - 00-documentation: 0 of 0 Files
+ - 00-docs: 0 of 0 Files
  - 01-domain: 669 of 7 Files
  - 02-bpmn: 2327 of 20 Files
  - 03-api: 4250 of 27 Files
