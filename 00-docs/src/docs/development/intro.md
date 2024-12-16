@@ -1,3 +1,6 @@
+{%
+helium.site.pageNavigation.enabled = false
+%}
 # Introduction
 
 ## Pre-Requisites
@@ -11,11 +14,15 @@ There are three phases in the development process:
 1. **[Init Company]**
   
    Create the directory structure and common files to get you started with _Camundala_.
+   
+1. **[Setup Company Project](../company/intro.md)** 
 
-2. **[Create Project]**
+   A Company Project handles the specific configuration for the company.
+
+1. **[Create Project]**
 
    Create the project directory and the Helper Script for the project development.
 
-3. **[Project Development]**
+1. **[Project Development]**
 
    Tasks to support the project development.

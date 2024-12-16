@@ -9,7 +9,7 @@ case class SbtSettingsGenerator()(using config: DevConfig):
   private lazy val versionConfig = config.versionConfig
   private lazy val repoConfig = config.reposConfig
   private lazy val settingsSbt =
-    s"""// $doNotAdjust. This file is replaced by `./helper.scala update`.
+    s"""$helperDoNotAdjustText
        |
        |import com.typesafe.sbt.SbtNativePackager.Docker
        |import com.typesafe.sbt.packager.Keys.*
@@ -20,7 +20,7 @@ case class SbtSettingsGenerator()(using config: DevConfig):
        |
        |  val scalaV = "${versionConfig.scalaVersion}"
        |  val customer = ProjectDef.org
-       |  val customerCamundalaV = "${versionConfig.customerCamundalaVersion}"
+       |  val customerCamundalaV = "${versionConfig.companyCamundalaVersion}"
        |
        |  // other dependencies
        |  // run worker

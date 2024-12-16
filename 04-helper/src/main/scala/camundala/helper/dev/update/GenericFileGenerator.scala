@@ -17,7 +17,7 @@ case class GenericFileGenerator()(using config: DevConfig):
   end generate
 
   private lazy val scalafmt =
-    s"""# $doNotAdjust. This file is replaced by `./helper.scala update`.
+    s"""# $helperDoNotAdjustText
        |
        |version = "3.7.15"
        |project.git = true
@@ -50,7 +50,7 @@ case class GenericFileGenerator()(using config: DevConfig):
        |""".stripMargin
 
   private lazy val gitignore =
-    s"""# $doNotAdjust. This file is replaced by `./helper.scala update`.
+    s"""# $helperDoNotAdjustText
        |*.class
        |*.log
        |

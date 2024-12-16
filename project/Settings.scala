@@ -120,12 +120,7 @@ object Settings {
     laikaSite / target := baseDirectory.value / ".." / "docs",
     laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting),
     laikaTheme := Helium.defaults.site
-      .topNavigationBar(
-        homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home),
-        navLinks = Seq(
-          IconLink.external(githubUrl, HeliumIcon.github),
-        )
-      )
+      .pageNavigation()
       .build,
   )
   lazy val mdocSettings = Seq(

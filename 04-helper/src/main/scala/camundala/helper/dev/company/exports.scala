@@ -1,7 +1,11 @@
-package camundala.helper.dev.company
+package camundala.helper.dev
+package company
+
+import camundala.helper.dev.update.{doNotAdjustText, howToResetText}
 
 export camundala.helper.util.DevConfig
 export camundala.helper.util.ModuleConfig
 
-lazy val howToResetText =
-  "This file was created with `./helperCompany.scala init` - to reset delete it and run the command."
+private val replaceHelperCompanyCommand ="../helperCompany.scala init"
+lazy val helperCompanyDoNotAdjustText = doNotAdjustText(replaceHelperCompanyCommand)
+lazy val helperCompanyHowToResetText = howToResetText(replaceHelperCompanyCommand)

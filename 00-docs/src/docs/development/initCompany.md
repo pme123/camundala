@@ -1,3 +1,6 @@
+{%
+helium.site.pageNavigation.enabled = false
+%}
 # Init Company
 **Experimental**
 

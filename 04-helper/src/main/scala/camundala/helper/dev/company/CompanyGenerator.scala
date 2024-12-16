@@ -14,6 +14,9 @@ case class CompanyGenerator()(using config: DevConfig):
     createOrUpdate(os.pwd / "helperCompany.scala", CompanyScriptCreator().companyHelper)
     // sbt
     CompanySbtGenerator().generate
+    // company-camundala
+    // helper.scala
+    createOrUpdate(companyCamundala / "helper.scala", CompanyScriptCreator().companyCamundalaHelper)
     // docs
     CompanyDocsGenerator(companyCamundala).generate
   end generate

@@ -24,7 +24,7 @@ case class ScriptCreator()(using config: DevConfig):
   private lazy val versionHelper = CompanyVersionHelper(companyName)
   private lazy val helperHeader =
     s"""#!/usr/bin/env -S scala shebang
-       |// $doNotAdjust. This file is replaced by `./helper.scala update`.
+       |$helperDoNotAdjustText
        |
        |//> using dep $companyName::$companyName-camundala-helper:${versionHelper.companyCamundalaVersion}
        |

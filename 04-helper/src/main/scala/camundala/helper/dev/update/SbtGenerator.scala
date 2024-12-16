@@ -8,13 +8,13 @@ case class SbtGenerator()(using
 
   lazy val generate: Unit =
     createOrUpdate(buildSbtDir, buildSbt)
-    generateBuildProperties
+    generateBuildProperties()
     generatePluginsSbt
     createOrUpdate(config.sbtProjectDir / "ProjectDef.scala", projectDefSbt)
   end generate
 
-  lazy val generateBuildProperties =
-    createOrUpdate(config.sbtProjectDir / "build.properties", buildProperties)
+  def generateBuildProperties(replaceStr: String = helperDoNotAdjustText) =
+    createOrUpdate(config.sbtProjectDir / "build.properties", buildProperties(replaceStr))
   lazy val generatePluginsSbt =
     createOrUpdate(config.sbtProjectDir / "plugins.sbt", pluginsSbt)
   private lazy val projectConf = config.apiProjectConf
@@ -37,12 +37,12 @@ case class SbtGenerator()(using
        |""".stripMargin
   end buildSbt
 
-  private lazy val buildProperties =
-    s"""// $doNotAdjust. This file is replaced by `./helper.scala update`.
+  private def buildProperties(replaceStr: String) =
+    s"""$replaceStr
        |sbt.version=${config.versionConfig.sbtVersion}
        |""".stripMargin
   private lazy val pluginsSbt =
-    s"""// $doNotAdjust. This file is replaced by `./helper.scala update`.
+    s"""$helperDoNotAdjustText
        |addDependencyTreePlugin // sbt dependencyBrowseTreeHTML -> target/tree.html
        |
        |// docker image
@@ -51,7 +51,7 @@ case class SbtGenerator()(using
        |""".stripMargin
 
   private lazy val projectDefSbt =
-    s"""// $doNotAdjust. This file is replaced by `./helper.scala update`.
+    s"""$helperDoNotAdjustText
        |import sbt.*
        |
        |object ProjectDef {

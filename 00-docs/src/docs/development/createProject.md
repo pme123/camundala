@@ -1,6 +1,13 @@
+{%
+helium.site.pageNavigation.enabled = false
+%}
 # Create Project
 
 **Experimental**
+
+@:callout(info)
+Make sure you have [setup the company project](../company/intro.md).
+@:@
 
 Creating a Project is done in two steps:
 

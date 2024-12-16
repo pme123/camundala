@@ -5,6 +5,7 @@ import camundala.helper.dev.update.createIfNotExists
 import java.time.LocalDate
 
 case class CompanyDocsGenerator(companyCamundala: os.Path):
+  private lazy val companyProjectName = companyCamundala.last
   private lazy val docsBase = companyCamundala / s"00-docs"
   private lazy val docsSrc = docsBase / "src" / "docs"
 
@@ -39,12 +40,39 @@ case class CompanyDocsGenerator(companyCamundala: os.Path):
   private lazy val instructions =
     createIfNotExists(
       docsSrc / "instructions.md",
-      s"""|## Create This Page
+      s"""|## Create a Release
           |This is a semi-automatic process. This should be done either to prepare a Release or after a Release.
           |
+          |@:callout(info)
+          |Be aware this requires a Postman Account and a collection, that runs the deployment.
+          |
+          |See [Setup Postman]($${camundala.docs}/company/postman.html)
+          |@:@
           |Do the following steps:
           |
-          |- TODO describe your process here
+          |- Check out this project _${companyProjectName}_: `git clone https://YOUR_REPO/$companyProjectName.git`
+          |- Configure the Release - edit _00-docs/CONFIG.conf_.
+          |- Copy the old Versions from _00-docs/VERSIONS.conf_ to _00-docs/VERSIONS_PREVIOUS.conf_.
+          |- Copy the Versions of the Release to _00-docs/VERSIONS.conf_  from Postman [Manage Deploy: YOUR_ENVIRONMENT](https://YOUR_POSTMAN_URL).
+          |```
+          |    // START VERSIONS
+          |
+          |    // Project
+          |    myProjectVersion = "0.8.11" // new
+          |    ...
+          |    // END VERSIONS
+          |    ```
+          |- Prepare Docs Release: `00-docs/helper.scala prepareDocs`
+          |
+          |  @:callout(warning)
+          |  Be aware that this overwrites `release.md`
+          |  @:@
+          |
+          |- Manually adjust the Release Notes _release.md_.
+          |    - You can check the result, using the _Sbt_ command _laikaPreview_ on [localhost](http://localhost:4242/index.html)
+          |    - If you change the Versions you need to reload _SBT_.
+          |- Publish Docs: `00-docs/helper.scala publishDocs`
+          |- Check the result on [MyCompany Documentation](https://YOUR_DOCUMENTATION)
           |""".stripMargin
     )
 
@@ -72,7 +100,7 @@ case class CompanyDocsGenerator(companyCamundala: os.Path):
     )
   private lazy val style =
     createIfNotExists(
-      docsSrc / "style.md",
+      docsSrc / "style.css",
       s"""|.mermaid svg {
           |    height: 400px;
           |}
@@ -125,6 +153,7 @@ case class CompanyDocsGenerator(companyCamundala: os.Path):
           |// what is the release about (abstract as markup)
           |release.notes = \"\"\"
           |- TODO: Describe the Release here
+          |\"\"\"
           |""".stripMargin
     )
   private def versions(name: String) =

@@ -165,13 +165,13 @@ enum TestType:
   case MUnit, Simulation, None
 
 case class VersionConfig(
-    scalaVersion: String = BuildInfo.scalaVersion,
-    camundalaVersion: String = BuildInfo.version,
-    customerCamundalaVersion: String = "0.1.0-SNAPSHOT",
-    camundaVersion: String = BuildInfo.camundaVersion,
-    sbtVersion: String = BuildInfo.sbtVersion,
-    springBootVersion: String = BuildInfo.springBootVersion,
-    jaxbXmlVersion: String = BuildInfo.jaxbApiVersion,
-    munitVersion: String = BuildInfo.mUnitVersion,
-    otherVersions: Map[String, String] = Map.empty
+                          scalaVersion: String = BuildInfo.scalaVersion,
+                          camundalaVersion: String = BuildInfo.version,
+                          companyCamundalaVersion: String = "0.1.0-SNAPSHOT",
+                          camundaVersion: String = BuildInfo.camundaVersion,
+                          sbtVersion: String = BuildInfo.sbtVersion,
+                          springBootVersion: String = BuildInfo.springBootVersion,
+                          jaxbXmlVersion: String = BuildInfo.jaxbApiVersion,
+                          munitVersion: String = BuildInfo.mUnitVersion,
+                          otherVersions: Map[String, String] = Map.empty
 )

@@ -69,7 +69,8 @@ lazy val domain = project
       BuildInfoKey("springBootVersion", springBootVersion),
       BuildInfoKey("jaxbApiVersion", jaxbApiVersion),
       BuildInfoKey("osLibVersion", osLibVersion),
-      BuildInfoKey("mUnitVersion", mUnitVersion)
+      BuildInfoKey("mUnitVersion", mUnitVersion),
+      BuildInfoKey("dmnTesterVersion", dmnTesterVersion),
     )
   ).enablePlugins(BuildInfoPlugin)
 // layer 02
