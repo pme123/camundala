@@ -10,7 +10,7 @@ object Dependencies:
   val osLibVersion = "0.11.3"
   // 01-domain
   val openapiCirceVersion = "0.11.3"
-  val tapirVersion = "1.11.9"
+  val tapirVersion = "1.11.10"
   val ironCirceVersion = "2.6.0"
   val mUnitVersion = "1.0.3"
   // 02-bpmn
@@ -50,10 +50,10 @@ object Dependencies:
   // camunda // server spring-boot
   // 04-c8-spring
   // -> bpmn
-  val scalaJacksonVersion = "2.18.1"
-  val zeebeVersion = "8.5.9"
+  val scalaJacksonVersion = "2.18.2"
+  val zeebeVersion = "8.5.15"
   val springBootVersion = "3.3.4"
-  val swaggerOpenAPIVersion = "2.1.23"
+  val swaggerOpenAPIVersion = "2.1.24"
   // examples
   val h2Version = "2.3.232"
   val twitter4jVersion = "4.1.2"
