@@ -6,7 +6,6 @@ import camundala.domain.*
 object ReviewInvoice extends BpmnProcessDsl:
   final val processName = "example-invoice-c7-review"
   val descr = "This starts the Review Invoice Process."
-  val companyDescr = ""
 
   type InConfig = NoInConfig
 

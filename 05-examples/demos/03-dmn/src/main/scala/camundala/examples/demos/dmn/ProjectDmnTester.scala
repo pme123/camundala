@@ -20,6 +20,7 @@ object ProjectDmnTester
 
   override def starterConfig: DmnTesterStarterConfig =
     DmnTesterStarterConfig(
+        companyName = "camundala",
       dmnPaths = Seq(localDmnPath),
       dmnConfigPaths = Seq(localDmnConfigPath)
     )

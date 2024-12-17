@@ -6,7 +6,6 @@ import camundala.domain.*
 object TwitterApi extends BpmnProcessDsl:
   val processName = "TwitterDemoP"
   val descr = "This runs the Twitter Approvement Process."
-  val companyDescr = ""
   val path: String = "DELETE /services/method"
 
   val twitterDemoProcess =

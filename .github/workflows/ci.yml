@@ -17,13 +17,11 @@ jobs:
           jvm: zulu:21
       - name: Compile
         run: sbt compile
-      - name: Documentation
-        run: sbt documentation/laikaSite
       - name: Test
         run: sbt -v "test:compile; domain/test; bpmn/test;"
       - name: Test Report
         uses: dorny/test-reporter@v1
-        if: success() || failure()    # run this step even if previous step failed
+        if: success()    # run this step even if previous step failed
         with:
           name: Test Report            # Name of the check run which will be created
           path: "**/test-reports/*.xml"    # Path to test results.

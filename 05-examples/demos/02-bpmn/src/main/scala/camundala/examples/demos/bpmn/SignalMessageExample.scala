@@ -6,7 +6,7 @@ import camundala.domain.*
 object MessageForExample extends BpmnProcessDsl:
   val processName = "message-for-example"
   val descr = ""
-  val companyDescr = ""
+
   lazy val messageExample = process(
     in = SignalMessageExampleIn(),
     out = SignalMessageExampleOut()
@@ -20,7 +20,6 @@ end MessageForExample
 object SignalExample extends BpmnProcessDsl:
   val processName = "signal-example"
   val descr = ""
-  val companyDescr = ""
 
   lazy val signalExample = process(
     in = SignalMessageExampleIn(),

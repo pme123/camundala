@@ -20,7 +20,7 @@ lazy val root = project
     sourcesInBase := false
   )
   .aggregate(
-    documentation,
+    docs,
     domain,
     bpmn,
     api,
@@ -41,35 +41,13 @@ lazy val root = project
   )
 
 // general independent
-lazy val documentation =
-  (project in file("./00-documentation"))
+lazy val docs =
+  (project in file("./00-docs"))
     .configure(preventPublication)
-    .settings(projectSettings("documentation"))
-    .settings(
-      laikaConfig := LaikaConfig.defaults
-        .withConfigValue(LaikaKeys.excludeFromNavigation, Seq(Root))
-        .withConfigValue("projectVersion", projectVersion)
-        .withConfigValue(
-          LinkConfig.empty
-            .addTargets(
-              TargetDefinition.external("bpmn specification", "https://www.bpmn.org"),
-              TargetDefinition.external("camunda", "https://camunda.com")
-            ).addSourceLinks(
-              SourceLinks(
-                baseUri =
-                  "https://github.com/pme123/camundala/tree/master/05-examples/invoice/camunda7/src/main/scala/",
-                suffix = "scala"
-              )
-            )
-        )
-        .withRawContent
-      // .failOnMessages(MessageFilter.None)
-      //  .renderMessages(MessageFilter.None)
-      ,
-      laikaSite / target := baseDirectory.value / ".." / "docs",
-      laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting)
-    )
-    .enablePlugins(LaikaPlugin)
+    .settings(projectSettings("docs"))
+    .settings(laikaSettings)
+    .settings(mdocSettings)
+    .enablePlugins(LaikaPlugin, MdocPlugin)
 
 // layer 01
 lazy val domain = project
@@ -91,12 +69,11 @@ lazy val domain = project
       BuildInfoKey("springBootVersion", springBootVersion),
       BuildInfoKey("jaxbApiVersion", jaxbApiVersion),
       BuildInfoKey("osLibVersion", osLibVersion),
-      BuildInfoKey("mUnitVersion", mUnitVersion)
+      BuildInfoKey("mUnitVersion", mUnitVersion),
+      BuildInfoKey("dmnTesterVersion", dmnTesterVersion),
     )
   ).enablePlugins(BuildInfoPlugin)
 // layer 02
-val osLibDependency = "com.lihaoyi" %% "os-lib" % osLibVersion
-val chimneyDependency = "io.scalaland" %% "chimney" % chimneyVersion
 lazy val bpmn = project
   .in(file("./02-bpmn"))
   .configure(publicationSettings)
@@ -105,9 +82,10 @@ lazy val bpmn = project
   .settings(
     autoImportSetting,
     libraryDependencies ++= Seq(
-      osLibDependency,     
-      chimneyDependency // mapping
-  ))
+      osLib,
+      chimney // mapping
+    )
+  )
   .dependsOn(domain)
 
 // layer 03
@@ -145,7 +123,7 @@ lazy val worker = project
   .settings(
     projectSettings("worker"),
     unitTestSettings,
-    autoImportSetting,
+    autoImportSetting
   )
   .dependsOn(bpmn)
 
@@ -163,7 +141,6 @@ lazy val simulation = project
   .dependsOn(bpmn)
 
 // layer 04
-val swaggerOpenAPIDependency = "io.swagger.parser.v3" % "swagger-parser" % swaggerOpenAPIVersion
 lazy val helper = project
   .in(file("./04-helper"))
   .configure(publicationSettings)
@@ -171,7 +148,7 @@ lazy val helper = project
   .settings(unitTestSettings)
   .settings(
     autoImportSetting,
-    libraryDependencies ++= Seq(osLibDependency, swaggerOpenAPIDependency)
+    libraryDependencies ++= Seq(osLib, swaggerOpenAPI, sardineWebDav)
   ).dependsOn(api, simulation, worker)
 
 lazy val camunda7Worker = project
@@ -412,7 +389,7 @@ lazy val exampleDemosC7 = project
   )
   .dependsOn(bpmn, exampleDemosBpmn, camunda)
 
-// start company documentation example
+// start company docs example
 import com.typesafe.config.ConfigFactory
 
 import scala.jdk.CollectionConverters.*
@@ -431,6 +408,7 @@ lazy val exampleMyCompany = project
   .settings(projectSettings("example-exampleDemos"))
   .settings(
     laikaConfig := LaikaConfig.defaults
+      .withConfigValue("projectVersion", projectVersion)
       .withConfigValue(LaikaKeys.excludeFromNavigation, Seq(Root))
       .withRawContent
     //  .failOnMessages(MessageFilter.None)

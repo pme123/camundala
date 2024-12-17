@@ -4,8 +4,6 @@ case class ReposConfig(
     credentials: Seq[RepoCredentials] = Seq.empty,
     // first repo is the release Repo!
     repos: Seq[RepoConfig] = Seq.empty,
-    repoSearch: (project: String, org: String) => String = VersionHelper.repoSearchMavenCentral,
-    ammoniteRepos: Seq[RepoConfig] = Seq.empty
 ):
 
   def sbtCredentials: String =

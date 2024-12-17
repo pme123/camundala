@@ -6,7 +6,6 @@ import camundala.domain.*
 object GenericServiceExample extends BpmnProcessDsl:
   val processName = "genericServiceExample"
   val descr = ""
-  val companyDescr = ""
 
   case class Input(serviceName: String = "myservice.api.v1.post")extends GenericServiceIn
   object Input:

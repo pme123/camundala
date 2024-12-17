@@ -10,7 +10,7 @@ import sttp.tapir.Schema.annotations.description
 trait StarWarsApi extends BpmnServiceTaskDsl:
   val serviceLabel: String = "Star Wars API"
   val serviceVersion: String = "1.0"
-  val companyDescr = ""
+
 end StarWarsApi
 
 object StarWarsPeople extends StarWarsApi:

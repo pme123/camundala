@@ -15,6 +15,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.25 - 2024-12-16
+### Changed 
+- Started documenting the Company level. - see [Commit](https://pme123@github.com/pme123/camundala/commit/2f4159cc90b2831b792e363237c0497f24d4cc36)
+- Added 00-docs CONFIG/VERSIONS files in CompanyDocsGenerator. - see [Commit](https://pme123@github.com/pme123/camundala/commit/e4cc15b935ee44b50e65b632f260f2be2deb21e1)
+- Added 00-docs generator. - see [Commit](https://pme123@github.com/pme123/camundala/commit/9aaec9430785fa22bf209110d62e129229694306)
+- Updating documentation. - see [Commit](https://pme123@github.com/pme123/camundala/commit/c3d9d3d2d158f5e078ad87bd63d50874c503db8f)
+- Fixing prepare-/publishDocs. - see [Commit](https://pme123@github.com/pme123/camundala/commit/9740b77bdc177686afdf11561cae8753dfc1e8ed)
+- Moved documentation to 00-docs / integrated DevCompanyCamundalaHelper. - see [Commit](https://pme123@github.com/pme123/camundala/commit/dcff2bd839b1750d74f2b5e525ca9e33f1136bfb)
+- Added publish for DevCompanyCamundalaRunner. - see [Commit](https://pme123@github.com/pme123/camundala/commit/e3260d645c13e2b272436dec608971f1e7ef1d8b)
+- Cleanup company docs. - see [Commit](https://pme123@github.com/pme123/camundala/commit/928c2b58bd1481f1896f45412ffa64954c3a9261)
+- Migrated docker.. to camundala. - see [Commit](https://pme123@github.com/pme123/camundala/commit/76185cf5a8909dfb90b5eddcbd10e8f762242171)
+- Migrated deploy to camundala. - see [Commit](https://pme123@github.com/pme123/camundala/commit/d541363d3b6d9345fef10a584f108917c867a543)
+- Migrated publish to camundala. - see [Commit](https://pme123@github.com/pme123/camundala/commit/4d9b9f9070fe4e975d62342cd4f8daa440c633b4)
+- Documented generate helper. - see [Commit](https://pme123@github.com/pme123/camundala/commit/c710de3cc3de2240817acc719a1abc110bd2a357)
+- Added Company Wrappers for all modules in CompanyWrapperGenerator / added mdoc for Version resolving in code. - see [Commit](https://pme123@github.com/pme123/camundala/commit/016c7ab5bfc520e2cdaf76da6097584f2ac8eefd)
+- Restructured Helper - Added DevCompanyHelper.createProject. - see [Commit](https://pme123@github.com/pme123/camundala/commit/946b54a31f74fa0a877da4f8a15e4055c47d3222)
+- Restructured Helper - Added DevCompanyHelper.initCompany. - see [Commit](https://pme123@github.com/pme123/camundala/commit/c450c2859329b35f18bd4295a5750d708d18edb7)
+- redone TimerEvent. - see [Commit](https://pme123@github.com/pme123/camundala/commit/90e6788e02d335667e795748cbe4796c85d46422)
+- run documentation/laikaSite. - see [Commit](https://pme123@github.com/pme123/camundala/commit/fedfbb1770215571957aca8078d95a1d5c2cc00d)
+- run documentation/laikaSite. - see [Commit](https://pme123@github.com/pme123/camundala/commit/82b77f1fe4a27f7b6ff8bce1e6ac9a754a0cab89)
+- Fixing compile errors. - see [Commit](https://pme123@github.com/pme123/camundala/commit/2c966d67dfeef3208af648bc3b69b5bfc341e830)
+- Documenting bpmnDsl and worker. - see [Commit](https://pme123@github.com/pme123/camundala/commit/1d77e010a9744dd1f291175bdfc406938639dfe0)
+- Updated process to bpmnDsl. - see [Commit](https://pme123@github.com/pme123/camundala/commit/a7eecd5ca066f02f5cece96dc158d84fcecbfa04)
+- Working at the documentation. - see [Commit](https://pme123@github.com/pme123/camundala/commit/4a2b1ea8c00dd3a90864ef3be6347e8963e84c34)
+- Added align.preset = most to GenericFileGenerator. - see [Commit](https://pme123@github.com/pme123/camundala/commit/711af08d8279f6904d86a239f749cc4184327d6a)
+
 ## 1.30.24 - 2024-11-27
 ### Changed 
 - Removed TimeToLive in BpmnProcessGenerator. - see [Commit](https://pme123@github.com/pme123/camundala/commit/195d735f7a38d02ed94d6681ce1ff5d38b503910)
@@ -622,139 +648,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed 
 - Fixed sonatypeProfileName := "pme123". - see [Commit](https://github.com/pme123/camundala/commit/76ef1449b8c2bac08bdbf400118ab37571b688ef)
 
-## 1.21.6 - 2023-10-02
-### Changed 
-- Changed Sonatype credential Host to ThisBuild. - see [Commit](https://github.com/pme123/camundala/commit/8db4859829e0804aede204aa61c273f5285e2c7e)
-
-## 1.21.5 - 2023-09-29
-### Changed 
-- Added sbt-ci-release plugin. - see [Commit](https://github.com/pme123/camundala/commit/66066dfd5117cb4a8eb07b3b4eb3063d169ed904)
-
-## 1.21.0 - 2023-09-20
-### Changed 
-- Fixed catalog generation. - see [Commit](https://github.com/pme123/camundala/commit/76501d1a7476511b9d24d88af1876a96b19fb338)
-- Added way to start Process as Message or Signal - adjusted CamundaPostmanApiCreator. - see [Commit](https://github.com/pme123/camundala/commit/12598277faf6398cb8510fe82ee2e017164c4046)
-- Fix in naming for ServiceProcessApi. - see [Commit](https://github.com/pme123/camundala/commit/393f76c5721b91fe2efee72872fb4f4f93eec650)
-- Added possibility to start process with Signal- or MessageEvent. - see [Commit](https://github.com/pme123/camundala/commit/83b33afbd50fa9b7bb35956618cf95ce3471f162)
-- Fixed naming ValidaterError to ValidatorError. - see [Commit](https://github.com/pme123/camundala/commit/f662306421c24b5d0e3b33dcc06b94394d321485)
-- Simplified servicePath in worker - see [Commit](https://github.com/pme123/camundala/commit/140b9a59f5fdcada8018b57b5a8b0a59398ef946)
-
-## 1.20.1 - 2023-09-12
-### Changed 
-- Fix, set counter to 0 when checking Process is finished. - see [Commit](https://github.com/pme123/camundala/commit/9fd14d27c29b0ec8085f14e10bf89285a13d3975)
-
-## 1.20.0 - 2023-09-12
-### Changed 
-- Added better Logging of Failures. - see [Commit](https://github.com/pme123/camundala/commit/ead889e2902de830d35097268bc92b6dc9ddb169)
-- Added defaultHandledErrorCodes as default for extractSeqFromArrayOrString. - see [Commit](https://github.com/pme123/camundala/commit/f5022982f6a6361a182829c379ba22e9e34f68df)
-- Added check for incidents to tryOrFail in SimulationHelper. - see [Commit](https://github.com/pme123/camundala/commit/e4b037de9ced36ee8343843bb640714ea8a4e89b)
-- Optimized retry if process is finished - checks if there was an incident. - see [Commit](https://github.com/pme123/camundala/commit/ea42abf71d3821a94da4498f30a69f4a505a59ab)
-- added convenience method for mapBodyOutput / cosmetics. - see [Commit](https://github.com/pme123/camundala/commit/b682c18a70e660256c675910eb3ee561c6d046dc)
-- Fix in ApiConfig. - see [Commit](https://github.com/pme123/camundala/commit/de8391bc9aabbfda1cc751321762aa3dad649855)
-
-## 1.19.1 - 2023-09-04
-### Changed 
-- Adjusted Documentation. - see [Commit](https://github.com/pme123/camundala/commit/1b154ac6c5c5f59a40bd9291f380d482e818a56c)
-- Cleanup and configurable PROJECT.conf. - see [Commit](https://github.com/pme123/camundala/commit/58a8a6529206128233fc67243bb09daf4da8cd98)
-- Added impersonateUserId to camundaInMap. - see [Commit](https://github.com/pme123/camundala/commit/d9d07eff4a2fccfd394536ddd53c0288a3ea5f71)
-
-## 1.19.0 - 2023-08-30
-### Changed 
-- Fixing imports / cosmetics. - see [Commit](https://github.com/pme123/camundala/commit/e5c4e0220fa5f3a32141f9741c84ff0eb26df62a)
-- Moving from exports to -Yimports. - see [Commit](https://github.com/pme123/camundala/commit/c071247012c278235f1e5a9101651a2a3b8ac121)
-- Added general variables to documentation. - see [Commit](https://github.com/pme123/camundala/commit/8a2bc0ec18e38b91a709ff3c7b66f504813bc149)
-- Added technologies.md to documentation. - see [Commit](https://github.com/pme123/camundala/commit/5ef0e1386f78889ae13d7316dc60fb6359014991)
-- Added Example of Process Validation Worker - see [Commit](https://github.com/pme123/camundala/commit/0064db8e4d75e20f8bf7b1a3739f177f85595500)
-- Fixed compile errors. - see [Commit](https://github.com/pme123/camundala/commit/4869587996d29c8037606922e85444c7e05c842c)
-- Added Worker to example-invoice-c7. - see [Commit](https://github.com/pme123/camundala/commit/955641017413e4eac55364d31a4ffc3da259ffa1)
-- Updated Versions. - see [Commit](https://github.com/pme123/camundala/commit/21850ef330ee6aa79d7c823f40374e9035ce9fee)
-- Added Worker Example / added Simulations to verify Workers handled Errors. - see [Commit](https://github.com/pme123/camundala/commit/69fabbdaff735a2f0afcaf14f68a6e1016dd7ee6)
-- Documented general variables. - see [Commit](https://github.com/pme123/camundala/commit/959fe2551f6edbbf81f60cbdc3b5c9201261aa86)
-- Added missing general variables. - see [Commit](https://github.com/pme123/camundala/commit/5c641c2332992b2b84047c8806da7bbb2eb4aa85)
-- Introducing ServiceProcess. - see [Commit](https://github.com/pme123/camundala/commit/fd346aacfc5fcd746319e5582fe081b2599bcccc)
-- added generic service process to us with workers - see [Commit](https://github.com/pme123/camundala/commit/3ecba59bcf5ef577931c8481e9136d135990a19c)
-- Added ServiceUnexpectedError - see [Commit](https://github.com/pme123/camundala/commit/e51ef34d3ffa88be5b9978fe7c4af3bfd684e665)
-
-## 1.18.1 - 2023-08-14
-### Changed 
-- Changed Errors to Json. - see [Commit](https://github.com/pme123/camundala/commit/d5797d1465f3e871cba83de5172bf14b33b0a9b6)
-
-## 1.18.0 - 2023-08-14
-### Changed 
-- Fixing Compile error. - see [Commit](https://github.com/pme123/camundala/commit/3661b7a19a66d5bf7ff127117cffd66430cf18ff)
-- Description Experiments / MockedServiceResponse. - see [Commit](https://github.com/pme123/camundala/commit/44d9d37bce5b8fd75e827cccca4d68e2b9f194df)
-- Description Experiments / MockedServiceResponse. - see [Commit](https://github.com/pme123/camundala/commit/d01c2003b140ffa902840fae63b22f158f9f197f)
-- Added Camunda7 External Worker Support. - see [Commit](https://github.com/pme123/camundala/commit/8ee83d0a53b36a2581ded07f94796ac29c3cde21)
-
-## 1.17.0 - 2023-08-12
-### Changed 
-- Working MockedHttpResponse implementation - see [Commit](https://github.com/pme123/camundala/commit/74b4e9d63e3a743038cc0cb2ff65519f3217ebe0)
-- Typesafe MockedHttpResponse experiment - see [Commit](https://github.com/pme123/camundala/commit/19f936a2f04cca16b6454d861aa25a6a0870a764)
-- Moved GenericServiceIn to domain. - see [Commit](https://github.com/pme123/camundala/commit/d93ec5650fd98b02dea39d7fd7fa0a6851db9868)
-
-## 1.16.0 - 2023-08-04
-### Changed 
-- MAP-7496: Removed dependency to package.conf - see [Commit](https://github.com/pme123/camundala/commit/7ce14fdf57a921de6fbe9e6f1f2647f80fbdb39a)
-- Moved CompanyDocCreator from helper. - see [Commit](https://github.com/pme123/camundala/commit/76b076a5ee1b4cd8fe9009e057b91e720a134e29)
-- Cleanup Imports - see [Commit](https://github.com/pme123/camundala/commit/911b051ed1a5baba2b234825ef0b9283b9217f37)
-- State of work in CompanyDocCreator - see [Commit](https://github.com/pme123/camundala/commit/088ac2e101fc2c0be36f5773ff376127df84f7dd)
-- Fixed counter set to 0 where missing in simulations - see [Commit](https://github.com/pme123/camundala/commit/8b4ba72ead3cc7a8d82b3f8bbd1db48864f6ae83)
-- State of Work - Cleanup - see [Commit](https://github.com/pme123/camundala/commit/5d21a814a924c9ca93df231d4dc89054185fbaac)
-- Start creating Company docs. - see [Commit](https://github.com/pme123/camundala/commit/6d63aa69a849316748c117d564a5178cde7f1b9a)
-- Added some catalog.md for testing - see [Commit](https://github.com/pme123/camundala/commit/83fbe3115cdaafc4c772603295ff01a0b615c259)
-- Changed order in Simulation - error last - easier to scroll to. - see [Commit](https://github.com/pme123/camundala/commit/793d23d08bdbccff8f3a61de3ced351530003b30)
-- Cosmetics. - see [Commit](https://github.com/pme123/camundala/commit/bfbc51ad5eecf4f6f8f96667f1e69ee9078f6e4e)
-
-## 1.15.17 - 2023-06-22
-### Changed 
-- MAP-7344: Fix for null values in DMN comparing. - see [Commit](https://github.com/pme123/camundala/commit/d77ebeb72a31b8cdce31e81596c31c387a4071dc)
-
-## 1.15.16 - 2023-06-21
-### Changed 
-- MAP-6880: Added withIn/ withOut functions / fix in JSON check for values that must not exist. - see [Commit](https://github.com/pme123/camundala/commit/4fd38506d71c0aff17ac30d96e670d617572622e)
-
-## 1.15.15 - 2023-06-19
-### Changed 
-- MAP-6880: Adjusted de/encoding of JSONs. - see [Commit](https://github.com/pme123/camundala/commit/b4797ae7f3631705784507ee83f10aa821391cfe)
-- MAP-6880: Added missing image. - see [Commit](https://github.com/pme123/camundala/commit/482ba93c876d49cb252434fab93d22c77e60e7c1)
-
-## 1.15.14 - 2023-06-16
-### Changed 
-- MAP-6880: Some cosmetics for Mocker and Validator. - see [Commit](https://github.com/pme123/camundala/commit/682a63af41e3a3ca7c57dee24c5ff94fdb75bda8)
-- MAP-6880: Added documentation creation to Github action. - see [Commit](https://github.com/pme123/camundala/commit/158538b25b09efc1f1b9f6cf3177a51ba39b92a1)
-- MAP-6880: Adding Mocking documentation and example. - see [Commit](https://github.com/pme123/camundala/commit/3d8f9cd070c990a424e9d397ec51e4aaa15782fd)
-- MAP-6880: Specified and documented standard mocking. - see [Commit](https://github.com/pme123/camundala/commit/97c6bfa14b3e0a25efa16af5e29cc2af338b30fc)
-- Documentation of API document. - see [Commit](https://github.com/pme123/camundala/commit/63bb466b9db751d3b5c94840b41160b36c0f2ac8)
-- Documentation of API document. - see [Commit](https://github.com/pme123/camundala/commit/247fb33c5c8937a6c214e580740d8e7ae10e87e6)
-- Fixes in documentation. - see [Commit](https://github.com/pme123/camundala/commit/3ee1961dfd329333cfd3526400c6ccb75e76ca2a)
-
-## 1.15.13 - 2023-05-31
-### Changed 
-- Added _ignore.simulation_ / extended documentation for Simulations. - see [Commit](https://github.com/pme123/camundala/commit/8e7c44950633a530e89b26a21245ee8f8d9303d8)
-- Added check to verify that None variables are tested correctly. - see [Commit](https://github.com/pme123/camundala/commit/74e4b922b31c88d00caf49e2fa34cb7bb2b173dc)
-
-## 1.15.12 - 2023-05-23
-### Changed 
-- Updated ChangeLogUpdater, so it can be used in other projects. - see [Commit](https://github.com/pme123/camundala/commit/5955e24847e5c6bdee0c46cc51f884b21d2297de)
-
-## 1.15.11 - 2023-05-23
-### Changed
-- Added ChangeLogUpdater - in new helper module - to the publish process. - see [Commit](https://github.com/pme123/camundala/commit/dc27005f107e6e0f5c582722592170e5612677c2)
-- Added CHANGELOG. - see [Commit](https://github.com/pme123/camundala/commit/dfc5ea4eb309208edad8a9ad51b7c6bbcdd2358e)
-
-## 1.15.10 - 2023-05-22
-**Due to a bad release - 1.5.9, and it is not possible to remove a release from maven central -
-I decided to start the semantic versioning now.
-
-Be aware that breaking changes could still occur, but they will be reflected in the version number.
-**
-### Changed
-- Fixes and additions in the documentation - events. - see [Commit](https://github.com/pme123/camundala/commit/2aca78e38cb73243bbc7c8693c2279ecfdf8092a)
-- Added TimerEvents to Postman Api and Simulation. - see [Commit](https://github.com/pme123/camundala/commit/7632bbe48445f25b76df629da3f61aa4cd4ac1ef)
-- Added TimerEvents to BpmnDsl. - see [Commit](https://github.com/pme123/camundala/commit/c5954b347056b5dbd236507c44c7c5dc4fa9e0a2)
-- Added missing !!! in difference message of Simulation's Json checking. - see [Commit](https://github.com/pme123/camundala/commit/c2cf6bd98b132762b7d4ad09506fa809c6e80a46)
-
-## 0.15.10 - 2023-04-19
-### Changed
-- Added possibility to wait in UserTask before completing it. - see [Commit](https://github.com/pme123/camundala/commit/f874658328f9df829eed34c3d6e803a1709ebacb)
-- Added debug request body. in simulation. - see [Commit](https://github.com/pme123/camundala/commit/4972d6b860ac7239493d6ed50a3ad32be1de3cba)
+...

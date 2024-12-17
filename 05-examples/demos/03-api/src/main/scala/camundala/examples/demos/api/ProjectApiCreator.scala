@@ -28,14 +28,6 @@ object ProjectApiCreator extends DefaultApiCreator:
       .withPort(8034)
 
   document(
-    DecisionResultTypes.singleEntryDMN
-      .withDiagramName("DecisionResultTypes"),
-    DecisionResultTypes.collectEntriesDMN
-      .withDiagramName("DecisionResultTypes"),
-    DecisionResultTypes.singleResultDMN
-      .withDiagramName("DecisionResultTypes"),
-    DecisionResultTypes.resultListDMN
-      .withDiagramName("DecisionResultTypes"),
     api(
       DecisionResultTypes.demoProcess
         .withDiagramName("mapping-example")
@@ -46,10 +38,11 @@ object ProjectApiCreator extends DefaultApiCreator:
       DecisionResultTypes.resultListDMN.withDiagramName("DecisionResultTypes")
     ),
     GenericServiceExample.example,
-    EnumExample.example,
+    api(EnumExample.example)(
     EnumWorkerExample.example,
     DateExample.DateExampleDMN,
     VariablesExample.VariablesExampleDMN,
+    ),
     SimulationTestOverridesExample.simulationProcess,
     group("SignalMessageExample")(
       SignalExample.signalExample,
@@ -57,8 +50,8 @@ object ProjectApiCreator extends DefaultApiCreator:
       SignalExample.signalIntermediateExample,
       MessageForExample.messageIntermediateExample
     ),
-    api(TimerExample.timerProcess)(
-      TimerExample.timer
+    api(TimerExample.example)(
+      TheTimer.example
     )
   )
 end ProjectApiCreator

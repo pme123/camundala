@@ -1,6 +1,6 @@
 package camundala.examples.demos.simulation
 
-import camundala.examples.demos.bpmn.TimerExample.{timer, timerProcess}
+import camundala.examples.demos.bpmn.*
 import camundala.simulation.*
 
 // exampleDemosSimulation/test
@@ -9,14 +9,14 @@ class TimerExampleSimulation extends DemosSimulation:
 
   simulate(
     scenario(`timerProcess waiting for job`)(
-      timer
+      TheTimer.example
     ),
     scenario(`timerProcess waiting for variable`)(
-      timer
+      TheTimer.example
         .waitFor("timerReady")
     )
   )
 
-  private lazy val `timerProcess waiting for job` = timerProcess
-  private lazy val `timerProcess waiting for variable` = timerProcess
+  private lazy val `timerProcess waiting for job` = TimerExample.example
+  private lazy val `timerProcess waiting for variable` = TimerExample.example
 end TimerExampleSimulation

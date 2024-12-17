@@ -1,6 +1,5 @@
 package camundala.api
 
-import camundala.api.docs.ApiProjectConf
 import camundala.bpmn.InputParams
 import camundala.domain.MockedServiceResponse
 import sttp.apispec.openapi.*

@@ -14,7 +14,6 @@ object ProjectDmnTester
       App:
   val processName = "NOT USED"
   val descr = ""
-  val companyDescr = ""
 
   private lazy val localDmnConfigPath: os.Path =
     os.pwd / "05-examples" / "invoice" / "03-dmn" / "src" / "main" / "resources" / "dmnConfigs"
@@ -24,6 +23,7 @@ object ProjectDmnTester
 
   override def starterConfig: DmnTesterStarterConfig =
     DmnTesterStarterConfig(
+      companyName = "camundala",
       dmnPaths = Seq(localDmnPath),
       dmnConfigPaths = Seq(localDmnConfigPath)
     )
