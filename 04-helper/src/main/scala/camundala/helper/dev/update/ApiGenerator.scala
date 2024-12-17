@@ -9,8 +9,8 @@ case class ApiGenerator()(using config: DevConfig):
       ) / "ApiProjectCreator.scala",
       api
     )
-    createOrUpdate(config.projectDir / "OpenApi.html", openApiHtml)
-    createOrUpdate(config.projectDir / "PostmanOpenApi.html", postmanOpenApiHtml)
+    createOrUpdate(config.projectDir / "03-api" / "OpenApi.html", openApiHtml)
+    createOrUpdate(config.projectDir / "03-api" / "PostmanOpenApi.html", postmanOpenApiHtml)
   end generate
 
   lazy val api =

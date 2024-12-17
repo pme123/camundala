@@ -44,10 +44,13 @@ lazy val root = project
 lazy val docs =
   (project in file("./00-docs"))
     .configure(preventPublication)
-    .settings(projectSettings("docs"))
-    .settings(laikaSettings)
-    .settings(mdocSettings)
+    .settings(
+      projectSettings("docs"),
+      autoImportSetting,
+      laikaSettings,
+      mdocSettings)
     .enablePlugins(LaikaPlugin, MdocPlugin)
+    .dependsOn(helper)
 
 // layer 01
 lazy val domain = project

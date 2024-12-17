@@ -25,13 +25,12 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
   private lazy val bpmnWrapper =
     s"""package $companyName.camundala.bpmn
        |
-       |import camundala.bpmn.*
-       |import camundala.domain.*
-       |
        |/**
        | * Add here company specific stuff, like documentation or custom elements.
        | */
-       |trait CompanyBpmnDsl
+       |trait CompanyBpmnDsl:
+       |  // override def companyDescr = ??? //TODO Add your specific Company Description!
+       |end CompanyBpmnDsl
        |
        |trait CompanyBpmnProcessDsl extends BpmnProcessDsl, CompanyBpmnDsl
        |trait CompanyBpmnServiceTaskDsl extends BpmnServiceTaskDsl, CompanyBpmnDsl
@@ -45,8 +44,6 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
 
   private lazy val apiWrapper =
     s"""package $companyName.camundala.api
-       |
-       |import camundala.api.*
        |
        |/**
        | * Add here company specific stuff, to create the Api documentation and the Postman collection.

@@ -10,7 +10,7 @@ case class CompanyVersionHelper(
 ):
   
   lazy val companyCamundalaVersion: String =
-    VersionHelper.repoSearch(s"$companyName-camundala-api_3", companyName)
+    VersionHelper.repoSearch(s"$companyName-camundala-bpmn_3", companyName)
 
 end CompanyVersionHelper
 
@@ -65,7 +65,7 @@ end VersionHelper
 object VersionHelper:
 
   lazy val camundalaVersion: String =
-    repoSearch("camundala-api_3", "io.github.pme123")
+    repoSearch("camundala-bpmn_3", "io.github.pme123")
 
   def repoSearch(project: String, org: String): String =
     val searchResult = os.proc(

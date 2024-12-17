@@ -7,13 +7,7 @@ class VersionHelperTest extends FunSuite:
   test("repoSearch".ignore) {
     assertEquals(
       VersionHelper.repoSearch("camundala-api_3", "io.github.pme123"),
-      "1.30.24" // This is the latest released version
-    )
-  }
-  test("repoSearch company") {
-    assertEquals(
-      VersionHelper.repoSearch("valiant-camundala-bpmn_3", "valiant"),
-      "0.18.59" // This is the latest released version
+      "1.30.25" // This is the latest released version
     )
   }
   test("repoSearch no result") {

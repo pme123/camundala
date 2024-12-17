@@ -14,10 +14,6 @@ case class ApiConfig(
     endpoint: String = "http://localhost:8080/engine-rest",
     // Base Path of your project (if changed - all doc paths will be adjusted)
     basePath: os.Path = os.pwd,
-    openApiPath: os.Path = os.pwd / "openApi.yml",
-    postmanOpenApiPath: os.Path = os.pwd / "postmanOpenApi.yml",
-    openApiDocuPath: os.Path = os.pwd / "OpenApi.html",
-    postmanOpenApiDocuPath: os.Path = os.pwd / "PostmanOpenApi.html",
     // If you work with JIRA, you can add matchers that will create automatically URLs to JIRA Tasks
     jiraUrls: Map[String, String] = Map.empty,
     // Configure your project setup
@@ -37,9 +33,14 @@ case class ApiConfig(
     // function to extract project and the reference id from a reference (CallActivity, Dmn or ExternalWorker)
     // default returns the first part of the reference as project (e.g. mycompany from mycompany-product)
     projectRefId: String => (String, String) =
-      pr => pr.split("-").head -> pr
+      pr => pr.split("-").head -> pr,
 ):
   val catalogPath: os.Path = basePath / catalogFileName
+
+  lazy val openApiPath: os.Path = basePath / "03-api" / "OpenApi.yml"
+  lazy val postmanOpenApiPath: os.Path = basePath / "03-api" / "PostmanOpenApi.yml"
+  lazy val openApiDocuPath: os.Path = basePath / "03-api" / "OpenApi.html"
+  lazy val postmanOpenApiDocuPath: os.Path = basePath / "03-api" / "PostmanOpenApi.html"
 
   lazy val projectGroups: Seq[ProjectGroup] = projectsConfig.projectConfigs
     .map(_.group)
@@ -51,10 +52,6 @@ case class ApiConfig(
   def withBasePath(path: os.Path): ApiConfig =
     copy(
       basePath = path,
-      openApiPath = path / "openApi.yml",
-      openApiDocuPath = path / "OpenApi.html",
-      postmanOpenApiPath = path / "postmanOpenApi.yml",
-      postmanOpenApiDocuPath = path / "PostmanOpenApi.html"
     )
 
   def withEndpoint(ep: String): ApiConfig =

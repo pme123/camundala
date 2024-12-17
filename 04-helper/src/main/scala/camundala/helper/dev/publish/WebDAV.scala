@@ -35,7 +35,7 @@ abstract class WebDAV:
   end startSession
 end WebDAV
 
-case class ProjectWebDAV(projectName: String, publishConfig: PublishConfig) extends WebDAV:
+case class ProjectWebDAV(projectName: String, apiConfig: ApiConfig, publishConfig: PublishConfig) extends WebDAV:
 
   val projectUrl = s"$publishBaseUrl/$projectName/"
 
@@ -58,8 +58,8 @@ case class ProjectWebDAV(projectName: String, publishConfig: PublishConfig) exte
       end try
       // create new
       sardine.createDirectory(projectUrl)
-      sardine.put(s"$projectUrl/OpenApi.html", openApiHtml, contentTypeHtml)
-      sardine.put(s"$projectUrl/openApi.yml", openApiYml, contentTypeYaml)
+      sardine.put(s"${apiConfig.openApiDocuPath}", openApiHtml, contentTypeHtml)
+      sardine.put(s"${apiConfig.openApiPath}", openApiYml, contentTypeYaml)
       postmanApiYml.foreach(pApi =>
         sardine.put(
           s"$projectUrl/postmanCollection.json",

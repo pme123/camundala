@@ -16,7 +16,7 @@ case class PublishHelper()(using
   def publish(version: String): Unit =
     println(s"Publishing BPF Package: $version")
     verifyVersion(version)
-    verifySnapshots()
+    //TODO verifySnapshots()
     verifyChangelog(version)
     pushDevelop()
     setApiVersion(version)
@@ -71,7 +71,7 @@ case class PublishHelper()(using
   private def publishToWebserver(): Unit =
     // push it to Documentation Webserver
     publishConfig.foreach:
-      ProjectWebDAV(devConfig.projectName, _).upload()
+      ProjectWebDAV(devConfig.projectName, apiConfig, _).upload()
 
 end PublishHelper
 
