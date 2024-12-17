@@ -1,7 +1,7 @@
 import sbt.*
 import sbt.Keys.*
 
-object Dependencies:
+object Dependencies {
 
   // dependency Versions
   // 00-docs
@@ -51,7 +51,7 @@ object Dependencies:
   // 04-c8-spring
   // -> bpmn
   val scalaJacksonVersion = "2.18.2"
-  val zeebeVersion = "8.5.15"
+  val camunda8Version = "8.5.9"
   val springBootVersion = "3.3.4"
   val swaggerOpenAPIVersion = "2.1.24"
   // examples
@@ -74,14 +74,14 @@ object Dependencies:
   val zeebeDependencies = Seq(
     "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
     "org.springframework.boot" % "spring-boot-starter-webflux" % springBootVersion,
-    "io.camunda.spring" % "spring-boot-starter-camunda" % zeebeVersion,
+    "io.camunda.spring" % "spring-boot-starter-camunda" % camunda8Version,
     "com.fasterxml.jackson.module" %% "jackson-module-scala" % scalaJacksonVersion
   ).map(_.exclude("org.slf4j", "slf4j-api"))
 
   // examples
   val camundaDependencies = Seq(
-    "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
-    "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
+    "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude("org.slf4j", "slf4j-api"),
+    "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude("org.slf4j", "slf4j-api"),
     "io.netty" % "netty-all" % "4.1.110.Final", // needed for Spring Boot Version > 2.5.*
     "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
     "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
@@ -98,4 +98,4 @@ object Dependencies:
   lazy val chimney = "io.scalaland" %% "chimney" % chimneyVersion
   lazy val swaggerOpenAPI = "io.swagger.parser.v3" % "swagger-parser" % swaggerOpenAPIVersion
   lazy val sardineWebDav = "com.github.lookfirst" % "sardine" % sardineWebDavVersion
-end Dependencies
+}
