@@ -1,7 +1,7 @@
 import sbt.*
 import sbt.Keys.*
 
-object Dependencies {
+object Dependencies:
 
   // dependency Versions
   // 00-docs
@@ -80,9 +80,9 @@ object Dependencies {
 
   // examples
   val camundaDependencies = Seq(
-    "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude("org.slf4j", "slf4j-api"),
-    "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude("org.slf4j", "slf4j-api"),
-    "io.netty" % "netty-all" % "4.1.110.Final", // needed for Spring Boot Version > 2.5.*
+    "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
+    "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude ("org.slf4j", "slf4j-api"),
+    "io.netty" % "netty-all" % "4.1.116.Final", // needed for Spring Boot Version > 2.5.*
     "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
     "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
     // json support
@@ -98,5 +98,4 @@ object Dependencies {
   lazy val chimney = "io.scalaland" %% "chimney" % chimneyVersion
   lazy val swaggerOpenAPI = "io.swagger.parser.v3" % "swagger-parser" % swaggerOpenAPIVersion
   lazy val sardineWebDav = "com.github.lookfirst" % "sardine" % sardineWebDavVersion
-
-}
+end Dependencies
