@@ -12,11 +12,11 @@ import xerial.sbt.Sonatype.autoImport.sonatypeRepository
 
 import scala.util.Using
 
-object Settings {
+object Settings:
 
   lazy val projectVersion =
     Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
-  val scala3Version = "3.6.1"
+  val scala3Version = "3.6.2"
   val org = "io.github.pme123"
 
   def projectSettings(projName: String) = Seq(
@@ -116,23 +116,22 @@ object Settings {
     //  .renderMessages(MessageFilter.None)
     ,
     Laika / sourceDirectories := Seq(mdocOut.value),
-
     laikaSite / target := baseDirectory.value / ".." / "docs",
     laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting),
     laikaTheme := Helium.defaults.site
       .topNavigationBar(
         homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home),
         navLinks = Seq(
-          IconLink.external(githubUrl, HeliumIcon.github),
+          IconLink.external(githubUrl, HeliumIcon.github)
         )
       )
-      .build,
+      .build
   )
   lazy val mdocSettings = Seq(
-    mdocIn                    := baseDirectory.value / "src" / "docs",
-    mdocVariables             := Map(
-      "VERSION"-> projectVersion
+    mdocIn := baseDirectory.value / "src" / "docs",
+    mdocVariables := Map(
+      "VERSION" -> projectVersion
     ),
-    mdocExtraArguments        := Seq("--no-link-hygiene"),
+    mdocExtraArguments := Seq("--no-link-hygiene")
   )
-}
+end Settings
