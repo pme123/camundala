@@ -8,7 +8,7 @@ case class CompanyScriptCreator()(using config: DevConfig):
     s"""#!/usr/bin/env -S scala shebang
        |$helperCompanyDoNotAdjustText
        |
-       |//> using toolkit 0.5.0
+       |//> using toolkit 0.6.0
        |//> using dep io.github.pme123::camundala-helper:${VersionHelper.camundalaVersion}
        |
        |import camundala.helper.dev.DevCompanyRunner
