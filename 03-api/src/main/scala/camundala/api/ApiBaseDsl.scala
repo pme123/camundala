@@ -9,7 +9,10 @@ import scala.reflect.ClassTag
 trait ApiBaseDsl:
 
   def group(name: String)(apis: InOutApi[?, ?]*): CApiGroup =
-    CApiGroup(name, apis.toList)
+    group(name, "")(apis*)
+
+  def group(name: String, description: String)(apis: InOutApi[?, ?]*): CApiGroup =
+    CApiGroup(name, description, apis.toList)
 
   def api[
       In <: Product: InOutEncoder: InOutDecoder: Schema,

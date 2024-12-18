@@ -1,9 +1,12 @@
 package camundala.api
 
 import camundala.bpmn.InputParams
-import camundala.domain.MockedServiceResponse
+import camundala.domain.*
+import io.circe.Encoder
 import sttp.apispec.openapi.*
 import sttp.apispec.openapi.circe.yaml.*
+import sttp.tapir.*
+import sttp.tapir.docs.apispec.DocsExtension
 import sttp.tapir.docs.openapi.{OpenAPIDocsInterpreter, OpenAPIDocsOptions}
 
 import java.text.SimpleDateFormat
@@ -43,15 +46,23 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
     println(s"Check Open API Docu: ${apiConfig.openApiDocuPath}")
   end writeOpenApis
 
-  protected lazy val openAPIDocsInterpreter =
+  protected lazy val openAPIDocsInterpreter      =
     OpenAPIDocsInterpreter(docsOptions =
       OpenAPIDocsOptions.default.copy(defaultDecodeFailureOutput = _ => None)
     )
-
+  import sttp.tapir.json.circe.*
   protected def openApi(apiDoc: ApiDoc): OpenAPI =
     val endpoints = create(apiDoc)
     openAPIDocsInterpreter
-      .toOpenAPI(endpoints, info(title, Some(description)))
+      .toOpenAPI(
+        endpoints,
+        info(title, Some(description)),
+        docsExtensions = List(DocsExtension.of(
+          "tags",
+          apiDoc.groupTags.asJson
+        ))
+      )
+
   end openApi
 
   protected def postmanOpenApi(apiDoc: ApiDoc): OpenAPI =
@@ -235,9 +246,9 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
       jiraUrls: Map[String, String]
   ): String =
     jiraUrls.toList match
-      case Nil => line
+      case Nil                => line
       case (k -> url) :: tail =>
-        val regex = Regex(s"""$k-(\\d+)""")
+        val regex   = Regex(s"""$k-(\\d+)""")
         val matches = regex.findAllIn(line).toSeq
         val changed =
           matches.foldLeft(line)((a, b) => a.replace(b, s"[$b]($url/$b)"))
@@ -293,7 +304,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
     val catalogPath = apiConfig.catalogPath
     if os.exists(catalogPath) then
       os.remove(catalogPath)
-    val catalog = toCatalog(apiDoc)
+    val catalog     = toCatalog(apiDoc)
     os.write(catalogPath, catalog)
     println(s"Created Catalog $catalogPath")
   end writeCatalog
@@ -310,9 +321,9 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
     apiDoc.apis.foldLeft(List.empty[(InOutApi[?, ?], String)]) {
       case (result, groupedApi: ProcessApi[?, ?, ?]) =>
         result ++ (groupedApi.apis :+ groupedApi).map(_ -> groupedApi.name)
-      case (result, groupedApi: GroupedApi) =>
+      case (result, groupedApi: GroupedApi)          =>
         result ++ groupedApi.apis.map(_ -> groupedApi.name)
-      case (result, _) =>
+      case (result, _)                               =>
         result
     }.distinct
 

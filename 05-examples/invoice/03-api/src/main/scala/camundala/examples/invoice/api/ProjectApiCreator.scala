@@ -34,13 +34,13 @@ object ProjectApiCreator extends DefaultApiCreator:
       ReviewInvoice.AssignReviewerUT.example,
       ReviewInvoiceUT
     ),
-    group("Workers")(
+    group("Workers", "All my super Workers")(
       StarWarsPeopleDetail.example
         .withOutExample("Success", StarWarsPeopleDetail.Out.Success())
         .withOutExample("Failure", StarWarsPeopleDetail.Out.Failure()),
       api(ArchiveInvoice.example)
     ),
-    group("User Tasks")(
+    group("User Tasks", "All the User Interfaces.")(
       api(ApproveInvoiceUT), // api( is optional
       InvoiceReceipt.PrepareBankTransferUT.example,
       ReviewInvoice.AssignReviewerUT.example,

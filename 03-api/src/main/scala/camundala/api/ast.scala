@@ -10,10 +10,18 @@ import scala.annotation.targetName
 import scala.reflect.ClassTag
 import scala.util.Random
 
-case class ApiDoc(apis: List[CApi])
+case class ApiDoc(apis: List[CApi]):
+  lazy val groupTags: List[ApiTag] = apis.flatMap(_.groupTag)
+end ApiDoc
+
+case class ApiTag(name: String, description: String, `x-displayName`: String)
+object ApiTag:
+  given InOutCodec[ApiTag] = deriveInOutCodec
+//  given ApiSchema[ApiTag] = deriveApiSchema // problem with magnolia
 
 sealed trait CApi:
   def name: String
+  def groupTag: Option[ApiTag] = None
 
 sealed trait GroupedApi extends CApi:
   def name: String
@@ -28,10 +36,10 @@ sealed trait InOutApi[
   def inOut: InOut[In, Out, ?]
   def apiExamples: ApiExamples[In, Out]
   lazy val inOutDescr: InOutDescr[In, Out] = inOut.inOutDescr
-  lazy val id: String = inOutDescr.id
-  lazy val descr: String = inOut.descr.getOrElse("")
-  lazy val typeName: String = inOut.typeName
-  lazy val inOutType: InOutType = inOut.inOutType
+  lazy val id: String                      = inOutDescr.id
+  lazy val descr: String                   = inOut.descr.getOrElse("")
+  lazy val typeName: String                = inOut.typeName
+  lazy val inOutType: InOutType            = inOut.inOutType
 
   def withExamples(
       examples: ApiExamples[In, Out]
@@ -55,11 +63,11 @@ sealed trait InOutApi[
 
   lazy val inJson: Option[Json] = inOut.in match
     case _: NoInput => None
-    case _ => Some(inOut.in.asJson.deepDropNullValues)
+    case _          => Some(inOut.in.asJson.deepDropNullValues)
 
   lazy val outJson: Option[Json] = inOut.out match
     case _: NoInput => None
-    case _ => Some(inOut.out.asJson.deepDropNullValues)
+    case _          => Some(inOut.out.asJson.deepDropNullValues)
 
   lazy val variableNamesIn: List[String] =
     inOut.in.productElementNames.toList
@@ -83,13 +91,13 @@ sealed trait InOutApi[
       diagramDownloadPath: String,
       diagramNameAdjuster: Option[String => String]
   ): String =
-    val postfix = if typeName == "Process" then "bpmn" else "dmn"
-    val postfixUpper = postfix.head.toUpper + postfix.tail
+    val postfix         = if typeName == "Process" then "bpmn" else "dmn"
+    val postfixUpper    = postfix.head.toUpper + postfix.tail
     val pureDiagramName = diagramName.getOrElse(id)
-    val name =
+    val name            =
       diagramNameAdjuster.map(_(pureDiagramName)).getOrElse(pureDiagramName)
-    val fileName = s"$name.$postfix"
-    val randomPostfix = Random.nextInt(100000)
+    val fileName        = s"$name.$postfix"
+    val randomPostfix   = Random.nextInt(100000)
     s"""
        |<div class="diagramCanvas">
        |  <div class="diagram" id="$name-$randomPostfix">
@@ -135,7 +143,7 @@ case class ProcessApi[
        |
        |${inOut.in match
         case _: GenericServiceIn => "" // no diagram if generic
-        case _ =>
+        case _                   =>
           diagramDownloadPath
             .map(diagramFrame(_, diagramNameAdjuster))
             .getOrElse("")
@@ -143,7 +151,7 @@ case class ProcessApi[
        |${generalVariablesDescr(inOut.out, "")}""".stripMargin
 
       // this function needs to be here as circe does not find the JsonEncoder in the extension method
-  lazy val initInMapper: EndpointIO.Body[String, InitIn] = jsonBody[InitIn]
+  lazy val initInMapper: EndpointIO.Body[String, InitIn]                = jsonBody[InitIn]
 
 end ProcessApi
 
@@ -200,7 +208,7 @@ sealed trait ExternalTaskApi[
   def inOut: ExternalTask[In, Out, ?]
 
   def processName: String = inOut.processName
-  lazy val topicName = inOut.topicName
+  lazy val topicName      = inOut.topicName
 
   override def apiDescription(
       diagramDownloadPath: Option[String],
@@ -257,7 +265,7 @@ case class ServiceWorkerApi[
     inOut.defaultServiceOutMock match
       case seq: Seq[?] =>
         s"Seq[${seq.head.getClass.getName.replace("$", " > ")}]"
-      case other => other.getClass.getName.replace("$", " > ")
+      case other       => other.getClass.getName.replace("$", " > ")
 end ServiceWorkerApi
 
 object ServiceWorkerApi:
@@ -342,10 +350,12 @@ end DecisionDmnApi
 
 case class CApiGroup(
     name: String,
+    description: String,
     apis: List[InOutApi[?, ?]]
 ) extends GroupedApi:
 
   def withApis(apis: List[InOutApi[?, ?]]): CApiGroup = copy(apis = apis)
+  override def groupTag: Option[ApiTag] = Some(ApiTag(name, description, name))
 
 end CApiGroup
 
