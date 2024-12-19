@@ -14,6 +14,7 @@ object ProjectApiCreator extends DefaultApiCreator:
   protected val title = "Demos Example Process API"
 
   protected val version = "1.0"
+  lazy val companyProjectVersion: String = "0.1.0"
 
   lazy val companyDescr: ExampleName = ""
   lazy val projectDescr: ExampleName = ""

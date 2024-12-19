@@ -11,11 +11,11 @@ case class CompanyScriptCreator()(using config: DevConfig):
        |//> using toolkit 0.5.0
        |//> using dep io.github.pme123::camundala-helper:${VersionHelper.camundalaVersion}
        |
-       |import camundala.helper.dev.DevCompanyRunner
+       |import camundala.helper.dev.DevCompanyHelper
        |
        |   @main
        |   def run(command: String, arguments: String*): Unit =
-       |     DevCompanyRunner.run(command, arguments*)
+       |     DevCompanyHelper.run(command, arguments*)
        |""".stripMargin
 
   lazy val companyCamundalaHelper =

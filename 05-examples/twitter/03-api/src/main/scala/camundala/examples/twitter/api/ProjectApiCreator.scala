@@ -15,7 +15,7 @@ object ProjectApiCreator extends DefaultApiCreator:
 
   val version = "1.0"
 
-  lazy val companyDescr: String = ""
+  lazy val companyProjectVersion: String = "0.1.0"
   lazy val projectDescr: String = ""
 
   document(

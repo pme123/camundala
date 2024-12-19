@@ -1,5 +1,6 @@
 package camundala.helper.openApi
 
+import camundala.api.ApiConfig
 import camundala.helper.util.ModuleConfig
 
 case class OpenApiConfig(

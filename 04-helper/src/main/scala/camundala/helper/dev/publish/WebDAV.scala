@@ -58,8 +58,8 @@ case class ProjectWebDAV(projectName: String, apiConfig: ApiConfig, publishConfi
       end try
       // create new
       sardine.createDirectory(projectUrl)
-      sardine.put(s"${apiConfig.openApiDocuPath}", openApiHtml, contentTypeHtml)
-      sardine.put(s"${apiConfig.openApiPath}", openApiYml, contentTypeYaml)
+      sardine.put(s"$projectUrl/OpenApi.html", openApiHtml, contentTypeHtml)
+      sardine.put(s"$projectUrl/OpenApi.yml", openApiYml, contentTypeYaml)
       postmanApiYml.foreach(pApi =>
         sardine.put(
           s"$projectUrl/postmanCollection.json",
@@ -104,7 +104,7 @@ case class ProjectWebDAV(projectName: String, apiConfig: ApiConfig, publishConfi
   private lazy val openApiHtml =
     os.read.inputStream(publishConfig.openApiHtmlPath)
   private lazy val openApiYml = os
-    .read(os.pwd / "openApi.yml")
+    .read(apiConfig.openApiPath)
     .getBytes(StandardCharsets.UTF_8)
   private lazy val postmanApiYml =
     val path = os.pwd / "postmanCollection.json"

@@ -17,6 +17,7 @@ object TwitterApiCreator extends DefaultApiCreator:
   def title = "Twitter Process API C8"
 
   def version = "1.0"
+  lazy val companyProjectVersion: String = "0.1.0"
 
   document {
     api(twitterDemoProcess)(

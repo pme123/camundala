@@ -78,7 +78,7 @@ We can group our `api`s.
 - This creates a YAML file (Open API) with your documentation. 
 - In the console you find the paths to the created documentation.
 
-     - By default it's here: `YOUR_PROJECT_PATH/openApi.yml`
+     - By default it's here: `YOUR_PROJECT_PATH/OpenApi.yml`
      - There is also a link to an HTML (`YOUR_PROJECT_PATH/OpenApi.html`). 
        You can copy it from here [OpenApi.html](https://github.com/pme123/camundala-example/blob/master/OpenApi.html)
 - Open `OpenApi.html` in a webserver (e.g. from your IDE).
@@ -122,7 +122,7 @@ case class ApiConfig(
     endpoint: String = "http://localhost:8080/engine-rest",
     // Base Path of your project (if changed - all doc paths will be adjusted)
     basePath: os.Path = os.pwd,
-    openApiPath: os.Path = os.pwd / "openApi.yml",
+    openApiPath: os.Path = os.pwd / "OpenApi.yml",
     postmanOpenApiPath: os.Path = os.pwd / "postmanOpenApi.yml",
     openApiDocuPath: os.Path = os.pwd / "OpenApi.html",
     postmanOpenApiDocuPath: os.Path = os.pwd / "PostmanOpenApi.html",

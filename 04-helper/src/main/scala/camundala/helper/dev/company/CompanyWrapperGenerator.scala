@@ -43,7 +43,8 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
        |""".stripMargin
 
   private lazy val apiWrapper =
-    s"""package $companyName.camundala.api
+    s"""package $companyName.camundala
+       |package api
        |
        |/**
        | * Add here company specific stuff, to create the Api documentation and the Postman collection.
@@ -53,7 +54,7 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
        |  // override the config if needed
        |  protected def apiConfig: ApiConfig = CompanyApiCreator.apiConfig
        |
-       |  lazy val companyDescr = ??? //TODO Add your Company Description!
+       |  lazy val companyProjectVersion = BuildInfo.version
        |
        |object CompanyApiCreator:
        |   lazy val apiConfig = ApiConfig(companyId = "$companyName")

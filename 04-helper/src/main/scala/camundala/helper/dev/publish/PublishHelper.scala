@@ -1,9 +1,7 @@
 package camundala.helper.dev.publish
 
 import camundala.api.ApiConfig
-import camundala.helper.dev.publish.ChangeLogUpdater
 import camundala.helper.util.{DevConfig, Helpers, PublishConfig}
-import com.typesafe.config.{Config, ConfigFactory}
 
 case class PublishHelper()(using
     devConfig: DevConfig,

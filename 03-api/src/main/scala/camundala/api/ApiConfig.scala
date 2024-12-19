@@ -37,10 +37,10 @@ case class ApiConfig(
 ):
   val catalogPath: os.Path = basePath / catalogFileName
 
-  lazy val openApiPath: os.Path = basePath / "03-api" / "OpenApi.yml"
-  lazy val postmanOpenApiPath: os.Path = basePath / "03-api" / "PostmanOpenApi.yml"
-  lazy val openApiDocuPath: os.Path = basePath / "03-api" / "OpenApi.html"
-  lazy val postmanOpenApiDocuPath: os.Path = basePath / "03-api" / "PostmanOpenApi.html"
+  lazy val openApiPath: os.Path            = basePath / ApiConfig.openApiPath
+  lazy val postmanOpenApiPath: os.Path     = basePath / ApiConfig.postmanOpenApiPath
+  lazy val openApiDocuPath: os.Path        = basePath / ApiConfig.openApiHtmlPath
+  lazy val postmanOpenApiDocuPath: os.Path = basePath / ApiConfig.postmanOpenApiHtmlPath
 
   lazy val projectGroups: Seq[ProjectGroup] = projectsConfig.projectConfigs
     .map(_.group)
@@ -51,7 +51,7 @@ case class ApiConfig(
 
   def withBasePath(path: os.Path): ApiConfig =
     copy(
-      basePath = path,
+      basePath = path
     )
 
   def withEndpoint(ep: String): ApiConfig =
@@ -97,6 +97,11 @@ case class ApiConfig(
 
   lazy val projectConfPath: Path = basePath / projectsConfig.projectConfPath
 end ApiConfig
+object ApiConfig:
+  lazy val openApiPath: os.RelPath = os.rel / "03-api" / "OpenApi.yml"
+  lazy val postmanOpenApiPath: os.RelPath     = os.rel / "03-api" / "PostmanOpenApi.yml"
+  lazy val openApiHtmlPath: os.RelPath        = os.rel / "03-api" / "OpenApi.html"
+  lazy val postmanOpenApiHtmlPath: os.RelPath = os.rel / "03-api" / "PostmanOpenApi.html"
 
 case class ProjectsConfig(
     // Path, where the Git Projects are cloned - for dependency check.
@@ -157,10 +162,10 @@ case class ProjectsConfig(
 
     projectNames.find(refIdent.startsWith)
       .map(pn =>
-        refIdent.replace(s"$pn-", "") // case myCompany-myProject-myProcess
+        refIdent.replace(s"$pn-", "")  // case myCompany-myProject-myProcess
           .replace(s"$companyId-", "") // case myCompany-myProject > where no myProcess
       )
-      .orElse( // case myProject-myProcess
+      .orElse(          // case myProject-myProcess
         projectNames.map(_.replace(s"$companyId-", ""))
           .find(refIdent.startsWith)
           .map(pn =>
@@ -223,7 +228,7 @@ case class ProjectConfig(
     group: ProjectGroup,
     color: String = "#fff"
 ):
-  def absGitPath(gitDir: os.Path): os.Path = gitDir / name
+  def absGitPath(gitDir: os.Path): os.Path  = gitDir / name
   def absBpmnPath(gitDir: os.Path): os.Path = absGitPath(gitDir) / bpmnPath
 end ProjectConfig
 

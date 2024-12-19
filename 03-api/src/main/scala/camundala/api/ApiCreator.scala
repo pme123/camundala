@@ -1,7 +1,9 @@
 package camundala.api
 
+import camundala.BuildInfo
 import camundala.bpmn.InputParams
 import camundala.domain.*
+import com.typesafe.config.ConfigFactory
 import io.circe.Encoder
 import sttp.apispec.openapi.*
 import sttp.apispec.openapi.circe.yaml.*
@@ -12,10 +14,11 @@ import sttp.tapir.docs.openapi.{OpenAPIDocsInterpreter, OpenAPIDocsOptions}
 import java.text.SimpleDateFormat
 import java.util.Date
 import scala.util.matching.Regex
+import scala.jdk.CollectionConverters.*
 
 trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
 
-  protected def companyDescr: String
+  protected def companyProjectVersion: String
   protected def projectDescr: String
 
   def supportedVariables: Seq[InputParams] =
@@ -254,6 +257,47 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
           matches.foldLeft(line)((a, b) => a.replace(b, s"[$b]($url/$b)"))
         replaceJira(changed, tail.toMap)
 
+  protected def packageConf =
+    if packageConfPath.toIO.exists() then
+      s"""# Package Configuration
+         |**Check all dependency trees here: [$projectName](../../dependencies/$projectName.html)**
+         |
+         |$dependencies
+         |
+         |<details>
+         |<summary>${apiConfig.projectsConfig.projectConfPath}</summary>
+         |<p>
+         |
+         |```
+         |
+         |${os.read(packageConfPath).trim}
+         |
+         |```
+         |
+         |</p>
+         |</details>
+         |""".stripMargin
+    else ""
+
+  protected def dependencies: String =
+
+    def docPortal(pckg: String) = apiConfig.docProjectUrl(pckg) / "OpenApi.html"
+
+    val projects       = apiConfig.projectsConfig.groupedConfigs.flatMap(_.projects)
+    println(s"Projects: $projects")
+    def documentations =
+      projects.map(pc => pc.name -> docPortal(pc.name)).toMap
+
+    s"""|### Dependencies:
+        |
+        |${
+         apiProjectConf.dependencies
+           .map(dep => s"- _**[${dep.name}](${documentations.getOrElse(dep.name, "NOT FOUND")})**_")
+           .mkString("\n")
+       }
+        |""".stripMargin
+  end dependencies
+
   protected def createReadme(): String =
     val readme = basePath / "README.md"
     if readme.toIO.exists() then
@@ -264,7 +308,6 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
 
   protected def description: String =
     s"""
-       |$companyDescr
        |
        |$projectDescr
        |
@@ -272,11 +315,18 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
        |
        |**See the [Camundala Documentation](https://pme123.github.io/camundala/)**
        |
+       |$packageConf
+       |
        |${createReadme()}
        |
        |${createChangeLog()}
        |
        |${createGeneralVariables()}
+       |
+       |> Created with:
+       |> - [camundala-api v${BuildInfo.version}](https://github.com/pme123/camundala)
+       |> - ${apiProjectConf.org}-camundala-api $companyProjectVersion
+       |> - ${apiProjectConf.org}-camundala-helper
        |
        |""".stripMargin
 
@@ -347,4 +397,8 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
   private def listOfStringsOrCommaSeparated(example: String) =
     s"""It is also possible to use a _comma separated_ String,
        |like `"$example"`""".stripMargin
+
+  private lazy val packageConfPath = apiConfig.basePath / apiConfig.projectsConfig.projectConfPath
+  private lazy val apiProjectConf  = ApiProjectConf(packageConfPath)
+
 end ApiCreator
