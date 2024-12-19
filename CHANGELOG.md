@@ -15,6 +15,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.26 - 2024-12-19
+### Changed 
+- Fixing missing OpenApi.yml / adding generic documentation in ApiCreator. - see [Commit](https://pme123@github.com/pme123/camundala/commit/aba43a7e53d6aedca80917ed02a1bf0bb0519930)
+- Added tags description in ApiCreator. - see [Commit](https://pme123@github.com/pme123/camundala/commit/866cfad7d1ebdb936ae21a4b9cbd6ef9dacdd577)
+- Updating Versions - see [Commit](https://pme123@github.com/pme123/camundala/commit/d1473c30267078397195dcaa97c69cf8007dd304)
+- Documenting company bpmn / api. - see [Commit](https://pme123@github.com/pme123/camundala/commit/622339dc44d641941acd93ddbfc993dc8add4f7f)
+- Merge remote-tracking branch 'origin/master' into develop - see [Commit](https://pme123@github.com/pme123/camundala/commit/eb5b8709c44ee28b3039746d69fd401b8b12e98d)
+- Merge pull request #117 from scala-steward/update/mdoc-2.6.2 - see [Commit](https://pme123@github.com/pme123/camundala/commit/eff93a8865662224d382de45453f530bf6d9ef44)
+- Merge pull request #113 from scala-steward/update/munit-1.0.3 - see [Commit](https://pme123@github.com/pme123/camundala/commit/bc9f94594f2b312cce76bdee911b0f57704b0122)
+- Update munit to 1.0.3 - see [Commit](https://pme123@github.com/pme123/camundala/commit/76a0578bc64f9e64a56f15fbcd0644e6c95239e4)
+- Update mdoc, sbt-mdoc to 2.6.2 - see [Commit](https://pme123@github.com/pme123/camundala/commit/0e82da1c0a7eaec1e9a90a15623fff4e007f3d33)
+- Documenting company bpmn / api. - see [Commit](https://pme123@github.com/pme123/camundala/commit/0ca11498125f474a0a76bf582f93049ec0b544f7)
+- Generated documentation. - see [Commit](https://pme123@github.com/pme123/camundala/commit/47f17802ba079f095788129ca2468ceb79f08154)
+- Merge branch 'develop' - see [Commit](https://pme123@github.com/pme123/camundala/commit/7d510c2d2ccd6b41f098d7dd5ab7cad87d52a4e3)
+
 ## 1.30.25 - 2024-12-16
 ### Changed 
 - Started documenting the Company level. - see [Commit](https://pme123@github.com/pme123/camundala/commit/2f4159cc90b2831b792e363237c0497f24d4cc36)
