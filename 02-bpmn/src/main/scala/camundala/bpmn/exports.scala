@@ -15,11 +15,11 @@ def toJsonString[T <: Product: InOutEncoder](product: T): String =
 @deprecated("Use `Optable`.")
 def maybe[T](value: T | Option[T]): Option[T] = value match
   case v: Option[?] => v.asInstanceOf[Option[T]]
-  case v => Some(v.asInstanceOf[T])
+  case v            => Some(v.asInstanceOf[T])
 
 inline def allFieldNames[T <: Enum | Product]: Seq[String] = ${ FieldNamesOf.allFieldNames[T] }
-inline def nameOfVariable(inline x: Any): String = ${ NameOf.nameOfVariable('x) }
-inline def nameOfType[A]: String = ${ NameOf.nameOfType[A] }
+inline def nameOfVariable(inline x: Any): String           = ${ NameOf.nameOfVariable('x) }
+inline def nameOfType[A]: String                           = ${ NameOf.nameOfType[A] }
 
 enum InputParams:
   // mocking
@@ -65,7 +65,7 @@ object GenericExternalTask:
   enum ProcessStatus:
     case succeeded, `404`, `400`, `output-mocked`, `validation-failed`
   object ProcessStatus:
-    given ApiSchema[ProcessStatus] = deriveEnumApiSchema
+    given ApiSchema[ProcessStatus]  = deriveEnumApiSchema
     given InOutCodec[ProcessStatus] = deriveEnumInOutCodec
 end GenericExternalTask
 
@@ -78,19 +78,19 @@ case class NoInConfig()
 
 object NoInConfig:
   given InOutCodec[NoInConfig] = deriveCodec
-  given ApiSchema[NoInConfig] = deriveApiSchema
+  given ApiSchema[NoInConfig]  = deriveApiSchema
 
 // ApiCreator that describes these variables
 case class GeneralVariables(
     // mocking
-    servicesMocked: Boolean = false, // Process only
-    mockedWorkers: Seq[String] = Seq.empty, // Process only
+    servicesMocked: Boolean = false,             // Process only
+    mockedWorkers: Seq[String] = Seq.empty,      // Process only
     outputMock: Option[Json] = None,
-    outputServiceMock: Option[Json] = None, // Service only
+    outputServiceMock: Option[Json] = None,      // Service only
     // mapping
-    manualOutMapping: Boolean = false, // Service only
-    outputVariables: Seq[String] = Seq.empty, // Service only
-    handledErrors: Seq[String] = Seq.empty, // Service only
+    manualOutMapping: Boolean = false,           // Service only
+    outputVariables: Seq[String] = Seq.empty,    // Service only
+    handledErrors: Seq[String] = Seq.empty,      // Service only
     regexHandledErrors: Seq[String] = Seq.empty, // Service only
     // authorization
     impersonateUserId: Option[String] = None
@@ -101,7 +101,7 @@ end GeneralVariables
 
 object GeneralVariables:
   given InOutCodec[GeneralVariables] = deriveCodec
-  given ApiSchema[GeneralVariables] = deriveApiSchema
+  given ApiSchema[GeneralVariables]  = deriveApiSchema
 end GeneralVariables
 
 lazy val regexHandledErrorsDescr =
@@ -112,7 +112,7 @@ Example: `['java.sql.SQLException', '"errorNr":20000']`
 """
 def typeDescription(obj: AnyRef) =
   s"The type of an Enum -> '**${enumType(obj)}**'. Just use the the enum type. This is needed for simple unmarshalling the JSON"
-def enumType(obj: AnyRef) =
+def enumType(obj: AnyRef)        =
   s"$obj"
 
 case class ProcessLabels(labels: Option[Seq[ProcessLabel]]):
@@ -127,13 +127,13 @@ case class ProcessLabels(labels: Option[Seq[ProcessLabel]]):
       .map:
         case ProcessLabel(k, v) => s" - $k: $v\n"
       .mkString
-  lazy val de: String =
+  lazy val de: String    =
     labels.toSeq.flatten
       .collectFirst:
         case ProcessLabel(k, v) if k == ProcessLabels.labelKeyDe =>
           v
       .getOrElse("-")
-  lazy val fr: String =
+  lazy val fr: String    =
     labels.toSeq.flatten
       .collectFirst:
         case ProcessLabel(k, v) if k == ProcessLabels.labelKeyFr =>
@@ -173,25 +173,35 @@ given valueDecoder: InOutDecoder[ValueSimple] with
 
 given InOutCodec[ValueSimple] = CirceCodec.from(valueDecoder, valueEncoder)
 
-lazy val NewName = """^.+\-(.+V.+\-(.+))$""".r // mycompany-myproject-myprocessV1-MyWorker
-lazy val OldName1 = """^.+\-(.+\.(post|get|patch|put|delete))$""".r // mycompany-myproject-myprocessV1.MyWorker.get - use NewName for the new naming convention
-lazy val OldName2 = """^.+\-(.+V.+\.(.+))$""".r // mycompany-myproject-myprocessV1.MyWorker - use NewName for the new naming convention
-lazy val OldName31 = """^.+\-.+(\-(.+\-..+\-.+))$""".r // mycompany-myproject-myprocess-other-MyWorker - use NewName for the new naming convention
-lazy val OldName32 = """^.+\-.+(\-(.+\-.+))$""".r // mycompany-myproject-myprocess-MyWorker - use NewName for the new naming convention
-lazy val OldName4 = """^.+\-.+\-(.+)$""".r // mycompany-myproject-myprocess.MyWorker - use NewName for the new naming convention
+lazy val NewName   = """^.+\-(.+V.+\-(.+))$""".r // mycompany-myproject-myprocessV1-MyWorker
+lazy val OldName1  =
+  """^.+\-(.+\.(post|get|patch|put|delete))$""".r // mycompany-myproject-myprocessV1.MyWorker.get or mycompany-myproject-MyWorker.get - use NewName for the new naming convention
+lazy val OldName2  =
+  """^.+\-(.+V.+\.(.+))$""".r                     // mycompany-myproject-myprocessV1.MyWorker - use NewName for the new naming convention
+lazy val OldName31 =
+  """^.+\-.+(\-(.+\-..+\-.+))$""".r               // mycompany-myproject-myprocess-other-MyWorker - use NewName for the new naming convention
+lazy val OldName32 =
+  """^.+\-.+(\-(.+\-.+))$""".r                    // mycompany-myproject-myprocess-MyWorker - use NewName for the new naming convention
+lazy val OldName4  =
+  """^.+\-.+\-(.+)$""".r                          // mycompany-myproject-myprocess.MyWorker - use NewName for the new naming convention
 
-def shortenName(name: String): String = name match
-  case OldName1(n, _) =>
-    n.split("\\.").drop(1).mkString(".")
-  case NewName(_, n) =>
-    n
-  case OldName2(_, n) =>
-    n
-  case OldName31(_, n) =>
-    n
-  case OldName32(_, n) =>
-    n
-  case OldName4(n) =>
-    n
-  case _ => // something else
-    name
+def shortenName(name: String): String =
+  name match
+    case OldName1(n, _)  if n.count(_ == '.') == 1 =>
+      n
+    case OldName1(n, _)  =>
+      println("OldName1+: " + n)
+      n.split("\\.").drop(1).mkString(".")
+    case NewName(_, n)   =>
+      println("NewName: " + n)
+      n
+    case OldName2(_, n)  =>
+      n
+    case OldName31(_, n) =>
+      n
+    case OldName32(_, n) =>
+      n
+    case OldName4(n)     =>
+      n
+    case _               => // something else
+      name

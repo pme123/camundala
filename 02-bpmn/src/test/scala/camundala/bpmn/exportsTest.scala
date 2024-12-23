@@ -18,7 +18,11 @@ class exportsTest extends munit.FunSuite:
       shortenName("mycompany-myproject-myprocess.MyWorker.delete"),
       "MyWorker.delete"
     )
-
+  test("mycompany-myproject-myworker.post OLD1"):
+    assertEquals(
+      shortenName("mycompany-myproject-myworker.post"),
+      "myworker.post"
+    )
   test("mycompany-myproject-myprocessV1.MyWorker OLD2"):
     assertEquals(
       shortenName("mycompany-myproject-myprocessV1.MyWorker"),
@@ -56,6 +60,7 @@ class exportsTest extends munit.FunSuite:
       shortenName("mycompany-myproject.myprocess.GetMyWorker"),
       "mycompany-myproject.myprocess.GetMyWorker"
     )
+
 
 
 end exportsTest
