@@ -11,7 +11,7 @@ object TwitterApiCreator extends DefaultApiCreator:
   override val apiConfig: ApiConfig =
     ApiConfig("demoCompany")
       .withBasePath(os.pwd / "05-examples" / "twitter" / "camunda8")
-      .withDocProjectUrl(project => s"https://webstor.ch/camundala/myCompany/$project")
+      .withDocBaseUrl("https://webstor.ch/camundala/myCompany")
       .withPort(8887)
 
   def title = "Twitter Process API C8"

@@ -10,11 +10,12 @@ chmod +x helper.scala
 ```
 
 @:callout(info)
-To update this project, use `../helperCompany init` - see  [Init Company].
+To update this project, use `cd ..` and then `./helperCompany init` - see  [Init Company].
 @:@
 
 ## publish
-
+TODO
 ## prepareDocs
-
+TODO
 ## publishDocs
+TODO

@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter
 trait DocCreator extends DependencyCreator, Helpers:
 
   protected def publishConfig: Option[PublishConfig]
-  protected def gitBasePath: os.Path = apiConfig.projectsConfig.gitDir
+  protected def gitBasePath: os.Path = apiConfig.tempGitDir
   protected def configs: Seq[ApiProjectConf] = setupConfigs()
   lazy val projectConfigs: Seq[ProjectConfig] =
     apiConfig.projectsConfig.projectConfigs
@@ -54,7 +54,7 @@ trait DocCreator extends DependencyCreator, Helpers:
                       |%}
                       |## Catalog
                       |${projectConfigs
-                       .map { case pc @ ProjectConfig(projectName, _, _, _, _) =>
+                       .map { case pc @ ProjectConfig(projectName, _, _) =>
                          val path = pc.absGitPath(gitBasePath) / catalogFileName
                          if os.exists(path) then
                            os.read(path)
@@ -263,7 +263,7 @@ trait DocCreator extends DependencyCreator, Helpers:
     val projectChangelogs = mergeConfigs
       .sortBy(_.name)
       .map(c => s"""
-                   |## [${c.name}](${apiConfig.docProjectUrl(c.name)}/OpenApi.html)
+                   |## [${c.name}](s"${apiConfig.docBaseUrl}/${c.name}/OpenApi.html")
                    |${extractChangelog(c)}
                    |""".stripMargin)
       .mkString("\n")

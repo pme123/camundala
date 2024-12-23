@@ -75,10 +75,7 @@ sealed trait InOutApi[
   lazy val variableNamesOut: List[String] =
     inOut.out.productElementNames.toList
 
-  def apiDescription(
-      diagramDownloadPath: Option[String],
-      diagramNameAdjuster: Option[String => String]
-  ): String =
+  def apiDescription(companyName: String): String =
     s"""$descr
        |
        |- Input:  `${inOut.in.getClass.getName.replace("$", " > ")}`
@@ -87,15 +84,11 @@ sealed trait InOutApi[
 
   protected def diagramName: Option[String] = None
 
-  protected def diagramFrame(
-      diagramDownloadPath: String,
-      diagramNameAdjuster: Option[String => String]
-  ): String =
+  protected def diagramFrame(companyName: String): String =
     val postfix         = if typeName == "Process" then "bpmn" else "dmn"
     val postfixUpper    = postfix.head.toUpper + postfix.tail
     val pureDiagramName = diagramName.getOrElse(id)
-    val name            =
-      diagramNameAdjuster.map(_(pureDiagramName)).getOrElse(pureDiagramName)
+    val name            = pureDiagramName.replaceFirst(s"$companyName-", "")
     val fileName        = s"$name.$postfix"
     val randomPostfix   = Random.nextInt(100000)
     s"""
@@ -105,7 +98,7 @@ sealed trait InOutApi[
        |  </div>
        |</div>
        |
-       |Download: [$fileName]($diagramDownloadPath/$fileName)
+       |Download: [$fileName](diagrams/$fileName)
        |
        |
        |<div>
@@ -135,23 +128,18 @@ case class ProcessApi[
   ): InOutApi[In, Out] =
     copy(apiExamples = examples)
 
-  override def apiDescription(
-      diagramDownloadPath: Option[String],
-      diagramNameAdjuster: Option[String => String]
-  ): String =
-    s"""${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
+  override def apiDescription(companyName:String): String =
+    s"""${super.apiDescription(companyName)}
        |
        |${inOut.in match
         case _: GenericServiceIn => "" // no diagram if generic
         case _                   =>
-          diagramDownloadPath
-            .map(diagramFrame(_, diagramNameAdjuster))
-            .getOrElse("")
+          diagramFrame(companyName)
       }
        |${generalVariablesDescr(inOut.out, "")}""".stripMargin
 
       // this function needs to be here as circe does not find the JsonEncoder in the extension method
-  lazy val initInMapper: EndpointIO.Body[String, InitIn]                = jsonBody[InitIn]
+  lazy val initInMapper: EndpointIO.Body[String, InitIn] = jsonBody[InitIn]
 
 end ProcessApi
 
@@ -210,14 +198,11 @@ sealed trait ExternalTaskApi[
   def processName: String = inOut.processName
   lazy val topicName      = inOut.topicName
 
-  override def apiDescription(
-      diagramDownloadPath: Option[String],
-      diagramNameAdjuster: Option[String => String]
-  ): String =
+  override def apiDescription(companyName: String): String =
     s"""
        |**Topic:** `$topicName` (to define in the _**Topic**_ of the _**External Task**_ > _Service Task_ of type _External_)
        |
-       |${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
+       |${super.apiDescription(companyName)}
        |
        |You can test this worker using the generic process _**$GenericExternalTaskProcessName**_ (e.g. with Postman).
        |""".stripMargin
@@ -239,13 +224,10 @@ case class ServiceWorkerApi[
   ): InOutApi[In, Out] =
     copy(apiExamples = examples)
 
-  override def apiDescription(
-      diagramDownloadPath: Option[String],
-      diagramNameAdjuster: Option[String => String]
-  ): String =
+  override def apiDescription(companyName: String): String =
     s"""
        |
-       |${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
+       |${super.apiDescription(companyName)}
        |- ServiceOut:  `$serviceOutDescr`
        |${generalVariablesDescr(
         inOut.out,
@@ -327,16 +309,9 @@ case class DecisionDmnApi[
   def toActivityApi: ActivityApi[In, Out] =
     ActivityApi(name, inOut)
 
-  override def apiDescription(
-      diagramDownloadPath: Option[String],
-      diagramNameAdjuster: Option[String => String]
-  ): String =
-    s"""${super.apiDescription(diagramDownloadPath, diagramNameAdjuster)}
-       |
-       |${diagramDownloadPath
-        .map(diagramFrame(_, diagramNameAdjuster))
-        .getOrElse("")}
-       |""".stripMargin
+  override def apiDescription(companyName: String): String =
+    s"""${super.apiDescription(companyName)}
+       |${diagramFrame(companyName: String)}""".stripMargin
 end DecisionDmnApi
 
 object DecisionDmnApi:
@@ -355,7 +330,7 @@ case class CApiGroup(
 ) extends GroupedApi:
 
   def withApis(apis: List[InOutApi[?, ?]]): CApiGroup = copy(apis = apis)
-  override def groupTag: Option[ApiTag] = Some(ApiTag(name, description, name))
+  override def groupTag: Option[ApiTag]               = Some(ApiTag(name, description, name))
 
 end CApiGroup
 

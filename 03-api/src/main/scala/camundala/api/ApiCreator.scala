@@ -281,9 +281,9 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
 
   protected def dependencies: String =
 
-    def docPortal(pckg: String) =  s"${apiConfig.docProjectUrl(pckg)}/OpenApi.html"
+    def docPortal(projectName: String) =  s"${apiConfig.docBaseUrl}/$projectName/OpenApi.html"
 
-    val projects       = apiConfig.projectsConfig.groupedConfigs.flatMap(_.projects)
+    val projects       = apiConfig.projectsConfig.perGitRepoConfigs.flatMap(_.projects)
     println(s"Projects: $projects")
     def documentations =
       projects.map(pc => pc.name -> docPortal(pc.name)).toMap

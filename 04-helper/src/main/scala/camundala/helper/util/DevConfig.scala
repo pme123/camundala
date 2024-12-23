@@ -6,29 +6,27 @@ import camundala.helper.util.ReposConfig
 import os.RelPath
 
 case class DevConfig(
-                      projectName: String,
-                      baseDir: os.Path = os.pwd,
-                      modules: Seq[ModuleConfig] = DevConfig.modules,
-                      subProjects: Seq[String] = Seq.empty,
-                      apiProjectConf: ApiProjectConf,
-                      versionConfig: VersionConfig = VersionConfig(),
-                      reposConfig: ReposConfig = ReposConfig.dummyRepos,
-                      // path where the BPMNs are - must be relative to the project path
-                      bpmnPath: os.RelPath = os.rel / "src" / "main" / "resources",
-                      sbtDockerSettings: Option[String] = None
+    projectName: String,
+    baseDir: os.Path = os.pwd,
+    modules: Seq[ModuleConfig] = DevConfig.modules,
+    subProjects: Seq[String] = Seq.empty,
+    apiProjectConf: ApiProjectConf,
+    versionConfig: VersionConfig = VersionConfig(),
+    reposConfig: ReposConfig = ReposConfig.dummyRepos,
+    sbtDockerSettings: Option[String] = None
 ):
-  lazy val companyName: String = apiProjectConf.org
-  lazy val companyClassName: String = companyName.head.toUpper + companyName.tail
-  lazy val projectShortName: String = projectName.split("-").tail.mkString("-")
+  lazy val companyName: String            = apiProjectConf.org
+  lazy val companyClassName: String       = companyName.head.toUpper + companyName.tail
+  lazy val projectShortName: String       = projectName.split("-").tail.mkString("-")
   lazy val projectClassNames: Seq[String] = projectName.split("-").map(n => n.head.toUpper + n.tail)
-  lazy val projectShortClassName: String = projectClassNames.last
-  lazy val projectClassName: String = projectClassNames.mkString
+  lazy val projectShortClassName: String  = projectClassNames.last
+  lazy val projectClassName: String       = projectClassNames.mkString
 
   lazy val projectDir: os.Path = DevConfig.projectDir(projectName, baseDir)
 
-  lazy val projectPackage: String = projectName.split("-").mkString(".")
+  lazy val projectPackage: String  = projectName.split("-").mkString(".")
   lazy val projectPath: os.RelPath = os.rel / projectName.split("-")
-  lazy val sbtProjectDir: os.Path = projectDir / "project"
+  lazy val sbtProjectDir: os.Path  = projectDir / "project"
 
   def dependsOn(level: Int): String =
     val depsOn = modules
@@ -49,8 +47,7 @@ object DevConfig:
       packageConfRelPath: os.RelPath,
       versionConfig: VersionConfig,
       reposConfig: ReposConfig,
-      sbtDockerSettings: String,
-      bpmnPath: os.RelPath
+      sbtDockerSettings: String
   ): DevConfig = new DevConfig(
     projectName,
     subProjects = subProjects,
@@ -58,8 +55,7 @@ object DevConfig:
       ApiProjectConf.init(projectName, projectDir(projectName, os.pwd) / packageConfRelPath),
     versionConfig = versionConfig,
     reposConfig = reposConfig,
-    sbtDockerSettings = Some(sbtDockerSettings),
-    bpmnPath = bpmnPath
+    sbtDockerSettings = Some(sbtDockerSettings)
   )
 
   def defaultConfig(projectName: String): DevConfig = DevConfig(
@@ -104,8 +100,8 @@ case class ModuleConfig(
       subProject: Option[String] = None,
       isSourceDir: Boolean = true
   ): RelPath =
-    val subPackage = subProject.toSeq
-    val subModule = if generateSubModule then subPackage else Seq.empty
+    val subPackage       = subProject.toSeq
+    val subModule        = if generateSubModule then subPackage else Seq.empty
     val sourceOrResource =
       if isSourceDir
       then os.rel / "scala" / projectPath / name / subPackage
@@ -124,18 +120,18 @@ case class ModuleConfig(
 end ModuleConfig
 
 object ModuleConfig:
-  lazy val bpmnModule = ModuleConfig(
+  lazy val bpmnModule       = ModuleConfig(
     "bpmn",
     level = 2,
     testType = TestType.MUnit,
     generateSubModule = true,
     hasProjectDependencies = true
   )
-  lazy val apiModule = ModuleConfig(
+  lazy val apiModule        = ModuleConfig(
     "api",
     level = 3
   )
-  lazy val dmnModule = ModuleConfig(
+  lazy val dmnModule        = ModuleConfig(
     "dmn",
     level = 3,
     doPublish = false
@@ -146,7 +142,7 @@ object ModuleConfig:
     testType = TestType.Simulation,
     doPublish = false
   )
-  lazy val workerModule = ModuleConfig(
+  lazy val workerModule     = ModuleConfig(
     "worker",
     level = 3,
     testType = TestType.MUnit,
@@ -154,7 +150,7 @@ object ModuleConfig:
     sbtPlugins = Seq("DockerPlugin", "JavaAppPackaging"),
     hasProjectDependencies = true
   )
-  lazy val helperModule = ModuleConfig(
+  lazy val helperModule     = ModuleConfig(
     "helper",
     level = 4
   )
@@ -165,13 +161,13 @@ enum TestType:
   case MUnit, Simulation, None
 
 case class VersionConfig(
-                          scalaVersion: String = BuildInfo.scalaVersion,
-                          camundalaVersion: String = BuildInfo.version,
-                          companyCamundalaVersion: String = "0.1.0-SNAPSHOT",
-                          camundaVersion: String = BuildInfo.camundaVersion,
-                          sbtVersion: String = BuildInfo.sbtVersion,
-                          springBootVersion: String = BuildInfo.springBootVersion,
-                          jaxbXmlVersion: String = BuildInfo.jaxbApiVersion,
-                          munitVersion: String = BuildInfo.mUnitVersion,
-                          otherVersions: Map[String, String] = Map.empty
+    scalaVersion: String = BuildInfo.scalaVersion,
+    camundalaVersion: String = BuildInfo.version,
+    companyCamundalaVersion: String = "0.1.0-SNAPSHOT",
+    camundaVersion: String = BuildInfo.camundaVersion,
+    sbtVersion: String = BuildInfo.sbtVersion,
+    springBootVersion: String = BuildInfo.springBootVersion,
+    jaxbXmlVersion: String = BuildInfo.jaxbApiVersion,
+    munitVersion: String = BuildInfo.mUnitVersion,
+    otherVersions: Map[String, String] = Map.empty
 )

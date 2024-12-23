@@ -205,3 +205,5 @@ def shortenName(name: String): String =
       n
     case _               => // something else
       name
+
+lazy val diagramPath: os.RelPath = os.rel / "src" / "main" / "resources" / "camunda"

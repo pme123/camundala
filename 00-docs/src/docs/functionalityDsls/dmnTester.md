@@ -218,7 +218,7 @@ Example of a general Tester you can use for all project, that also starts the DM
 ```scala
 trait MyCompanyDmnTester extends DmnTesterConfigCreator, DmnTesterStarter:
 
-  private def localDmnPath = os.pwd / "src" / "main" / "resources" / "camunda"
+  private def localDmnPath = os.pwd / diagramPath
 
   override protected def starterConfig: DmnTesterStarterConfig =
     DmnTesterStarterConfig(

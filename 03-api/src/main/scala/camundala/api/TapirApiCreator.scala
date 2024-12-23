@@ -121,10 +121,8 @@ trait TapirApiCreator extends AbstractApiCreator:
           .in(path(eTag))
           .summary(endpointName)
           .description(
-            inOutApi.apiDescription(
-              apiConfig.diagramDownloadPath,
-              apiConfig.diagramNameAdjuster
-            ) + additionalDescr.getOrElse("")
+            inOutApi.apiDescription(apiConfig.companyName) +
+              additionalDescr.getOrElse("")
           )
           .head
       ).map(ep => inOutApi.toInput.map(ep.in).getOrElse(ep))
