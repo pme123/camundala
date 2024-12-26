@@ -127,15 +127,15 @@ All other information is taken automatically from the _ApiProjectConf_.
 
 With the API Creator you get a lot of features out of the box.
 
-#### README
+### README
 If you have a read me in your base path (`config.basePath / "README.md`),
 we integrate it automatically in the documentation - as a visible part.
 
-#### CHANGELOG
+### CHANGELOG
 If you have a change log in your base path (`config.basePath / "CHANGELOG.md`),
 we integrate it automatically in the documentation - as a collapsed part.
 
-#### General Variables
+### General Variables
 General variables that are supported in any Process- and/or ExternalTask-Worker are documented - in a collapsed part.
 By default, the following Variables are supported:
 
@@ -175,7 +175,7 @@ If you only want to support some of them, you can override them:
   )
 ```
 
-#### Jira Tickets
+### Jira Tickets
 We replace configured JIRA Ticket pattern with its URL.
 
 Configuration:
@@ -192,7 +192,7 @@ Now in the Change Log all occurrences of the regex `JIRA_PROJECT-(\\d+)` (-> `JI
 will be replaced with `[JIRA_TICKET]($url/JIRA_TICKET)`.
 In the generated documentation this is a link to the according Jira ticket.
 
-#### BPMN diagrams
+### BPMN diagrams
 BPMN- and DMN diagrams are integrated in the documentation.
 
 They are referenced in the OpenApi.html and can be opened directly from there. 
@@ -204,4 +204,62 @@ There are 3 ways:
 
 @:callout(info)
 This is only working if you upload your BPMN- and DMN-diagrams to a Web server (via WebDAV).
+@:@
+
+
+### Project dependencies
+To know where your process is used and what processes your process is using, is very helpful.
+It works for **BPMN**s and **DMN**s.
+
+Camundala will clone or update all configured projects:
+
+`ProjectsConfig.perGitRepoConfigs/$project.git` into `ApiConfig.tempGitDir`
+
+for example:
+
+`https://github.com/mycompany/mycompany-myproject.git` -> `../../git-temp/mycompany-myproject`.
+
+It creates bullet lists grouped by projects:
+
+---
+Used in 2 Project(s)
+
+- myProjectA
+    - Process: myProcessAA
+    - Process: myProcessAC
+
+- myProjectB
+    - Process: myProcessBA
+
+Uses 1 Project(s)
+
+- myHelperProject
+    - Process: myHelperProcess
+    - DMN: myHelperDMN
+    - Worker: myWorkerAA
+    - DMN: myDMNAA
+    - UserTask: myUserTaskAA
+
+---
+
+#### Used Dependency Resolution
+For each Process (BPMN):
+
+- Takes the id of the DMN or BPMN.
+- Checks all DMNs and BPMNs of all configured projects, if they refer this id.
+- Lists these DMNs and BPMNs, grouped by their projects.
+
+#### Uses Dependency Resolution
+
+For each Process (BPMN or DMN):
+
+- Extracts all referred ids of DMNs and BPMNs.
+- Lists the DMNs and BPMNs, grouped by their projects - Generic Service Processes are listed by their service name.
+
+@:callout(info)
+The BPMNs and DMNs are resolved by their ids. So it is essential that the ids are unique.
+
+This is done by following naming conventions.
+You can easily enforce that by using the provided generators, see [Generate Process/-Elements].
+
 @:@

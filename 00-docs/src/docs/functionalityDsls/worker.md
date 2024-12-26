@@ -44,7 +44,7 @@ TODO
 This is the same in every worker type.
 TODO
 
-```scala
+
 ## Init Process Worker
 The _Init Process Worker_ is a special _Worker_ that is used to start a process.
 

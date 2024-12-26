@@ -13,35 +13,26 @@ To have accurate and not outdated documentation is a challenge.
 The closest you can get, is when your running- or tested code is the documentation.
 
 And this is what we do here!
-Together with the [Simulations] you get the most accurate documentation possible without having too much work.
+Together with the [Simulations] and the [Workers] you get the most accurate documentation possible without having too much work.
 
 ## Getting Started
-The documentation uses the BPMNs you created - in this context I refer to the [Bpmn DSL](../bpmnDsl.md)
+The documentation uses the BPMNs you created - in this context I refer to the [Bpmn DSL].
 
 Let's start with a basic example:
 
 ```scala
 // put your api in a package of your project
-package camundala.examples.invoice
-
-// import camundala dependencies
-import camundala.api.*
-import camundala.bpmn.*
-
-// import the projects bpmns (Processes, UserTasks etc.)
-import camundala.examples.invoice.bpmn.*
-// import the projects domain (inputs and outputs)
-// - needed if you have additional infos (e.g.not needed for simulation)
-import camundala.examples.invoice.domain.*
+package camundala.examples.invoice.api
 
 // define an object that extends from a common Api Creator
 object ApiProjectCreator extends DefaultApiCreator:
   // technical name of the project
   val projectName = "invoice-example"
   // readable name of the project
-  protected val title = "Invoice Example Process API"
+  lazy val title = "Invoice Example Process API"
+  lazy val projectDescr = "This is the API Documentation for the Invoice Example Process."
   // version of your project
-  protected val version = "1.0"
+  lazy val version = "1.0"
 
   // the documentation
   document (
@@ -54,7 +45,7 @@ object ApiProjectCreator extends DefaultApiCreator:
       AssignReviewerUT,
       ReviewInvoiceUT
     ),
-    group("DMNs")(
+    group("DMNs", "All the DMNs")(
       InvoiceAssignApproverDMN
     )
   )
@@ -62,31 +53,34 @@ object ApiProjectCreator extends DefaultApiCreator:
 
 #### document
 This is the entry point for your documentation.
-Usually there is one documentation for a project.
-A document consists of one or more `api`s or `group`s.
+There is one documentation for a project.
+A document consists of one or more `api`s and/or `group`s.
 
 #### api
-Usually an api is the documentation of a process with its interactions or a DMN Decision.
+Usually there is an api for each process with its interactions, like DMN Decisions or User Tasks.
 
 #### group
-We can group our `api`s. 
+If you have no process to organize your Process Interactions, you can use a group.
+This is especially useful if you have only Workers (a shared Service project) or DMN Decisions.
+It is also possible to add a description to the group.
 
 ### Create the Documentation
-- In your _sbt-console_:  `run`
+- In your _sbt-console_:  `api/run`
 
      - If you have more runnable applications you need to choose the _ApiCreator_ class. 
 - This creates a YAML file (Open API) with your documentation. 
 - In the console you find the paths to the created documentation.
 
-     - By default it's here: `YOUR_PROJECT_PATH/OpenApi.yml`
-     - There is also a link to an HTML (`YOUR_PROJECT_PATH/OpenApi.html`). 
-       You can copy it from here [OpenApi.html](https://github.com/pme123/camundala-example/blob/master/OpenApi.html)
+     - By default, it's here: `YOUR_PROJECT_PATH/03-api/OpenApi.yml`
+     - There is also an HTML that wraps it (`YOUR_PROJECT_PATH/03-api/OpenApi.html` that is created with `./helper.scala update`.). 
+
 - Open `OpenApi.html` in a webserver (e.g. from your IDE).
   The parts of the document are described in the following chapters.
 
 ## Document
 ### Naming
-The DSL is using the names of your BPMN Processes just for Taging (grouping in the document structure).
+The DSL uses the `InOut.id` as the references throughout the documentation.
+For the `api` it uses the `Process.processName` also as the Tag (grouping in the document structure).
 
 Example:
 
@@ -110,37 +104,10 @@ The output variables are described in the _200_ (_ok_) response, as a status is 
 
 See [Postman Open API] for additional information.
 
+@:callout(info)
+There is an idea to provide a _Domain Driven Gateway_, so this will be more natural.
+@:@
 
-### Custom ApiCreator
-In General you will have your own Creator that holds the configuration, pattern for descriptions etc.
-Here is an example of a companies Creator:
-```scala
-trait MyCompanyApiCreator extends DefaultApiCreator :
-
-  // adjust the config with company specifics - see above
-  override protected def apiConfig: ApiConfig =
-    super.apiConfig
-      .with..
-
-  // takes the general descriptions and adds company specific stuff
-  override def description =
-    super.description.map(descr =>
-      s"""|$descr
-         |$postmanApi
-         |$changeLog
-         |$releasing
-         |""".stripMargin
-    )
-```
-Now in your department you can have yet another one:
-```scala
-trait MyDepartmenetApiCreator extends MyCompanyApiCreator :
-
-  // adjust the Company config with department specifics - see above
-  override protected def apiConfig: ApiConfig =
-    super.apiConfig
-      .with..
-```
 ## Apis
 Each Api defines its inputs and outputs, as well as if needed additional information.
 
@@ -184,36 +151,8 @@ This will create the following structure in  the doc:
 ### Input-/ Output-Variables
 The input- and output variables are taken from the domain model of the BPMN object.
 
-Example:
-```scala
-object ReviewInvoice extends BpmnDsl:
-  val processName = "example-invoice-c7-review"
-  
-  @description("Same Input as _InvoiceReceipt_, only different Mocking")
-  case class In(
-                       creditor: String = "Great Pizza for Everyone Inc.",
-                       amount: Double = 300.0,
-                       invoiceCategory: InvoiceCategory = InvoiceCategory.`Travel Expenses`,
-                       invoiceNumber: String = "I-12345",
-                       @description("You can let the Archive Service fail for testing.")
-                       shouldFail: Option[Boolean] = None,
-                       @description("You can mock me by providing the output.")
-                       outputMock: Option[Out] = None
-               )
-  
-  case class Out(
-                        @description("Flag that is set by the Reviewer")
-                        clarified: Boolean = true
-                )
-  ...
-  lazy val example: Process[In, Out] =
-    process(
-      id = processName,
-      descr = "This starts the Review Invoice Process.",
-      in = In(), // INPUT
-      out = Out() // OUTPUT
-    )
-```
+See [Bpmn DSL] for more information.
+
 This creates this input description documentation:
 
 ![api_inputs](images/api_inputs.png)
@@ -223,7 +162,7 @@ And it creates this output description documentation:
 ![api_outputs](images/api_outputs.png)
 
 ### Examples
-By default we create an example for the input- and one for the output variables.
+By default, we create an example for the input- and one for the output variables.
 You find them on the right side of your Api documentation.
 
 If you want to add more examples, you can do this the following ways:
@@ -284,114 +223,11 @@ private lazy val InvoiceAssignApproverDMN =
       )
 ```
 
-
-### Project dependencies
-To know where your process is used and what processes your process is using, is very helpful.
-
-Camundala uses Git for this and creates bullet lists grouped by projects:
-
-It works for **BPMN**s and **DMN**s.
-
-Used in 2 Project(s)
-
-- myProjectA
-    - myProcessAA
-    - myProcessAC
-
-- myProjectB
-  - myProcessBA
-
-Uses 1 Project(s)
-
-- myHelperProject
-   - myHelperProcess
-   - myHelperDMN
-
-#### GitConfigs
-All that is needed, is to configure the projects you want to check for dependencies.
-
-Example:
-
-```scala
-GitConfigs(
-  os.pwd / os.up / "git-temp",
-  Seq(
-    GitConfig(
-      cloneUrl = "https://github.com/mycompany",
-      projects = Seq(
-        "myHelperProject",
-        "myProject",
-        "myProjectA",
-        "myProjectB"
-      )
-    )
-  )
-)
-```
-This will clone or update these projects (`$cloneUrl/$project.git`) into `../../git-temp`, 
-for example `https://github.com/mycompany/myProject.git`.
-
-#### Used Dependency Resolution
-For each Process (BPMN):
-
-- Takes the id of the DMN or BPMN.
-- Checks all DMNs and BPMNs of all configured projects, if they refer this id.
-- Lists these DMNs and BPMNs, grouped by their projects.
-
-#### Uses Dependency Resolution
-@:callout(info)
-At the moment we refer BPMNs and DMNs like this:
-
-- `bpmnId`
-- `projectId:bpmnId`
-
-This is not standard Camunda and it involves adjustments of the BPMN/DMN during deployment.
-
-As ids must be unique, we will change this in the future and resolve the Ids by searching all configured project for these ids.
-
-TODO: implement.
-@:@
-
-For each Process (BPMN or DMN):
-
-- Extracts all referred ids of DMNs and BPMNs.
-- Lists the DMNs and BPMNs, grouped by their projects - Generic Service Processes are listed by their service name.
-
-
 ### Generic Service Process
 @:callout(info)
-At the moment we wrap all our REST API calls with a process. This may change in the future, as at the moment - processes is the only way to abstract over External Tasks in our company😢 (when adding additional functionality like mocking).
-
-However, it still makes sense to hide technical details and to document these Services, if you want to use them in more than one process.
+This is now _**DEPRECATED**_ and replaced by _Service Workers_.
+See [Service Worker].
 @:@
-For the usability of Services in a process, we create a _Generic Service Process_.
-
-```scala
-trait GenericServiceIn:
-  def serviceName: String
-```
-
-Just inherit this Trait in your input class:
-
-```scala
-object MyService
-  extends BpmnDsl: 
-    case class In(
-      ...
-      serviceName: String = "myService-get",
-      ...
-    ) extends GenericServiceIn
-  ...
-```
-
-This will adjust the following things in the API documentation:
-
-- No Bpmn Diagram is inlined.
-- Needed to find Usages in other Processes.
-
-And in the Postman API:
-
-- The _endpointName_ is just the _serviceName_, instead of _s"$endpointType: $\{inOutApi.id\}"_.
 
 ## Groups
 You can organize your Apis within Groups.
@@ -504,3 +340,4 @@ In the future we may provide a REST API that will work for both.
 
 This would also allow a painless transition to Camunda 8.
 @:@
+

@@ -50,7 +50,7 @@ object ProjectApiCreator extends DefaultApiCreator:
     group("DMNs")(
       api(InvoiceAssignApproverDMN2) // api( is optional)
       // InvoiceAssignApproverDMN3 // want be shown as only one DMN with the same id is shown in the API.
-    )
+    ),
   )
 
   override protected lazy val apiConfig: ApiConfig =
