@@ -104,6 +104,7 @@
   <p class="header"><a href="#">04-helper</a></p>
 
   <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#companydevhelper">CompanyDevHelper</a></li>
   </ul>
 
   <p class="footer"></p>
@@ -113,6 +114,22 @@
       <main class="content">
 
         <h1 id="_04-helper" class="title">04-helper</h1>
+        
+        <h3 id="companydevhelper" class="section"><a class="anchor-link left" href="#companydevhelper"><i class="icofont-laika link">&#xef71;</i></a>CompanyDevHelper</h3>
+        <p>With the <code>CompanyDevHelper</code> you can customize  <em>Camundala</em> for your Company:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">api</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">helper</span><span>.</span><span class="identifier">dev</span><span>.</span><span class="type-name">DevHelper</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">helper</span><span>.</span><span class="identifier">util</span><span>.*
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">CompanyDevHelper</span><span>(</span><span class="identifier">projectName</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">subProjects</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">Seq</span><span>.</span><span class="identifier">empty</span><span>)
+    </span><span class="keyword">extends</span><span> </span><span class="type-name">DevHelper</span><span>:
+
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">apiConfig</span><span>: </span><span class="type-name">ApiConfig</span><span> = </span><span class="type-name">ApiConfig</span><span>(</span><span class="string-literal">&quot;mycompany&quot;</span><span>)</span><span class="comment">//.withTenantId(&quot;mycompany&quot;)...
+</span><span>
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">deployConfig</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">DeployConfig</span><span>] = ???
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">devConfig</span><span>: </span><span class="type-name">DevConfig</span><span> = ???
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">dockerConfig</span><span>: </span><span class="type-name">DockerConfig</span><span> = ???
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">publishConfig</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">PublishConfig</span><span>] = ???</span></code></pre>
 
         
 <hr class="footer-rule"/>

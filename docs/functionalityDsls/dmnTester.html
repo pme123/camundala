@@ -107,7 +107,6 @@
     <li class="level1 nav-leaf"><a href="#why">Why</a></li>
     <li class="level1 nav-node"><a href="#get-started">Get Started</a></li>
     <li class="level2 nav-leaf"><a href="#run-the-dmn-tester">Run the DMN Tester</a></li>
-    <li class="level1 nav-leaf"><a href="#startdmntester">startDmnTester</a></li>
     <li class="level1 nav-node"><a href="#createdmnconfigs">createDmnConfigs</a></li>
     <li class="level2 nav-leaf"><a href="#testvalues">.testValues</a></li>
     <li class="level2 nav-leaf"><a href="#testunit">.testUnit</a></li>
@@ -143,14 +142,10 @@
 </span><span class="keyword">package</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">examples</span><span>.</span><span class="identifier">invoice</span><span>.</span><span class="identifier">dmn</span><span>
 </span><span class="comment">// import the projects bpmns (DMNs)
 </span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">examples</span><span>.</span><span class="identifier">invoice</span><span>.</span><span class="identifier">bpmn</span><span>.*
-</span><span class="comment">// import Camundala dmn DSL / the DMN Tester starter
-</span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">dmn</span><span>.{</span><span class="type-name">DmnTesterConfigCreator</span><span>, </span><span class="type-name">DmnTesterStarter</span><span>}
-</span><span class="comment">// define an object that extends ..  
+
 </span><span class="keyword">object</span><span> </span><span class="type-name">ProjectDmnTester</span><span> 
-  </span><span class="keyword">extends</span><span> </span><span class="type-name">DmnTesterConfigCreator</span><span>, </span><span class="comment">//  .. from a Config Creator DSL 
-</span><span>    </span><span class="type-name">DmnTesterStarter</span><span>, </span><span class="comment">// .. from a starter - that runs the DMN Tester automatically
-</span><span>    </span><span class="type-name">App</span><span>: </span><span class="comment">// .. to run the Application
-</span><span>      
+  </span><span class="keyword">extends</span><span> </span><span class="type-name">CompanyDmnTester</span><span>:
+      
       </span><span class="identifier">startDmnTester</span><span>()
 
       </span><span class="identifier">createDmnConfigs</span><span>(
@@ -169,11 +164,8 @@
         
         <h3 id="run-the-dmn-tester" class="section"><a class="anchor-link left" href="#run-the-dmn-tester"><i class="icofont-laika link">&#xef71;</i></a>Run the DMN Tester</h3>
         <p>In your <em>sbt-console</em>:</p>
-        <p><code>runMain camundala.examples.invoice.dmn.ProjectDmnTester</code></p>
-        
-        <h2 id="startdmntester" class="section"><a class="anchor-link left" href="#startdmntester"><i class="icofont-laika link">&#xef71;</i></a>startDmnTester</h2>
-        <p>Starts the Docker container. 
-        This makes the whole process pretty nice and fast. 
+        <p><code>dmn/run</code></p>
+        <p>This starts the Docker container and makes the whole process pretty nice and fast. 
         The following steps are done:</p>
         <ul>
           <li>Check if the Container is already running.</li>
@@ -186,10 +178,8 @@
         <p>A DSL to create the DMN Tester configurations.</p>
         <p>You start from the DMN, that you defined, here an example:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">InvoiceAssignApproverDMN</span><span> = </span><span class="identifier">collectEntries</span><span>(
-    </span><span class="identifier">decisionDefinitionKey</span><span> = </span><span class="string-literal">&quot;example-invoice-c7-assignApprover&quot;</span><span>,
     </span><span class="identifier">in</span><span> = </span><span class="type-name">SelectApproverGroup</span><span>(),
     </span><span class="identifier">out</span><span> = </span><span class="type-name">Seq</span><span>(</span><span class="type-name">ApproverGroup</span><span>.</span><span class="identifier">management</span><span>),
-    </span><span class="identifier">descr</span><span> = </span><span class="string-literal">&quot;Decision Table on who must approve the Invoice.&quot;</span><span>,
   )</span></code></pre>
         <p>Now you can add the following:</p>
         
@@ -223,11 +213,11 @@
         <h3 id="dmnpath" class="section"><a class="anchor-link left" href="#dmnpath"><i class="icofont-laika link">&#xef71;</i></a>.dmnPath</h3>
         <p>To support different naming schemes, you can adjust the DMN file name the following way:</p>
         <ul>
-          <li>Nothing to do, if the file name is <code>dmnBasePath / s&quot;${decisionId}.dmn&quot;</code>. (see configuration)</li>
+          <li>Nothing to do, if the file name is <code>dmnBasePath / s&quot;${decisionId.replace(&quot;mycompany-&quot;, &quot;&quot;)}.dmn&quot;</code>. (see configuration)</li>
           <li>
             The creation of the default path can be overridden: 
             <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">defaultDmnPath</span><span>(</span><span class="identifier">dmnName</span><span>: </span><span class="type-name">String</span><span>): </span><span class="identifier">os</span><span>.</span><span class="type-name">Path</span><span> =
-    </span><span class="identifier">dmnBasePath</span><span> / </span><span class="string-literal">s&quot;</span><span class="substitution">${dmnName.replace(&quot;myPrefix-&quot;, &quot;&quot;)}</span><span class="string-literal">.dmn&quot;</span></code></pre>
+    </span><span class="identifier">dmnBasePath</span><span> / </span><span class="string-literal">s&quot;</span><span class="substitution">$decisionId</span><span class="string-literal">.dmn&quot;</span></code></pre>
           </li>
           <li>
             A different name, but with the same <em>defaultDmnPath</em>:
@@ -268,63 +258,13 @@
         <p>In this example the input must be <code>A_dynamic_2</code> to match the first rule. 
         So it is a corner case if this is rather a test input.</p>
         <p>The output variable can be whatever you want.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>Be aware that you must run the DMN Tester again, whenever you made changes (<code>sbt dmn/run</code>).</p>
+        </div>
         
         <h2 id="configuration" class="section"><a class="anchor-link left" href="#configuration"><i class="icofont-laika link">&#xef71;</i></a>Configuration</h2>
-        <p>The following is the default configuration:</p>
-        <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">DmnTesterStarterConfig</span><span>(
-         </span><span class="comment">// the name of the container that will be started
-</span><span>         </span><span class="identifier">containerName</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;camunda-dmn-tester&quot;</span><span>,
-         </span><span class="comment">// path to where the configs should be created in
-</span><span>         </span><span class="identifier">dmnConfigPaths</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="identifier">os</span><span>.</span><span class="type-name">Path</span><span>] = </span><span class="type-name">Seq</span><span>(
-           </span><span class="identifier">projectBasePath</span><span> / </span><span class="string-literal">&quot;src&quot;</span><span> / </span><span class="string-literal">&quot;it&quot;</span><span> / </span><span class="string-literal">&quot;resources&quot;</span><span> / </span><span class="string-literal">&quot;dmnConfigs&quot;</span><span>
-         ),
-         </span><span class="comment">// paths where the DMNs are (could be different places)
-</span><span>         </span><span class="identifier">dmnPaths</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="identifier">os</span><span>.</span><span class="type-name">Path</span><span>] = </span><span class="type-name">Seq</span><span>(
-           </span><span class="identifier">projectBasePath</span><span> / </span><span class="string-literal">&quot;src&quot;</span><span> / </span><span class="string-literal">&quot;main&quot;</span><span> / </span><span class="string-literal">&quot;resources&quot;</span><span>
-         ),
-         </span><span class="comment">// the port the DMN Tester is started - e.g. http://localhost:8883
-</span><span>         </span><span class="identifier">exposedPort</span><span>: </span><span class="type-name">Int</span><span> = </span><span class="number-literal">8883</span><span>,
-         </span><span class="comment">// the image version of the DMN Tester
-</span><span>         </span><span class="identifier">imageVersion</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;latest&quot;</span><span>
- )</span></code></pre>
-        <p>You can override it via the following variables (you see the defaults):</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">starterConfig</span><span>: </span><span class="type-name">DmnTesterStarterConfig</span><span> = </span><span class="type-name">DmnTesterStarterConfig</span><span>()
-</span><span class="comment">// this is the project where you start the DmnCreator
-</span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">projectBasePath</span><span>: </span><span class="identifier">os</span><span>.</span><span class="type-name">Path</span><span> = </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span>
-
-</span><span class="comment">// the path where the DMNs are
-</span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">dmnBasePath</span><span>: </span><span class="identifier">os</span><span>.</span><span class="type-name">Path</span><span> = </span><span class="identifier">starterConfig</span><span>.</span><span class="identifier">dmnPaths</span><span>.</span><span class="identifier">head</span><span>
-</span><span class="comment">// the path where the DMN Configs are
-</span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">dmnConfigPath</span><span>: </span><span class="identifier">os</span><span>.</span><span class="type-name">Path</span><span> = </span><span class="identifier">starterConfig</span><span>.</span><span class="identifier">dmnConfigPaths</span><span>.</span><span class="identifier">head</span><span>
-</span><span class="comment">// creating the Path to the DMN - by default the _dmnName_ is `decisionDmn.decisionDefinitionKey`.
-</span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">defaultDmnPath</span><span>(</span><span class="identifier">dmnName</span><span>: </span><span class="type-name">String</span><span>): </span><span class="identifier">os</span><span>.</span><span class="type-name">Path</span><span> = </span><span class="identifier">dmnBasePath</span><span> / </span><span class="string-literal">s&quot;</span><span class="substitution">$dmnName</span><span class="string-literal">.dmn&quot;</span></code></pre>
-        <p>Example of a general Tester you can use for all project, that also starts the DMN Tester:</p>
-        <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MyCompanyDmnTester</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">DmnTesterConfigCreator</span><span>, </span><span class="type-name">DmnTesterStarter</span><span>:
-
-  </span><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">localDmnPath</span><span> = </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="string-literal">&quot;src&quot;</span><span> / </span><span class="string-literal">&quot;main&quot;</span><span> / </span><span class="string-literal">&quot;resources&quot;</span><span> / </span><span class="string-literal">&quot;camunda&quot;</span><span>
-
-  </span><span class="keyword">override</span><span> </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">starterConfig</span><span>: </span><span class="type-name">DmnTesterStarterConfig</span><span> =
-    </span><span class="type-name">DmnTesterStarterConfig</span><span>(
-      </span><span class="identifier">dmnPaths</span><span> = </span><span class="type-name">Seq</span><span>(</span><span class="identifier">localDmnPath</span><span>)
-  )
-  </span><span class="keyword">override</span><span> </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">defaultDmnPath</span><span>(</span><span class="identifier">dmnName</span><span>: </span><span class="type-name">String</span><span>): </span><span class="identifier">os</span><span>.</span><span class="type-name">Path</span><span> =
-    </span><span class="keyword">val</span><span> </span><span class="identifier">dmnPath</span><span> = </span><span class="identifier">dmnBasePath</span><span> / </span><span class="string-literal">s&quot;</span><span class="substitution">${dmnName.replace(&quot;mycompany-&quot;, &quot;&quot;)}</span><span class="string-literal">.dmn&quot;</span><span>
-    </span><span class="keyword">if</span><span>(!</span><span class="identifier">dmnPath</span><span>.</span><span class="identifier">toIO</span><span>.</span><span class="identifier">exists</span><span>())
-      </span><span class="keyword">throw</span><span> </span><span class="type-name">FileNotFoundException</span><span>(</span><span class="string-literal">s&quot;There is no DMN in </span><span class="substitution">$dmnPath</span><span class="string-literal">&quot;</span><span>)
-    </span><span class="identifier">dmnPath</span><span>
-
-  </span><span class="identifier">startDmnTester</span><span>()
-
-</span><span class="identifier">end</span><span> </span><span class="type-name">MyCompanyDmnTester</span></code></pre>
-        <p>So in the project you can focus on the creation of DMN Configurations, like:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// runMain mycompany.nnk.dmn.ProjectDmnTester
-</span><span class="keyword">object</span><span> </span><span class="type-name">ProjectDmnTester</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">MyCompanyDmnTester</span><span>, </span><span class="type-name">App</span><span>:
-
-  </span><span class="identifier">createDmnConfigs</span><span>(
-        ...
-  )
-
-</span><span class="identifier">end</span><span> </span><span class="type-name">ProjectDmnTester</span></code></pre>
+        <p>See <a href="../company/03-dmn.html#_03-dmn">03-dmn</a>.</p>
         
         <h2 id="problem-handling" class="section"><a class="anchor-link left" href="#problem-handling"><i class="icofont-laika link">&#xef71;</i></a>Problem Handling</h2>
         <p>The DMN Tester is run on Docker.

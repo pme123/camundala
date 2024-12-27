@@ -106,6 +106,7 @@
   <ul class="nav-list">
     <li class="level1 nav-node"><a href="#custom-worker">Custom Worker</a></li>
     <li class="level2 nav-leaf"><a href="#runwork">runWork</a></li>
+    <li class="level1 nav-node"><a href="#init-process-worker">Init Process Worker</a></li>
     <li class="level2 nav-leaf"><a href="#custominit">customInit</a></li>
     <li class="level1 nav-node"><a href="#service-worker">Service Worker</a></li>
     <li class="level2 nav-leaf"><a href="#apiuri">apiUri</a></li>
@@ -166,23 +167,24 @@
         <h3 id="validate"><a class="anchor-link left" href="#validate"><i class="icofont-laika link">&#xef71;</i></a>validate</h3>
         <p>This is the same in every worker type.
         TODO</p>
-        <pre><code class="nohighlight"><span>## </span><span class="type-name">Init</span><span> </span><span class="type-name">Process</span><span> </span><span class="type-name">Worker</span><span>
-</span><span class="type-name">The</span><span> </span><span class="identifier">_Init</span><span> </span><span class="type-name">Process</span><span> </span><span class="type-name">Worker_</span><span> </span><span class="identifier">is</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">special</span><span> </span><span class="identifier">_Worker_</span><span> </span><span class="identifier">that</span><span> </span><span class="identifier">is</span><span> </span><span class="identifier">used</span><span> </span><span class="identifier">to</span><span> </span><span class="identifier">start</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">process</span><span>.
-
-</span><span class="type-name">It</span><span> </span><span class="identifier">automatically</span><span> </span><span class="identifier">does</span><span>:
-- </span><span class="identifier">validate</span><span> </span><span class="identifier">the</span><span> </span><span class="identifier">input</span><span> </span><span class="identifier">variables</span><span>
-- </span><span class="identifier">merge</span><span> </span><span class="identifier">the</span><span> </span><span class="identifier">_inConfig_</span><span> </span><span class="identifier">variables</span><span> </span><span class="keyword">with</span><span> </span><span class="identifier">manual</span><span> </span><span class="identifier">overrides</span><span>
-
-</span><span class="type-name">You</span><span> </span><span class="identifier">can</span><span>:
-- </span><span class="identifier">init</span><span> </span><span class="identifier">input</span><span> </span><span class="identifier">process</span><span> </span><span class="identifier">variables</span><span> </span><span class="keyword">with</span><span> </span><span class="keyword">default</span><span> </span><span class="identifier">values</span><span>.
-- </span><span class="identifier">init</span><span> </span><span class="identifier">process</span><span> </span><span class="identifier">variables</span><span> </span><span class="identifier">used</span><span> </span><span class="identifier">to</span><span> </span><span class="identifier">control</span><span> </span><span class="identifier">the</span><span> </span><span class="identifier">process</span><span> </span><span class="identifier">flow</span><span>, 
-  </span><span class="identifier">like</span><span> </span><span class="identifier">counters</span><span>, </span><span class="identifier">variables</span><span> </span><span class="identifier">that</span><span> </span><span class="identifier">may</span><span> </span><span class="identifier">not</span><span> </span><span class="identifier">be</span><span> </span><span class="identifier">on</span><span> </span><span class="identifier">the</span><span> </span><span class="identifier">process</span><span>.
-- </span><span class="identifier">create</span><span> </span><span class="identifier">simplified</span><span> </span><span class="identifier">process</span><span> </span><span class="identifier">variables</span><span> </span><span class="identifier">to</span><span> </span><span class="identifier">simplify</span><span> </span><span class="identifier">the</span><span> </span><span class="identifier">process</span><span> </span><span class="identifier">flow</span><span>.
-- </span><span class="identifier">validate</span><span> </span><span class="identifier">the</span><span> </span><span class="identifier">input</span><span> </span><span class="identifier">variables</span><span>, </span><span class="keyword">if</span><span> </span><span class="identifier">you</span><span> </span><span class="identifier">need</span><span> </span><span class="identifier">more</span><span> </span><span class="identifier">sophisticated</span><span> </span><span class="identifier">validation</span><span> </span><span class="identifier">logic</span><span>, 
-  </span><span class="identifier">than</span><span> </span><span class="identifier">you</span><span> </span><span class="identifier">can</span><span> </span><span class="identifier">do</span><span> </span><span class="keyword">with</span><span> </span><span class="identifier">the</span><span> </span><span class="keyword">type</span><span> </span><span class="identifier">definition</span><span>.
-
-</span><span class="identifier">``</span><span>`</span><span class="identifier">scala</span><span>
-</span><span class="keyword">import</span><span> </span><span class="identifier">mycompany</span><span>.</span><span class="identifier">myproject</span><span>.</span><span class="identifier">bpmn</span><span>.</span><span class="identifier">myprocess</span><span>.</span><span class="identifier">v1</span><span>.</span><span class="type-name">MyProcess</span><span>.*
+        
+        <h2 id="init-process-worker" class="section"><a class="anchor-link left" href="#init-process-worker"><i class="icofont-laika link">&#xef71;</i></a>Init Process Worker</h2>
+        <p>The <em>Init Process Worker</em> is a special <em>Worker</em> that is used to start a process.</p>
+        <p>It automatically does:</p>
+        <ul>
+          <li>validate the input variables</li>
+          <li>merge the <em>inConfig</em> variables with manual overrides</li>
+        </ul>
+        <p>You can:</p>
+        <ul>
+          <li>init input process variables with default values.</li>
+          <li>init process variables used to control the process flow, 
+          like counters, variables that may not be on the process.</li>
+          <li>create simplified process variables to simplify the process flow.</li>
+          <li>validate the input variables, if you need more sophisticated validation logic, 
+          than you can do with the type definition.</li>
+        </ul>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">mycompany</span><span>.</span><span class="identifier">myproject</span><span>.</span><span class="identifier">bpmn</span><span>.</span><span class="identifier">myprocess</span><span>.</span><span class="identifier">v1</span><span>.</span><span class="type-name">MyProcess</span><span>.*
 
 </span><span class="annotation">@Configuration</span><span>
 </span><span class="keyword">class</span><span> </span><span class="type-name">MyProcessWorker</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CompanyInitWorkerDsl</span><span>[</span><span class="type-name">In</span><span>, </span><span class="type-name">Out</span><span>, </span><span class="type-name">InitIn</span><span>, </span><span class="type-name">InConfig</span><span>]:

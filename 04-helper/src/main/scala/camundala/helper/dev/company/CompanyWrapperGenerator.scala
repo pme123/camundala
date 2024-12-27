@@ -57,7 +57,7 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
        |  lazy val companyProjectVersion = BuildInfo.version
        |
        |object CompanyApiCreator:
-       |   lazy val apiConfig = ApiConfig(companyId = "$companyName")
+       |   lazy val apiConfig = ApiConfig(companyName = "$companyName")
        |""".stripMargin
 
   private lazy val dmnWrapper =
@@ -81,8 +81,10 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
        | */
        |trait CompanySimulation extends BasicSimulationDsl:
        |
-       |  override implicit def config =
+       |  override def config =
        |    super.config //TODO Adjust config if needed
+       |
+       |end CompanySimulation
        |""".stripMargin
 
   private lazy val workerWrapper =

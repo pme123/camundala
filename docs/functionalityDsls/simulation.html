@@ -156,6 +156,7 @@
         <div class="callout info">
           <i class="icofont-laika info">&#xef4e;</i>
           <p>For the deployment I created a script that also starts the Simulation.</p>
+          <p>See <a href="../development/projectDev.html#deploy">deploy</a>.</p>
         </div>
         
         <h2 id="why" class="section"><a class="anchor-link left" href="#why"><i class="icofont-laika link">&#xef71;</i></a>Why</h2>
@@ -182,15 +183,10 @@
         <pre><code class="nohighlight"><span class="comment">// put your simulations in the simulation package of your project (it)
 </span><span class="keyword">package</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">examples</span><span>.</span><span class="identifier">invoice</span><span>.</span><span class="identifier">simulation</span><span>
 </span><span class="comment">// import the projects bpmns (Processes, UserTasks etc.)
-</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">examples</span><span>.</span><span class="identifier">invoice</span><span>.</span><span class="identifier">bpmn</span><span>.*
-</span><span class="comment">// import Camundala simulation DSL - for now this is the one and only
-</span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">simulation</span><span>.</span><span class="identifier">custom</span><span>.</span><span class="type-name">CustomSimulation</span><span>
 
 </span><span class="comment">// define a class that extends from a simulation DSL   
-</span><span class="keyword">class</span><span> </span><span class="type-name">InvoiceSimulation</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CustomSimulation</span><span>
-
-:
+</span><span class="keyword">class</span><span> </span><span class="type-name">InvoiceSimulation</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CompanySimulation</span><span>:
 
   </span><span class="identifier">simulate</span><span>(
     </span><span class="comment">// add scenarios (comma separated)
@@ -209,6 +205,10 @@
     </span><span class="comment">// more scenarios  ..
 </span><span>  )
   </span><span class="identifier">end</span><span> </span><span class="type-name">InvoiceSimulation</span></code></pre>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>This class is automatically created with <code>./helper.scala process &lt;processName&gt;</code> - see <a href="../development/projectDev.html#process">development &gt; process</a>.</p>
+        </div>
         
         <h4 id="simulate" class="section"><a class="anchor-link left" href="#simulate"><i class="icofont-laika link">&#xef71;</i></a>simulate</h4>
         <p>This is the entry point for your Simulation.
@@ -225,11 +225,11 @@
         <ul>
           <li>
             <p>run all simulations:</p>
-            <p><code>It/test</code></p>
+            <p><code>simulation/test</code></p>
           </li>
           <li>
             <p>run some simulations:</p>
-            <p><code>It/testOnly *MySimulation</code></p>
+            <p><code>simulation/testOnly *MySimulation</code></p>
             <p>You can use any pattern, where <code>*</code> is wildcard for any characters.</p>
           </li>
         </ul>
@@ -292,28 +292,17 @@
         <p><img src="images/simulation_outputNaming.png" alt="simulation_outputNaming"></p>
         
         <h3 id="configuration" class="section"><a class="anchor-link left" href="#configuration"><i class="icofont-laika link">&#xef71;</i></a>Configuration</h3>
-        <p>The following is the default configuration:</p>
-        <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">SimulationConfig</span><span>[</span><span class="type-name">B</span><span>](
-                                </span><span class="comment">// define tenant if you have one
-</span><span>                                </span><span class="identifier">tenantId</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">None</span><span>,
-                                </span><span class="comment">// the Camunda Port
-</span><span>                                </span><span class="comment">// there are Requests that wait until the process is ready - like getTask.
-</span><span>                                </span><span class="comment">// the Simulation waits 1 second between the Requests.
-</span><span>                                </span><span class="comment">// so with a timeout of 10 sec it will try 10 times (retryDuration = 1.second)
-</span><span>                                </span><span class="identifier">maxCount</span><span>: </span><span class="type-name">Int</span><span> = </span><span class="number-literal">10</span><span>,
-                                </span><span class="comment">// REST endpoint of Camunda
-</span><span>                                </span><span class="identifier">endpoint</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;http://localhost:8080/engine-rest&quot;</span><span>,
-                                </span><span class="comment">// you can add authentication with this - default there is none.
-</span><span>                                </span><span class="comment">// see BasicSimulationDsl / OAuthSimulationDsl for examples
-</span><span>                                </span><span class="identifier">authHeader</span><span>: </span><span class="type-name">B</span><span> =&gt; </span><span class="type-name">B</span><span> = (</span><span class="identifier">b</span><span>: </span><span class="type-name">B</span><span>) =&gt; </span><span class="identifier">b</span><span>,
-                                </span><span class="comment">// the maximum LogLevel you want to print the LogEntries.
-</span><span>                                </span><span class="identifier">logLevel</span><span>: </span><span class="type-name">LogLevel</span><span> = </span><span class="type-name">LogLevel</span><span>.</span><span class="type-name">INFO</span><span>
-                              )</span></code></pre>
+        <p>The configuration is described in <a href="../company/03-simulation.html#_03-simulation">03-simulation</a>.</p>
         <p>You can easily override it in your Simulation:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">config</span><span> =
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">override</span><span> </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">config</span><span> =
   </span><span class="keyword">super</span><span>.</span><span class="identifier">config</span><span>
-    .</span><span class="identifier">withPort</span><span>(</span><span class="number-literal">8034</span><span>)
-    .</span><span class="identifier">withLogLevel</span><span>(</span><span class="type-name">LogLevel</span><span>.</span><span class="type-name">DEBUG</span><span>)</span></code></pre>
+    .</span><span class="identifier">withLogLevel</span><span>(</span><span class="type-name">LogLevel</span><span>.</span><span class="type-name">DEBUG</span><span>)
+    .</span><span class="identifier">withMaxCount</span><span>(</span><span class="number-literal">20</span><span>)</span></code></pre>
+        <p>Especially interesting on the level of each Simulation are:</p>
+        <ul>
+          <li><code>logLevel</code> to debug the Simulation.</li>
+          <li><code>maxCount</code> to increase the timeout for the interactions (one count is one second).</li>
+        </ul>
         
         <h2 id="scenarios" class="section"><a class="anchor-link left" href="#scenarios"><i class="icofont-laika link">&#xef71;</i></a>Scenarios</h2>
         <p>The following chapters explain the different scenario types:</p>
@@ -498,7 +487,7 @@
 )</span></code></pre>
         
         <h3 id="only-a-scenario" class="section"><a class="anchor-link left" href="#only-a-scenario"><i class="icofont-laika link">&#xef71;</i></a>Only a Scenario</h3>
-        <p>You can run only a scenario at the time by just prefix your Scenario with <code>only</code>.</p>
+        <p>You can run only one are a few scenario at the time by just prefix your Scenarios with <code>only</code>.</p>
         
         <h4 id="examples-2" class="section"><a class="anchor-link left" href="#examples-2"><i class="icofont-laika link">&#xef71;</i></a>Examples:</h4>
         <pre><code class="nohighlight"><span class="identifier">simulate</span><span>(
@@ -513,7 +502,7 @@
     </span><span class="type-name">ApproveInvoiceUT</span><span>,
     </span><span class="type-name">PrepareBankTransferUT</span><span>
   ),
-  </span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>)
+  </span><span class="identifier">only</span><span>.</span><span class="identifier">scenario</span><span>(</span><span class="type-name">InvoiceAssignApproverDMN</span><span>)
 )</span></code></pre>
         <p>An only Scenario will create a Warning for all other Scenarios as they are ignored.</p>
         
@@ -566,28 +555,25 @@
           <i class="icofont-laika info">&#xef4e;</i>
           <p>This only works for one hierarchy of sub processes.
           When you have more complex sub processes, you must mock them.</p>
+          <p><strong>Not recommended</strong>: please test each process separately.</p>
         </div>
         
         <h2 id="validation" class="section"><a class="anchor-link left" href="#validation"><i class="icofont-laika link">&#xef71;</i></a>Validation</h2>
         <p>The simulation uses your BPMN DSL objects not just to run the process and its interactions.
-        It also uses the the input- and output domain objects to validate variables of the process.</p>
+        It also uses the input- and output domain objects to validate variables of the process.</p>
         <pre><code class="nohighlight"><span class="comment">// domain classes
-</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InvoiceReceipt</span><span>(
-                           </span><span class="identifier">creditor</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Great Pizza for Everyone Inc.&quot;</span><span>,
-                           </span><span class="identifier">amount</span><span>: </span><span class="type-name">Double</span><span> = </span><span class="number-literal">300.0</span><span>,
-
-...
-)
-
-</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">ApproveInvoice</span><span>(
-                           </span><span class="identifier">approved</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">true</span><span>
-                         )
-
-...
-</span><span class="comment">// bpmn object
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">In</span><span>(
+ </span><span class="identifier">creditor</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Great Pizza for Everyone Inc.&quot;</span><span>,
+ </span><span class="identifier">amount</span><span>: </span><span class="type-name">Double</span><span> = </span><span class="number-literal">300.0</span><span>,
+</span><span class="comment">//...
+</span><span>)
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Out</span><span>(
+ </span><span class="identifier">approved</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">true</span><span>,
+ </span><span class="comment">//...
+</span><span>)
+</span><span class="comment">//...
+// bpmn object
 </span><span class="identifier">process</span><span>(
-  </span><span class="identifier">id</span><span> = </span><span class="string-literal">&quot;example-invoice-c7-review&quot;</span><span>,
-  </span><span class="identifier">descr</span><span> = </span><span class="string-literal">&quot;This starts the Review Invoice Process.&quot;</span><span>,
   </span><span class="identifier">in</span><span> = </span><span class="type-name">InvoiceReceipt</span><span>(),
   </span><span class="identifier">out</span><span> = </span><span class="type-name">InvoiceReviewed</span><span>()
 )</span></code></pre>
@@ -741,6 +727,12 @@
         <h4 id="user-task" class="section"><a class="anchor-link left" href="#user-task"><i class="icofont-laika link">&#xef71;</i></a>User Task</h4>
         <p>It simple tries until there is a User Task in the process available.
         If there are more than one, it just takes the first one.</p>
+        <p>To complete a User Task, you can also wait some seconds. 
+        This is useful, if you want to check if intermediate events were triggered.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">scenario</span><span>(</span><span class="identifier">userTaskExampleProcess</span><span>)(
+  </span><span class="identifier">userTaskExample</span><span>
+    .</span><span class="identifier">waitForSec</span><span>(</span><span class="number-literal">2</span><span>) </span><span class="comment">// wait 2 seconds
+</span><span>)</span></code></pre>
         
         <h4 id="receive-message-event" class="section"><a class="anchor-link left" href="#receive-message-event"><i class="icofont-laika link">&#xef71;</i></a>Receive Message Event</h4>
         <p>We try to correlate the message until it is successful.
@@ -785,6 +777,7 @@
           <p>Mocking is handled directly in the processes itself.</p>
           <p>This is especially useful in <em>Simulations</em>.</p>
           <p>However, you can mock on any environment, like local or production (e.g. with <em>Postman</em>).</p>
+          <p>See also <a href="../generalConcerns.html#mocking">General Concerns</a>.</p>
         </div>
         
         <h3 id="generic-mocking" class="section"><a class="anchor-link left" href="#generic-mocking"><i class="icofont-laika link">&#xef71;</i></a>Generic Mocking</h3>

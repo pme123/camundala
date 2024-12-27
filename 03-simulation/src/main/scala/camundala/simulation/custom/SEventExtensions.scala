@@ -79,7 +79,7 @@ trait SEventExtensions extends SimulationHelper:
           else None
         val tenant = // only set if there is no processInstanceId
           if sEvent.processInstanceId then None
-          else summon[SimulationConfig[?]].tenantId
+          else config.tenantId
         val body = CorrelateMessageIn(
           messageName = event.messageName,
           tenantId = tenant,
