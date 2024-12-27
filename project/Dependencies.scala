@@ -41,6 +41,7 @@ object Dependencies {
   // -> worker
   val camundaVersion = "7.22.0" // external task client
   val jaxbApiVersion = "4.0.2" // needed by the camunda client 7.21?!
+  val scaffeineV = "5.2.1" // caching
   // - sttpClient3
 
   // --- Experiments
@@ -58,6 +59,12 @@ object Dependencies {
   val h2Version = "2.3.232"
   val twitter4jVersion = "4.1.2"
   val groovyVersion = "3.0.23"
+
+  lazy val camundaExternalTaskClientDependency = "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion
+  lazy val springBootOAuth2ClientDependency = "org.springframework.boot" % "spring-boot-starter-oauth2-client" % springBootVersion
+  lazy val jaxbApiDependency = "jakarta.xml.bind" % "jakarta.xml.bind-api" % jaxbApiVersion
+  lazy val scaffeineDependency = // token caching
+    "com.github.blemale" %% "scaffeine" % scaffeineV // caching
 
   lazy val tapirDependencies = Seq(
     "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
@@ -88,7 +95,7 @@ object Dependencies {
     // json support
     "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
     "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % camundaSpinVersion,
-    "jakarta.xml.bind" % "jakarta.xml.bind-api" % jaxbApiVersion,
+    jaxbApiDependency,
     // groovy support
     "org.codehaus.groovy" % "groovy-jsr223" % groovyVersion,
     "com.h2database" % "h2" % h2Version

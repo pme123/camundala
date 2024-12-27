@@ -57,6 +57,7 @@ case class WorkerGenerator()(using config: DevConfig):
        |@Component("${config.projectClassName}$objName")
        |@ConfigurationPropertiesScan
        |@ComponentScan(basePackages = Array(
+       |  "camundala.camunda7.worker.oauth",
        |  "$companyName.camundala.worker",
        |  "${config.projectPackage}.worker",
        |  ${

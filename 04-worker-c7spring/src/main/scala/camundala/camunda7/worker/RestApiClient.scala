@@ -135,6 +135,13 @@ trait RestApiClient:
     val runtimeClass = implicitly[ClassTag[ServiceOut]].runtimeClass
     runtimeClass == classOf[NoOutput]
 
+  extension (request: Request[Either[String, String], Any])
+
+    def addToken(token: String): RequestT[Identity, Either[String, String], Any] =
+      val tokenHeader = if token.startsWith("Bearer") then token else s"Bearer $token"
+      request.header("Authorization", tokenHeader)
+
+  end extension
 end RestApiClient
 
 object DefaultRestApiClient extends RestApiClient

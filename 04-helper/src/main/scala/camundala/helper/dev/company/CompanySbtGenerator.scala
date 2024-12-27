@@ -31,7 +31,7 @@ case class CompanySbtGenerator()(using
        |""".stripMargin
 
   private lazy val settings =
-    s"""// $helperCompanyDoNotAdjustText
+    s"""$helperCompanyDoNotAdjustText
       |
        |import com.typesafe.config.ConfigFactory
        |import laika.ast.Path.Root
