@@ -13,8 +13,9 @@ case class CompanyDevHelper(projectName: String, subProjects: Seq[String] = Seq.
 
   lazy val apiConfig: ApiConfig = ApiConfig("mycompany")//.withTenantId("mycompany")...
 
-  def deployConfig: Option[DeployConfig] = ???
-  def devConfig: DevConfig = ???
-  def dockerConfig: DockerConfig = ???
+  lazy val deployConfig: Option[DeployConfig] = ???
+  lazy val devConfig: DevConfig = ???
+  lazy val dockerConfig: DockerConfig = ???
+  lazy val publishConfig: Option[PublishConfig] = ???
 
 ```

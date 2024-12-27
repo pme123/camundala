@@ -1,0 +1,985 @@
+openapi: 3.1.0
+info:
+  title: Invoice Example Process API
+  version: '1.0'
+  summary: "\n         |**This is for Postman - to have example requests. Be aware\
+    \ the Output is not provided!**\n         |\n         |\n\n\n\nCreated at 23.12.2024,\
+    \ 16:43\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)**\n\
+    \n# Package Configuration\n**Check all dependency trees here: [example-invoice](../../dependencies/example-invoice.html)**\n\
+    \n### Dependencies:\n\n\n\n\n<details>\n<summary>PROJECT.conf</summary>\n<p>\n\
+    \n```\n\norg = \"pme123\"\nname = \"example-invoice\"\nversion = \"0.1.0-SNAPSHOT\"\
+    \ndependencies: {\n  //\"example-helper\": \"pme123:example-helper:1.3.*\"\n}\n\
+    \n```\n\n</p>\n</details>\n\n\nThere is no README.md in the Project.\n\n\n\n<p/>\n\
+    <details>\n<summary>\n<b><i>General Variables</i></b>\n</summary>\n\n<p>\n\n###\
+    \ Mocking\n\n**servicesMocked**:\n\nMock all the _ServiceWorkers_ in your process\
+    \ with their default Mock:\n\n- DSL:\n```scala\nprocess(..)\n  .mockServices\n\
+    ```\n\n- Json\n```json\n...\n\"servicesMocked\": true,\n...\n```\n\n\n**mockedWorkers**:\n\
+    \nMock any Process- and/or ExternalTask-Worker with their default Mocks.\nThis\
+    \ is a list of the _Worker topicNames or Process processNames_, you want to mock.\n\
+    It is also possible to use a _comma separated_ String,\nlike `\"mySubProcess,myOtherSubProcess,myService\"\
+    `\n\n_Be aware_: For Sub-Processes, this expects an _InitWorker_ where the _topicName_\
+    \ is equal to the _processName_.\n\n\n- DSL:\n```scala\nprocess(..)\n  .mockedWorkers(\"\
+    mySubProcess1\", \"mySubProcess2\") // creates a list with SubProcessess\n  .mockedWorker(\"\
+    myOtherSubProcess\") // adds a SubProcess\n```\n\n- Json\n```json\n...\n\"mockedWorkers\"\
+    : [\"mySubProcess\", \"myOtherSubProcess, myService\"],\n...\n```\n\n\n**outputMock**:\n\
+    \nMock the Process or ExternalTask (`Out`)\n - You find an example in every _Process_\
+    \ and _ExternalTask_.\n\n\n- DSL:\n```scala\nprocess(..) // or serviceTask(..)/customTask(..)\n\
+    \  .mockWith(outputMock)\n```\n\n- Json\n```json\n...\n\"outputMock\": {..},\n\
+    ...\n```\n\n\n**outputServiceMock**:\n\nMock the Inner-Service (`MockedServiceResponse[ServiceOut]`)\n\
+    \ - You find an example in every _ServiceTask_.\n\n\n- DSL:\n```scala\nserviceTask(..)\n\
+    \  .mockServiceWith(MockedServiceResponse\n     .success200(inOut.defaultServiceOutMock))\n\
+    ```\n\n- Json\n```json\n...\n\"outputServiceMock\": {\n  \"respStatus\" : 200,\n\
+    \  \"respBody\" : \"Example String Body\",\n  \"respHeaders\" : [\n  ]\n},\n...\n\
+    ```\n\n### Mapping\n**outputVariables**:\n\nYou can filter the Output with a list\
+    \ of variable names you are interested in.\nThis list may include all variables\
+    \ from the output (`Out`). We included an example for each Process or ExternalTask.\n\
+    It is also possible to use a _comma separated_ String,\nlike `\"name,firstName\"\
+    `\n\n\n- DSL:\n```scala\nprocess(..) // or serviceTask(..)/customTask(..)\n  .withOutputVariables(\"\
+    name\", \"firstName\") // creates a list with outputVariables\n  .withOutputVariable(\"\
+    nickname\") // adds a outputVariable\n```\n\n- Json\n```json\n...\n\"outputVariables\"\
+    : [\"name\", \"firstName\"],\n...\n```\n\n\n**manualOutMapping**:\n\nBy default\
+    \ all output Variables (`Out`) are on the Process for _External Tasks_.\nIf the\
+    \ filter _outputVariables_ is not enough,\nyou can set this variable - every output\
+    \ variable is then local.\n\n_Be aware_ that you must then manually have _output\
+    \ mappings_ for each output variable!\n\n\n- DSL:\n```scala\nserviceTask(..) //\
+    \ or customTask(..)\n  .manualOutMapping\n```\n\n- Json\n```json\n...\n\"manualOutMapping\"\
+    : true,\n...\n```\n\n### Mocking\n**handledErrors**:\n\nA list of error codes\
+    \ that are handled (`BpmnError`)\nIt is also possible to use a _comma separated_\
+    \ String,\nlike `\"validation-failed,404\"`\n\nAt the moment only _ServiceTasks_\
+    \ supported.\n\n\n- DSL:\n```scala\nserviceTask(..)\n  .handleErrors(ErrorCodes.`validation-failed`,\
+    \ \"404\") // create a list of handledErrors\n  .handleError(\"404\") // add a\
+    \ handledError\n```\n\n- Json\n```json\n...\n\"handledErrors\": [\"validation-failed\"\
+    , \"404\"],\n...\n```\n\n\n**regexHandledErrors**:\n\nYou can further filter Handled\
+    \ Errors with a list of Regex expressions that the body error message must match.\n\
+    It is also possible to use a _comma separated_ String,\nlike `\"SQL exception,\"\
+    errorNr\":\"20000\"\"`\n\nAt the moment only _ServiceTasks_ supported.\n\n\n-\
+    \ DSL:\n```scala\nserviceTask(..)\n  .handleErrorWithRegex(\"SQL exception\")\n\
+    \  .handleErrorWithRegex(\"\\\"errorNr\\\":\\\"20000\\\"\")\n```\n\n- Json\n```json\n\
+    ...\n\"regexHandledErrors\": [\"SQL exception\", \"\"errorNr\":\"20000\"\"],\n\
+    ...\n```\n\n### Authorization\n**impersonateUserId**:\n\nUser-ID of a User that\
+    \ should be taken to authenticate to the services.\nThis must be supported by\
+    \ your implementation. *Be caution: this may be a security issue!*.\nIt is helpful\
+    \ if you have Tokens that expire, but long running Processes.\n\n- DSL:\n```scala\n\
+    process(..) // or serviceTask(..)/customTask(..)\n  .withImpersonateUserId(impersonateUserId)\n\
+    ```\n\n- Json\n```json\n...\n\"impersonateUserId\": \"myUserName\",\n...\n```\n\
+    \n</p>\n</details>\n<p/>\n        \n\n> Created with:\n> - [camundala-api v1.31.0-SNAPSHOT](https://github.com/pme123/camundala)\n\
+    > - pme123-camundala-api 0.1.0\n> - pme123-camundala-helper\n\n\n         |"
+servers:
+- url: http://localhost:8034/engine-rest
+  description: Local Developer Server
+paths:
+  /process-definition/key/example-invoice-c7/start:
+    post:
+      tags:
+      - example-invoice-c7
+      summary: 'Bpmn: c7'
+      description: |2
+
+        This starts the Invoice Receipt Process.
+
+        ---
+
+        - **Called Element**: `example-invoice-c7` (to define in the Call Activity)
+
+
+
+        ---
+
+
+
+
+        See API Doc: [Bpmn: c7](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/Bpmn:%20c7)
+      operationId: postProcess-definitionKeyExample-invoice-c7Start
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              example-invoice-c7:
+                value:
+                  variables:
+                    creditor:
+                      value: Great Pizza for Everyone Inc.
+                      type: String
+                    invoiceNumber:
+                      value: I-12345
+                      type: String
+                    amount:
+                      value: 300.0
+                      type: Double
+                    invoiceCategory:
+                      value: Travel Expenses
+                      type: String
+                  businessKey: example-invoice-c7
+                  withVariablesInReturn: true
+              With InConfig:
+                value:
+                  variables:
+                    creditor:
+                      value: Great Pizza for Everyone Inc.
+                      type: String
+                    invoiceNumber:
+                      value: I-12345
+                      type: String
+                    amount:
+                      value: 300.0
+                      type: Double
+                    inConfig:
+                      value: |-
+                        {
+                          "shouldFail" : false,
+                          "invoiceReviewedMock" : {
+                            "clarified" : true
+                          }
+                        }
+                      type: Json
+                    invoiceCategory:
+                      value: Travel Expenses
+                      type: String
+                  businessKey: example-invoice-c7
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /decision-definition/key/{key}/--REMOVE:example-invoice-c7-assignApprover--/evaluate:
+    post:
+      tags:
+      - example-invoice-c7
+      summary: 'Dmn: c7-assignApprover'
+      description: |2
+
+        Decision Table on who must approve the Invoice.
+
+        Decision DMN:
+        - _decisionDefinitionKey_: `example-invoice-c7-assignApprover`,
+
+
+        See API Doc: [Dmn: c7-assignApprover](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/Dmn:%20c7-assignApprover)
+      operationId: postDecision-definitionKeyKey--remove:example-invoice-c7-assignapprover--Evaluate
+      parameters:
+      - name: key
+        in: path
+        description: The Process- or Decision-DefinitionKey of the Process or Decision
+        required: true
+        schema:
+          default: example-invoice-c7-assignApprover
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateDecisionIn'
+            examples:
+              example-invoice-c7-assignApprover:
+                value:
+                  variables:
+                    amount:
+                      value: 30.0
+                      type: Double
+                    invoiceCategory:
+                      value: Software License Costs
+                      type: String
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/--REMOVE:ApproveInvoiceUT--:
+    post:
+      tags:
+      - example-invoice-c7
+      summary: 'UserTask: ApproveInvoiceUT'
+      description: |
+        Approve the invoice (or not).
+
+        See API Doc: [UserTask: ApproveInvoiceUT](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
+      operationId: postTask--remove:approveinvoiceut--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetActiveTaskIn'
+            examples:
+              ApproveInvoiceUT:
+                value:
+                  processInstanceId: '{{processInstanceId}}'
+                  active: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/form-variables/--REMOVE:ApproveInvoiceUT--:
+    get:
+      tags:
+      - example-invoice-c7
+      summary: 'UserTask: ApproveInvoiceUT'
+      description: |
+        Approve the invoice (or not).
+
+        See API Doc: [UserTask: ApproveInvoiceUT](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
+      operationId: getTaskTaskidForm-variables--remove:approveinvoiceut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          default: '{{taskId}}'
+          type: string
+      - name: variableNames
+        in: query
+        description: |-
+          A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+          It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+          If the query parameter contains non-existent variable names, the variable names are ignored.
+        required: false
+        schema:
+          default: name,example
+          type: string
+      - name: deserializeValues
+        in: query
+        required: false
+        schema:
+          default: false
+          type: boolean
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/complete/--REMOVE:ApproveInvoiceUT--:
+    post:
+      tags:
+      - example-invoice-c7
+      summary: 'UserTask: ApproveInvoiceUT'
+      description: |
+        Approve the invoice (or not).
+
+        See API Doc: [UserTask: ApproveInvoiceUT](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/UserTask:%20ApproveInvoiceUT)
+      operationId: postTaskTaskidComplete--remove:approveinvoiceut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          default: '{{taskId}}'
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskIn'
+            examples:
+              ApproveInvoiceUT:
+                value:
+                  variables:
+                    approved:
+                      value: true
+                      type: Boolean
+                  withVariablesInReturn: true
+              Invoice approved:
+                value:
+                  variables:
+                    approved:
+                      value: true
+                      type: Boolean
+                  withVariablesInReturn: true
+              Invoice NOT approved:
+                value:
+                  variables:
+                    approved:
+                      value: false
+                      type: Boolean
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/--REMOVE:PrepareBankTransferUT--:
+    post:
+      tags:
+      - example-invoice-c7
+      summary: 'UserTask: PrepareBankTransferUT'
+      description: |
+        Prepare the bank transfer in the Financial Accounting System.
+
+        See API Doc: [UserTask: PrepareBankTransferUT](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
+      operationId: postTask--remove:preparebanktransferut--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetActiveTaskIn'
+            examples:
+              PrepareBankTransferUT:
+                value:
+                  processInstanceId: '{{processInstanceId}}'
+                  active: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/form-variables/--REMOVE:PrepareBankTransferUT--:
+    get:
+      tags:
+      - example-invoice-c7
+      summary: 'UserTask: PrepareBankTransferUT'
+      description: |
+        Prepare the bank transfer in the Financial Accounting System.
+
+        See API Doc: [UserTask: PrepareBankTransferUT](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
+      operationId: getTaskTaskidForm-variables--remove:preparebanktransferut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          default: '{{taskId}}'
+          type: string
+      - name: variableNames
+        in: query
+        description: |-
+          A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+          It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+          If the query parameter contains non-existent variable names, the variable names are ignored.
+        required: false
+        schema:
+          default: name,example
+          type: string
+      - name: deserializeValues
+        in: query
+        required: false
+        schema:
+          default: false
+          type: boolean
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/complete/--REMOVE:PrepareBankTransferUT--:
+    post:
+      tags:
+      - example-invoice-c7
+      summary: 'UserTask: PrepareBankTransferUT'
+      description: |
+        Prepare the bank transfer in the Financial Accounting System.
+
+        See API Doc: [UserTask: PrepareBankTransferUT](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/UserTask:%20PrepareBankTransferUT)
+      operationId: postTaskTaskidComplete--remove:preparebanktransferut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          default: '{{taskId}}'
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskIn'
+            examples:
+              PrepareBankTransferUT:
+                value:
+                  variables: {}
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /process-definition/key/camundala-externalTask-generic/start--REMOVE:ArchiveInvoiceService--:
+    post:
+      tags:
+      - example-invoice-c7
+      summary: 'Worker: ArchiveInvoiceService'
+      description: |
+        Archives the Receipt.
+
+        See API Doc: [Worker: ArchiveInvoiceService](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/Worker:%20ArchiveInvoiceService)
+      operationId: postProcess-definitionKeyCamundala-externaltask-genericStart--remove:archiveinvoiceservice--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              ArchiveInvoiceService:
+                value:
+                  variables:
+                    shouldFail:
+                      value: true
+                      type: Boolean
+                  businessKey: ArchiveInvoiceService
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /process-definition/key/example-invoice-c7-review/start:
+    post:
+      tags:
+      - example-invoice-c7-review
+      summary: 'Bpmn: c7-review'
+      description: |2
+
+        This starts the Review Invoice Process.
+
+        ---
+
+        - **Called Element**: `example-invoice-c7-review` (to define in the Call Activity)
+
+
+
+        ---
+
+
+
+
+        See API Doc: [Bpmn: c7-review](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/Bpmn:%20c7-review)
+      operationId: postProcess-definitionKeyExample-invoice-c7-reviewStart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              example-invoice-c7-review:
+                value:
+                  variables:
+                    creditor:
+                      value: Great Pizza for Everyone Inc.
+                      type: String
+                    amount:
+                      value: 300.0
+                      type: Double
+                    invoiceCategory:
+                      value: Travel Expenses
+                      type: String
+                    invoiceNumber:
+                      value: I-12345
+                      type: String
+                  businessKey: example-invoice-c7-review
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/--REMOVE:AssignReviewerUT--:
+    post:
+      tags:
+      - example-invoice-c7-review
+      summary: 'UserTask: AssignReviewerUT'
+      description: |
+        Select the Reviewer.
+
+        See API Doc: [UserTask: AssignReviewerUT](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
+      operationId: postTask--remove:assignreviewerut--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetActiveTaskIn'
+            examples:
+              AssignReviewerUT:
+                value:
+                  processInstanceId: '{{processInstanceId}}'
+                  active: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/form-variables/--REMOVE:AssignReviewerUT--:
+    get:
+      tags:
+      - example-invoice-c7-review
+      summary: 'UserTask: AssignReviewerUT'
+      description: |
+        Select the Reviewer.
+
+        See API Doc: [UserTask: AssignReviewerUT](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
+      operationId: getTaskTaskidForm-variables--remove:assignreviewerut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          default: '{{taskId}}'
+          type: string
+      - name: variableNames
+        in: query
+        description: |-
+          A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+          It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+          If the query parameter contains non-existent variable names, the variable names are ignored.
+        required: false
+        schema:
+          default: name,example
+          type: string
+      - name: deserializeValues
+        in: query
+        required: false
+        schema:
+          default: false
+          type: boolean
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/complete/--REMOVE:AssignReviewerUT--:
+    post:
+      tags:
+      - example-invoice-c7-review
+      summary: 'UserTask: AssignReviewerUT'
+      description: |
+        Select the Reviewer.
+
+        See API Doc: [UserTask: AssignReviewerUT](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/UserTask:%20AssignReviewerUT)
+      operationId: postTaskTaskidComplete--remove:assignreviewerut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          default: '{{taskId}}'
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskIn'
+            examples:
+              AssignReviewerUT:
+                value:
+                  variables:
+                    reviewer:
+                      value: John
+                      type: String
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/--REMOVE:ReviewInvoiceUT--:
+    post:
+      tags:
+      - example-invoice-c7-review
+      summary: 'UserTask: ReviewInvoiceUT'
+      description: |
+        Review Invoice and approve.
+
+        See API Doc: [UserTask: ReviewInvoiceUT](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
+      operationId: postTask--remove:reviewinvoiceut--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetActiveTaskIn'
+            examples:
+              ReviewInvoiceUT:
+                value:
+                  processInstanceId: '{{processInstanceId}}'
+                  active: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/form-variables/--REMOVE:ReviewInvoiceUT--:
+    get:
+      tags:
+      - example-invoice-c7-review
+      summary: 'UserTask: ReviewInvoiceUT'
+      description: |
+        Review Invoice and approve.
+
+        See API Doc: [UserTask: ReviewInvoiceUT](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
+      operationId: getTaskTaskidForm-variables--remove:reviewinvoiceut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          default: '{{taskId}}'
+          type: string
+      - name: variableNames
+        in: query
+        description: |-
+          A comma-separated list of variable names. Allows restricting the list of requested variables to the variable names in the list.
+          It is best practice to restrict the list of variables to the variables actually required by the form in order to minimize fetching of data. If the query parameter is ommitted all variables are fetched.
+          If the query parameter contains non-existent variable names, the variable names are ignored.
+        required: false
+        schema:
+          default: name,example
+          type: string
+      - name: deserializeValues
+        in: query
+        required: false
+        schema:
+          default: false
+          type: boolean
+      responses:
+        '200':
+          description: ''
+  /task/{taskId}/complete/--REMOVE:ReviewInvoiceUT--:
+    post:
+      tags:
+      - example-invoice-c7-review
+      summary: 'UserTask: ReviewInvoiceUT'
+      description: |
+        Review Invoice and approve.
+
+        See API Doc: [UserTask: ReviewInvoiceUT](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/UserTask:%20ReviewInvoiceUT)
+      operationId: postTaskTaskidComplete--remove:reviewinvoiceut--
+      parameters:
+      - name: taskId
+        in: path
+        description: |
+          The taskId of the Form.
+          > This is the result id of the `GetActiveTask`
+
+          Add in the _Tests_ panel of _Postman_:
+          ```
+          let result = pm.response.json()[0];
+          pm.collectionVariables.set("taskId", result.id)
+          ```
+        required: true
+        schema:
+          default: '{{taskId}}'
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteTaskIn'
+            examples:
+              ReviewInvoiceUT:
+                value:
+                  variables:
+                    clarified:
+                      value: true
+                      type: Boolean
+                  withVariablesInReturn: true
+              Invoice clarified:
+                value:
+                  variables:
+                    clarified:
+                      value: true
+                      type: Boolean
+                  withVariablesInReturn: true
+              Invoice NOT clarified:
+                value:
+                  variables:
+                    clarified:
+                      value: false
+                      type: Boolean
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+  /process-definition/key/camundala-externalTask-generic/start--REMOVE:star-wars-api-people-detail--:
+    post:
+      tags:
+      - Workers
+      summary: 'Worker: api-people-detail'
+      description: |
+        Get People Details from StarWars API
+
+        ---
+
+
+
+        <details>
+        <summary><b>Wrapped Service:</b>
+
+        (Star Wars API - v1.0 - GET /people/${in.id})
+        </summary>
+        <p>
+        Input Body: `camundala.domain.NoInput`:
+
+
+        Example Response: `camundala.examples.invoice.bpmn.People`:
+
+        ```json
+        {
+          "respStatus" : 200,
+          "respBody" : {
+            "name" : "Luke Skywalker",
+            "height" : "172",
+            "mass" : "77",
+            "hair_color" : "blond",
+            "skin_color" : "fair",
+            "eye_color" : "blue"
+          },
+          "respHeaders" : [
+            [
+              "fromHeader",
+              "okidoki"
+            ]
+          ]
+        }
+        ```
+        </p>
+        </details>
+        </p>
+
+        ---
+
+
+        See API Doc: [Worker: api-people-detail](Some(https://webstor.ch/camundala/myCompany)/example-invoice/OpenApi.html#operation/Worker:%20api-people-detail)
+      operationId: postProcess-definitionKeyCamundala-externaltask-genericStart--remove:star-wars-api-people-detail--
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartProcessIn'
+            examples:
+              star-wars-api-people-detail:
+                value:
+                  variables:
+                    id:
+                      value: 1
+                      type: Integer
+                  businessKey: star-wars-api-people-detail
+                  withVariablesInReturn: true
+        required: true
+      responses:
+        '200':
+          description: ''
+components:
+  schemas:
+    CBoolean:
+      title: CBoolean
+      type: object
+      required:
+      - value
+      - type
+      properties:
+        value:
+          type: boolean
+        type:
+          type: string
+    CDouble:
+      title: CDouble
+      type: object
+      required:
+      - value
+      - type
+      properties:
+        value:
+          type: number
+          format: double
+        type:
+          type: string
+    CFile:
+      title: CFile
+      type: object
+      required:
+      - value
+      - valueInfo
+      - type
+      properties:
+        value:
+          description: The File's content as Base64 encoded String.
+          type: string
+        valueInfo:
+          $ref: '#/components/schemas/CFileValueInfo'
+        type:
+          type: string
+    CFileValueInfo:
+      title: CFileValueInfo
+      type: object
+      required:
+      - filename
+      properties:
+        filename:
+          type: string
+        mimetype:
+          type: string
+    CInteger:
+      title: CInteger
+      type: object
+      required:
+      - value
+      - type
+      properties:
+        value:
+          type: integer
+          format: int32
+        type:
+          type: string
+    CJson:
+      title: CJson
+      type: object
+      required:
+      - value
+      - type
+      properties:
+        value:
+          type: string
+        type:
+          type: string
+    CLong:
+      title: CLong
+      type: object
+      required:
+      - value
+      - type
+      properties:
+        value:
+          type: integer
+          format: int64
+        type:
+          type: string
+    CNull:
+      title: CNull
+      type: object
+    CString:
+      title: CString
+      type: object
+      required:
+      - value
+      - type
+      properties:
+        value:
+          type: string
+        type:
+          type: string
+    CamundaVariable:
+      title: CamundaVariable
+      oneOf:
+      - $ref: '#/components/schemas/CBoolean'
+      - $ref: '#/components/schemas/CDouble'
+      - $ref: '#/components/schemas/CFile'
+      - $ref: '#/components/schemas/CInteger'
+      - $ref: '#/components/schemas/CJson'
+      - $ref: '#/components/schemas/CLong'
+      - $ref: '#/components/schemas/CNull'
+      - $ref: '#/components/schemas/CString'
+    CompleteTaskIn:
+      title: CompleteTaskIn
+      description: 'A JSON object with the following properties: (at least an empty
+        JSON object {} or an empty request body)'
+      type: object
+      required:
+      - variables
+      - withVariablesInReturn
+      properties:
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+        withVariablesInReturn:
+          description: Set to false will not return the Process Variables and the
+            Result Status is 204.
+          type: boolean
+    EvaluateDecisionIn:
+      title: EvaluateDecisionIn
+      description: 'A JSON object with the following properties:'
+      type: object
+      required:
+      - variables
+      properties:
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+    GetActiveTaskIn:
+      title: GetActiveTaskIn
+      description: Same as GetActiveJobIn.
+      type: object
+      required:
+      - processInstanceId
+      - active
+      properties:
+        processInstanceId:
+          description: |2
+
+            The id of the process - you want to get the active tasks.
+            > This is the result id of the `StartProcessOut`
+
+            Add in the _Tests_ panel of _Postman_:
+            ```
+            let result = pm.response.json();
+            pm.collectionVariables.set("processInstanceId", result.id)
+            ```
+          type: string
+        active:
+          description: We are only interested in the active Task(s)
+          type: boolean
+    Map_CamundaVariable:
+      title: Map_CamundaVariable
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/CamundaVariable'
+    StartProcessIn:
+      title: StartProcessIn
+      description: 'A JSON object with the following properties: (at least an empty
+        JSON object {} or an empty request body)'
+      type: object
+      required:
+      - variables
+      - withVariablesInReturn
+      properties:
+        variables:
+          $ref: '#/components/schemas/Map_CamundaVariable'
+        businessKey:
+          description: The business key of the process instance.
+          type: string
+        withVariablesInReturn:
+          description: Set to false will not return the Process Variables.
+          type: boolean

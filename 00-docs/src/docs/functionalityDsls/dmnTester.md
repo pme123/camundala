@@ -22,13 +22,9 @@ Let's start with a basic example:
 package camundala.examples.invoice.dmn
 // import the projects bpmns (DMNs)
 import camundala.examples.invoice.bpmn.*
-// import Camundala dmn DSL / the DMN Tester starter
-import camundala.dmn.{DmnTesterConfigCreator, DmnTesterStarter}
-// define an object that extends ..  
+
 object ProjectDmnTester 
-  extends DmnTesterConfigCreator, //  .. from a Config Creator DSL 
-    DmnTesterStarter, // .. from a starter - that runs the DMN Tester automatically
-    App: // .. to run the Application
+  extends CompanyDmnTester:
       
       startDmnTester()
 
@@ -50,11 +46,9 @@ end ProjectDmnTester
 ### Run the DMN Tester
 In your _sbt-console_:
  
-  `runMain camundala.examples.invoice.dmn.ProjectDmnTester`
+  `dmn/run`
 
-## startDmnTester
-Starts the Docker container. 
-This makes the whole process pretty nice and fast. 
+This starts the Docker container and makes the whole process pretty nice and fast. 
 The following steps are done:
 
 - Check if the Container is already running.
@@ -69,10 +63,8 @@ You start from the DMN, that you defined, here an example:
 
 ```scala
   lazy val InvoiceAssignApproverDMN = collectEntries(
-    decisionDefinitionKey = "example-invoice-c7-assignApprover",
     in = SelectApproverGroup(),
     out = Seq(ApproverGroup.management),
-    descr = "Decision Table on who must approve the Invoice.",
   )
 ```
 
@@ -120,11 +112,11 @@ So if you have complex set of dependent DMN Tables you can test them separately,
 ### .dmnPath
 To support different naming schemes, you can adjust the DMN file name the following way:
 
-- Nothing to do, if the file name is `dmnBasePath / s"${decisionId}.dmn"`. (see configuration)
+- Nothing to do, if the file name is `dmnBasePath / s"${decisionId.replace("mycompany-", "")}.dmn"`. (see configuration)
 - The creation of the default path can be overridden: 
     ```scala
       protected def defaultDmnPath(dmnName: String): os.Path =
-        dmnBasePath / s"${dmnName.replace("myPrefix-", "")}.dmn"
+        dmnBasePath / s"$decisionId.dmn"
     ```
 - A different name, but with the same _defaultDmnPath_:
     ```scala
@@ -176,77 +168,12 @@ So it is a corner case if this is rather a test input.
 
 The output variable can be whatever you want.
 
+@:callout(info)
+Be aware that you must run the DMN Tester again, whenever you made changes (`sbt dmn/run`).
+@:@
+
 ## Configuration
-The following is the default configuration:
-```scala
-case class DmnTesterStarterConfig(
-         // the name of the container that will be started
-         containerName: String = "camunda-dmn-tester",
-         // path to where the configs should be created in
-         dmnConfigPaths: Seq[os.Path] = Seq(
-           projectBasePath / "src" / "it" / "resources" / "dmnConfigs"
-         ),
-         // paths where the DMNs are (could be different places)
-         dmnPaths: Seq[os.Path] = Seq(
-           projectBasePath / "src" / "main" / "resources"
-         ),
-         // the port the DMN Tester is started - e.g. http://localhost:8883
-         exposedPort: Int = 8883,
-         // the image version of the DMN Tester
-         imageVersion: String = "latest"
- )
-```
-
-You can override it via the following variables (you see the defaults):
-
-```scala
-protected def starterConfig: DmnTesterStarterConfig = DmnTesterStarterConfig()
-// this is the project where you start the DmnCreator
-protected def projectBasePath: os.Path = os.pwd
-
-// the path where the DMNs are
-protected def dmnBasePath: os.Path = starterConfig.dmnPaths.head
-// the path where the DMN Configs are
-protected def dmnConfigPath: os.Path = starterConfig.dmnConfigPaths.head
-// creating the Path to the DMN - by default the _dmnName_ is `decisionDmn.decisionDefinitionKey`.
-protected def defaultDmnPath(dmnName: String): os.Path = dmnBasePath / s"$dmnName.dmn"
-
-```
-
-Example of a general Tester you can use for all project, that also starts the DMN Tester:
-
-```scala
-trait MyCompanyDmnTester extends DmnTesterConfigCreator, DmnTesterStarter:
-
-  private def localDmnPath = os.pwd / diagramPath
-
-  override protected def starterConfig: DmnTesterStarterConfig =
-    DmnTesterStarterConfig(
-      dmnPaths = Seq(localDmnPath)
-  )
-  override protected def defaultDmnPath(dmnName: String): os.Path =
-    val dmnPath = dmnBasePath / s"${dmnName.replace("mycompany-", "")}.dmn"
-    if(!dmnPath.toIO.exists())
-      throw FileNotFoundException(s"There is no DMN in $dmnPath")
-    dmnPath
-
-  startDmnTester()
-
-end MyCompanyDmnTester
-```
-
-So in the project you can focus on the creation of DMN Configurations, like:
-
-```scala
-// runMain mycompany.nnk.dmn.ProjectDmnTester
-object ProjectDmnTester extends MyCompanyDmnTester, App:
-
-  createDmnConfigs(
-        ...
-  )
-
-end ProjectDmnTester
-```
+See [03-dmn].
 
 ## Problem Handling
 

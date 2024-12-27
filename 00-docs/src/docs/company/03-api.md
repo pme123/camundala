@@ -47,7 +47,7 @@ lazy val apiConfig: ApiConfig =
     .withJiraUrls("COM" -> "https://issue.mycompany.ch/browse")  
 ```
 
-## Default ApiConfig
+### Default ApiConfig
 This is the default Configuration:
 ```scala
 // your company name like 'mycompany'

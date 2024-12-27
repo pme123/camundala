@@ -63,17 +63,12 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
   private lazy val dmnWrapper =
     s"""package $companyName.camundala.dmn
        |
-       |import camundala.dmn.*
+       |trait CompanyDmnTester extends DmnTesterConfigCreator:
        |
-       |/**
-       | * Add here company specific stuff, to run the DMN Tester.
-       | */
-       |trait CompanyDmnTester extends DmnTesterConfigCreator, DmnTesterStarter:
+       |  override def starterConfig: DmnTesterStarterConfig =
+       |    DmnTesterStarterConfig(companyName = "$companyName")
        |
-       |  def starterConfig: DmnTesterStarterConfig =
-       |    DmnTesterStarterConfig( // adjust paths if needed
-       |      companyName = "$companyName",
-       |    )
+       |end CompanyDmnTester
        |""".stripMargin
 
   private lazy val simulationWrapper =
