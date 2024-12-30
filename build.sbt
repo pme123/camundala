@@ -30,6 +30,7 @@ lazy val root = project
     helper,
     // implementations
     camunda7Worker,
+    camunda8Worker,
     // experiments
     camunda, // not in use
     camunda8, // not in use
@@ -167,6 +168,21 @@ lazy val camunda7Worker = project
       springBootOAuth2ClientDependency,
       jaxbApiDependency,
       scaffeineDependency
+    )
+  )
+  .dependsOn(worker)
+
+lazy val camunda8Worker = project
+  .in(file("./04-worker-c8zio"))
+  .configure(publicationSettings)
+  .settings(projectSettings("camunda8-worker"))
+  .settings(unitTestSettings)
+  .settings(
+    autoImportSetting,
+    libraryDependencies ++= Seq(
+      sttpDependency,
+      zeebeJavaClientDependency,
+      zioDependency
     )
   )
   .dependsOn(worker)

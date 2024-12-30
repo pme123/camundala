@@ -42,6 +42,7 @@ object Dependencies {
   val camundaVersion = "7.22.0" // external task client
   val jaxbApiVersion = "4.0.2" // needed by the camunda client 7.21?!
   val scaffeineV = "5.2.1" // caching
+  val zioVersion = "2.1.14" // zio
   // - sttpClient3
 
   // --- Experiments
@@ -83,7 +84,12 @@ object Dependencies {
     "org.springframework.boot" % "spring-boot-starter-webflux" % springBootVersion,
     "io.camunda.spring" % "spring-boot-starter-camunda" % camunda8Version,
     "com.fasterxml.jackson.module" %% "jackson-module-scala" % scalaJacksonVersion
-  ).map(_.exclude("org.slf4j", "slf4j-api"))
+  )//.map(_.exclude("org.slf4j", "slf4j-api"))
+
+  val zeebeJavaClientDependency =
+    "io.camunda" % "zeebe-client-java" % "8.7.0-alpha2" //TODO camunda8Version,
+  val zioDependency =
+    "dev.zio" %% "zio" % zioVersion
 
   // examples
   val camundaDependencies = Seq(
