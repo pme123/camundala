@@ -5,11 +5,11 @@ import os.proc
 
 import java.util.Date
 
-case class DeployHelper(deployConfig: PostmanConfig) extends Helpers:
+case class DeployHelper(postmanConfig: PostmanConfig) extends Helpers:
 
-  val collectionId = deployConfig.collectionId
-  val envId = deployConfig.localDevEnvId
-  val postmanApiKey = sys.env(deployConfig.envApiKey)
+  val collectionId = postmanConfig.collectionId
+  val envId = postmanConfig.localDevEnvId
+  val postmanApiKey = sys.env(postmanConfig.envApiKey)
 
   def deploy(integrationTest: Option[String] = None): Unit =
     println(s"Publishing Project locally")
