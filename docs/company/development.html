@@ -68,7 +68,6 @@
     <li class="level1 nav-leaf"><a href="../">Intro</a></li>
     <li class="level1 nav-leaf"><a href="../specification.html">Process &amp; Domain Specification</a></li>
     <li class="level1 nav-leaf"><a href="../bpmnDsl.html">BPMN DSL</a></li>
-    <li class="level1 nav-leaf"><a href="../projectSetup.html">Project Setup</a></li>
     <li class="level1 nav-leaf"><a href="../technologies.html">Technologies</a></li>
     <li class="level1 nav-leaf"><a href="../generalConcerns.html">General Concerns</a></li>
     <li class="level1 nav-header">Functional DSLs</li>
@@ -105,6 +104,9 @@
 
   <ul class="nav-list">
     <li class="level1 nav-leaf"><a href="#publish">publish</a></li>
+    <li class="level1 nav-node"><a href="#company-documentation">Company Documentation</a></li>
+    <li class="level2 nav-leaf"><a href="#preparedocs">prepareDocs</a></li>
+    <li class="level2 nav-leaf"><a href="#publishdocs">publishDocs</a></li>
   </ul>
 
   <p class="footer"></p>
@@ -124,13 +126,64 @@ chmod +x helper.scala</span></code></pre>
         </div>
         
         <h2 id="publish" class="section"><a class="anchor-link left" href="#publish"><i class="icofont-laika link">&#xef71;</i></a>publish</h2>
-        <p>TODO</p>
+        <p>Creates a new Release for the Company project (<code>company-camundala</code>) and publishes to the repository(e.g. Artifactory)</p>
+        <p>Usage:</p>
+        <pre><code>./helper.scala publish &lt;VERSION&gt;</code></pre>
+        <p>Example:</p>
+        <pre><code>./helper.scala publish 0.2.5</code></pre>
+        <p>The same steps are executed as for the <code>publish</code> command in any project.
+        See <a href="../development/projectDev.html#publish">project publish</a>.</p>
         
-        <h2 id="preparedocs"><a class="anchor-link left" href="#preparedocs"><i class="icofont-laika link">&#xef71;</i></a>prepareDocs</h2>
-        <p>TODO</p>
+        <h2 id="company-documentation" class="section"><a class="anchor-link left" href="#company-documentation"><i class="icofont-laika link">&#xef71;</i></a>Company Documentation</h2>
+        <p>This is a semi-automatic process. This should be done either to prepare a Release or after a Release.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>At the moment this is based on using <strong>Postman</strong> and a <strong>WebDAV</strong> server.</p>
+          <p>So get in touch if you have a different setup.</p>
+        </div>
+        <p>Do the following steps:</p>
+        <ul>
+          <li>Open the <code>company-camundala</code> project in your IDE.</li>
+          <li>Configure the Release - edit <code>00-docs/CONFIG.conf</code>.</li>
+          <li>Copy the actual Production Versions of the Release (<code>00-docs/VERSIONS.conf</code>) to <code>00-docs/VERSIONS_PREVIOUS.conf</code> from <a href="postman.html#postman">Postman</a>.</li>
+          <li>
+            Copy the new Versions of the Release to <code>00-docs/VERSIONS.conf</code> from <a href="postman.html#postman">Postman</a>.
+            <pre><code>// START VERSIONS
+// Workers
+companyAccountingWorkerVersion = &quot;1.8.11&quot; 
+...
+// Project
+companyAccountingVersion = &quot;0.8.11&quot; 
+...
+
+// END VERSIONS</code></pre>
+            <p>See <a href="postman.html#deploy-the-projects">Deploy the Projects</a></p>
+          </li>
+        </ul>
         
-        <h2 id="publishdocs"><a class="anchor-link left" href="#publishdocs"><i class="icofont-laika link">&#xef71;</i></a>publishDocs</h2>
-        <p>TODO</p>
+        <h3 id="preparedocs" class="section"><a class="anchor-link left" href="#preparedocs"><i class="icofont-laika link">&#xef71;</i></a>prepareDocs</h3>
+        <p>Prepare the company documentation.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>./helper.scala prepareDocs</span></code></pre>
+        <div class="callout warning">
+          <i class="icofont-laika warning">&#xf026;</i>
+          <p>Be aware that this overwrites <code>release.md</code></p>
+        </div>
+        <ul>
+          <li>
+            Manually adjust the Release Notes <em>release.md</em>.
+            <ul>
+              <li>You can check the result, using the <em>Sbt</em> command <em>laikaPreview</em> on <a href="http://localhost:4242/index.html">localhost</a></li>
+              <li>If you change the Versions you need to reload <em>SBT</em>.</li>
+            </ul>
+          </li>
+        </ul>
+        
+        <h3 id="publishdocs" class="section"><a class="anchor-link left" href="#publishdocs"><i class="icofont-laika link">&#xef71;</i></a>publishDocs</h3>
+        <p>Release the company documentation.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>./helper.scala publishDocs</span></code></pre>
+        <ul>
+          <li>Check the result on your Company Documentation Page.</li>
+        </ul>
 
         
 <hr class="footer-rule"/>

@@ -68,7 +68,6 @@
     <li class="level1 nav-leaf"><a href="../">Intro</a></li>
     <li class="level1 nav-leaf"><a href="../specification.html">Process &amp; Domain Specification</a></li>
     <li class="level1 nav-leaf"><a href="../bpmnDsl.html">BPMN DSL</a></li>
-    <li class="level1 nav-leaf"><a href="../projectSetup.html">Project Setup</a></li>
     <li class="level1 nav-leaf"><a href="../technologies.html">Technologies</a></li>
     <li class="level1 nav-leaf"><a href="../generalConcerns.html">General Concerns</a></li>
     <li class="level1 nav-header">Functional DSLs</li>
@@ -104,7 +103,14 @@
   <p class="header"><a href="#">04-helper</a></p>
 
   <ul class="nav-list">
-    <li class="level1 nav-leaf"><a href="#companydevhelper">CompanyDevHelper</a></li>
+    <li class="level1 nav-node"><a href="#companydevhelper">CompanyDevHelper</a></li>
+    <li class="level2 nav-leaf"><a href="#apiconfig-1">ApiConfig</a></li>
+    <li class="level2 nav-leaf"><a href="#devconfig-1">DevConfig</a></li>
+    <li class="level1 nav-node"><a href="#companydevconfig">CompanyDevConfig</a></li>
+    <li class="level2 nav-leaf"><a href="#defaultprojectconfigpath">defaultProjectConfigPath</a></li>
+    <li class="level1 nav-node"><a href="#companycamundaladevhelper">CompanyCamundalaDevHelper</a></li>
+    <li class="level2 nav-leaf"><a href="#apiconfig-2">apiConfig</a></li>
+    <li class="level2 nav-leaf"><a href="#devconfig-2">devConfig</a></li>
   </ul>
 
   <p class="footer"></p>
@@ -115,21 +121,103 @@
 
         <h1 id="_04-helper" class="title">04-helper</h1>
         
-        <h3 id="companydevhelper" class="section"><a class="anchor-link left" href="#companydevhelper"><i class="icofont-laika link">&#xef71;</i></a>CompanyDevHelper</h3>
-        <p>With the <code>CompanyDevHelper</code> you can customize  <em>Camundala</em> for your Company:</p>
-        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">api</span><span>.*
-</span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">helper</span><span>.</span><span class="identifier">dev</span><span>.</span><span class="type-name">DevHelper</span><span>
-</span><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">helper</span><span>.</span><span class="identifier">util</span><span>.*
+        <h2 id="companydevhelper" class="section"><a class="anchor-link left" href="#companydevhelper"><i class="icofont-laika link">&#xef71;</i></a>CompanyDevHelper</h2>
+        <p>With the <code>CompanyDevHelper</code> you can customize  the development process for each project.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">CompanyDevHelper</span><span>(</span><span class="identifier">projectName</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">subProjects</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">Seq</span><span>.</span><span class="identifier">empty</span><span>)
+  </span><span class="keyword">extends</span><span> </span><span class="type-name">DevHelper</span><span>:
 
-</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">CompanyDevHelper</span><span>(</span><span class="identifier">projectName</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">subProjects</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">Seq</span><span>.</span><span class="identifier">empty</span><span>)
-    </span><span class="keyword">extends</span><span> </span><span class="type-name">DevHelper</span><span>:
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">apiConfig</span><span>: </span><span class="type-name">ApiConfig</span><span> = </span><span class="type-name">CompanyApiCreator</span><span>.</span><span class="identifier">apiConfig</span><span>
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">devConfig</span><span>: </span><span class="type-name">DevConfig</span><span> = </span><span class="type-name">CompanyDevConfig</span><span>.</span><span class="identifier">config</span><span>(</span><span class="identifier">projectName</span><span>, </span><span class="identifier">subProjects</span><span>)
 
-  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">apiConfig</span><span>: </span><span class="type-name">ApiConfig</span><span> = </span><span class="type-name">ApiConfig</span><span>(</span><span class="string-literal">&quot;mycompany&quot;</span><span>)</span><span class="comment">//.withTenantId(&quot;mycompany&quot;)...
+</span><span class="identifier">end</span><span> </span><span class="type-name">CompanyDevHelper</span></code></pre>
+        
+        <h3 id="apiconfig-1" class="section"><a class="anchor-link left" href="#apiconfig-1"><i class="icofont-laika link">&#xef71;</i></a>ApiConfig</h3>
+        <p>Taken from <code>CompanyApiCreator.apiConfig</code>, see <a href="03-api.html#companyapicreator">CompanyApiCreator</a></p>
+        
+        <h3 id="devconfig-1" class="section"><a class="anchor-link left" href="#devconfig-1"><i class="icofont-laika link">&#xef71;</i></a>DevConfig</h3>
+        <p>Taken from <code>CompanyApiCreator.apiConfig</code>, see <a href="#companydevconfig">CompanyDevConfig</a></p>
+        
+        <h2 id="companydevconfig" class="section"><a class="anchor-link left" href="#companydevconfig"><i class="icofont-laika link">&#xef71;</i></a>CompanyDevConfig</h2>
+        <p>The <code>CompanyDevConfig</code> is a helper to create the <code>DevConfig</code> for the <code>CompanyDevHelper</code>.</p>
+        <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">CompanyDevConfig</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">config</span><span>(
+      </span><span class="identifier">projectName</span><span>: </span><span class="type-name">String</span><span>,
+      </span><span class="identifier">subProjects</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">Seq</span><span>.</span><span class="identifier">empty</span><span>
+  ) = </span><span class="type-name">DevConfig</span><span>(
+    </span><span class="identifier">projectName</span><span>,
+    </span><span class="identifier">subProjects</span><span>,
+    </span><span class="identifier">camundala</span><span>.</span><span class="identifier">api</span><span>.</span><span class="identifier">defaultProjectConfigPath</span><span>
+  ).</span><span class="identifier">withVersionConfig</span><span>(</span><span class="identifier">companyVersionConfig</span><span>)
+   </span><span class="comment">// .withSbtConfig(SbtConfig(...))
+</span><span>   </span><span class="comment">// .withPublishConfig(PublishConfig(...))
+</span><span>   </span><span class="comment">// .withPostmanConfig(PostmanConfig(...))
+</span><span>   </span><span class="comment">// .withDockerConfig(DockerConfig(...))
 </span><span>
-  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">deployConfig</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">DeployConfig</span><span>] = ???
-  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">devConfig</span><span>: </span><span class="type-name">DevConfig</span><span> = ???
-  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">dockerConfig</span><span>: </span><span class="type-name">DockerConfig</span><span> = ???
-  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">publishConfig</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">PublishConfig</span><span>] = ???</span></code></pre>
+  </span><span class="keyword">private</span><span> </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">companyVersionConfig</span><span> = </span><span class="type-name">VersionConfig</span><span>(
+    </span><span class="identifier">scalaVersion</span><span> = </span><span class="type-name">BuildInfo</span><span>.</span><span class="identifier">scalaVersion</span><span>,
+    </span><span class="identifier">camundalaVersion</span><span> = </span><span class="type-name">BuildInfo</span><span>.</span><span class="identifier">camundalaV</span><span>,
+    </span><span class="identifier">companyCamundalaVersion</span><span> = </span><span class="type-name">BuildInfo</span><span>.</span><span class="identifier">version</span><span>,
+    </span><span class="identifier">sbtVersion</span><span> = </span><span class="type-name">BuildInfo</span><span>.</span><span class="identifier">sbtVersion</span><span>,
+    </span><span class="identifier">otherVersions</span><span> = </span><span class="type-name">Map</span><span>()
+  )
+</span><span class="identifier">end</span><span> </span><span class="type-name">CompanyDevConfig</span></code></pre>
+        <p>Here the default values for <code>DevConfig</code>:</p>
+        <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">DevConfig</span><span>(
+    </span><span class="comment">// project configuration taken from the PROJECT.conf
+</span><span>    </span><span class="identifier">apiProjectConf</span><span>: </span><span class="type-name">ApiProjectConf</span><span>,
+    </span><span class="comment">// subProjects to optimize compilation time - use only for big projects
+</span><span>    </span><span class="identifier">subProjects</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">Seq</span><span>.</span><span class="identifier">empty</span><span>,
+    </span><span class="comment">// additional sbt configuration for sbt generation
+</span><span>    </span><span class="identifier">sbtConfig</span><span>: </span><span class="type-name">SbtConfig</span><span> = </span><span class="type-name">SbtConfig</span><span>(),
+    </span><span class="comment">// versions used for generators
+</span><span>    </span><span class="identifier">versionConfig</span><span>: </span><span class="type-name">VersionConfig</span><span> = </span><span class="type-name">VersionConfig</span><span>(),
+    </span><span class="comment">// If you have a Postman account, add the config here (used for ./helper.scala deploy..)
+</span><span>    </span><span class="identifier">postmanConfig</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">PostmanConfig</span><span>] = </span><span class="type-name">None</span><span>,
+    </span><span class="comment">// Adjust the DockerConfig (used for ./helper.scala deploy../ docker..)
+</span><span>    </span><span class="identifier">dockerConfig</span><span>: </span><span class="type-name">DockerConfig</span><span> = </span><span class="type-name">DockerConfig</span><span>(),
+    </span><span class="comment">// If you have a webdav server to publish the docs, add the config here (used in ./helper.scala publish..)
+</span><span>    </span><span class="identifier">publishConfig</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">PublishConfig</span><span>] = </span><span class="type-name">None</span><span>,
+    </span><span class="comment">// general project structure -  do not change if possible
+</span><span>    </span><span class="identifier">modules</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">ModuleConfig</span><span>] = </span><span class="type-name">DevConfig</span><span>.</span><span class="identifier">modules</span><span>
+)</span></code></pre>
+        
+        <h3 id="defaultprojectconfigpath" class="section"><a class="anchor-link left" href="#defaultprojectconfigpath"><i class="icofont-laika link">&#xef71;</i></a>defaultProjectConfigPath</h3>
+        <p>At the moment we use a configuration file for each project. <strong>This may change in the future.</strong>
+        The default path is <code>projectBasePath / PROJECT.conf</code> and is generated by <code>./helper.scala update</code> in the project.</p>
+        <p>Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">org</span><span> = </span><span class="string-literal">&quot;mycompany&quot;</span><span>
+</span><span class="identifier">name</span><span> = </span><span class="string-literal">&quot;mycompany-accounting&quot;</span><span>
+</span><span class="identifier">version</span><span> = </span><span class="string-literal">&quot;1.25.0-SNAPSHOT&quot;</span><span>
+</span><span class="identifier">dependencies</span><span>: {
+  </span><span class="string-literal">&quot;mycompany-helper&quot;</span><span>: </span><span class="string-literal">&quot;mycompany:mycompany-helper:1.4.*&quot;</span><span>
+  </span><span class="string-literal">&quot;mycompany-services&quot;</span><span>: </span><span class="string-literal">&quot;mycompany:mycompany-services:1.7.*&quot;</span><span>
+  </span><span class="string-literal">&quot;mycompany-crm&quot;</span><span>: </span><span class="string-literal">&quot;mycompany:mycompany-crm:2.28.*&quot;</span><span>
+}</span></code></pre>
+        
+        <h2 id="companycamundaladevhelper" class="section"><a class="anchor-link left" href="#companycamundaladevhelper"><i class="icofont-laika link">&#xef71;</i></a>CompanyCamundalaDevHelper</h2>
+        <p>The <code>CompanyCamundalaDevHelper</code> is a helper dedicated for the <code>company-camundala</code> project.</p>
+        <p>See <a href="development.html#development">Development</a></p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">CompanyCamundalaDevHelper</span><span>
+    </span><span class="keyword">extends</span><span> </span><span class="type-name">DevCompanyCamundalaHelper</span><span>:
+
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">apiConfig</span><span>: </span><span class="type-name">ApiConfig</span><span> = </span><span class="type-name">CompanyApiCreator</span><span>.</span><span class="identifier">apiConfig</span><span>
+    .</span><span class="identifier">copy</span><span>(
+      </span><span class="identifier">basePath</span><span> = </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> /</span><span class="string-literal">&quot;00-docs&quot;</span><span>,
+      </span><span class="identifier">tempGitDir</span><span> = </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="identifier">os</span><span>.</span><span class="identifier">up</span><span> / </span><span class="string-literal">&quot;git-temp&quot;</span><span>
+    )
+
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">devConfig</span><span>: </span><span class="type-name">DevConfig</span><span> = </span><span class="type-name">CompanyDevConfig</span><span>.</span><span class="identifier">config</span><span>(</span><span class="type-name">BuildInfo</span><span>.</span><span class="identifier">name</span><span>, </span><span class="type-name">Seq</span><span>.</span><span class="identifier">empty</span><span>)
+  
+</span><span class="identifier">end</span><span> </span><span class="type-name">CompanyCamundalaDevHelper</span></code></pre>
+        
+        <h3 id="apiconfig-2" class="section"><a class="anchor-link left" href="#apiconfig-2"><i class="icofont-laika link">&#xef71;</i></a>apiConfig</h3>
+        <p>The <code>apiConfig</code> is taken from <code>CompanyApiCreator.apiConfig</code> and can be customized.
+        The <code>basePath</code> and the <code>tempGitDir</code> must be adjusted, as <code>company-camundala</code> 
+        has a different file structure, compared to a project.</p>
+        
+        <h3 id="devconfig-2" class="section"><a class="anchor-link left" href="#devconfig-2"><i class="icofont-laika link">&#xef71;</i></a>devConfig</h3>
+        <p>Here your <code>DevConfig</code> defined in the <code>CompanyDevConfig.config</code> method, should work. 
+        The only adjustments are the <code>projectName</code> and that no <code>subProjects</code> are needed.</p>
 
         
 <hr class="footer-rule"/>

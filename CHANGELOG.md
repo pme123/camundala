@@ -15,6 +15,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.27 - 2024-12-30
+### Changed 
+- Added Company development documentation. - see [Commit](https://pme123@github.com/pme123/camundala/commit/5e668742e60236054ec1804ea34db91a52f8ac42)
+- Added Helper documentation. - see [Commit](https://pme123@github.com/pme123/camundala/commit/0ef49dadcea58985fb8bc55367c7d8ea2a260e13)
+- Added Worker documentation. - see [Commit](https://pme123@github.com/pme123/camundala/commit/16ca22337ce552e60356f45b0a43371b1ca28cee)
+- Added example Worker implementation to 04-worker-c8zio. - see [Commit](https://pme123@github.com/pme123/camundala/commit/c176892b7f2108062b3e2075e0bfdd52c60164ad)
+- Added Worker implementation to 04-worker-c7spring. - see [Commit](https://pme123@github.com/pme123/camundala/commit/1c7b7e5526d9cb9635910ab8a110365c50b16a5b)
+- Added Simulation documentation. - see [Commit](https://pme123@github.com/pme123/camundala/commit/2de43068083c0d1b6a5f77e7e10b6ebb455618f8)
+- Added DmnTester documentation. - see [Commit](https://pme123@github.com/pme123/camundala/commit/f948cbe8880d94a850d6c45f8d06de3ec2508711)
+- Merge branch 'master' into develop - see [Commit](https://pme123@github.com/pme123/camundala/commit/7f32346a993dd2e3cc6833fe12fddbbbf9dfee3c)
+- Fixed Dependencies. - see [Commit](https://pme123@github.com/pme123/camundala/commit/8182f6c44e43fd6382712428b9233f98a9554aac)
+- Merge branch 'master' into develop - see [Commit](https://pme123@github.com/pme123/camundala/commit/a9d3e6fba7b5c1cb260b705fa25396e75e2c5766)
+- Documented company/03-api. - see [Commit](https://pme123@github.com/pme123/camundala/commit/6780fe26284cb0b050931287af82cfc1fe6f7ee5)
+- Merge pull request #122 from scala-steward/update/tapir-iron-1.11.11 - see [Commit](https://pme123@github.com/pme123/camundala/commit/3358e8151e52f62797c13b6cc5e30ee1c56d56b4)
+- Merge pull request #123 from scala-steward/update/sbt-1.10.7 - see [Commit](https://pme123@github.com/pme123/camundala/commit/4bb71adb6772208b0a313f8b489829015f6d84cc)
+- Update sbt, sbt-dependency-tree, ... to 1.10.7 - see [Commit](https://pme123@github.com/pme123/camundala/commit/f66e1eb97fb919aa6431f77eda9ba949036ca8c0)
+- Update tapir-iron, tapir-json-circe, ... to 1.11.11 - see [Commit](https://pme123@github.com/pme123/camundala/commit/9232fd4285161b3b42d687988f090c483e7623e5)
+- Documented company/03-api. - see [Commit](https://pme123@github.com/pme123/camundala/commit/52ca9f0a1287ccb9e8b502fdcadefe60c5e37cac)
+- Fixing shortenName for OldName1 mycompany-myproject-myworker.post. - see [Commit](https://pme123@github.com/pme123/camundala/commit/1f02a621e56eb75e849b0656043db802ef2e1e11)
+- Fixing bad dependency links. - see [Commit](https://pme123@github.com/pme123/camundala/commit/af29067f95337aa3f6773981d4ddf6fe40e454f8)
+
 ## 1.30.26 - 2024-12-19
 ### Changed 
 - Fixing missing OpenApi.yml / adding generic documentation in ApiCreator. - see [Commit](https://pme123@github.com/pme123/camundala/commit/aba43a7e53d6aedca80917ed02a1bf0bb0519930)

@@ -68,7 +68,6 @@
     <li class="level1 nav-leaf"><a href="../">Intro</a></li>
     <li class="level1 nav-leaf"><a href="../specification.html">Process &amp; Domain Specification</a></li>
     <li class="level1 nav-leaf"><a href="../bpmnDsl.html">BPMN DSL</a></li>
-    <li class="level1 nav-leaf"><a href="../projectSetup.html">Project Setup</a></li>
     <li class="level1 nav-leaf"><a href="../technologies.html">Technologies</a></li>
     <li class="level1 nav-leaf"><a href="../generalConcerns.html">General Concerns</a></li>
     <li class="level1 nav-header">Functional DSLs</li>
@@ -104,12 +103,18 @@
   <p class="header"><a href="#">Workers</a></p>
 
   <ul class="nav-list">
-    <li class="level1 nav-node"><a href="#custom-worker">Custom Worker</a></li>
-    <li class="level2 nav-leaf"><a href="#runwork">runWork</a></li>
+    <li class="level1 nav-node"><a href="#general">General</a></li>
+    <li class="level2 nav-leaf"><a href="#validate">validate</a></li>
+    <li class="level1 nav-leaf"><a href="#custom-worker">Custom Worker</a></li>
     <li class="level1 nav-node"><a href="#init-process-worker">Init Process Worker</a></li>
     <li class="level2 nav-leaf"><a href="#custominit">customInit</a></li>
     <li class="level1 nav-node"><a href="#service-worker">Service Worker</a></li>
     <li class="level2 nav-leaf"><a href="#apiuri">apiUri</a></li>
+    <li class="level2 nav-leaf"><a href="#method">method</a></li>
+    <li class="level2 nav-leaf"><a href="#inputheaders">inputHeaders</a></li>
+    <li class="level2 nav-leaf"><a href="#querysegments">querySegments</a></li>
+    <li class="level2 nav-leaf"><a href="#inputmapper">inputMapper</a></li>
+    <li class="level2 nav-leaf"><a href="#outputmapper">outputMapper</a></li>
   </ul>
 
   <p class="footer"></p>
@@ -121,19 +126,37 @@
         <h1 id="workers" class="title">Workers</h1>
         <p>The implementation of an <strong><em>External Task</em></strong> is done by a <em><strong>Worker</strong></em>.</p>
         <p>So for each <em>External Task</em> type we have a DSL for an according <em>Worker</em>.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>In the future, it is possible to have more than the Worker types, that are described here.</p>
+        </div>
+        
+        <h2 id="general" class="section"><a class="anchor-link left" href="#general"><i class="icofont-laika link">&#xef71;</i></a>General</h2>
+        <p>Let&#39;s start with functions that are provided for all Workers.</p>
+        
+        <h3 id="validate" class="section"><a class="anchor-link left" href="#validate"><i class="icofont-laika link">&#xef71;</i></a>validate</h3>
+        <p>In every <em>Worker</em>, the input <code>In</code> is validated automatically (it is decoded from JSON to a <code>In</code> object).
+        However, you can override the <code>validate</code> method to add more sophisticated validation logic.</p>
+        <p>Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">validate</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">Either</span><span>[</span><span class="type-name">ValidatorError</span><span>, </span><span class="type-name">In</span><span>] =
+    </span><span class="keyword">for</span><span>
+      </span><span class="identifier">_</span><span> &lt;- </span><span class="type-name">Try</span><span>(</span><span class="identifier">in</span><span>.</span><span class="identifier">accountTypeFilterAsSeq</span><span>).</span><span class="identifier">toEither</span><span>.</span><span class="identifier">left</span><span>.</span><span class="identifier">map</span><span>: </span><span class="identifier">_</span><span> =&gt;
+          </span><span class="type-name">ValidatorError</span><span>(
+            </span><span class="string-literal">&quot;accountTypeFilter must be a single Int or a comma separated String of Ints&quot;</span><span>
+          )
+      </span><span class="comment">//_ &lt;- moreValidation(in)
+</span><span>    </span><span class="keyword">yield</span><span> </span><span class="identifier">in</span><span>    </span></code></pre>
         
         <h2 id="custom-worker" class="section"><a class="anchor-link left" href="#custom-worker"><i class="icofont-laika link">&#xef71;</i></a>Custom Worker</h2>
         <p>The <em>Custom Worker</em> is a general <em>Worker</em> that can used for any business logic or integration.</p>
-        <p>It automatically does:</p>
-        <ul>
-          <li>validate the input variables</li>
-        </ul>
         <p>You can create:</p>
         <ul>
           <li>business logic that can&#39;t be handled by the expression language in the BPMN itself</li>
+          <li>complex mappings</li>
           <li>a service integration that is not covered by the <em>Service Worker</em></li>
           <li>whatever you want</li>
         </ul>
+        <p>Use this <a href="../development/projectDev.html#customtask">Generator</a> to create a new <em>Custom Worker</em></p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">mycompany</span><span>.</span><span class="identifier">myproject</span><span>.</span><span class="identifier">bpmn</span><span>.</span><span class="identifier">myprocess</span><span>.</span><span class="identifier">v1</span><span>.</span><span class="type-name">MyCustomTask</span><span>.*
 
 </span><span class="annotation">@Configuration</span><span>
@@ -143,11 +166,9 @@
 
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">runWork</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">Either</span><span>[</span><span class="type-name">CamundalaWorkerError</span><span>.</span><span class="type-name">CustomError</span><span>, </span><span class="type-name">Out</span><span>] =
     </span><span class="comment">// your business logic
-</span><span>    ???
-  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">validate</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">Either</span><span>[</span><span class="type-name">CamundalaWorkerError</span><span>.</span><span class="type-name">ValidatorError</span><span>, </span><span class="type-name">In</span><span>] =
-    ??? </span><span class="comment">// custom validation logic here  </span></code></pre>
+</span><span>    ???</span></code></pre>
         <ul>
-          <li><code>lazy val customTask</code> is just needed for the compiler to check the correctness of the types.</li>
+          <li><code>lazy val customTask</code> is just needed for the compiler to check the correctness of the types (<em>Prototype</em> pattern).</li>
           <li><code>runWork</code> is the method that is called by the <em>Worker</em> to execute the business logic.</li>
           <li>The code can either:</li>
         </ul>
@@ -156,17 +177,16 @@
         </ul>
         <ul>
           <li>fail the task with an error -&gt; <code>Left[CamundalaWorkerError.CustomError]</code></li>
-          <li><code>override def validate(in: In)</code> is optional and can be used to add more sophisticated validation logic.
-          If the validation fails, the process will fail.</li>
         </ul>
-        <p>Examples:</p>
-        
-        <h3 id="runwork" class="section"><a class="anchor-link left" href="#runwork"><i class="icofont-laika link">&#xef71;</i></a>runWork</h3>
-        <p>TODO</p>
-        
-        <h3 id="validate"><a class="anchor-link left" href="#validate"><i class="icofont-laika link">&#xef71;</i></a>validate</h3>
-        <p>This is the same in every worker type.
-        TODO</p>
+        <p>Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">runWork</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">Either</span><span>[</span><span class="type-name">CamundalaWorkerError</span><span>.</span><span class="type-name">CustomError</span><span>, </span><span class="type-name">Out</span><span>] =
+  </span><span class="identifier">doSomethingThatCanFail</span><span>(</span><span class="identifier">in</span><span>)
+    .</span><span class="identifier">left</span><span>.</span><span class="identifier">map</span><span>: </span><span class="identifier">e</span><span> =&gt; 
+      </span><span class="type-name">CamundalaWorkerError</span><span>.</span><span class="type-name">CustomError</span><span>(</span><span class="string-literal">&quot;Problem in Worker: &quot;</span><span> + </span><span class="identifier">e</span><span>.</span><span class="identifier">getMessage</span><span>)
+    
+</span><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">doSomethingThatCanFail</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">Either</span><span>[</span><span class="type-name">Throwable</span><span>, </span><span class="type-name">In</span><span>] = ???    </span></code></pre>
+        <p><code>doSomethingThatCanFail</code> does some mapping or business logic that can fail.
+        If it fails, it returns a <code>Left</code> with an error message, that you wrap with a <em>CamundalaWorkerError.CustomError</em>.</p>
         
         <h2 id="init-process-worker" class="section"><a class="anchor-link left" href="#init-process-worker"><i class="icofont-laika link">&#xef71;</i></a>Init Process Worker</h2>
         <p>The <em>Init Process Worker</em> is a special <em>Worker</em> that is used to start a process.</p>
@@ -181,8 +201,6 @@
           <li>init process variables used to control the process flow, 
           like counters, variables that may not be on the process.</li>
           <li>create simplified process variables to simplify the process flow.</li>
-          <li>validate the input variables, if you need more sophisticated validation logic, 
-          than you can do with the type definition.</li>
         </ul>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">mycompany</span><span>.</span><span class="identifier">myproject</span><span>.</span><span class="identifier">bpmn</span><span>.</span><span class="identifier">myprocess</span><span>.</span><span class="identifier">v1</span><span>.</span><span class="type-name">MyProcess</span><span>.*
 
@@ -192,28 +210,26 @@
   </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">inOutExample</span><span> = </span><span class="identifier">example</span><span>
     
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">customInit</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">InitIn</span><span> =
-    ??? </span><span class="comment">// init logic here
-</span><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">validate</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">Either</span><span>[</span><span class="type-name">CamundalaWorkerError</span><span>.</span><span class="type-name">ValidatorError</span><span>, </span><span class="type-name">In</span><span>] =
-    ??? </span><span class="comment">// custom validation logic here</span></code></pre>
+    ??? </span><span class="comment">// init logic here</span></code></pre>
         <ul>
           <li><code>lazy val inOutExample</code> is just needed for the compiler to check the correctness of the types.</li>
           <li><code>customInit</code> is the method that is called by the <em>Worker</em> to execute the init logic.</li>
           <li>The method sets the process variables according the <em>InitIn</em> object.
           Be aware that this can not fail, as the input variables are already validated.</li>
-          <li><code>override def validate(in: In)</code> is optional and can be used to add more sophisticated validation logic.
-          If the validation fails, the process will fail.</li>
         </ul>
         <p>Examples:</p>
         
         <h3 id="custominit" class="section"><a class="anchor-link left" href="#custominit"><i class="icofont-laika link">&#xef71;</i></a>customInit</h3>
-        <p>TODO</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">customInit</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">InitIn</span><span> =
+  </span><span class="type-name">InitIn</span><span>(
+    </span><span class="identifier">currency</span><span> = </span><span class="identifier">in</span><span>.</span><span class="identifier">currency</span><span>.</span><span class="identifier">getOrElse</span><span>(</span><span class="type-name">Currency</span><span>.</span><span class="type-name">EUR</span><span>), </span><span class="comment">// set optional value with default value
+</span><span>    </span><span class="identifier">requestCounter</span><span> = </span><span class="number-literal">0</span><span>, </span><span class="comment">// init process variables used to control the process flow
+</span><span>    </span><span class="identifier">iban</span><span> = </span><span class="identifier">in</span><span>.</span><span class="identifier">person</span><span>.</span><span class="identifier">iban</span><span>, </span><span class="comment">// simplify process variables
+</span><span>    </span><span class="comment">//...
+</span><span>  )</span></code></pre>
         
         <h2 id="service-worker" class="section"><a class="anchor-link left" href="#service-worker"><i class="icofont-laika link">&#xef71;</i></a>Service Worker</h2>
         <p>The <em>Service Worker</em> is a special <em>Worker</em> that is used to call a REST API service.</p>
-        <p>It automatically does:</p>
-        <ul>
-          <li>validate the input variables</li>
-        </ul>
         <p>You can provide:</p>
         <ul>
           <li>the method and the path of the service</li>
@@ -229,9 +245,9 @@
   </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">serviceTask</span><span> = </span><span class="identifier">example</span><span>
 
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">apiUri</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>) = </span><span class="string-literal">uri&quot;</span><span class="substitution">$serviceBasePath</span><span class="string-literal">/myService&quot;</span><span>
-  </span><span class="keyword">override</span><span> </span><span class="keyword">protected</span><span> </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">method</span><span>: </span><span class="type-name">Method</span><span> = </span><span class="type-name">Method</span><span>.</span><span class="type-name">POST</span><span>
+  </span><span class="keyword">override</span><span> </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">method</span><span>: </span><span class="type-name">Method</span><span> = </span><span class="type-name">Method</span><span>.</span><span class="type-name">POST</span><span>
  
-  </span><span class="keyword">override</span><span> </span><span class="keyword">protected</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">inputHeaders</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>] =
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">inputHeaders</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>] =
   ??? </span><span class="comment">// map the input variables to the headers
 </span><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">querySegments</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>) =
     ??? </span><span class="comment">// map the input variables to the query parameters  
@@ -241,9 +257,7 @@
                            </span><span class="identifier">out</span><span>: </span><span class="type-name">ServiceResponse</span><span>[</span><span class="type-name">ServiceOut</span><span>],
                            </span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>
                          ): </span><span class="type-name">Either</span><span>[</span><span class="type-name">ServiceMappingError</span><span>, </span><span class="type-name">Out</span><span>] =
-    ??? </span><span class="comment">// map the service response body and header to the output variables
-</span><span>  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">validate</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">Either</span><span>[</span><span class="type-name">CamundalaWorkerError</span><span>.</span><span class="type-name">ValidatorError</span><span>, </span><span class="type-name">In</span><span>] =
-    ??? </span><span class="comment">// custom validation logic here</span></code></pre>
+    ??? </span><span class="comment">// map the service response body and header to the output variables</span></code></pre>
         <ul>
           <li><code>lazy val serviceTask</code> is just needed for the compiler to check the correctness of the types.</li>
           <li><code>def apiUri(in: In)</code> the path of the service, with the path parameters from the <code>in</code> object.
@@ -253,24 +267,80 @@
           <li><code>override def inputHeaders(in: In)</code> is optional and can be used to add headers to the request.</li>
           <li><code>override def inputMapper(in: In)</code> is optional and can be used to map the input variables to the request body.</li>
           <li><code>override def outputMapper(out: ServiceResponse[ServiceOut], in: In)</code> is optional and can be used to map the response body and -headers to the output variables.</li>
-          <li><code>override def validate(in: In)</code> is optional and can be used to add more sophisticated validation logic.
-          If the validation fails, the process will fail.</li>
         </ul>
         <p>Examples:</p>
         
         <h3 id="apiuri" class="section"><a class="anchor-link left" href="#apiuri"><i class="icofont-laika link">&#xef71;</i></a>apiUri</h3>
-        <p>TODO</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">apiUri</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>) = </span><span class="string-literal">uri&quot;</span><span class="substitution">$serviceBasePath</span><span class="string-literal">/myService/account/</span><span class="substitution">${in.accountId}</span><span class="string-literal">&quot;</span></code></pre>
+        <p>The only required function. It returns the path of the service, with the path parameters from the <code>in</code> object.</p>
         
-        <h3 id="querysegments"><a class="anchor-link left" href="#querysegments"><i class="icofont-laika link">&#xef71;</i></a>querySegments</h3>
-        <p>TODO</p>
+        <h3 id="method" class="section"><a class="anchor-link left" href="#method"><i class="icofont-laika link">&#xef71;</i></a>method</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">override</span><span> </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">method</span><span>: </span><span class="type-name">Method</span><span> = </span><span class="type-name">Method</span><span>.</span><span class="type-name">POST</span></code></pre>
+        <p>Override the HTTP method. Default is <code>Method.GET</code>.</p>
         
-        <h3 id="inputheaders"><a class="anchor-link left" href="#inputheaders"><i class="icofont-laika link">&#xef71;</i></a>inputHeaders</h3>
-        <p>TODO</p>
+        <h3 id="inputheaders" class="section"><a class="anchor-link left" href="#inputheaders"><i class="icofont-laika link">&#xef71;</i></a>inputHeaders</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">inputHeaders</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>] =
+  </span><span class="type-name">Map</span><span>(</span><span class="string-literal">&quot;Correlation-ID&quot;</span><span> -&gt; </span><span class="identifier">in</span><span>.</span><span class="identifier">userId</span><span>)</span></code></pre>
         
-        <h3 id="inputmapper"><a class="anchor-link left" href="#inputmapper"><i class="icofont-laika link">&#xef71;</i></a>inputMapper</h3>
-        <p>TODO</p>
+        <h3 id="querysegments" class="section"><a class="anchor-link left" href="#querysegments"><i class="icofont-laika link">&#xef71;</i></a>querySegments</h3>
+        <p>We support three ways to provide query parameters:</p>
         
-        <h3 id="outputmapper"><a class="anchor-link left" href="#outputmapper"><i class="icofont-laika link">&#xef71;</i></a>outputMapper</h3>
+        <h4 id="querykeys" class="section"><a class="anchor-link left" href="#querykeys"><i class="icofont-laika link">&#xef71;</i></a>queryKeys</h4>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">querySegments</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>) =
+  </span><span class="identifier">queryKeys</span><span>(</span><span class="string-literal">&quot;limitSelection&quot;</span><span>, </span><span class="string-literal">&quot;accountType&quot;</span><span>)</span></code></pre>
+        <p>A list of optional <code>In</code> fields that are mapped to query parameters.
+        So in this example you need to have <code>limitSelection</code> and <code>accountType</code> in your <code>In</code> object.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">In</span><span>(</span><span class="identifier">limitSelection</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="identifier">accountType</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>])</span></code></pre>
+        
+        <h4 id="querykeyvalues" class="section"><a class="anchor-link left" href="#querykeyvalues"><i class="icofont-laika link">&#xef71;</i></a>queryKeyValues</h4>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">querySegments</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>) =
+  </span><span class="identifier">queryKeyValues</span><span>(
+    </span><span class="string-literal">&quot;limitSelection&quot;</span><span> -&gt; </span><span class="identifier">in</span><span>.</span><span class="identifier">limitSelection</span><span>,
+    </span><span class="string-literal">&quot;accountType&quot;</span><span> -&gt; </span><span class="identifier">adjust</span><span>(</span><span class="identifier">in</span><span>.</span><span class="identifier">accountType</span><span>)
+  )</span></code></pre>
+        <p>If you need to adjust an <code>In</code> value, you can use this way of explicit listing the key-value pairs.</p>
+        
+        <h4 id="queryvalues" class="section"><a class="anchor-link left" href="#queryvalues"><i class="icofont-laika link">&#xef71;</i></a>queryValues</h4>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">querySegments</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>) =
+  </span><span class="identifier">queryValues</span><span>(
+    </span><span class="string-literal">s&quot;eq(username,string:</span><span class="substitution">${in.user}</span><span class="string-literal">)&quot;</span><span>
+  )</span></code></pre>
+        <p>If you have a query language, you can use this way to provide the query parameters.</p>
+        
+        <h4 id="a-combination-of-the-above" class="section"><a class="anchor-link left" href="#a-combination-of-the-above"><i class="icofont-laika link">&#xef71;</i></a>a combination of the above</h4>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">querySegments</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>) =
+  </span><span class="identifier">queryKeys</span><span>(</span><span class="string-literal">&quot;limitSelection&quot;</span><span>) ++
+    </span><span class="identifier">queryKeyValues</span><span>(</span><span class="string-literal">&quot;accountType&quot;</span><span> -&gt; </span><span class="identifier">adjust</span><span>(</span><span class="identifier">in</span><span>.</span><span class="identifier">accountType</span><span>))</span></code></pre>
+        <p>And you can combine them as you like.</p>
+        
+        <h3 id="inputmapper" class="section"><a class="anchor-link left" href="#inputmapper"><i class="icofont-laika link">&#xef71;</i></a>inputMapper</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">inputMapper</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">ServiceIn</span><span>] =
+  </span><span class="type-name">Some</span><span>(</span><span class="type-name">ServiceIn</span><span>(</span><span class="identifier">in</span><span>.</span><span class="identifier">accountType</span><span>, </span><span class="identifier">in</span><span>.</span><span class="identifier">accountId</span><span>))</span></code></pre>
+        <p>Mapping the input variables to the request body.</p>
+        
+        <h3 id="outputmapper" class="section"><a class="anchor-link left" href="#outputmapper"><i class="icofont-laika link">&#xef71;</i></a>outputMapper</h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">outputMapper</span><span>(
+                           </span><span class="identifier">out</span><span>: </span><span class="type-name">ServiceResponse</span><span>[</span><span class="type-name">ServiceOut</span><span>],
+                           </span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>
+                         ): </span><span class="type-name">Either</span><span>[</span><span class="type-name">ServiceMappingError</span><span>, </span><span class="type-name">Out</span><span>] =
+  </span><span class="identifier">out</span><span>.</span><span class="identifier">outputBody</span><span>
+    .</span><span class="identifier">collect</span><span>:
+      </span><span class="keyword">case</span><span> </span><span class="identifier">b</span><span> </span><span class="keyword">if</span><span> </span><span class="identifier">b</span><span>.</span><span class="identifier">nonEmpty</span><span> =&gt;
+        </span><span class="type-name">Right</span><span>(</span><span class="type-name">Out</span><span>(
+          </span><span class="identifier">creditCardDetail</span><span> = </span><span class="identifier">b</span><span>.</span><span class="identifier">head</span><span>,
+          </span><span class="identifier">creditCardDetails</span><span> = </span><span class="identifier">b</span><span>
+        ))
+   .</span><span class="identifier">getOrElse</span><span>(</span><span class="type-name">Left</span><span>(</span><span class="type-name">ServiceMappingError</span><span>(</span><span class="string-literal">&quot;There is at least one CreditCardDetail expected.&quot;</span><span>)))</span></code></pre>
+        <p>Mapping the response body and -headers to the output variables.</p>
+        <div class="callout info">
+          <i class="icofont-laika info">&#xef4e;</i>
+          <p>As you can see there are only two methods that can fail:</p>
+          <ul>
+            <li><code>validate</code> -&gt; For the input, use this methode to validate the input and return any possible error.</li>
+            <li><code>outputMapper</code> -&gt; For the output, we do not have an extra &#39;validate&#39; method. 
+            So if the service response is not as expected, you can return an error here.</li>
+          </ul>
+        </div>
 
         
 <hr class="footer-rule"/>
