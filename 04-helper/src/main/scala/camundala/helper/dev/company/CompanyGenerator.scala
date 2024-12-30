@@ -7,7 +7,8 @@ case class CompanyGenerator()(using config: DevConfig):
   lazy val generate: Unit =
     generateDirectories
     DirectoryGenerator().generate // generates myCompany-camundala project
-
+    GenericFileGenerator().createScalaFmt
+    GenericFileGenerator().createGitIgnore
     // needed helper classes
     CompanyWrapperGenerator().generate
     // override helperCompany.scala

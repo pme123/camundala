@@ -5,8 +5,8 @@ import camundala.api.DependencyConf
 case class WorkerGenerator()(using config: DevConfig):
 
   lazy val generate: Unit =
-    createIfNotExists(workerPath() / "WorkerApp.scala", workerApp)
-    createIfNotExists(workerTestPath() / "WorkerTestApp.scala", workerTestApp)
+    createOrUpdate(workerPath() / "WorkerApp.scala", workerApp)
+    createOrUpdate(workerTestPath() / "WorkerTestApp.scala", workerTestApp)
     createOrUpdate(workerConfigPath / "application.yaml", applicationYaml)
     createOrUpdate(workerConfigPath / "banner.txt", banner)
   end generate
@@ -35,22 +35,17 @@ case class WorkerGenerator()(using config: DevConfig):
 
   private lazy val companyName = config.companyName
   private lazy val workerApp =
-    objectContent("WorkerApp")
+    createWorkerApp("WorkerApp")
 
   private lazy val workerTestApp =
-    objectContent("WorkerTestApp", Some(config.apiProjectConf.dependencies))
+    createWorkerApp("WorkerTestApp", Some(config.apiProjectConf.dependencies))
 
-  private def objectContent(
+  private def createWorkerApp(
       objName: String,
       dependencies: Option[Seq[DependencyConf]] = None
   ) =
-    s"""package ${config.projectPackage}.worker
-       |
-       |import org.springframework.boot.SpringApplication
-       |import org.springframework.boot.autoconfigure.SpringBootApplication
-       |import org.springframework.boot.context.properties.ConfigurationPropertiesScan
-       |import org.springframework.context.annotation.ComponentScan
-       |import org.springframework.stereotype.Component
+    s"""$helperDoNotAdjustText
+       |package ${config.projectPackage}.worker
        |
        |// sbt worker/${dependencies.map(_ => "test:").getOrElse("")}run
        |@SpringBootApplication
@@ -71,14 +66,13 @@ case class WorkerGenerator()(using config: DevConfig):
               (if dependencies.get.nonEmpty then ",\n" else "  //TODO add here your dependencies")
           .getOrElse("")
       }
-       |  //TODO add packages you need for your Spring App
        |))
        |class $objName
        |
        |object $objName:
        |  
        |  def main(args: Array[String]): Unit =
-       |    SpringApplication.run(classOf[$objName], args*)
+       |    runSpringApp(classOf[$objName], args*)
        |end $objName""".stripMargin
 
   private def processWorker(setupElement: SetupElement) =
@@ -109,7 +103,7 @@ case class WorkerGenerator()(using config: DevConfig):
        |
        |import ${config.projectPackage}.bpmn.$processName${version.versionPackage}.$workerName.*
        |
-       |@Configuration
+       |@SpringConfiguration
        |class ${workerName}Worker extends Company${label.replace("Task", "")}WorkerDsl[In, Out${
         if label == "CustomTask" then "" else ", ServiceIn, ServiceOut"
       }]:

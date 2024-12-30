@@ -17,7 +17,7 @@ case class ApiGenerator()(using config: DevConfig):
     s"""package ${config.projectPackage}
        |package api
        |
-       |import bpmn.*
+       |//import bpmn.*
        |
        |object ApiProjectCreator extends CompanyApiCreator:
        |
@@ -31,15 +31,17 @@ case class ApiGenerator()(using config: DevConfig):
        |  val version = "0.1.0-SNAPSHOT"
        |
        |  document(
-       |    myProcessApi,
+       |    //myProcessApi,
        |    //..
        |  )
        |
+       |  /* example:
        |  private lazy val myProcessApi =
        |    import myProcess.v1.*
        |    api(MyProcess.example)(
        |      // userTasks / workers etc.
        |    )
+       |  */
        |end ApiProjectCreator
        |""".stripMargin
   end api
