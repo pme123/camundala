@@ -92,10 +92,10 @@ object ApiConfig:
 end ApiConfig
 
 case class ProjectsConfig(
-    // Path to your ApiProjectConf - default is os.pwd / PROJECT.conf
-    projectConfPath: os.RelPath = defaultProjectPath,
-    // grouped configs per GitRepos - so it is possible to use projects from different Repos
-    perGitRepoConfigs: Seq[ProjectsPerGitRepoConfig] = Seq.empty
+                           // Path to your ApiProjectConf - default is os.pwd / PROJECT.conf
+                           projectConfPath: os.RelPath = defaultProjectConfigPath,
+                           // grouped configs per GitRepos - so it is possible to use projects from different Repos
+                           perGitRepoConfigs: Seq[ProjectsPerGitRepoConfig] = Seq.empty
 ):
 
   lazy val isConfigured: Boolean = perGitRepoConfigs.nonEmpty

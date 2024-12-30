@@ -6,7 +6,6 @@ import camundala.helper.util.{DevConfig, Helpers, PublishConfig}
 case class PublishHelper()(using
     devConfig: DevConfig,
     apiConfig: ApiConfig,
-    publishConfig: Option[PublishConfig]
 ) extends Helpers:
 
   import PublishHelper.*
@@ -68,7 +67,7 @@ case class PublishHelper()(using
 
   private def publishToWebserver(): Unit =
     // push it to Documentation Webserver
-    publishConfig.foreach:
+    devConfig.publishConfig.foreach:
       ProjectWebDAV(devConfig.projectName, apiConfig, _).upload()
 
 end PublishHelper

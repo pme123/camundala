@@ -7,7 +7,7 @@ case class SbtSettingsGenerator()(using config: DevConfig):
   end generate
 
   private lazy val versionConfig = config.versionConfig
-  private lazy val repoConfig = config.reposConfig
+  private lazy val repoConfig = config.sbtConfig.reposConfig
   private lazy val settingsSbt =
     s"""$helperDoNotAdjustText
        |
@@ -136,7 +136,7 @@ case class SbtSettingsGenerator()(using config: DevConfig):
 
   private lazy val sbtDocker =
     s"  lazy val dockerSettings = " +
-    config.sbtDockerSettings
+    config.sbtConfig.dockerSettings
       .getOrElse("Seq()")
 
   private lazy val testSettings =

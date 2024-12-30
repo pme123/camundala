@@ -1,20 +1,29 @@
 package camundala.helper.util
 
 import camundala.BuildInfo
-import camundala.api.ApiProjectConf
-import camundala.helper.util.ReposConfig
+import camundala.api.{ApiProjectConf, defaultProjectConfigPath}
 import os.RelPath
 
 case class DevConfig(
-    projectName: String,
-    baseDir: os.Path = os.pwd,
-    modules: Seq[ModuleConfig] = DevConfig.modules,
-    subProjects: Seq[String] = Seq.empty,
+    // project configuration taken from the PROJECT.conf
     apiProjectConf: ApiProjectConf,
+    // subProjects to optimize compilation time - use only for big projects
+    subProjects: Seq[String] = Seq.empty,
+    // additional sbt configuration for sbt generation
+    sbtConfig: SbtConfig = SbtConfig(),
+    // versions used for generators
     versionConfig: VersionConfig = VersionConfig(),
-    reposConfig: ReposConfig = ReposConfig.dummyRepos,
-    sbtDockerSettings: Option[String] = None
+    // If you have a Postman account, add the config here (used for ./helper.scala deploy..)
+    postmanConfig: Option[PostmanConfig] = None,
+    // Adjust the DockerConfig (used for ./helper.scala deploy../ docker..)
+    dockerConfig: DockerConfig = DockerConfig(),
+    // If you have a webdav server to publish the docs, add the config here (used in ./helper.scala publish..)
+    publishConfig: Option[PublishConfig] = None,
+    // general project structure -  do not change if possible -
+    modules: Seq[ModuleConfig] = DevConfig.modules
 ):
+  lazy val baseDir: os.Path               = os.pwd
+  lazy val projectName: String            = apiProjectConf.name
   lazy val companyName: String            = apiProjectConf.org
   lazy val companyClassName: String       = companyName.head.toUpper + companyName.tail
   lazy val projectShortName: String       = projectName.split("-").tail.mkString("-")
@@ -37,6 +46,17 @@ case class DevConfig(
     else ""
   end dependsOn
 
+  def withVersionConfig(versionConfig: VersionConfig): DevConfig =
+    copy(versionConfig = versionConfig)
+  def withSbtConfig(sbtConfig: SbtConfig): DevConfig             =
+    copy(sbtConfig = sbtConfig)
+  def withPostmanConfig(postmanConfig: PostmanConfig): DevConfig =
+    copy(postmanConfig = Some(postmanConfig))
+  def withDockerConfig(dockerConfig: DockerConfig): DevConfig    =
+    copy(dockerConfig = dockerConfig)
+  def withPublishConfig(publishConfig: PublishConfig): DevConfig =
+    copy(publishConfig = Some(publishConfig))
+
 end DevConfig
 
 object DevConfig:
@@ -44,22 +64,14 @@ object DevConfig:
   def apply(
       projectName: String,
       subProjects: Seq[String],
-      packageConfRelPath: os.RelPath,
-      versionConfig: VersionConfig,
-      reposConfig: ReposConfig,
-      sbtDockerSettings: String
+      packageConfRelPath: os.RelPath
   ): DevConfig = new DevConfig(
-    projectName,
     subProjects = subProjects,
     apiProjectConf =
       ApiProjectConf.init(projectName, projectDir(projectName, os.pwd) / packageConfRelPath),
-    versionConfig = versionConfig,
-    reposConfig = reposConfig,
-    sbtDockerSettings = Some(sbtDockerSettings)
   )
 
   def defaultConfig(projectName: String): DevConfig = DevConfig(
-    projectName,
     apiProjectConf = ApiProjectConf.initDummy(projectName)
   )
 

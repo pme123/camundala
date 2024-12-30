@@ -5,7 +5,7 @@ import camundala.bpmn.shortenName
 import camundala.domain.*
 
 val catalogFileName = "catalog.md"
-val defaultProjectPath = os.rel / "PROJECT.conf"
+val defaultProjectConfigPath = os.rel / "PROJECT.conf"
 
 def shortenTag(refIdentShort: String) =
   val tag = shortenName(refIdentShort)

@@ -14,7 +14,9 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
     createIfNotExists(projectWorkerContextPath, workerContextWrapper)
     createIfNotExists(projectWorkerPasswordPath, workerPasswordWrapper)
     createIfNotExists(projectWorkerRestApiPath, workerRestApiWrapper)
-    createIfNotExists(projectHelperPath, helperWrapper)
+    createIfNotExists(helperCompanyDevHelperPath, helperCompanyDevHelperWrapper)
+    createIfNotExists(helperCompanyDevConfigPath, helperCompanyDevConfigWrapper)
+    createIfNotExists(helperCompanyCamundalaDevHelperPath, helperCompanyCamundalaDevHelperWrapper)
 
   private lazy val companyName = config.companyName
 
@@ -26,7 +28,9 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
   private lazy val projectWorkerContextPath = ModuleConfig.workerModule.srcPath / "CompanyEngineContext.scala"
   private lazy val projectWorkerPasswordPath = ModuleConfig.workerModule.srcPath / "CompanyPasswordFlow.scala"
   private lazy val projectWorkerRestApiPath = ModuleConfig.workerModule.srcPath / "CompanyRestApiClient.scala"
-  private lazy val projectHelperPath = ModuleConfig.helperModule.srcPath / "CompanyDevHelper.scala"
+  private lazy val helperCompanyDevHelperPath = ModuleConfig.helperModule.srcPath / "CompanyDevHelper.scala"
+  private lazy val helperCompanyDevConfigPath = ModuleConfig.helperModule.srcPath / "CompanyDevConfig.scala"
+  private lazy val helperCompanyCamundalaDevHelperPath = ModuleConfig.helperModule.srcPath / "CompanyCamundalaDevHelper.scala"
 
   private lazy val bpmnWrapper =
     s"""package $companyName.camundala.bpmn
@@ -189,27 +193,77 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
        |end CompanyRestApiClient
        |""".stripMargin
 
-  private lazy val helperWrapper =
+  private lazy val helperCompanyDevHelperWrapper =
     s"""package $companyName.camundala.helper
        |
        |import camundala.api.ApiConfig
-       |import camundala.helper.dev.*
+       |import camundala.helper.dev.DevHelper
        |import camundala.helper.util.*
-       |import mycompany.camundala.api.CompanyApiCreator
+       |import $companyName.camundala.api.*
        |
-       |case class CompanyDevHelper(projectName: String, subProjects: Seq[String] = Seq.empty) extends DevHelper:
+       |case class CompanyDevHelper(projectName: String, subProjects: Seq[String] = Seq.empty)
+       |    extends DevHelper:
        |
        |  lazy val apiConfig: ApiConfig = CompanyApiCreator.apiConfig
+       |  lazy val devConfig: DevConfig = CompanyDevConfig.config(projectName, subProjects)
        |
-       |  lazy val devConfig: DevConfig =
-       |    DevConfig.defaultConfig(projectName) //TODO Implement your Config!
-       |      .copy(subProjects = subProjects)
-       |
-       |  lazy val publishConfig: Option[PublishConfig] = None //TODO If you have a webdav server to publish the docs, add the config here
-       |  lazy val deployConfig: Option[DeployConfig] = None //TODO If you have a Postman account, add the config here
-       |  lazy val dockerConfig: DockerConfig = DockerConfig() //TODO Adjust the DockerConfig if needed
+       |end CompanyDevHelper
        |""".stripMargin
-  end helperWrapper
+  end helperCompanyDevHelperWrapper
+  private lazy val helperCompanyDevConfigWrapper =
+    s"""package $companyName.camundala.helper
+       |
+       |import camundala.helper.util.*
+       |
+       |import $companyName.camundala.BuildInfo
+       |
+       |object CompanyDevConfig:
+       |  def config(
+       |      projectName: String,
+       |      subProjects: Seq[String] = Seq.empty
+       |  ) = DevConfig(
+       |    projectName,
+       |    subProjects,
+       |    camundala.api.defaultProjectConfigPath
+       |  ).withVersionConfig(companyVersionConfig)
+       |   // .withSbtConfig(SbtConfig(...))
+       |   // .withPublishConfig(PublishConfig(...))
+       |   // .withPostmanConfig(PostmanConfig(...))
+       |   // .withDockerConfig(DockerConfig(...))
+       |
+       |  private lazy val companyVersionConfig = VersionConfig(
+       |    scalaVersion = BuildInfo.scalaVersion,
+       |    camundalaVersion = BuildInfo.camundalaV,
+       |    companyCamundalaVersion = BuildInfo.version,
+       |    sbtVersion = BuildInfo.sbtVersion,
+       |    otherVersions = Map()
+       |  )
+       |end CompanyDevConfig
+       |""".stripMargin
+  end helperCompanyDevConfigWrapper
+  private lazy val helperCompanyCamundalaDevHelperWrapper =
+      s"""package $companyName.camundala.helper
+         |
+         |import camundala.api.ApiConfig
+         |import camundala.helper.dev.DevCompanyCamundalaHelper
+         |import camundala.helper.util.DevConfig
+         |import $companyName.camundala.BuildInfo
+         |import $companyName.camundala.api.CompanyApiCreator
+         |
+         |object CompanyCamundalaDevHelper
+         |    extends DevCompanyCamundalaHelper:
+         |
+         |  lazy val apiConfig: ApiConfig = CompanyApiCreator.apiConfig
+         |    .copy(
+         |      basePath = os.pwd /"00-docs",
+         |      tempGitDir = os.pwd / os.up / "git-temp"
+         |    )
+         |
+         |  lazy val devConfig: DevConfig = CompanyDevConfig.config(BuildInfo.name, Seq.empty)
+         |
+         |end CompanyCamundalaDevHelper
+         |""".stripMargin
+  end helperCompanyCamundalaDevHelperWrapper
 
   extension (module: ModuleConfig)
     def srcPath: os.Path =
