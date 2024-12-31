@@ -26,7 +26,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
 
   def document(apis: CApi*): Unit =
     val apiDoc = ApiDoc(apis.toList)
-    apiConfig.projectsConfig.init // pulls all dependencies.
+    apiConfig.init // pulls all dependencies.
     ModelerTemplGenerator(version, apiConfig.modelerTemplateConfig, Some(projectName)).generate(
       collectApis(apiDoc)
     )

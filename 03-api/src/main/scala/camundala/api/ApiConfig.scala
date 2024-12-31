@@ -39,6 +39,8 @@ case class ApiConfig(
     .map(_.group)
     .distinct
 
+  lazy val init: Unit = projectsConfig.init(tempGitDir)
+  
   def withTenantId(tenantId: String): ApiConfig =
     copy(tenantId = Some(tenantId))
 
