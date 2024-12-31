@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.28 - 2024-12-31
+### Changed 
+- Adjusted the spring dependencies due to problems in test worker. - see [Commit](https://pme123@github.com/pme123/camundala/commit/1896166353ee31f7f66e1aab70f32a566df08ded)
+
 ## 1.30.27 - 2024-12-30
 ### Changed 
 - Added Company development documentation. - see [Commit](https://pme123@github.com/pme123/camundala/commit/5e668742e60236054ec1804ea34db91a52f8ac42)
