@@ -82,7 +82,7 @@ case class WorkerGenerator()(using config: DevConfig):
        |
        |import ${config.projectPackage}.bpmn.$processName${version.versionPackage}.$workerName.*
        |
-       |@Configuration
+       |@SpringConfiguration
        |class ${workerName}Worker extends CompanyInitWorkerDsl[In, Out, InitIn, InConfig]:
        |
        |  lazy val inOutExample = example

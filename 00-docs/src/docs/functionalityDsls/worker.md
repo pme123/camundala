@@ -40,7 +40,7 @@ Use this [Generator](../development/projectDev.md#customtask) to create a new _C
 ```scala
 import mycompany.myproject.bpmn.myprocess.v1.MyCustomTask.*
 
-@Configuration
+@SpringConfiguration
 class MyCustomTaskWorker extends CompanyCustomWorkerDsl[In, Out]:
 
   lazy val customTask = example
@@ -84,7 +84,7 @@ You can:
 ```scala
 import mycompany.myproject.bpmn.myprocess.v1.MyProcess.*
 
-@Configuration
+@SpringConfiguration
 class MyProcessWorker extends CompanyInitWorkerDsl[In, Out, InitIn, InConfig]:
 
   lazy val inOutExample = example
@@ -123,7 +123,7 @@ You can provide:
 ```scala
 import mycompany.myproject.bpmn.myprocess.v1.MyServiceTask.*
 
-@Configuration
+@SpringConfiguration
 class MyServiceTaskWorker extends CompanyServiceWorkerDsl[In, Out]:
 
   lazy val serviceTask = example

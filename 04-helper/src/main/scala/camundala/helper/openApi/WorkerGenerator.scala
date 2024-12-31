@@ -56,7 +56,7 @@ case class WorkerGenerator()(using val config: OpenApiConfig, val apiDefinition:
          |import $bpmnPackage.schema.*
          |import $bpmnPackage.$name.*
          |
-         |@Configuration
+         |@SpringConfiguration
          |class ${name}Worker
          |  extends ${config.superWorkerClass}[In, Out, ServiceIn, ServiceOut]:
          |
