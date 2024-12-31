@@ -164,11 +164,9 @@ lazy val camunda7Worker = project
     autoImportSetting,
     libraryDependencies ++= Seq(
       sttpDependency,
-      camundaExternalTaskClientDependency,
-      springBootOAuth2ClientDependency,
       jaxbApiDependency,
       scaffeineDependency
-    )
+    ) ++ camunda7workerDependencies
   )
   .dependsOn(worker)
 

@@ -61,8 +61,6 @@ object Dependencies {
   val twitter4jVersion = "4.1.2"
   val groovyVersion = "3.0.23"
 
-  lazy val camundaExternalTaskClientDependency = "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion
-  lazy val springBootOAuth2ClientDependency = "org.springframework.boot" % "spring-boot-starter-oauth2-client" % springBootVersion
   lazy val jaxbApiDependency = "jakarta.xml.bind" % "jakarta.xml.bind-api" % jaxbApiVersion
   lazy val scaffeineDependency = // token caching
     "com.github.blemale" %% "scaffeine" % scaffeineV // caching
@@ -77,6 +75,12 @@ object Dependencies {
     "com.softwaremill.sttp.tapir" %% "tapir-iron" % tapirVersion
   )
 
+  lazy val camunda7workerDependencies = Seq(
+    "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion,
+    "org.springframework.boot" % "spring-boot-starter-oauth2-client" % springBootVersion,
+    "org.springframework.boot" % "spring-boot-starter-security" % springBootVersion,
+    "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion
+  )
   lazy val sttpDependency = "com.softwaremill.sttp.client3" %% "circe" % sttpClient3Version
 
   val zeebeDependencies = Seq(
