@@ -1,5 +1,6 @@
 package camundala.api
 
+import camundala.bpmn.diagramPath
 import io.circe.parser
 import io.circe.syntax.*
 
@@ -19,7 +20,7 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
       .foreach: c =>
         val toPath = templConfig.templatePath / "dependencies"
         os.makeDir.all(toPath)
-        val fromPath = projectsConfig.gitDir / c.name / templConfig.templateRelativePath
+        val fromPath = apiConfig.tempGitDir / c.name / templConfig.templateRelativePath
         println(s"Fetch dependencies: ${c.name} > $fromPath")
         if os.exists(fromPath) then
           os.walk(fromPath)
@@ -33,16 +34,8 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
                   case t
                       if t.elementType.value == AppliesTo.`bpmn:CallActivity` &&
                         t.name != apiProjectConfig.name =>
-                    val idWithPrefix = s"${apiConfig.projectRefId(t.id)._1}:${t.id}"
-                    println(s" - Extend Template with prefix: $idWithPrefix")
                     val newTempl =
-                      t.copy(properties =
-                        t.properties
-                          .map:
-                            case p if p.value == t.id =>
-                              p.copy(value = idWithPrefix)
-                            case p => p
-                      ).asJson
+                      t.asJson
                         .deepDropNullValues
                         .toString
                     os.write.over(toPath / p.last, newTempl)
@@ -59,7 +52,7 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
     println("Adjust Color for:")
     projectsConfig.projectConfig(apiProjectConfig.name)
       .map: pc =>
-        os.walk(os.pwd / pc.bpmnPath)
+        os.walk(os.pwd / diagramPath)
           .filter:
             _.toString.endsWith(".bpmn")
           .map: p =>
@@ -80,7 +73,8 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
       .map: ca =>
         val calledElement = ca \@ "calledElement"
         val id = ca \@ "id"
-        apiConfig.projectRefId(calledElement)._1 -> id
+        println(s"CHANGED  -> $calledElement > $id --")
+        calledElement -> id
 
     val externalWorkers = (xml \\ "serviceTask")
       .map: br =>
@@ -88,7 +82,8 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
           .attribute("http://camunda.org/schema/1.0/bpmn", "topic")
           .get
         val id = br \@ "id"
-        apiConfig.projectRefId(workerRef.toString)._1 -> id
+        println(s"CHANGED workerRef -> $workerRef > $id --")
+        workerRef.toString -> id
 
     val businessRuleTasks = (xml \\ "businessRuleTask")
       .map: br =>
@@ -96,7 +91,8 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
           .attribute("http://camunda.org/schema/1.0/bpmn", "decisionRef")
           .get
         val id = br \@ "id"
-        apiConfig.projectRefId(decisionRef.toString)._1 -> id
+        println(s"CHANGED decisionRef -> $decisionRef > $id --")
+        decisionRef.toString -> id
 
     val xmlNew = (callActivities ++ businessRuleTasks ++ externalWorkers)
       .filter:

@@ -22,10 +22,7 @@ object ProjectApiCreator extends DefaultApiCreator:
   override protected val apiConfig: ApiConfig =
     ApiConfig("demoCompany")
       .withBasePath(os.pwd / "05-examples" / "demos")
-      .withDocProjectUrl(project => s"https://webstor.ch/camundala/myCompany/$project")
-      .withDiagramDownloadPath(
-        "src/main/resources"
-      )
+      .withDocBaseUrl("https://webstor.ch/camundala/myCompany")
       .withPort(8034)
 
   document(

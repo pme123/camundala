@@ -1,12 +1,13 @@
 package camundala
 package api
 
-import os.Path
+import camundala.bpmn.diagramPath
 import sttp.apispec.openapi.Contact
 
 case class ApiConfig(
-    companyId: String,
-    // define tenant if you have one
+    // your company name like 'mycompany'
+    companyName: String,
+    // define tenant if you have one - used for the Postman OpenApi
     tenantId: Option[String] = None,
     // contact email / phone, if there are questions
     contact: Option[Contact] = None,
@@ -21,19 +22,11 @@ case class ApiConfig(
     // Configure your template generation
     modelerTemplateConfig: ModelerTemplateConfig = ModelerTemplateConfig(),
     // The URL of your published documentations
-    // myProject => s"http://myCompany/bpmnDocs/${myProject}"
-    docProjectUrl: String => String = proj => s"No URL defined for $proj",
-    // If you want to integrate your BPMNs and DMNs in your Documentation.
-    // Add the path the diagrams are located on your webserver.
-    // myProject => s"http://myCompany/bpmnDocs/${myProject}/${diagramDownloadPath}"
-    // if you want to have a diagram - you must define this!
-    diagramDownloadPath: Option[String] = None,
-    // if you want to adjust the diagramName
-    diagramNameAdjuster: Option[String => String] = None,
-    // function to extract project and the reference id from a reference (CallActivity, Dmn or ExternalWorker)
-    // default returns the first part of the reference as project (e.g. mycompany from mycompany-product)
-    projectRefId: String => (String, String) =
-      pr => pr.split("-").head -> pr,
+    // s"http://myCompany/bpmnDocs"
+    docBaseUrl: Option[String] = None,
+    // Path, where the Git Projects are cloned - for dependency check.
+    // the default is for the structure: dev-myCompany/projects/myProject
+    tempGitDir: os.Path = os.pwd / os.up / os.up / "git-temp"
 ):
   val catalogPath: os.Path = basePath / catalogFileName
 
@@ -60,11 +53,8 @@ case class ApiConfig(
   def withPort(port: Int): ApiConfig =
     copy(endpoint = s"http://localhost:$port/engine-rest")
 
-  def withDocProjectUrl(url: String => String): ApiConfig =
-    copy(docProjectUrl = url)
-
-  def withDiagramDownloadPath(diagramDownloadPath: String): ApiConfig =
-    copy(diagramDownloadPath = Some(diagramDownloadPath))
+  def withDocBaseUrl(url: String): ApiConfig =
+    copy(docBaseUrl = Some(url))
 
   def withProjectsConfig(gitConfigs: ProjectsConfig): ApiConfig =
     copy(projectsConfig = gitConfigs)
@@ -72,9 +62,9 @@ case class ApiConfig(
   def withModelerTemplateConfig(modelerTemplateConfig: ModelerTemplateConfig): ApiConfig =
     copy(modelerTemplateConfig = modelerTemplateConfig)
 
-  def addGitConfig(gitConfig: GroupedProjectConfig): ApiConfig =
+  def addGitConfig(gitConfig: ProjectsPerGitRepoConfig): ApiConfig =
     copy(projectsConfig =
-      projectsConfig.copy(groupedConfigs = projectsConfig.groupedConfigs :+ gitConfig)
+      projectsConfig.copy(perGitRepoConfigs = projectsConfig.perGitRepoConfigs :+ gitConfig)
     )
 
   def withJiraUrls(urls: (String, String)*): ApiConfig =
@@ -83,56 +73,53 @@ case class ApiConfig(
   def addJiraUrl(jiraTag: String, url: String): ApiConfig =
     copy(jiraUrls = jiraUrls + (jiraTag -> url))
 
-  def withDiagramNameAdjuster(adjuster: String => String): ApiConfig =
-    copy(diagramNameAdjuster = Some(adjuster))
-
-  def withProjectRefId(projectRefId: String => (String, String)): ApiConfig =
-    copy(projectRefId = projectRefId)
+  def withContact(contact: Contact): ApiConfig =
+    copy(contact = Some(contact))
 
   def refIdentShort(refIdent: String): String =
-    projectsConfig.refIdentShort(refIdent, companyId)
+    projectsConfig.refIdentShort(refIdent, companyName)
 
   def refIdentShort(refIdent: String, projectName: String): String =
-    projectsConfig.refIdentShort(refIdent, companyId, projectName)
+    projectsConfig.refIdentShort(refIdent, companyName, projectName)
 
-  lazy val projectConfPath: Path = basePath / projectsConfig.projectConfPath
+  lazy val projectConfPath: os.Path = basePath / projectsConfig.projectConfPath
 end ApiConfig
 object ApiConfig:
-  lazy val openApiPath: os.RelPath = os.rel / "03-api" / "OpenApi.yml"
+  lazy val openApiPath: os.RelPath            = os.rel / "03-api" / "OpenApi.yml"
   lazy val postmanOpenApiPath: os.RelPath     = os.rel / "03-api" / "PostmanOpenApi.yml"
   lazy val openApiHtmlPath: os.RelPath        = os.rel / "03-api" / "OpenApi.html"
   lazy val postmanOpenApiHtmlPath: os.RelPath = os.rel / "03-api" / "PostmanOpenApi.html"
+end ApiConfig
 
 case class ProjectsConfig(
-    // Path, where the Git Projects are cloned - for dependency check.
-    // this for the structure: dev-myCompany/projects/myProject
-    gitDir: os.Path = os.pwd / os.up / os.up / "git-temp",
-    // Path to your ApiProjectConf
-    projectConfPath: os.RelPath = defaultProjectPath,
-    groupedConfigs: Seq[GroupedProjectConfig] = Seq.empty
+                           // Path to your ApiProjectConf - default is os.pwd / PROJECT.conf
+                           projectConfPath: os.RelPath = defaultProjectConfigPath,
+                           // grouped configs per GitRepos - so it is possible to use projects from different Repos
+                           perGitRepoConfigs: Seq[ProjectsPerGitRepoConfig] = Seq.empty
 ):
-  lazy val isConfigured: Boolean = groupedConfigs.nonEmpty
+
+  lazy val isConfigured: Boolean = perGitRepoConfigs.nonEmpty
 
   def withProjectConfPath(path: os.RelPath): ProjectsConfig =
     copy(projectConfPath = path)
 
   def projectCloneUrl(projectName: String): Option[String] =
-    groupedConfigs
+    perGitRepoConfigs
       .find(_.containsProject(projectName))
-      .map(_.cloneUrl)
+      .map(_.cloneBaseUrl)
 
-  lazy val init: Unit =
-    groupedConfigs.foreach(_.init(gitDir))
+  def init(tempGitDir: os.Path): Unit =
+    perGitRepoConfigs.foreach(_.init(tempGitDir))
   end init
 
-  def initProject(projectName: String): Unit =
-    groupedConfigs.foreach(_.initProject(gitDir, projectName))
+  def initProject(projectName: String, tempGitDir: os.Path): Unit =
+    perGitRepoConfigs.foreach(_.initProject(tempGitDir, projectName))
   end initProject
 
   def projectConfig(projectName: String): Option[ProjectConfig] =
     projectConfigs.find(_.name == projectName)
 
-  lazy val projectConfigs: Seq[ProjectConfig] = groupedConfigs.flatMap(_.projects)
+  lazy val projectConfigs: Seq[ProjectConfig] = perGitRepoConfigs.flatMap(_.projects)
 
   lazy val colors: Seq[(String, String)] = projectConfigs.map { project =>
     project.name -> project.color
@@ -142,7 +129,7 @@ case class ProjectsConfig(
       projectName: String,
       projectGroup: ProjectGroup
   ): Boolean =
-    groupedConfigs
+    perGitRepoConfigs
       .flatMap(_.projects)
       .find(_.name == projectName)
       .exists(_.group == projectGroup)
@@ -176,25 +163,23 @@ case class ProjectsConfig(
 
 end ProjectsConfig
 
-case class GroupedProjectConfig(
-    cloneUrl: String,
-    projects: Seq[ProjectConfig],
-    groupedProjects: Boolean = false
+case class ProjectsPerGitRepoConfig(
+    // Base URL for the Git Repos
+    // The pattern must be $cloneBaseUrl/$projectName.git
+    cloneBaseUrl: String,
+    // Definition of the projects
+    projects: Seq[ProjectConfig]
 ):
 
   def init(gitDir: os.Path): Unit =
-    if groupedProjects then
-      updateProject(gitDir, cloneUrl)
-    else
-      projects.foreach { project =>
-        val gitRepo = s"$cloneUrl/${project.name}.git"
-        updateProject(project.absGitPath(gitDir), gitRepo)
-      }
+    projects.foreach: project =>
+      val gitRepo = s"$cloneBaseUrl/${project.name}.git"
+      updateProject(project.absGitPath(gitDir), gitRepo)
 
   def initProject(gitDir: os.Path, projectName: String): Unit =
     projects.find(_.name == projectName)
       .foreach { project =>
-        val gitRepo = s"$cloneUrl/${project.name}.git"
+        val gitRepo = s"$cloneBaseUrl/${project.name}.git"
         updateProject(project.absGitPath(gitDir), gitRepo)
       }
   end initProject
@@ -217,23 +202,23 @@ case class GroupedProjectConfig(
         .callOnConsole(gitProjectDir)
     end if
   end updateProject
-end GroupedProjectConfig
+end ProjectsPerGitRepoConfig
 
 case class ProjectConfig(
+    // Name of the project
     name: String,
-    // path of project (name => gitProjectDir/${os.RelPath})
-    path: String => os.RelPath = name => os.rel / name,
-    // path where the BPMNs are - must be relative to the project path
-    bpmnPath: os.RelPath = os.rel / "src" / "main" / "resources",
+    // you can group your projects - for better overview
     group: ProjectGroup,
+    // the color of your project - for better overview and visualization in the BPMN diagrams
     color: String = "#fff"
 ):
   def absGitPath(gitDir: os.Path): os.Path  = gitDir / name
-  def absBpmnPath(gitDir: os.Path): os.Path = absGitPath(gitDir) / bpmnPath
+  def absBpmnPath(gitDir: os.Path): os.Path = absGitPath(gitDir) / diagramPath
 end ProjectConfig
 
 case class ProjectGroup(
     name: String,
+    // line color
     color: String = "purple",
     fill: String = "#ddd"
 )
@@ -243,7 +228,7 @@ case class ModelerTemplateConfig(
     templateRelativePath: os.RelPath = os.rel / ".camunda" / "element-templates",
     generateGeneralVariables: Boolean = true
 ):
-  lazy val templatePath: Path = os.pwd / templateRelativePath
+  lazy val templatePath: os.Path = os.pwd / templateRelativePath
 
   lazy val schema =
     s"https://unpkg.com/@camunda/element-templates-json-schema@$schemaVersion/resources/schema.json"

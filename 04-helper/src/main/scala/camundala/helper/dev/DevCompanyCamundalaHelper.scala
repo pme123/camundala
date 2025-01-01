@@ -1,15 +1,14 @@
 package camundala.helper.dev
 
-import camundala.api.ApiConfig
 import camundala.helper.dev.company.docs.DocCreator
 import camundala.helper.dev.publish.PublishHelper
 import camundala.helper.dev.publish.PublishHelper.*
-import camundala.helper.util.{DevConfig, Helpers, PublishConfig}
+import camundala.helper.util.{DevConfig, PublishConfig}
 
 import scala.util.{Failure, Success, Try}
 
 // dev-company/company-camundala/helper.scala
-trait DevCompanyCamundalaHelper extends Helpers, DocCreator:
+trait DevCompanyCamundalaHelper extends DocCreator:
   def devConfig: DevConfig
 
   def runForCompany(command: String, arguments: String*): Unit =
@@ -23,6 +22,8 @@ trait DevCompanyCamundalaHelper extends Helpers, DocCreator:
         println("Available commands: " + Command.values.mkString(", "))
     end match
   end runForCompany
+
+  protected def publishConfig: Option[PublishConfig] = devConfig.publishConfig
 
   private def runCommand(command: Command, args: Seq[String]): Unit =
     command match

@@ -8,9 +8,7 @@ import bpmn.*
 import java.time.LocalDateTime
 
 object ProjectDmnTester
-    extends DmnTesterConfigCreator,
-      DmnTesterStarter,
-      App:
+    extends DmnTesterConfigCreator:
 
   private lazy val localDmnConfigPath: os.Path =
     os.pwd / "05-examples" / "demos" / "03-dmn" / "src" / "main" / "resources" / "dmnConfigs"
@@ -24,9 +22,7 @@ object ProjectDmnTester
       dmnPaths = Seq(localDmnPath),
       dmnConfigPaths = Seq(localDmnConfigPath)
     )
-
-  startDmnTester()
-
+  
   createDmnConfigs(
     DecisionResultTypes.singleEntryDMN.testUnit
       .dmnPath("DecisionResultTypes")

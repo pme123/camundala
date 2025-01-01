@@ -19,9 +19,9 @@ trait ProcessReferenceCreator:
   protected def refIdentShort(refIdent: String, projectName: String): String =
     apiConfig.refIdentShort(refIdent, projectName)
 
-  protected def gitBasePath: os.Path = apiConfig.projectsConfig.gitDir
+  protected def gitBasePath: os.Path = apiConfig.tempGitDir
   private def docProjectUrl(project: String): String =
-    apiConfig.docProjectUrl(project)
+    s"${apiConfig.docBaseUrl.getOrElse("NOT_SET")}/$projectName"
 
   private lazy val projectConfigs: Seq[ProjectConfig] =
     apiConfig.projectsConfig.projectConfigs
@@ -167,10 +167,9 @@ trait ProcessReferenceCreator:
         serviceName: Option[String] = None,
         refType: InOutType = InOutType.Bpmn
     ):
-
-      lazy val (project: String, processId: String) =
-        apiConfig.projectRefId(processRef)
-
+      lazy val processId = processRef
+      lazy val project = processRef.split("-").take(2).mkString("-")
+      println(s"CHANGES $processRef -  $project")
       lazy val processIdent: String = serviceName.getOrElse(processId)
       lazy val identShort = shortenName(processIdent)
       lazy val identShortProcess = shortenTag(processIdent).replace(" ", "-")

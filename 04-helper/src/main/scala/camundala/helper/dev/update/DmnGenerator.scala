@@ -7,9 +7,10 @@ case class DmnGenerator()(using config: DevConfig):
     createIfNotExists(dmnPath() / "ProjectDmnTester.scala", dmnTester)
 
   lazy val dmnTester: String =
-    s"""package ${config.projectPackage}.dmn
+    s"""package ${config.projectPackage}
+       |package dmn
        |
-       |import ${config.projectPackage}.bpmn.*
+       |//import bpmn.*
        |
        |// dmn/run
        |object ProjectDmnTester extends CompanyDmnTester:

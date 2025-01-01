@@ -1,5 +1,4 @@
 # Project Development
-**Experimental**
 
 The following chapters describe the tasks to support the project development.
 
@@ -10,6 +9,33 @@ In general, you can type `./helper.scala x` to get a list of available commands.
 And then you can type `./helper.scala <command>` to get help for a specific command.
 
 The `version` is optional and defaults to `1`.
+
+## helper.scala
+This file will be replaced with `./helper.scala update`. However, you need to set there the 
+subprojects you want to use.
+
+```scala
+#!/usr/bin/env -S scala shebang
+// DO NOT ADJUST. This file is replaced by `./helper.scala update`.
+//> using dep mycompany::mycompany-camundala-helper:0.1.0-SNAPSHOT
+
+import mycompany.camundala.helper.*
+
+lazy val projectName: String = "mycompany-myProject"
+lazy val subProjects = Seq(
+  "accounting",
+  "hr"
+)
+
+@main
+def run(command: String, arguments: String*): Unit =
+  CompanyDevHelper(projectName, subProjects).run(command, arguments*)
+```
+### subProjects
+Compile time can be optimized by using subprojects - this makes the project a bit more complex, 
+as for each subProject, a SBT module is created.
+
+`./helper.scala update` will generate this file but preserve the project name and subprojects.
 
 ## update
 Whenever you have changes in the `company-camundala` project or in one of your dependencies, 
@@ -31,7 +57,8 @@ You will get a warning, but the file will not be replaced.
 Creates a new Release for the BPMN project and publishes to the repository(e.g. Artifactory)
 
 @:callout(info)
-Adjust the `CompanyDevHelper.publishConfig` configuration.
+If you want to provide the documentation on a WebDAV server, 
+you need a `CompanyDevHelper.devConfig.publishConfig` configuration.
 
 @:@
 
@@ -66,7 +93,7 @@ The following steps are executed:
 Deploys the BPMN project to the local Camunda server and runs the Simulation you're working on.
 
 @:callout(info)
-**Be aware** that `CompanyDevHelper.deployConfig` must be defined.
+**Be aware** that `CompanyDevHelper.devConfig.postmanConfig` must be defined.
 
 At the moment, only deployment via _Postman Collection_ is supported (using Camunda REST API to deploy).
 @:@
@@ -265,7 +292,7 @@ To run the Camunda Server locally, you can use `docker-compose`.
 **Precondition**: 
 - You have to have `docker` and `docker-compose` installed.
 - You need to have a `docker-compose.yml` in `dev-company/docker` directory.
-- Adjust the `CompanyDevHelper.dockerConfig` configuration.
+- Adjust the `CompanyDevHelper.devConfig.dockerConfig` configuration.
 
 @:@
 

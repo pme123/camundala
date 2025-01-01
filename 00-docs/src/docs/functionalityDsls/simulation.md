@@ -11,6 +11,8 @@ The diagrams must be deployed.
 
 @:callout(info)
 For the deployment I created a script that also starts the Simulation.
+
+See [deploy](../development/projectDev.md#deploy).
 @:@
 
 ## Why
@@ -42,15 +44,10 @@ Let's start with a basic example:
 // put your simulations in the simulation package of your project (it)
 package camundala.examples.invoice.simulation
 // import the projects bpmns (Processes, UserTasks etc.)
-
 import camundala.examples.invoice.bpmn.*
-// import Camundala simulation DSL - for now this is the one and only
-import camundala.simulation.custom.CustomSimulation
 
 // define a class that extends from a simulation DSL   
-class InvoiceSimulation extends CustomSimulation
-
-:
+class InvoiceSimulation extends CompanySimulation:
 
   simulate(
     // add scenarios (comma separated)
@@ -71,6 +68,10 @@ class InvoiceSimulation extends CustomSimulation
   end InvoiceSimulation
 ```
 
+@:callout(info)
+This class is automatically created with `./helper.scala process <processName>` - see [development > process](../development/projectDev.md#process).
+@:@
+
 #### simulate
 
 This is the entry point for your Simulation.
@@ -89,11 +90,11 @@ In your _sbt-console_:
 
 - run all simulations:
 
-  `It/test`
+  `simulation/test`
 
 - run some simulations:
 
-  `It/testOnly *MySimulation`
+  `simulation/testOnly *MySimulation`
 
   You can use any pattern, where `*` is wildcard for any characters.
 
@@ -172,35 +173,20 @@ These names are then used in the output Log:
 
 ### Configuration
 
-The following is the default configuration:
-
-```scala
-case class SimulationConfig[B](
-                                // define tenant if you have one
-                                tenantId: Option[String] = None,
-                                // the Camunda Port
-                                // there are Requests that wait until the process is ready - like getTask.
-                                // the Simulation waits 1 second between the Requests.
-                                // so with a timeout of 10 sec it will try 10 times (retryDuration = 1.second)
-                                maxCount: Int = 10,
-                                // REST endpoint of Camunda
-                                endpoint: String = "http://localhost:8080/engine-rest",
-                                // you can add authentication with this - default there is none.
-                                // see BasicSimulationDsl / OAuthSimulationDsl for examples
-                                authHeader: B => B = (b: B) => b,
-                                // the maximum LogLevel you want to print the LogEntries.
-                                logLevel: LogLevel = LogLevel.INFO
-                              )
-```
+The configuration is described in [03-simulation].
 
 You can easily override it in your Simulation:
 
 ```scala
-  override implicit def config =
+override implicit def config =
   super.config
-    .withPort(8034)
     .withLogLevel(LogLevel.DEBUG)
+    .withMaxCount(20)
 ```
+
+Especially interesting on the level of each Simulation are:
+- `logLevel` to debug the Simulation.
+- `maxCount` to increase the timeout for the interactions (one count is one second).
 
 ## Scenarios
 
@@ -438,7 +424,7 @@ scenario(
 
 ### Only a Scenario
 
-You can run only a scenario at the time by just prefix your Scenario with `only`.
+You can run only one are a few scenario at the time by just prefix your Scenarios with `only`.
 
 #### Examples:
 
@@ -455,7 +441,7 @@ simulate(
     ApproveInvoiceUT,
     PrepareBankTransferUT
   ),
-  scenario(InvoiceAssignApproverDMN)
+  only.scenario(InvoiceAssignApproverDMN)
 )
 ```
 
@@ -503,31 +489,29 @@ the following possibilities:
 @:callout(info)
 This only works for one hierarchy of sub processes.
 When you have more complex sub processes, you must mock them.
+
+**Not recommended**: please test each process separately.
 @:@
 
 ## Validation
 
 The simulation uses your BPMN DSL objects not just to run the process and its interactions.
-It also uses the the input- and output domain objects to validate variables of the process.
+It also uses the input- and output domain objects to validate variables of the process.
 
 ```scala
 // domain classes
-case class InvoiceReceipt(
-                           creditor: String = "Great Pizza for Everyone Inc.",
-                           amount: Double = 300.0,
-
-...
+case class In(
+ creditor: String = "Great Pizza for Everyone Inc.",
+ amount: Double = 300.0,
+//...
 )
-
-case class ApproveInvoice(
-                           approved: Boolean = true
-                         )
-
-...
+case class Out(
+ approved: Boolean = true,
+ //...
+)
+//...
 // bpmn object
 process(
-  id = "example-invoice-c7-review",
-  descr = "This starts the Review Invoice Process.",
   in = InvoiceReceipt(),
   out = InvoiceReviewed()
 )
@@ -748,6 +732,15 @@ It checks if the state of the process is `COMPLETED`.
 It simple tries until there is a User Task in the process available.
 If there are more than one, it just takes the first one.
 
+To complete a User Task, you can also wait some seconds. 
+This is useful, if you want to check if intermediate events were triggered.
+```scala
+scenario(userTaskExampleProcess)(
+  userTaskExample
+    .waitForSec(2) // wait 2 seconds
+)
+```
+
 #### Receive Message Event
 
 We try to correlate the message until it is successful.
@@ -808,6 +801,8 @@ Mocking is handled directly in the processes itself.
 This is especially useful in _Simulations_.
 
 However, you can mock on any environment, like local or production (e.g. with _Postman_).
+
+See also [General Concerns](../generalConcerns.md#mocking).
 @:@
 
 ### Generic Mocking

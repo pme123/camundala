@@ -64,8 +64,7 @@ final case class ModelerTemplGenerator(
       AppliesTo.activity,
       ElementType.callActivity,
       Seq(
-        TemplProp.calledElement(inOut.id),
-        TemplProp.calledElementBinding
+        TemplProp.calledElement(inOut.id)
       ) ++ generalVariables(
         isCallActivity = true,
         TemplMapperHelper.processVariables,
@@ -208,12 +207,6 @@ object TemplProp:
     value = value,
     //  group = Some(PropGroup.callActivity.id),
     binding = PropBinding.property(name = "calledElement")
-  )
-  lazy val calledElementBinding = TemplProp(
-    `type` = TemplType.Hidden,
-    value = "deployment",
-    //  group = Some(PropGroup.callActivity.id),
-    binding = PropBinding.property(name = "camunda:calledElementBinding")
   )
   // Service Task
   def serviceTaskTopic(value: String) = TemplProp(

@@ -1,17 +1,19 @@
 package camundala.helper.dev.update
 
+import camundala.bpmn.diagramPath
+
 case class BpmnProcessGenerator()(using config: DevConfig):
 
   def createBpmn(setupElement: SetupElement): Unit =
     val name = s"${setupElement.identifierShort}.bpmn"
     os.write.over(
-      bpmnPath / name,
+      os.pwd / diagramPath / name,
       bpmn(setupElement)
     )
   end createBpmn
 
   private lazy val bpmnPath =
-    val dir = config.projectDir / config.bpmnPath
+    val dir = config.projectDir / diagramPath
     os.makeDir.all(dir)
     dir
   end bpmnPath

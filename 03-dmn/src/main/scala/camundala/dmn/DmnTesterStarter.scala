@@ -7,7 +7,7 @@ import scala.util.{Failure, Success, Try}
 
 trait DmnTesterStarter extends DmnTesterHelpers, App:
 
-  def startDmnTester(): Unit =
+  lazy val startDmnTester: Unit =
     println("Check logs in Docker Console!")
     println(s"Open the browser: http://localhost:${starterConfig.exposedPort}")
     if checkIsRunning() then

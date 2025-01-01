@@ -1,6 +1,7 @@
 package camundala.helper.dev.publish
 
 import camundala.api.ApiConfig
+import camundala.bpmn.diagramPath
 import camundala.helper.util.{Helpers, PublishConfig}
 import com.github.sardine.SardineFactory
 import com.github.sardine.impl.SardineException
@@ -81,7 +82,8 @@ case class ProjectWebDAV(projectName: String, apiConfig: ApiConfig, publishConfi
         }
       end if
       // diagrams
-      val diagramDir = os.pwd / "src" / "main" / "resources" / "camunda"
+      val diagramDir = os.pwd / diagramPath
+      println(s"Diagram Directory: $diagramDir")
       sardine.createDirectory(s"$projectUrl/diagrams/")
       val diagramFiles = os.list(diagramDir)
       diagramFiles

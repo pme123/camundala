@@ -46,6 +46,9 @@ However, it turns out that this is quite helpful:
 The mocking is done with General Variables - see also the chapter above.
 
 **The Usage** is described here under [_General Variables_](exampleApi/OpenApi.html)
+
+As **Simulations** use mocking the most, we describe it [there](functionalityDsls/simulation.md#mocking)
+in more detail.
 @:@
 
 We have four ways to mock. Each possibility is done with a dedicated Process Variable.

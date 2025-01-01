@@ -68,7 +68,6 @@
     <li class="level1 nav-leaf"><a href="../">Intro</a></li>
     <li class="level1 nav-leaf"><a href="../specification.html">Process &amp; Domain Specification</a></li>
     <li class="level1 nav-leaf"><a href="../bpmnDsl.html">BPMN DSL</a></li>
-    <li class="level1 nav-leaf"><a href="../projectSetup.html">Project Setup</a></li>
     <li class="level1 nav-leaf"><a href="../technologies.html">Technologies</a></li>
     <li class="level1 nav-leaf"><a href="../generalConcerns.html">General Concerns</a></li>
     <li class="level1 nav-header">Functional DSLs</li>
@@ -118,10 +117,25 @@
         <p>We use postman to test the APIs and deploy our projects.</p>
         
         <h2 id="test-the-apis" class="section"><a class="anchor-link left" href="#test-the-apis"><i class="icofont-laika link">&#xef71;</i></a>Test the APIs</h2>
-        <p>TODO</p>
+        <p>In the process of publishing the APIs, we also create a Postman Collection.</p>
+        <p>You find the Postman Collection in the <code>projectBaseDir/03-api/PostmanOpenApi.yml</code> directory of the project.</p>
         
         <h2 id="deploy-the-projects" class="section"><a class="anchor-link left" href="#deploy-the-projects"><i class="icofont-laika link">&#xef71;</i></a>Deploy the Projects</h2>
-        <p>TODO</p>
+        <p>This is used when you deploy the projects to the camunda Engine.</p>
+        <p>You need a folder in a Postman Collection. The folder name is <code>deploy_manifest</code>.</p>
+        <p>This folder will be run from top to bottom. So you need to:</p>
+        <ul>
+          <li>authenticate to the <a href="https://docs.camunda.org/rest/camunda-bpm-platform/7.22/#tag/Deployment">Camunda REST API</a></li>
+          <li>configure the deployment for the local environment</li>
+          <li>call the Camunda REST API to deploy the project</li>
+          <li>test the deployment with another call to the API.</li>
+        </ul>
+        <p>You need to provide the following configuration:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PostmanConfig</span><span>(
+    </span><span class="identifier">collectionId</span><span>: </span><span class="type-name">String</span><span>,
+    </span><span class="identifier">localDevEnvId</span><span>: </span><span class="type-name">String</span><span>,
+    </span><span class="identifier">envApiKey</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;POSTMAN_API_KEY&quot;</span><span>
+)</span></code></pre>
 
         
 <hr class="footer-rule"/>

@@ -1,15 +1,15 @@
 package camundala.helper.dev.deploy
 
-import camundala.helper.util.{DeployConfig, Helpers}
+import camundala.helper.util.{PostmanConfig, Helpers}
 import os.proc
 
 import java.util.Date
 
-case class DeployHelper(deployConfig: DeployConfig) extends Helpers:
+case class DeployHelper(postmanConfig: PostmanConfig) extends Helpers:
 
-  val collectionId = deployConfig.postmanCollectionId
-  val envId = deployConfig.postmanLocalDevEnvId
-  val postmanApiKey = sys.env(deployConfig.postmanEnvApiKey)
+  val collectionId = postmanConfig.collectionId
+  val envId = postmanConfig.localDevEnvId
+  val postmanApiKey = sys.env(postmanConfig.envApiKey)
 
   def deploy(integrationTest: Option[String] = None): Unit =
     println(s"Publishing Project locally")

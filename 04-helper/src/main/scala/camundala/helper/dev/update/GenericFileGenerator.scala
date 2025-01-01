@@ -5,8 +5,8 @@ import camundala.helper.util.VersionHelper
 case class GenericFileGenerator()(using config: DevConfig):
 
   lazy val generate: Unit =
-    createOrUpdate(config.projectDir / ".scalafmt.conf", scalafmt)
-    createOrUpdate(config.projectDir / ".gitignore", gitignore)
+    createScalaFmt
+    createGitIgnore
     createOrUpdate(config.projectDir / "helper.scala", helperScala)
     os.proc("chmod", "+x", config.projectDir / "helper.scala").call()
     createIfNotExists(config.projectDir / "CHANGELOG.md", changeLog)
@@ -15,6 +15,11 @@ case class GenericFileGenerator()(using config: DevConfig):
     createOrUpdate(config.projectDir / ".run" / "WorkerTestApp.run.xml", workerTestAppIntellij)
     createOrUpdate(config.projectDir / ".vscode" / "launch.json", workerTestAppVsCode)
   end generate
+
+  lazy val createScalaFmt =
+    createOrUpdate(config.projectDir / ".scalafmt.conf", scalafmt)
+  lazy val createGitIgnore =
+    createOrUpdate(config.projectDir / ".gitignore", gitignore)
 
   private lazy val scalafmt =
     s"""# $helperDoNotAdjustText

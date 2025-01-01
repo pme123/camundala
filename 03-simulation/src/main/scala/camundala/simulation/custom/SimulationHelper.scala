@@ -11,7 +11,7 @@ import scala.util.Try
 trait SimulationHelper extends ResultChecker, Logging:
 
   // not possible to override given instance
-  implicit def config: SimulationConfig[RequestT[Empty, Either[String, String], Any]] =
+  def config: SimulationConfig[RequestT[Empty, Either[String, String], Any]] =
     SimulationConfig[RequestT[Empty, Either[String, String], Any]]()
 
   lazy val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()

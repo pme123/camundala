@@ -8,7 +8,7 @@ case class CompanySbtGenerator()(using
 ):
   lazy val companyName = config.companyName
 
-  lazy val sbtGenerator = SbtGenerator()
+  lazy val sbtGenerator   = SbtGenerator()
   lazy val generate: Unit =
     createIfNotExists(buildSbtDir, buildSbt)
     sbtGenerator.generateBuildProperties(helperCompanyDoNotAdjustText)
@@ -31,8 +31,8 @@ case class CompanySbtGenerator()(using
        |""".stripMargin
 
   private lazy val settings =
-    s"""// $helperCompanyDoNotAdjustText
-      |
+    s"""$helperCompanyDoNotAdjustText
+       |
        |import com.typesafe.config.ConfigFactory
        |import laika.ast.Path.Root
        |import laika.config.{LinkValidation, SyntaxHighlighting, Version, Versions}
@@ -169,7 +169,6 @@ case class CompanySbtGenerator()(using
        |}
        |""".stripMargin
 
-
   private lazy val buildSbt =
     s"""// $howToResetText
        |import sbt.*
@@ -277,7 +276,7 @@ case class CompanySbtGenerator()(using
        |addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.12.0")
        |
        |// docs
-       |addSbtPlugin("org.typelevel" % "laika-sbt" % "1.2.1")
+       |addSbtPlugin("org.typelevel" % "laika-sbt" % "1.3.0")
        |
        |// docker (optional)
        |addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.10.0")

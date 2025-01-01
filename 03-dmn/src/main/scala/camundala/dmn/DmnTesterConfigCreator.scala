@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 import scala.language.reflectiveCalls
 import scala.reflect.ClassTag
 
-trait DmnTesterConfigCreator extends DmnConfigWriter:
+trait DmnTesterConfigCreator extends DmnConfigWriter, DmnTesterStarter:
 
   // the path where the DMNs are
   protected def dmnBasePath: os.Path = starterConfig.dmnPaths.head
@@ -24,6 +24,7 @@ trait DmnTesterConfigCreator extends DmnConfigWriter:
     dmnPath
 
   protected def createDmnConfigs(dmnTesterObjects: DmnTesterObject[?]*): Unit =
+    startDmnTester
     dmnConfigs(dmnTesterObjects)
       .foreach(updateConfig(_, dmnConfigPath))
     println("Check it on http://localhost:8883")

@@ -22,7 +22,7 @@ case class CompanyScriptCreator()(using config: DevConfig):
     s"""#!/usr/bin/env -S scala shebang
        |$helperCompanyDoNotAdjustText
        |
-       |//> using dep valiant::${config.companyName}-camundala-helper:${config.versionConfig.companyCamundalaVersion}
+       |//> using dep ${config.companyName}::${config.companyName}-camundala-helper:${config.versionConfig.companyCamundalaVersion}
        |
        |import ${config.companyName}.camundala.helper.*
        |

@@ -9,9 +9,7 @@ import bpmn.InvoiceReceipt.InvoiceAssignApproverDMN
 
 object ProjectDmnTester
     extends DmnTesterConfigCreator,
-      DmnTesterStarter,
-      BpmnProcessDsl,
-      App:
+      BpmnProcessDsl:
   val processName = "NOT USED"
   val descr = ""
 
@@ -27,8 +25,6 @@ object ProjectDmnTester
       dmnPaths = Seq(localDmnPath),
       dmnConfigPaths = Seq(localDmnConfigPath)
     )
-
-  startDmnTester()
 
   createDmnConfigs(
     InvoiceAssignApproverDMN.example

@@ -12,12 +12,9 @@ import scala.util.{Failure, Success, Try}
 trait DevHelper:
   def apiConfig: ApiConfig
   def devConfig: DevConfig
-  def publishConfig: Option[PublishConfig]
-  def deployConfig: Option[DeployConfig]
-  def dockerConfig: DockerConfig
+
   given DevConfig = devConfig
   given ApiConfig = apiConfig
-  given Option[PublishConfig] = publishConfig
 
   def run(command: String, arguments: String*): Unit =
     val args = arguments.toSeq
@@ -115,7 +112,7 @@ trait DevHelper:
       case Command.deploy =>
         args match
           case Seq(simulation) =>
-            deployConfig
+            devConfig.postmanConfig
               .map(DeployHelper(_).deploy(Some(simulation)))
               .getOrElse(println("deploy is not supported as there is no deployConfig"))
           case other =>
@@ -124,11 +121,11 @@ trait DevHelper:
             println(s"Example: $command OpenAccountSimulation")
       // docker
       case Command.dockerUp =>
-        DockerHelper(dockerConfig).dockerUp()
+        DockerHelper(devConfig.dockerConfig).dockerUp()
       case Command.dockerStop =>
-        DockerHelper(dockerConfig).dockerStop()
+        DockerHelper(devConfig.dockerConfig).dockerStop()
       case Command.dockerDown =>
-        DockerHelper(dockerConfig).dockerDown()
+        DockerHelper(devConfig.dockerConfig).dockerDown()
 
   private def printBadActivity(command: Command, args: Seq[String]): Unit =
     println(s"Invalid arguments for command $command: $args")

@@ -50,17 +50,14 @@ object ProjectApiCreator extends DefaultApiCreator:
     group("DMNs")(
       api(InvoiceAssignApproverDMN2) // api( is optional)
       // InvoiceAssignApproverDMN3 // want be shown as only one DMN with the same id is shown in the API.
-    )
+    ),
   )
 
   override protected lazy val apiConfig: ApiConfig =
     ApiConfig("demoCompany")
       .withBasePath(os.pwd / "05-examples" / "invoice")
-      .withDocProjectUrl(project =>
-        s"https://webstor.ch/camundala/myCompany/$project"
-      )
+      .withDocBaseUrl(s"https://webstor.ch/camundala/myCompany")
       .withPort(8034)
-      .withDiagramDownloadPath("diagrams")
 
   private lazy val `Invoice Receipt` =
     InvoiceReceipt.example

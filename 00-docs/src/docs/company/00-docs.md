@@ -26,3 +26,4 @@ The following files will be created by `.helper.scala prepareDocs`:
     | - release.md
 ```
 So do **not adjust** them manually.
+

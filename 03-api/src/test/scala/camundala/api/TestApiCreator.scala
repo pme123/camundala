@@ -17,7 +17,6 @@ object TestApiCreator extends DefaultApiCreator, BpmnProcessDsl, App:
 
   override val apiConfig: ApiConfig =
     ApiConfig("DemoConfig")
-      .withDocProjectUrl(project => s"https://MYDOCHOST/$project")
       .withBasePath(os.pwd / "api")
 
   document(

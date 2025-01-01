@@ -188,7 +188,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
   end filteredOutput
 
   protected lazy val logger: WorkerLogger =
-    engineContext.getLogger(getClass)
+    engineContext.getLogger(classOf[C7WorkerHandler])
 
   private[worker] def isErrorHandled(error: CamundalaWorkerError, handledErrors: Seq[String]) =
     error.isMock || // if it is mocked, it is handled in the error, as it also could be a successful output

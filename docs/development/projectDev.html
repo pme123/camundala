@@ -68,7 +68,6 @@
     <li class="level1 nav-leaf"><a href="../">Intro</a></li>
     <li class="level1 nav-leaf"><a href="../specification.html">Process &amp; Domain Specification</a></li>
     <li class="level1 nav-leaf"><a href="../bpmnDsl.html">BPMN DSL</a></li>
-    <li class="level1 nav-leaf"><a href="../projectSetup.html">Project Setup</a></li>
     <li class="level1 nav-leaf"><a href="../technologies.html">Technologies</a></li>
     <li class="level1 nav-leaf"><a href="../generalConcerns.html">General Concerns</a></li>
     <li class="level1 nav-header">Functional DSLs</li>
@@ -104,6 +103,8 @@
   <p class="header"><a href="#">Project Development</a></p>
 
   <ul class="nav-list">
+    <li class="level1 nav-node"><a href="#helper-scala">helper.scala</a></li>
+    <li class="level2 nav-leaf"><a href="#subprojects">subProjects</a></li>
     <li class="level1 nav-leaf"><a href="#update">update</a></li>
     <li class="level1 nav-leaf"><a href="#publish">publish</a></li>
     <li class="level1 nav-leaf"><a href="#deploy">deploy</a></li>
@@ -129,12 +130,35 @@
       <main class="content">
 
         <h1 id="project-development" class="title">Project Development</h1>
-        <p><strong>Experimental</strong></p>
         <p>The following chapters describe the tasks to support the project development.</p>
         <p>We provide a <code>helper.scala</code> script that helps you with the most common tasks.</p>
         <p>In general, you can type <code>./helper.scala x</code> to get a list of available commands.</p>
         <p>And then you can type <code>./helper.scala &lt;command&gt;</code> to get help for a specific command.</p>
         <p>The <code>version</code> is optional and defaults to <code>1</code>.</p>
+        
+        <h2 id="helper-scala" class="section"><a class="anchor-link left" href="#helper-scala"><i class="icofont-laika link">&#xef71;</i></a>helper.scala</h2>
+        <p>This file will be replaced with <code>./helper.scala update</code>. However, you need to set there the 
+        subprojects you want to use.</p>
+        <pre><code class="nohighlight"><span>#!/</span><span class="identifier">usr</span><span>/</span><span class="identifier">bin</span><span>/</span><span class="identifier">env</span><span> -</span><span class="type-name">S</span><span> </span><span class="identifier">scala</span><span> </span><span class="identifier">shebang</span><span>
+</span><span class="comment">// DO NOT ADJUST. This file is replaced by `./helper.scala update`.
+//&gt; using dep mycompany::mycompany-camundala-helper:0.1.0-SNAPSHOT
+</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">mycompany</span><span>.</span><span class="identifier">camundala</span><span>.</span><span class="identifier">helper</span><span>.*
+
+</span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">projectName</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;mycompany-myProject&quot;</span><span>
+</span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">subProjects</span><span> = </span><span class="type-name">Seq</span><span>(
+  </span><span class="string-literal">&quot;accounting&quot;</span><span>,
+  </span><span class="string-literal">&quot;hr&quot;</span><span>
+)
+
+</span><span class="annotation">@main</span><span>
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">run</span><span>(</span><span class="identifier">command</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">arguments</span><span>: </span><span class="type-name">String</span><span>*): </span><span class="type-name">Unit</span><span> =
+  </span><span class="type-name">CompanyDevHelper</span><span>(</span><span class="identifier">projectName</span><span>, </span><span class="identifier">subProjects</span><span>).</span><span class="identifier">run</span><span>(</span><span class="identifier">command</span><span>, </span><span class="identifier">arguments</span><span>*)</span></code></pre>
+        
+        <h3 id="subprojects" class="section"><a class="anchor-link left" href="#subprojects"><i class="icofont-laika link">&#xef71;</i></a>subProjects</h3>
+        <p>Compile time can be optimized by using subprojects - this makes the project a bit more complex, 
+        as for each subProject, a SBT module is created.</p>
+        <p><code>./helper.scala update</code> will generate this file but preserve the project name and subprojects.</p>
         
         <h2 id="update" class="section"><a class="anchor-link left" href="#update"><i class="icofont-laika link">&#xef71;</i></a>update</h2>
         <p>Whenever you have changes in the <code>company-camundala</code> project or in one of your dependencies, 
@@ -150,7 +174,8 @@
         <p>Creates a new Release for the BPMN project and publishes to the repository(e.g. Artifactory)</p>
         <div class="callout info">
           <i class="icofont-laika info">&#xef4e;</i>
-          <p>Adjust the <code>CompanyDevHelper.publishConfig</code> configuration.</p>
+          <p>If you want to provide the documentation on a WebDAV server, 
+          you need a <code>CompanyDevHelper.devConfig.publishConfig</code> configuration.</p>
         </div>
         <p>Usage:</p>
         <pre><code>./helper.scala publish &lt;VERSION&gt;</code></pre>
@@ -186,7 +211,7 @@
         <p>Deploys the BPMN project to the local Camunda server and runs the Simulation you&#39;re working on.</p>
         <div class="callout info">
           <i class="icofont-laika info">&#xef4e;</i>
-          <p><strong>Be aware</strong> that <code>CompanyDevHelper.deployConfig</code> must be defined.</p>
+          <p><strong>Be aware</strong> that <code>CompanyDevHelper.devConfig.postmanConfig</code> must be defined.</p>
           <p>At the moment, only deployment via <em>Postman Collection</em> is supported (using Camunda REST API to deploy).</p>
         </div>
         <p>Usage:</p>
@@ -306,7 +331,7 @@ src           - main -&gt; myproject-myProcessV1.bpmn
           <ul>
             <li>You have to have <code>docker</code> and <code>docker-compose</code> installed.</li>
             <li>You need to have a <code>docker-compose.yml</code> in <code>dev-company/docker</code> directory.</li>
-            <li>Adjust the <code>CompanyDevHelper.dockerConfig</code> configuration.</li>
+            <li>Adjust the <code>CompanyDevHelper.devConfig.dockerConfig</code> configuration.</li>
           </ul>
         </div>
         

@@ -64,7 +64,7 @@ trait SScenarioExtensions extends SStepExtensions:
       val process = scenario.process
       val body = CorrelateMessageIn(
         messageName = process.processName,
-        tenantId = summon[SimulationConfig[?]].tenantId,
+        tenantId = config.tenantId,
         businessKey = Some(scenario.name),
         processVariables = Some(process.camundaInMap)
       ).asJson.deepDropNullValues.toString

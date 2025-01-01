@@ -30,6 +30,7 @@ lazy val root = project
     helper,
     // implementations
     camunda7Worker,
+    camunda8Worker,
     // experiments
     camunda, // not in use
     camunda8, // not in use
@@ -163,8 +164,23 @@ lazy val camunda7Worker = project
     autoImportSetting,
     libraryDependencies ++= Seq(
       sttpDependency,
-      "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion,
-      "jakarta.xml.bind" % "jakarta.xml.bind-api" % jaxbApiVersion
+      jaxbApiDependency,
+      scaffeineDependency
+    ) ++ camunda7workerDependencies
+  )
+  .dependsOn(worker)
+
+lazy val camunda8Worker = project
+  .in(file("./04-worker-c8zio"))
+  .configure(publicationSettings)
+  .settings(projectSettings("camunda8-worker"))
+  .settings(unitTestSettings)
+  .settings(
+    autoImportSetting,
+    libraryDependencies ++= Seq(
+      sttpDependency,
+      zeebeJavaClientDependency,
+      zioDependency
     )
   )
   .dependsOn(worker)
