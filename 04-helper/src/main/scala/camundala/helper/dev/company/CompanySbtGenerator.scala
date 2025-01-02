@@ -276,7 +276,7 @@ case class CompanySbtGenerator()(using
        |addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.12.0")
        |
        |// docs
-       |addSbtPlugin("org.typelevel" % "laika-sbt" % "1.3.0")
+       |addSbtPlugin("org.typelevel" % "laika-sbt" % "1.3.1")
        |
        |// docker (optional)
        |addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.10.0")
