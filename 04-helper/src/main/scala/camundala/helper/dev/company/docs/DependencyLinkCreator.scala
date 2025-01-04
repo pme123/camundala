@@ -1,10 +1,10 @@
 package camundala.helper.dev.company.docs
 
-import camundala.api.{ApiConfig, ApiProjectConf, ProjectGroup}
+import camundala.api.{ApiConfig, DocProjectConfig, ProjectGroup}
 
 case class DependencyLinkCreator()(using
     val apiConfig: ApiConfig,
-    val configs: Seq[ApiProjectConf]
+    val configs: Seq[DocProjectConfig]
 ) extends DependencyCreator:
 
   def createIndex(dependencyGraph: String): Unit =
@@ -21,7 +21,7 @@ case class DependencyLinkCreator()(using
 
   private def create(title: String, dependencyGraph: String): String =
     val packages: Seq[Package] = configs
-      .groupBy(_.name)
+      .groupBy(_.projectName)
       .map { case _ -> v =>
         Package(v.maxBy(_.version))
       }

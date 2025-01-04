@@ -1,6 +1,7 @@
 package camundala.helper.dev.company
 
-import camundala.helper.util.{DevConfig, VersionHelper}
+import camundala.api.VersionHelper
+import camundala.helper.util.DevConfig
 
 case class CompanyScriptCreator()(using config: DevConfig):
 

@@ -1,6 +1,7 @@
 package camundala.helper.dev.update
 
-import camundala.helper.util.{TestType, VersionHelper}
+import camundala.api.VersionHelper
+import camundala.helper.util.TestType
 
 case class SbtGenerator()(using
     config: DevConfig
@@ -17,7 +18,7 @@ case class SbtGenerator()(using
     createOrUpdate(config.sbtProjectDir / "build.properties", buildProperties(replaceStr))
   lazy val generatePluginsSbt =
     createOrUpdate(config.sbtProjectDir / "plugins.sbt", pluginsSbt)
-  private lazy val projectConf = config.apiProjectConf
+  private lazy val projectConf = config.apiProjectConfig
   private lazy val versionHelper = VersionHelper(projectConf)
   private lazy val buildSbtDir = config.projectDir / "build.sbt"
 
@@ -55,9 +56,9 @@ case class SbtGenerator()(using
        |import sbt.*
        |
        |object ProjectDef {
-       |  val org = "${projectConf.org}"
-       |  val name = "${projectConf.name}"
-       |  val version = "${projectConf.version}"
+       |  val org = "${projectConf.companyName}"
+       |  val name = "${projectConf.projectName}"
+       |  val version = "${projectConf.projectVersion}"
        |
        |${versionHelper.dependencyVersionVars}
        |

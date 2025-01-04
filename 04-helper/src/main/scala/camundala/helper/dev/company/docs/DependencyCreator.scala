@@ -1,11 +1,11 @@
 package camundala.helper.dev.company.docs
 
-import camundala.api.{ApiConfig, ApiProjectConf}
+import camundala.api.{ApiConfig, DocProjectConfig}
 
 trait DependencyCreator:
 
   protected def apiConfig: ApiConfig
-  protected def configs: Seq[ApiProjectConf]
+  protected def configs: Seq[DocProjectConfig]
   protected def releaseConfig: ReleaseConfig = readReleaseConfig
   given ApiConfig = apiConfig
   
@@ -16,8 +16,8 @@ trait DependencyCreator:
   end Package
 
   object Package:
-    def apply(conf: ApiProjectConf): Package =
-      Package(conf.name, conf.minorVersion)
+    def apply(conf: DocProjectConfig): Package =
+      Package(conf.projectName, conf.minorVersion)
 
   lazy val colors: Seq[(String, String)] = apiConfig.projectsConfig.colors
   lazy val colorMap: Map[String, String] = colors.toMap

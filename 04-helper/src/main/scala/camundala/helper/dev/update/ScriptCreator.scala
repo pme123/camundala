@@ -6,17 +6,11 @@ case class ScriptCreator()(using config: DevConfig):
 
 
   lazy val projectHelper =
-    val projectName = config.projectName
     s"""$helperHeader
-       |
-       |lazy val projectName: String = "$projectName"
-       |lazy val subProjects = Seq(
-       |  ${config.subProjects.map(sp => s"\"$sp\"").mkString(", ")}
-       |)
        |
        |@main
        |def run(command: String, arguments: String*): Unit =
-       |  CompanyDevHelper(projectName, subProjects).run(command, arguments*)
+       |  CompanyDevHelper.run(command, arguments*)
        |""".stripMargin
   end projectHelper
 

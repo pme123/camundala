@@ -6,6 +6,7 @@ import camundala.domain.*
 
 val catalogFileName = "catalog.md"
 val defaultProjectConfigPath = os.rel / "PROJECT.conf"
+lazy val projectsPath = os.pwd / "projects"
 
 def shortenTag(refIdentShort: String) =
   val tag = shortenName(refIdentShort)

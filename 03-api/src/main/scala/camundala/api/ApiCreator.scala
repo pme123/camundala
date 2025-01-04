@@ -3,7 +3,6 @@ package camundala.api
 import camundala.BuildInfo
 import camundala.bpmn.InputParams
 import camundala.domain.*
-import com.typesafe.config.ConfigFactory
 import io.circe.Encoder
 import sttp.apispec.openapi.*
 import sttp.apispec.openapi.circe.yaml.*
@@ -281,7 +280,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
 
   protected def dependencies: String =
 
-    def docPortal(projectName: String) =  s"${apiConfig.docBaseUrl}/$projectName/OpenApi.html"
+    def docPortal(projectName: String) =  s"${apiConfig.docBaseUrl.getOrElse("NOT_SET")}/$projectName/OpenApi.html"
 
     val projects       = apiConfig.projectsConfig.perGitRepoConfigs.flatMap(_.projects)
     println(s"Projects: $projects")
@@ -292,7 +291,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
         |
         |${
          apiProjectConf.dependencies
-           .map(dep => s"- _**[${dep.name}](${documentations.getOrElse(dep.name, "NOT FOUND")})**_")
+           .map(dep => s"- _**[${dep.projectName}](${documentations.getOrElse(dep.projectName, "NOT FOUND")})**_")
            .mkString("\n")
        }
         |""".stripMargin
@@ -325,8 +324,8 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
        |
        |> Created with:
        |> - [camundala-api v${BuildInfo.version}](https://github.com/pme123/camundala)
-       |> - ${apiProjectConf.org}-camundala-api $companyProjectVersion
-       |> - ${apiProjectConf.org}-camundala-helper
+       |> - ${apiProjectConf.companyName}-camundala-api $companyProjectVersion
+       |> - ${apiProjectConf.companyName}-camundala-helper
        |
        |""".stripMargin
 
@@ -399,6 +398,6 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
        |like `"$example"`""".stripMargin
 
   private lazy val packageConfPath = apiConfig.basePath / apiConfig.projectsConfig.projectConfPath
-  private lazy val apiProjectConf  = ApiProjectConf(packageConfPath)
+  private lazy val apiProjectConf  = DocProjectConfig(packageConfPath)
 
 end ApiCreator

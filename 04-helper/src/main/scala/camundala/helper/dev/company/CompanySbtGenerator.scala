@@ -17,7 +17,7 @@ case class CompanySbtGenerator()(using
     createOrUpdate(config.sbtProjectDir / "Settings.scala", settings)
   end generate
 
-  private lazy val projectConf = config.apiProjectConf
+  private lazy val projectConf = config.apiProjectConfig
   private lazy val buildSbtDir = config.projectDir / "build.sbt"
 
   private lazy val projectDev =

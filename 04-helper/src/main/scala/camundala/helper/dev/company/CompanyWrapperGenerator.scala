@@ -14,6 +14,7 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
     createIfNotExists(projectWorkerContextPath, workerContextWrapper)
     createIfNotExists(projectWorkerPasswordPath, workerPasswordWrapper)
     createIfNotExists(projectWorkerRestApiPath, workerRestApiWrapper)
+    createIfNotExists(projectWorkerConfigPath, workerApplicationConfig)
     createIfNotExists(helperCompanyDevHelperPath, helperCompanyDevHelperWrapper)
     createIfNotExists(helperCompanyDevConfigPath, helperCompanyDevConfigWrapper)
     createIfNotExists(helperCompanyCamundalaDevHelperPath, helperCompanyCamundalaDevHelperWrapper)
@@ -28,6 +29,7 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
   private lazy val projectWorkerContextPath = ModuleConfig.workerModule.srcPath / "CompanyEngineContext.scala"
   private lazy val projectWorkerPasswordPath = ModuleConfig.workerModule.srcPath / "CompanyPasswordFlow.scala"
   private lazy val projectWorkerRestApiPath = ModuleConfig.workerModule.srcPath / "CompanyRestApiClient.scala"
+  private lazy val projectWorkerConfigPath = ModuleConfig.workerModule.resourcePath / "application-company-defaults.yaml"
   private lazy val helperCompanyDevHelperPath = ModuleConfig.helperModule.srcPath / "CompanyDevHelper.scala"
   private lazy val helperCompanyDevConfigPath = ModuleConfig.helperModule.srcPath / "CompanyDevConfig.scala"
   private lazy val helperCompanyCamundalaDevHelperPath = ModuleConfig.helperModule.srcPath / "CompanyCamundalaDevHelper.scala"
@@ -100,7 +102,7 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
   private lazy val workerHandlerWrapper =
     s"""package $companyName.camundala.worker
        |
-       |import camundala.camunda7.worker.C7WorkerHandler       |
+       |import camundala.camunda7.worker.C7WorkerHandler 
        |import scala.reflect.ClassTag
        |
        |/**
@@ -193,19 +195,62 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
        |end CompanyRestApiClient
        |""".stripMargin
 
+  private lazy val workerApplicationConfig =
+    """server:
+      |  port: 8093
+      |camunda.bpm:
+      |  job-execution:
+      |    wait-time-in-millis: 200 # this is for speedup testing
+      |  client:
+      |    base-url: ${CAMUNDA_BASE_URL:http://localhost:8080/engine-rest}
+      |    worker-id: ${WORKER_ID:my-worker}
+      |    disable-backoff-strategy: true # only during testing - faster topic
+      |    async-response-timeout: 10000
+      |
+      |spring:
+      |  security:
+      |    oauth2:
+      |      client:
+      |        registration:
+      |          worker:
+      |            provider: keycloak-primary
+      |            client-id: myclient
+      |            client-secret: ${FSSO_CLIENT_SECRET}
+      |            clientName: ${FSSO_CLIENT_NAME:myclient}
+      |            authorization-grant-type: client_credentials
+      |            redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
+      |            scope:
+      |              - openid
+      |              - profile
+      |              - email
+      |        provider:
+      |          keycloak-primary:
+      |            authorization-uri: ${FSSO_BASE_URL:http://kubernetes.docker.internal:8090/auth}/realms/${FSSO_REALM:master}/protocol/openid-connect/auth
+      |            token-uri: ${FSSO_BASE_URL:http://kubernetes.docker.internal:8090/auth}/realms/${FSSO_REALM:master}/protocol/openid-connect/token
+      |            user-info-uri: ${FSSO_BASE_URL:http://kubernetes.docker.internal:8090/auth}/realms/${FSSO_REALM:master}/protocol/openid-connect/userinfo
+      |            jwk-set-uri: ${FSSO_BASE_URL:http://kubernetes.docker.internal:8090/auth}/realms/${FSSO_REALM:master}/protocol/openid-connect/certs
+      |            user-name-attribute: preferred_username
+      |
+      |management:
+      |  endpoints:
+      |    web:
+      |      exposure:
+      |        include: "health"
+      |""".stripMargin
+
   private lazy val helperCompanyDevHelperWrapper =
     s"""package $companyName.camundala.helper
        |
        |import camundala.api.ApiConfig
        |import camundala.helper.dev.DevHelper
-       |import camundala.helper.util.*
-       |import $companyName.camundala.api.*
+       |import camundala.helper.util.DevConfig
+       |import $companyName.camundala.api.CompanyApiCreator
        |
-       |case class CompanyDevHelper(projectName: String, subProjects: Seq[String] = Seq.empty)
+       |case object CompanyDevHelper
        |    extends DevHelper:
        |
        |  lazy val apiConfig: ApiConfig = CompanyApiCreator.apiConfig
-       |  lazy val devConfig: DevConfig = CompanyDevConfig.config(projectName, subProjects)
+       |  lazy val devConfig: DevConfig = CompanyDevConfig.config
        |
        |end CompanyDevHelper
        |""".stripMargin
@@ -213,25 +258,32 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
   private lazy val helperCompanyDevConfigWrapper =
     s"""package $companyName.camundala.helper
        |
+       |import camundala.api.*
        |import camundala.helper.util.*
-       |
        |import $companyName.camundala.BuildInfo
        |
        |object CompanyDevConfig:
-       |  def config(
-       |      projectName: String,
-       |      subProjects: Seq[String] = Seq.empty
-       |  ) = DevConfig(
-       |    projectName,
-       |    subProjects,
-       |    camundala.api.defaultProjectConfigPath
-       |  ).withVersionConfig(companyVersionConfig)
+       |
+       |  lazy val companyConfig =
+       |    DevConfig(
+       |      ApiProjectConfig(
+       |        projectName = BuildInfo.name,
+       |        projectVersion = BuildInfo.version
+       |      )
+       |    )
+       |
+       |  lazy val config: DevConfig =
+       |     config(ApiProjectConfig())
+       |     
+       |  def config(apiProjectConfig: ApiProjectConfig): DevConfig =
+       |    DevConfig(apiProjectConfig)
+       |   // .withVersionConfig(companyVersionConfig)
        |   // .withSbtConfig(SbtConfig(...))
        |   // .withPublishConfig(PublishConfig(...))
        |   // .withPostmanConfig(PostmanConfig(...))
        |   // .withDockerConfig(DockerConfig(...))
        |
-       |  private lazy val companyVersionConfig = VersionConfig(
+       |  private lazy val companyVersionConfig = CompanyVersionConfig(
        |    scalaVersion = BuildInfo.scalaVersion,
        |    camundalaVersion = BuildInfo.camundalaV,
        |    companyCamundalaVersion = BuildInfo.version,
@@ -255,11 +307,11 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
          |
          |  lazy val apiConfig: ApiConfig = CompanyApiCreator.apiConfig
          |    .copy(
-         |      basePath = os.pwd /"00-docs",
+         |      basePath = os.pwd / "00-docs",
          |      tempGitDir = os.pwd / os.up / "git-temp"
          |    )
          |
-         |  lazy val devConfig: DevConfig = CompanyDevConfig.config(BuildInfo.name, Seq.empty)
+         |  lazy val devConfig: DevConfig = CompanyDevConfig.companyConfig
          |
          |end CompanyCamundalaDevHelper
          |""".stripMargin
@@ -269,5 +321,10 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
     def srcPath: os.Path =
       config.projectDir / module.packagePath(
         config.projectPath
+      )
+    def resourcePath: os.Path =
+      config.projectDir / module.packagePath(
+        config.projectPath,
+        isSourceDir = false
       )
 end CompanyWrapperGenerator

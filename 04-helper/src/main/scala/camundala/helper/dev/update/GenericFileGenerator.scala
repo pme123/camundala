@@ -1,7 +1,5 @@
 package camundala.helper.dev.update
 
-import camundala.helper.util.VersionHelper
-
 case class GenericFileGenerator()(using config: DevConfig):
 
   lazy val generate: Unit =

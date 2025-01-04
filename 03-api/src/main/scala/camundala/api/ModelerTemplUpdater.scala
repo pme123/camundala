@@ -20,12 +20,12 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
       .foreach: c =>
         val toPath = templConfig.templatePath / "dependencies"
         os.makeDir.all(toPath)
-        val fromPath = apiConfig.tempGitDir / c.name / templConfig.templateRelativePath
-        println(s"Fetch dependencies: ${c.name} > $fromPath")
+        val fromPath = apiConfig.tempGitDir / c.projectName / templConfig.templateRelativePath
+        println(s"Fetch dependencies: ${c.projectName} > $fromPath")
         if os.exists(fromPath) then
           os.walk(fromPath)
             .filter: p =>
-              p.last.startsWith(c.name)
+              p.last.startsWith(c.projectName)
             .foreach: p =>
               parser.parse(os.read(p))
                 .flatMap:
@@ -33,7 +33,7 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
                 .map:
                   case t
                       if t.elementType.value == AppliesTo.`bpmn:CallActivity` &&
-                        t.name != apiProjectConfig.name =>
+                        t.name != apiProjectConfig.projectName =>
                     val newTempl =
                       t.asJson
                         .deepDropNullValues
@@ -50,7 +50,7 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
 
   private def updateBpmnColors(): Unit =
     println("Adjust Color for:")
-    projectsConfig.projectConfig(apiProjectConfig.name)
+    projectsConfig.projectConfig(apiProjectConfig.projectName)
       .map: pc =>
         os.walk(os.pwd / diagramPath)
           .filter:
@@ -63,7 +63,7 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
 
   private lazy val templConfig = apiConfig.modelerTemplateConfig
   private lazy val projectsConfig = apiConfig.projectsConfig
-  private lazy val apiProjectConfig = ApiProjectConf(apiConfig.projectConfPath)
+  private lazy val apiProjectConfig = DocProjectConfig(apiConfig.projectConfPath)
   private lazy val colorMap = apiConfig.projectsConfig.colors.toMap
 
   private def extractUsesRefs(bpmnPath: os.Path, xmlStr: String) =
@@ -97,7 +97,7 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
     val xmlNew = (callActivities ++ businessRuleTasks ++ externalWorkers)
       .filter:
         case project -> _ =>
-          colorMap.contains(project) && apiProjectConfig.name != project
+          colorMap.contains(project) && apiProjectConfig.projectName != project
       .foldLeft(xml):
         case (xmlResult, project -> id) =>
           println(s"  -> $project > $id -- ${colorMap(project)}")

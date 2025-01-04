@@ -1,5 +1,7 @@
 package camundala.helper.dev.company
 
+import camundala.api.*
+import camundala.api.defaultProjectConfigPath
 import camundala.helper.dev.update.*
 
 case class CompanyGenerator()(using config: DevConfig):
@@ -24,7 +26,7 @@ case class CompanyGenerator()(using config: DevConfig):
 
   lazy val createProject: Unit =
     generateProjectDirectories
-    createOrUpdate(projects / projectName / "helper.scala", ScriptCreator().projectHelper)
+    createOrUpdate(projectsPath / projectName / "helper.scala", ScriptCreator().projectHelper)
   end createProject
 
   private lazy val companyName = config.companyName
@@ -34,22 +36,16 @@ case class CompanyGenerator()(using config: DevConfig):
     os.makeDir.all(gitTemp)
     os.makeDir.all(docker)
     os.makeDir.all(companyCamundala)
-    os.makeDir.all(projects)
+    os.makeDir.all(projectsPath)
 
   end generateDirectories
 
   private lazy val generateProjectDirectories: Unit =
-    os.makeDir.all(projects / projectName)
+    os.makeDir.all(projectsPath / projectName)
 
   private lazy val gitTemp = os.pwd / "git-temp"
   private lazy val docker = os.pwd / "docker"
   private lazy val companyCamundala = os.pwd / s"$companyName-camundala"
-  private lazy val projects = os.pwd / "projects"
+  
 end CompanyGenerator
 
-object CompanyGenerator:
-  def init(companyName: String) = //, repoConfig: RepoConfig.Artifactory) =
-    DevConfig.defaultConfig(s"$companyName-camundala")
-  end init
-
-end CompanyGenerator

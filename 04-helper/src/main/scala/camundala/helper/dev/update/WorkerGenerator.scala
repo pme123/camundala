@@ -1,6 +1,6 @@
 package camundala.helper.dev.update
 
-import camundala.api.DependencyConf
+import camundala.api.DependencyConfig
 
 case class WorkerGenerator()(using config: DevConfig):
 
@@ -38,11 +38,11 @@ case class WorkerGenerator()(using config: DevConfig):
     createWorkerApp("WorkerApp")
 
   private lazy val workerTestApp =
-    createWorkerApp("WorkerTestApp", Some(config.apiProjectConf.dependencies))
+    createWorkerApp("WorkerTestApp", Some(config.apiProjectConfig.dependencies))
 
   private def createWorkerApp(
       objName: String,
-      dependencies: Option[Seq[DependencyConf]] = None
+      dependencies: Option[Seq[DependencyConfig]] = None
   ) =
     s"""$helperDoNotAdjustText
        |package ${config.projectPackage}.worker

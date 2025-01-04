@@ -1,18 +1,16 @@
 package camundala.helper.util
 
 import camundala.BuildInfo
-import camundala.api.{ApiProjectConf, defaultProjectConfigPath}
+import camundala.api.{ApiProjectConfig, DocProjectConfig, defaultProjectConfigPath}
 import os.RelPath
 
 case class DevConfig(
     // project configuration taken from the PROJECT.conf
-    apiProjectConf: ApiProjectConf,
-    // subProjects to optimize compilation time - use only for big projects
-    subProjects: Seq[String] = Seq.empty,
+    apiProjectConfig: ApiProjectConfig,
     // additional sbt configuration for sbt generation
     sbtConfig: SbtConfig = SbtConfig(),
     // versions used for generators
-    versionConfig: VersionConfig = VersionConfig(),
+    versionConfig: CompanyVersionConfig = CompanyVersionConfig(),
     // If you have a Postman account, add the config here (used for ./helper.scala deploy..)
     postmanConfig: Option[PostmanConfig] = None,
     // Adjust the DockerConfig (used for ./helper.scala deploy../ docker..)
@@ -23,15 +21,17 @@ case class DevConfig(
     modules: Seq[ModuleConfig] = DevConfig.modules
 ):
   lazy val baseDir: os.Path               = os.pwd
-  lazy val projectName: String            = apiProjectConf.name
-  lazy val companyName: String            = apiProjectConf.org
+  lazy val projectName: String            = apiProjectConfig.projectName
+  lazy val companyName: String            = apiProjectConfig.companyName
   lazy val companyClassName: String       = companyName.head.toUpper + companyName.tail
   lazy val projectShortName: String       = projectName.split("-").tail.mkString("-")
   lazy val projectClassNames: Seq[String] = projectName.split("-").map(n => n.head.toUpper + n.tail)
   lazy val projectShortClassName: String  = projectClassNames.last
   lazy val projectClassName: String       = projectClassNames.mkString
 
-  lazy val projectDir: os.Path = DevConfig.projectDir(projectName, baseDir)
+  lazy val projectDir: os.Path      = DevConfig.projectDir(projectName, baseDir)
+  // subProjects to optimize compilation time - use only for big projects
+  lazy val subProjects: Seq[String] = apiProjectConfig.subProjects
 
   lazy val projectPackage: String  = projectName.split("-").mkString(".")
   lazy val projectPath: os.RelPath = os.rel / projectName.split("-")
@@ -46,35 +46,38 @@ case class DevConfig(
     else ""
   end dependsOn
 
-  def withVersionConfig(versionConfig: VersionConfig): DevConfig =
+  def withVersionConfig(versionConfig: CompanyVersionConfig): DevConfig =
     copy(versionConfig = versionConfig)
-  def withSbtConfig(sbtConfig: SbtConfig): DevConfig             =
+  def withSbtConfig(sbtConfig: SbtConfig): DevConfig                    =
     copy(sbtConfig = sbtConfig)
-  def withPostmanConfig(postmanConfig: PostmanConfig): DevConfig =
+  def withPostmanConfig(postmanConfig: PostmanConfig): DevConfig        =
     copy(postmanConfig = Some(postmanConfig))
-  def withDockerConfig(dockerConfig: DockerConfig): DevConfig    =
+  def withDockerConfig(dockerConfig: DockerConfig): DevConfig           =
     copy(dockerConfig = dockerConfig)
-  def withPublishConfig(publishConfig: PublishConfig): DevConfig =
+  def withPublishConfig(publishConfig: PublishConfig): DevConfig        =
     copy(publishConfig = Some(publishConfig))
 
 end DevConfig
 
 object DevConfig:
 
-  def apply(
+  def init(packageConfPath: os.Path = os.pwd / defaultProjectConfigPath): DevConfig = new DevConfig(
+    apiProjectConfig = ApiProjectConfig(packageConfPath)
+  )
+
+  def initCompany(
       projectName: String,
-      subProjects: Seq[String],
-      packageConfRelPath: os.RelPath
-  ): DevConfig = new DevConfig(
-    subProjects = subProjects,
-    apiProjectConf =
-      ApiProjectConf.init(projectName, projectDir(projectName, os.pwd) / packageConfRelPath),
-  )
+      packageConfPath: os.Path = os.pwd / defaultProjectConfigPath
+  ): DevConfig =
+    new DevConfig(
+      apiProjectConfig =
+        ApiProjectConfig.init(projectName, packageConfPath),
+    )
 
-  def defaultConfig(projectName: String): DevConfig = DevConfig(
-    apiProjectConf = ApiProjectConf.initDummy(projectName)
+  def configForCompany(projectName: String): DevConfig = DevConfig(
+    apiProjectConfig = ApiProjectConfig(projectName, "0.1.0-SNAPSHOT"),
   )
-
+  
   def projectDir(projectName: String, baseDir: os.Path): os.Path =
     if baseDir.toString.endsWith(projectName) then baseDir else baseDir / projectName
 
@@ -172,7 +175,7 @@ end ModuleConfig
 enum TestType:
   case MUnit, Simulation, None
 
-case class VersionConfig(
+case class CompanyVersionConfig(
     scalaVersion: String = BuildInfo.scalaVersion,
     camundalaVersion: String = BuildInfo.version,
     companyCamundalaVersion: String = "0.1.0-SNAPSHOT",

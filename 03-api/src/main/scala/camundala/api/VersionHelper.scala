@@ -1,31 +1,21 @@
-package camundala.helper.util
+package camundala.api
 
-import camundala.api.ApiProjectConf
-import camundala.api.DependencyConf
+import camundala.api.{ApiProjectConfig, DependencyConfig}
 
 import scala.jdk.CollectionConverters.*
 
-case class CompanyVersionHelper(
-    companyName: String,
-):
-  
-  lazy val companyCamundalaVersion: String =
-    VersionHelper.repoSearch(s"$companyName-camundala-bpmn_3", companyName)
-
-end CompanyVersionHelper
-
 case class VersionHelper(
-    projectConf: ApiProjectConf,
+                          projectConf: ApiProjectConfig,
 ):
 
   lazy val dependencyVersions: Map[String, String] =
     val deps = projectConf.dependencies
       .map:
-        case dConf @ DependencyConf(org, name, version) =>
-          val lastVersion = VersionHelper.repoSearch(name, org)
+        case dConf @ DependencyConfig(name, version) =>
+          val lastVersion = VersionHelper.repoSearch(name, dConf.companyName)
           if !lastVersion.startsWith(dConf.minorVersion) then
             println(
-              s"${Console.YELLOW_B}WARNING: There is a newer Version for $org:$name:$version -> $lastVersion${Console.RESET}"
+              s"${Console.YELLOW_B}WARNING: There is a newer Version for ${dConf.companyName}:$name:$version -> $lastVersion${Console.RESET}"
             )
           name -> lastVersion
       .toMap
@@ -49,7 +39,7 @@ case class VersionHelper(
     dependencyVersions
       .map:
         case name -> _ =>
-          s""""${projectConf.org}" % "$name-$moduleName" % ${variableName(name)}Version${
+          s""""${projectConf.companyName}" % "$name-$moduleName" % ${variableName(name)}Version${
               if testOnly then " % Test" else ""
             }"""
       .toSeq.sorted.mkString(",\n    ")
@@ -67,6 +57,10 @@ object VersionHelper:
   lazy val camundalaVersion: String =
     repoSearch("camundala-bpmn_3", "io.github.pme123")
 
+  // this expects a projectName in this pattern mycompany-myproject
+  def repoSearch(projectName: String): String =
+    repoSearch(projectName, projectName.split("-").head)
+    
   def repoSearch(project: String, org: String): String =
     val searchResult = os.proc(
       "cs",

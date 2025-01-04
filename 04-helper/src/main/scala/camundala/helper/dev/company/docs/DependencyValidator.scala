@@ -1,10 +1,10 @@
 package camundala.helper.dev.company.docs
 
-import camundala.api.{ApiConfig, ApiProjectConf}
+import camundala.api.{ApiConfig, DocProjectConfig}
 
 case class DependencyValidator()(using
     val apiConfig: ApiConfig,
-    val configs: Seq[ApiProjectConf]
+    val configs: Seq[DocProjectConfig]
 ) extends DependencyCreator:
 
   @throws[IllegalStateException]
@@ -36,7 +36,7 @@ case class DependencyValidator()(using
     val allDependencies = configs.flatMap(_.dependencies).distinct
     configs
       .filter(!_.isWorker)
-      .groupBy(_.name)
+      .groupBy(_.projectName)
       .map { case _ -> pcs =>
         if pcs.size > 1 then
           pcs

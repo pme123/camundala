@@ -1,6 +1,8 @@
 package camundala.helper.dev
 
+import camundala.api.{defaultProjectConfigPath, projectsPath}
 import camundala.helper.dev.company.CompanyGenerator
+import camundala.helper.dev.update.createIfNotExists
 import camundala.helper.util.{DevConfig, RepoConfig}
 
 import scala.util.{Failure, Success, Try}
@@ -25,7 +27,7 @@ object DevCompanyHelper:
       case Command.`init` =>
         initCompany
       case Command.project =>
-        args match
+        args.toList match
           case Seq(projectName) =>
             createProject(projectName)
           case other =>
@@ -36,17 +38,34 @@ object DevCompanyHelper:
   enum Command:
     case init, project
 
-  private def initCompany: Unit =
+  protected def initCompany: Unit =
     println(s"Init Company $companyName")
-    given config: DevConfig = CompanyGenerator.init(companyName)
+    given config: DevConfig = DevConfig.configForCompany(s"$companyName-camundala")
     CompanyGenerator().generate
 
-
-  private def createProject(projectName: String): Unit =
-    println(s"Create Project: $projectName - Company: $companyName")
-    given config: DevConfig = DevConfig.defaultConfig(s"$companyName-$projectName")
+  protected def createProject(projectName: String): Unit =
+    println(s"Create Project: ${projectName.replace(s"-$companyName", "")} - Company: $companyName")
+    val name = s"$companyName-${projectName.replace(s"$companyName-", "")}"
+    val configPath = projectsPath / name / defaultProjectConfigPath
+    createIfNotExists(configPath, apiProjectConfig(name))
+    given config: DevConfig = DevConfig.init(configPath)
     CompanyGenerator().createProject
 
   private lazy val companyName = os.pwd.last.replace("dev-", "").toLowerCase
+
+  private def apiProjectConfig(projectName: String) =
+    s"""// Project configuration
+       |
+       |projectName: $projectName
+       |projectVersion: 0.1.0-SNAPSHOT
+       |subProjects: [
+       |  // subProject1,
+       |  // subProject2
+       |]
+       |dependencies: {
+       |  // mastercompany-services: 1.2.4
+       |  // mycompany-commons: 1.0.3
+       |}
+       |""".stripMargin
 
 end DevCompanyHelper
