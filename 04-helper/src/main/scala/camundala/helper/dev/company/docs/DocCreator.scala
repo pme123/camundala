@@ -1,6 +1,6 @@
 package camundala.helper.dev.company.docs
 
-import camundala.api.{DocProjectConfig, ProjectConfig, catalogFileName}
+import camundala.api.{ApiProjectConfig, DocProjectConfig, ProjectConfig, catalogFileName}
 import camundala.helper.dev.publish.DocsWebDAV
 import camundala.helper.util.{Helpers, PublishConfig}
 import os.Path
@@ -17,6 +17,8 @@ trait DocCreator extends DependencyCreator, Helpers:
   protected def publishConfig: Option[PublishConfig]
   protected def gitBasePath: os.Path           = apiConfig.tempGitDir
   protected def configs: Seq[DocProjectConfig] = setupConfigs()
+  protected def apiProjectConfig(projectConfigPath: os.Path): ApiProjectConfig = ApiProjectConfig(projectConfigPath)
+
   lazy val projectConfigs: Seq[ProjectConfig]  =
     apiConfig.projectsConfig.projectConfigs
 
@@ -193,7 +195,7 @@ trait DocCreator extends DependencyCreator, Helpers:
                       .proc("git", "checkout", s"tags/v$version")
                       .callOnConsole(projectPath)
     yield DocProjectConfig(
-      projectPath / apiConfig.projectsConfig.projectConfPath,
+      apiProjectConfig(projectPath / apiConfig.projectsConfig.projectConfPath),
       os.read.lines(projectPath / "CHANGELOG.md"),
       versionPrevious,
       isWorker

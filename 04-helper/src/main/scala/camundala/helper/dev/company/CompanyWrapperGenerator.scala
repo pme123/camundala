@@ -275,13 +275,14 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
        |  lazy val config: DevConfig =
        |     config(ApiProjectConfig())
        |     
-       |  def config(apiProjectConfig: ApiProjectConfig): DevConfig =
-       |    DevConfig(apiProjectConfig)
-       |   // .withVersionConfig(companyVersionConfig)
-       |   // .withSbtConfig(SbtConfig(...))
-       |   // .withPublishConfig(PublishConfig(...))
-       |   // .withPostmanConfig(PostmanConfig(...))
-       |   // .withDockerConfig(DockerConfig(...))
+       |  def config(apiProjectConfig: ApiProjectConfig) = DevConfig(
+       |    apiProjectConfig,
+       |    //sbtConfig = companySbtConfig,
+       |    //versionConfig = companyVersionConfig,
+       |    //publishConfig = Some(companyPublishConfig),
+       |    //postmanConfig = Some(companyPostmanConfig),
+       |    //dockerConfig = companyDockerConfig
+       |  )
        |
        |  private lazy val companyVersionConfig = CompanyVersionConfig(
        |    scalaVersion = BuildInfo.scalaVersion,

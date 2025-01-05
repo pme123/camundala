@@ -7,6 +7,8 @@ helium.site.pageNavigation.enabled = false
 A Company Project handles the specific configuration for the company.
 
 @:callout(info)
+**Be aware** that this is not tested.
+
 Make sure you have [init the company](../development/initCompany.md).
 
 In this process many files are generated and some are replaced.

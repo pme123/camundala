@@ -9,14 +9,14 @@ import scala.language.postfixOps
 import scala.xml.*
 import scala.xml.transform.{RewriteRule, RuleTransformer}
 
-case class ModelerTemplUpdater(apiConfig: ApiConfig):
-
+case class ModelerTemplUpdater(apiConfig: ApiConfig, apiProjectConfig: ApiProjectConfig):
+  
   def update(): Unit =
     updateTemplates()
     updateBpmnColors()
 
   private def updateTemplates(): Unit =
-    apiProjectConfig.dependencies
+    docProjectConfig.dependencies
       .foreach: c =>
         val toPath = templConfig.templatePath / "dependencies"
         os.makeDir.all(toPath)
@@ -33,7 +33,7 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
                 .map:
                   case t
                       if t.elementType.value == AppliesTo.`bpmn:CallActivity` &&
-                        t.name != apiProjectConfig.projectName =>
+                        t.name != docProjectConfig.projectName =>
                     val newTempl =
                       t.asJson
                         .deepDropNullValues
@@ -50,7 +50,7 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
 
   private def updateBpmnColors(): Unit =
     println("Adjust Color for:")
-    projectsConfig.projectConfig(apiProjectConfig.projectName)
+    projectsConfig.projectConfig(docProjectConfig.projectName)
       .map: pc =>
         os.walk(os.pwd / diagramPath)
           .filter:
@@ -60,10 +60,10 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
           .map:
             extractUsesRefs
   end updateBpmnColors
-
+  
   private lazy val templConfig = apiConfig.modelerTemplateConfig
   private lazy val projectsConfig = apiConfig.projectsConfig
-  private lazy val apiProjectConfig = DocProjectConfig(apiConfig.projectConfPath)
+  private lazy val docProjectConfig: DocProjectConfig = DocProjectConfig(apiProjectConfig)
   private lazy val colorMap = apiConfig.projectsConfig.colors.toMap
 
   private def extractUsesRefs(bpmnPath: os.Path, xmlStr: String) =
@@ -97,7 +97,7 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig):
     val xmlNew = (callActivities ++ businessRuleTasks ++ externalWorkers)
       .filter:
         case project -> _ =>
-          colorMap.contains(project) && apiProjectConfig.projectName != project
+          colorMap.contains(project) && docProjectConfig.projectName != project
       .foldLeft(xml):
         case (xmlResult, project -> id) =>
           println(s"  -> $project > $id -- ${colorMap(project)}")

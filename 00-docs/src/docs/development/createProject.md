@@ -28,6 +28,7 @@ Here we focus on the first step.
       |  projects
       |    |  myProject
       |    |    |  helper.scala
+      |    |    |  PROJECT.conf
     ``` 
    
 1. Make `helper.scala` executable:
@@ -37,6 +38,21 @@ chmod +x helper.scala
 ```
 
 1. Open the `mycompany-myProject` directory with your IDE (I use Intellij).
+
+1. Adjust the `PROJECT.conf` to your needs.
+
+```
+projectName: mycompany-myProject
+projectVersion: 0.1.0-SNAPSHOT
+subProjects: [
+  // subProject1
+  // subProject2
+]
+dependencies: {
+  // mastercompany-services: 1.2.4
+  // mycompany-commons: 1.0.3
+}
+```
 
 @:callout(info)
 If you haven't released `company-camundala` yet,

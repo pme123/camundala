@@ -120,7 +120,7 @@ case class CompanyDocsGenerator(companyCamundala: os.Path):
   private def directory(name: String, title: String, isVersioned: Boolean) =
     os.makeDir.all(docsSrc / name)
     createIfNotExists(
-      docsSrc / name / "directory.md",
+      docsSrc / name / "directory.conf",
       s"""|${laikaVersioned(isVersioned)}
           |
           |${laikaTitle(title)}

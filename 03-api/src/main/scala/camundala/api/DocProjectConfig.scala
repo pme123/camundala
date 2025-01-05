@@ -38,16 +38,16 @@ object DocProjectConfig:
   lazy val defaultVersion = "0.1.0"
 
   def apply(
-      packageFile: os.Path
+      apiProjectConfig: ApiProjectConfig
   ): DocProjectConfig =
-    apply(packageFile, Seq.empty, DocProjectConfig.defaultVersion, false)
+    apply(apiProjectConfig, Seq.empty, DocProjectConfig.defaultVersion, false)
+
   def apply(
-      packageFile: os.Path,
+      apiProjectConfig: ApiProjectConfig,
       changelog: Seq[String],
       versionPrevious: String,
       isWorker: Boolean
   ): DocProjectConfig =
-    val apiProjectConfig = ApiProjectConfig(packageFile)
     DocProjectConfig(
       apiProjectConfig,
       versionPrevious,
@@ -55,25 +55,5 @@ object DocProjectConfig:
       isWorker
     )
   end apply
-
-  def init(projectName: String, newPackageFile: os.Path) =
-    if !os.exists(newPackageFile)
-    then
-      println(s"Created initial $newPackageFile")
-      os.makeDir.all(newPackageFile / os.up)
-      os.write(
-        newPackageFile,
-        s"""
-           |org = "${projectName.split("-").head}"
-           |name = "$projectName"
-           |version = "${DocProjectConfig.defaultVersion}"
-           |dependencies: {
-           |
-           |}
-           |""".stripMargin
-      )
-    end if
-    apply(newPackageFile)
-  end init
-
+  
 end DocProjectConfig

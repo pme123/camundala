@@ -19,6 +19,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
 
   protected def companyProjectVersion: String
   protected def projectDescr: String
+  protected def apiProjectConfig: ApiProjectConfig = ApiProjectConfig(apiConfig.projectConfPath)
 
   def supportedVariables: Seq[InputParams] =
     InputParams.values.toSeq
@@ -29,7 +30,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
     ModelerTemplGenerator(version, apiConfig.modelerTemplateConfig, Some(projectName)).generate(
       collectApis(apiDoc)
     )
-    ModelerTemplUpdater(apiConfig).update()
+    ModelerTemplUpdater(apiConfig, apiProjectConfig).update()
     writeOpenApis(apiDoc)
     writeCatalog(apiDoc)
   end document
@@ -290,7 +291,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
     s"""|### Dependencies:
         |
         |${
-         apiProjectConf.dependencies
+         docProjectConfig.dependencies
            .map(dep => s"- _**[${dep.projectName}](${documentations.getOrElse(dep.projectName, "NOT FOUND")})**_")
            .mkString("\n")
        }
@@ -324,8 +325,8 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
        |
        |> Created with:
        |> - [camundala-api v${BuildInfo.version}](https://github.com/pme123/camundala)
-       |> - ${apiProjectConf.companyName}-camundala-api $companyProjectVersion
-       |> - ${apiProjectConf.companyName}-camundala-helper
+       |> - ${docProjectConfig.companyName}-camundala-api $companyProjectVersion
+       |> - ${docProjectConfig.companyName}-camundala-helper
        |
        |""".stripMargin
 
@@ -398,6 +399,6 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
        |like `"$example"`""".stripMargin
 
   private lazy val packageConfPath = apiConfig.basePath / apiConfig.projectsConfig.projectConfPath
-  private lazy val apiProjectConf  = DocProjectConfig(packageConfPath)
+  private lazy val docProjectConfig  = DocProjectConfig(apiProjectConfig)
 
 end ApiCreator
