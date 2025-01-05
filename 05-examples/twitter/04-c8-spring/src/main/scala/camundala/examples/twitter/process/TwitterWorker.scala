@@ -6,6 +6,7 @@ import io.camunda.zeebe.spring.client.annotation.{JobWorker, VariablesAsType}
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import scala.jdk.CollectionConverters.MapHasAsJava
 
 @Component
 class TwitterWorker:
@@ -19,7 +20,7 @@ class TwitterWorker:
     try twitterService.tweet(variables.tweet)
     catch
       case ex: DuplicateTweetException =>
-        throw new ZeebeBpmnError("duplicateMessage", "Could not post tweet, it is a duplicate.")
+        throw new ZeebeBpmnError("duplicateMessage", "Could not post tweet, it is a duplicate.", Map.empty.asJava)
 
   @JobWorker(`type` = "send-rejection", autoComplete = true)
   @throws[Exception]

@@ -9,7 +9,7 @@ object Dependencies {
   // 04-helper
   val osLibVersion = "0.11.3"
   // 01-domain
-  val openapiCirceVersion = "0.11.3"
+  val openapiCirceVersion = "0.11.5"
   val tapirVersion = "1.11.11"
   val ironCirceVersion = "2.6.0"
   val mUnitVersion = "1.0.3"
@@ -23,7 +23,7 @@ object Dependencies {
   // - mUnitVersion
   // 03-dmn
   // -> bpmn
-  val sttpClient3Version = "3.10.1"
+  val sttpClient3Version = "3.10.2"
   val dmnTesterVersion = "0.17.9"
   // - mUnitVersion
   // 03-simulation
@@ -33,7 +33,7 @@ object Dependencies {
   // 03-worker
   // -> bpmn
   // -mUnitVersion
-  val chimneyVersion = "1.5.0"
+  val chimneyVersion = "1.6.0"
   // --- Implementations
   // 04-helper
   val sardineWebDavVersion = "5.12"
@@ -41,7 +41,7 @@ object Dependencies {
   // -> worker
   val camundaVersion = "7.22.0" // external task client
   val jaxbApiVersion = "4.0.2" // needed by the camunda client 7.21?!
-  val scaffeineV = "5.2.1" // caching
+  val scaffeineV = "5.3.0" // caching
   val zioVersion = "2.1.14" // zio
   // - sttpClient3
 
@@ -53,7 +53,7 @@ object Dependencies {
   // 04-c8-spring
   // -> bpmn
   val scalaJacksonVersion = "2.18.2"
-  val camunda8Version = "8.5.9"
+  val camunda8Version = "8.5.15"
   val springBootVersion = "3.3.4"
   val swaggerOpenAPIVersion = "2.1.24"
   // examples
