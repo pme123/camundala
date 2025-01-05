@@ -123,7 +123,8 @@
             <pre class="keep-together pdf epub"><code class="nohighlight"><span>dev-mycompany
   |  projects
   |    |  myProject
-  |    |    |  helper.scala</span></code></pre>
+  |    |    |  helper.scala
+  |    |    |  PROJECT.conf</span></code></pre>
           </li>
           <li>
             <p>Make <code>helper.scala</code> executable:</p>
@@ -133,7 +134,20 @@ chmod +x helper.scala</span></code></pre>
           <li>
             <p>Open the <code>mycompany-myProject</code> directory with your IDE (I use Intellij).</p>
           </li>
+          <li>
+            <p>Adjust the <code>PROJECT.conf</code> to your needs.</p>
+          </li>
         </ol>
+        <pre><code>projectName: mycompany-myProject
+projectVersion: 0.1.0-SNAPSHOT
+subProjects: [
+  // subProject1
+  // subProject2
+]
+dependencies: {
+  // mastercompany-services: 1.2.4
+  // mycompany-commons: 1.0.3
+}</code></pre>
         <div class="callout info">
           <i class="icofont-laika info">&#xef4e;</i>
           <p>If you haven&#39;t released <code>company-camundala</code> yet,

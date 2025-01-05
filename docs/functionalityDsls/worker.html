@@ -159,7 +159,7 @@
         <p>Use this <a href="../development/projectDev.html#customtask">Generator</a> to create a new <em>Custom Worker</em></p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">mycompany</span><span>.</span><span class="identifier">myproject</span><span>.</span><span class="identifier">bpmn</span><span>.</span><span class="identifier">myprocess</span><span>.</span><span class="identifier">v1</span><span>.</span><span class="type-name">MyCustomTask</span><span>.*
 
-</span><span class="annotation">@Configuration</span><span>
+</span><span class="annotation">@SpringConfiguration</span><span>
 </span><span class="keyword">class</span><span> </span><span class="type-name">MyCustomTaskWorker</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CompanyCustomWorkerDsl</span><span>[</span><span class="type-name">In</span><span>, </span><span class="type-name">Out</span><span>]:
 
   </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">customTask</span><span> = </span><span class="identifier">example</span><span>
@@ -204,7 +204,7 @@
         </ul>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">mycompany</span><span>.</span><span class="identifier">myproject</span><span>.</span><span class="identifier">bpmn</span><span>.</span><span class="identifier">myprocess</span><span>.</span><span class="identifier">v1</span><span>.</span><span class="type-name">MyProcess</span><span>.*
 
-</span><span class="annotation">@Configuration</span><span>
+</span><span class="annotation">@SpringConfiguration</span><span>
 </span><span class="keyword">class</span><span> </span><span class="type-name">MyProcessWorker</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CompanyInitWorkerDsl</span><span>[</span><span class="type-name">In</span><span>, </span><span class="type-name">Out</span><span>, </span><span class="type-name">InitIn</span><span>, </span><span class="type-name">InConfig</span><span>]:
 
   </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">inOutExample</span><span> = </span><span class="identifier">example</span><span>
@@ -239,7 +239,7 @@
         </ul>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">mycompany</span><span>.</span><span class="identifier">myproject</span><span>.</span><span class="identifier">bpmn</span><span>.</span><span class="identifier">myprocess</span><span>.</span><span class="identifier">v1</span><span>.</span><span class="type-name">MyServiceTask</span><span>.*
 
-</span><span class="annotation">@Configuration</span><span>
+</span><span class="annotation">@SpringConfiguration</span><span>
 </span><span class="keyword">class</span><span> </span><span class="type-name">MyServiceTaskWorker</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CompanyServiceWorkerDsl</span><span>[</span><span class="type-name">In</span><span>, </span><span class="type-name">Out</span><span>]:
 
   </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">serviceTask</span><span> = </span><span class="identifier">example</span><span>

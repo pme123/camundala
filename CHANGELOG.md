@@ -15,6 +15,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.29 - 2025-01-05
+### Changed 
+- Updated Versions. - see [Commit](https://pme123@github.com/pme123/camundala/commit/69a7f565c0a9d8ed2fce96535b4f8f9c8903ef98)
+- Removed version from PROJECT.conf - see [Commit](https://pme123@github.com/pme123/camundala/commit/4292ec47edd043a24029006b3f612c3bb457bda6)
+- Adjusted Documentation for changes. - see [Commit](https://pme123@github.com/pme123/camundala/commit/9e68f34dad449cf5fae85219386149ad7e762b01)
+- Changed configuration for Project to PROJECT.conf - see [Commit](https://pme123@github.com/pme123/camundala/commit/ea26b5caf881c3620b88cdaf68b371bcf01a979a)
+- Merge branch 'master' into develop - see [Commit](https://pme123@github.com/pme123/camundala/commit/ae70c4a3df3b2840180738458d47e6eb5f508761)
+- Merge pull request #129 from scala-steward/update/laika-sbt-1.3.0 - see [Commit](https://pme123@github.com/pme123/camundala/commit/791f39b48bbd2488f7580d7437d2a7fbff1fbf3d)
+- Update laika-sbt to 1.3.0 - see [Commit](https://pme123@github.com/pme123/camundala/commit/d0d6572dcefb050f0bf93c0e54098157cda7e204)
+- Fixed @SpringConfiguration. - see [Commit](https://pme123@github.com/pme123/camundala/commit/af82b22143d996e234930a76d36519248529ee41)
+- Fixed error in ApiConfig.init for templates. - see [Commit](https://pme123@github.com/pme123/camundala/commit/31bdebc3f833a5da47ce913ba982dc209745aa0e)
+
 ## 1.30.28 - 2024-12-31
 ### Changed 
 - Adjusted the spring dependencies due to problems in test worker. - see [Commit](https://pme123@github.com/pme123/camundala/commit/1896166353ee31f7f66e1aab70f32a566df08ded)
