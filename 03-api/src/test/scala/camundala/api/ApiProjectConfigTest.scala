@@ -14,8 +14,8 @@ class ApiProjectConfigTest extends FunSuite:
         VersionConfig("1.0.0-SNAPSHOT"),
         Seq("subProject1", "subProject2"),
         Seq(
-          DependencyConfig("mastercompany-services", "1.2.4"),
-          DependencyConfig("mycompany-commons", "1.0.3")
+          DependencyConfig("mastercompany-services"),
+          DependencyConfig("mycompany-commons")
         )
       )
     )

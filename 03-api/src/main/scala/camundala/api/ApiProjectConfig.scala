@@ -39,14 +39,8 @@ object ApiProjectConfig:
     val projectName    = projectConfig.getString("projectName")
     val projectVersion = projectConfig.getString("projectVersion")
     val subProjects    = projectConfig.getStringList("subProjects").asScala.toSeq
-    val dependencies   = projectConfig
-      .getObject("dependencies")
-      .unwrapped()
-      .asScala
-      .map:
-        case k -> v =>
-          DependencyConfig.apply(k, v.toString)
-      .toSeq
+    val dependencies   =
+      projectConfig.getStringList("dependencies").asScala.map(DependencyConfig.apply).toSeq
 
     ApiProjectConfig(
       projectName,
@@ -106,13 +100,8 @@ final case class DependencyConfig(
 end DependencyConfig
 
 object DependencyConfig:
-  def apply(projectName: String, version: String): DependencyConfig =
-    DependencyConfig(projectName, VersionConfig(version))
-  // "org:name:version" => DependencyConfig - only works for the company-project
-  def apply(dependency: String): DependencyConfig                   =
-    val dArray = dependency.replace("\"", "").split(":")
-    // DependencyConfig(dArray(0), dArray(1), dArray(2))
-    val lastVersion = VersionHelper.repoSearch(dArray(1), dArray(0))
-    DependencyConfig(dArray(1), VersionConfig(lastVersion))
+  def apply(projectName: String): DependencyConfig =
+    val lastVersion = VersionHelper.repoSearch(projectName)
+    DependencyConfig(projectName, VersionConfig(lastVersion))
 
 end DependencyConfig
