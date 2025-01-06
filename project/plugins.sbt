@@ -1,4 +1,4 @@
-addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.10.4")
+addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.11.0")
 
 // https://github.com/djspiewak/sbt-github-actions
 //addSbtPlugin("com.codecommit" % "sbt-github-actions" % "0.13.0")
