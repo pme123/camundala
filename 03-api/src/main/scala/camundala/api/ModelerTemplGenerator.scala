@@ -6,7 +6,8 @@ import camundala.domain.*
 final case class ModelerTemplGenerator(
     apiVersion: String,
     config: ModelerTemplateConfig,
-    projectName: Option[String]
+    projectName: String,
+    companyName: String
 ) extends App:
 
   lazy val version = apiVersion.split("\\.").head.toInt
@@ -42,6 +43,7 @@ final case class ModelerTemplGenerator(
         if elementType == ElementType.callActivity then PropType.`camunda:out`
         else PropType.`camunda:outputParameter`
       )
+    val niceName = inOut.niceName.replace(s"${companyName.head.toUpper}${companyName.tail} ", "")
     val templ = MTemplate(
       inOut.id,
       inOut.id,
@@ -49,7 +51,7 @@ final case class ModelerTemplGenerator(
       version,
       appliesTo,
       elementType,
-      mapProps ++ properties :+ TemplProp.name(inOut.niceName),
+      mapProps ++ properties :+ TemplProp.name(niceName),
       config.schema
     )
     os.write.over(
