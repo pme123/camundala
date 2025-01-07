@@ -3,20 +3,20 @@ info:
   title: Invoice Example Process API
   version: '1.0'
   summary: "\n         |**This is for Postman - to have example requests. Be aware\
-    \ the Output is not provided!**\n         |\n         |\n\n\n\nCreated at 23.12.2024,\
-    \ 16:43\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)**\n\
+    \ the Output is not provided!**\n         |\n         |\n\n\n\nCreated at 07.01.2025,\
+    \ 16:41\n\n**See the [Camundala Documentation](https://pme123.github.io/camundala/)**\n\
     \n# Package Configuration\n**Check all dependency trees here: [example-invoice](../../dependencies/example-invoice.html)**\n\
     \n### Dependencies:\n\n\n\n\n<details>\n<summary>PROJECT.conf</summary>\n<p>\n\
-    \n```\n\norg = \"pme123\"\nname = \"example-invoice\"\nversion = \"0.1.0-SNAPSHOT\"\
-    \ndependencies: {\n  //\"example-helper\": \"pme123:example-helper:1.3.*\"\n}\n\
-    \n```\n\n</p>\n</details>\n\n\nThere is no README.md in the Project.\n\n\n\n<p/>\n\
-    <details>\n<summary>\n<b><i>General Variables</i></b>\n</summary>\n\n<p>\n\n###\
-    \ Mocking\n\n**servicesMocked**:\n\nMock all the _ServiceWorkers_ in your process\
-    \ with their default Mock:\n\n- DSL:\n```scala\nprocess(..)\n  .mockServices\n\
-    ```\n\n- Json\n```json\n...\n\"servicesMocked\": true,\n...\n```\n\n\n**mockedWorkers**:\n\
-    \nMock any Process- and/or ExternalTask-Worker with their default Mocks.\nThis\
-    \ is a list of the _Worker topicNames or Process processNames_, you want to mock.\n\
-    It is also possible to use a _comma separated_ String,\nlike `\"mySubProcess,myOtherSubProcess,myService\"\
+    \n```\n\nprojectName = \"pme123-invoice\"\nprojectVersion = \"0.1.0-SNAPSHOT\"\
+    \nsubProjects = []\ndependencies: []\n\n```\n\n</p>\n</details>\n\n\nThere is\
+    \ no README.md in the Project.\n\n\n\n<p/>\n<details>\n<summary>\n<b><i>General\
+    \ Variables</i></b>\n</summary>\n\n<p>\n\n### Mocking\n\n**servicesMocked**:\n\
+    \nMock all the _ServiceWorkers_ in your process with their default Mock:\n\n-\
+    \ DSL:\n```scala\nprocess(..)\n  .mockServices\n```\n\n- Json\n```json\n...\n\"\
+    servicesMocked\": true,\n...\n```\n\n\n**mockedWorkers**:\n\nMock any Process-\
+    \ and/or ExternalTask-Worker with their default Mocks.\nThis is a list of the\
+    \ _Worker topicNames or Process processNames_, you want to mock.\nIt is also possible\
+    \ to use a _comma separated_ String,\nlike `\"mySubProcess,myOtherSubProcess,myService\"\
     `\n\n_Be aware_: For Sub-Processes, this expects an _InitWorker_ where the _topicName_\
     \ is equal to the _processName_.\n\n\n- DSL:\n```scala\nprocess(..)\n  .mockedWorkers(\"\
     mySubProcess1\", \"mySubProcess2\") // creates a list with SubProcessess\n  .mockedWorker(\"\

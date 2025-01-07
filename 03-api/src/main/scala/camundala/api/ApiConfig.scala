@@ -126,6 +126,10 @@ case class ProjectsConfig(
   lazy val colors: Seq[(String, String)] = projectConfigs.map { project =>
     project.name -> project.color
   }
+  
+  def colorForId(refName:String, ownProjectName: String): Option[(String, String)] =
+    colors.find:
+      case (id, _) => refName.startsWith(id) && ! refName.startsWith(ownProjectName)
 
   def hasProjectGroup(
       projectName: String,

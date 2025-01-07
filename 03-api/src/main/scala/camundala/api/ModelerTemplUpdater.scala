@@ -95,12 +95,14 @@ case class ModelerTemplUpdater(apiConfig: ApiConfig, apiProjectConfig: ApiProjec
         decisionRef.toString -> id
 
     val xmlNew = (callActivities ++ businessRuleTasks ++ externalWorkers)
-      .filter:
-        case project -> _ =>
-          colorMap.contains(project) && docProjectConfig.projectName != project
+      .flatMap:
+        case refName -> elemId =>
+          apiConfig.projectsConfig
+            .colorForId(refName, docProjectConfig.projectName)
+              .map (_ -> elemId).toSeq
       .foldLeft(xml):
-        case (xmlResult, project -> id) =>
-          println(s"  -> $project > $id -- ${colorMap(project)}")
+        case (xmlResult, project -> color -> id) =>
+          println(s"  -> $project > $id -- $color")
           new RuleTransformer(changeColor(project, id)).apply(xmlResult)
     os.write.over(bpmnPath, xmlNew.toString)
   end extractUsesRefs
