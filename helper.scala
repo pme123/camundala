@@ -3,7 +3,7 @@
 //> using toolkit 0.5.0
 //> using dep io.github.pme123::camundala-helper:1.30.29
 
-import camundala.helper.*
+import camundala.helper.dev.publish.ChangeLogUpdater
 
 @main
 def release(version: String): Unit =
