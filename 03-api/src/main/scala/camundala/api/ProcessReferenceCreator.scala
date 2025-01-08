@@ -14,14 +14,14 @@ trait ProcessReferenceCreator:
   protected def projectName: String
   protected def apiConfig: ApiConfig
 
-  protected def refIdentShort(refIdent: String): String =
+  protected def refIdentShort(refIdent: String): String                      =
     apiConfig.refIdentShort(refIdent)
   protected def refIdentShort(refIdent: String, projectName: String): String =
     apiConfig.refIdentShort(refIdent, projectName)
 
-  protected def gitBasePath: os.Path = apiConfig.tempGitDir
-  private def docProjectUrl(project: String): String =
-    s"${apiConfig.docBaseUrl.getOrElse("NOT_SET")}/$projectName"
+  protected def gitBasePath: os.Path                   = apiConfig.tempGitDir
+  protected def docProjectUrl(project: String): String =
+    apiConfig.docBaseUrl.map(u => s"$u/$project").getOrElse("NOT_SET")
 
   private lazy val projectConfigs: Seq[ProjectConfig] =
     apiConfig.projectsConfig.projectConfigs
@@ -55,7 +55,7 @@ trait ProcessReferenceCreator:
   case class UsedByReferenceCreator(refId: String):
 
     def create(): String =
-      val refs = findUsagesInBpmn()
+      val refs   = findUsagesInBpmn()
       val refDoc = refs
         .map { case k -> processes =>
           s"""_${k}_
@@ -89,7 +89,7 @@ trait ProcessReferenceCreator:
               !c.contains(s"id=\"$refId\"")
             }
             .map { pc =>
-              println(s"- $processName ${pc._1}")
+              println(s"-> $processName ${pc._1} - ${pc._2}")
               docuPath(processName, pc._1, pc._2)
             }
         }
@@ -104,7 +104,7 @@ trait ProcessReferenceCreator:
         content: String
     ): (String, String) =
       val extractId =
-        val pattern = """<(bpmn:process|process)([^\/>]+)isExecutable="true"([^\/>]*>)""".r
+        val pattern   = """<(bpmn:process|process)([^\/>]+)isExecutable="true"([^\/>]*>)""".r
         val idPattern = """[\s\S]*id="([^"]*)"[\s\S]*""".r
         pattern
           .findFirstIn(content)
@@ -115,9 +115,9 @@ trait ProcessReferenceCreator:
           .getOrElse(s"Id not found in $path")
       end extractId
 
-      val refId = refIdentShort(extractId, projectName)
+      val refId                  = refIdentShort(extractId, projectName)
       lazy val identShortProcess = shortenTag(extractId).replace(" ", "-")
-      val anchor = s"#tag/${identShortProcess}"
+      val anchor                 = s"#tag/${identShortProcess}"
       projectName -> s"[${InOutType.Bpmn}: $refId](${docProjectUrl(projectName)}/OpenApi.html$anchor)"
     end docuPath
 
@@ -132,10 +132,10 @@ trait ProcessReferenceCreator:
       println(s"Uses for $processName")
       findBpmn(processName)
         .map { xmlStr =>
-          val refs = extractUsesRefs(xmlStr)
+          val refs   = extractUsesRefs(xmlStr)
           val refDoc = refs
             .map { case k -> processes =>
-              println(s"- $k:\n -- ${processes.map(_.asString).mkString("\n  -- ")}")
+              println(s"- $k:\n -- ${processes.map(_.asString).mkString("\n -- ")}")
               s"""_${k}_
                  |${processes
                   .map(_.asString)
@@ -167,31 +167,31 @@ trait ProcessReferenceCreator:
         serviceName: Option[String] = None,
         refType: InOutType = InOutType.Bpmn
     ):
-      lazy val processId = processRef
-      lazy val project = processRef.split("-").take(2).mkString("-")
+      lazy val processId            = processRef
+      lazy val project              = apiConfig.projectsConfig.projectNameForRef(processRef)
       println(s"CHANGES $processRef -  $project")
       lazy val processIdent: String = serviceName.getOrElse(processId)
-      lazy val identShort = shortenName(processIdent)
-      lazy val identShortProcess = shortenTag(processIdent).replace(" ", "-")
-      lazy val anchorOperation = s"#operation/$refType:%20$identShort"
-      lazy val anchorProcess = s"#tag/${identShortProcess}"
+      lazy val identShort           = shortenName(processIdent)
+      lazy val identShortProcess    = shortenTag(processIdent).replace(" ", "-")
+      lazy val anchorOperation      = s"#operation/$refType:%20$identShort"
+      lazy val anchorProcess        = s"#tag/${identShortProcess}"
 
       lazy val serviceStr: String =
         serviceName.map(_ => s" ($processId)").getOrElse("")
 
       lazy val asString: String =
         refType match
-          case  InOutType.Bpmn if serviceName.isEmpty =>
-                        s"_[$identShortProcess](${docProjectUrl(project)}/OpenApi.html$anchorProcess)_ $serviceStr"
-          case _ =>  
+          case InOutType.Bpmn if serviceName.isEmpty =>
+            s"_[$identShortProcess](${docProjectUrl(project)}/OpenApi.html$anchorProcess)_ $serviceStr"
+          case _                                     =>
             s"_[$refType: $identShort](${docProjectUrl(project)}/OpenApi.html$anchorOperation)_ $serviceStr"
     end UsesRef
 
     private def extractUsesRefs(xmlStr: String) =
-      val xml = XML.load(new StringReader(xmlStr))
-      val callActivities = (xml \\ "callActivity")
+      val xml             = XML.load(new StringReader(xmlStr))
+      val callActivities  = (xml \\ "callActivity")
         .map { ca =>
-          val calledElement = ca \@ "calledElement"
+          val calledElement    = ca \@ "calledElement"
           val maybeServiceName = (ca \\ "in")
             .filter(_ \@ "target" == "serviceName")
             .map(_ \@ "sourceExpression")

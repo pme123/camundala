@@ -167,6 +167,13 @@ case class ProjectsConfig(
         refIdent)
   end refIdentShort
 
+  def projectNameForRef(processRef: String): String =
+    projectConfigs
+      .find(pc => processRef.startsWith(pc.name))
+      .map(_.name)
+      .getOrElse("NO PROJECT FOUND")
+  end projectNameForRef
+  
 end ProjectsConfig
 
 case class ProjectsPerGitRepoConfig(
