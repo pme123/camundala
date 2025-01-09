@@ -1,19 +1,41 @@
+spring.application.name: camundala-examples-demos
 server:
   port: 8093
 camunda.bpm:
   job-execution:
     wait-time-in-millis: 200 # this is for speedup testing
   client:
-    base-url: ${CAMUNDA_REST_URL:http://localhost:8034/engine-rest}
+    base-url: ${CAMUNDA_BASE_URL:http://localhost:8887/engine-rest}
     worker-id: ${WORKER_ID:my-worker}
     disable-backoff-strategy: true # only during testing - faster topic
     async-response-timeout: 10000
+# default configuration for bpf-apps
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          worker:
+            provider: keycloak-primary
+            client-id: bpf
+            client-secret: ${FSSO_CLIENT_SECRET:c352a25e-c6d0-4e27-a75d-efedd0c5ec3a}
+            clientName: ${FSSO_CLIENT_NAME:bpf}
+            authorization-grant-type: client_credentials
+            redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
+            scope:
+              - openid
+              - profile
+              - email
+        provider:
+          keycloak-primary:
+            authorization-uri: ${FSSO_BASE_URL:http://kubernetes.docker.internal:8090/auth}/realms/${FSSO_REALM:master}/protocol/openid-connect/auth
+            token-uri: ${FSSO_BASE_URL:http://kubernetes.docker.internal:8090/auth}/realms/${FSSO_REALM:master}/protocol/openid-connect/token
+            user-info-uri: ${FSSO_BASE_URL:http://kubernetes.docker.internal:8090/auth}/realms/${FSSO_REALM:master}/protocol/openid-connect/userinfo
+            jwk-set-uri: ${FSSO_BASE_URL:http://kubernetes.docker.internal:8090/auth}/realms/${FSSO_REALM:master}/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
 
-logging:
-  level:
-    root: warn
-    "camundala": info
-    "valiant": info
-    "org.camunda.bpm.client": info
-    "org.camunda.bpm.client.spring": info
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health"

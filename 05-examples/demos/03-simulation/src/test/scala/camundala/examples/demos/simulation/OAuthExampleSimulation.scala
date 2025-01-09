@@ -9,13 +9,13 @@ import camundala.simulation.custom.*
   */
 class OAuthExampleSimulation extends OAuthSimulationDsl:
 
-  simulate {
+  simulate (
     badScenario(
       CamundalaGenerateTestP,
       404,
       "No matching process definition with key: camundala-generate-test and tenant-id: 0949"
     )
-  }
+  )
 
   override implicit def config =
     super.config

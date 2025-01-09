@@ -13,5 +13,5 @@ class BasicAuthExampleSimulation extends BasicSimulationDsl:
   )
 
   override def config =
-    super.config.withPort(8033)
+    super.config.withPort(8887)
 end BasicAuthExampleSimulation

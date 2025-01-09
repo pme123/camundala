@@ -8,16 +8,19 @@ import camundala.simulation.custom.CustomSimulation
 // exampleDemosSimulation/testOnly *BadScenarioExampleSimulation
 class BadScenarioExampleSimulation extends DemosSimulation:
 
-  simulate {
+  simulate(
     badScenario(
       `Bad Scenario with Message`,
       500,
       Some("Unknown property used in expression: ${nonExistingVariable}")
-    )
+    ),
     badScenario(
-      `Bad Scenario without Message`,
+      `Bad Scenario without Message 2`,
       500
     )
-  }
+  )
+
+  lazy val `Bad Scenario without Message 2` =
+    `Bad Scenario with Message`
 
 end BadScenarioExampleSimulation

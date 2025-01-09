@@ -23,7 +23,7 @@ class EnumWorkerExampleSimulation extends CustomSimulation:
 
   override implicit def config =
     super.config
-      .withPort(8034)
+      .withPort(8887)
     //  .withLogLevel(LogLevel.DEBUG)
 
 end EnumWorkerExampleSimulation

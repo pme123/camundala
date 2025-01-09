@@ -303,20 +303,24 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
     ): Seq[ExternalTaskScenario] =
       serviceScenario(task, task.out, task.defaultServiceOutMock)
 
-    def badScenario(
-        scen: SScenario,
-        status: Int,
-        errorMsg: Optable[String] = None
-    ): SScenario =
-      scen.only
+    inline def badScenario(
+                            inline process: Process[?, ?, ?],
+                            status: Int,
+                            errorMsg: Optable[String] = None
+                          ): BadScenario =
+      BadScenario(nameOfVariable(process), process, status, errorMsg.value, isOnly = true)
 
-    def incidentScenario(scen: SScenario, incidentMsg: String): SScenario =
-      scen.only
+    inline def incidentScenario(
+                                 inline process: Process[?, ?, ?],
+                                 incidentMsg: String
+                               )(body: SStep*): IncidentScenario =
+      IncidentScenario(nameOfVariable(process), process, body.toList, incidentMsg, isOnly = true)
 
-    def incidentScenario(scen: SScenario, incidentMsg: String)(
-        body: SStep*
-    ): SScenario =
-      scen.only
+    inline def incidentScenario(
+                                 inline process: Process[?, ?, ?],
+                                 incidentMsg: String
+                               ): IncidentScenario =
+      incidentScenario(process, incidentMsg)()
   end only
 
 end SimulationDsl
