@@ -111,6 +111,10 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
        | */
        |trait CompanyWorkerHandler extends C7WorkerHandler
        |
+       |trait CompanyValidationWorkerDsl[
+       |    In <: Product: InOutCodec
+       |] extends CompanyWorkerHandler, ValidationWorkerDsl[In]
+       |
        |trait CompanyInitWorkerDsl[
        |    In <: Product: InOutCodec,
        |    Out <: Product: InOutCodec,

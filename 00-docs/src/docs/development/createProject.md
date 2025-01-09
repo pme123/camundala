@@ -48,10 +48,10 @@ subProjects: [
   // subProject1
   // subProject2
 ]
-dependencies: {
-  // mastercompany-services: 1.2.4
-  // mycompany-commons: 1.0.3
-}
+dependencies: [
+  // example-helper
+  // example-accounts
+]
 ```
 
 @:callout(info)

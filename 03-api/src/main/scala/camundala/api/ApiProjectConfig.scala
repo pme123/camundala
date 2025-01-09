@@ -22,12 +22,16 @@ object ApiProjectConfig:
       os.write(
         newPackageFile,
         s"""
-           |org = "${projectName.split("-").head}"
-           |name = "$projectName"
-           |version = "${DocProjectConfig.defaultVersion}"
-           |dependencies: {
-           |
-           |}
+           |projectName: $projectName
+           |projectVersion: ${DocProjectConfig.defaultVersion}
+           |subProjects: [
+           |  // subProject1
+           |  // subProject2
+           |]
+           |dependencies: [
+           |  // example-helper
+           |  // example-accounts
+           |]
            |""".stripMargin
       )
     end if

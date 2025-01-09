@@ -11,27 +11,24 @@ case class WorkerGenerator()(using config: DevConfig):
     createOrUpdate(workerConfigPath / "banner.txt", banner)
   end generate
 
-  def createProcess(setupElement: SetupElement): Unit =
-    os.write.over(
-      workerPath(Some(setupElement)),
-      processWorker(setupElement)
-    )
-    os.write.over(
-      workerTestPath(Some(setupElement)),
-      processWorkerTest(setupElement)
-    )
-  end createProcess
+  def createProcessWorker(setupElement: SetupElement): Unit =
+    createWorker(setupElement, processWorker, processWorkerTest)
+  
+  def createEventWorker(setupElement: SetupElement): Unit =
+    createWorker(setupElement, eventWorker, eventWorkerTest)
 
-  def createProcessElement(setupElement: SetupElement): Unit =
-    os.write.over(
+  def createWorker(setupElement: SetupElement,
+                   worker: SetupElement => String = processElement,
+                   workerTest: SetupElement => String = processElementTest): Unit =
+    createIfNotExists(
       workerPath(Some(setupElement)),
-      processElement(setupElement)
+      worker(setupElement)
     )
-    os.write.over(
+    createIfNotExists(
       workerTestPath(Some(setupElement)),
-      processElementTest(setupElement)
+      workerTest(setupElement)
     )
-  end createProcessElement
+  end createWorker
 
   private lazy val companyName = config.companyName
   private lazy val workerApp =
@@ -87,12 +84,28 @@ case class WorkerGenerator()(using config: DevConfig):
        |
        |  lazy val inOutExample = example
        |
-       |  override def customInit(in: In): InitIn =
+       |  def customInit(in: In): InitIn =
        |    InitIn() //TODO add variable initialisation (to simplify the process expressions) or remove function
        |    // NoInput() // if no initialization is needed
        |  
        |end ${workerName}Worker""".stripMargin
-  end processWorker
+    
+  private def eventWorker(setupElement: SetupElement) =
+    val SetupElement(_, processName, workerName, version) = setupElement
+    s"""package ${config.projectPackage}
+       |package worker.$processName${version.versionPackage}
+       |
+       |import ${config.projectPackage}.bpmn.$processName${version.versionPackage}.$workerName.*
+       |
+       |@SpringConfiguration
+       |class ${workerName}Worker extends CompanyValidationWorkerDsl[In]:
+       |
+       |  lazy val inOutExample = example
+       |  
+       |  // remove it if not needed
+       |  override def validate(in: In): Either[CamundalaWorkerError.ValidatorError, In] = super.validate(in)
+       |
+       |end ${workerName}Worker""".stripMargin
 
   private def processElement(
       setupElement: SetupElement
@@ -148,20 +161,31 @@ case class WorkerGenerator()(using config: DevConfig):
   private def processWorkerTest(setupElement: SetupElement) =
     workerTest(setupElement):
       s"""
-         |  test("customInit ${setupElement.bpmnName}"):
+         |  test("customInit"):
          |    val in = In()
          |    val out = InitIn()
          |    assertEquals(
          |      worker.customInit(in),
          |      out
          |    )""".stripMargin
+      
+  private def eventWorkerTest(setupElement: SetupElement) =
+    workerTest(setupElement):
+      s"""
+         |  test("validate"):
+         |    val in = In()
+         |    assertEquals(
+         |      worker.validate(in), 
+         |      Right(in)
+         |    )
+         |""".stripMargin
 
   private def processElementTest(setupElement: SetupElement) =
     workerTest(setupElement):
       if setupElement.label == "CustomTask"
       then
         s"""
-           |  test("runWork ${setupElement.bpmnName}"):
+           |  test("runWork"):
            |    val in = In()
            |    val out = Right(Out())
            |    assertEquals(

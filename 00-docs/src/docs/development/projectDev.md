@@ -244,7 +244,11 @@ Example:
 This creates the following files:
 ```
 // the domain In -> NoOutput
-02-bpmn - main -> mycompany.myproject.bpmn.myProcess.v1.MySignalEvent      
+02-bpmn - main -> mycompany.myproject.bpmn.myProcess.v1.MySignalEvent   
+// the ValidationWorker    
+03-worker     - main -> mycompany.myproject.worker.myProcess.v1.MySignalEventWorker  
+              - test -> mycompany.myproject.worker.myProcess.v1.MySignalEventWorkerTest 
+   
 ```
 
 ### messageEvent
@@ -263,7 +267,10 @@ Example:
 This creates the following files:
 ```
 // the domain In -> NoOutput
-02-bpmn - main -> mycompany.myproject.bpmn.myProcess.v1.MyMessageEvent      
+02-bpmn - main -> mycompany.myproject.bpmn.myProcess.v1.MyMessageEvent   
+// the ValidationWorker    
+03-worker     - main -> mycompany.myproject.worker.myProcess.v1.MyMessageEventWorker  
+              - test -> mycompany.myproject.worker.myProcess.v1.MyMessageEventWorkerTest 
 ```
 
 ### timerEvent

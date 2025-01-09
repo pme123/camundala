@@ -79,7 +79,8 @@ object DevConfig:
   )
   
   def projectDir(projectName: String, baseDir: os.Path): os.Path =
-    if baseDir.toString.endsWith(projectName) then baseDir else baseDir / projectName
+    println(s"baseDir: $baseDir - projectName: $projectName -${if baseDir.toString.endsWith(projectName) then baseDir else baseDir / projectName}")
+    if baseDir.toString.toLowerCase.endsWith(projectName.toLowerCase) then baseDir else baseDir / projectName
 
   import ModuleConfig.*
 

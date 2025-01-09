@@ -59,13 +59,13 @@ object DevCompanyHelper:
        |projectName: $projectName
        |projectVersion: 0.1.0-SNAPSHOT
        |subProjects: [
-       |  // subProject1,
+       |  // subProject1
        |  // subProject2
        |]
-       |dependencies: {
-       |  // mastercompany-services: 1.2.4
-       |  // mycompany-commons: 1.0.3
-       |}
+       |dependencies: [
+       |  // mastercompany-services
+       |  // mycompany-commons
+       |]
        |""".stripMargin
 
 end DevCompanyHelper

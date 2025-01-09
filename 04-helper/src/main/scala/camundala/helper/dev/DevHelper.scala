@@ -201,7 +201,9 @@ trait DevHelper:
       processName.asProcessName,
       bpmnName.asElemName,
       version
-    ))
+    ),
+      withWorker = false
+    )
 
   extension (name: String)
     private def asProcessName: String =

@@ -21,12 +21,12 @@ case class SetupGenerator()(using config: DevConfig):
     BpmnGenerator().createProcess(setupElement)
     BpmnProcessGenerator().createBpmn(setupElement)
     SimulationGenerator().createProcess(setupElement)
-    WorkerGenerator().createProcess(setupElement)
+    WorkerGenerator().createProcessWorker(setupElement)
   end createProcess
 
   def createProcessElement(setupObject: SetupElement): Unit =
     BpmnGenerator().createProcessElement(setupObject)
-    WorkerGenerator().createProcessElement(setupObject)
+    WorkerGenerator().createWorker(setupObject)
 
   def createUserTask(setupObject: SetupElement): Unit =
     BpmnGenerator().createProcessElement(setupObject)
@@ -34,7 +34,9 @@ case class SetupGenerator()(using config: DevConfig):
   def createDecision(setupObject: SetupElement): Unit =
     BpmnGenerator().createProcessElement(setupObject)
 
-  def createEvent(setupObject: SetupElement): Unit =
-    BpmnGenerator().createEvent(setupObject)
+  def createEvent(setupElement: SetupElement, withWorker: Boolean = true): Unit =
+    BpmnGenerator().createEvent(setupElement)
+    if withWorker then WorkerGenerator().createEventWorker(setupElement)
+
 
 end SetupGenerator
