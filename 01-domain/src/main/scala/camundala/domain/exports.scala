@@ -13,7 +13,7 @@ import scala.language.implicitConversions
 
 // circe JsonInOutEncoder/ Decoder
 export io.circe.{Codec as CirceCodec}
-export io.circe.Json
+export io.circe.{Decoder, HCursor, Json}
 
 type InOutCodec[T] = io.circe.Codec[T]
 type InOutEncoder[T] = io.circe.Encoder[T]
