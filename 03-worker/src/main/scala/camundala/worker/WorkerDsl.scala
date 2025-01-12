@@ -6,7 +6,8 @@ import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 import scala.reflect.ClassTag
 
-trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
+trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]
+  extends JobWorker:
 
   protected def engineContext: EngineContext
 

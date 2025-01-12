@@ -81,6 +81,9 @@ object Dependencies {
     "org.springframework.boot" % "spring-boot-starter-security" % springBootVersion,
     "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion
   )
+  lazy val camunda7ZioWorkerDependencies = Seq(
+    "org.camunda.bpm" % "camunda-external-task-client" % camundaVersion
+  )
   lazy val sttpDependency = "com.softwaremill.sttp.client3" %% "circe" % sttpClient3Version
 
   val zeebeDependencies = Seq(

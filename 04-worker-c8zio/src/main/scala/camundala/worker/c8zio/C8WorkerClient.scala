@@ -1,15 +1,16 @@
 package camundala.worker.c8zio
 
+import camundala.worker.{JobWorker, WorkerClient}
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.impl.oauth.OAuthCredentialsProviderBuilder
-import zio.{ZIO, ZIOAppDefault}
+import zio.{Console, ZIO}
 
 import java.net.URI
-import java.time.Duration
 
-object C8WorkerClient extends ZIOAppDefault:
+object C8WorkerClient extends WorkerClient[C8Worker]:
 
-  override def run: ZIO[Any, Any, Any] =
+  def runWorkers(workers: Set[C8Worker]): ZIO[Any, Any, Any] =
+    Console.printLine(s"Starting Zeebe Worker Client: ${workers}") *>
     ZIO.acquireReleaseWith(zeebeClient)(_.closeClient()): client =>
       for
         server <- ZIO.attempt(
@@ -18,15 +19,18 @@ object C8WorkerClient extends ZIOAppDefault:
                       .send
                       .join
                   ).forever.fork
-        worker <- ZIO.attempt(client
-                    .newWorker()
-                    .jobType("publish-tweet")
-                    .handler(ExampleJobHandler())
-                    .timeout(Duration.ofSeconds(10))
-                    .open()).fork
-        _      <- worker.join
+        _      <- ZIO.collectAllPar(workers.map(w => registerWorker(w, client)))
         _      <- server.join
       yield ()
+
+  private def registerWorker(worker: C8Worker, client: ZeebeClient) =
+    Console.printLine("Registering Worker: " + worker.topic) *>
+    ZIO.attempt(client
+      .newWorker()
+      .jobType(worker.topic)
+      .handler(worker)
+      .timeout(worker.timeout.toMillis)
+      .open())
 
   private lazy val zeebeClient =
     ZIO.attempt:
