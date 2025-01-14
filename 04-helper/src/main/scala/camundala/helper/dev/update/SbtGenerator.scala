@@ -159,6 +159,6 @@ case class SbtGenerator()(using
            |    testSettings""".stripMargin
       case TestType.Simulation =>
         s""",
-           |    Test / parallelExecution := true,
+           |    Test / parallelExecution := false,
            |    testFrameworks += new TestFramework("camundala.simulation.custom.SimulationTestFramework")""".stripMargin
 end SbtGenerator
