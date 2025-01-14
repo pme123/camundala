@@ -113,6 +113,22 @@ given InOutCodec[IntOrString] = CirceCodec.from(
 type IntOrString = Int | String
 given ApiSchema[IntOrString] = Schema.derivedUnion
 
+type IntOrBoolean = Int | Boolean
+
+given ApiSchema[IntOrBoolean] = Schema.derivedUnion
+given InOutCodec[IntOrBoolean] = CirceCodec.from(
+  new Decoder[IntOrBoolean]:
+    final def apply(c: HCursor): Decoder.Result[IntOrBoolean] =
+      if c.value.isBoolean
+      then c.as[Boolean]
+      else c.as[Int]
+  ,
+  new Encoder[IntOrBoolean]:
+    final def apply(a: IntOrBoolean): Json = a match
+      case s: Boolean => Json.fromBoolean(s)
+      case i: Int => Json.fromInt(i)
+)
+
 case class NoInput()
 object NoInput:
   given ApiSchema[NoInput] = deriveApiSchema
