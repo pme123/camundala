@@ -240,7 +240,7 @@ trait DocCreator extends DependencyCreator, Helpers:
                 c.dependencies
                   .find: c3 =>
                     val version2 = c2.projectVersion.minorVersion + "."
-                    c3.projectName == c2.projectName && c3.toString.startsWith(version2)
+                    c3.projectName == c2.projectName && c3.projectVersion.toString.startsWith(version2)
                   .map(_ => c2.projectVersion)
                   .getOrElse("")
               )
