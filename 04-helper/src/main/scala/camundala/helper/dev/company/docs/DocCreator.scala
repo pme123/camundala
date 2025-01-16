@@ -15,11 +15,12 @@ import java.time.format.DateTimeFormatter
 trait DocCreator extends DependencyCreator, Helpers:
 
   protected def publishConfig: Option[PublishConfig]
-  protected def gitBasePath: os.Path           = apiConfig.tempGitDir
-  protected def configs: Seq[DocProjectConfig] = setupConfigs()
-  protected def apiProjectConfig(projectConfigPath: os.Path): ApiProjectConfig = ApiProjectConfig(projectConfigPath)
+  protected def gitBasePath: os.Path                                           = apiConfig.tempGitDir
+  protected def configs: Seq[DocProjectConfig]                                 = setupConfigs()
+  protected def apiProjectConfig(projectConfigPath: os.Path): ApiProjectConfig =
+    ApiProjectConfig(projectConfigPath)
 
-  lazy val projectConfigs: Seq[ProjectConfig]  =
+  lazy val projectConfigs: Seq[ProjectConfig] =
     apiConfig.projectsConfig.projectConfigs
 
   def prepareDocs(): Unit =
@@ -240,7 +241,9 @@ trait DocCreator extends DependencyCreator, Helpers:
                 c.dependencies
                   .find: c3 =>
                     val version2 = c2.projectVersion.minorVersion + "."
-                    c3.projectName == c2.projectName && c3.projectVersion.toString.startsWith(version2)
+                    c3.projectName == c2.projectName && c3.projectVersion.toString.startsWith(
+                      version2
+                    )
                   .map(_ => c2.projectVersion)
                   .getOrElse("")
               )
@@ -249,18 +252,29 @@ trait DocCreator extends DependencyCreator, Helpers:
         .mkString("\n")
   end dependencyTable
 
-  private def setupReleaseNotes(using configs: Seq[DocProjectConfig]) =
+  private def setupReleaseNotes(using configs: Seq[DocProjectConfig]): String =
     val mergeConfigs = configs
-      .filter(c => c.isNew || c.isPatched) // take only the new or patched ones
       .foldLeft(Seq.empty[DocProjectConfig]):
         case (result, c) =>
           result
             .find(_.projectName == c.projectName)
             .map: mc =>
-              if c.versionAsInt > mc.versionAsInt
-              then result.filterNot(_.projectName == c.projectName) :+ c
-              else result
+              val previousVersion = // get the highest previous version
+                if mc.versionPreviousConf.isHigherThan(c.versionPreviousConf)
+                then
+                  mc.versionPreviousConf.toString
+                else
+                  c.versionPreviousConf.toString
+
+              val config = // get the highest version
+                if mc.projectVersion.isHigherThan(c.projectVersion)
+                then
+                  mc
+                else c
+              result.filterNot(_.projectName == c.projectName) :+
+                config.copy(versionPrevious = previousVersion)
             .getOrElse(result :+ c)
+      .filter(c => c.isNew || c.isPatched) // take only the new or patched ones
 
     val projectChangelogs = mergeConfigs
       .sortBy(_.projectName)
