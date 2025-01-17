@@ -6,10 +6,10 @@ import camundala.examples.demos.newWorker.ExampleJob.*
 import camundala.worker.CamundalaWorkerError
 import camundala.worker.c8zio.C8Worker
 
-object ExampleJobHandler extends CompanyCustomWorkerDsl[In, Out]:
+object ExampleJobWorker extends CompanyCustomWorkerDsl[In, Out]:
   lazy val customTask = example
   def runWork(in: In): Either[CamundalaWorkerError.CustomError, Out] = ???
-end ExampleJobHandler
+end ExampleJobWorker
 
 object ExampleJob extends CompanyBpmnCustomTaskDsl:
 
@@ -17,13 +17,20 @@ object ExampleJob extends CompanyBpmnCustomTaskDsl:
   val descr: String = "Creates and adjusts variables for the module creditcard."
 
   case class In(
-      myId: Long = 123L,
-      myMessage: String = "hello"
+      clientKey: Long = 123L,
+      approved: Boolean = true,
+      myMessage: Option[String] = Some("hello"),
+      myTypes: List[MyType] = List(MyType("no", 12), MyType(), MyType())
   )
 
   object In:
     given ApiSchema[In]  = deriveApiSchema
     given InOutCodec[In] = deriveInOutCodec
+
+  case class MyType(doit: String = "yes", why: Int = 42)
+  object MyType:
+    given ApiSchema[MyType]  = deriveApiSchema
+    given InOutCodec[MyType] = deriveInOutCodec
 
   case class Out(
       myId: Long = 123L,
@@ -38,3 +45,25 @@ object ExampleJob extends CompanyBpmnCustomTaskDsl:
     Out()
   )
 end ExampleJob
+/*
+{
+  "approved" : true,
+  "clientKey" : 74854564837991,
+    "myMessage" : "hello",
+    "myTypes" : [
+    {
+      "doit" : "no",
+      "why" : 12
+    },
+    {
+      "doit" : "yes",
+      "why" : 42
+    },
+    {
+      "doit" : "yes",
+      "why" : 42
+    }
+  ],
+ "businessKey": "MY_BUSINESS_KEY"
+}
+*/

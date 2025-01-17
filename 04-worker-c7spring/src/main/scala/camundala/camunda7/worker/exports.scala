@@ -1,7 +1,6 @@
 package camundala
 package camunda7.worker
 
-import camundala.worker.*
 import org.camunda.bpm.client.task.ExternalTask
 import sttp.client3.{HttpClientSyncBackend, Identity, SttpBackend}
 

@@ -10,7 +10,7 @@ trait CompanyWorkerApp extends WorkerApp:
 
 object TestWorkerApp extends CompanyWorkerApp:
   workers(
-    ExampleJobHandler
+    ExampleJobWorker
   )
   
   

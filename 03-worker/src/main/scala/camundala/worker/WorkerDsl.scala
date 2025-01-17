@@ -15,7 +15,6 @@ trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]
 
   // needed that it can be called from CSubscriptionPostProcessor
   def worker: Worker[In, Out, ?]
-
   def topic: String = worker.topic
 
   def runWorkFromWorker(in: In)(using EngineRunContext): Option[Either[RunWorkError, Out]] =

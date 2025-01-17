@@ -7,9 +7,9 @@ import zio.{Console, ZIO}
 
 import java.net.URI
 
-object C8WorkerClient extends WorkerClient[C8Worker]:
+object C8WorkerClient extends WorkerClient[C8Worker[?,?]]:
 
-  def runWorkers(workers: Set[C8Worker]): ZIO[Any, Any, Any] =
+  def runWorkers(workers: Set[C8Worker[?,?]]): ZIO[Any, Any, Any] =
     Console.printLine(s"Starting Zeebe Worker Client: ${workers}") *>
     ZIO.acquireReleaseWith(zeebeClient)(_.closeClient()): client =>
       for
@@ -23,7 +23,7 @@ object C8WorkerClient extends WorkerClient[C8Worker]:
         _      <- server.join
       yield ()
 
-  private def registerWorker(worker: C8Worker, client: ZeebeClient) =
+  private def registerWorker(worker: C8Worker[?,?], client: ZeebeClient) =
     Console.printLine("Registering Worker: " + worker.topic) *>
     ZIO.attempt(client
       .newWorker()

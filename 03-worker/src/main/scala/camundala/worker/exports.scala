@@ -6,6 +6,8 @@ import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 import io.circe.*
 
+import java.util.Date
+
 export sttp.model.Uri.UriContext
 export sttp.model.Method
 export sttp.model.Uri
@@ -168,3 +170,11 @@ end CamundalaWorkerError
 
 def niceClassName(clazz: Class[?]) =
   clazz.getName.split("""\$""").head
+
+def printTimeOnConsole(start: Date) =
+  val time = new Date().getTime - start.getTime
+  val color = if time > 1000 then Console.YELLOW_B
+  else if time > 250 then Console.MAGENTA
+  else Console.BLACK
+  s"($color$time ms${Console.RESET})"
+end printTimeOnConsole

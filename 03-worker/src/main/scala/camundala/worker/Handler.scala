@@ -9,6 +9,30 @@ import sttp.model.Uri.QuerySegment
 import sttp.model.{Method, Uri}
 import scala.reflect.ClassTag
 
+trait WorkerHandler:
+  def worker: Worker[?, ?, ?]
+  def topic: String
+
+  def applicationName: String
+  def registerHandler(): Unit
+  def registerHandler( register: => Unit): Unit =
+    val appPackageName = applicationName.replace("-", ".")
+    val testMode       = sys.env.get("WORKER_TEST_MODE").contains("true") // did not work with lazy val
+    if testMode || getClass.getName.startsWith(appPackageName)
+    then
+      register
+      logger.info(s"Worker registered: $topic -> ${worker.getClass.getSimpleName}")
+      logger.debug(prettyString(worker))
+    else
+      logger.info(
+        s"Worker NOT registered: $topic -> ${worker.getClass.getSimpleName} (class starts not with $appPackageName)"
+      )
+    end if
+  end registerHandler
+
+  protected lazy val logger: WorkerLogger
+end WorkerHandler
+
 /** handler for Custom Validation (next to the automatic Validation of the In Object.
   *
   * For example if one of two optional variables must exist.
@@ -125,11 +149,11 @@ case class ServiceHandler[
     val rRequest = runnableRequest(inputObject)
     for
       optWithServiceMock <- withServiceMock(rRequest, inputObject)
-      output <- handleMocking(optWithServiceMock, rRequest).getOrElse(
-        summon[EngineRunContext]
-          .sendRequest[ServiceIn, ServiceOut](rRequest)
-          .flatMap(out => outputMapper(out, inputObject))
-      )
+      output             <- handleMocking(optWithServiceMock, rRequest).getOrElse(
+                              summon[EngineRunContext]
+                                .sendRequest[ServiceIn, ServiceOut](rRequest)
+                                .flatMap(out => outputMapper(out, inputObject))
+                            )
     yield output
     end for
   end runWork
@@ -157,13 +181,17 @@ case class ServiceHandler[
       case (_, Some(json)) =>
         (for
           mockedResponse <- decodeMock[MockedServiceResponse[ServiceOut]](json)
-          out <- handleServiceMock(mockedResponse, runnableRequest, in)
+          out            <- handleServiceMock(mockedResponse, runnableRequest, in)
         yield out)
           .map(Some.apply)
-      case (true, _) =>
-        handleServiceMock(dynamicServiceOutMock.map(_(in)).getOrElse(defaultServiceOutMock), runnableRequest, in)
+      case (true, _)       =>
+        handleServiceMock(
+          dynamicServiceOutMock.map(_(in)).getOrElse(defaultServiceOutMock),
+          runnableRequest,
+          in
+        )
           .map(Some.apply)
-      case _ =>
+      case _               =>
         Right(None)
 
   end withServiceMock
@@ -200,7 +228,7 @@ case class ServiceHandler[
     mockedResponse match
       case MockedServiceResponse(_, Right(body), headers) =>
         mapBodyOutput(body, headers, in)
-      case MockedServiceResponse(status, Left(body), _) =>
+      case MockedServiceResponse(status, Left(body), _)   =>
         Left(
           ServiceRequestError(
             status,

@@ -7,23 +7,26 @@ import camundala.worker.c8zio.C8Worker
 
 import scala.reflect.ClassTag
 
-trait CompanyWorkerHandler extends C7WorkerHandler, C8Worker
+trait CompanyWorkerHandler[
+  In <: Product: InOutCodec,
+  Out <: Product: InOutCodec
+] extends C7WorkerHandler, C8Worker[In, Out]
 
 trait CompanyValidationWorkerDsl[
     In <: Product: InOutCodec
-] extends CompanyWorkerHandler, ValidationWorkerDsl[In]
+] extends CompanyWorkerHandler[In, NoOutput], ValidationWorkerDsl[In]
 
 trait CompanyInitWorkerDsl[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
     InitIn <: Product: InOutCodec,
     InConfig <: Product: InOutCodec
-] extends CompanyWorkerHandler, InitWorkerDsl[In, Out, InitIn, InConfig]
+] extends CompanyWorkerHandler[In, Out], InitWorkerDsl[In, Out, InitIn, InConfig]
 
 trait CompanyCustomWorkerDsl[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec
-] extends CompanyWorkerHandler, CustomWorkerDsl[In, Out]
+] extends CompanyWorkerHandler[In, Out], CustomWorkerDsl[In, Out]
 
 
 trait CompanyServiceWorkerDsl[
@@ -31,4 +34,4 @@ trait CompanyServiceWorkerDsl[
     Out <: Product: InOutCodec,
     ServiceIn: InOutEncoder,
     ServiceOut: InOutDecoder: ClassTag
-] extends CompanyWorkerHandler, ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]
+] extends CompanyWorkerHandler[In, Out], ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]

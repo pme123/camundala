@@ -18,7 +18,7 @@ import scala.util.{Failure, Success}
 /** To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
   * parameters.
   */
-trait C7WorkerHandler extends camunda.ExternalTaskHandler:
+trait C7WorkerHandler extends camunda.ExternalTaskHandler, WorkerHandler:
 
   @Value("${spring.application.name}")
   var applicationName: String = scala.compiletime.uninitialized
@@ -28,9 +28,6 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
 
   @Autowired()
   protected var externalTaskClient: ExternalTaskClient = scala.compiletime.uninitialized
-
-  def worker: Worker[?, ?, ?]
-  def topic: String
 
   override def execute(
       externalTask: camunda.ExternalTask,
@@ -43,27 +40,17 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
       )
       executeWorker(externalTaskService)(using externalTask)
       logger.info(
-        s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) ended ${printTime(startDate)}   > ${externalTask.getBusinessKey}"
+        s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) ended ${printTimeOnConsole(startDate)}   > ${externalTask.getBusinessKey}"
       )
   end execute
 
   @PostConstruct
   def registerHandler(): Unit =
-    val appPackageName = applicationName.replace("-", ".")
-    val testMode = sys.env.get("WORKER_TEST_MODE").contains("true") // did not work with lazy val
-    if testMode || getClass.getName.startsWith(appPackageName)
-    then
+    registerHandler:
       externalTaskClient
         .subscribe(topic)
         .handler(this)
         .open()
-      logger.info(s"Worker registered: $topic -> ${worker.getClass.getSimpleName}")
-      logger.debug(prettyString(worker))
-    else
-      logger.info(
-        s"Worker NOT registered: $topic -> ${worker.getClass.getSimpleName} (class starts not with $appPackageName)"
-      )
-    end if
   end registerHandler
 
   private def executeWorker(
@@ -93,14 +80,6 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
         )
     end try
   end executeWorker
-
-  private def printTime(start: Date) =
-    val time = new Date().getTime - start.getTime
-    val color = if time > 1000 then Console.YELLOW_B
-    else if time > 250 then Console.MAGENTA
-    else Console.BLACK
-    s"($color$time ms${Console.RESET})"
-  end printTime
 
   extension (externalTaskService: camunda.ExternalTaskService)
 
