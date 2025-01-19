@@ -18,21 +18,21 @@ trait CreatorHelper:
         optExample: Option[AnyRef] = None,
         optExamples: Option[java.util.Map[String, Example]] = None
     ): ConstrField =
-      val fromType = extractType(optKey.getOrElse("fieldKeyFromType"))
-      val tpe = fromType.head.toUpper + fromType.tail
-      val key = optKey.getOrElse(tpe.head.toLower + tpe.tail)
+      val fromType            = extractType(optKey.getOrElse("fieldKeyFromType"))
+      val tpe                 = fromType.head.toUpper + fromType.tail
+      val key                 = optKey.getOrElse(tpe.head.toLower + tpe.tail)
       val isOptional: Boolean =
         (Option(schema.getNullable), optIsRequired) match
           case Some(opt) -> _ => opt
           case _ -> Some(req) => !req
-          case _ -> _ => true
+          case _ -> _         => true
 
       val wrapperType = schemaType match
         case Some("Set") => Some(WrapperType.Set)
         case Some("Seq") => Some(WrapperType.Seq)
-        case _ => None
+        case _           => None
 
-      val enumCases = Option(schema.getEnum)
+      val enumCases    = Option(schema.getEnum)
         .map:
           _.asScala.toSeq
             .map:
@@ -80,17 +80,17 @@ trait CreatorHelper:
             config.typeMapping("AnyType")
           else
             schema.getItems.extractType(s"$key.items")
-        case Some(value) =>
+        case Some(value)                                      =>
           schema.getFormat match
-            case "int64" => "Long"
-            case "date-time" => "LocalDateTime"
-            case "date" => "LocalDate"
+            case "int64"                                                                        => "Long"
+            case "date-time"                                                                    => "LocalDateTime"
+            case "date"                                                                         => "LocalDate"
             case _ if schema.getMaximum != null && schema.getMaximum.longValue() > Int.MaxValue =>
               "Long"
-            case _ => value
-        case None if schema.get$ref() != null =>
+            case _                                                                              => value
+        case None if schema.get$ref() != null                 =>
           refType
-        case None =>
+        case None                                             =>
           println(s"Unsupported Type: $key - ${schema.get$ref()} - ${schema.getType}")
           config.typeMapping("AnyType")
     end extractType

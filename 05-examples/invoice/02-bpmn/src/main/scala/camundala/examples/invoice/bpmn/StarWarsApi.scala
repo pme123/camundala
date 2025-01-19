@@ -8,7 +8,7 @@ import io.github.iltotore.iron.constraint.all.*
 import sttp.tapir.Schema.annotations.description
 
 trait StarWarsApi extends BpmnServiceTaskDsl:
-  val serviceLabel: String = "Star Wars API"
+  val serviceLabel: String   = "Star Wars API"
   val serviceVersion: String = "1.0"
 
 end StarWarsApi
@@ -16,12 +16,12 @@ end StarWarsApi
 object StarWarsPeople extends StarWarsApi:
 
   final val topicName = "star-wars-api-people"
-  val descr = "Get People from StarWars API"
-  val path: String = "GET /people"
+  val descr           = "Get People from StarWars API"
+  val path: String    = "GET /people"
 
-  type ServiceIn = NoInput
+  type ServiceIn  = NoInput
   type ServiceOut = PeopleResults
-  lazy val serviceInExample = NoInput()
+  lazy val serviceInExample                               = NoInput()
   lazy val serviceMock: MockedServiceResponse[ServiceOut] =
     MockedServiceResponse.success200(PeopleResults())
 
@@ -31,7 +31,7 @@ object StarWarsPeople extends StarWarsApi:
   )
 
   object In:
-    given ApiSchema[In] = deriveApiSchema
+    given ApiSchema[In]  = deriveApiSchema
     given InOutCodec[In] = deriveCodec
   end In
 
@@ -44,7 +44,7 @@ object StarWarsPeople extends StarWarsApi:
   end Out
 
   object Out:
-    given ApiSchema[Out] = deriveApiSchema
+    given ApiSchema[Out]  = deriveApiSchema
     given InOutCodec[Out] = deriveInOutCodec
   end Out
 
@@ -53,7 +53,7 @@ object StarWarsPeople extends StarWarsApi:
   )
 
   object PeopleResults:
-    given ApiSchema[PeopleResults] = deriveApiSchema
+    given ApiSchema[PeopleResults]  = deriveApiSchema
     given InOutCodec[PeopleResults] = deriveCodec
   end PeopleResults
 
@@ -70,10 +70,10 @@ end StarWarsPeople
 object StarWarsPeopleDetail extends StarWarsApi:
 
   final val topicName = "star-wars-api-people-detail"
-  val descr = "Get People Details from StarWars API"
-  val path: String = "GET /people/${in.id}"
+  val descr           = "Get People Details from StarWars API"
+  val path: String    = "GET /people/${in.id}"
 
-  type ServiceIn = NoInput
+  type ServiceIn  = NoInput
   type ServiceOut = People
   lazy val serviceInExample = NoInput()
 
@@ -88,7 +88,7 @@ object StarWarsPeopleDetail extends StarWarsApi:
   )
 
   object In:
-    given ApiSchema[In] = deriveApiSchema
+    given ApiSchema[In]  = deriveApiSchema
     given InOutCodec[In] = deriveCodec
   end In
 
@@ -102,7 +102,7 @@ object StarWarsPeopleDetail extends StarWarsApi:
   end Out
 
   object Out:
-    given ApiSchema[Out] = deriveApiSchema
+    given ApiSchema[Out]  = deriveApiSchema
     given InOutCodec[Out] = deriveInOutCodec
   end Out
 
@@ -126,6 +126,6 @@ case class People(
 )
 
 object People:
-  given ApiSchema[People] = deriveApiSchema
+  given ApiSchema[People]  = deriveApiSchema
   given InOutCodec[People] = deriveCodec
 end People

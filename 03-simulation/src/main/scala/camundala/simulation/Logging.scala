@@ -6,8 +6,8 @@ import java.time.format.DateTimeFormatter
 trait Logging:
 
   def debug(msg: String): LogEntry = LogEntry(LogLevel.DEBUG, msg)
-  def info(msg: String): LogEntry = LogEntry(LogLevel.INFO, msg)
-  def warn(msg: String): LogEntry = LogEntry(LogLevel.WARN, msg)
+  def info(msg: String): LogEntry  = LogEntry(LogLevel.INFO, msg)
+  def warn(msg: String): LogEntry  = LogEntry(LogLevel.WARN, msg)
   def error(msg: String): LogEntry = LogEntry(LogLevel.ERROR, msg)
 
   given Conversion[LogEntry, Seq[LogEntry]] = Seq(_)
@@ -39,7 +39,7 @@ enum LogLevel(val color: String) extends Ordered[LogLevel]:
   override def compare(that: LogLevel): Int = that.ordinal - ordinal
 
   case DEBUG extends LogLevel(Console.GREEN)
-  case INFO extends LogLevel(Console.GREEN)
-  case WARN extends LogLevel(Console.MAGENTA)
+  case INFO  extends LogLevel(Console.GREEN)
+  case WARN  extends LogLevel(Console.MAGENTA)
   case ERROR extends LogLevel(Console.RED)
 end LogLevel

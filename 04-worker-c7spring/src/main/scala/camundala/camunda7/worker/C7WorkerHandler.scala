@@ -50,7 +50,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
   @PostConstruct
   def registerHandler(): Unit =
     val appPackageName = applicationName.replace("-", ".")
-    val testMode = sys.env.get("WORKER_TEST_MODE").contains("true") // did not work with lazy val
+    val testMode       = sys.env.get("WORKER_TEST_MODE").contains("true") // did not work with lazy val
     if testMode || getClass.getName.startsWith(appPackageName)
     then
       externalTaskClient
@@ -75,8 +75,8 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
     try
       (for
           generalVariables <- tryGeneralVariables
-          context = EngineRunContext(engineContext, generalVariables)
-          filteredOut <-
+          context           = EngineRunContext(engineContext, generalVariables)
+          filteredOut      <-
             worker.executor(using context).execute(tryProcessVariables)
         yield externalTaskService.handleSuccess(filteredOut, generalVariables.manualOutMapping) //
       ).left.map { ex =>
@@ -95,7 +95,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
   end executeWorker
 
   private def printTime(start: Date) =
-    val time = new Date().getTime - start.getTime
+    val time  = new Date().getTime - start.getTime
     val color = if time > 1000 then Console.YELLOW_B
     else if time > 250 then Console.MAGENTA
     else Console.BLACK
@@ -122,18 +122,18 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
       val errorMsg = error.errorMsg.replace("\n", "")
       (for
         generalVariables <- tryGeneralVariables
-        errorHandled = isErrorHandled(error, generalVariables.handledErrors)
+        errorHandled      = isErrorHandled(error, generalVariables.handledErrors)
         errorRegexHandled = errorHandled && generalVariables.regexHandledErrors.forall(regex =>
-          errorMsg.matches(s".*$regex.*")
-        )
+                              errorMsg.matches(s".*$regex.*")
+                            )
       yield (errorHandled, errorRegexHandled, generalVariables))
         .flatMap {
           case (true, true, generalVariables) =>
             val mockedOutput = error match
               case error: ErrorWithOutput =>
                 error.output
-              case _ => Map.empty
-            val filtered = filteredOutput(generalVariables.outputVariables, mockedOutput)
+              case _                      => Map.empty
+            val filtered     = filteredOutput(generalVariables.outputVariables, mockedOutput)
             Right(
               if
                 error.isMock && !generalVariables.handledErrors.contains(
@@ -144,7 +144,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
               else
                 val errorVars = Map(
                   "errorCode" -> error.errorCode,
-                  "errorMsg" -> error.errorMsg
+                  "errorMsg"  -> error.errorMsg
                 )
                 val variables = (filtered ++ errorVars).asJava
                 logger.info(s"Handled Error: $errorVars")
@@ -155,9 +155,9 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
                   variables
                 )
             )
-          case (true, false, _) =>
+          case (true, false, _)               =>
             Left(HandledRegexNotMatchedError(error))
-          case _ =>
+          case _                              =>
             Left(error)
         }
         .left
@@ -181,7 +181,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler:
   ): Map[String, Any] =
     outputVariables match
       case filter if filter.isEmpty => allOutputs
-      case filter =>
+      case filter                   =>
         allOutputs
           .filter { case k -> _ => filter.contains(k) }
 

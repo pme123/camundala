@@ -6,17 +6,17 @@ import laika.format.Markdown.GitHubFlavor
 import laika.helium.Helium
 import laika.helium.config.{Favicon, HeliumIcon, IconLink}
 
-ThisBuild / versionScheme := Some("early-semver")
+ThisBuild / versionScheme          := Some("early-semver")
 ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
-ThisBuild / evictionErrorLevel := Level.Warn
+ThisBuild / evictionErrorLevel     := Level.Warn
 //Problems in Scala 3.5.0: ThisBuild / usePipelining := true
 
 lazy val root = project
   .in(file("."))
   .configure(preventPublication)
   .settings(
-    name := "camundala",
-    organization := org,
+    name          := "camundala",
+    organization  := org,
     sourcesInBase := false
   )
   .aggregate(
@@ -32,7 +32,7 @@ lazy val root = project
     camunda7Worker,
     camunda8Worker,
     // experiments
-    camunda, // not in use
+    camunda,  // not in use
     camunda8, // not in use
     // examples
     exampleInvoice,
@@ -49,7 +49,8 @@ lazy val docs =
       projectSettings("docs"),
       autoImportSetting,
       laikaSettings,
-      mdocSettings)
+      mdocSettings
+    )
     .enablePlugins(LaikaPlugin, MdocPlugin)
     .dependsOn(helper)
 
@@ -63,7 +64,7 @@ lazy val domain = project
     autoImportSetting,
     libraryDependencies ++= tapirDependencies,
     buildInfoPackage := "camundala",
-    buildInfoKeys := Seq[BuildInfoKey](
+    buildInfoKeys    := Seq[BuildInfoKey](
       organization,
       name,
       version,
@@ -74,11 +75,11 @@ lazy val domain = project
       BuildInfoKey("jaxbApiVersion", jaxbApiVersion),
       BuildInfoKey("osLibVersion", osLibVersion),
       BuildInfoKey("mUnitVersion", mUnitVersion),
-      BuildInfoKey("dmnTesterVersion", dmnTesterVersion),
+      BuildInfoKey("dmnTesterVersion", dmnTesterVersion)
     )
   ).enablePlugins(BuildInfoPlugin)
 // layer 02
-lazy val bpmn = project
+lazy val bpmn   = project
   .in(file("./02-bpmn"))
   .configure(publicationSettings)
   .settings(projectSettings("bpmn"))
@@ -103,7 +104,7 @@ lazy val api = project
     libraryDependencies ++=
       Seq(
         "org.scala-lang.modules" %% "scala-xml" % scalaXmlVersion,
-        "com.typesafe" % "config" % typesafeConfigVersion
+        "com.typesafe"            % "config"    % typesafeConfigVersion
       )
   )
   .dependsOn(bpmn)
@@ -193,10 +194,10 @@ lazy val camunda = project
   .settings(
     autoImportSetting,
     libraryDependencies ++= Seq(
-      "org.camunda.bpm" % "camunda-engine-spring-6" % camundaVersion, // listeners
+      "org.camunda.bpm"            % "camunda-engine-spring-6"                              % camundaVersion, // listeners
       "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion,
-      "org.camunda.bpm" % "camunda-engine-plugin-spin" % camundaVersion,
-      "org.camunda.spin" % "camunda-spin-dataformat-json-jackson" % camundaSpinVersion
+      "org.camunda.bpm"            % "camunda-engine-plugin-spin"                           % camundaVersion,
+      "org.camunda.spin"           % "camunda-spin-dataformat-json-jackson"                 % camundaSpinVersion
     )
   )
   .dependsOn(bpmn)
@@ -413,11 +414,11 @@ import com.typesafe.config.ConfigFactory
 
 import scala.jdk.CollectionConverters.*
 
-val config = ConfigFactory.parseFile(new File("05-examples/myCompany/CONFIG.conf"))
-val currentVersion = config.getString("release.tag")
-val released = config.getBoolean("released")
-val olderVersions = config.getList("releases.older").asScala
-val versions = Versions
+val config                = ConfigFactory.parseFile(new File("05-examples/myCompany/CONFIG.conf"))
+val currentVersion        = config.getString("release.tag")
+val released              = config.getBoolean("released")
+val olderVersions         = config.getList("releases.older").asScala
+val versions              = Versions
   .forCurrentVersion(
     Version(currentVersion, currentVersion)
       .withLabel(if (released) "Stable" else "Dev")
@@ -426,15 +427,15 @@ lazy val exampleMyCompany = project
   .in(file("./05-examples/myCompany"))
   .settings(projectSettings("example-exampleDemos"))
   .settings(
-    laikaConfig := LaikaConfig.defaults
+    laikaConfig      := LaikaConfig.defaults
       .withConfigValue("projectVersion", projectVersion)
       .withConfigValue(LaikaKeys.excludeFromNavigation, Seq(Root))
       .withRawContent
     //  .failOnMessages(MessageFilter.None)
     //  .renderMessages(MessageFilter.None)
     ,
-    laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting),
-    laikaTheme := Helium.defaults.site
+    laikaExtensions  := Seq(GitHubFlavor, SyntaxHighlighting),
+    laikaTheme       := Helium.defaults.site
       .topNavigationBar(
         homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home)
       )
@@ -445,7 +446,7 @@ lazy val exampleMyCompany = project
       .site
       .versions(versions)
       .build,
-    buildInfoKeys := Seq[BuildInfoKey](
+    buildInfoKeys    := Seq[BuildInfoKey](
       organization,
       name,
       version,

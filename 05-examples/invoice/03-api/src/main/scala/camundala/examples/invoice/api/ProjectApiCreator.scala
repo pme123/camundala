@@ -14,11 +14,11 @@ import camundala.examples.invoice.bpmn.InvoiceReceipt.InvoiceAssignApproverDMN.*
 object ProjectApiCreator extends DefaultApiCreator:
 
   // technical name of the project
-  val projectName = "example-invoice"
+  val projectName                        = "example-invoice"
   // readable name of the project
-  protected val title = "Invoice Example Process API"
+  protected val title                    = "Invoice Example Process API"
   // version of your project
-  protected val version = "1.0"
+  protected val version                  = "1.0"
   lazy val companyProjectVersion: String = "0.1.0"
 
   lazy val companyDescr: String = ""
@@ -50,7 +50,7 @@ object ProjectApiCreator extends DefaultApiCreator:
     group("DMNs")(
       api(InvoiceAssignApproverDMN2) // api( is optional)
       // InvoiceAssignApproverDMN3 // want be shown as only one DMN with the same id is shown in the API.
-    ),
+    )
   )
 
   override protected lazy val apiConfig: ApiConfig =
@@ -65,7 +65,7 @@ object ProjectApiCreator extends DefaultApiCreator:
         "With InConfig",
         InvoiceReceipt.In(inConfig = Some(InConfig.example))
       )
-  private lazy val ApproveInvoiceUT =
+  private lazy val ApproveInvoiceUT  =
     InvoiceReceipt.ApproveInvoiceUT.example
       .withOutExample("Invoice approved", InvoiceReceipt.ApproveInvoiceUT.Out())
       .withOutExample(
@@ -81,10 +81,10 @@ object ProjectApiCreator extends DefaultApiCreator:
         ReviewInvoice.ReviewInvoiceUT.Out(false)
       )
 
-  private lazy val budget = InvoiceAssignApproverDMN.In()
+  private lazy val budget               = InvoiceAssignApproverDMN.In()
   private lazy val `day-to-day expense` =
     InvoiceAssignApproverDMN.In(125, InvoiceCategory.Misc)
-  private lazy val exceptional =
+  private lazy val exceptional          =
     InvoiceAssignApproverDMN.In(12345, InvoiceCategory.Misc)
 
   private lazy val InvoiceAssignApproverDMN1 =

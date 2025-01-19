@@ -4,8 +4,8 @@ import camundala.bpmn.*
 import camundala.domain.*
 
 object TwitterApi extends BpmnProcessDsl:
-  val processName = "TwitterDemoP"
-  val descr = "This runs the Twitter Approvement Process."
+  val processName  = "TwitterDemoP"
+  val descr        = "This runs the Twitter Approvement Process."
   val path: String = "DELETE /services/method"
 
   val twitterDemoProcess =
@@ -14,7 +14,7 @@ object TwitterApi extends BpmnProcessDsl:
       out = ReviewedTweet() // just for Testing
     )
 
-  val reviewTweetApprovedUT = userTask(
+  val reviewTweetApprovedUT    = userTask(
     id = "user_task_review_tweet",
     in = Tweet(),
     out = ReviewedTweet()
@@ -34,7 +34,7 @@ case class Tweet(
 )
 
 object Tweet:
-  given ApiSchema[Tweet] = deriveApiSchema
+  given ApiSchema[Tweet]  = deriveApiSchema
   given InOutCodec[Tweet] = deriveCodec
 
 @description("Every Tweet has to be accepted by the Boss.")
@@ -46,7 +46,7 @@ case class ReviewedTweet(
 )
 
 object ReviewedTweet:
-  given ApiSchema[ReviewedTweet] = deriveApiSchema
+  given ApiSchema[ReviewedTweet]  = deriveApiSchema
   given InOutCodec[ReviewedTweet] = deriveCodec
 
 @description("Every Tweet has to be accepted by the Boss.")
@@ -60,9 +60,9 @@ case class TweetOut(
 enum EndStatus:
   case published, notPublished
 object EndStatus:
-  given ApiSchema[EndStatus] = deriveApiSchema
+  given ApiSchema[EndStatus]  = deriveApiSchema
   given InOutCodec[EndStatus] = deriveEnumInOutCodec
 
 object TweetOut:
-  given ApiSchema[TweetOut] = deriveApiSchema
+  given ApiSchema[TweetOut]  = deriveApiSchema
   given InOutCodec[TweetOut] = deriveCodec

@@ -5,7 +5,7 @@ import camundala.domain.*
 
 object DecisionResultTypes extends BpmnProcessDsl:
   val processName = "camundala-mapping-example"
-  val descr = ""
+  val descr       = ""
 
   case class Input(letter: String)
 
@@ -68,13 +68,13 @@ object DecisionResultTypes extends BpmnProcessDsl:
 
   lazy val demoProcess = process()
 
-  given ApiSchema[Input] = deriveApiSchema
+  given ApiSchema[Input]  = deriveApiSchema
   given InOutCodec[Input] = deriveCodec
 
-  given ApiSchema[ManyOutResult] = deriveApiSchema
+  given ApiSchema[ManyOutResult]  = deriveApiSchema
   given InOutCodec[ManyOutResult] = deriveCodec
 
-  given ApiSchema[BadManyOutResult] = deriveApiSchema
+  given ApiSchema[BadManyOutResult]  = deriveApiSchema
   given InOutCodec[BadManyOutResult] = deriveCodec
 
 end DecisionResultTypes

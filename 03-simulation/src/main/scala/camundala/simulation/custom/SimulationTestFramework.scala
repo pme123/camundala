@@ -25,8 +25,8 @@ final class SimulationTestFramework extends sbt.testing.Framework:
 end SimulationTestFramework
 
 object SimulationFingerprint extends sbt.testing.SubclassFingerprint:
-  def superclassName(): String = "camundala.simulation.custom.CustomSimulation"
-  final def isModule() = false
+  def superclassName(): String        = "camundala.simulation.custom.CustomSimulation"
+  final def isModule()                = false
   final def requireNoArgConstructor() = true
 end SimulationFingerprint
 
@@ -45,19 +45,19 @@ final class SimulationRunner(
         td,
         (loggers, eventHandler) =>
           Future {
-            val startTime = System.currentTimeMillis()
+            val startTime     = System.currentTimeMillis()
             val futSimResults = Class
               .forName(td.fullyQualifiedName())
               .getDeclaredConstructor()
               .newInstance()
               .asInstanceOf[CustomSimulation]
               .simulation
-            val simResults = Await.result(futSimResults, 5.minutes)
-            val time = System.currentTimeMillis() - startTime
-            val timeInSec = time / 1000
-            val name = td.fullyQualifiedName().split('.').last
-            val line = "~" * (((maxLine - 5) - name.length) / 2)
-            val logLevel = simResults.head._1
+            val simResults    = Await.result(futSimResults, 5.minutes)
+            val time          = System.currentTimeMillis() - startTime
+            val timeInSec     = time / 1000
+            val name          = td.fullyQualifiedName().split('.').last
+            val line          = "~" * (((maxLine - 5) - name.length) / 2)
+            val logLevel      = simResults.head._1
             println(
               s"""${logLevel.color}${s"$line START $name $line"
                   .takeRight(maxLine)}${Console.RESET}
@@ -80,7 +80,7 @@ final class SimulationRunner(
                 def status(): sbt.testing.Status = logLevel match
                   case LogLevel.ERROR =>
                     sbt.testing.Status.Failure
-                  case _ =>
+                  case _              =>
                     sbt.testing.Status.Success
 
                 def selector(): sbt.testing.NestedTestSelector =
@@ -91,8 +91,7 @@ final class SimulationRunner(
 
                 def fingerprint(): sbt.testing.Fingerprint = td.fingerprint()
 
-                def duration(): Long = time
-              )
+                def duration(): Long = time)
             }
           }
       )

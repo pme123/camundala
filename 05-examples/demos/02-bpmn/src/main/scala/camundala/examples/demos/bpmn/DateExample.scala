@@ -8,12 +8,12 @@ import java.time.LocalDateTime
 object DateExample extends BpmnProcessDsl:
 
   val processName = "NOT USED"
-  def descr = ""
+  def descr       = ""
 
   case class Input(inDate: LocalDateTime = LocalDateTime.parse("2013-12-12T12:12:12"))
 
   object Input:
-    given ApiSchema[Input] = deriveApiSchema
+    given ApiSchema[Input]  = deriveApiSchema
     given InOutCodec[Input] = deriveCodec
 
   lazy val DateExampleDMN = singleEntry(

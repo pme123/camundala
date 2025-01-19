@@ -15,11 +15,12 @@ import java.time.format.DateTimeFormatter
 trait DocCreator extends DependencyCreator, Helpers:
 
   protected def publishConfig: Option[PublishConfig]
-  protected def gitBasePath: os.Path           = apiConfig.tempGitDir
-  protected def configs: Seq[DocProjectConfig] = setupConfigs()
-  protected def apiProjectConfig(projectConfigPath: os.Path): ApiProjectConfig = ApiProjectConfig(projectConfigPath)
+  protected def gitBasePath: os.Path                                           = apiConfig.tempGitDir
+  protected def configs: Seq[DocProjectConfig]                                 = setupConfigs()
+  protected def apiProjectConfig(projectConfigPath: os.Path): ApiProjectConfig =
+    ApiProjectConfig(projectConfigPath)
 
-  lazy val projectConfigs: Seq[ProjectConfig]  =
+  lazy val projectConfigs: Seq[ProjectConfig] =
     apiConfig.projectsConfig.projectConfigs
 
   def prepareDocs(): Unit =

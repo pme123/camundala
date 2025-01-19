@@ -17,7 +17,7 @@ import scala.reflect.ClassTag
 trait RestApiClient:
 
   def sendRequest[
-      ServiceIn: InOutEncoder, // body of service
+      ServiceIn: InOutEncoder,           // body of service
       ServiceOut: InOutDecoder: ClassTag // output of service
   ](
       runnableRequest: RunnableRequest[ServiceIn]
@@ -25,12 +25,12 @@ trait RestApiClient:
     try
       for
         reqWithOptBody <- requestWithOptBody(runnableRequest)
-        req <- auth(reqWithOptBody)
-        response <- sendRequest(req)
-        statusCode = response.code
-        body <- readBody(statusCode, response, req)
-        headers = response.headers.map(h => h.name -> h.value).toMap
-        out <- decodeResponse[ServiceOut](body)
+        req            <- auth(reqWithOptBody)
+        response       <- sendRequest(req)
+        statusCode      = response.code
+        body           <- readBody(statusCode, response, req)
+        headers         = response.headers.map(h => h.name -> h.value).toMap
+        out            <- decodeResponse[ServiceOut](body)
       yield ServiceResponse(out, headers)
     catch
       case ex: Throwable =>
@@ -81,15 +81,15 @@ trait RestApiClient:
   ](
       body: String
   ): Either[ServiceBadBodyError, ServiceOut] =
-    if hasNoOutput[ServiceOut]() 
-    then  Right(NoOutput().asInstanceOf[ServiceOut])
+    if hasNoOutput[ServiceOut]()
+    then Right(NoOutput().asInstanceOf[ServiceOut])
     else
-      if  body.isBlank then
+      if body.isBlank then
         val runtimeClass = implicitly[ClassTag[ServiceOut]].runtimeClass
         runtimeClass match
           case x if x == classOf[Option[?]] =>
             Right(None.asInstanceOf[ServiceOut])
-          case other =>
+          case other                        =>
             Left(ServiceBadBodyError(
               s"There is no body in the response and the ServiceOut is neither NoOutput nor Option (Class is $other)."
             ))
@@ -99,7 +99,9 @@ trait RestApiClient:
           .decodeAccumulating[ServiceOut](body)
           .toEither
           .left
-          .map(err => ServiceBadBodyError(s"Problem creating body from response.\n$err\nBODY: $body"))
+          .map(err =>
+            ServiceBadBodyError(s"Problem creating body from response.\n$err\nBODY: $body")
+          )
 
   protected def requestWithOptBody[ServiceIn: InOutEncoder](
       runnableRequest: RunnableRequest[ServiceIn]

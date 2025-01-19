@@ -128,7 +128,7 @@ case class ProcessApi[
   ): InOutApi[In, Out] =
     copy(apiExamples = examples)
 
-  override def apiDescription(companyName:String): String =
+  override def apiDescription(companyName: String): String =
     s"""${super.apiDescription(companyName)}
        |
        |${inOut.in match
@@ -138,8 +138,8 @@ case class ProcessApi[
       }
        |${generalVariablesDescr(inOut.out, "")}""".stripMargin
 
-      // this function needs to be here as circe does not find the JsonEncoder in the extension method
-  lazy val initInMapper: EndpointIO.Body[String, InitIn] = jsonBody[InitIn]
+    // this function needs to be here as circe does not find the JsonEncoder in the extension method
+  lazy val initInMapper: EndpointIO.Body[String, InitIn]   = jsonBody[InitIn]
 
 end ProcessApi
 

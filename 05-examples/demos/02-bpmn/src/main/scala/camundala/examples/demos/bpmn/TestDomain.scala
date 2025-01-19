@@ -6,16 +6,16 @@ import camundala.domain.*
 object TestDomain extends BpmnProcessDsl:
 
   lazy val processName: String = "simulation-TestOverrides"
-  lazy val descr: String = ""
+  lazy val descr: String       = ""
 
   case class SomeObj(tag: String = "okidoki", isOk: String = "false")
   object SomeObj:
-    given ApiSchema[SomeObj] = deriveApiSchema
+    given ApiSchema[SomeObj]  = deriveApiSchema
     given InOutCodec[SomeObj] = deriveInOutCodec
   end SomeObj
   case class ValueWrapper(success: Boolean = false)
   object ValueWrapper:
-    given ApiSchema[ValueWrapper] = deriveApiSchema
+    given ApiSchema[ValueWrapper]  = deriveApiSchema
     given InOutCodec[ValueWrapper] = deriveInOutCodec
   end ValueWrapper
 // process In
@@ -27,7 +27,7 @@ object TestDomain extends BpmnProcessDsl:
       success: ValueWrapper = ValueWrapper()
   )
   object In:
-    given ApiSchema[In] = deriveApiSchema
+    given ApiSchema[In]  = deriveApiSchema
     given InOutCodec[In] = deriveInOutCodec
   end In
 
@@ -40,7 +40,7 @@ object TestDomain extends BpmnProcessDsl:
       listResult: Seq[String] = List("a", "b")
   )
   object Out:
-    given ApiSchema[Out] = deriveApiSchema
+    given ApiSchema[Out]  = deriveApiSchema
     given InOutCodec[Out] = deriveInOutCodec
   end Out
 

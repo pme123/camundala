@@ -12,29 +12,31 @@ import scala.deriving.Mirror
 import scala.language.implicitConversions
 
 // circe JsonInOutEncoder/ Decoder
-export io.circe.{Codec as CirceCodec}
+export io.circe.Codec as CirceCodec
 export io.circe.Json
 
-type InOutCodec[T] = io.circe.Codec[T]
+type InOutCodec[T]   = io.circe.Codec[T]
 type InOutEncoder[T] = io.circe.Encoder[T]
 type InOutDecoder[T] = io.circe.Decoder[T]
 
 // Circe Enum codec
 
-inline def deriveInOutCodec[A](using inline A: Mirror.Of[A]): InOutCodec[A] =
+inline def deriveInOutCodec[A](using inline A: Mirror.Of[A]): InOutCodec[A]                        =
   deriveInOutCodec("type")
 inline def deriveInOutCodec[A](discriminator: String)(using inline A: Mirror.Of[A]): InOutCodec[A] =
   io.circe.derivation.ConfiguredCodec.derived(using
-  Configuration.default // .withDefaults
-    .withDiscriminator(discriminator))
+    Configuration.default // .withDefaults
+      .withDiscriminator(discriminator)
+  )
 inline def deriveInOutEncoder[A](using inline A: Mirror.Of[A]): InOutEncoder[A] =
   deriveInOutEncoder("type")
 inline def deriveInOutEncoder[A](discriminator: String)(using
     inline A: Mirror.Of[A]
 ): InOutEncoder[A] =
   io.circe.derivation.ConfiguredEncoder.derived(using
-  Configuration.default // .withDefaults
-    .withDiscriminator(discriminator))
+    Configuration.default // .withDefaults
+      .withDiscriminator(discriminator)
+  )
 inline def deriveInOutDecoder[A](using inline A: Mirror.Of[A]): InOutDecoder[A] =
   deriveInOutDecoder("type")
 
@@ -42,8 +44,9 @@ inline def deriveInOutDecoder[A](discriminator: String)(using
     inline A: Mirror.Of[A]
 ): InOutDecoder[A] =
   io.circe.derivation.ConfiguredDecoder.derived(using
-  Configuration.default // .withDefaults
-    .withDiscriminator(discriminator))
+    Configuration.default // .withDefaults
+      .withDiscriminator(discriminator)
+  )
 
 inline def deriveEnumInOutCodec[A](using inline A: Mirror.SumOf[A]): InOutCodec[A] =
   given Configuration = Configuration.default
@@ -70,7 +73,7 @@ def customDecodeAccumulating[T](c: HCursor)(using InOutDecoder[T]): Either[Decod
     .left.map:
       case err if err.size == 1 =>
         err.head
-      case errors =>
+      case errors               =>
         errors.head.copy(
           message =
             errors.foldLeft("")((result, error) =>
@@ -108,62 +111,62 @@ given InOutCodec[IntOrString] = CirceCodec.from(
   new Encoder[IntOrString]:
     final def apply(a: IntOrString): Json = a match
       case s: String => Json.fromString(s)
-      case i: Int => Json.fromInt(i)
+      case i: Int    => Json.fromInt(i)
 )
 type IntOrString = Int | String
-given ApiSchema[IntOrString] = Schema.derivedUnion
+given ApiSchema[IntOrString]  = Schema.derivedUnion
 
 case class NoInput()
 object NoInput:
-  given ApiSchema[NoInput] = deriveApiSchema
+  given ApiSchema[NoInput]  = deriveApiSchema
   given InOutCodec[NoInput] = deriveCodec
 
 case class NoConfig()
 object NoConfig:
-  given ApiSchema[NoConfig] = deriveApiSchema
+  given ApiSchema[NoConfig]  = deriveApiSchema
   given InOutCodec[NoConfig] = deriveCodec
 
 case class NoOutput()
 object NoOutput:
-  given ApiSchema[NoOutput] = deriveApiSchema
+  given ApiSchema[NoOutput]  = deriveApiSchema
   given InOutCodec[NoOutput] = deriveCodec
 
 enum ProcessStatus:
   case succeeded, `output-mocked`, failed, notValid, canceled
 object ProcessStatus:
-  given ApiSchema[ProcessStatus] = deriveEnumApiSchema
-  given ApiSchema[ProcessStatus.succeeded.type] = deriveEnumApiSchema
-  given ApiSchema[ProcessStatus.`output-mocked`.type] = deriveEnumApiSchema
-  given ApiSchema[ProcessStatus.failed.type] = deriveEnumApiSchema
-  given ApiSchema[ProcessStatus.notValid.type] = deriveEnumApiSchema
-  given ApiSchema[ProcessStatus.canceled.type] = deriveEnumApiSchema
-  given InOutCodec[ProcessStatus] = deriveEnumInOutCodec
-  given InOutCodec[ProcessStatus.succeeded.type] = deriveEnumValueInOutCodec
+  given ApiSchema[ProcessStatus]                       = deriveEnumApiSchema
+  given ApiSchema[ProcessStatus.succeeded.type]        = deriveEnumApiSchema
+  given ApiSchema[ProcessStatus.`output-mocked`.type]  = deriveEnumApiSchema
+  given ApiSchema[ProcessStatus.failed.type]           = deriveEnumApiSchema
+  given ApiSchema[ProcessStatus.notValid.type]         = deriveEnumApiSchema
+  given ApiSchema[ProcessStatus.canceled.type]         = deriveEnumApiSchema
+  given InOutCodec[ProcessStatus]                      = deriveEnumInOutCodec
+  given InOutCodec[ProcessStatus.succeeded.type]       = deriveEnumValueInOutCodec
   given InOutCodec[ProcessStatus.`output-mocked`.type] = deriveEnumValueInOutCodec
-  given InOutCodec[ProcessStatus.failed.type] = deriveEnumValueInOutCodec
-  given InOutCodec[ProcessStatus.notValid.type] = deriveEnumValueInOutCodec
-  given InOutCodec[ProcessStatus.canceled.type] = deriveEnumValueInOutCodec
+  given InOutCodec[ProcessStatus.failed.type]          = deriveEnumValueInOutCodec
+  given InOutCodec[ProcessStatus.notValid.type]        = deriveEnumValueInOutCodec
+  given InOutCodec[ProcessStatus.canceled.type]        = deriveEnumValueInOutCodec
 end ProcessStatus
 
 @deprecated("Use _ProcessStatus_")
 enum ProcessEndStatus:
   case succeeded, `output-mocked`
 object ProcessEndStatus:
-  given ApiSchema[ProcessEndStatus] = deriveEnumApiSchema
+  given ApiSchema[ProcessEndStatus]  = deriveEnumApiSchema
   given InOutCodec[ProcessEndStatus] = deriveEnumInOutCodec
 
 @deprecated("Use _ProcessStatus_")
 enum NotValidStatus:
   case notValid, canceled
 object NotValidStatus:
-  given ApiSchema[NotValidStatus] = deriveEnumApiSchema
+  given ApiSchema[NotValidStatus]  = deriveEnumApiSchema
   given InOutCodec[NotValidStatus] = deriveEnumInOutCodec
 
 @deprecated("Use _ProcessStatus_")
 enum CanceledStatus:
   case canceled
 object CanceledStatus:
-  given ApiSchema[CanceledStatus] = deriveEnumApiSchema
+  given ApiSchema[CanceledStatus]  = deriveEnumApiSchema
   given InOutCodec[CanceledStatus] = deriveEnumInOutCodec
 
 @deprecated
@@ -178,8 +181,9 @@ object GenericServiceIn:
     val name = serviceName.split("-")
       .last
     if Seq("get", "post", "put", "delete").contains(name.toLowerCase)
-    then serviceName  // keep the name as it is
+    then serviceName // keep the name as it is
     else name
+  end shortServiceName
 
 end GenericServiceIn
 
@@ -193,7 +197,7 @@ case class FileInOut(
 end FileInOut
 
 object FileInOut:
-  given ApiSchema[FileInOut] = deriveApiSchema
+  given ApiSchema[FileInOut]  = deriveApiSchema
   given InOutCodec[FileInOut] = deriveCodec
 
 /** In Camunda 8 only json is allowed!
@@ -206,7 +210,7 @@ case class FileRefInOut(
 )
 
 object FileRefInOut:
-  given ApiSchema[FileRefInOut] = deriveApiSchema
+  given ApiSchema[FileRefInOut]  = deriveApiSchema
   given InOutCodec[FileRefInOut] = deriveCodec
 
 // Use this in the DSL to avoid Option[?]
@@ -215,7 +219,7 @@ case class Optable[Out](value: Option[Out])
 
 object Optable:
   given fromOpt[T]: Conversion[Option[T], Optable[T]] = Optable(_)
-  given fromValue[T]: Conversion[T, Optable[T]] = v => Optable(Option(v))
+  given fromValue[T]: Conversion[T, Optable[T]]       = v => Optable(Option(v))
 
 //json
 def throwErr(err: String) =
@@ -223,14 +227,14 @@ def throwErr(err: String) =
 
 def toJson(json: String): Json =
   parser.parse(json) match
-    case Right(v) => v.deepDropNullValues
+    case Right(v)  => v.deepDropNullValues
     case Left(exc) =>
       throwErr(s"Could not create Json from your String -> $exc")
-val testModeDescr =
+val testModeDescr              =
   "This flag indicades that this is a test - in the process it can behave accordingly."
 
 // descriptions
-val deprecatedDescr =
+val deprecatedDescr                       =
   "See https://pme123.github.io/camundala/specification.html#supported-general-variables"
 @deprecated("Change to serviceTask")
 def serviceNameDescr(serviceName: String) =
@@ -284,7 +288,7 @@ def outputServiceMockDescr[ServiceOut: InOutEncoder](mock: ServiceOut) =
      |""".stripMargin
 
 @deprecated(deprecatedDescr)
-val handledErrorsDescr =
+val handledErrorsDescr      =
   "A comma separated list of HTTP-Status-Codes, that are modelled in the BPMN as Business-Exceptions - see Outputs. z.B: `404,500`"
 val regexHandledErrorsDescr =
   """If you specified _handledErrors_, you can specify Regexes that all must match the error messages.
@@ -301,7 +305,7 @@ extension (str: String)
     val result = str.foldLeft(""):
       case r -> c if c.isUpper =>
         s"$r $c"
-      case r -> c =>
+      case r -> c              =>
         s"$r$c"
     result.split("-")
       .map: p =>
@@ -310,32 +314,32 @@ extension (str: String)
   end niceName
 end extension
 
-def prettyUriString(uri: Uri) =
+def prettyUriString(uri: Uri)                                                        =
   URLDecoder.decode(
     uri.toString,
     Charset.defaultCharset()
   )
 def prettyString(obj: Any, depth: Int = 0, paramName: Option[String] = None): String =
-  val indent = "  " * depth
-  val prettyName = paramName.fold("")(x => s"$x: ")
-  val ptype = obj match
+  val indent       = "  " * depth
+  val prettyName   = paramName.fold("")(x => s"$x: ")
+  val ptype        = obj match
     case _: Iterable[Any] => ""
-    case obj: Product => obj.productPrefix
-    case _ => obj.toString
+    case obj: Product     => obj.productPrefix
+    case _                => obj.toString
   val nameWithType = s"\n$indent$prettyName$ptype"
 
   obj match
-    case None => ""
-    case Some(value) => s"${prettyString(value, depth, paramName)}"
-    case uri: Uri => s"\n$indent$prettyName${prettyUriString(uri)}"
+    case None               => ""
+    case Some(value)        => s"${prettyString(value, depth, paramName)}"
+    case uri: Uri           => s"\n$indent$prettyName${prettyUriString(uri)}"
     case seq: Iterable[Any] =>
       val seqStr = seq.map(prettyString(_, depth + 1))
       if seqStr.isEmpty then "" else s"$nameWithType[${seqStr.mkString}\n$indent]"
-    case obj: Product =>
+    case obj: Product       =>
       val objStr = (obj.productIterator zip obj.productElementNames)
         .map { case (subObj, paramName) => prettyString(subObj, depth + 1, Some(paramName)) }
       if objStr.isEmpty then s"$nameWithType" else s"$nameWithType{${objStr.mkString}\n$indent}"
-    case _ =>
+    case _                  =>
       s"$nameWithType"
   end match
 end prettyString

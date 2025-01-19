@@ -13,7 +13,7 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
   given EngineRunContext = EngineRunContext(
     new EngineContext:
       override def getLogger(clazz: Class[?]): WorkerLogger = ???
-      override def toEngineObject: Json => Any = ???
+      override def toEngineObject: Json => Any              = ???
       override def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder: ClassTag](
           request: RunnableRequest[ServiceIn]
       ): SendRequestType[ServiceOut] = ???
@@ -22,9 +22,9 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
   )
 
   def processName: String = "test-process"
-  def example = process(In(), NoOutput())
+  def example             = process(In(), NoOutput())
   import In.given
-  def worker = InitWorker(example)
+  def worker              = InitWorker(example)
 
   case class In(aValue: String = "ok", inConfig: Option[InConfig] = None)
       extends WithConfig[InConfig]:
@@ -32,7 +32,7 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
 
   object In:
     given InOutCodec[In] = deriveInOutCodec[In]
-    given ApiSchema[In] = deriveApiSchema[In]
+    given ApiSchema[In]  = deriveApiSchema[In]
 
   case class InConfig(
       requiredValue: String = "required",
@@ -41,7 +41,7 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
 
   object InConfig:
     given InOutCodec[InConfig] = deriveInOutCodec[InConfig]
-    given ApiSchema[InConfig] = deriveApiSchema[InConfig]
+    given ApiSchema[InConfig]  = deriveApiSchema[InConfig]
 
   lazy val executor = WorkerExecutor(worker)
 
@@ -50,8 +50,8 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
       executor.InputValidator.validate(Seq(
         Right("requiredValue" -> None),
         Right("optionalValue" -> None),
-        Right("aValue" -> Some(Json.fromString("ok"))),
-        Right("inConfig" -> Some(Json.obj("requiredValue" -> Json.fromString("aso"))))
+        Right("aValue"        -> Some(Json.fromString("ok"))),
+        Right("inConfig"      -> Some(Json.obj("requiredValue" -> Json.fromString("aso"))))
       )),
       Right(In(inConfig = Some(InConfig(requiredValue = "aso"))))
     )
@@ -60,14 +60,14 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
       executor.InputValidator.validate(Seq(
         Right("requiredValue" -> None),
         Right("optionalValue" -> None),
-        Right("aValue" -> Some(Json.fromString("ok")))
+        Right("aValue"        -> Some(Json.fromString("ok")))
       )),
       Right(In(inConfig = Some(InConfig())))
     )
   test("InputValidator WithConfig override InConfig in In"):
     assertEquals(
       executor.InputValidator.validate(Seq(
-        Right("aValue" -> Some(Json.fromString("ok"))),
+        Right("aValue"        -> Some(Json.fromString("ok"))),
         Right("requiredValue" -> Some(Json.fromString("aso"))),
         Right("optionalValue" -> Some(Json.fromString("nei")))
       )),
@@ -75,7 +75,7 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
     )
 
   test("Test optional values are null in JSON"):
-    val in = InConfig().asJson.hcursor
+    val in  = InConfig().asJson.hcursor
       .downField("optionalValue")
       .as[Json]
     val out = Json.Null
@@ -83,5 +83,5 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
       in,
       Right(out)
     )
- 
+
 end WorkerExecutorTest

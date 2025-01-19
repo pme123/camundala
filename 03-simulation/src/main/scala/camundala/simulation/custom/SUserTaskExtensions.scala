@@ -25,9 +25,9 @@ trait SUserTaskExtensions extends SimulationHelper:
       def getTask(
           processInstanceId: Any
       )(data: ScenarioData): ResultType =
-        val uri =
+        val uri            =
           uri"${config.endpoint}/task?processInstanceId=$processInstanceId"
-        val request = basicRequest
+        val request        = basicRequest
           .auth()
           .get(uri)
         given ScenarioData = data
@@ -64,9 +64,9 @@ trait SUserTaskExtensions extends SimulationHelper:
 
     def checkForm()(using data: ScenarioData): ResultType =
       val processInstanceId = data.context.processInstanceId
-      val uri =
+      val uri               =
         uri"${config.endpoint}/process-instance/$processInstanceId/variables?deserializeValues=false"
-      val request = basicRequest
+      val request           = basicRequest
         .auth()
         .get(uri)
 
@@ -106,14 +106,14 @@ trait SUserTaskExtensions extends SimulationHelper:
     end checkForm
 
     private def completeTask()(using data: ScenarioData): ResultType =
-      val taskId = data.context.taskId
-      val backend = HttpClientSyncBackend()
-      val uri =
+      val taskId         = data.context.taskId
+      val backend        = HttpClientSyncBackend()
+      val uri            =
         uri"${config.endpoint}/task/$taskId/complete?deserializeValues=false"
-      val body = CompleteTaskOut(
+      val body           = CompleteTaskOut(
         userTask.camundaOutMap
       ).asJson.deepDropNullValues.toString
-      val request = basicRequest
+      val request        = basicRequest
         .auth()
         .contentType("application/json")
         .body(body)
