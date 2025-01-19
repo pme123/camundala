@@ -1,12 +1,8 @@
 package camundala.camunda7.worker
 
-import camundala.worker.CamundalaWorkerError.CamundaBpmnError
-import camundala.worker.CamundalaWorkerError.UnexpectedError
 import camundala.bpmn.*
 import camundala.worker.CamundalaWorkerError
 import camundala.worker.CamundalaWorkerError.*
-import org.camunda.bpm.client.task.ExternalTaskService
-import org.camunda.bpm.client.task.impl.ExternalTaskServiceImpl
 
 class C7WorkerHandlerTest extends munit.FunSuite:
 

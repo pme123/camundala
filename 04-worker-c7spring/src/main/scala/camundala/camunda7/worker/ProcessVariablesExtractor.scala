@@ -1,11 +1,10 @@
 package camundala.camunda7.worker
 
-import camundala.domain.*
 import camundala.bpmn.*
 import camundala.camunda7.worker.CamundaHelper.*
+import camundala.domain.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.BadVariableError
-import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.engine.variable.`type`.ValueType
 import org.camunda.bpm.engine.variable.value.TypedValue
 

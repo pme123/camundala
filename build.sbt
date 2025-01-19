@@ -31,6 +31,7 @@ lazy val root = project
     // implementations
     camunda7Worker,
     camunda8Worker,
+    camunda7ZioWorker,
     // experiments
     camunda,  // not in use
     camunda8, // not in use
@@ -129,7 +130,10 @@ lazy val worker = project
     projectSettings("worker"),
     unitTestSettings,
     autoImportSetting,
-    libraryDependencies += zioDependency
+    libraryDependencies ++= Seq(
+      zioDependency,
+      zioSlf4jDependency,
+    )
   )
   .dependsOn(bpmn)
 
@@ -410,7 +414,7 @@ lazy val exampleDemosWorker = project
   .settings(projectSettings("example-demos-worker"))
   .configure(preventPublication)
   .settings(autoImportSetting)
-  .dependsOn(worker, camunda7Worker, camunda8Worker, exampleDemosBpmn)
+  .dependsOn(worker, camunda7Worker, camunda8Worker, camunda7ZioWorker, exampleDemosBpmn)
 
 lazy val exampleDemosC7 = project
   .in(file("./05-examples/demos/04-c7-spring"))

@@ -1,9 +1,8 @@
 package camundala
 package worker
 
-import camundala.domain.*
 import camundala.bpmn.*
-import camundala.worker.CamundalaWorkerError.ServiceError
+import camundala.domain.*
 
 import java.time.{LocalDate, LocalDateTime}
 import scala.reflect.ClassTag

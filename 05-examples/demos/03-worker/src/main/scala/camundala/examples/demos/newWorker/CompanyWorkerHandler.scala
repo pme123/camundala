@@ -3,14 +3,17 @@ package camundala.examples.demos.newWorker
 import camundala.camunda7.worker.C7WorkerHandler
 import camundala.domain.*
 import camundala.worker.*
-import camundala.worker.c8zio.C8Worker
+import camundala.worker.c8zio.{C7Context, C7Worker, C8Context, C8Worker}
 
 import scala.reflect.ClassTag
 
 trait CompanyWorkerHandler[
   In <: Product: InOutCodec,
   Out <: Product: InOutCodec
-] extends C7WorkerHandler, C8Worker[In, Out]
+] extends C7Worker[In, Out], C8Worker[In, Out]:
+  override protected def c7Context: C7Context = new C7Context {}
+  override protected def c8Context: C8Context = new C8Context {}
+
 
 trait CompanyValidationWorkerDsl[
     In <: Product: InOutCodec

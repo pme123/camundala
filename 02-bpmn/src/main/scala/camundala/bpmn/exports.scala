@@ -100,8 +100,32 @@ case class GeneralVariables(
 end GeneralVariables
 
 object GeneralVariables:
-  given InOutCodec[GeneralVariables] = deriveCodec
+  given InOutCodec[GeneralVariables] = CirceCodec.from(decoder, deriveInOutEncoder)
   given ApiSchema[GeneralVariables]  = deriveApiSchema
+
+  implicit val decoder: Decoder[GeneralVariables] = new Decoder[GeneralVariables] :
+    final def apply(c: HCursor): Decoder.Result[GeneralVariables] =
+      for
+        servicesMocked <- c.downField("servicesMocked").as[Option[Boolean]].map(_.getOrElse(false))
+        mockedWorkers <- c.downField("mockedWorkers").as[Option[Seq[String]]].map(_.getOrElse(Seq.empty))
+        outputMock <- c.downField("outputMock").as[Option[Json]]
+        outputServiceMock <- c.downField("outputServiceMock").as[Option[Json]]
+        manualOutMapping <- c.downField("manualOutMapping").as[Option[Boolean]].map(_.getOrElse(false))
+        outputVariables <- c.downField("outputVariables").as[Option[Seq[String]]].map(_.getOrElse(Seq.empty))
+        handledErrors <- c.downField("handledErrors").as[Option[Seq[String]]].map(_.getOrElse(Seq.empty))
+        regexHandledErrors <- c.downField("regexHandledErrors").as[Option[Seq[String]]].map(_.getOrElse(Seq.empty))
+        impersonateUserId <- c.downField("impersonateUserId").as[Option[String]]
+      yield GeneralVariables(
+        servicesMocked,
+        mockedWorkers,
+        outputMock,
+        outputServiceMock,
+        manualOutMapping,
+        outputVariables,
+        handledErrors,
+        regexHandledErrors,
+        impersonateUserId
+      )
 end GeneralVariables
 
 lazy val regexHandledErrorsDescr =

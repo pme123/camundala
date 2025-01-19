@@ -9,10 +9,6 @@ import scala.reflect.ClassTag
 trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]
   extends JobWorker:
 
-  protected def engineContext: EngineContext
-
-  protected def logger: WorkerLogger
-
   // needed that it can be called from CSubscriptionPostProcessor
   def worker: Worker[In, Out, ?]
   def topic: String = worker.topic
@@ -171,12 +167,10 @@ private trait InitProcessDsl[
     InitIn <: Product: InOutCodec,
     InConfig <: Product: InOutCodec
 ]:
-  protected def engineContext: EngineContext
-
   protected def customInit(in: In): InitIn
 
   // by default the InConfig is initialized
-  final def initProcess(in: In): Either[InitProcessError, Map[String, Any]] =
+  final def initProcess(in: In)(using engineContext: EngineContext): Either[InitProcessError, Map[String, Any]] =
     val inConfig = in match
       case i: WithConfig[?] =>
         initConfig(
@@ -201,7 +195,7 @@ private trait InitProcessDsl[
   private def initConfig(
       optConfig: Option[InConfig],
       defaultConfig: InConfig
-  ): Map[String, Any] =
+  )(using engineContext: EngineContext): Map[String, Any] =
     val defaultJson = defaultConfig.asJson
     val r = optConfig.map {
       config =>

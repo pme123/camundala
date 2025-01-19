@@ -1,14 +1,12 @@
-package camundala
-package camunda7.worker
+package camundala.worker.c8zio
 
 import camundala.domain.*
 import camundala.worker.*
 import org.camunda.bpm.client.variable.ClientValues
 import org.slf4j.{Logger, LoggerFactory}
-import org.springframework.context.annotation.Configuration
 import scala.reflect.ClassTag
 
-trait Camunda7Context extends EngineContext:
+trait C7Context extends EngineContext:
 
   def getLogger(clazz: Class[?]): WorkerLogger =
     Slf4JLogger.logger(clazz.getName)
@@ -18,12 +16,10 @@ trait Camunda7Context extends EngineContext:
 
   def sendRequest[ServiceIn: InOutEncoder, ServiceOut: InOutDecoder: ClassTag](
       request: RunnableRequest[ServiceIn]
-  ): SendRequestType[ServiceOut] =
-    DefaultRestApiClient.sendRequest(request)
+  ): SendRequestType[ServiceOut] = ???
+   // DefaultRestApiClient.sendRequest(request)
 
-end Camunda7Context
+end C7Context
 
-@Configuration
-class DefaultCamunda7Context extends Camunda7Context
 
 

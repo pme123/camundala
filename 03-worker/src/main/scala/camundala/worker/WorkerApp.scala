@@ -1,13 +1,16 @@
 package camundala.worker
 
 import zio.*
+import zio.ZIO.*
 
 import scala.compiletime.uninitialized
 
 trait WorkerApp extends ZIOAppDefault:
-  def workerClients: Seq[WorkerClient[?]]
-  var theWorkers: Set[JobWorker] = uninitialized
+  def workerRegistries: Seq[WorkerRegistry[?]]
+  protected var theWorkers: Set[JobWorker] = uninitialized
 
+  override val bootstrap: ZLayer[ZIOAppArgs, Any, Any] = ZioLogger.logger
+  
   def workers(dWorkers: (JobWorker | Seq[JobWorker])*): Unit =
     theWorkers = dWorkers
       .flatMap:
@@ -17,6 +20,6 @@ trait WorkerApp extends ZIOAppDefault:
 
   override def run: ZIO[Any, Any, Any] =
     for
-      _ <- Console.printLine("Starting WorkerApp")
-      _ <- ZIO.collectAllPar(workerClients.map(_.run(theWorkers)))
+      _ <- logInfo("Starting WorkerApp")
+      _ <- collectAllPar(workerRegistries.map(_.register(theWorkers)))
     yield ()   

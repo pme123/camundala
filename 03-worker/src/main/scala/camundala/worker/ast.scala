@@ -27,14 +27,15 @@ sealed trait Worker[
   // no handler for mocking - all done from the InOut Object
   def runWorkHandler: Option[RunWorkHandler[In, Out]] = None
   // helper
-  def variableNames: Seq[String] =
+  lazy val variableNames: Seq[String] =
     (in.productElementNames.toSeq ++
       otherEnumInExamples
         .map:
           _.flatMap(_.productElementNames)
-        .toSeq.flatten).distinct
+        .toSeq.flatten).distinct ++
+      inConfigVariableNames
 
-  def inConfigVariableNames: Seq[String] =
+  lazy val inConfigVariableNames: Seq[String] =
     in match
       case i: WithConfig[?] =>
         i.defaultConfig.productElementNames.toSeq

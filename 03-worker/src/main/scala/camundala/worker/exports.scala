@@ -37,7 +37,7 @@ end decodeTo
 
 type HandledErrorCodes = Seq[ErrorCodeType]
 
-sealed trait CamundalaWorkerError:
+sealed trait CamundalaWorkerError extends Throwable:
   def isMock = false
   def errorCode: ErrorCodeType
   def errorMsg: String

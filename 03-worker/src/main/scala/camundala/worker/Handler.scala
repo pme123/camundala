@@ -13,10 +13,9 @@ trait WorkerHandler:
   def worker: Worker[?, ?, ?]
   def topic: String
 
-  def applicationName: String
-  def registerHandler(): Unit
+  def projectName: String
   def registerHandler( register: => Unit): Unit =
-    val appPackageName = applicationName.replace("-", ".")
+    val appPackageName = projectName.replace("-", ".")
     val testMode       = sys.env.get("WORKER_TEST_MODE").contains("true") // did not work with lazy val
     if testMode || getClass.getName.startsWith(appPackageName)
     then
@@ -66,6 +65,10 @@ object ValidationHandler:
         funct(in)
 end ValidationHandler
 
+
+type InitProcessFunction =
+  EngineContext ?=> Either[InitProcessError, Map[String, Any]]
+
 /** handler for Custom Process Initialisation. All the variables in the Result Map will be put on
   * the process.
   *
@@ -98,18 +101,17 @@ end ValidationHandler
 trait InitProcessHandler[
     In <: Product: InOutCodec
 ]:
-  def init(input: In): Either[InitProcessError, Map[String, Any]]
+  def init(input: In): InitProcessFunction
 end InitProcessHandler
-
 object InitProcessHandler:
   def apply[
       In <: Product: InOutCodec
   ](
-      funct: In => Either[InitProcessError, Map[String, Any]],
+      funct: In => InitProcessFunction,
       processLabels: ProcessLabels
   ): InitProcessHandler[In] =
     new InitProcessHandler[In]:
-      override def init(in: In): Either[InitProcessError, Map[String, Any]] =
+      override def init(in: In): InitProcessFunction =
         funct(in)
           .map:
             _ ++ processLabels.toMap

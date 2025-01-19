@@ -21,7 +21,7 @@ import scala.util.{Failure, Success}
 trait C7WorkerHandler extends camunda.ExternalTaskHandler, WorkerHandler:
 
   @Value("${spring.application.name}")
-  var applicationName: String = scala.compiletime.uninitialized
+  var projectName: String = scala.compiletime.uninitialized
 
   @Autowired()
   protected var engineContext: EngineContext = scala.compiletime.uninitialized
@@ -57,7 +57,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler, WorkerHandler:
       externalTaskService: camunda.ExternalTaskService
   ): HelperContext[Unit] =
     val tryProcessVariables =
-      ProcessVariablesExtractor.extract(worker.variableNames ++ worker.inConfigVariableNames)
+      ProcessVariablesExtractor.extract(worker.variableNames)
     val tryGeneralVariables = ProcessVariablesExtractor.extractGeneral()
     try
       (for
