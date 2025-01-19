@@ -177,33 +177,33 @@ lazy val NewName   = """^.+\-(.+V.+\-(.+))$""".r // mycompany-myproject-myproces
 lazy val OldName1  =
   """^.+\-(.+\.(post|get|patch|put|delete))$""".r // mycompany-myproject-myprocessV1.MyWorker.get or mycompany-myproject-MyWorker.get - use NewName for the new naming convention
 lazy val OldName2  =
-  """^.+\-(.+V.+\.(.+))$""".r                     // mycompany-myproject-myprocessV1.MyWorker - use NewName for the new naming convention
+  """^.+\-(.+V.+\.(.+))$""".r // mycompany-myproject-myprocessV1.MyWorker - use NewName for the new naming convention
 lazy val OldName31 =
-  """^.+\-.+(\-(.+\-..+\-.+))$""".r               // mycompany-myproject-myprocess-other-MyWorker - use NewName for the new naming convention
+  """^.+\-.+(\-(.+\-..+\-.+))$""".r // mycompany-myproject-myprocess-other-MyWorker - use NewName for the new naming convention
 lazy val OldName32 =
-  """^.+\-.+(\-(.+\-.+))$""".r                    // mycompany-myproject-myprocess-MyWorker - use NewName for the new naming convention
+  """^.+\-.+(\-(.+\-.+))$""".r // mycompany-myproject-myprocess-MyWorker - use NewName for the new naming convention
 lazy val OldName4  =
-  """^.+\-.+\-(.+)$""".r                          // mycompany-myproject-myprocess.MyWorker - use NewName for the new naming convention
+  """^.+\-.+\-(.+)$""".r // mycompany-myproject-myprocess.MyWorker - use NewName for the new naming convention
 
 def shortenName(name: String): String =
   name match
-    case OldName1(n, _)  if n.count(_ == '.') == 1 =>
+    case OldName1(n, _) if n.count(_ == '.') == 1 =>
       n
-    case OldName1(n, _)  =>
+    case OldName1(n, _)                           =>
       println("OldName1+: " + n)
       n.split("\\.").drop(1).mkString(".")
-    case NewName(_, n)   =>
+    case NewName(_, n)                            =>
       println("NewName: " + n)
       n
-    case OldName2(_, n)  =>
+    case OldName2(_, n)                           =>
       n
-    case OldName31(_, n) =>
+    case OldName31(_, n)                          =>
       n
-    case OldName32(_, n) =>
+    case OldName32(_, n)                          =>
       n
-    case OldName4(n)     =>
+    case OldName4(n)                              =>
       n
-    case _               => // something else
+    case _                                        => // something else
       name
 
 lazy val diagramPath: os.RelPath = os.rel / "src" / "main" / "resources" / "camunda"

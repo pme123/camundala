@@ -125,11 +125,11 @@ case class ServiceHandler[
     val rRequest = runnableRequest(inputObject)
     for
       optWithServiceMock <- withServiceMock(rRequest, inputObject)
-      output <- handleMocking(optWithServiceMock, rRequest).getOrElse(
-        summon[EngineRunContext]
-          .sendRequest[ServiceIn, ServiceOut](rRequest)
-          .flatMap(out => outputMapper(out, inputObject))
-      )
+      output             <- handleMocking(optWithServiceMock, rRequest).getOrElse(
+                              summon[EngineRunContext]
+                                .sendRequest[ServiceIn, ServiceOut](rRequest)
+                                .flatMap(out => outputMapper(out, inputObject))
+                            )
     yield output
     end for
   end runWork
@@ -157,13 +157,17 @@ case class ServiceHandler[
       case (_, Some(json)) =>
         (for
           mockedResponse <- decodeMock[MockedServiceResponse[ServiceOut]](json)
-          out <- handleServiceMock(mockedResponse, runnableRequest, in)
+          out            <- handleServiceMock(mockedResponse, runnableRequest, in)
         yield out)
           .map(Some.apply)
-      case (true, _) =>
-        handleServiceMock(dynamicServiceOutMock.map(_(in)).getOrElse(defaultServiceOutMock), runnableRequest, in)
+      case (true, _)       =>
+        handleServiceMock(
+          dynamicServiceOutMock.map(_(in)).getOrElse(defaultServiceOutMock),
+          runnableRequest,
+          in
+        )
           .map(Some.apply)
-      case _ =>
+      case _               =>
         Right(None)
 
   end withServiceMock
@@ -200,7 +204,7 @@ case class ServiceHandler[
     mockedResponse match
       case MockedServiceResponse(_, Right(body), headers) =>
         mapBodyOutput(body, headers, in)
-      case MockedServiceResponse(status, Left(body), _) =>
+      case MockedServiceResponse(status, Left(body), _)   =>
         Left(
           ServiceRequestError(
             status,

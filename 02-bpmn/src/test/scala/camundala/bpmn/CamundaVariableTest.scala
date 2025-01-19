@@ -21,10 +21,10 @@ class CamundaVariableTest extends FunSuite:
       variable,
       Map(
         "addressChangeCountryPolicy" -> CBoolean(true),
-        "expiresInDays" -> CInteger(3),
-        "staffMemberId" -> CLong(2L),
-        "leadInstruction" -> CString("hello"),
-        "other" -> CJson(
+        "expiresInDays"              -> CInteger(3),
+        "staffMemberId"              -> CLong(2L),
+        "leadInstruction"            -> CString("hello"),
+        "other"                      -> CJson(
           """{
             |  "other" : true
             |}""".stripMargin
@@ -37,9 +37,9 @@ class CamundaVariableTest extends FunSuite:
     assertEquals(
       variable,
       Map(
-        "other" -> CBoolean(true),
+        "other" -> CBoolean(true)
       )
-    )  
+    )
 
 end CamundaVariableTest
 
@@ -52,7 +52,7 @@ case class Out(
 )
 
 object Out:
-  given ApiSchema[Out] = deriveApiSchema
+  given ApiSchema[Out]  = deriveApiSchema
   given InOutCodec[Out] = deriveInOutCodec
 
 case class Other(
@@ -60,5 +60,5 @@ case class Other(
 )
 
 object Other:
-  given ApiSchema[Other] = deriveApiSchema
+  given ApiSchema[Other]  = deriveApiSchema
   given InOutCodec[Other] = deriveInOutCodec

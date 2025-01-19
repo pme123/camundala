@@ -6,7 +6,7 @@ object FieldNamesOf:
 
   def allFieldNames[T: Type](using Quotes): Expr[Seq[String]] =
     import quotes.reflect.*
-    val tpe = TypeRepr.of[T]
+    val tpe    = TypeRepr.of[T]
     val fields =
       if tpe.typeSymbol.children.isEmpty then
         tpe.typeSymbol.primaryConstructor.paramSymss.flatten.map(_.name)

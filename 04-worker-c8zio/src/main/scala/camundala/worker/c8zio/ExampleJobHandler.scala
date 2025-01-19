@@ -9,5 +9,4 @@ class ExampleJobHandler extends JobHandler:
     println(s"Handling Job: ${job}")
     client.newCompleteCommand(job.getKey).send().join()
 
-
 end ExampleJobHandler

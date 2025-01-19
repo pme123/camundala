@@ -34,7 +34,7 @@ case class WorkerGenerator()(using config: DevConfig):
   end createProcessElement
 
   private lazy val companyName = config.companyName
-  private lazy val workerApp =
+  private lazy val workerApp   =
     createWorkerApp("WorkerApp")
 
   private lazy val workerTestApp =

@@ -116,12 +116,12 @@ trait ServiceWorkerDsl[
   protected def serviceTask: ServiceTask[In, Out, ServiceIn, ServiceOut]
   protected def apiUri(in: In): Uri // input must be valid - so no errors
   // optional
-  protected def method: Method = Method.GET
+  protected def method: Method                                  = Method.GET
   protected def querySegments(in: In): Seq[QuerySegmentOrParam] =
     Seq.empty // input must be valid - so no errors
-      // mocking out from outService and headers
-  protected def inputMapper(in: In): Option[ServiceIn] = None // input must be valid - so no errors
-  protected def inputHeaders(in: In): Map[String, String] =
+    // mocking out from outService and headers
+  protected def inputMapper(in: In): Option[ServiceIn]          = None // input must be valid - so no errors
+  protected def inputHeaders(in: In): Map[String, String]       =
     Map.empty // input must be valid - so no errors
   protected def outputMapper(
       serviceOut: ServiceResponse[ServiceOut],
@@ -140,10 +140,10 @@ trait ServiceWorkerDsl[
       in: In
   ): Either[ServiceMappingError, Out] =
     serviceResponse.outputBody match
-      case _: NoOutput => Right(serviceTask.out)
+      case _: NoOutput       => Right(serviceTask.out)
       case Some(_: NoOutput) => Right(serviceTask.out)
-      case None => Right(serviceTask.out)
-      case _ =>
+      case None              => Right(serviceTask.out)
+      case _                 =>
         Left(ServiceMappingError(s"There is an outputMapper missing for '${getClass.getName}'."))
   end defaultOutMapper
 
@@ -183,8 +183,8 @@ private trait InitProcessDsl[
           i.inConfig.asInstanceOf[Option[InConfig]],
           i.defaultConfig.asInstanceOf[InConfig]
         )
-      case _ => Map.empty
-    val custom = engineContext.toEngineObject(customInit(in))
+      case _                => Map.empty
+    val custom   = engineContext.toEngineObject(customInit(in))
     Right(inConfig ++ custom)
   end initProcess
 
@@ -203,20 +203,23 @@ private trait InitProcessDsl[
       defaultConfig: InConfig
   ): Map[String, Any] =
     val defaultJson = defaultConfig.asJson
-    val r = optConfig.map {
+    val r           = optConfig.map {
       config =>
         val json = config.asJson
         config.productElementNames
           .map(k =>
-            k -> (json.hcursor
-              .downField(k).focus, defaultJson.hcursor
-              .downField(k).focus)
+            k -> (
+              json.hcursor
+                .downField(k).focus,
+              defaultJson.hcursor
+                .downField(k).focus
+            )
           ).collect {
             case k -> (Some(j), Some(dj)) if j.isNull =>
               k -> dj
-            case k -> (Some(j), _) =>
+            case k -> (Some(j), _)                    =>
               k -> j
-            case k -> (_, dj) =>
+            case k -> (_, dj)                         =>
               k -> dj.getOrElse(Json.Null)
           }
           .toMap

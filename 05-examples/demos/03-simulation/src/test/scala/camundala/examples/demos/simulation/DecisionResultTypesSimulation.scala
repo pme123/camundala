@@ -23,14 +23,14 @@ class DecisionResultTypesSimulation extends DemosSimulation:
   )
 
   private lazy val collectEntriesOverrideDMN = collectEntriesDMN
-  private lazy val collectEntriesOverride =
+  private lazy val collectEntriesOverride    =
     collectEntriesOverrideDMN
       .hasSize(2)
       .contains(1)
       .contains(2)
 
   private lazy val resultListOverrideDMN = resultListDMN
-  private lazy val resultListOverride =
+  private lazy val resultListOverride    =
     resultListOverrideDMN
       .hasSize(2)
       .contains(ManyOutResult(1, "🤩"))

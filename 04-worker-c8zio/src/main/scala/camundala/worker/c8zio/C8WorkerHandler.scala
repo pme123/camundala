@@ -5,5 +5,4 @@ package camundala.worker.c8zio
   */
 trait C8WorkerHandler:
 
-
 end C8WorkerHandler

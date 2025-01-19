@@ -40,7 +40,7 @@ case class ApiConfig(
     .distinct
 
   lazy val init: Unit = projectsConfig.init(tempGitDir)
-  
+
   def withTenantId(tenantId: String): ApiConfig =
     copy(tenantId = Some(tenantId))
 
@@ -94,10 +94,10 @@ object ApiConfig:
 end ApiConfig
 
 case class ProjectsConfig(
-                           // Path to your ApiProjectConf - default is os.pwd / PROJECT.conf
-                           projectConfPath: os.RelPath = defaultProjectConfigPath,
-                           // grouped configs per GitRepos - so it is possible to use projects from different Repos
-                           perGitRepoConfigs: Seq[ProjectsPerGitRepoConfig] = Seq.empty
+    // Path to your ApiProjectConf - default is os.pwd / PROJECT.conf
+    projectConfPath: os.RelPath = defaultProjectConfigPath,
+    // grouped configs per GitRepos - so it is possible to use projects from different Repos
+    perGitRepoConfigs: Seq[ProjectsPerGitRepoConfig] = Seq.empty
 ):
 
   lazy val isConfigured: Boolean = perGitRepoConfigs.nonEmpty
@@ -126,10 +126,10 @@ case class ProjectsConfig(
   lazy val colors: Seq[(String, String)] = projectConfigs.map { project =>
     project.name -> project.color
   }
-  
-  def colorForId(refName:String, ownProjectName: String): Option[(String, String)] =
+
+  def colorForId(refName: String, ownProjectName: String): Option[(String, String)] =
     colors.find:
-      case (id, _) => refName.startsWith(id) && ! refName.startsWith(ownProjectName)
+      case (id, _) => refName.startsWith(id) && !refName.startsWith(ownProjectName)
 
   def hasProjectGroup(
       projectName: String,
@@ -146,7 +146,7 @@ case class ProjectsConfig(
       .replace(
         s"${projectName.replace(s"$companyId-", "")}-",
         ""
-      ) // myproject-myprocess -> myprocess
+      )                            // myproject-myprocess -> myprocess
   end refIdentShort
 
   // if projectName is not known
@@ -155,7 +155,7 @@ case class ProjectsConfig(
 
     projectNames.find(refIdent.startsWith)
       .map(pn =>
-        refIdent.replace(s"$pn-", "")  // case myCompany-myProject-myProcess
+        refIdent.replace(s"$pn-", "") // case myCompany-myProject-myProcess
           .replace(s"$companyId-", "") // case myCompany-myProject > where no myProcess
       )
       .orElse(          // case myProject-myProcess
@@ -173,7 +173,7 @@ case class ProjectsConfig(
       .map(_.name)
       .getOrElse("NO PROJECT FOUND")
   end projectNameForRef
-  
+
 end ProjectsConfig
 
 case class ProjectsPerGitRepoConfig(

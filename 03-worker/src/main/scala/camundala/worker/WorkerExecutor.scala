@@ -18,32 +18,33 @@ case class WorkerExecutor[
       processVariables: Seq[Either[BadVariableError, (String, Option[Json])]]
   ) =
     for
-      validatedInput <- InputValidator.validate(processVariables)
+      validatedInput    <- InputValidator.validate(processVariables)
       initializedOutput <- Initializer.initVariables(validatedInput)
-      mockedOutput <- OutMocker.mockedOutput(validatedInput)
+      mockedOutput      <- OutMocker.mockedOutput(validatedInput)
       // only run the work if it is not mocked
-      output <- if mockedOutput.isEmpty then WorkRunner.run(validatedInput) else Right(mockedOutput.get)
-      allOutputs = camundaOutputs(validatedInput, initializedOutput, output)
-      filteredOut = filteredOutput(allOutputs)
+      output            <-
+        if mockedOutput.isEmpty then WorkRunner.run(validatedInput) else Right(mockedOutput.get)
+      allOutputs         = camundaOutputs(validatedInput, initializedOutput, output)
+      filteredOut        = filteredOutput(allOutputs)
       // make MockedOutput as error if mocked
-      _ <- if mockedOutput.isDefined then Left(MockedOutput(filteredOut)) else Right(())
+      _                 <- if mockedOutput.isDefined then Left(MockedOutput(filteredOut)) else Right(())
     yield filteredOut
 
   object InputValidator:
-    lazy val prototype = worker.in
+    lazy val prototype         = worker.in
     lazy val validationHandler = worker.validationHandler
 
     def validate(
         inputParamsAsJson: Seq[Either[Any, (String, Option[Json])]]
     ): Either[ValidatorError, In] =
-      val jsonResult: Either[ValidatorError, Seq[(String, Option[Json])]] =
+      val jsonResult: Either[ValidatorError, Seq[(String, Option[Json])]]                  =
         inputParamsAsJson
           .partition(_.isRight) match
           case (successes, failures) if failures.isEmpty =>
             Right(
               successes.collect { case Right(value) => value }
             )
-          case (_, failures) =>
+          case (_, failures)                             =>
             Left(
               ValidatorError(
                 failures
@@ -51,7 +52,7 @@ case class WorkerExecutor[
                   .mkString("Validator Error(s):\n - ", " - ", "\n")
               )
             )
-      val json: Either[ValidatorError, JsonObject] = jsonResult
+      val json: Either[ValidatorError, JsonObject]                                         = jsonResult
         .map(_.foldLeft(JsonObject()) { case (jsonObj, jsonKey -> jsonValue) =>
           if jsonValue.isDefined
           then jsonObj.add(jsonKey, jsonValue.get)
@@ -64,24 +65,24 @@ case class WorkerExecutor[
               .map(ex => ValidatorError(errorMsg = ex.errorMsg))
               .flatMap(in => validationHandler.map(h => h.validate(in)).getOrElse(Right(in)))
           )
-      val in = toIn(json)
-      val result = in.flatMap:
+      val in                                                                               = toIn(json)
+      val result                                                                           = in.flatMap:
         case i: WithConfig[?] =>
           val newIn =
             for
-              jsonObj: JsonObject <- json
-              inputVariables = jsonObj.toMap
+              jsonObj: JsonObject   <- json
+              inputVariables         = jsonObj.toMap
               configJson: JsonObject =
                 inputVariables.get("inConfig").getOrElse(i.defaultConfigAsJson).asObject.get
-              newJsonConfig = worker.inConfigVariableNames
-                .foldLeft(configJson):
-                  case (configJson, n) =>
-                    if jsonObj.contains(n)
-                    then configJson.add(n, jsonObj(n).get)
-                    else configJson
+              newJsonConfig          = worker.inConfigVariableNames
+                                         .foldLeft(configJson):
+                                           case (configJson, n) =>
+                                             if jsonObj.contains(n)
+                                             then configJson.add(n, jsonObj(n).get)
+                                             else configJson
             yield jsonObj.add("inConfig", newJsonConfig.asJson)
           toIn(newIn)
-        case x =>
+        case x                =>
           in
       result
     end validate
@@ -115,10 +116,10 @@ case class WorkerExecutor[
         case (_, Some(outputMock), _) =>
           decodeMock(outputMock)
         // if your worker is mocked we use the default mock
-        case (true, None, None) =>
+        case (true, None, None)       =>
           worker.defaultMock(in).map(Some(_))
         // otherwise it is not mocked or it is a service mock which is handled in service Worker during running
-        case (_, None, _) =>
+        case (_, None, _)             =>
           Right(None)
     end mockedOutput
 
@@ -150,9 +151,8 @@ case class WorkerExecutor[
       (output match
         case o: NoOutput =>
           context.toEngineObject(o)
-        case _ =>
-          context.toEngineObject(output.asInstanceOf[Out])
-      )
+        case _           =>
+          context.toEngineObject(output.asInstanceOf[Out]))
   private def filteredOutput(
       allOutputs: Map[String, Any]
   ): Map[String, Any] =
