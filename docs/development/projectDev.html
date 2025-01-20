@@ -301,7 +301,10 @@ src           - main -&gt; myproject-myProcessV1.bpmn
         <pre><code>./helper.scala signalEvent myProcess MySignalEvent 1</code></pre>
         <p>This creates the following files:</p>
         <pre><code>// the domain In -&gt; NoOutput
-02-bpmn - main -&gt; mycompany.myproject.bpmn.myProcess.v1.MySignalEvent      </code></pre>
+02-bpmn - main -&gt; mycompany.myproject.bpmn.myProcess.v1.MySignalEvent   
+// the ValidationWorker    
+03-worker     - main -&gt; mycompany.myproject.worker.myProcess.v1.MySignalEventWorker  
+              - test -&gt; mycompany.myproject.worker.myProcess.v1.MySignalEventWorkerTest </code></pre>
         
         <h3 id="messageevent" class="section"><a class="anchor-link left" href="#messageevent"><i class="icofont-laika link">&#xef71;</i></a>messageEvent</h3>
         <p>Creates a new Message Event.</p>
@@ -311,7 +314,10 @@ src           - main -&gt; myproject-myProcessV1.bpmn
         <pre><code>./helper.scala messageEvent myProcess MyMessageEvent 1</code></pre>
         <p>This creates the following files:</p>
         <pre><code>// the domain In -&gt; NoOutput
-02-bpmn - main -&gt; mycompany.myproject.bpmn.myProcess.v1.MyMessageEvent      </code></pre>
+02-bpmn - main -&gt; mycompany.myproject.bpmn.myProcess.v1.MyMessageEvent   
+// the ValidationWorker    
+03-worker     - main -&gt; mycompany.myproject.worker.myProcess.v1.MyMessageEventWorker  
+              - test -&gt; mycompany.myproject.worker.myProcess.v1.MyMessageEventWorkerTest </code></pre>
         
         <h3 id="timerevent" class="section"><a class="anchor-link left" href="#timerevent"><i class="icofont-laika link">&#xef71;</i></a>timerEvent</h3>
         <p>Creates a new Timer Event.</p>

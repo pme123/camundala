@@ -15,6 +15,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.31 - 2025-01-20
+### Changed 
+- Made the taskDefinitionKey of a UserTask required to be the same as in the BPMN - new in API doc and Simulation. - see [Commit](https://pme123@github.com/pme123/camundala/commit/dfd801def32646c3a748464c309594c1cfe439ed)
+- Updated Versions. - see [Commit](https://pme123@github.com/pme123/camundala/commit/c85dd2ba69698edd4c4360f9d2537b7553a07414)
+- Working Worker C7 example. - see [Commit](https://pme123@github.com/pme123/camundala/commit/4584d6868a5861780d2ec3f605b7e6398dc9a5cb)
+- Working Worker C8 example. - see [Commit](https://pme123@github.com/pme123/camundala/commit/3af0336ded2ae41fdf807d35da54d5b2e46cd68b)
+- Worker C8 state of work. - see [Commit](https://pme123@github.com/pme123/camundala/commit/0ef0d755e5137e564487d1cbe2a3d715f38bcf2d)
+- Fixed check previous Version check - too many changelog entries. - see [Commit](https://pme123@github.com/pme123/camundala/commit/751432cf6694f5a950edb77203a3ea0dc298308a)
+- Fixed missing dependencies in the dependency table. - see [Commit](https://pme123@github.com/pme123/camundala/commit/1be2d62cf12f141330194772f3451d7f6a38bf43)
+- Adjustments file generation. - see [Commit](https://pme123@github.com/pme123/camundala/commit/a4781a792971893b6f478ec876b3a2f9cd28ca98)
+- Added codec for IntOrBoolean. - see [Commit](https://pme123@github.com/pme123/camundala/commit/f8051a16f0d14cf4ffc4aeef15e706e8dbf995a3)
+- First version with Worker for Camunda8. - see [Commit](https://pme123@github.com/pme123/camundala/commit/18b73324573eff2e42d755f417ec0d45a57c3036)
+- Added Circe Classes to exports.scala. - see [Commit](https://pme123@github.com/pme123/camundala/commit/ebecd6242e4691704d3a9609609f4b874fa57a11)
+- Fixes in project update / added CompanyValidationWorker. - see [Commit](https://pme123@github.com/pme123/camundala/commit/f38eeb69f1944aec84839b1df2012290a5ba1359)
+- Fixing only.badScenarios / only.incidentScenarios. - see [Commit](https://pme123@github.com/pme123/camundala/commit/1899a565231b3f52463f67b3284001a98861f2b4)
+
 ## 1.30.30 - 2025-01-08
 ### Changed 
 - Try fixing CI: sbt: command not found - see [Commit](https://pme123@github.com/pme123/camundala/commit/5e5b9b787eb4f74a08cd6efd46a3ae0055da1163)

@@ -212,6 +212,10 @@
  */</span><span>
 </span><span class="keyword">trait</span><span> </span><span class="type-name">CompanyWorkerHandler</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">C7WorkerHandler</span><span>
 
+</span><span class="keyword">trait</span><span> </span><span class="type-name">CompanyValidationWorkerDsl</span><span>[
+  </span><span class="type-name">In</span><span> &lt;: </span><span class="type-name">Product</span><span>: </span><span class="type-name">InOutCodec</span><span>
+] </span><span class="keyword">extends</span><span> </span><span class="type-name">CompanyWorkerHandler</span><span>, </span><span class="type-name">ValidationWorkerDsl</span><span>[</span><span class="type-name">In</span><span>]
+
 </span><span class="keyword">trait</span><span> </span><span class="type-name">CompanyInitWorkerDsl</span><span>[
     </span><span class="type-name">In</span><span> &lt;: </span><span class="type-name">Product</span><span>: </span><span class="type-name">InOutCodec</span><span>,
     </span><span class="type-name">Out</span><span> &lt;: </span><span class="type-name">Product</span><span>: </span><span class="type-name">InOutCodec</span><span>,
