@@ -10,7 +10,7 @@ object Dependencies {
   val osLibVersion = "0.11.3"
   // 01-domain
   val openapiCirceVersion = "0.11.5"
-  val tapirVersion = "1.11.11"
+  val tapirVersion = "1.11.13"
   val ironCirceVersion = "2.6.0"
   val mUnitVersion = "1.0.4"
   // 02-bpmn
@@ -55,7 +55,8 @@ object Dependencies {
   val scalaJacksonVersion = "2.18.2"
   val camunda8Version = "8.5.16"
   val springBootVersion = "3.3.4"
-  val swaggerOpenAPIVersion = "2.1.24"
+  val nettyVersion = "4.1.117.Final"
+  val swaggerOpenAPIVersion = "2.1.25"
   // examples
   val h2Version = "2.3.232"
   val twitter4jVersion = "4.1.2"
@@ -103,7 +104,7 @@ object Dependencies {
   val camundaDependencies = Seq(
     "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion exclude("org.slf4j", "slf4j-api"),
     "org.springframework.boot" % "spring-boot-starter-jdbc" % springBootVersion exclude("org.slf4j", "slf4j-api"),
-    "io.netty" % "netty-all" % "4.1.110.Final", // needed for Spring Boot Version > 2.5.*
+    "io.netty" % "netty-all" % nettyVersion, // needed for Spring Boot Version > 2.5.*
     "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-rest" % camundaVersion,
     "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-webapp" % camundaVersion,
     // json support
