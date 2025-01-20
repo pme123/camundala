@@ -23,10 +23,11 @@ trait SUserTaskExtensions extends SimulationHelper:
 
     private def task()(using data: ScenarioData): ResultType =
       def getTask(
-          processInstanceId: Any
+          processInstanceId: Any,
+          taskDefinitionKey: String
       )(data: ScenarioData): ResultType =
         val uri =
-          uri"${config.endpoint}/task?processInstanceId=$processInstanceId"
+          uri"${config.endpoint}/task?processInstanceId=$processInstanceId&taskDefinitionKey=$taskDefinitionKey"
         val request = basicRequest
           .auth()
           .get(uri)
@@ -34,7 +35,7 @@ trait SUserTaskExtensions extends SimulationHelper:
           .info(
             s"UserTask '${userTask.name}' get"
           )
-          .debug(s"- URI: $uri")
+          .info(s"- URI: $uri")
 
         request
           .extractBody()
@@ -53,13 +54,13 @@ trait SUserTaskExtensions extends SimulationHelper:
               }
               .left
               .flatMap { _ =>
-                userTask.tryOrFail(getTask(processInstanceId))
+                userTask.tryOrFail(getTask(processInstanceId, userTask.id))
               }
           )
       end getTask
 
       val processInstanceId = data.context.processInstanceId
-      getTask(processInstanceId)(data.withRequestCount(0))
+      getTask(processInstanceId, userTask.id)(data.withRequestCount(0))
     end task
 
     def checkForm()(using data: ScenarioData): ResultType =

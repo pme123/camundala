@@ -13,9 +13,9 @@ trait WorkerHandler:
   def worker: Worker[?, ?, ?]
   def topic: String
 
-  def projectName: String
+  def applicationName: String
   def registerHandler( register: => Unit): Unit =
-    val appPackageName = projectName.replace("-", ".")
+    val appPackageName = applicationName.replace("-", ".")
     val testMode       = sys.env.get("WORKER_TEST_MODE").contains("true") // did not work with lazy val
     if testMode || getClass.getName.startsWith(appPackageName)
     then

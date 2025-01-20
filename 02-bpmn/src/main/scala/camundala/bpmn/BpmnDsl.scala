@@ -6,19 +6,16 @@ trait BpmnDsl:
   def companyDescr: String = ""
 
   private[bpmn] def msgNameDescr(messageName: String) =
-    Some(s"""
-            |$descr
-            |
-            |- _messageName_: `$messageName`
-            |
-            |---
-            |
-            |$companyDescr
-            |""".stripMargin)
+    bpmnDescr(s"- _messageName_: `$messageName`")
 
-  private[bpmn] lazy val defaultDescr =
+  private[bpmn] def userTaskDescr(messageName: String) =
+    bpmnDescr(s"- _taskDefinitionKey_: `$messageName`")
+
+  private def bpmnDescr(keyLabel: String) =
     Some(s"""
             |$descr
+            |
+            |$keyLabel
             |
             |---
             |

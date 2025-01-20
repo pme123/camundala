@@ -16,7 +16,7 @@ trait BpmnUserTaskDsl extends BpmnDsl:
       out: Out = NoOutput()
   ): UserTask[In, Out] =
     UserTask(
-      InOutDescr(name, in, out, defaultDescr)
+      InOutDescr(name, in, out, userTaskDescr(name))
     )
 
 end BpmnUserTaskDsl
