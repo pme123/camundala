@@ -10,6 +10,7 @@
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0yzjas8" sourceRef="Activity_1p8rmh1" targetRef="Event_1mv5kky" />
     <bpmn:serviceTask id="Activity_1p8rmh1" name="Publish on Twitter" camunda:type="external" camunda:topic="publish-tweet">
+      <bpmn:extensionElements />
       <bpmn:incoming>Flow_1c8rqmn</bpmn:incoming>
       <bpmn:outgoing>Flow_0yzjas8</bpmn:outgoing>
     </bpmn:serviceTask>

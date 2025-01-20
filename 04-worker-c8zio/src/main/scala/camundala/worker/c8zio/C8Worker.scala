@@ -14,17 +14,16 @@ import scala.jdk.CollectionConverters.*
 import java.util.Date
 
 trait C8Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, JobHandler:
-  protected def worker: Worker[?, ?, ?]
   protected def c8Context: C8Context
   private lazy val runtime = Runtime.default
 
   def handle(client: JobClient, job: ActivatedJob): Unit =
     Unsafe.unsafe:
       implicit unsafe =>
-        runtime.unsafe.run(
+        runtime.unsafe.runToFuture(
           run(client, job)
             .provideLayer(ZioLogger.logger)
-        ).getOrThrow()
+        ).future
 
   def run(client: JobClient, job: ActivatedJob): ZIO[Any, Throwable, Unit] =
     (for

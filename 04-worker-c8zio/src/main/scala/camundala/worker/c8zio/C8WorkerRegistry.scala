@@ -32,10 +32,11 @@ class C8WorkerRegistry(client: C8Client)
       .handler(worker)
       .timeout(worker.timeout.toMillis)
       .open()) *>
-        logInfo("Registered C8 Worker: " + worker.topic)
+      logInfo("Registered C8 Worker: " + worker.topic)
 
   extension (client: ZeebeClient)
     def closeClient() =
-      succeed(if client != null then client.close() else ())
+      logInfo("Closing C7 Worker Client") *>
+        succeed(if client != null then client.close() else ())
 
 end C8WorkerRegistry

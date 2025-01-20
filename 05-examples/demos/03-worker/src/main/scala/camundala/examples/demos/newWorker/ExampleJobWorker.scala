@@ -10,6 +10,7 @@ object ExampleJobWorker extends CompanyCustomWorkerDsl[In, Out]:
   lazy val customTask = example
   def runWork(in: In): Either[CamundalaWorkerError.CustomError, Out] =
     logger.info(s"Running ExampleJobWorker with $in")
+    Thread.sleep(3000)
     Right(Out())
 end ExampleJobWorker
 

@@ -1,0 +1,23 @@
+{
+  "myMessage": {
+    "value": "hello camunda 7",
+    "type": "String"
+  },
+  "servicesMocked": {
+    "value": true,
+    "type": "Boolean"
+  },
+  "approved": {
+    "value": true,
+    "type": "Boolean"
+  },
+  "clientKey": {
+    "value": 74854564837991,
+    "type": "Long"
+  },
+  "myTypes": {
+    "value": "[\n{\n\"doit\" : \"no\",\n\"why\" : 12\n},\n{\n\"doit\" : \"yes\",\n\"why\" : 42\n},\n{\n\"doit\" : \"yes\",\n\"why\" : 42\n}\n]",
+    "type": "Json"
+  }
+}
+

@@ -4,6 +4,8 @@ import scala.concurrent.duration.*
 
 trait JobWorker:
   def topic: String
+  protected def worker: Worker[?, ?, ?]
+
   def timeout: Duration = 10.seconds
 
   protected def errorHandled(error: CamundalaWorkerError, handledErrors: Seq[String]): Boolean =
@@ -17,8 +19,9 @@ trait JobWorker:
       error: CamundalaWorkerError,
       regexHandledErrors: Seq[String]
   ) =
+    val errorMsg = error.errorMsg.replace("\n", "")
     errorHandled && regexHandledErrors.forall(regex =>
-      error.errorMsg.matches(s".*$regex.*")
+      errorMsg.matches(s".*$regex.*")
     )
 
   protected def filteredOutput(

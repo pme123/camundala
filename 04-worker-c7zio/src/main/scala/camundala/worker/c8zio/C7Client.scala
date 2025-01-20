@@ -23,10 +23,10 @@ object C7NoAuthClient extends C7Client:
     ZIO.attempt:
       ExternalTaskClient.create()
         .baseUrl("http://localhost:8887/engine-rest")
-        .asyncResponseTimeout(15000)
+       // .asyncResponseTimeout(10000)
         .customizeHttpClient: httpClientBuilder =>
           httpClientBuilder.setDefaultRequestConfig(RequestConfig.custom()
-            .setResponseTimeout(Timeout.ofSeconds(15))
+           // .setResponseTimeout(Timeout.ofSeconds(15))
             .build())
         .build()
 
