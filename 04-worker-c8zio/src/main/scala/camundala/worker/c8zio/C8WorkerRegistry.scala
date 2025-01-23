@@ -1,12 +1,9 @@
 package camundala.worker.c8zio
 
-import camundala.worker.{JobWorker, WorkerRegistry}
+import camundala.worker.WorkerRegistry
 import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.impl.oauth.OAuthCredentialsProviderBuilder
 import zio.ZIO.*
 import zio.{Console, *}
-
-import java.net.URI
 
 class C8WorkerRegistry(client: C8Client)
     extends WorkerRegistry[C8Worker[?, ?]]:

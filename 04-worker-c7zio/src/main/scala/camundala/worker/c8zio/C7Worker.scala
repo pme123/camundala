@@ -12,12 +12,11 @@ import zio.ZIO.*
 import java.util.Date
 import scala.jdk.CollectionConverters.*
 
-trait C7Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, camunda.ExternalTaskHandler:
+trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
+    extends WorkerDsl[In, Out], camunda.ExternalTaskHandler:
 
   protected def c7Context: C7Context
-
-  private lazy val runtime = Runtime.default
-
+  
   def logger: WorkerLogger = Slf4JLogger.logger(getClass.getName)
 
   override def execute(
@@ -154,5 +153,6 @@ trait C7Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, camunda.E
     end handleError
 
   end extension
+  private lazy val runtime = Runtime.default
 
 end C7Worker

@@ -4,14 +4,16 @@ package worker
 import camundala.bpmn.*
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
+
+import scala.concurrent.duration.*
 import scala.reflect.ClassTag
 
-trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]
-  extends JobWorker:
+trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
 
   // needed that it can be called from CSubscriptionPostProcessor
   def worker: Worker[In, Out, ?]
   def topic: String = worker.topic
+  def timeout: Duration = 10.seconds
 
   def runWorkFromWorker(in: In)(using EngineRunContext): Option[Either[RunWorkError, Out]] =
     worker.runWorkHandler
@@ -21,6 +23,35 @@ trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]
   def runWorkFromWorkerUnsafe(in: In)(using EngineRunContext): Either[RunWorkError, Out] =
     runWorkFromWorker(in)
       .get // only if you are sure that there is a handler
+
+  protected def errorHandled(error: CamundalaWorkerError, handledErrors: Seq[String]): Boolean =
+    error.isMock || // if it is mocked, it is handled in the error, as it also could be a successful output
+      handledErrors.contains(error.errorCode.toString) || handledErrors.map(
+      _.toLowerCase
+    ).contains("catchall")
+
+  protected def regexMatchesAll(
+                                 errorHandled: Boolean,
+                                 error: CamundalaWorkerError,
+                                 regexHandledErrors: Seq[String]
+                               ) =
+    val errorMsg = error.errorMsg.replace("\n", "")
+    errorHandled && regexHandledErrors.forall(regex =>
+      errorMsg.matches(s".*$regex.*")
+    )
+
+  protected def filteredOutput(
+                                outputVariables: Seq[String],
+                                allOutputs: Map[String, Any]
+                              ): Map[String, Any] =
+    outputVariables match
+      case filter if filter.isEmpty => allOutputs
+      case filter =>
+        allOutputs
+          .filter:
+            case k -> _ => filter.contains(k)
+
+  end filteredOutput
 
   extension [T](option: Option[T])
     def toEither[E <: CamundalaWorkerError](

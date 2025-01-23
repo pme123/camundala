@@ -48,25 +48,3 @@ object ExampleJob extends CompanyBpmnCustomTaskDsl:
     Out()
   )
 end ExampleJob
-/*
-{
-  "approved" : true,
-  "clientKey" : 74854564837991,
-    "myMessage" : "hello",
-    "myTypes" : [
-    {
-      "doit" : "no",
-      "why" : 12
-    },
-    {
-      "doit" : "yes",
-      "why" : 42
-    },
-    {
-      "doit" : "yes",
-      "why" : 42
-    }
-  ],
- "businessKey": "MY_BUSINESS_KEY"
-}
-*/

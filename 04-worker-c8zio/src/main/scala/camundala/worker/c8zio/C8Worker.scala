@@ -13,7 +13,7 @@ import java.time
 import scala.jdk.CollectionConverters.*
 import java.util.Date
 
-trait C8Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, JobHandler:
+trait C8Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec] extends WorkerDsl[In, Out], JobHandler:
   protected def c8Context: C8Context
   private lazy val runtime = Runtime.default
 
