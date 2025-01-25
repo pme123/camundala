@@ -27,7 +27,12 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
   def document(apis: CApi*): Unit =
     val apiDoc = ApiDoc(apis.toList)
     apiConfig.init // pulls all dependencies.
-    ModelerTemplGenerator(version, apiConfig.modelerTemplateConfig, projectName, apiProjectConfig.companyName).generate(
+    ModelerTemplGenerator(
+      version,
+      apiConfig.modelerTemplateConfig,
+      projectName,
+      apiProjectConfig.companyName
+    ).generate(
       collectApis(apiDoc)
     )
     ModelerTemplUpdater(apiConfig, apiProjectConfig).update()
@@ -281,7 +286,8 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
 
   protected def dependencies: String =
 
-    def docPortal(projectName: String) =  s"${apiConfig.docBaseUrl.getOrElse("NOT_SET")}/$projectName/OpenApi.html"
+    def docPortal(projectName: String) =
+      s"${apiConfig.docBaseUrl.getOrElse("NOT_SET")}/$projectName/OpenApi.html"
 
     val projects       = apiConfig.projectsConfig.perGitRepoConfigs.flatMap(_.projects)
     println(s"Projects: $projects")
@@ -292,7 +298,9 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
         |
         |${
          docProjectConfig.dependencies
-           .map(dep => s"- _**[${dep.projectName}](${documentations.getOrElse(dep.projectName, "NOT FOUND")})**_")
+           .map(dep =>
+             s"- _**[${dep.projectName}](${documentations.getOrElse(dep.projectName, "NOT FOUND")})**_"
+           )
            .mkString("\n")
        }
         |""".stripMargin
@@ -398,7 +406,7 @@ trait ApiCreator extends PostmanApiCreator, TapirApiCreator, App:
     s"""It is also possible to use a _comma separated_ String,
        |like `"$example"`""".stripMargin
 
-  private lazy val packageConfPath = apiConfig.basePath / apiConfig.projectsConfig.projectConfPath
-  private lazy val docProjectConfig  = DocProjectConfig(apiProjectConfig)
+  private lazy val packageConfPath  = apiConfig.basePath / apiConfig.projectsConfig.projectConfPath
+  private lazy val docProjectConfig = DocProjectConfig(apiProjectConfig)
 
 end ApiCreator

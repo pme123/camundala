@@ -45,7 +45,7 @@ object CamundaHelper:
       .map {
         case typedValue if typedValue.getType == ValueType.NULL =>
           ZIO.succeed(None) // k -> null as Camunda Expressions need them
-        case typedValue                                         =>
+        case typedValue =>
           extractValue(typedValue)
             .map(v => Some(v))
       }
@@ -163,7 +163,7 @@ object CamundaHelper:
     ZIO.fromEither(variableKeys)
       .map: varKeys =>
         varKeys.map(_.trim).filter(_.nonEmpty)
-      .mapError : error =>
+      .mapError: error =>
         error.printStackTrace()
         BadVariableError(
           s"Could not extract Seq for an Array or comma-separated String: ${error.getMessage}"

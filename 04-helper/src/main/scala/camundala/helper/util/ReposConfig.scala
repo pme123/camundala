@@ -3,7 +3,7 @@ package camundala.helper.util
 case class ReposConfig(
     credentials: Seq[RepoCredentials] = Seq.empty,
     // first repo is the release Repo!
-    repos: Seq[RepoConfig] = Seq.empty,
+    repos: Seq[RepoConfig] = Seq.empty
 ):
 
   def sbtCredentials: String =
@@ -35,7 +35,7 @@ object RepoConfig:
       descr: String = "",
       realm: String = "gitlab"
   ) extends RepoConfig:
-    lazy val sbtContent =
+    lazy val sbtContent   =
       s"""  // $descr
          |  lazy val ${name}RepoStr = 
          |    "$repo"

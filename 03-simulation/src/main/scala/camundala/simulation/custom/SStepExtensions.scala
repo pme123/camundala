@@ -14,15 +14,15 @@ trait SStepExtensions
         data: ScenarioData
     ): ResultType =
       step match
-        case ut: SUserTask =>
+        case ut: SUserTask      =>
           ut.getAndComplete()
-        case e: SMessageEvent =>
+        case e: SMessageEvent   =>
           e.sendMessage()
-        case e: SSignalEvent =>
+        case e: SSignalEvent    =>
           e.sendSignal()
-        case e: STimerEvent =>
+        case e: STimerEvent     =>
           e.getAndExecute()
-        case sp: SSubProcess =>
+        case sp: SSubProcess    =>
           for
             given ScenarioData <- sp.switchToSubProcess()
             given ScenarioData <- sp.runSteps()
@@ -43,7 +43,7 @@ trait SStepExtensions
         case (Right(data), step) =>
           given ScenarioData = data
           step.run()
-        case (leftData, _) => leftData
+        case (leftData, _)       => leftData
       }
 
     def check()(using
@@ -57,9 +57,9 @@ trait SStepExtensions
 
     def checkVars()(using data: ScenarioData): ResultType =
       val processInstanceId = data.context.processInstanceId
-      val uri =
+      val uri               =
         uri"${config.endpoint}/history/variable-instance?processInstanceIdIn=$processInstanceId&executionIdIn=$processInstanceId&deserializeValues=false"
-      val request = basicRequest
+      val request           = basicRequest
         .auth()
         .get(uri)
       runRequest(request, s"Process '${hasProcessSteps.name}' checkVars")((body, data) =>
@@ -96,12 +96,12 @@ trait SStepExtensions
 
     def checkFinished()(data: ScenarioData): ResultType =
       val processInstanceId = data.context.processInstanceId
-      val uri =
+      val uri               =
         uri"${config.endpoint}/history/process-instance/$processInstanceId"
-      val request = basicRequest
+      val request           = basicRequest
         .auth()
         .get(uri)
-      given ScenarioData = data
+      given ScenarioData    = data
       runRequest(request, s"Process '${hasProcessSteps.name}' checkProcess") {
         (body, data) =>
           body.hcursor

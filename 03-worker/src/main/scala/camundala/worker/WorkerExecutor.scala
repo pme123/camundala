@@ -154,8 +154,7 @@ case class WorkerExecutor[
         case o: NoOutput =>
           context.toEngineObject(o)
         case _           =>
-          context.toEngineObject(output.asInstanceOf[Out])
-      )
+          context.toEngineObject(output.asInstanceOf[Out]))
   private def filteredOutput(
       allOutputs: Map[String, Any]
   ): Map[String, Any] =

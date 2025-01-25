@@ -11,7 +11,7 @@ object ProjectDmnTester
     extends DmnTesterConfigCreator,
       BpmnProcessDsl:
   val processName = "NOT USED"
-  val descr = ""
+  val descr       = ""
 
   private lazy val localDmnConfigPath: os.Path =
     os.pwd / "05-examples" / "invoice" / "03-dmn" / "src" / "main" / "resources" / "dmnConfigs"
@@ -43,7 +43,7 @@ object ProjectDmnTester
   )
 
   object InvoiceAssignApproverDmnIn:
-    given Schema[InvoiceAssignApproverDmnIn] = Schema.derived
+    given Schema[InvoiceAssignApproverDmnIn]     = Schema.derived
     given CirceCodec[InvoiceAssignApproverDmnIn] = deriveCodec
   end InvoiceAssignApproverDmnIn
 
@@ -52,7 +52,7 @@ object ProjectDmnTester
     case `day-to-day expense`, budget, exceptional
 
   object InvoiceClassification:
-    given Schema[InvoiceClassification] = deriveEnumApiSchema
+    given Schema[InvoiceClassification]     = deriveEnumApiSchema
     given InOutCodec[InvoiceClassification] = deriveEnumInOutCodec
 
   private lazy val InvoiceAssignApproverDmnUnit =

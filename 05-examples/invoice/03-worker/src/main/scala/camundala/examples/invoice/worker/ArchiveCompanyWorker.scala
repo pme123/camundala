@@ -20,11 +20,11 @@ class ArchiveCompanyWorker
     inputObject.shouldFail match
       case Some(false) =>
         Right(Out(Some(true)))
-      case Some(true) =>
+      case Some(true)  =>
         val err = CustomError("Could not archive invoice...")
         logger.error(err)
         Left(err)
-      case _ =>
+      case _           =>
         Right(Out(Some(false)))
     end match
   end runWork

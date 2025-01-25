@@ -23,6 +23,7 @@ trait JobWorker:
     errorHandled && regexHandledErrors.forall(regex =>
       errorMsg.matches(s".*$regex.*")
     )
+  end regexMatchesAll
 
   protected def filteredOutput(
       outputVariables: Seq[String],

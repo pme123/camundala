@@ -11,9 +11,9 @@ object TestApiCreator extends DefaultApiCreator, BpmnProcessDsl, App:
 
   def title = "Test API"
 
-  def version = "1.0"
+  def version                            = "1.0"
   lazy val companyProjectVersion: String = "0.1.0"
-  lazy val projectDescr: String = ""
+  lazy val projectDescr: String          = ""
 
   override val apiConfig: ApiConfig =
     ApiConfig("DemoConfig")
@@ -48,7 +48,7 @@ object Sample extends BpmnProcessDsl:
       address: Address = Address()
   )
   object SampleIn:
-    given ApiSchema[SampleIn] = deriveApiSchema
+    given ApiSchema[SampleIn]  = deriveApiSchema
     given InOutCodec[SampleIn] = deriveCodec
   end SampleIn
 
@@ -61,7 +61,7 @@ object Sample extends BpmnProcessDsl:
       country: String = "CH"
   )
   object Address:
-    given ApiSchema[Address] = deriveApiSchema
+    given ApiSchema[Address]  = deriveApiSchema
     given InOutCodec[Address] = deriveCodec
   end Address
 
@@ -71,12 +71,12 @@ object Sample extends BpmnProcessDsl:
       outputValue: String = "Just some text"
   )
   object SampleOut:
-    given ApiSchema[SampleOut] = deriveApiSchema
+    given ApiSchema[SampleOut]  = deriveApiSchema
     given InOutCodec[SampleOut] = deriveCodec
   end SampleOut
 
   lazy val standardSample: SampleIn = SampleIn()
-  val descr =
+  val descr                         =
     s"""This runs the Sample Process.
        |""".stripMargin
 

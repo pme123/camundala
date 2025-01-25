@@ -7,7 +7,7 @@ import camundala.worker.CamundalaWorkerError.*
 import scala.reflect.ClassTag
 
 trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]
-  extends JobWorker:
+    extends JobWorker:
 
   // needed that it can be called from CSubscriptionPostProcessor
   def worker: Worker[In, Out, ?]
@@ -112,12 +112,12 @@ trait ServiceWorkerDsl[
   protected def serviceTask: ServiceTask[In, Out, ServiceIn, ServiceOut]
   protected def apiUri(in: In): Uri // input must be valid - so no errors
   // optional
-  protected def method: Method = Method.GET
+  protected def method: Method                                  = Method.GET
   protected def querySegments(in: In): Seq[QuerySegmentOrParam] =
     Seq.empty // input must be valid - so no errors
-      // mocking out from outService and headers
-  protected def inputMapper(in: In): Option[ServiceIn] = None // input must be valid - so no errors
-  protected def inputHeaders(in: In): Map[String, String] =
+    // mocking out from outService and headers
+  protected def inputMapper(in: In): Option[ServiceIn]          = None // input must be valid - so no errors
+  protected def inputHeaders(in: In): Map[String, String]       =
     Map.empty // input must be valid - so no errors
   protected def outputMapper(
       serviceOut: ServiceResponse[ServiceOut],
@@ -136,10 +136,10 @@ trait ServiceWorkerDsl[
       in: In
   ): Either[ServiceMappingError, Out] =
     serviceResponse.outputBody match
-      case _: NoOutput => Right(serviceTask.out)
+      case _: NoOutput       => Right(serviceTask.out)
       case Some(_: NoOutput) => Right(serviceTask.out)
-      case None => Right(serviceTask.out)
-      case _ =>
+      case None              => Right(serviceTask.out)
+      case _                 =>
         Left(ServiceMappingError(s"There is an outputMapper missing for '${getClass.getName}'."))
   end defaultOutMapper
 
@@ -170,15 +170,17 @@ private trait InitProcessDsl[
   protected def customInit(in: In): InitIn
 
   // by default the InConfig is initialized
-  final def initProcess(in: In)(using engineContext: EngineContext): Either[InitProcessError, Map[String, Any]] =
+  final def initProcess(in: In)(using
+      engineContext: EngineContext
+  ): Either[InitProcessError, Map[String, Any]] =
     val inConfig = in match
       case i: WithConfig[?] =>
         initConfig(
           i.inConfig.asInstanceOf[Option[InConfig]],
           i.defaultConfig.asInstanceOf[InConfig]
         )
-      case _ => Map.empty
-    val custom = engineContext.toEngineObject(customInit(in))
+      case _                => Map.empty
+    val custom   = engineContext.toEngineObject(customInit(in))
     Right(inConfig ++ custom)
   end initProcess
 
@@ -197,20 +199,23 @@ private trait InitProcessDsl[
       defaultConfig: InConfig
   )(using engineContext: EngineContext): Map[String, Any] =
     val defaultJson = defaultConfig.asJson
-    val r = optConfig.map {
+    val r           = optConfig.map {
       config =>
         val json = config.asJson
         config.productElementNames
           .map(k =>
-            k -> (json.hcursor
-              .downField(k).focus, defaultJson.hcursor
-              .downField(k).focus)
+            k -> (
+              json.hcursor
+                .downField(k).focus,
+              defaultJson.hcursor
+                .downField(k).focus
+            )
           ).collect {
             case k -> (Some(j), Some(dj)) if j.isNull =>
               k -> dj
-            case k -> (Some(j), _) =>
+            case k -> (Some(j), _)                    =>
               k -> j
-            case k -> (_, dj) =>
+            case k -> (_, dj)                         =>
               k -> dj.getOrElse(Json.Null)
           }
           .toMap

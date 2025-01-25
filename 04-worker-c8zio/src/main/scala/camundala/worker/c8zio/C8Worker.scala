@@ -69,25 +69,26 @@ trait C8Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, JobHandle
       error: CamundalaWorkerError
   ): ZIO[Any, Throwable, Unit] =
     (for
-      _ <- logError(s"Error: ${error.causeMsg}")
+      _                <- logError(s"Error: ${error.causeMsg}")
       json             <- extractJson(job)
       generalVariables <- extractGeneralVariables(json)
-      isErrorHandled      = errorHandled(error, generalVariables.handledErrors)
-      errorRegexHandled = regexMatchesAll(isErrorHandled, error, generalVariables.regexHandledErrors)
-        _ <- attempt(client.newFailCommand(job)
-             .retries(job.getRetries - 1)
-             .retryBackoff(time.Duration.ofSeconds(60))
-             .variables(Map("errorCode" -> error.errorCode, "errorMsg" -> error.errorMsg).asJava)
-             .errorMessage(error.causeMsg)
-             .send().join())
+      isErrorHandled    = errorHandled(error, generalVariables.handledErrors)
+      errorRegexHandled =
+        regexMatchesAll(isErrorHandled, error, generalVariables.regexHandledErrors)
+      _                <- attempt(client.newFailCommand(job)
+                            .retries(job.getRetries - 1)
+                            .retryBackoff(time.Duration.ofSeconds(60))
+                            .variables(Map("errorCode" -> error.errorCode, "errorMsg" -> error.errorMsg).asJava)
+                            .errorMessage(error.causeMsg)
+                            .send().join())
     yield (isErrorHandled, errorRegexHandled, generalVariables))
-      .flatMap :
+      .flatMap:
         case (true, true, generalVariables) =>
           val mockedOutput = error match
             case error: ErrorWithOutput =>
               error.output
-            case _ => Map.empty
-          val filtered = filteredOutput(generalVariables.outputVariables, mockedOutput)
+            case _                      => Map.empty
+          val filtered     = filteredOutput(generalVariables.outputVariables, mockedOutput)
           ZIO.attempt(
             if
               error.isMock && !generalVariables.handledErrors.contains(
@@ -98,7 +99,7 @@ trait C8Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, JobHandle
             else
               val errorVars = Map(
                 "errorCode" -> error.errorCode,
-                "errorMsg" -> error.errorMsg
+                "errorMsg"  -> error.errorMsg
               )
               val variables = (filtered ++ errorVars).asJava
               client.newFailCommand(job)
@@ -108,9 +109,9 @@ trait C8Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, JobHandle
                 .errorMessage(error.causeMsg)
                 .send().join()
           )
-        case (true, false, _) =>
+        case (true, false, _)               =>
           ZIO.fail(HandledRegexNotMatchedError(error))
-        case _ =>
+        case _                              =>
           ZIO.fail(error)
 
   private def extractGeneralVariables(json: Json) =

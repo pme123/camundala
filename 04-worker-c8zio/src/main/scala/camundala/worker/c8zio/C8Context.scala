@@ -16,6 +16,5 @@ trait C8Context extends EngineContext:
   def sendRequest[ServiceIn: InOutEncoder, ServiceOut: InOutDecoder: ClassTag](
       request: RunnableRequest[ServiceIn]
   ): SendRequestType[ServiceOut] = ???
-    //DefaultRestApiClient.sendRequest(request)
-
-
+  // DefaultRestApiClient.sendRequest(request)
+end C8Context
