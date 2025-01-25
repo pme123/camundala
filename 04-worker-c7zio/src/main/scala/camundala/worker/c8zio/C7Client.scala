@@ -23,12 +23,13 @@ object C7NoAuthClient extends C7Client:
     ZIO.attempt:
       ExternalTaskClient.create()
         .baseUrl("http://localhost:8887/engine-rest")
-       // .asyncResponseTimeout(10000)
+        // .asyncResponseTimeout(10000)
         .customizeHttpClient: httpClientBuilder =>
           httpClientBuilder.setDefaultRequestConfig(RequestConfig.custom()
-           // .setResponseTimeout(Timeout.ofSeconds(15))
+            // .setResponseTimeout(Timeout.ofSeconds(15))
             .build())
         .build()
+end C7NoAuthClient
 
 object C7BasicAuthClient extends C7Client:
 
@@ -55,9 +56,9 @@ object C7BasicAuthClient extends C7Client:
 end C7BasicAuthClient
 
 object OAuth2Client extends C7Client, OAuthPasswordFlow:
-  given WorkerLogger = Slf4JLogger.logger(getClass.getName)
+  given WorkerLogger         = Slf4JLogger.logger(getClass.getName)
   lazy val fssoRealm: String = sys.env.getOrElse("FSSO_REALM", "0949")
-  lazy val fssoBaseUrl = sys.env.getOrElse("FSSO_BASE_URL", s"http://host.lima.internal:8090")
+  lazy val fssoBaseUrl       = sys.env.getOrElse("FSSO_BASE_URL", s"http://host.lima.internal:8090")
 
   def addAccessToken = new HttpRequestInterceptor:
     override def process(request: HttpRequest, entity: EntityDetails, context: HttpContext): Unit =

@@ -7,7 +7,7 @@ import camundala.worker.CamundalaWorkerError
 import camundala.worker.c8zio.C8Worker
 
 object ExampleJobWorker extends CompanyCustomWorkerDsl[In, Out]:
-  lazy val customTask = example
+  lazy val customTask                                                = example
   def runWork(in: In): Either[CamundalaWorkerError.CustomError, Out] =
     logger.info(s"Running ExampleJobWorker with $in")
     Thread.sleep(3000)
@@ -69,4 +69,4 @@ end ExampleJob
   ],
  "businessKey": "MY_BUSINESS_KEY"
 }
-*/
+ */

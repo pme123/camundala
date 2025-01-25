@@ -18,16 +18,16 @@ sealed trait Worker[
 
   def inOutExample: InOut[In, Out, ?]
   def topic: String
-  def otherEnumInExamples: Option[Seq[In]] = inOutExample.otherEnumInExamples
-  lazy val in: In = inOutExample.in
-  lazy val out: Out = inOutExample.out
+  def otherEnumInExamples: Option[Seq[In]]               = inOutExample.otherEnumInExamples
+  lazy val in: In                                        = inOutExample.in
+  lazy val out: Out                                      = inOutExample.out
   // handler
-  def validationHandler: Option[ValidationHandler[In]] = None
+  def validationHandler: Option[ValidationHandler[In]]   = None
   def initProcessHandler: Option[InitProcessHandler[In]] = None
   // no handler for mocking - all done from the InOut Object
-  def runWorkHandler: Option[RunWorkHandler[In, Out]] = None
+  def runWorkHandler: Option[RunWorkHandler[In, Out]]    = None
   // helper
-  lazy val variableNames: Seq[String] =
+  lazy val variableNames: Seq[String]                    =
     (in.productElementNames.toSeq ++
       otherEnumInExamples
         .map:
@@ -39,7 +39,7 @@ sealed trait Worker[
     in match
       case i: WithConfig[?] =>
         i.defaultConfig.productElementNames.toSeq
-      case _ => Seq.empty
+      case _                => Seq.empty
 
   def defaultMock(in: In)(using
       context: EngineRunContext
@@ -48,7 +48,7 @@ sealed trait Worker[
       inOutExample match
         case e: ProcessOrExternalTask[In, Out, ?] =>
           e.dynamicOutMock.map(_(in)).getOrElse(out)
-        case _ => out
+        case _                                    => out
     )
   end defaultMock
 
@@ -186,7 +186,7 @@ object RunnableRequest:
       inputObject.productElementNames.toSeq
         .zip(inputObject.productIterator.toSeq)
         .collect {
-          case k -> Some(v) => k -> s"$v"
+          case k -> Some(v)        => k -> s"$v"
           case k -> v if v != None => k -> s"$v"
         }
         .toMap
@@ -194,8 +194,8 @@ object RunnableRequest:
     val segments =
       querySegments
         .collect {
-          case Value(v) => QuerySegment.Value(v)
-          case KeyValue(k, v) => QuerySegment.KeyValue(k, v)
+          case Value(v)                       => QuerySegment.Value(v)
+          case KeyValue(k, v)                 => QuerySegment.KeyValue(k, v)
           case Key(k) if valueMap.contains(k) =>
             QuerySegment.KeyValue(k, valueMap(k))
         }

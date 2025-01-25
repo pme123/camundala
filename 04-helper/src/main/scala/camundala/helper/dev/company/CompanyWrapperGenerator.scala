@@ -18,21 +18,31 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
     createIfNotExists(helperCompanyDevHelperPath, helperCompanyDevHelperWrapper)
     createIfNotExists(helperCompanyDevConfigPath, helperCompanyDevConfigWrapper)
     createIfNotExists(helperCompanyCamundalaDevHelperPath, helperCompanyCamundalaDevHelperWrapper)
+  end generate
 
   private lazy val companyName = config.companyName
 
-  private lazy val projectBpmnPath = ModuleConfig.bpmnModule.srcPath / "CompanyBpmnDsl.scala"
-  private lazy val projectApiPath = ModuleConfig.apiModule.srcPath / "CompanyApiCreator.scala"
-  private lazy val projectDmnPath = ModuleConfig.dmnModule.srcPath / "CompanyDmnTester.scala"
-  private lazy val projectSimulationPath = ModuleConfig.simulationModule.srcPath / "CompanySimulation.scala"
-  private lazy val projectWorkerHandlerPath = ModuleConfig.workerModule.srcPath / "CompanyWorkerHandler.scala"
-  private lazy val projectWorkerContextPath = ModuleConfig.workerModule.srcPath / "CompanyEngineContext.scala"
-  private lazy val projectWorkerPasswordPath = ModuleConfig.workerModule.srcPath / "CompanyPasswordFlow.scala"
-  private lazy val projectWorkerRestApiPath = ModuleConfig.workerModule.srcPath / "CompanyRestApiClient.scala"
-  private lazy val projectWorkerConfigPath = ModuleConfig.workerModule.resourcePath / "application-company-defaults.yaml"
-  private lazy val helperCompanyDevHelperPath = ModuleConfig.helperModule.srcPath / "CompanyDevHelper.scala"
-  private lazy val helperCompanyDevConfigPath = ModuleConfig.helperModule.srcPath / "CompanyDevConfig.scala"
-  private lazy val helperCompanyCamundalaDevHelperPath = ModuleConfig.helperModule.srcPath / "CompanyCamundalaDevHelper.scala"
+  private lazy val projectBpmnPath                     = ModuleConfig.bpmnModule.srcPath / "CompanyBpmnDsl.scala"
+  private lazy val projectApiPath                      = ModuleConfig.apiModule.srcPath / "CompanyApiCreator.scala"
+  private lazy val projectDmnPath                      = ModuleConfig.dmnModule.srcPath / "CompanyDmnTester.scala"
+  private lazy val projectSimulationPath               =
+    ModuleConfig.simulationModule.srcPath / "CompanySimulation.scala"
+  private lazy val projectWorkerHandlerPath            =
+    ModuleConfig.workerModule.srcPath / "CompanyWorkerHandler.scala"
+  private lazy val projectWorkerContextPath            =
+    ModuleConfig.workerModule.srcPath / "CompanyEngineContext.scala"
+  private lazy val projectWorkerPasswordPath           =
+    ModuleConfig.workerModule.srcPath / "CompanyPasswordFlow.scala"
+  private lazy val projectWorkerRestApiPath            =
+    ModuleConfig.workerModule.srcPath / "CompanyRestApiClient.scala"
+  private lazy val projectWorkerConfigPath             =
+    ModuleConfig.workerModule.resourcePath / "application-company-defaults.yaml"
+  private lazy val helperCompanyDevHelperPath          =
+    ModuleConfig.helperModule.srcPath / "CompanyDevHelper.scala"
+  private lazy val helperCompanyDevConfigPath          =
+    ModuleConfig.helperModule.srcPath / "CompanyDevConfig.scala"
+  private lazy val helperCompanyCamundalaDevHelperPath =
+    ModuleConfig.helperModule.srcPath / "CompanyCamundalaDevHelper.scala"
 
   private lazy val bpmnWrapper =
     s"""package $companyName.camundala.bpmn
@@ -242,7 +252,7 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
       |        include: "health"
       |""".stripMargin
 
-  private lazy val helperCompanyDevHelperWrapper =
+  private lazy val helperCompanyDevHelperWrapper          =
     s"""package $companyName.camundala.helper
        |
        |import camundala.api.ApiConfig
@@ -259,7 +269,7 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
        |end CompanyDevHelper
        |""".stripMargin
   end helperCompanyDevHelperWrapper
-  private lazy val helperCompanyDevConfigWrapper =
+  private lazy val helperCompanyDevConfigWrapper          =
     s"""package $companyName.camundala.helper
        |
        |import camundala.api.*
@@ -299,31 +309,31 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
        |""".stripMargin
   end helperCompanyDevConfigWrapper
   private lazy val helperCompanyCamundalaDevHelperWrapper =
-      s"""package $companyName.camundala.helper
-         |
-         |import camundala.api.ApiConfig
-         |import camundala.helper.dev.DevCompanyCamundalaHelper
-         |import camundala.helper.util.DevConfig
-         |import $companyName.camundala.BuildInfo
-         |import $companyName.camundala.api.CompanyApiCreator
-         |
-         |object CompanyCamundalaDevHelper
-         |    extends DevCompanyCamundalaHelper:
-         |
-         |  lazy val apiConfig: ApiConfig = CompanyApiCreator.apiConfig
-         |    .copy(
-         |      basePath = os.pwd / "00-docs",
-         |      tempGitDir = os.pwd / os.up / "git-temp"
-         |    )
-         |
-         |  lazy val devConfig: DevConfig = CompanyDevConfig.companyConfig
-         |
-         |end CompanyCamundalaDevHelper
-         |""".stripMargin
+    s"""package $companyName.camundala.helper
+       |
+       |import camundala.api.ApiConfig
+       |import camundala.helper.dev.DevCompanyCamundalaHelper
+       |import camundala.helper.util.DevConfig
+       |import $companyName.camundala.BuildInfo
+       |import $companyName.camundala.api.CompanyApiCreator
+       |
+       |object CompanyCamundalaDevHelper
+       |    extends DevCompanyCamundalaHelper:
+       |
+       |  lazy val apiConfig: ApiConfig = CompanyApiCreator.apiConfig
+       |    .copy(
+       |      basePath = os.pwd / "00-docs",
+       |      tempGitDir = os.pwd / os.up / "git-temp"
+       |    )
+       |
+       |  lazy val devConfig: DevConfig = CompanyDevConfig.companyConfig
+       |
+       |end CompanyCamundalaDevHelper
+       |""".stripMargin
   end helperCompanyCamundalaDevHelperWrapper
 
   extension (module: ModuleConfig)
-    def srcPath: os.Path =
+    def srcPath: os.Path      =
       config.projectDir / module.packagePath(
         config.projectPath
       )
@@ -332,4 +342,5 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
         config.projectPath,
         isSourceDir = false
       )
+  end extension
 end CompanyWrapperGenerator

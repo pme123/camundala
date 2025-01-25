@@ -22,7 +22,7 @@ class InvoiceSimulation extends CustomSimulation:
       "Could not archive invoice..."
     )(
       ApproveInvoiceUT
-        .waitForSec(1), // tests wait function for UserTasks
+        .waitForSec(1),    // tests wait function for UserTasks
       PrepareBankTransferUT
     ),
     scenario(`Invoice Receipt`)(
@@ -40,7 +40,7 @@ class InvoiceSimulation extends CustomSimulation:
         AssignReviewerUT,
         ReviewInvoiceUT // do clarify
       ),
-      ApproveInvoiceUT, // now approve
+      ApproveInvoiceUT,    // now approve
       PrepareBankTransferUT
     ),
     scenario(`Invoice Receipt with Review failed`)(
@@ -53,7 +53,7 @@ class InvoiceSimulation extends CustomSimulation:
     scenario(`Invoice Receipt with Review mocked`)(
       NotApproveInvoiceUT,
       // subProcess Mocked - so nothing to do
-      ApproveInvoiceUT, // now approve
+      ApproveInvoiceUT,    // now approve
       PrepareBankTransferUT
     ),
     scenario(InvoiceAssignApproverDMN),
@@ -66,7 +66,7 @@ class InvoiceSimulation extends CustomSimulation:
     scenario(`Invoice Receipt mocked invoiceReviewed`)(
       NotApproveInvoiceUT,
       // subProcess not needed because of mocking
-      ApproveInvoiceUT, // now approve
+      ApproveInvoiceUT,    // now approve
       PrepareBankTransferUT
     ),
     scenario(`Review Invoice mocked`), // mocks itself
@@ -97,7 +97,7 @@ class InvoiceSimulation extends CustomSimulation:
     // .withMaxCount(20)
     // .withLogLevel(LogLevel.DEBUG)
 
-  private lazy val `Invoice Receipt` = InvoiceReceipt.example
+  private lazy val `Invoice Receipt`                        = InvoiceReceipt.example
   private lazy val `Invoice Receipt mocked invoiceReviewed` =
     `Invoice Receipt with Review`
       .withIn(InvoiceReceipt.In(inConfig =
@@ -106,22 +106,22 @@ class InvoiceSimulation extends CustomSimulation:
         ))
       ))
 
-  private lazy val ApproveInvoiceUT = InvoiceReceipt.ApproveInvoiceUT.example
+  private lazy val ApproveInvoiceUT      = InvoiceReceipt.ApproveInvoiceUT.example
   private lazy val PrepareBankTransferUT =
     InvoiceReceipt.PrepareBankTransferUT.example
 
-  private lazy val `Review Invoice` = ReviewInvoice.example
+  private lazy val `Review Invoice`        = ReviewInvoice.example
   private lazy val `Review Invoice mocked` = ReviewInvoice.example
     .mockWith(ReviewInvoice.Out())
 
   private lazy val AssignReviewerUT = ReviewInvoice.AssignReviewerUT.example
-  private lazy val ReviewInvoiceUT = ReviewInvoice.ReviewInvoiceUT.example
+  private lazy val ReviewInvoiceUT  = ReviewInvoice.ReviewInvoiceUT.example
 
   private lazy val ReviewInvoiceNotClarifiedUT =
     ReviewInvoiceUT
       .withOut(ReviewInvoice.ReviewInvoiceUT.Out(false))
 
-  private lazy val NotApproveInvoiceUT =
+  private lazy val NotApproveInvoiceUT             =
     ApproveInvoiceUT
       .withOut(InvoiceReceipt.ApproveInvoiceUT.Out(false))
   // this indirection is needed as we use the same Process for two scenarios (name clash).
@@ -139,11 +139,11 @@ class InvoiceSimulation extends CustomSimulation:
       .exists("amount")
       .notExists("amounts")
       .isEquals("amount", 300.0)
-  private lazy val `Invoice Receipt that fails` =
+  private lazy val `Invoice Receipt that fails`     =
     InvoiceReceipt.example
       .withIn(InvoiceReceipt.In(inConfig = Some(InvoiceReceipt.InConfig(shouldFail = Some(true)))))
 
-  private lazy val InvoiceAssignApproverDMN =
+  private lazy val InvoiceAssignApproverDMN  =
     InvoiceReceipt.InvoiceAssignApproverDMN.example
   private lazy val InvoiceAssignApproverDMN2 =
     InvoiceAssignApproverDMN
@@ -173,7 +173,7 @@ class InvoiceSimulation extends CustomSimulation:
       .withOut(
         InvoiceReceipt.Out(approved = false, clarified = Some(false), archived = None)
       )
-  private lazy val BadValidationP =
+  private lazy val BadValidationP                       =
     InvoiceReceipt.example
       .withIn(InvoiceReceipt.In(null))
 

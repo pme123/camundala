@@ -13,15 +13,16 @@ import scala.reflect.ClassTag
 trait DmnTesterConfigCreator extends DmnConfigWriter, DmnTesterStarter:
 
   // the path where the DMNs are
-  protected def dmnBasePath: os.Path = starterConfig.dmnPaths.head
+  protected def dmnBasePath: os.Path                     = starterConfig.dmnPaths.head
   // the path where the DMN Configs are
-  protected def dmnConfigPath: os.Path = starterConfig.dmnConfigPaths.head
+  protected def dmnConfigPath: os.Path                   = starterConfig.dmnConfigPaths.head
   // creating the Path to the DMN - by default the _dmnName_ is `decisionDmn.decisionDefinitionKey`.
   protected def defaultDmnPath(dmnName: String): os.Path =
     val dmnPath = dmnBasePath / s"${dmnName.replace(s"${starterConfig.companyName}-", "")}.dmn"
-    if (!dmnPath.toIO.exists())
+    if !dmnPath.toIO.exists() then
       throw FileNotFoundException(s"There is no DMN in $dmnPath")
     dmnPath
+  end defaultDmnPath
 
   protected def createDmnConfigs(dmnTesterObjects: DmnTesterObject[?]*): Unit =
     startDmnTester
@@ -43,10 +44,10 @@ trait DmnTesterConfigCreator extends DmnConfigWriter, DmnTesterStarter:
     dmnTesterObjects
       .filterNot(_._inTestMode)
       .map { dmnTO =>
-        val dmn = dmnTO.dDmn
+        val dmn         = dmnTO.dDmn
         val in: Product = dmn.in
-        val inputs = toInputs(in, dmnTO)
-        val variables = toVariables(in)
+        val inputs      = toInputs(in, dmnTO)
+        val variables   = toVariables(in)
         DmnConfig(
           dmn.decisionDefinitionKey,
           TesterData(inputs, variables),
@@ -76,11 +77,11 @@ trait DmnTesterConfigCreator extends DmnConfigWriter, DmnTesterStarter:
   ): TesterInput =
     val unwrapValue = value match
       case d: LocalDateTime => d.toString
-      case Some(v) => v
-      case v => v
-    val isNullable = value match
+      case Some(v)          => v
+      case v                => v
+    val isNullable  = value match
       case Some(_) => true
-      case _ => false
+      case _       => false
     // noinspection ScalaUnnecessaryParentheses
     unwrapValue match
       case v: (Double | Int | Long | Short | String | Float) =>
@@ -89,13 +90,13 @@ trait DmnTesterConfigCreator extends DmnConfigWriter, DmnTesterStarter:
           isNullable,
           addTestValues.getOrElse(k, List(TesterValue.fromAny(v)))
         )
-      case _: Boolean =>
+      case _: Boolean                                        =>
         TesterInput(
           k,
           isNullable,
           List(TesterValue.fromAny(true), toTesterValue(false))
         )
-      case v: scala.reflect.Enum =>
+      case v: scala.reflect.Enum                             =>
         val e: { def values: Array[?] } =
           v.asInstanceOf[{ def values: Array[?] }]
         TesterInput(
@@ -103,7 +104,7 @@ trait DmnTesterConfigCreator extends DmnConfigWriter, DmnTesterStarter:
           isNullable,
           addTestValues.getOrElse(k, e.values.map(v => toTesterValue(v)).toList)
         )
-      case v =>
+      case v                                                 =>
         throw new IllegalArgumentException(
           s"Not supported for DMN Input ($k -> $v)"
         )
@@ -134,7 +135,7 @@ trait DmnTesterConfigCreator extends DmnConfigWriter, DmnTesterStarter:
     value match
       // enums not supported in DmnTester 2.13
       case e: scala.reflect.Enum => TesterValue.fromAny(e.toString)
-      case v => TesterValue.fromAny(v)
+      case v                     => TesterValue.fromAny(v)
 
   extension [In <: Product](dmnTO: DmnTesterObject[In])
 

@@ -6,6 +6,6 @@ enum InvoiceCategory:
   case `Travel Expenses`, Misc, `Software License Costs`
 
 object InvoiceCategory:
-  given ApiSchema[InvoiceCategory] = deriveEnumApiSchema
+  given ApiSchema[InvoiceCategory]  = deriveEnumApiSchema
   given InOutCodec[InvoiceCategory] = deriveEnumInOutCodec
 end InvoiceCategory

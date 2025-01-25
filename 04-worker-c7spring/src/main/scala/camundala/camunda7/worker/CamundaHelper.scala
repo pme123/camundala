@@ -25,15 +25,15 @@ object CamundaHelper:
   )(using ExternalTask): Either[BadVariableError, Option[A]] =
     for
       maybeJson <- jsonVariableOpt(varKey)
-      obj <- maybeJson
-        .map(_.as[Option[A]])
-        .getOrElse(Right(None))
-        .left
-        .map(err =>
-          BadVariableError(
-            s"Problem decoding Json to ${nameOfType[A]}: ${err.getMessage}"
-          )
-        )
+      obj       <- maybeJson
+                     .map(_.as[Option[A]])
+                     .getOrElse(Right(None))
+                     .left
+                     .map(err =>
+                       BadVariableError(
+                         s"Problem decoding Json to ${nameOfType[A]}: ${err.getMessage}"
+                       )
+                     )
     yield obj
 
   def jsonVariableOpt(
@@ -64,7 +64,7 @@ object CamundaHelper:
   ): HelperContext[Either[BadVariableError, Seq[String]]] =
     jsonVariableOpt(varKey)
       .flatMap {
-        case Some(value) if value.isArray =>
+        case Some(value) if value.isArray  =>
           extractFromSeq(
             value
               .as[Seq[String]]
@@ -75,7 +75,7 @@ object CamundaHelper:
               .as[String]
               .map(_.split(",").toSeq)
           )
-        case _ =>
+        case _                             =>
           Right(defaultSeq.map(_.toString))
       }
 
@@ -131,11 +131,11 @@ object CamundaHelper:
 
       case _: PrimitiveValueType =>
         typedValue.getValue match
-          case vt: DmnValueSimple =>
+          case vt: DmnValueSimple     =>
             Right(vt.asJson)
           case en: scala.reflect.Enum =>
             Right(Json.fromString(en.toString))
-          case other =>
+          case other                  =>
             Left(
               BadVariableError(
                 s"Input is not valid: Unexpected PrimitiveValueType: $other"

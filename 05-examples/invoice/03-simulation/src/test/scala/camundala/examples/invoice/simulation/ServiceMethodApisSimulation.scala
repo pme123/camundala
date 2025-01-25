@@ -26,6 +26,6 @@ class ServiceMethodApisSimulation extends CustomSimulation:
     //  .withLogLevel(LogLevel.DEBUG)
 
   private lazy val `Service Method Delete` = ServiceMethodDeleteApi.example
-  private lazy val `Service Method List` = ServiceMethodListApi.example
+  private lazy val `Service Method List`   = ServiceMethodListApi.example
 
 end ServiceMethodApisSimulation
