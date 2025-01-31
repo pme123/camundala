@@ -24,8 +24,7 @@ object C7NoAuthClient extends C7Client:
     ZIO.attempt:
       ExternalTaskClient.create()
         .baseUrl("http://localhost:8887/engine-rest")
-        .backoffStrategy(new ExponentialErrorBackoffStrategy(100, 1.5, 1000))
-       // .asyncResponseTimeout(10000)
+        .disableBackoffStrategy()
         .customizeHttpClient: httpClientBuilder =>
           httpClientBuilder.setDefaultRequestConfig(RequestConfig.custom()
            // .setResponseTimeout(Timeout.ofSeconds(15))
@@ -39,7 +38,7 @@ object C7BasicAuthClient extends C7Client:
       val encodedCredentials = encodeCredentials("admin", "admin")
       val cl                 = ExternalTaskClient.create()
         .baseUrl("http://localhost:8080/engine-rest")
-        .asyncResponseTimeout(15000)
+        .disableBackoffStrategy()
         .customizeHttpClient: httpClientBuilder =>
           httpClientBuilder.setDefaultRequestConfig(RequestConfig.custom()
             .setResponseTimeout(Timeout.ofSeconds(15))
@@ -69,7 +68,7 @@ object OAuth2Client extends C7Client, OAuthPasswordFlow:
     ZIO.attempt:
       ExternalTaskClient.create()
         .baseUrl("http://localhost:8080/engine-rest")
-        .asyncResponseTimeout(15000)
+        .disableBackoffStrategy()
         .customizeHttpClient: httpClientBuilder =>
           httpClientBuilder
             .addRequestInterceptorLast(addAccessToken)

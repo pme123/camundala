@@ -12,12 +12,7 @@ class C8WorkerRegistry(client: C8Client)
     Console.printLine(s"Starting C8 Worker Client") *>
       acquireReleaseWith(client.client)(_.closeClient()): client =>
         for
-          server <- attempt(
-                      client
-                        .newTopologyRequest
-                        .send
-                        .join
-                    ).forever.fork
+          server <- ZIO.never.forever.fork
           _      <- collectAllPar(workers.map(w => registerWorker(w, client)))
           _      <- server.join
         yield ()

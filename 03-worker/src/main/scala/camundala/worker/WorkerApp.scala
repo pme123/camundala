@@ -27,12 +27,9 @@ trait WorkerApp extends ZIOAppDefault:
   override def run: ZIO[Any, Any, Any] =
     for
       _ <- logInfo(s"Starting WorkerApp: ${getClass.getSimpleName}")
-      _ <- ZIO.foreachPar((theDependencies :+ this))(app => registerWorkers(app))
+      _ <- ZIO.foreachPar(workerRegistries)(registry =>
+        registry.register((theDependencies :+ this).flatMap(_.theWorkers).toSet)
+      )
     yield ()
-//TODO optimize registration
-  private def registerWorkers(app: WorkerApp): ZIO[Any, Any, Any] =
-    for
-      _ <- logInfo(s"Starting WorkerApp: ${app.getClass.getSimpleName}")
-      _ <- collectAllPar(workerRegistries.map(_.register(app.theWorkers)))
-    yield ()
+
 end WorkerApp
