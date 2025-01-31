@@ -13,6 +13,5 @@ object TestWorkerApp extends CompanyWorkerApp:
     ExampleJobWorker
   )
 
-  def asDependency = theWorkers
-  
+
   

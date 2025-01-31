@@ -8,6 +8,7 @@ import org.apache.hc.core5.http.*
 import org.apache.hc.core5.http.protocol.HttpContext
 import org.apache.hc.core5.util.Timeout
 import org.camunda.bpm.client.ExternalTaskClient
+import org.camunda.bpm.client.backoff.ExponentialErrorBackoffStrategy
 import zio.ZIO
 
 import java.io.IOException
@@ -23,6 +24,7 @@ object C7NoAuthClient extends C7Client:
     ZIO.attempt:
       ExternalTaskClient.create()
         .baseUrl("http://localhost:8887/engine-rest")
+        .backoffStrategy(new ExponentialErrorBackoffStrategy(100, 1.5, 1000))
        // .asyncResponseTimeout(10000)
         .customizeHttpClient: httpClientBuilder =>
           httpClientBuilder.setDefaultRequestConfig(RequestConfig.custom()
