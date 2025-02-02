@@ -1,9 +1,12 @@
-package camundala.worker.c8zio
+package camundala.worker.c7zio
 
 import camundala.domain.*
 import camundala.worker.*
+import camundala.worker.CamundalaWorkerError.ServiceError
 import org.camunda.bpm.client.variable.ClientValues
 import org.slf4j.{Logger, LoggerFactory}
+import zio.ZIO
+
 import scala.reflect.ClassTag
 
 trait C7Context extends EngineContext:
@@ -16,10 +19,7 @@ trait C7Context extends EngineContext:
 
   def sendRequest[ServiceIn: InOutEncoder, ServiceOut: InOutDecoder: ClassTag](
       request: RunnableRequest[ServiceIn]
-  ): SendRequestType[ServiceOut] = ???
-   // DefaultRestApiClient.sendRequest(request)
+  ): SendRequestType[ServiceOut] =
+    DefaultRestApiClient.sendRequest(request)
 
 end C7Context
-
-
-

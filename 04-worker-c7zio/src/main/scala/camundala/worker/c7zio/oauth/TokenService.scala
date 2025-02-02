@@ -1,4 +1,4 @@
-package camundala.worker.c8zio
+package camundala.worker.c7zio
 package oauth
 
 import camundala.worker.CamundalaWorkerError.ServiceAuthError

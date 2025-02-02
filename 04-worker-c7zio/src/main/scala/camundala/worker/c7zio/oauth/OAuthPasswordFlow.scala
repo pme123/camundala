@@ -1,4 +1,4 @@
-package camundala.worker.c8zio.oauth
+package camundala.worker.c7zio.oauth
 
 import camundala.domain.InOutDecoder
 import camundala.worker.*

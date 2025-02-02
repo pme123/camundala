@@ -5,6 +5,7 @@ import camundala.bpmn.*
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 import io.circe.*
+import zio.{IO, ZIO}
 
 import java.util.Date
 
@@ -172,7 +173,7 @@ def niceClassName(clazz: Class[?]) =
   clazz.getName.split("""\$""").head
 
 def printTimeOnConsole(start: Date) =
-  val time = new Date().getTime - start.getTime
+  val time  = new Date().getTime - start.getTime
   val color = if time > 1000 then Console.YELLOW_B
   else if time > 250 then Console.MAGENTA
   else Console.BLACK

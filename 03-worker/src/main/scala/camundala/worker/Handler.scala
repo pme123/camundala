@@ -7,6 +7,8 @@ import camundala.worker.CamundalaWorkerError.*
 import io.circe
 import sttp.model.Uri.QuerySegment
 import sttp.model.{Method, Uri}
+import zio.{IO, ZIO}
+
 import scala.reflect.ClassTag
 
 trait WorkerHandler:
@@ -14,7 +16,7 @@ trait WorkerHandler:
   def topic: String
 
   def applicationName: String
-  def registerHandler( register: => Unit): Unit =
+  def registerHandler(register: => Unit): Unit =
     val appPackageName = applicationName.replace("-", ".")
     val testMode       = sys.env.get("WORKER_TEST_MODE").contains("true") // did not work with lazy val
     if testMode || getClass.getName.startsWith(appPackageName)

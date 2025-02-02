@@ -4,7 +4,7 @@ import camundala.bpmn.CustomTask
 import camundala.domain.*
 import camundala.examples.demos.newWorker.ExampleJob2.*
 import camundala.worker.CamundalaWorkerError
-import camundala.worker.c8zio.C8Worker
+import camundala.worker.c7zio.C8Worker
 
 object ExampleJob2Worker extends CompanyCustomWorkerDsl[In, Out]:
   lazy val customTask = example

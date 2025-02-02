@@ -5,6 +5,7 @@ import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 import camundala.bpmn.WithConfig
 import io.circe.syntax.*
+import zio.*
 
 case class WorkerExecutor[
     In <: Product: InOutCodec,
@@ -13,57 +14,65 @@ case class WorkerExecutor[
 ](
     worker: T
 )(using context: EngineRunContext):
+  given EngineContext = context.engineContext
 
   def execute(
-      processVariables: Seq[Either[BadVariableError, (String, Option[Json])]]
-  ): Either[CamundalaWorkerError, Map[String, Any]] =
-    for
+      processVariables: Seq[IO[BadVariableError, (String, Option[Json])]]
+  ): IO[CamundalaWorkerError, Map[String, Any]] =
+    (for
       validatedInput    <- InputValidator.validate(processVariables)
-      initializedOutput <- Initializer.initVariables(validatedInput)(using context.engineContext)
+      initializedOutput <- Initializer.initVariables(validatedInput)
       mockedOutput      <- OutMocker.mockedOutput(validatedInput)
       // only run the work if it is not mocked
       output            <-
-        if mockedOutput.isEmpty then WorkRunner.run(validatedInput) else Right(mockedOutput.get)
-      allOutputs         = camundaOutputs(validatedInput, initializedOutput, output)
-      filteredOut        = filteredOutput(allOutputs)
+        if mockedOutput.isEmpty then WorkRunner.run(validatedInput)
+        else ZIO.succeed(mockedOutput.get)
+      allOutputs: Map[String, Any] = camundaOutputs(validatedInput, initializedOutput, output)
+      filteredOut: Map[String, Any] = filteredOutput(allOutputs, context.generalVariables.outputVariables)
       // make MockedOutput as error if mocked
-      _                 <- if mockedOutput.isDefined then Left(MockedOutput(filteredOut)) else Right(())
-    yield filteredOut
+      _                 <- if mockedOutput.isDefined then ZIO.fail(MockedOutput(filteredOut)) else ZIO.succeed(())
+    yield filteredOut)
 
   object InputValidator:
     lazy val prototype         = worker.in
     lazy val validationHandler = worker.validationHandler
 
     def validate(
-        inputParamsAsJson: Seq[Either[Any, (String, Option[Json])]]
-    ): Either[ValidatorError, In] =
-      val jsonResult: Either[ValidatorError, Seq[(String, Option[Json])]]                  =
-        inputParamsAsJson
-          .partition(_.isRight) match
-          case (successes, failures) if failures.isEmpty =>
-            Right(
-              successes.collect { case Right(value) => value }
-            )
-          case (_, failures)                             =>
-            Left(
-              ValidatorError(
-                failures
-                  .collect { case Left(value) => value }
-                  .mkString("Validator Error(s):\n - ", " - ", "\n")
+        inputParamsAsJson: Seq[IO[Any, (String, Option[Json])]]
+    ): IO[ValidatorError, In] =
+
+      val jsonResult: IO[ValidatorError, Seq[(String, Option[Json])]] =
+        ZIO
+          .partition(inputParamsAsJson)(i => i)
+          .flatMap:
+            case (failures, successes) if failures.isEmpty =>
+              ZIO.succeed(successes.toSeq)
+            case (failures, _)                             =>
+              ZIO.fail(
+                ValidatorError(
+                  failures
+                    .collect { case Left(value) => value }
+                    .mkString("Validator Error(s):\n - ", " - ", "\n")
+                )
               )
-            )
-      val json: Either[ValidatorError, JsonObject]                                         = jsonResult
+
+      val json: IO[ValidatorError, JsonObject] = jsonResult
         .map(_.foldLeft(JsonObject()) { case (jsonObj, jsonKey -> jsonValue) =>
           if jsonValue.isDefined
           then jsonObj.add(jsonKey, jsonValue.get)
           else jsonObj
         })
-      def toIn(posJsonObj: Either[ValidatorError, JsonObject]): Either[ValidatorError, In] =
+
+      def toIn(posJsonObj: IO[ValidatorError, JsonObject]): IO[ValidatorError, In] =
         posJsonObj
           .flatMap(jsonObj =>
-            decodeTo[In](jsonObj.asJson.deepDropNullValues.toString).left
-              .map(ex => ValidatorError(errorMsg = ex.errorMsg))
-              .flatMap(in => validationHandler.map(h => h.validate(in)).getOrElse(Right(in)))
+            ZIO.fromEither(decodeTo[In](jsonObj.asJson.deepDropNullValues.toString))
+              .mapError(ex => ValidatorError(errorMsg = ex.errorMsg))
+              .flatMap(in =>
+                validationHandler.map(h => ZIO.fromEither(h.validate(in))).getOrElse(ZIO.succeed(
+                  in
+                ))
+              )
           )
 
       val in     = toIn(json)
@@ -74,7 +83,7 @@ case class WorkerExecutor[
               jsonObj: JsonObject   <- json
               inputVariables         = jsonObj.toMap
               configJson: JsonObject =
-                inputVariables.get("inConfig").getOrElse(i.defaultConfigAsJson).asObject.get
+                inputVariables.getOrElse("inConfig", i.defaultConfigAsJson).asObject.get
               newJsonConfig          = worker.inConfigVariableNames
                                          .foldLeft(configJson):
                                            case (configJson, n) =>
@@ -98,17 +107,19 @@ case class WorkerExecutor[
 
     def initVariables(
         validatedInput: In
-    ): InitProcessFunction =
+    )(using EngineContext): IO[InitProcessError, Map[String, Any]] =
       worker.initProcessHandler
-        .map { vi =>
+        .map: vi =>
           vi.init(validatedInput).map(_ ++ defaultVariables)
-        }
-        .getOrElse(Right(defaultVariables))
+        .map:
+          ZIO.fromEither
+        .getOrElse:
+          ZIO.succeed(defaultVariables)
   end Initializer
 
   object OutMocker:
 
-    def mockedOutput(in: In): Either[MockerError, Option[Out]] =
+    def mockedOutput(in: In): IO[MockerError, Option[Out]] =
       (
         context.generalVariables.isMockedWorker(worker.topic),
         context.generalVariables.outputMock,
@@ -122,49 +133,54 @@ case class WorkerExecutor[
           worker.defaultMock(in).map(Some(_))
         // otherwise it is not mocked or it is a service mock which is handled in service Worker during running
         case (_, None, _)             =>
-          Right(None)
+          ZIO.succeed(None)
     end mockedOutput
 
     private def decodeMock(
         json: Json
     ) =
-      json.as[Out]
+      ZIO.fromEither(json.as[Out])
         .map:
           Some(_)
-        .left.map: error =>
+        .mapError: error =>
           MockerError(errorMsg = s"$error:\n- $json")
     end decodeMock
 
   end OutMocker
 
   object WorkRunner:
-    def run(inputObject: In): Either[RunWorkError, Out | NoOutput] =
+    def run(inputObject: In)(using EngineRunContext): IO[RunWorkError, Out | NoOutput] =
       worker.runWorkHandler
-        .map(_.runWork(inputObject))
-        .getOrElse(Right(NoOutput()))
+        .map:
+          _.runWork(inputObject)
+        .map:
+          ZIO.fromEither
+        .getOrElse:
+          ZIO.succeed(NoOutput())
   end WorkRunner
 
   private def camundaOutputs(
       initializedInput: In,
       internalVariables: Map[String, Any],
       output: Out | NoOutput
-  ): Map[String, Any] =
+  )(using context: EngineRunContext): Map[String, Any] =
     context.toEngineObject(initializedInput) ++ internalVariables ++
       (output match
         case o: NoOutput =>
           context.toEngineObject(o)
         case _           =>
           context.toEngineObject(output.asInstanceOf[Out])
-      )
+        )
+
   private def filteredOutput(
-      allOutputs: Map[String, Any]
+      allOutputs: Map[String, Any],
+      outputVariables: Seq[String]
   ): Map[String, Any] =
-    val filter = context.generalVariables.outputVariables
-    if filter.isEmpty then
+    if outputVariables.isEmpty then
       allOutputs
     else
       allOutputs
-        .filter { case k -> _ => filter.contains(k) }
+        .filter { case k -> _ => outputVariables.contains(k) }
     end if
   end filteredOutput
 

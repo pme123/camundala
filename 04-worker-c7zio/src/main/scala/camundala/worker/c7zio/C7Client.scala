@@ -1,6 +1,6 @@
-package camundala.worker.c8zio
+package camundala.worker.c7zio
 
-import camundala.worker.c8zio.oauth.OAuthPasswordFlow
+import camundala.worker.c7zio.oauth.OAuthPasswordFlow
 import camundala.worker.{Slf4JLogger, WorkerLogger}
 import org.apache.hc.client5.http.config.RequestConfig
 import org.apache.hc.client5.http.impl.classic.*

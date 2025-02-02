@@ -1,7 +1,9 @@
-package camundala.worker.c8zio
+package camundala.worker.c7zio
 
 import camundala.domain.*
 import camundala.worker.*
+import camundala.worker.CamundalaWorkerError.ServiceError
+import zio.ZIO
 
 import scala.reflect.ClassTag
 

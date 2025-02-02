@@ -1,4 +1,4 @@
-package camundala.worker.c8zio
+package camundala.worker.c7zio
 
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.impl.oauth.OAuthCredentialsProviderBuilder

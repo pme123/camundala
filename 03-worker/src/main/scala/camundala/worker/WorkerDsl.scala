@@ -12,7 +12,7 @@ trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
 
   // needed that it can be called from CSubscriptionPostProcessor
   def worker: Worker[In, Out, ?]
-  def topic: String = worker.topic
+  def topic: String     = worker.topic
   def timeout: Duration = 10.seconds
 
   def runWorkFromWorker(in: In)(using EngineRunContext): Option[Either[RunWorkError, Out]] =
@@ -27,26 +27,27 @@ trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
   protected def errorHandled(error: CamundalaWorkerError, handledErrors: Seq[String]): Boolean =
     error.isMock || // if it is mocked, it is handled in the error, as it also could be a successful output
       handledErrors.contains(error.errorCode.toString) || handledErrors.map(
-      _.toLowerCase
-    ).contains("catchall")
+        _.toLowerCase
+      ).contains("catchall")
 
   protected def regexMatchesAll(
-                                 errorHandled: Boolean,
-                                 error: CamundalaWorkerError,
-                                 regexHandledErrors: Seq[String]
-                               ) =
+      errorHandled: Boolean,
+      error: CamundalaWorkerError,
+      regexHandledErrors: Seq[String]
+  ) =
     val errorMsg = error.errorMsg.replace("\n", "")
     errorHandled && regexHandledErrors.forall(regex =>
       errorMsg.matches(s".*$regex.*")
     )
+  end regexMatchesAll
 
   protected def filteredOutput(
-                                outputVariables: Seq[String],
-                                allOutputs: Map[String, Any]
-                              ): Map[String, Any] =
+      outputVariables: Seq[String],
+      allOutputs: Map[String, Any]
+  ): Map[String, Any] =
     outputVariables match
       case filter if filter.isEmpty => allOutputs
-      case filter =>
+      case filter                   =>
         allOutputs
           .filter:
             case k -> _ => filter.contains(k)
@@ -143,12 +144,12 @@ trait ServiceWorkerDsl[
   protected def serviceTask: ServiceTask[In, Out, ServiceIn, ServiceOut]
   protected def apiUri(in: In): Uri // input must be valid - so no errors
   // optional
-  protected def method: Method = Method.GET
+  protected def method: Method                                  = Method.GET
   protected def querySegments(in: In): Seq[QuerySegmentOrParam] =
     Seq.empty // input must be valid - so no errors
-      // mocking out from outService and headers
-  protected def inputMapper(in: In): Option[ServiceIn] = None // input must be valid - so no errors
-  protected def inputHeaders(in: In): Map[String, String] =
+    // mocking out from outService and headers
+  protected def inputMapper(in: In): Option[ServiceIn]          = None // input must be valid - so no errors
+  protected def inputHeaders(in: In): Map[String, String]       =
     Map.empty // input must be valid - so no errors
   protected def outputMapper(
       serviceOut: ServiceResponse[ServiceOut],
@@ -167,10 +168,10 @@ trait ServiceWorkerDsl[
       in: In
   ): Either[ServiceMappingError, Out] =
     serviceResponse.outputBody match
-      case _: NoOutput => Right(serviceTask.out)
+      case _: NoOutput       => Right(serviceTask.out)
       case Some(_: NoOutput) => Right(serviceTask.out)
-      case None => Right(serviceTask.out)
-      case _ =>
+      case None              => Right(serviceTask.out)
+      case _                 =>
         Left(ServiceMappingError(s"There is an outputMapper missing for '${getClass.getName}'."))
   end defaultOutMapper
 

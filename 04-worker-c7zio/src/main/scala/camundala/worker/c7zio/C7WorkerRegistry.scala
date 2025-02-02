@@ -1,4 +1,4 @@
-package camundala.worker.c8zio
+package camundala.worker.c7zio
 
 import camundala.worker.WorkerRegistry
 import org.camunda.bpm.client.ExternalTaskClient

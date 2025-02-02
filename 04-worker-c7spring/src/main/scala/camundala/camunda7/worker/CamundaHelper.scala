@@ -9,6 +9,7 @@ import io.circe.Decoder.Result
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.engine.variable.`type`.{PrimitiveValueType, ValueType}
 import org.camunda.bpm.engine.variable.value.TypedValue
+import zio.{IO, ZIO}
 
 object CamundaHelper:
 
@@ -22,38 +23,38 @@ object CamundaHelper:
     */
   def variableOpt[A: InOutDecoder](
       varKey: String | InputParams
-  )(using ExternalTask): Either[BadVariableError, Option[A]] =
+  )(using ExternalTask): IO[BadVariableError, Option[A]] =
     for
       maybeJson <- jsonVariableOpt(varKey)
-      obj <- maybeJson
-        .map(_.as[Option[A]])
-        .getOrElse(Right(None))
-        .left
-        .map(err =>
-          BadVariableError(
-            s"Problem decoding Json to ${nameOfType[A]}: ${err.getMessage}"
-          )
-        )
+      obj       <- maybeJson
+                     .map(_.as[Option[A]])
+                     .map(ZIO.fromEither)
+                     .getOrElse(ZIO.succeed(None))
+                     .mapError(err =>
+                       BadVariableError(
+                         s"Problem decoding Json to ${nameOfType[A]}: ${err.getMessage}"
+                       )
+                     )
     yield obj
 
   def jsonVariableOpt(
       varKey: String | InputParams
-  ): HelperContext[Either[BadVariableError, Option[Json]]] =
+  ): HelperContext[IO[BadVariableError, Option[Json]]] =
     variableTypedOpt(varKey)
       .map {
         case typedValue if typedValue.getType == ValueType.NULL =>
-          Right(None) // k -> null as Camunda Expressions need them
+          ZIO.succeed(None) // k -> null as Camunda Expressions need them
         case typedValue =>
           extractValue(typedValue)
             .map(v => Some(v))
       }
-      .getOrElse(Right(None))
+      .getOrElse(ZIO.succeed(None))
 
   // used for input variables you can define with Array of Strings or a comma-separated String
   // if not set it returns an empty Seq
   def extractSeqFromArrayOrString(
       varKey: String | InputParams
-  ): HelperContext[Either[BadVariableError, Seq[String]]] =
+  ): HelperContext[IO[BadVariableError, Seq[String]]] =
     extractSeqFromArrayOrString(varKey, Seq.empty)
 
   // used for input variables you can define with Array of Strings or a comma-separated String
@@ -61,10 +62,10 @@ object CamundaHelper:
   def extractSeqFromArrayOrString(
       varKey: String | InputParams,
       defaultSeq: Seq[String | ErrorCodes] = Seq.empty
-  ): HelperContext[Either[BadVariableError, Seq[String]]] =
+  ): HelperContext[IO[BadVariableError, Seq[String]]] =
     jsonVariableOpt(varKey)
       .flatMap {
-        case Some(value) if value.isArray =>
+        case Some(value) if value.isArray  =>
           extractFromSeq(
             value
               .as[Seq[String]]
@@ -75,8 +76,8 @@ object CamundaHelper:
               .as[String]
               .map(_.split(",").toSeq)
           )
-        case _ =>
-          Right(defaultSeq.map(_.toString))
+        case _                             =>
+          ZIO.succeed(defaultSeq.map(_.toString))
       }
 
   /** Analog `variable(String vari)`. You can define a Value that is returned if there is no
@@ -85,19 +86,22 @@ object CamundaHelper:
   def variable[A: InOutDecoder](
       varKey: String | InputParams,
       defaultObj: A
-  ): HelperContext[Either[BadVariableError, A]] =
+  ): HelperContext[IO[BadVariableError, A]] =
     variableOpt[A](varKey).map(_.getOrElse(defaultObj))
 
   /** Returns the Variable in the Bag. B if there is no Variable with that identifier.
     */
   def variable[T: InOutDecoder](
       varKey: String | InputParams
-  ): HelperContext[Either[BadVariableError, T]] =
+  ): HelperContext[IO[BadVariableError, T]] =
     variableOpt(varKey)
       .flatMap(
-        _.toEither(
-          s"The Variable '$varKey' is required! But does  not exist in your Process"
-        )
+        ZIO.fromOption(_)
+          .mapError(_ =>
+            BadVariableError(
+              s"The Variable '$varKey' is required! But does  not exist in your Process"
+            )
+          )
       )
   end variable
 
@@ -120,30 +124,29 @@ object CamundaHelper:
 
   end extension // Option
 
-  def extractValue(typedValue: TypedValue): Either[BadVariableError, Json] =
+  def extractValue(typedValue: TypedValue): IO[BadVariableError, Json] =
     typedValue.getType match
       case pt: PrimitiveValueType if pt.getName == "json" =>
         val jsonStr = typedValue.getValue.toString
-        parser
-          .parse(jsonStr)
-          .left
-          .map(ex => BadVariableError(s"Input is not valid: $ex"))
+        ZIO.fromEither(parser
+          .parse(jsonStr))
+          .mapError(ex => BadVariableError(s"Input is not valid: $ex"))
 
       case _: PrimitiveValueType =>
         typedValue.getValue match
-          case vt: DmnValueSimple =>
-            Right(vt.asJson)
+          case vt: DmnValueSimple     =>
+            ZIO.succeed(vt.asJson)
           case en: scala.reflect.Enum =>
-            Right(Json.fromString(en.toString))
-          case other =>
-            Left(
+            ZIO.succeed(Json.fromString(en.toString))
+          case other                  =>
+            ZIO.fail(
               BadVariableError(
                 s"Input is not valid: Unexpected PrimitiveValueType: $other"
               )
             )
 
       case other =>
-        Left(
+        ZIO.fail(
           BadVariableError(
             s"Unexpected ValueType ${other.getName} - but is ${typedValue.getType}"
           )
@@ -153,15 +156,13 @@ object CamundaHelper:
 
   private def extractFromSeq(
       variableKeys: Result[Seq[String]]
-  ): HelperContext[Either[BadVariableError, Seq[String]]] =
-    variableKeys
+  ): HelperContext[IO[BadVariableError, Seq[String]]] =
+    ZIO.fromEither(variableKeys)
       .map(_.map(_.trim).filter(_.nonEmpty))
-      .left
-      .map { error =>
+      .mapError: error =>
         error.printStackTrace()
         BadVariableError(
           s"Could not extract Seq for an Array or comma-separated String: ${error.getMessage}"
         )
-      }
 
 end CamundaHelper

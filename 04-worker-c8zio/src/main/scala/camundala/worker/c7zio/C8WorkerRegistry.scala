@@ -1,4 +1,4 @@
-package camundala.worker.c8zio
+package camundala.worker.c7zio
 
 import camundala.worker.WorkerRegistry
 import io.camunda.zeebe.client.ZeebeClient
