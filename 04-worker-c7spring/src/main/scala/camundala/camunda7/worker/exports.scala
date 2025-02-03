@@ -8,6 +8,4 @@ export sttp.model.{Method, Uri, QueryParams}
 export org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription
 export org.springframework.context.annotation.Configuration
 
-lazy val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
-
 type HelperContext[T] = ExternalTask ?=> T

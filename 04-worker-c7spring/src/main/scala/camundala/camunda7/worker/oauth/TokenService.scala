@@ -1,6 +1,6 @@
 package camundala.camunda7.worker.oauth
 
-import camundala.camunda7.worker.backend
+import camundala.worker.backend
 import camundala.worker.CamundalaWorkerError.ServiceAuthError
 import sttp.client3.*
 import sttp.client3.circe.*
