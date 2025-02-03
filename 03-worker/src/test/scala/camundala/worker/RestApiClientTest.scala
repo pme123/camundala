@@ -1,9 +1,7 @@
-package camundala.camunda7.worker
+package camundala.worker
 
-import camundala.domain.NoOutput
-import java.time.LocalDate
-import camundala.worker.CamundalaWorkerError.*
 import camundala.domain.*
+import camundala.worker.CamundalaWorkerError.*
 
 class RestApiClientTest extends munit.FunSuite, RestApiClient:
 
