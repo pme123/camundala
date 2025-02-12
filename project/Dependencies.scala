@@ -80,7 +80,8 @@ object Dependencies {
     "org.camunda.bpm.springboot" % "camunda-bpm-spring-boot-starter-external-task-client" % camundaVersion,
     "org.springframework.boot" % "spring-boot-starter-oauth2-client" % springBootVersion,
     "org.springframework.boot" % "spring-boot-starter-security" % springBootVersion,
-    "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion
+    "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion,
+    "net.minidev" % "json-smart" % "2.4.10", // due to problems 
   )
   lazy val camunda7ZioWorkerDependencies = Seq(
     "org.camunda.bpm" % "camunda-external-task-client" % camundaVersion
