@@ -12,6 +12,5 @@ object TestWorker2App extends CompanyWorkerApp:
     TestWorkerApp
   )
 
-//
   
   
