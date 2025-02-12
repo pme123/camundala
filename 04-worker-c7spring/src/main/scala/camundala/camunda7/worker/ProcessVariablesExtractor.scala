@@ -7,13 +7,14 @@ import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.BadVariableError
 import org.camunda.bpm.engine.variable.`type`.ValueType
 import org.camunda.bpm.engine.variable.value.TypedValue
+import zio.{IO, ZIO}
 
 /** Validator to validate the input variables automatically.
   */
 object ProcessVariablesExtractor:
 
-  type VariableType = HelperContext[Seq[Either[BadVariableError, (String, Option[Json])]]]
-  type GeneralVariableType = HelperContext[Either[BadVariableError, GeneralVariables]]
+  type VariableType = HelperContext[Seq[IO[BadVariableError, (String, Option[Json])]]]
+  type GeneralVariableType = HelperContext[IO[BadVariableError, GeneralVariables]]
 
   // gets the input variables of the process as Optional Jsons.
   def extract(variableNames: Seq[String]): VariableType =
@@ -21,14 +22,13 @@ object ProcessVariablesExtractor:
       .map(k => k -> variableTypedOpt(k))
       .map {
         case k -> Some(typedValue) if typedValue.getType == ValueType.NULL =>
-          Right(k -> None) // k -> null as Camunda Expressions need them
+          ZIO.succeed(k -> None) // k -> null as Camunda Expressions need them
         case k -> Some(typedValue) =>
           extractValue(typedValue)
             .map(v => k -> Some(v))
-            .left
-            .map(ex => BadVariableError(s"Problem extracting Process Variable $k: ${ex.errorMsg}"))
+            .mapError(ex => BadVariableError(s"Problem extracting Process Variable $k: ${ex.errorMsg}"))
         case k -> None =>
-          Right(k -> None) // k -> null as Camunda Expressions need them
+          ZIO.succeed(k -> None) // k -> null as Camunda Expressions need them
       }
   end extract
 

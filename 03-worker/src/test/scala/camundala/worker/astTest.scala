@@ -2,7 +2,8 @@ package camundala.worker
 
 import camundala.bpmn.*
 import camundala.domain.*
-import camundala.worker.CamundalaWorkerError.MockedOutput
+import camundala.worker.CamundalaWorkerError.{MockedOutput, ServiceError}
+import zio.ZIO
 
 import scala.reflect.ClassTag
 
@@ -34,8 +35,8 @@ class astTest extends munit.FunSuite, BpmnProcessDsl, BpmnServiceTaskDsl:
       inOutExample = proc
     )
 
-    assertEquals(worker.defaultMock(In(1)), Right(Out()))
-    assertEquals(worker.defaultMock(In(3)), Right(Out(false)))
+    assertEquals(worker.defaultMock(In(1)), ZIO.succeed(Out()))
+    assertEquals(worker.defaultMock(In(3)), ZIO.succeed(Out(false)))
   }
 
   test("defaultMock ServiceTask") {
@@ -69,8 +70,8 @@ class astTest extends munit.FunSuite, BpmnProcessDsl, BpmnServiceTaskDsl:
       )
     )
 
-    assertEquals(worker.defaultMock(In(1)), Right(Out()))
-    assertEquals(worker.defaultMock(In(3)), Right(Out(false)))
+    assertEquals(worker.defaultMock(In(1)), ZIO.succeed(Out()))
+    assertEquals(worker.defaultMock(In(3)), ZIO.succeed(Out(false)))
   }
 
   case class In(value: Int = 1)

@@ -1,4 +1,4 @@
-package camundala.worker.c8zio
+package camundala.worker.c7zio
 
 import camundala.bpmn.GeneralVariables
 import camundala.domain.*
@@ -12,11 +12,10 @@ import zio.ZIO.*
 import java.util.Date
 import scala.jdk.CollectionConverters.*
 
-trait C7Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, camunda.ExternalTaskHandler:
+trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
+    extends WorkerDsl[In, Out], camunda.ExternalTaskHandler:
 
   protected def c7Context: C7Context
-
-  private lazy val runtime = Runtime.default
 
   def logger: WorkerLogger = Slf4JLogger.logger(getClass.getName)
 
@@ -54,16 +53,13 @@ trait C7Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, camunda.E
       ProcessVariablesExtractor.extract(worker.variableNames)
     val tryGeneralVariables = ProcessVariablesExtractor.extractGeneral()
     (for
-        generalVariables <- tryGeneralVariables
-        context           = EngineRunContext(c7Context, generalVariables)
-        filteredOut      <-
-          ZIO.fromEither(
-            worker.executor(using context).execute(variablesAsEithers(tryProcessVariables))
-          )
-        _                <- ZIO.attempt(externalTaskService.handleSuccess(
-                              filteredOut,
-                              generalVariables.manualOutMapping
-                            ))
+        generalVariables      <- tryGeneralVariables
+        given EngineRunContext = EngineRunContext(c7Context, generalVariables)
+        filteredOut           <- worker.executor.execute(tryProcessVariables)
+        _                     <- ZIO.attempt(externalTaskService.handleSuccess(
+                                   filteredOut,
+                                   generalVariables.manualOutMapping
+                                 ))
       yield () //
     ).mapError:
       case ex: CamundalaWorkerError => ex
@@ -72,17 +68,6 @@ trait C7Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, camunda.E
       externalTaskService.handleError(ex, tryGeneralVariables)
       ex
   end executeWorker
-
-  private def variablesAsEithers(tryProcessVariables: Seq[IO[
-    BadVariableError,
-    (String, Option[Json])
-  ]]): Seq[Either[BadVariableError, (String, Option[Json])]] =
-    tryProcessVariables
-      .map((x: IO[BadVariableError, (String, Option[Json])]) =>
-        Unsafe.unsafe:
-          implicit unsafe => // can be removed if everything is ZIO
-            runtime.unsafe.run(x.either).getOrThrow()
-      )
 
   extension (externalTaskService: camunda.ExternalTaskService)
 
@@ -154,5 +139,6 @@ trait C7Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, camunda.E
     end handleError
 
   end extension
+  private lazy val runtime = Runtime.default
 
 end C7Worker

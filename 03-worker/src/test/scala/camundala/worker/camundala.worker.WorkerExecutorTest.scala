@@ -3,6 +3,7 @@ package camundala.worker
 import camundala.bpmn.*
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
+import zio.ZIO
 
 import scala.reflect.ClassTag
 
@@ -48,30 +49,30 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
   test("InputValidator WithConfig override InConfig"):
     assertEquals(
       executor.InputValidator.validate(Seq(
-        Right("requiredValue" -> None),
-        Right("optionalValue" -> None),
-        Right("aValue" -> Some(Json.fromString("ok"))),
-        Right("inConfig" -> Some(Json.obj("requiredValue" -> Json.fromString("aso"))))
+        ZIO.succeed("requiredValue" -> None),
+        ZIO.succeed("optionalValue" -> None),
+        ZIO.succeed("aValue" -> Some(Json.fromString("ok"))),
+        ZIO.succeed("inConfig" -> Some(Json.obj("requiredValue" -> Json.fromString("aso"))))
       )),
-      Right(In(inConfig = Some(InConfig(requiredValue = "aso"))))
+      ZIO.succeed(In(inConfig = Some(InConfig(requiredValue = "aso"))))
     )
   test("InputValidator WithConfig default InConfig"):
     assertEquals(
       executor.InputValidator.validate(Seq(
-        Right("requiredValue" -> None),
-        Right("optionalValue" -> None),
-        Right("aValue" -> Some(Json.fromString("ok")))
+        ZIO.succeed("requiredValue" -> None),
+        ZIO.succeed("optionalValue" -> None),
+        ZIO.succeed("aValue" -> Some(Json.fromString("ok")))
       )),
-      Right(In(inConfig = Some(InConfig())))
+      ZIO.succeed(In(inConfig = Some(InConfig())))
     )
   test("InputValidator WithConfig override InConfig in In"):
     assertEquals(
       executor.InputValidator.validate(Seq(
-        Right("aValue" -> Some(Json.fromString("ok"))),
-        Right("requiredValue" -> Some(Json.fromString("aso"))),
-        Right("optionalValue" -> Some(Json.fromString("nei")))
+        ZIO.succeed("aValue" -> Some(Json.fromString("ok"))),
+        ZIO.succeed("requiredValue" -> Some(Json.fromString("aso"))),
+        ZIO.succeed("optionalValue" -> Some(Json.fromString("nei")))
       )),
-      Right(In(inConfig = Some(InConfig(requiredValue = "aso", optionalValue = Some("nei")))))
+      ZIO.succeed(In(inConfig = Some(InConfig(requiredValue = "aso", optionalValue = Some("nei")))))
     )
 
   test("Test optional values are null in JSON"):

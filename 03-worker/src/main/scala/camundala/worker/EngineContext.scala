@@ -3,6 +3,8 @@ package worker
 
 import camundala.bpmn.*
 import camundala.domain.*
+import camundala.worker.CamundalaWorkerError.ServiceError
+import zio.ZIO
 
 import java.time.{LocalDate, LocalDateTime}
 import scala.reflect.ClassTag

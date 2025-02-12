@@ -131,6 +131,8 @@ lazy val worker = project
     unitTestSettings,
     autoImportSetting,
     libraryDependencies ++= Seq(
+      sttpDependency,
+      scaffeineDependency,
       zioDependency,
       zioSlf4jDependency,
     )
@@ -169,9 +171,7 @@ lazy val camunda7Worker = project
   .settings(
     autoImportSetting,
     libraryDependencies ++= Seq(
-      sttpDependency,
-      jaxbApiDependency,
-      scaffeineDependency
+      jaxbApiDependency
     ) ++ camunda7workerDependencies
   )
   .dependsOn(worker)
@@ -183,10 +183,7 @@ lazy val camunda7ZioWorker = project
   .settings(unitTestSettings)
   .settings(
     autoImportSetting,
-    libraryDependencies ++= Seq(
-      sttpDependency,
-      scaffeineDependency
-    ) ++ camunda7ZioWorkerDependencies
+    libraryDependencies ++=  camunda7ZioWorkerDependencies
   )
   .dependsOn(worker)
 lazy val camunda8Worker = project
@@ -197,7 +194,6 @@ lazy val camunda8Worker = project
   .settings(
     autoImportSetting,
     libraryDependencies ++= Seq(
-      sttpDependency,
       zeebeJavaClientDependency
     )
   )

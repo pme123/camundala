@@ -7,6 +7,7 @@ import camundala.worker.CamundalaWorkerError.CustomError
 import camundala.worker.{CustomWorkerDsl, EngineRunContext}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
+import zio.IO
 
 @Configuration
 class ComposedWorker

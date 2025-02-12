@@ -8,6 +8,7 @@ import camundala.worker.CamundalaWorkerError.*
 import jakarta.annotation.PostConstruct
 import org.camunda.bpm.client.{ExternalTaskClient, task as camunda}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
+import zio.{IO, ZIO}
 
 import java.util.Date
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -61,14 +62,13 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler, WorkerHandler:
     val tryGeneralVariables = ProcessVariablesExtractor.extractGeneral()
     try
       (for
-          generalVariables <- tryGeneralVariables
-          context = EngineRunContext(engineContext, generalVariables)
-          filteredOut <-
-            worker.executor(using context).execute(tryProcessVariables)
+          generalVariables      <- tryGeneralVariables
+          given EngineRunContext = EngineRunContext(engineContext, generalVariables)
+          filteredOut           <-
+            worker.executor.execute(tryProcessVariables)
         yield externalTaskService.handleSuccess(filteredOut, generalVariables.manualOutMapping) //
-      ).left.map { ex =>
+      ).mapError: ex =>
         externalTaskService.handleError(ex, tryGeneralVariables)
-      }
     catch // safety net
       case ex: Throwable =>
         ex.printStackTrace()
@@ -95,25 +95,25 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler, WorkerHandler:
 
     private[worker] def handleError(
         error: CamundalaWorkerError,
-        tryGeneralVariables: Either[BadVariableError, GeneralVariables]
+        tryGeneralVariables: IO[BadVariableError, GeneralVariables]
     ): HelperContext[Unit] =
       import CamundalaWorkerError.*
       val errorMsg = error.errorMsg.replace("\n", "")
       (for
         generalVariables <- tryGeneralVariables
-        errorHandled = isErrorHandled(error, generalVariables.handledErrors)
+        errorHandled      = isErrorHandled(error, generalVariables.handledErrors)
         errorRegexHandled = errorHandled && generalVariables.regexHandledErrors.forall(regex =>
-          errorMsg.matches(s".*$regex.*")
-        )
+                              errorMsg.matches(s".*$regex.*")
+                            )
       yield (errorHandled, errorRegexHandled, generalVariables))
         .flatMap {
           case (true, true, generalVariables) =>
             val mockedOutput = error match
               case error: ErrorWithOutput =>
                 error.output
-              case _ => Map.empty
-            val filtered = filteredOutput(generalVariables.outputVariables, mockedOutput)
-            Right(
+              case _                      => Map.empty
+            val filtered     = filteredOutput(generalVariables.outputVariables, mockedOutput)
+            ZIO.succeed(
               if
                 error.isMock && !generalVariables.handledErrors.contains(
                   error.errorCode.toString
@@ -123,7 +123,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler, WorkerHandler:
               else
                 val errorVars = Map(
                   "errorCode" -> error.errorCode,
-                  "errorMsg" -> error.errorMsg
+                  "errorMsg"  -> error.errorMsg
                 )
                 val variables = (filtered ++ errorVars).asJava
                 logger.info(s"Handled Error: $errorVars")
@@ -134,13 +134,12 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler, WorkerHandler:
                   variables
                 )
             )
-          case (true, false, _) =>
-            Left(HandledRegexNotMatchedError(error))
-          case _ =>
-            Left(error)
+          case (true, false, _)               =>
+            ZIO.fail(HandledRegexNotMatchedError(error))
+          case _                              =>
+            ZIO.fail(error)
         }
-        .left
-        .map { err =>
+        .mapError: err =>
           logger.error(err)
           externalTaskService.handleFailure(
             summon[camunda.ExternalTask],
@@ -149,7 +148,6 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler, WorkerHandler:
             0,
             0
           ) // TODO implement retry mechanism
-        }
     end handleError
 
   end extension
@@ -160,7 +158,7 @@ trait C7WorkerHandler extends camunda.ExternalTaskHandler, WorkerHandler:
   ): Map[String, Any] =
     outputVariables match
       case filter if filter.isEmpty => allOutputs
-      case filter =>
+      case filter                   =>
         allOutputs
           .filter { case k -> _ => filter.contains(k) }
 

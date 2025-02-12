@@ -15,6 +15,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.32 - 2025-02-12
+### Changed 
+- Fixed Problem Error downloading net.minidev:json-smart:[1.3.3,2.4.10] - see [Commit](https://github.com/pme123/camundala/commit/65bb8c998ce4e27e465b22e70f6ca1e25879bba3)
+- Updated version - see [Commit](https://github.com/pme123/camundala/commit/97a16418d22c47b7c3fd7d81c975725e74c85e93)
+- Moved RestApiClientTest to Worker. - see [Commit](https://github.com/pme123/camundala/commit/320ea752be0cc0a9371c06179afea9c44ce2eaf8)
+- Moved RestApiClient to Worker. - see [Commit](https://github.com/pme123/camundala/commit/53c93c98909434cf5551216e186658c457a40b02)
+- Adjusted Worker to support ZIO. - see [Commit](https://github.com/pme123/camundala/commit/172941e90979c332da76270d5a02414e7c36c1fe)
+- Fixed Performance problems in WorkerRegistry.scala. - see [Commit](https://github.com/pme123/camundala/commit/8bfb0323561a3de92b6e0982937396dd80d8d280)
+- Adjusted C7Client. - see [Commit](https://github.com/pme123/camundala/commit/9497f0d02d2cb0ebcc6ca161b6fc31d9c110e4cb)
+- Updated Versions - see [Commit](https://github.com/pme123/camundala/commit/d94efa514c8a6088d1823b5e5b66096f56f7f5de)
+- Added workers for dependencies - first draft. - see [Commit](https://github.com/pme123/camundala/commit/08d435c306a2f11aeaeb1f679b11ca7d7c9b1090)
+- Documented Worker C8 example. - see [Commit](https://github.com/pme123/camundala/commit/225e7e1c01bb7d6411eae8dcbde84fef7f991ee7)
+- Updated MUnit version to 1.1.0 / Scala to 3.6.3. - see [Commit](https://github.com/pme123/camundala/commit/fb4bfedec0dc3aedce1cacf628f2a1b94ce08b3a)
+
 ## 1.30.31 - 2025-01-20
 ### Changed 
 - Made the taskDefinitionKey of a UserTask required to be the same as in the BPMN - new in API doc and Simulation. - see [Commit](https://pme123@github.com/pme123/camundala/commit/dfd801def32646c3a748464c309594c1cfe439ed)

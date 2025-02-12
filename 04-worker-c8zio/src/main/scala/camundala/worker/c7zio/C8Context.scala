@@ -1,4 +1,4 @@
-package camundala.worker.c8zio
+package camundala.worker.c7zio
 
 import camundala.domain.*
 import camundala.worker.*
@@ -15,7 +15,6 @@ trait C8Context extends EngineContext:
 
   def sendRequest[ServiceIn: InOutEncoder, ServiceOut: InOutDecoder: ClassTag](
       request: RunnableRequest[ServiceIn]
-  ): SendRequestType[ServiceOut] = ???
-    //DefaultRestApiClient.sendRequest(request)
-
-
+  ): SendRequestType[ServiceOut] =
+    DefaultRestApiClient.sendRequest(request)
+end C8Context

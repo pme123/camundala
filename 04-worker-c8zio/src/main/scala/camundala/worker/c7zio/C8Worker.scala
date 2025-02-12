@@ -1,4 +1,4 @@
-package camundala.worker.c8zio
+package camundala.worker.c7zio
 
 import camundala.bpmn.GeneralVariables
 import camundala.domain.*
@@ -13,7 +13,8 @@ import java.time
 import scala.jdk.CollectionConverters.*
 import java.util.Date
 
-trait C8Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, JobHandler:
+trait C8Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec] extends WorkerDsl[In, Out],
+      JobHandler:
   protected def c8Context: C8Context
   private lazy val runtime = Runtime.default
 
@@ -27,19 +28,19 @@ trait C8Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, JobHandle
 
   def run(client: JobClient, job: ActivatedJob): ZIO[Any, Throwable, Unit] =
     (for
-      startDate        <- succeed(new Date())
-      json             <- extractJson(job)
-      businessKey      <- extractBusinessKey(json)
-      _                <- logInfo(
-                            s"Worker: ${job.getType} (${job.getWorker}) started > $businessKey"
-                          )
-      processVariables <- ZIO.foreach(worker.variableNames)(k => processVariable(k, json))
-      generalVariables <- extractGeneralVariables(json)
-      context           = EngineRunContext(c8Context, generalVariables)
-      filteredOut      <- ZIO.fromEither(worker.executor(using context).execute(processVariables))
-      _                <- logInfo(s"generalVariables: $generalVariables")
-      _                <- handleSuccess(client, job, filteredOut, generalVariables.manualOutMapping, businessKey)
-      _                <-
+      startDate             <- succeed(new Date())
+      json                  <- extractJson(job)
+      businessKey           <- extractBusinessKey(json)
+      _                     <- logInfo(
+                                 s"Worker: ${job.getType} (${job.getWorker}) started > $businessKey"
+                               )
+      processVariables       = worker.variableNames.map(k => processVariable(k, json))
+      generalVariables      <- extractGeneralVariables(json)
+      given EngineRunContext = EngineRunContext(c8Context, generalVariables)
+      filteredOut           <- worker.executor.execute(processVariables)
+      _                     <- logInfo(s"generalVariables: $generalVariables")
+      _                     <- handleSuccess(client, job, filteredOut, generalVariables.manualOutMapping, businessKey)
+      _                     <-
         logInfo(
           s"Worker: ${job.getType} (${job.getWorker}) ended ${printTimeOnConsole(startDate)} > $businessKey"
         )
@@ -69,25 +70,26 @@ trait C8Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, JobHandle
       error: CamundalaWorkerError
   ): ZIO[Any, Throwable, Unit] =
     (for
-      _ <- logError(s"Error: ${error.causeMsg}")
+      _                <- logError(s"Error: ${error.causeMsg}")
       json             <- extractJson(job)
       generalVariables <- extractGeneralVariables(json)
-      isErrorHandled      = errorHandled(error, generalVariables.handledErrors)
-      errorRegexHandled = regexMatchesAll(isErrorHandled, error, generalVariables.regexHandledErrors)
-        _ <- attempt(client.newFailCommand(job)
-             .retries(job.getRetries - 1)
-             .retryBackoff(time.Duration.ofSeconds(60))
-             .variables(Map("errorCode" -> error.errorCode, "errorMsg" -> error.errorMsg).asJava)
-             .errorMessage(error.causeMsg)
-             .send().join())
+      isErrorHandled    = errorHandled(error, generalVariables.handledErrors)
+      errorRegexHandled =
+        regexMatchesAll(isErrorHandled, error, generalVariables.regexHandledErrors)
+      _                <- attempt(client.newFailCommand(job)
+                            .retries(job.getRetries - 1)
+                            .retryBackoff(time.Duration.ofSeconds(60))
+                            .variables(Map("errorCode" -> error.errorCode, "errorMsg" -> error.errorMsg).asJava)
+                            .errorMessage(error.causeMsg)
+                            .send().join())
     yield (isErrorHandled, errorRegexHandled, generalVariables))
-      .flatMap :
+      .flatMap:
         case (true, true, generalVariables) =>
           val mockedOutput = error match
             case error: ErrorWithOutput =>
               error.output
-            case _ => Map.empty
-          val filtered = filteredOutput(generalVariables.outputVariables, mockedOutput)
+            case _                      => Map.empty
+          val filtered     = filteredOutput(generalVariables.outputVariables, mockedOutput)
           ZIO.attempt(
             if
               error.isMock && !generalVariables.handledErrors.contains(
@@ -98,7 +100,7 @@ trait C8Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, JobHandle
             else
               val errorVars = Map(
                 "errorCode" -> error.errorCode,
-                "errorMsg" -> error.errorMsg
+                "errorMsg"  -> error.errorMsg
               )
               val variables = (filtered ++ errorVars).asJava
               client.newFailCommand(job)
@@ -108,9 +110,9 @@ trait C8Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, JobHandle
                 .errorMessage(error.causeMsg)
                 .send().join()
           )
-        case (true, false, _) =>
+        case (true, false, _)               =>
           ZIO.fail(HandledRegexNotMatchedError(error))
-        case _ =>
+        case _                              =>
           ZIO.fail(error)
 
   private def extractGeneralVariables(json: Json) =
@@ -141,12 +143,10 @@ trait C8Worker[In: InOutDecoder, Out: InOutEncoder] extends JobWorker, JobHandle
   private def processVariable(
       key: String,
       json: Json
-  ): UIO[Either[BadVariableError, (String, Option[Json])]] =
-    ZIO.succeed(
-      json.hcursor.downField(key).as[Option[Json]] match
-        case Right(value) => Right(key -> value)
-        case Left(ex)     => Left(BadVariableError(ex.getMessage))
-    )
+  ): IO[BadVariableError, (String, Option[Json])] =
+    json.hcursor.downField(key).as[Option[Json]] match
+      case Right(value) => ZIO.succeed(key -> value)
+      case Left(ex)     => ZIO.fail(BadVariableError(ex.getMessage))
 
   case class BusinessKey(businessKey: Option[String])
   object BusinessKey:

@@ -1,6 +1,6 @@
-package camundala.worker.c8zio
+package camundala.worker.c7zio
 
-import camundala.worker.c8zio.oauth.OAuthPasswordFlow
+import camundala.worker.oauth.OAuthPasswordFlow
 import camundala.worker.{Slf4JLogger, WorkerLogger}
 import org.apache.hc.client5.http.config.RequestConfig
 import org.apache.hc.client5.http.impl.classic.*
@@ -8,6 +8,7 @@ import org.apache.hc.core5.http.*
 import org.apache.hc.core5.http.protocol.HttpContext
 import org.apache.hc.core5.util.Timeout
 import org.camunda.bpm.client.ExternalTaskClient
+import org.camunda.bpm.client.backoff.ExponentialErrorBackoffStrategy
 import zio.ZIO
 
 import java.io.IOException
@@ -23,7 +24,7 @@ object C7NoAuthClient extends C7Client:
     ZIO.attempt:
       ExternalTaskClient.create()
         .baseUrl("http://localhost:8887/engine-rest")
-       // .asyncResponseTimeout(10000)
+        .disableBackoffStrategy()
         .customizeHttpClient: httpClientBuilder =>
           httpClientBuilder.setDefaultRequestConfig(RequestConfig.custom()
            // .setResponseTimeout(Timeout.ofSeconds(15))
@@ -37,7 +38,7 @@ object C7BasicAuthClient extends C7Client:
       val encodedCredentials = encodeCredentials("admin", "admin")
       val cl                 = ExternalTaskClient.create()
         .baseUrl("http://localhost:8080/engine-rest")
-        .asyncResponseTimeout(15000)
+        .disableBackoffStrategy()
         .customizeHttpClient: httpClientBuilder =>
           httpClientBuilder.setDefaultRequestConfig(RequestConfig.custom()
             .setResponseTimeout(Timeout.ofSeconds(15))
@@ -67,7 +68,7 @@ object OAuth2Client extends C7Client, OAuthPasswordFlow:
     ZIO.attempt:
       ExternalTaskClient.create()
         .baseUrl("http://localhost:8080/engine-rest")
-        .asyncResponseTimeout(15000)
+        .disableBackoffStrategy()
         .customizeHttpClient: httpClientBuilder =>
           httpClientBuilder
             .addRequestInterceptorLast(addAccessToken)

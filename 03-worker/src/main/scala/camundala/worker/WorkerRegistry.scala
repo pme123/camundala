@@ -3,8 +3,8 @@ package camundala.worker
 import zio.ZIO
 import zio.ZIO.*
 
-trait WorkerRegistry[T <: JobWorker]:
-  def register(workers: Set[JobWorker]): ZIO[Any, Any, Any] =
+trait WorkerRegistry[T <: WorkerDsl[?, ?]]:
+  def register(workers: Set[WorkerDsl[?, ?]]): ZIO[Any, Any, Any] =
     logInfo(s"Registering Workers for ${getClass.getSimpleName}") *>
       registerWorkers(workers.collect { case w: T => w })
 

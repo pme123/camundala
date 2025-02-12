@@ -3,9 +3,12 @@ package camunda7.worker
 
 import camundala.domain.*
 import camundala.worker.*
+import camundala.worker.CamundalaWorkerError.ServiceError
 import org.camunda.bpm.client.variable.ClientValues
 import org.slf4j.{Logger, LoggerFactory}
 import org.springframework.context.annotation.Configuration
+import zio.ZIO
+
 import scala.reflect.ClassTag
 
 trait Camunda7Context extends EngineContext:

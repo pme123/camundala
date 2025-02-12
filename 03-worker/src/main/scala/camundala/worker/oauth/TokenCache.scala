@@ -1,4 +1,4 @@
-package camundala.worker.c8zio.oauth
+package camundala.worker.oauth
 
 import com.github.blemale.scaffeine.{Cache, Scaffeine}
 

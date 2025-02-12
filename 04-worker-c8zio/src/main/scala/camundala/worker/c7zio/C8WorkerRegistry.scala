@@ -1,12 +1,9 @@
-package camundala.worker.c8zio
+package camundala.worker.c7zio
 
-import camundala.worker.{JobWorker, WorkerRegistry}
+import camundala.worker.WorkerRegistry
 import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.impl.oauth.OAuthCredentialsProviderBuilder
 import zio.ZIO.*
 import zio.{Console, *}
-
-import java.net.URI
 
 class C8WorkerRegistry(client: C8Client)
     extends WorkerRegistry[C8Worker[?, ?]]:
@@ -15,12 +12,7 @@ class C8WorkerRegistry(client: C8Client)
     Console.printLine(s"Starting C8 Worker Client") *>
       acquireReleaseWith(client.client)(_.closeClient()): client =>
         for
-          server <- attempt(
-                      client
-                        .newTopologyRequest
-                        .send
-                        .join
-                    ).forever.fork
+          server <- ZIO.never.forever.fork
           _      <- collectAllPar(workers.map(w => registerWorker(w, client)))
           _      <- server.join
         yield ()

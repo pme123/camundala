@@ -1,4 +1,4 @@
-package camundala.worker.c8zio
+package camundala.worker.c7zio
 
 import camundala.worker.WorkerRegistry
 import org.camunda.bpm.client.ExternalTaskClient
@@ -12,7 +12,7 @@ class C7WorkerRegistry(client: C7Client)
     Console.printLine(s"Starting C7 Worker Client") *>
       acquireReleaseWith(client.client)(_.closeClient()): client =>
         for
-          server <- ZIO.succeed(()).forever.fork
+          server <- ZIO.never.forever.fork
           _      <- collectAllPar(workers.map(w => registerWorker(w, client)))
           _      <- server.join
         yield ()

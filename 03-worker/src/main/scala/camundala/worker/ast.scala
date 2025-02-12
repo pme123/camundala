@@ -7,6 +7,7 @@ import camundala.worker.CamundalaWorkerError.*
 import camundala.worker.QuerySegmentOrParam.{Key, KeyValue, Value}
 import sttp.model.Uri.QuerySegment
 import sttp.model.{Method, Uri}
+import zio.{IO, ZIO}
 
 case class Workers(workers: Seq[Worker[?, ?, ?]])
 
@@ -18,16 +19,16 @@ sealed trait Worker[
 
   def inOutExample: InOut[In, Out, ?]
   def topic: String
-  def otherEnumInExamples: Option[Seq[In]] = inOutExample.otherEnumInExamples
-  lazy val in: In = inOutExample.in
-  lazy val out: Out = inOutExample.out
+  def otherEnumInExamples: Option[Seq[In]]               = inOutExample.otherEnumInExamples
+  lazy val in: In                                        = inOutExample.in
+  lazy val out: Out                                      = inOutExample.out
   // handler
-  def validationHandler: Option[ValidationHandler[In]] = None
+  def validationHandler: Option[ValidationHandler[In]]   = None
   def initProcessHandler: Option[InitProcessHandler[In]] = None
   // no handler for mocking - all done from the InOut Object
-  def runWorkHandler: Option[RunWorkHandler[In, Out]] = None
+  def runWorkHandler: Option[RunWorkHandler[In, Out]]    = None
   // helper
-  lazy val variableNames: Seq[String] =
+  lazy val variableNames: Seq[String]                    =
     (in.productElementNames.toSeq ++
       otherEnumInExamples
         .map:
@@ -39,16 +40,14 @@ sealed trait Worker[
     in match
       case i: WithConfig[?] =>
         i.defaultConfig.productElementNames.toSeq
-      case _ => Seq.empty
+      case _                => Seq.empty
 
-  def defaultMock(in: In)(using
-      context: EngineRunContext
-  ): Either[MockerError, Out] =
-    Right(
+  def defaultMock(in: In): IO[MockerError, Out] =
+    ZIO.succeed(
       inOutExample match
         case e: ProcessOrExternalTask[In, Out, ?] =>
           e.dynamicOutMock.map(_(in)).getOrElse(out)
-        case _ => out
+        case _                                    => out
     )
   end defaultMock
 
@@ -132,12 +131,10 @@ case class ServiceWorker[
   ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
     copy(runWorkHandler = Some(handler))
 
-  override def defaultMock(in: In)(using
-      context: EngineRunContext
-  ): Either[MockerError, Out] =
-    val mocked: Option[Either[MockerError, Out]] = // needed for Union Type
-      runWorkHandler
-        .map(handler =>
+  override def defaultMock(in: In): IO[MockerError, Out] =
+    runWorkHandler
+      .map(handler =>
+        ZIO.fromEither(
           handler
             .outputMapper(
               inOutExample.dynamicServiceOutMock
@@ -147,12 +144,12 @@ case class ServiceWorker[
                   inOutExample.defaultServiceOutMock.toServiceResponse
               ,
               in
-            ).left.map: error =>
-              MockerError(s"Error mapping ServiceResponse to Out: $error")
-        )
-    mocked
+            )
+        ).mapError: error =>
+          MockerError(s"Error mapping ServiceResponse to Out: $error")
+      )
       .getOrElse(
-        Left(MockerError(s"There is no ServiceRunner defined for Worker: $topic"))
+        ZIO.fail(MockerError(s"There is no ServiceRunner defined for Worker: $topic"))
       )
   end defaultMock
 
@@ -186,7 +183,7 @@ object RunnableRequest:
       inputObject.productElementNames.toSeq
         .zip(inputObject.productIterator.toSeq)
         .collect {
-          case k -> Some(v) => k -> s"$v"
+          case k -> Some(v)        => k -> s"$v"
           case k -> v if v != None => k -> s"$v"
         }
         .toMap
@@ -194,8 +191,8 @@ object RunnableRequest:
     val segments =
       querySegments
         .collect {
-          case Value(v) => QuerySegment.Value(v)
-          case KeyValue(k, v) => QuerySegment.KeyValue(k, v)
+          case Value(v)                       => QuerySegment.Value(v)
+          case KeyValue(k, v)                 => QuerySegment.KeyValue(k, v)
           case Key(k) if valueMap.contains(k) =>
             QuerySegment.KeyValue(k, valueMap(k))
         }
