@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## 1.30.32 - 2025-02-12
+## 1.30.33 - 2025-02-12
 ### Changed 
 - Fixed Problem Error downloading net.minidev:json-smart:[1.3.3,2.4.10] - see [Commit](https://github.com/pme123/camundala/commit/65bb8c998ce4e27e465b22e70f6ca1e25879bba3)
 - Updated version - see [Commit](https://github.com/pme123/camundala/commit/97a16418d22c47b7c3fd7d81c975725e74c85e93)
