@@ -36,7 +36,7 @@ object Dependencies {
   val chimneyVersion = "1.7.3"
   // --- Implementations
   // 04-helper
-  val sardineWebDavVersion = "5.12"
+  val sardineWebDavVersion = "5.13"
   // 04-worker-c7spring
   // -> worker
   val camundaVersion = "7.22.0" // external task client
@@ -53,9 +53,9 @@ object Dependencies {
   // 04-c8-spring
   // -> bpmn
   val scalaJacksonVersion = "2.18.2"
-  val camunda8Version = "8.5.16"
-  val springBootVersion = "3.3.8"
-  val nettyVersion = "4.1.117.Final"
+  val camunda8Version = "8.5.17"
+  val springBootVersion = "3.4.2"
+  val nettyVersion = "4.1.118.Final"
   val swaggerOpenAPIVersion = "2.1.25"
   // examples
   val h2Version = "2.3.232"
@@ -81,7 +81,6 @@ object Dependencies {
     "org.springframework.boot" % "spring-boot-starter-oauth2-client" % springBootVersion,
     "org.springframework.boot" % "spring-boot-starter-security" % springBootVersion,
     "org.springframework.boot" % "spring-boot-starter-web" % springBootVersion,
-    "net.minidev" % "json-smart" % "2.4.10", // due to problems 
   )
   lazy val camunda7ZioWorkerDependencies = Seq(
     "org.camunda.bpm" % "camunda-external-task-client" % camundaVersion
