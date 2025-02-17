@@ -7,8 +7,8 @@ case class SbtSettingsGenerator()(using config: DevConfig):
   end generate
 
   private lazy val versionConfig = config.versionConfig
-  private lazy val repoConfig = config.sbtConfig.reposConfig
-  private lazy val settingsSbt =
+  private lazy val repoConfig    = config.sbtConfig.reposConfig
+  private lazy val settingsSbt   =
     s"""$helperDoNotAdjustText
        |
        |import com.typesafe.sbt.SbtNativePackager.Docker
@@ -26,7 +26,7 @@ case class SbtSettingsGenerator()(using config: DevConfig):
        |  // run worker
        |  val mUnitVersion = "${config.versionConfig.munitVersion}"
        |  val mUnit = "org.scalameta" %% "munit" % mUnitVersion % Test
-       |    
+       |
        |$projectSettings
        |$sbtDependencies
        |$sbtPublish
@@ -83,7 +83,7 @@ case class SbtSettingsGenerator()(using config: DevConfig):
        |    )
        |  )
        |""".stripMargin
-  private lazy val sbtPublish =
+  private lazy val sbtPublish      =
     s"""  lazy val preventPublication = Seq(
        |    publish / skip := true,
        |    publish := {},
@@ -104,7 +104,7 @@ case class SbtSettingsGenerator()(using config: DevConfig):
   private lazy val sbtDependencies =
     config.modules
       .map: moduleConfig =>
-        val name = moduleConfig.name
+        val name         = moduleConfig.name
         val dependencies = moduleConfig.sbtDependencies
         s"""
            |  lazy val ${name}Deps = ${
@@ -118,7 +118,7 @@ case class SbtSettingsGenerator()(using config: DevConfig):
            |    )
            |""".stripMargin
       .mkString
-  private lazy val sbtRepos =
+  private lazy val sbtRepos        =
     s"""// Credentials
        |${
         repoConfig.credentials
@@ -136,8 +136,8 @@ case class SbtSettingsGenerator()(using config: DevConfig):
 
   private lazy val sbtDocker =
     s"  lazy val dockerSettings = " +
-    config.sbtConfig.dockerSettings
-      .getOrElse("Seq()")
+      config.sbtConfig.dockerSettings
+        .getOrElse("Seq()")
 
   private lazy val testSettings =
     s"""  lazy val testSettings = Seq(
@@ -153,13 +153,13 @@ case class SbtSettingsGenerator()(using config: DevConfig):
       |      (customAutoSettings ++
       |        Seq(
       |          "java.lang",
-      |          "java.time", 
+      |          "java.time",
       |          "scala",
       |          "scala.Predef",
       |          "camundala.domain",
       |          "camundala.bpmn",
       |          s"$customer.camundala.bpmn",
-      |          "io.circe.syntax", 
+      |          "io.circe.syntax",
       |          "sttp.tapir.json.circe",
       |          "io.scalaland.chimney.dsl",
       |          "io.github.iltotore.iron",

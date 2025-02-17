@@ -55,5 +55,5 @@ object DocProjectConfig:
       isWorker
     )
   end apply
-  
+
 end DocProjectConfig

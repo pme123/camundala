@@ -11,7 +11,7 @@ trait Mocker:
 
   def mockOrProceed(execution: DelegateExecution): Unit =
     val outputMock = execution.getVariable("outputMock")
-    val mocked =
+    val mocked     =
       if Option(outputMock).isEmpty then false
       else
         val parsedJson: Either[ParsingFailure, Json] =
@@ -23,11 +23,11 @@ trait Mocker:
               .foreach { case k -> json =>
                 execution.setVariable(k, camundaVariable(json))
               }
-          case Right(other) =>
+          case Right(other)                       =>
             throw new IllegalArgumentException(
               s"The mock must be a Json Object:\n- $other\n- ${other.getClass}"
             )
-          case Left(exception) =>
+          case Left(exception)                    =>
             throw new IllegalArgumentException(
               s"The mock could not be parsed to Json Object:\n- $outputMock\n- $exception"
             )
@@ -39,11 +39,11 @@ trait Mocker:
 
   private def camundaVariable(json: Json): Any =
     json match
-      case j if j.isNull => null
-      case j if j.isNumber => j.asNumber.get.toBigDecimal.get
+      case j if j.isNull    => null
+      case j if j.isNumber  => j.asNumber.get.toBigDecimal.get
       case j if j.isBoolean => j.asBoolean.get
-      case j if j.isString => j.asString.get
-      case j => JSON(j.toString)
+      case j if j.isString  => j.asString.get
+      case j                => JSON(j.toString)
   end camundaVariable
 
 end Mocker

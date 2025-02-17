@@ -67,7 +67,6 @@ object ValidationHandler:
         funct(in)
 end ValidationHandler
 
-
 type InitProcessFunction =
   EngineContext ?=> Either[InitProcessError, Map[String, Any]]
 

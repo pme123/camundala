@@ -26,8 +26,8 @@ type DmnValueSimple = String | Boolean | Int | Long | Double | LocalDate |
 type DmnValueType = DmnValueSimple | scala.reflect.Enum
 
 enum DecisionResultType:
-  case singleEntry // TypedValue
-  case singleResult // Map(String, Object)
+  case singleEntry    // TypedValue
+  case singleResult   // Map(String, Object)
   case collectEntries // List(Object)
   case resultList // List(Map(String, Object))
 end DecisionResultType
@@ -43,7 +43,7 @@ case class DecisionDmn[
       Activity[In, Out, DecisionDmn[In, Out]]:
   lazy val inOutType: InOutType = InOutType.Dmn
 
-  override val label: String =
+  override val label: String             =
     """// use singleEntry / collectEntries / singleResult / resultList
       |  dmn""".stripMargin
   lazy val decisionDefinitionKey: String = inOutDescr.id
@@ -96,10 +96,10 @@ given LocalDateTimeJsonDecoder: InOutDecoder[LocalDateTime] =
         .flatMap: dateStr =>
           Try(LocalDateTime.parse(dateStr)) match
             case Success(date) => Right(date)
-            case Failure(_) =>
+            case Failure(_)    =>
               Try(LocalDateTime.ofInstant(Instant.parse(dateStr), ZoneId.systemDefault())) match
                 case Success(date) => Right(date)
-                case Failure(_) =>
+                case Failure(_)    =>
                   Left(DecodingFailure(s"Could not parse LocalDateTime from $dateStr", c.history))
 
 given InOutDecoder[ZonedDateTime] =
@@ -114,7 +114,7 @@ given InOutDecoder[ZonedDateTime] =
 case class SingleEntry[Out <: DmnValueType: InOutEncoder: InOutDecoder: ClassTag](
     result: Out
 ):
-  lazy val toCamunda: CamundaVariable = CamundaVariable.valueToCamunda(result)
+  lazy val toCamunda: CamundaVariable        = CamundaVariable.valueToCamunda(result)
   val decisionResultType: DecisionResultType = DecisionResultType.singleEntry
 end SingleEntry
 
@@ -154,7 +154,7 @@ end SingleEntry
 case class CollectEntries[Out <: DmnValueType: InOutEncoder: InOutDecoder: Schema](
     result: Seq[Out]
 ):
-  lazy val toCamunda: Seq[CamundaVariable] =
+  lazy val toCamunda: Seq[CamundaVariable]   =
     result.map(CamundaVariable.valueToCamunda)
   val decisionResultType: DecisionResultType = DecisionResultType.collectEntries
 end CollectEntries
@@ -198,7 +198,7 @@ case class SingleResult[Out <: Product: InOutEncoder: InOutDecoder: Schema](resu
 
   lazy val toCamunda: Map[String, CamundaVariable] =
     CamundaVariable.toCamunda(result)
-  val decisionResultType: DecisionResultType = DecisionResultType.singleResult
+  val decisionResultType: DecisionResultType       = DecisionResultType.singleResult
 end SingleResult
 
 object SingleResult:
@@ -237,7 +237,7 @@ case class ResultList[Out <: Product: InOutEncoder: InOutDecoder: Schema](
 
   lazy val toCamunda: Seq[Map[String, CamundaVariable]] =
     result.map(CamundaVariable.toCamunda)
-  val decisionResultType: DecisionResultType = DecisionResultType.resultList
+  val decisionResultType: DecisionResultType            = DecisionResultType.resultList
 end ResultList
 
 object ResultList:
@@ -318,18 +318,16 @@ extension (output: Product)
     output.productIterator.size == 1 &&
       (output.productIterator.next() match
         case _: DmnValueType => true
-        case _ => false
-      )
+        case _               => false)
 
   def isSingleResult =
     output.productIterator.size == 1 &&
       (output.productIterator.next() match
         case _: Iterable[?] => false
-        case p: Product =>
+        case p: Product     =>
           p.productIterator.size > 1 &&
           p.productIterator.forall(_.isInstanceOf[DmnValueType])
-        case _ => false
-      )
+        case _              => false)
 
   def isCollectEntries: Boolean =
     output.productIterator.size == 1 &&
@@ -337,11 +335,10 @@ extension (output: Product)
         case p: Iterable[?] =>
           p.headOption match
             case Some(p: DmnValueType) => true
-            case o => false
-        case o => false
-      )
+            case o                     => false
+        case o              => false)
 
-  def isResultList =
+  def isResultList               =
     output.productIterator.size == 1 &&
       (output.productIterator.next() match
         case p: Iterable[?] =>
@@ -349,9 +346,8 @@ extension (output: Product)
             case Some(p: Product) =>
               p.productIterator.size > 1 &&
               p.productIterator.forall(_.isInstanceOf[DmnValueType])
-            case o => false
-        case o => false
-      )
+            case o                => false
+        case o              => false)
   def hasManyOutputVars: Boolean =
     isSingleResult || isResultList
 end extension // Product

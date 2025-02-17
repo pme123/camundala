@@ -202,15 +202,17 @@ private trait InitProcessDsl[
   protected def customInit(in: In): InitIn
 
   // by default the InConfig is initialized
-  final def initProcess(in: In)(using engineContext: EngineContext): Either[InitProcessError, Map[String, Any]] =
+  final def initProcess(in: In)(using
+      engineContext: EngineContext
+  ): Either[InitProcessError, Map[String, Any]] =
     val inConfig = in match
       case i: WithConfig[?] =>
         initConfig(
           i.inConfig.asInstanceOf[Option[InConfig]],
           i.defaultConfig.asInstanceOf[InConfig]
         )
-      case _ => Map.empty
-    val custom = engineContext.toEngineObject(customInit(in))
+      case _                => Map.empty
+    val custom   = engineContext.toEngineObject(customInit(in))
     Right(inConfig ++ custom)
   end initProcess
 
@@ -229,20 +231,23 @@ private trait InitProcessDsl[
       defaultConfig: InConfig
   )(using engineContext: EngineContext): Map[String, Any] =
     val defaultJson = defaultConfig.asJson
-    val r = optConfig.map {
+    val r           = optConfig.map {
       config =>
         val json = config.asJson
         config.productElementNames
           .map(k =>
-            k -> (json.hcursor
-              .downField(k).focus, defaultJson.hcursor
-              .downField(k).focus)
+            k -> (
+              json.hcursor
+                .downField(k).focus,
+              defaultJson.hcursor
+                .downField(k).focus
+            )
           ).collect {
             case k -> (Some(j), Some(dj)) if j.isNull =>
               k -> dj
-            case k -> (Some(j), _) =>
+            case k -> (Some(j), _)                    =>
               k -> j
-            case k -> (_, dj) =>
+            case k -> (_, dj)                         =>
               k -> dj.getOrElse(Json.Null)
           }
           .toMap

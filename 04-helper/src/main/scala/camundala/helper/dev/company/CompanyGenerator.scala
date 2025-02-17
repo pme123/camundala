@@ -43,9 +43,8 @@ case class CompanyGenerator()(using config: DevConfig):
   private lazy val generateProjectDirectories: Unit =
     os.makeDir.all(projectsPath / projectName)
 
-  private lazy val gitTemp = os.pwd / "git-temp"
-  private lazy val docker = os.pwd / "docker"
+  private lazy val gitTemp          = os.pwd / "git-temp"
+  private lazy val docker           = os.pwd / "docker"
   private lazy val companyCamundala = os.pwd / s"$companyName-camundala"
-  
-end CompanyGenerator
 
+end CompanyGenerator

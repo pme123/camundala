@@ -7,7 +7,7 @@ import camundala.examples.invoice.bpmn.ReviewInvoice.Out
 object InvoiceReceipt extends BpmnProcessDsl:
 
   val processName = "example-invoice-c7"
-  val descr = "This starts the Invoice Receipt Process."
+  val descr       = "This starts the Invoice Receipt Process."
 
   case class In(
       creditor: String = "Great Pizza for Everyone Inc.",
@@ -21,7 +21,7 @@ object InvoiceReceipt extends BpmnProcessDsl:
   end In
 
   object In:
-    given ApiSchema[In] = deriveApiSchema
+    given ApiSchema[In]  = deriveApiSchema
     given InOutCodec[In] = deriveCodec
   end In
 
@@ -40,7 +40,7 @@ object InvoiceReceipt extends BpmnProcessDsl:
       archived: Option[Boolean] = Some(false)
   )
   object Out:
-    given ApiSchema[Out] = deriveApiSchema
+    given ApiSchema[Out]  = deriveApiSchema
     given InOutCodec[Out] = deriveCodec
   end Out
 
@@ -55,7 +55,7 @@ object InvoiceReceipt extends BpmnProcessDsl:
       shouldFail = Some(false),
       invoiceReviewedMock = Some(ReviewInvoice.Out())
     )
-    given ApiSchema[InConfig] = deriveApiSchema
+    given ApiSchema[InConfig]  = deriveApiSchema
     given InOutCodec[InConfig] = deriveCodec
   end InConfig
 
@@ -72,7 +72,7 @@ object InvoiceReceipt extends BpmnProcessDsl:
           InvoiceCategory.`Software License Costs`
     )
     object In:
-      given ApiSchema[In] = deriveApiSchema
+      given ApiSchema[In]  = deriveApiSchema
       given InOutCodec[In] = deriveCodec
     end In
 
@@ -96,7 +96,7 @@ object InvoiceReceipt extends BpmnProcessDsl:
         approved: Boolean = true
     )
     object Out:
-      given ApiSchema[Out] = deriveApiSchema
+      given ApiSchema[Out]  = deriveApiSchema
       given InOutCodec[Out] = deriveCodec
     end Out
 
@@ -120,7 +120,7 @@ object InvoiceReceipt extends BpmnProcessDsl:
         invoiceNumber: String = "I-12345"
     )
     object In:
-      given ApiSchema[In] = deriveApiSchema
+      given ApiSchema[In]  = deriveApiSchema
       given InOutCodec[In] = deriveCodec
     end In
 
@@ -138,7 +138,7 @@ object InvoiceReceipt extends BpmnProcessDsl:
   enum ApproverGroup:
     case accounting, sales, management
   object ApproverGroup:
-    given ApiSchema[ApproverGroup] = deriveEnumApiSchema
+    given ApiSchema[ApproverGroup]  = deriveEnumApiSchema
     given InOutCodec[ApproverGroup] = deriveEnumInOutCodec
 
   end ApproverGroup
