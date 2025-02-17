@@ -13,13 +13,15 @@ case class WorkerGenerator()(using config: DevConfig):
 
   def createProcessWorker(setupElement: SetupElement): Unit =
     createWorker(setupElement, processWorker, processWorkerTest)
-  
+
   def createEventWorker(setupElement: SetupElement): Unit =
     createWorker(setupElement, eventWorker, eventWorkerTest)
 
-  def createWorker(setupElement: SetupElement,
-                   worker: SetupElement => String = processElement,
-                   workerTest: SetupElement => String = processElementTest): Unit =
+  def createWorker(
+      setupElement: SetupElement,
+      worker: SetupElement => String = processElement,
+      workerTest: SetupElement => String = processElementTest
+  ): Unit =
     createIfNotExists(
       workerPath(Some(setupElement)),
       worker(setupElement)
@@ -31,7 +33,7 @@ case class WorkerGenerator()(using config: DevConfig):
   end createWorker
 
   private lazy val companyName = config.companyName
-  private lazy val workerApp =
+  private lazy val workerApp   =
     createWorkerApp("WorkerApp")
 
   private lazy val workerTestApp =
@@ -67,7 +69,7 @@ case class WorkerGenerator()(using config: DevConfig):
        |class $objName
        |
        |object $objName:
-       |  
+       |
        |  def main(args: Array[String]): Unit =
        |    runSpringApp(classOf[$objName], args*)
        |end $objName""".stripMargin
@@ -87,9 +89,10 @@ case class WorkerGenerator()(using config: DevConfig):
        |  def customInit(in: In): InitIn =
        |    InitIn() //TODO add variable initialisation (to simplify the process expressions) or remove function
        |    // NoInput() // if no initialization is needed
-       |  
+       |
        |end ${workerName}Worker""".stripMargin
-    
+  end processWorker
+
   private def eventWorker(setupElement: SetupElement) =
     val SetupElement(_, processName, workerName, version) = setupElement
     s"""package ${config.projectPackage}
@@ -101,11 +104,12 @@ case class WorkerGenerator()(using config: DevConfig):
        |class ${workerName}Worker extends CompanyValidationWorkerDsl[In]:
        |
        |  lazy val inOutExample = example
-       |  
+       |
        |  // remove it if not needed
        |  override def validate(in: In): Either[CamundalaWorkerError.ValidatorError, In] = super.validate(in)
        |
        |end ${workerName}Worker""".stripMargin
+  end eventWorker
 
   private def processElement(
       setupElement: SetupElement
@@ -168,14 +172,14 @@ case class WorkerGenerator()(using config: DevConfig):
          |      worker.customInit(in),
          |      out
          |    )""".stripMargin
-      
+
   private def eventWorkerTest(setupElement: SetupElement) =
     workerTest(setupElement):
       s"""
          |  test("validate"):
          |    val in = In()
          |    assertEquals(
-         |      worker.validate(in), 
+         |      worker.validate(in),
          |      Right(in)
          |    )
          |""".stripMargin
@@ -249,7 +253,7 @@ case class WorkerGenerator()(using config: DevConfig):
        |    "camundala": info
        |    "${config.companyName}": info
        |    "org.camunda.bpm.client": info
-       |    
+       |
        |# add here your specific configuration -> REMOVE # DO NOT ADJU...
        |""".stripMargin
 

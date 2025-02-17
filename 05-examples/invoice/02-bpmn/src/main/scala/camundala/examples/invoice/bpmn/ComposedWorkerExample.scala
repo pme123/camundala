@@ -7,13 +7,13 @@ import camundala.domain.*
 object ComposedWorkerExample extends BpmnCustomTaskDsl:
 
   final val topicName = "example-composedWorker"
-  val descr = "Example to compose Workers."
+  val descr           = "Example to compose Workers."
 
   case class In(
       justDoIt: Option[Boolean] = Some(true)
   )
   object In:
-    given ApiSchema[In] = deriveApiSchema
+    given ApiSchema[In]  = deriveApiSchema
     given InOutCodec[In] = deriveCodec
   end In
 
@@ -22,7 +22,7 @@ object ComposedWorkerExample extends BpmnCustomTaskDsl:
       success: Boolean = true
   )
   object Out:
-    given ApiSchema[Out] = deriveApiSchema
+    given ApiSchema[Out]  = deriveApiSchema
     given InOutCodec[Out] = deriveCodec
   end Out
 

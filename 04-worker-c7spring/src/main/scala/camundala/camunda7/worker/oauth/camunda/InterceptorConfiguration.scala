@@ -22,5 +22,5 @@ class InterceptorConfiguration @Autowired() (
     logger.debug("Request interceptor called!")
     val token = accessTokenSyncWorker.getAccessTokenSync
     context.addHeader("Authorization", token)
-    
+
 end InterceptorConfiguration

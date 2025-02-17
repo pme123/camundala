@@ -54,7 +54,7 @@ case class DockerHelper(dockerConfig: DockerConfig) extends Helpers:
       s"helper-docker",
       command,
       command match
-        case "up" => "-d"
+        case "up"   => "-d"
         case "stop" => Seq("--timeout", "15") // the only valid param
         case "down" =>
           Seq(

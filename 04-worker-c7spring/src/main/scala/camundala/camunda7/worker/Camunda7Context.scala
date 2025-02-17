@@ -28,5 +28,3 @@ end Camunda7Context
 
 @Configuration
 class DefaultCamunda7Context extends Camunda7Context
-
-

@@ -77,17 +77,17 @@ class astTest extends munit.FunSuite, BpmnProcessDsl, BpmnServiceTaskDsl:
   case class In(value: Int = 1)
   object In:
     given InOutCodec[In] = deriveInOutCodec[In]
-    given ApiSchema[In] = deriveApiSchema[In]
+    given ApiSchema[In]  = deriveApiSchema[In]
   case class Out(value: Boolean = true)
   object Out:
     given InOutCodec[Out] = deriveInOutCodec[Out]
-    given ApiSchema[Out] = deriveApiSchema[Out]
+    given ApiSchema[Out]  = deriveApiSchema[Out]
 
-  override def processName: String = "???"
-  override def descr: String = "???"
-  override def companyDescr: String = "???"
-  override def path: String = "???"
-  override def serviceLabel: String = "???"
+  override def processName: String    = "???"
+  override def descr: String          = "???"
+  override def companyDescr: String   = "???"
+  override def path: String           = "???"
+  override def serviceLabel: String   = "???"
   override def serviceVersion: String = "???"
-  override def topicName: String = "???"
+  override def topicName: String      = "???"
 end astTest

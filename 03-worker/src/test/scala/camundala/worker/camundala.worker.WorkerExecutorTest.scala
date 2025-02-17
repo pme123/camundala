@@ -14,7 +14,7 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
   given EngineRunContext = EngineRunContext(
     new EngineContext:
       override def getLogger(clazz: Class[?]): WorkerLogger = ???
-      override def toEngineObject: Json => Any = ???
+      override def toEngineObject: Json => Any              = ???
       override def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder: ClassTag](
           request: RunnableRequest[ServiceIn]
       ): SendRequestType[ServiceOut] = ???
@@ -23,9 +23,9 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
   )
 
   def processName: String = "test-process"
-  def example = process(In(), NoOutput())
+  def example             = process(In(), NoOutput())
   import In.given
-  def worker = InitWorker(example)
+  def worker              = InitWorker(example)
 
   case class In(aValue: String = "ok", inConfig: Option[InConfig] = None)
       extends WithConfig[InConfig]:
@@ -33,7 +33,7 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
 
   object In:
     given InOutCodec[In] = deriveInOutCodec[In]
-    given ApiSchema[In] = deriveApiSchema[In]
+    given ApiSchema[In]  = deriveApiSchema[In]
 
   case class InConfig(
       requiredValue: String = "required",
@@ -42,7 +42,7 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
 
   object InConfig:
     given InOutCodec[InConfig] = deriveInOutCodec[InConfig]
-    given ApiSchema[InConfig] = deriveApiSchema[InConfig]
+    given ApiSchema[InConfig]  = deriveApiSchema[InConfig]
 
   lazy val executor = WorkerExecutor(worker)
 
@@ -51,8 +51,8 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
       executor.InputValidator.validate(Seq(
         ZIO.succeed("requiredValue" -> None),
         ZIO.succeed("optionalValue" -> None),
-        ZIO.succeed("aValue" -> Some(Json.fromString("ok"))),
-        ZIO.succeed("inConfig" -> Some(Json.obj("requiredValue" -> Json.fromString("aso"))))
+        ZIO.succeed("aValue"        -> Some(Json.fromString("ok"))),
+        ZIO.succeed("inConfig"      -> Some(Json.obj("requiredValue" -> Json.fromString("aso"))))
       )),
       ZIO.succeed(In(inConfig = Some(InConfig(requiredValue = "aso"))))
     )
@@ -61,14 +61,14 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
       executor.InputValidator.validate(Seq(
         ZIO.succeed("requiredValue" -> None),
         ZIO.succeed("optionalValue" -> None),
-        ZIO.succeed("aValue" -> Some(Json.fromString("ok")))
+        ZIO.succeed("aValue"        -> Some(Json.fromString("ok")))
       )),
       ZIO.succeed(In(inConfig = Some(InConfig())))
     )
   test("InputValidator WithConfig override InConfig in In"):
     assertEquals(
       executor.InputValidator.validate(Seq(
-        ZIO.succeed("aValue" -> Some(Json.fromString("ok"))),
+        ZIO.succeed("aValue"        -> Some(Json.fromString("ok"))),
         ZIO.succeed("requiredValue" -> Some(Json.fromString("aso"))),
         ZIO.succeed("optionalValue" -> Some(Json.fromString("nei")))
       )),
@@ -76,7 +76,7 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
     )
 
   test("Test optional values are null in JSON"):
-    val in = InConfig().asJson.hcursor
+    val in  = InConfig().asJson.hcursor
       .downField("optionalValue")
       .as[Json]
     val out = Json.Null
@@ -84,5 +84,5 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
       in,
       Right(out)
     )
- 
+
 end WorkerExecutorTest

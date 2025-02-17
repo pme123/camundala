@@ -45,16 +45,16 @@ trait InOut[
   def otherEnumInExamples: Option[Seq[In]]
   def otherEnumOutExamples: Option[Seq[Out]]
 
-  lazy val id: String = inOutDescr.id
+  lazy val id: String            = inOutDescr.id
   lazy val descr: Option[String] = inOutDescr.descr
-  lazy val in: In = inOutDescr.in
-  lazy val out: Out = inOutDescr.out
+  lazy val in: In                = inOutDescr.in
+  lazy val out: Out              = inOutDescr.out
 
-  def camundaInMap: Map[String, CamundaVariable] =
+  def camundaInMap: Map[String, CamundaVariable]       =
     CamundaVariable.toCamunda(in)
   lazy val camundaOutMap: Map[String, CamundaVariable] =
     CamundaVariable.toCamunda(out)
-  def camundaToCheckMap: Map[String, CamundaVariable] =
+  def camundaToCheckMap: Map[String, CamundaVariable]  =
     camundaOutMap.filterNot(_._1 == "type") // type used for Sum types - cannot be tested
 
   def withInOutDescr(inOutDescr: InOutDescr[In, Out]): T
@@ -85,7 +85,7 @@ end InOut
 trait ProcessElement extends Product:
   def id: String
   def typeName: String = getClass.getSimpleName
-  def label: String = typeName.head.toString.toLowerCase + typeName.tail
+  def label: String    = typeName.head.toString.toLowerCase + typeName.tail
   def descr: Option[String]
 end ProcessElement
 
@@ -231,7 +231,7 @@ enum StartEventType:
 
 object StartEventType:
   given InOutCodec[StartEventType] = deriveCodec
-  given ApiSchema[StartEventType] = deriveApiSchema
+  given ApiSchema[StartEventType]  = deriveApiSchema
 
 sealed trait ExternalTask[
     In <: Product: InOutEncoder: InOutDecoder: Schema,
@@ -243,22 +243,22 @@ sealed trait ExternalTask[
   protected def outputVariables: Seq[String]
   protected def handledErrors: Seq[ErrorCodeType]
   protected def regexHandledErrors: Seq[String]
-  lazy val inOutType: InOutType = InOutType.Worker
+  lazy val inOutType: InOutType        = InOutType.Worker
 
   def processName: String = GenericExternalTaskProcessName
 
-  override def camundaInMap: Map[String, CamundaVariable] =
+  override def camundaInMap: Map[String, CamundaVariable]      =
     super.camundaInMap +
-      (InputParams.handledErrors.toString -> CamundaVariable.valueToCamunda(
+      (InputParams.handledErrors.toString      -> CamundaVariable.valueToCamunda(
         handledErrors.map(_.toString).asJson.deepDropNullValues
       )) +
       (InputParams.regexHandledErrors.toString -> CamundaVariable
         .valueToCamunda(regexHandledErrors.asJson.deepDropNullValues)) +
-      (InputParams.topicName.toString -> CamundaVariable
+      (InputParams.topicName.toString          -> CamundaVariable
         .valueToCamunda(topicName)) +
-      (InputParams.manualOutMapping.toString -> CamundaVariable
+      (InputParams.manualOutMapping.toString   -> CamundaVariable
         .valueToCamunda(manualOutMapping)) +
-      (InputParams.outputVariables.toString -> CamundaVariable
+      (InputParams.outputVariables.toString    -> CamundaVariable
         .valueToCamunda(outputVariables.asJson.deepDropNullValues))
 end ExternalTask
 
@@ -289,7 +289,7 @@ case class ServiceTask[
 ) extends ExternalTask[In, Out, ServiceTask[In, Out, ServiceIn, ServiceOut]]:
   lazy val dynamicOutMock: Option[In => Out] = None
   @deprecated("Use _topicName_")
-  lazy val serviceName: String = inOutDescr.id
+  lazy val serviceName: String               = inOutDescr.id
 
   def withInOutDescr(
       descr: InOutDescr[In, Out]
@@ -304,7 +304,8 @@ case class ServiceTask[
   def mockWith(outputMock: Out): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(outputMock = Some(outputMock))
 
-  def mockWith(outputMock: In => MockedServiceResponse[ServiceOut]): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  def mockWith(outputMock: In => MockedServiceResponse[ServiceOut])
+      : ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(dynamicServiceOutMock = Some(outputMock))
 
   def mockServicesWithDefault: ServiceTask[In, Out, ServiceIn, ServiceOut] =
@@ -588,7 +589,7 @@ end SignalEvent
 
 object SignalEvent:
 
-  val Dynamic_ProcessInstance = "{processInstanceId}"
+  val Dynamic_ProcessInstance                = "{processInstanceId}"
   def init(id: String): SignalEvent[NoInput] =
     SignalEvent(
       id,
@@ -600,7 +601,7 @@ case class TimerEvent(
     title: String,
     inOutDescr: InOutDescr[NoInput, NoOutput]
 ) extends ReceiveEvent[NoInput, TimerEvent]:
-  lazy val inOutType: InOutType = InOutType.Timer
+  lazy val inOutType: InOutType                      = InOutType.Timer
   lazy val otherEnumInExamples: Option[Seq[NoInput]] = None
 
   def withInOutDescr(descr: InOutDescr[NoInput, NoOutput]): TimerEvent =
@@ -615,24 +616,24 @@ end TimerEvent
 
 def valueToJson(value: Any): Json =
   value match
-    case v: Int =>
+    case v: Int             =>
       Json.fromInt(v)
-    case v: Long =>
+    case v: Long            =>
       Json.fromLong(v)
-    case v: Boolean =>
+    case v: Boolean         =>
       Json.fromBoolean(v)
-    case v: Float =>
+    case v: Float           =>
       Json.fromFloat(v).getOrElse(Json.Null)
-    case v: Double =>
+    case v: Double          =>
       Json.fromDouble(v).getOrElse(Json.Null)
-    case null =>
+    case null               =>
       Json.Null
-    case ld: LocalDate =>
+    case ld: LocalDate      =>
       Json.fromString(ld.toString)
     case ldt: LocalDateTime =>
       Json.fromString(ldt.toString)
     case zdt: ZonedDateTime =>
       Json.fromString(zdt.toString)
-    case v =>
+    case v                  =>
       Json.fromString(v.toString)
 end valueToJson

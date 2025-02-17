@@ -18,11 +18,11 @@ object ProjectDmnTester
 
   override def starterConfig: DmnTesterStarterConfig =
     DmnTesterStarterConfig(
-        companyName = "camundala",
+      companyName = "camundala",
       dmnPaths = Seq(localDmnPath),
       dmnConfigPaths = Seq(localDmnConfigPath)
     )
-  
+
   createDmnConfigs(
     DecisionResultTypes.singleEntryDMN.testUnit
       .dmnPath("DecisionResultTypes")
