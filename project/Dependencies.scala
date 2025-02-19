@@ -10,7 +10,7 @@ object Dependencies {
   val osLibVersion = "0.11.3"
   // 01-domain
   val openapiCirceVersion = "0.11.7"
-  val tapirVersion = "1.11.14"
+  val tapirVersion = "1.11.15"
   val ironCirceVersion = "2.6.0"
   val mUnitVersion = "1.1.0"
   // 02-bpmn
