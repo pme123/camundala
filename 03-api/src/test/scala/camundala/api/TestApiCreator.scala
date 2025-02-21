@@ -2,18 +2,18 @@ package camundala
 package api
 
 import camundala.api.Sample.{SampleOut, standardSample}
-import camundala.bpmn.{BpmnDsl, BpmnProcessDsl}
+import camundala.bpmn.{BpmnDsl, BpmnProcessDsl, InOutDescr, Process, ProcessLabels}
 import camundala.domain.*
 
-object TestApiCreator extends DefaultApiCreator, BpmnProcessDsl, App:
+object TestApiCreator extends DefaultApiCreator, App:
 
   lazy val projectName = "TestApi"
 
   def title = "Test API"
 
-  def version = "1.0"
+  def version                            = "1.0"
   lazy val companyProjectVersion: String = "0.1.0"
-  lazy val projectDescr: String = ""
+  lazy val projectDescr: String          = ""
 
   override val apiConfig: ApiConfig =
     ApiConfig("DemoConfig")
@@ -27,8 +27,7 @@ object TestApiCreator extends DefaultApiCreator, BpmnProcessDsl, App:
   )
 
   private lazy val testProcess2 =
-    process(standardSample, SampleOut())
-
+    Process(InOutDescr(processName, standardSample, SampleOut()), NoInput(), ProcessLabels.none)
   val processName: String = "sample-process2"
 
   val descr: String = ""
@@ -48,7 +47,7 @@ object Sample extends BpmnProcessDsl:
       address: Address = Address()
   )
   object SampleIn:
-    given ApiSchema[SampleIn] = deriveApiSchema
+    given ApiSchema[SampleIn]  = deriveApiSchema
     given InOutCodec[SampleIn] = deriveCodec
   end SampleIn
 
@@ -61,7 +60,7 @@ object Sample extends BpmnProcessDsl:
       country: String = "CH"
   )
   object Address:
-    given ApiSchema[Address] = deriveApiSchema
+    given ApiSchema[Address]  = deriveApiSchema
     given InOutCodec[Address] = deriveCodec
   end Address
 
@@ -71,12 +70,12 @@ object Sample extends BpmnProcessDsl:
       outputValue: String = "Just some text"
   )
   object SampleOut:
-    given ApiSchema[SampleOut] = deriveApiSchema
+    given ApiSchema[SampleOut]  = deriveApiSchema
     given InOutCodec[SampleOut] = deriveCodec
   end SampleOut
 
   lazy val standardSample: SampleIn = SampleIn()
-  val descr =
+  val descr                         =
     s"""This runs the Sample Process.
        |""".stripMargin
 

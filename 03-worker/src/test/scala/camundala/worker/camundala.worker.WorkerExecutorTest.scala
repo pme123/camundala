@@ -7,7 +7,7 @@ import zio.ZIO
 
 import scala.reflect.ClassTag
 
-class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
+class WorkerExecutorTest extends munit.FunSuite:
 
   def descr: String = "myDescr"
 
@@ -23,7 +23,8 @@ class WorkerExecutorTest extends munit.FunSuite, BpmnProcessDsl:
   )
 
   def processName: String = "test-process"
-  def example = process(In(), NoOutput())
+  def example =
+    Process(InOutDescr(processName, In(), NoOutput()), NoInput(), ProcessLabels.none)
   import In.given
   def worker = InitWorker(example)
 

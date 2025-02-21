@@ -7,7 +7,7 @@ import zio.ZIO
 
 import scala.reflect.ClassTag
 
-class astTest extends munit.FunSuite, BpmnProcessDsl, BpmnServiceTaskDsl:
+class astTest extends munit.FunSuite:
 
   given EngineRunContext = EngineRunContext(
     new EngineContext:
@@ -24,9 +24,12 @@ class astTest extends munit.FunSuite, BpmnProcessDsl, BpmnServiceTaskDsl:
   )
 
   test("defaultMock Process") {
-    val proc = process(
+    val proc = Process(InOutDescr(
+      processName,
       In(),
-      Out()
+      Out()),
+      NoInput(),
+      ProcessLabels.none
     ).mockWith: in =>
       if in.value == 1 then Out(true)
       else Out(false)
@@ -83,11 +86,6 @@ class astTest extends munit.FunSuite, BpmnProcessDsl, BpmnServiceTaskDsl:
     given InOutCodec[Out] = deriveInOutCodec[Out]
     given ApiSchema[Out] = deriveApiSchema[Out]
 
-  override def processName: String = "???"
-  override def descr: String = "???"
-  override def companyDescr: String = "???"
-  override def path: String = "???"
-  override def serviceLabel: String = "???"
-  override def serviceVersion: String = "???"
-  override def topicName: String = "???"
+  def processName: String = "dummy"
+
 end astTest

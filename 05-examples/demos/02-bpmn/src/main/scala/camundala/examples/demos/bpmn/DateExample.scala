@@ -16,6 +16,10 @@ object DateExample extends BpmnProcessDsl:
     given ApiSchema[Input] = deriveApiSchema
     given InOutCodec[Input] = deriveCodec
 
+  lazy val example = process(
+    Input(),
+    NoOutput()
+  )
   lazy val DateExampleDMN = singleEntry(
     decisionDefinitionKey = "DateExample",
     in = Input(),

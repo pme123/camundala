@@ -65,7 +65,10 @@ object InvoiceReceipt extends BpmnProcessDsl:
       out = Out() // just for testing
     )
 
-  object InvoiceAssignApproverDMN:
+  object InvoiceAssignApproverDMN extends BpmnDecisionDsl:
+    val decisionId = "example-invoice-c7-assignApprover"
+    val descr = "Decision Table on who must approve the Invoice."
+
     case class In(
         amount: Double = 30.0,
         invoiceCategory: InvoiceCategory =
@@ -80,12 +83,38 @@ object InvoiceReceipt extends BpmnProcessDsl:
 
     lazy val example: DecisionDmn[In, CollectEntries[ApproverGroup]] =
       collectEntries(
-        decisionDefinitionKey = "example-invoice-c7-assignApprover",
         in = In(),
         out = Seq(ApproverGroup.management),
-        descr = "Decision Table on who must approve the Invoice."
       )
   end InvoiceAssignApproverDMN
+
+  object InvoiceAssignApproverDmnUnit extends BpmnDecisionDsl:
+    val decisionId = "example-invoice-c7-assignApprover"
+    val descr = "Decision Table just for unit testing."
+
+    case class In(
+                   invoiceClassification: InvoiceClassification = InvoiceClassification.`day-to-day expense`
+                 )
+    object In:
+      given ApiSchema[In] = deriveApiSchema
+      given InOutCodec[In] = deriveCodec
+    end In
+
+    @description("There are three possible Categories")
+    enum InvoiceClassification:
+      case `day-to-day expense`, budget, exceptional
+
+    object InvoiceClassification:
+      given Schema[InvoiceClassification] = deriveEnumApiSchema
+      given InOutCodec[InvoiceClassification] = deriveEnumInOutCodec
+
+    type Out = Seq[ApproverGroup]
+
+    lazy val example: DecisionDmn[In, CollectEntries[ApproverGroup]] =
+      collectEntries(
+        in = In(),
+        out = Seq(ApproverGroup.management),
+      )
 
   object ApproveInvoiceUT:
     type In = InvoiceReceipt.PrepareBankTransferUT.In

@@ -15,22 +15,22 @@ trait ApiBaseDsl:
     CApiGroup(name, description, apis.toList)
 
   def api[
-      In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
+      In <: Product: {InOutEncoder , InOutDecoder , Schema},
+      Out <: Product: {InOutEncoder , InOutDecoder , Schema},
       T <: InOutApi[In, Out]
   ](pApi: T): T =
     pApi
 
   def api[
-      In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
-      InitIn <: Product: InOutEncoder: InOutDecoder: Schema,
+      In <: Product: {InOutEncoder , InOutDecoder , Schema},
+      Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag },
+      InitIn <: Product: {InOutEncoder , InOutDecoder , Schema},
   ](pApi: ProcessApi[In, Out, InitIn])(body: InOutApi[?, ?]*): ProcessApi[In, Out, InitIn] =
     pApi.withApis(body.toList)
-
+  
   extension [
-      In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
+      In <: Product: {InOutEncoder , InOutDecoder , Schema},
+      Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag },
       T <: InOutApi[In, Out]
   ](inOutApi: T)
 
@@ -59,8 +59,8 @@ trait ApiBaseDsl:
   end extension
 
   extension [
-      In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
+      In <: Product: {InOutEncoder , InOutDecoder , Schema},
+      Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag },
       T <: DecisionDmnApi[In, Out]
   ](decApi: T)
     def withDiagramName(diagramName: String): DecisionDmnApi[In, Out] =
@@ -68,9 +68,9 @@ trait ApiBaseDsl:
   end extension
 
   extension [
-      In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema: ClassTag,
-      InitIn <: Product: InOutEncoder: InOutDecoder: Schema,
+      In <: Product: {InOutEncoder , InOutDecoder , Schema},
+      Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag },
+      InitIn <: Product: {InOutEncoder , InOutDecoder , Schema},
       T <: ProcessApi[In, Out, InitIn]
   ](processApi: T)
     def withDiagramName(diagramName: String): ProcessApi[In, Out, InitIn] =

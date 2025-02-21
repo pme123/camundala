@@ -10,19 +10,19 @@ trait BpmnProcessDsl extends BpmnDsl:
   def processLabels: ProcessLabels = ProcessLabels.none
 
   def process[
-      In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema,
-      InitIn <: Product: InOutEncoder: Schema,
+      In <: Product: {InOutEncoder, InOutDecoder, Schema},
+      Out <: Product: {InOutEncoder, InOutDecoder, Schema},
+      InitIn <: Product: {InOutEncoder, Schema}
   ](
       in: In = NoInput(),
       out: Out = NoOutput(),
-      initIn: InitIn = NoInput(),
+      initIn: InitIn = NoInput()
   ): Process[In, Out, InitIn] =
     Process(InOutDescr(processName, in, out, Some(description)), initIn, processLabels)
-  
+
   def process[
-      In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema
+      In <: Product: {InOutEncoder, InOutDecoder, Schema},
+      Out <: Product: {InOutEncoder, InOutDecoder, Schema}
   ](
       in: In,
       out: Out
@@ -46,8 +46,8 @@ trait BpmnProcessDsl extends BpmnDsl:
 
   // Use result strategy, like _singleEntry_, _collectEntries_, _singleResult_, _resultList_
   private def dmn[
-      In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema
+      In <: Product: {InOutEncoder, InOutDecoder, Schema},
+      Out <: Product: {InOutEncoder, InOutDecoder, Schema}
   ](
       decisionDefinitionKey: String,
       in: In,
@@ -60,8 +60,8 @@ trait BpmnProcessDsl extends BpmnDsl:
 
   @deprecated("Use .. extends BpmnDecisionDsl")
   def singleEntry[
-      In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: DmnValueType: InOutEncoder: InOutDecoder: Schema: ClassTag
+      In <: Product: {InOutEncoder, InOutDecoder, Schema},
+      Out <: DmnValueType: {InOutEncoder, InOutDecoder, Schema, ClassTag}
   ](
       decisionDefinitionKey: String,
       in: In,
@@ -76,8 +76,8 @@ trait BpmnProcessDsl extends BpmnDsl:
 
   @deprecated("Use .. extends BpmnDecisionDsl")
   def collectEntries[
-      In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: DmnValueType: InOutEncoder: InOutDecoder: Schema
+      In <: Product: {InOutEncoder, InOutDecoder, Schema},
+      Out <: DmnValueType: {InOutEncoder, InOutDecoder, Schema}
   ](
       decisionDefinitionKey: String,
       in: In,
@@ -90,14 +90,16 @@ trait BpmnProcessDsl extends BpmnDsl:
     )*/
     dmn(decisionDefinitionKey, in, out, descr.value)
 
-  given toCollectEntries[Out <: DmnValueType: InOutEncoder: InOutDecoder: Schema]
+  given toCollectEntries[
+      Out <: DmnValueType: {InOutEncoder, InOutDecoder, Schema}
+  ]
       : Conversion[Seq[Out], CollectEntries[Out]] =
     CollectEntries(_)
 
   @deprecated("Use .. extends BpmnDecisionDsl")
   def singleResult[
-      In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema
+      In <: Product: {InOutEncoder, InOutDecoder, Schema},
+      Out <: Product: {InOutEncoder, InOutDecoder, Schema}
   ](
       decisionDefinitionKey: String,
       in: In,
@@ -115,8 +117,8 @@ trait BpmnProcessDsl extends BpmnDsl:
 
   @deprecated("Use .. extends BpmnDecisionDsl")
   def resultList[
-      In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema
+      In <: Product: {InOutEncoder, InOutDecoder, Schema},
+      Out <: Product: {InOutEncoder, InOutDecoder, Schema}
   ](
       decisionDefinitionKey: String,
       in: In,
@@ -134,8 +136,8 @@ trait BpmnProcessDsl extends BpmnDsl:
 
   @deprecated("Use .. extends BpmnUserTaskDsl")
   def userTask[
-      In <: Product: InOutEncoder: InOutDecoder: Schema,
-      Out <: Product: InOutEncoder: InOutDecoder: Schema
+      In <: Product: {InOutEncoder, InOutDecoder, Schema},
+      Out <: Product: {InOutEncoder, InOutDecoder, Schema}
   ](
       id: String,
       in: In = NoInput(),
@@ -148,7 +150,7 @@ trait BpmnProcessDsl extends BpmnDsl:
 
   @deprecated("Use .. extends BpmnMessageEventDsl")
   def messageEvent[
-      Msg <: Product: InOutEncoder: InOutDecoder: Schema
+      Msg <: Product: {InOutEncoder, InOutDecoder, Schema}
   ](
       messageName: String,
       in: Msg = NoInput(),
@@ -167,7 +169,7 @@ trait BpmnProcessDsl extends BpmnDsl:
 
   @deprecated("Use .. extends BpmnMessageEventDsl")
   def receiveMessageEvent[
-      Msg <: Product: InOutEncoder: InOutDecoder: Schema
+    Msg <: Product: {InOutEncoder, InOutDecoder, Schema}
   ](
       messageName: String,
       in: Msg = NoInput(),
@@ -178,7 +180,7 @@ trait BpmnProcessDsl extends BpmnDsl:
 
   @deprecated("Use .. extends BpmnSignalEventDsl")
   def signalEvent[
-      Msg <: Product: InOutEncoder: InOutDecoder: Schema
+      Msg <: Product: {InOutEncoder, InOutDecoder, Schema}
   ](
       messageName: String,
       in: Msg = NoInput(),
@@ -197,7 +199,7 @@ trait BpmnProcessDsl extends BpmnDsl:
 
   @deprecated("Use .. extends BpmnSignalEventDsl")
   def receiveSignalEvent[
-      Msg <: Product: InOutEncoder: InOutDecoder: Schema
+      Msg <: Product: {InOutEncoder, InOutDecoder, Schema}
   ](
       messageName: String,
       in: Msg = NoInput(),
