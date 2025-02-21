@@ -49,6 +49,7 @@ trait InOut[
   lazy val descr: Option[String] = inOutDescr.descr
   lazy val in: In                = inOutDescr.in
   lazy val out: Out              = inOutDescr.out
+  lazy val niceName: String      = inOutDescr.niceName
 
   def camundaInMap: Map[String, CamundaVariable]       =
     CamundaVariable.toCamunda(in)
@@ -80,6 +81,40 @@ trait InOut[
   // this allows you to manipulate the existing out directly
   def withOut(outFunct: Out => Out): T =
     withInOutDescr(inOutDescr.copy(out = outFunct(out)))
+
+  lazy val inVariableNames: Seq[String] =
+    inOutVariableNames(in, otherEnumInExamples)
+
+  lazy val outVariableNames: Seq[String] =
+    inOutVariableNames(out, otherEnumOutExamples)
+
+  lazy val inVariables: Seq[(String, Any)] =
+    inOutVariables(in, otherEnumInExamples)
+
+  lazy val outVariables: Seq[(String, Any)] =
+    inOutVariables(out, otherEnumOutExamples)
+
+  private def inOutVariableNames(inOut: Product, otherEnumExamples: Option[Seq[Product]]) =
+    (inOut.productElementNames.toSeq ++
+      otherEnumExamples
+        .map:
+          _.flatMap(_.productElementNames)
+        .toSeq.flatten)
+      .distinct
+
+  private def inOutVariables(inOut: Product, otherEnumExamples: Option[Seq[Product]]) =
+    (inOut.productElementNames.toSeq
+      .zip(inOut.productIterator) ++
+      otherEnumExamples
+        .map:
+          _.flatMap: i =>
+            i.productElementNames.toSeq
+              .zip(i.productIterator)
+        .toSeq.flatten)
+      .distinct
+      .foldLeft(Seq.empty[(String, Any)]): (acc, el) =>
+        if acc.exists(_._1 == el._1) then acc
+        else acc :+ el
 end InOut
 
 trait ProcessElement extends Product:
@@ -105,8 +140,6 @@ sealed trait ProcessOrExternalTask[
   protected def servicesMocked: Boolean
   protected def outputMock: Option[Out]
   protected def impersonateUserId: Option[String]
-
-  lazy val inputVariableNames: Seq[String] = in.productElementNames.toSeq
 
   override def camundaInMap: Map[String, CamundaVariable] =
     val camundaOutputMock: Map[String, CamundaVariable] = outputMock

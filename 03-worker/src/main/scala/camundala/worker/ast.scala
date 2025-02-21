@@ -19,21 +19,20 @@ sealed trait Worker[
 
   def inOutExample: InOut[In, Out, ?]
   def topic: String
-  def otherEnumInExamples: Option[Seq[In]]               = inOutExample.otherEnumInExamples
-  lazy val in: In                                        = inOutExample.in
-  lazy val out: Out                                      = inOutExample.out
+
+  lazy val inVariableNames = inOutExample.inVariableNames
+  lazy val in: In          = inOutExample.in
+  lazy val out: Out        = inOutExample.out
+
   // handler
   def validationHandler: Option[ValidationHandler[In]]   = None
   def initProcessHandler: Option[InitProcessHandler[In]] = None
   // no handler for mocking - all done from the InOut Object
   def runWorkHandler: Option[RunWorkHandler[In, Out]]    = None
+
   // helper
-  lazy val variableNames: Seq[String]                    =
-    (in.productElementNames.toSeq ++
-      otherEnumInExamples
-        .map:
-          _.flatMap(_.productElementNames)
-        .toSeq.flatten).distinct ++
+  lazy val variableNames: Seq[String] =
+    inVariableNames ++
       inConfigVariableNames
 
   lazy val inConfigVariableNames: Seq[String] =
