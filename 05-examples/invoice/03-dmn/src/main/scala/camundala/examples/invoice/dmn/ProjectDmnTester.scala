@@ -5,11 +5,10 @@ package dmn
 import camundala.bpmn.*
 import camundala.domain.*
 import camundala.dmn.*
-import bpmn.InvoiceReceipt.InvoiceAssignApproverDMN
+import bpmn.InvoiceReceipt.{InvoiceAssignApproverDMN, InvoiceAssignApproverDmnUnit}
 
 object ProjectDmnTester
-    extends DmnTesterConfigCreator,
-      BpmnProcessDsl:
+    extends DmnTesterConfigCreator:
   val processName = "NOT USED"
   val descr = ""
 
@@ -31,34 +30,13 @@ object ProjectDmnTester
       .dmnPath("example-invoice-c7-assignApprover")
       .testValues(_.amount, 249, 250, 999, 1000, 1001),
     // for demonstration - created unit test - acceptMissingRules just for demo
-    InvoiceAssignApproverDmnUnit
+    InvoiceAssignApproverDmnUnit.example
       .acceptMissingRules
       .testUnit
       .dmnPath("example-invoice-c7-assignApprover")
     //  .inTestMode
   )
+  
 
-  case class InvoiceAssignApproverDmnIn(
-      invoiceClassification: InvoiceClassification = InvoiceClassification.`day-to-day expense`
-  )
-
-  object InvoiceAssignApproverDmnIn:
-    given Schema[InvoiceAssignApproverDmnIn] = Schema.derived
-    given CirceCodec[InvoiceAssignApproverDmnIn] = deriveCodec
-  end InvoiceAssignApproverDmnIn
-
-  @description("There are three possible Categories")
-  enum InvoiceClassification:
-    case `day-to-day expense`, budget, exceptional
-
-  object InvoiceClassification:
-    given Schema[InvoiceClassification] = deriveEnumApiSchema
-    given InOutCodec[InvoiceClassification] = deriveEnumInOutCodec
-
-  private lazy val InvoiceAssignApproverDmnUnit =
-    collectEntries(
-      decisionDefinitionKey = "example-invoice-c7-assignApprover",
-      in = InvoiceAssignApproverDmnIn()
-    )
 
 end ProjectDmnTester

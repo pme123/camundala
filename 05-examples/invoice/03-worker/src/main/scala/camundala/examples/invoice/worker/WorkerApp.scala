@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan
 @ConfigurationPropertiesScan
 @ComponentScan(basePackages =
   Array(
-    "camundala.camunda7.worker", // for context
+    "camundala.camunda7.worker.context", // for context
     "camundala.examples.invoice.worker"
   )
 )

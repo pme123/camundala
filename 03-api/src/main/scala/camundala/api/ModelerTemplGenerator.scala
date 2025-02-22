@@ -14,6 +14,7 @@ final case class ModelerTemplGenerator(
 
   def generate(apis: List[InOutApi[?, ?]]): Unit =
     os.makeDir.all(config.templatePath)
+    println(s"Generate Modeler Templates for: $projectName: ${apis.map(_.id).mkString(", ")}")
     apis.foreach:
       case api: ExternalTaskApi[?, ?] =>
         println(s"ExternalTaskApi supported for Modeler Template: ${api.id}")
@@ -28,18 +29,18 @@ final case class ModelerTemplGenerator(
   end generate
 
   private def generateTempl(
-      inOut: InOutDescr[?, ?],
+      inOut: InOut[?, ?, ?],
       appliesTo: Seq[AppliesTo],
       elementType: ElementType,
       properties: Seq[TemplProp]
   ): Unit =
     val mapProps = mappings(
-      inOut.in,
+      inOut.inVariables,
       if elementType == ElementType.callActivity then PropType.`camunda:in`
       else PropType.`camunda:inputParameter`
     ) ++
       mappings(
-        inOut.out,
+        inOut.outVariables,
         if elementType == ElementType.callActivity then PropType.`camunda:out`
         else PropType.`camunda:outputParameter`
       )
@@ -62,7 +63,7 @@ final case class ModelerTemplGenerator(
 
   private def generateTempl(inOut: ProcessApi[?, ?, ?]): Unit =
     generateTempl(
-      inOut.inOutDescr,
+      inOut.inOut,
       AppliesTo.activity,
       ElementType.callActivity,
       Seq(
@@ -80,7 +81,7 @@ final case class ModelerTemplGenerator(
       case _: ServiceWorkerApi[?, ?, ?, ?] => TemplMapperHelper.serviceWorkerVariables
       case _ => TemplMapperHelper.customWorkerVariables
     generateTempl(
-      inOut.inOutDescr,
+      inOut.inOut,
       AppliesTo.activity,
       ElementType.serviceTask,
       Seq(
@@ -90,9 +91,8 @@ final case class ModelerTemplGenerator(
     )
   end generateTempl
 
-  private def mappings[T <: Product](prod: T, propType: PropType): Seq[TemplProp] =
-    prod.productElementNames.toSeq
-      .zip(prod.productIterator)
+  private def mappings[T <: Product](variables: Seq[(String, Any)], propType: PropType): Seq[TemplProp] =
+    variables
       .filterNot:
         case name -> _ => name == "inConfig" // don't show configuration
       .map:

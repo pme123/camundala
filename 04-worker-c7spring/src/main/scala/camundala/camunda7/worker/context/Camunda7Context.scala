@@ -1,5 +1,4 @@
-package camundala
-package camunda7.worker
+package camundala.camunda7.worker.context
 
 import camundala.domain.*
 import camundala.worker.*

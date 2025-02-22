@@ -13,7 +13,8 @@ import java.time
 import scala.jdk.CollectionConverters.*
 import java.util.Date
 
-trait C8Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec] extends WorkerDsl[In, Out],
+trait C8Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
+    extends WorkerDsl[In, Out],
       JobHandler:
   protected def c8Context: C8Context
   private lazy val runtime = Runtime.default
@@ -37,7 +38,7 @@ trait C8Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec] extends Wo
       processVariables       = worker.variableNames.map(k => processVariable(k, json))
       generalVariables      <- extractGeneralVariables(json)
       given EngineRunContext = EngineRunContext(c8Context, generalVariables)
-      filteredOut           <- worker.executor.execute(processVariables)
+      filteredOut           <- WorkerExecutor(worker).execute(processVariables)
       _                     <- logInfo(s"generalVariables: $generalVariables")
       _                     <- handleSuccess(client, job, filteredOut, generalVariables.manualOutMapping, businessKey)
       _                     <-

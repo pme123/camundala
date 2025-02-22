@@ -11,8 +11,8 @@ import zio.{IO, ZIO}
 
 import scala.reflect.ClassTag
 
-trait WorkerHandler:
-  def worker: Worker[?, ?, ?]
+trait WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
+  def worker: Worker[In, Out, ?]
   def topic: String
 
   def applicationName: String
@@ -134,7 +134,7 @@ case class ServiceHandler[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
     ServiceIn: InOutEncoder,
-    ServiceOut: InOutDecoder: ClassTag
+    ServiceOut: {InOutDecoder, ClassTag}
 ](
     httpMethod: Method,
     apiUri: In => Uri,

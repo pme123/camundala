@@ -19,21 +19,20 @@ sealed trait Worker[
 
   def inOutExample: InOut[In, Out, ?]
   def topic: String
-  def otherEnumInExamples: Option[Seq[In]]               = inOutExample.otherEnumInExamples
-  lazy val in: In                                        = inOutExample.in
-  lazy val out: Out                                      = inOutExample.out
+
+  lazy val inVariableNames = inOutExample.inVariableNames
+  lazy val in: In          = inOutExample.in
+  lazy val out: Out        = inOutExample.out
+
   // handler
   def validationHandler: Option[ValidationHandler[In]]   = None
   def initProcessHandler: Option[InitProcessHandler[In]] = None
   // no handler for mocking - all done from the InOut Object
   def runWorkHandler: Option[RunWorkHandler[In, Out]]    = None
+
   // helper
-  lazy val variableNames: Seq[String]                    =
-    (in.productElementNames.toSeq ++
-      otherEnumInExamples
-        .map:
-          _.flatMap(_.productElementNames)
-        .toSeq.flatten).distinct ++
+  lazy val variableNames: Seq[String] =
+    inVariableNames ++
       inConfigVariableNames
 
   lazy val inConfigVariableNames: Seq[String] =
@@ -51,7 +50,6 @@ sealed trait Worker[
     )
   end defaultMock
 
-  def executor(using context: EngineRunContext): WorkerExecutor[In, Out, T]
 end Worker
 
 case class InitWorker[
@@ -75,11 +73,6 @@ case class InitWorker[
   ): InitWorker[In, Out, InitIn] =
     copy(initProcessHandler = Some(init))
 
-  def executor(using
-      context: EngineRunContext
-  ): WorkerExecutor[In, Out, InitWorker[In, Out, InitIn]] =
-    WorkerExecutor(this)
-
 end InitWorker
 
 case class CustomWorker[
@@ -101,11 +94,6 @@ case class CustomWorker[
       serviceHandler: CustomHandler[In, Out]
   ): CustomWorker[In, Out] =
     copy(runWorkHandler = Some(serviceHandler))
-
-  def executor(using
-      context: EngineRunContext
-  ): WorkerExecutor[In, Out, CustomWorker[In, Out]] =
-    WorkerExecutor(this)
 
 end CustomWorker
 
@@ -152,11 +140,6 @@ case class ServiceWorker[
         ZIO.fail(MockerError(s"There is no ServiceRunner defined for Worker: $topic"))
       )
   end defaultMock
-
-  def executor(using
-      context: EngineRunContext
-  ): WorkerExecutor[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]] =
-    WorkerExecutor(this)
 
 end ServiceWorker
 

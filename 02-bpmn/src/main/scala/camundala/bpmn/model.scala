@@ -6,8 +6,8 @@ import camundala.domain.*
 import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 
 case class InOutDescr[
-    In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema}
 ](
     id: String,
     in: In = NoInput(),
@@ -26,8 +26,8 @@ case class InOutDescr[
 end InOutDescr
 
 trait Activity[
-    In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema,
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema},
     T <: InOut[In, Out, T]
 ] extends InOut[In, Out, T]
 
@@ -35,8 +35,8 @@ enum InOutType:
   case Bpmn, Dmn, Worker, Timer, Signal, Message, UserTask
 
 trait InOut[
-    In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema,
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema},
     T <: InOut[In, Out, T]
 ] extends ProcessElement:
   def inOutDescr: InOutDescr[In, Out]
@@ -45,16 +45,17 @@ trait InOut[
   def otherEnumInExamples: Option[Seq[In]]
   def otherEnumOutExamples: Option[Seq[Out]]
 
-  lazy val id: String = inOutDescr.id
+  lazy val id: String            = inOutDescr.id
   lazy val descr: Option[String] = inOutDescr.descr
-  lazy val in: In = inOutDescr.in
-  lazy val out: Out = inOutDescr.out
+  lazy val in: In                = inOutDescr.in
+  lazy val out: Out              = inOutDescr.out
+  lazy val niceName: String      = inOutDescr.niceName
 
-  def camundaInMap: Map[String, CamundaVariable] =
+  def camundaInMap: Map[String, CamundaVariable]       =
     CamundaVariable.toCamunda(in)
   lazy val camundaOutMap: Map[String, CamundaVariable] =
     CamundaVariable.toCamunda(out)
-  def camundaToCheckMap: Map[String, CamundaVariable] =
+  def camundaToCheckMap: Map[String, CamundaVariable]  =
     camundaOutMap.filterNot(_._1 == "type") // type used for Sum types - cannot be tested
 
   def withInOutDescr(inOutDescr: InOutDescr[In, Out]): T
@@ -80,20 +81,54 @@ trait InOut[
   // this allows you to manipulate the existing out directly
   def withOut(outFunct: Out => Out): T =
     withInOutDescr(inOutDescr.copy(out = outFunct(out)))
+
+  lazy val inVariableNames: Seq[String] =
+    inOutVariableNames(in, otherEnumInExamples)
+
+  lazy val outVariableNames: Seq[String] =
+    inOutVariableNames(out, otherEnumOutExamples)
+
+  lazy val inVariables: Seq[(String, Any)] =
+    inOutVariables(in, otherEnumInExamples)
+
+  lazy val outVariables: Seq[(String, Any)] =
+    inOutVariables(out, otherEnumOutExamples)
+
+  private def inOutVariableNames(inOut: Product, otherEnumExamples: Option[Seq[Product]]) =
+    (inOut.productElementNames.toSeq ++
+      otherEnumExamples
+        .map:
+          _.flatMap(_.productElementNames)
+        .toSeq.flatten)
+      .distinct
+
+  private def inOutVariables(inOut: Product, otherEnumExamples: Option[Seq[Product]]) =
+    (inOut.productElementNames.toSeq
+      .zip(inOut.productIterator) ++
+      otherEnumExamples
+        .map:
+          _.flatMap: i =>
+            i.productElementNames.toSeq
+              .zip(i.productIterator)
+        .toSeq.flatten)
+      .distinct
+      .foldLeft(Seq.empty[(String, Any)]): (acc, el) =>
+        if acc.exists(_._1 == el._1) then acc
+        else acc :+ el
 end InOut
 
 trait ProcessElement extends Product:
   def id: String
   def typeName: String = getClass.getSimpleName
-  def label: String = typeName.head.toString.toLowerCase + typeName.tail
+  def label: String    = typeName.head.toString.toLowerCase + typeName.tail
   def descr: Option[String]
 end ProcessElement
 
 trait ProcessNode extends ProcessElement
 
 sealed trait ProcessOrExternalTask[
-    In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema,
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema},
     T <: InOut[In, Out, T]
 ] extends InOut[In, Out, T]:
   def processName: String
@@ -105,8 +140,6 @@ sealed trait ProcessOrExternalTask[
   protected def servicesMocked: Boolean
   protected def outputMock: Option[Out]
   protected def impersonateUserId: Option[String]
-
-  lazy val inputVariableNames: Seq[String] = in.productElementNames.toSeq
 
   override def camundaInMap: Map[String, CamundaVariable] =
     val camundaOutputMock: Map[String, CamundaVariable] = outputMock
@@ -129,9 +162,9 @@ sealed trait ProcessOrExternalTask[
 end ProcessOrExternalTask
 
 case class Process[
-    In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema,
-    InitIn <: Product: InOutEncoder: Schema
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema},
+    InitIn <: Product: {InOutEncoder, Schema}
 ](
     inOutDescr: InOutDescr[In, Out],
     initIn: InitIn = NoInput(),
@@ -231,11 +264,11 @@ enum StartEventType:
 
 object StartEventType:
   given InOutCodec[StartEventType] = deriveCodec
-  given ApiSchema[StartEventType] = deriveApiSchema
+  given ApiSchema[StartEventType]  = deriveApiSchema
 
 sealed trait ExternalTask[
-    In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema,
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema},
     T <: ExternalTask[In, Out, T]
 ] extends ProcessOrExternalTask[In, Out, T]:
   override final def topicName: String = inOutDescr.id
@@ -243,30 +276,30 @@ sealed trait ExternalTask[
   protected def outputVariables: Seq[String]
   protected def handledErrors: Seq[ErrorCodeType]
   protected def regexHandledErrors: Seq[String]
-  lazy val inOutType: InOutType = InOutType.Worker
+  lazy val inOutType: InOutType        = InOutType.Worker
 
   def processName: String = GenericExternalTaskProcessName
 
-  override def camundaInMap: Map[String, CamundaVariable] =
+  override def camundaInMap: Map[String, CamundaVariable]      =
     super.camundaInMap +
-      (InputParams.handledErrors.toString -> CamundaVariable.valueToCamunda(
+      (InputParams.handledErrors.toString      -> CamundaVariable.valueToCamunda(
         handledErrors.map(_.toString).asJson.deepDropNullValues
       )) +
       (InputParams.regexHandledErrors.toString -> CamundaVariable
         .valueToCamunda(regexHandledErrors.asJson.deepDropNullValues)) +
-      (InputParams.topicName.toString -> CamundaVariable
+      (InputParams.topicName.toString          -> CamundaVariable
         .valueToCamunda(topicName)) +
-      (InputParams.manualOutMapping.toString -> CamundaVariable
+      (InputParams.manualOutMapping.toString   -> CamundaVariable
         .valueToCamunda(manualOutMapping)) +
-      (InputParams.outputVariables.toString -> CamundaVariable
+      (InputParams.outputVariables.toString    -> CamundaVariable
         .valueToCamunda(outputVariables.asJson.deepDropNullValues))
 end ExternalTask
 
 case class ServiceTask[
-    In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema,
-    ServiceIn: InOutEncoder: InOutDecoder,
-    ServiceOut: InOutEncoder: InOutDecoder
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema},
+    ServiceIn: {InOutEncoder, InOutDecoder},
+    ServiceOut: {InOutEncoder, InOutDecoder}
 ](
     inOutDescr: InOutDescr[In, Out],
     defaultServiceOutMock: MockedServiceResponse[ServiceOut],
@@ -289,7 +322,7 @@ case class ServiceTask[
 ) extends ExternalTask[In, Out, ServiceTask[In, Out, ServiceIn, ServiceOut]]:
   lazy val dynamicOutMock: Option[In => Out] = None
   @deprecated("Use _topicName_")
-  lazy val serviceName: String = inOutDescr.id
+  lazy val serviceName: String               = inOutDescr.id
 
   def withInOutDescr(
       descr: InOutDescr[In, Out]
@@ -304,7 +337,8 @@ case class ServiceTask[
   def mockWith(outputMock: Out): ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(outputMock = Some(outputMock))
 
-  def mockWith(outputMock: In => MockedServiceResponse[ServiceOut]): ServiceTask[In, Out, ServiceIn, ServiceOut] =
+  def mockWith(outputMock: In => MockedServiceResponse[ServiceOut])
+      : ServiceTask[In, Out, ServiceIn, ServiceOut] =
     copy(dynamicServiceOutMock = Some(outputMock))
 
   def mockServicesWithDefault: ServiceTask[In, Out, ServiceIn, ServiceOut] =
@@ -393,8 +427,8 @@ case class ServiceTask[
 end ServiceTask
 
 case class CustomTask[
-    In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema}
 ](
     inOutDescr: InOutDescr[In, Out],
     otherEnumInExamples: Option[Seq[In]] = None,
@@ -475,8 +509,8 @@ case class CustomTask[
 end CustomTask
 
 case class UserTask[
-    In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema}
 ](
     inOutDescr: InOutDescr[In, Out],
     otherEnumInExamples: Option[Seq[In]] = None,
@@ -529,7 +563,7 @@ object UserTask:
 end UserTask
 
 sealed trait ReceiveEvent[
-    In <: Product: InOutEncoder: InOutDecoder: Schema,
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
     T <: ReceiveEvent[In, T]
 ] extends ProcessNode,
       Activity[In, NoOutput, T]:
@@ -537,7 +571,7 @@ sealed trait ReceiveEvent[
 end ReceiveEvent
 
 case class MessageEvent[
-    In <: Product: InOutEncoder: InOutDecoder: Schema
+    In <: Product: {InOutEncoder, InOutDecoder, Schema}
 ](
     messageName: String,
     inOutDescr: InOutDescr[In, NoOutput],
@@ -566,7 +600,7 @@ object MessageEvent:
 end MessageEvent
 
 case class SignalEvent[
-    In <: Product: InOutEncoder: InOutDecoder: Schema
+    In <: Product: {InOutEncoder, InOutDecoder, Schema}
 ](
     messageName: String,
     inOutDescr: InOutDescr[In, NoOutput],
@@ -588,7 +622,7 @@ end SignalEvent
 
 object SignalEvent:
 
-  val Dynamic_ProcessInstance = "{processInstanceId}"
+  val Dynamic_ProcessInstance                = "{processInstanceId}"
   def init(id: String): SignalEvent[NoInput] =
     SignalEvent(
       id,
@@ -600,7 +634,7 @@ case class TimerEvent(
     title: String,
     inOutDescr: InOutDescr[NoInput, NoOutput]
 ) extends ReceiveEvent[NoInput, TimerEvent]:
-  lazy val inOutType: InOutType = InOutType.Timer
+  lazy val inOutType: InOutType                      = InOutType.Timer
   lazy val otherEnumInExamples: Option[Seq[NoInput]] = None
 
   def withInOutDescr(descr: InOutDescr[NoInput, NoOutput]): TimerEvent =
@@ -615,24 +649,24 @@ end TimerEvent
 
 def valueToJson(value: Any): Json =
   value match
-    case v: Int =>
+    case v: Int             =>
       Json.fromInt(v)
-    case v: Long =>
+    case v: Long            =>
       Json.fromLong(v)
-    case v: Boolean =>
+    case v: Boolean         =>
       Json.fromBoolean(v)
-    case v: Float =>
+    case v: Float           =>
       Json.fromFloat(v).getOrElse(Json.Null)
-    case v: Double =>
+    case v: Double          =>
       Json.fromDouble(v).getOrElse(Json.Null)
-    case null =>
+    case null               =>
       Json.Null
-    case ld: LocalDate =>
+    case ld: LocalDate      =>
       Json.fromString(ld.toString)
     case ldt: LocalDateTime =>
       Json.fromString(ldt.toString)
     case zdt: ZonedDateTime =>
       Json.fromString(zdt.toString)
-    case v =>
+    case v                  =>
       Json.fromString(v.toString)
 end valueToJson
