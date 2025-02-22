@@ -55,7 +55,7 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     (for
         generalVariables      <- tryGeneralVariables
         given EngineRunContext = EngineRunContext(c7Context, generalVariables)
-        filteredOut           <- worker.executor.execute(tryProcessVariables)
+        filteredOut           <- WorkerExecutor(worker).execute(tryProcessVariables)
         _                     <- ZIO.attempt(externalTaskService.handleSuccess(
                                    filteredOut,
                                    generalVariables.manualOutMapping

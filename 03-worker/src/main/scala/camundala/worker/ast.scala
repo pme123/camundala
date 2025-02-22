@@ -50,7 +50,6 @@ sealed trait Worker[
     )
   end defaultMock
 
-  def executor(using context: EngineRunContext): WorkerExecutor[In, Out, T]
 end Worker
 
 case class InitWorker[
@@ -74,11 +73,6 @@ case class InitWorker[
   ): InitWorker[In, Out, InitIn] =
     copy(initProcessHandler = Some(init))
 
-  def executor(using
-      context: EngineRunContext
-  ): WorkerExecutor[In, Out, InitWorker[In, Out, InitIn]] =
-    WorkerExecutor(this)
-
 end InitWorker
 
 case class CustomWorker[
@@ -100,11 +94,6 @@ case class CustomWorker[
       serviceHandler: CustomHandler[In, Out]
   ): CustomWorker[In, Out] =
     copy(runWorkHandler = Some(serviceHandler))
-
-  def executor(using
-      context: EngineRunContext
-  ): WorkerExecutor[In, Out, CustomWorker[In, Out]] =
-    WorkerExecutor(this)
 
 end CustomWorker
 
@@ -151,11 +140,6 @@ case class ServiceWorker[
         ZIO.fail(MockerError(s"There is no ServiceRunner defined for Worker: $topic"))
       )
   end defaultMock
-
-  def executor(using
-      context: EngineRunContext
-  ): WorkerExecutor[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]] =
-    WorkerExecutor(this)
 
 end ServiceWorker
 

@@ -8,8 +8,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class ArchiveCompanyWorker
-    extends CompanyWorkerHandler, // environment specific
-    CustomWorkerDsl[In, Out]: // DSL for this type
+    extends CompanyCustomWorkerDsl[In, Out]: // DSL for this type
 
   lazy val customTask = example
 

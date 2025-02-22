@@ -103,7 +103,7 @@ object GeneralVariables:
   given InOutCodec[GeneralVariables] = CirceCodec.from(decoder, deriveInOutEncoder)
   given ApiSchema[GeneralVariables]  = deriveApiSchema
 
-  implicit val decoder: Decoder[GeneralVariables] = new Decoder[GeneralVariables] :
+  lazy val decoder: Decoder[GeneralVariables] = new Decoder[GeneralVariables] :
     final def apply(c: HCursor): Decoder.Result[GeneralVariables] =
       for
         servicesMocked <- c.downField("servicesMocked").as[Option[Boolean]].map(_.getOrElse(false))

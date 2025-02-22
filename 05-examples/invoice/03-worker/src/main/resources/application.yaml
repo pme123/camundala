@@ -1,5 +1,10 @@
 server:
   port: 8093
+
+spring:
+  application:
+    name: camundala-invoice
+
 camunda.bpm:
   job-execution:
     wait-time-in-millis: 200 # this is for speedup testing

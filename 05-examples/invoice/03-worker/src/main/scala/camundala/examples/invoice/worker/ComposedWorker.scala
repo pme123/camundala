@@ -11,8 +11,7 @@ import zio.IO
 
 @Configuration
 class ComposedWorker
-    extends CompanyWorkerHandler, // environment specific
-    CustomWorkerDsl[In, Out]: // DSL for this type
+    extends CompanyCustomWorkerDsl[In, Out]: // DSL for this type
 
   @Autowired
   var peopleWorker: StarWarsPeopleWorker = scala.compiletime.uninitialized
