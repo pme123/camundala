@@ -15,6 +15,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.34 - 2025-02-22
+### Changed 
+- Cleanup C7WorkerHandler to get closer to new Worker design. - see [Commit](https://github.com/pme123/camundala/commit/2561d19ad5a7535015bab6205dae1de6e74b7b2d)
+- Fixed ModelerTemplGenerator for InOut enums. - see [Commit](https://github.com/pme123/camundala/commit/838f93aca0f7ab76b2fe328b9bbcfc1fbbca4510)
+- Cleanup of deprecation warnings / experiments with example. - see [Commit](https://github.com/pme123/camundala/commit/8de2e857002ccf39bae588018c8c968307ff3cca)
+- Updated Versions. - see [Commit](https://github.com/pme123/camundala/commit/5ed383bb87ce838cfc2e0fde2f33b48c58208b93)
+- Updated Versions. - see [Commit](https://github.com/pme123/camundala/commit/ef3be3bc460e0f20e41db2f42080add9d7729112)
+
 ## 1.30.33 - 2025-02-12
 ### Changed 
 - Fixed Problem Error downloading net.minidev:json-smart:[1.3.3,2.4.10] - see [Commit](https://github.com/pme123/camundala/commit/65bb8c998ce4e27e465b22e70f6ca1e25879bba3)
