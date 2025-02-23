@@ -14,7 +14,7 @@ class ComposedWorker
     extends CompanyCustomWorkerDsl[In, Out]: // DSL for this type
 
   @Autowired
-  var peopleWorker: StarWarsPeopleWorker = scala.compiletime.uninitialized
+  var peopleWorker: StarWarsPeopleWorker             = scala.compiletime.uninitialized
   @Autowired
   var peopleDetailWorker: StarWarsPeopleDetailWorker = scala.compiletime.uninitialized
 
@@ -28,13 +28,13 @@ class ComposedWorker
       EngineRunContext(engineContext, GeneralVariables())
 
     val peopleWorkerIn = StarWarsPeople.In()
-    val out = peopleWorker.runWorkFromWorkerUnsafe(peopleWorkerIn)
+    val out            = peopleWorker.runWorkFromWorkerUnsafe(peopleWorkerIn)
       .left.map: error =>
         CustomError(
           s"Error while fetching Starwars People:\n- ${error.errorMsg}."
         )
     out.map:
-      case StarWarsPeople.Out.Success(people, _) =>
+      case StarWarsPeople.Out.Success(people, _)     =>
         logger.info(s"- Got People: $people")
         Out()
       case StarWarsPeople.Out.Failure(processStatus) =>

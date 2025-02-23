@@ -17,7 +17,7 @@ trait DevCompanyCamundalaHelper extends DocCreator:
     Try(Command.valueOf(command)) match
       case Success(cmd) =>
         runCommand(cmd, args)
-      case Failure(_) =>
+      case Failure(_)   =>
         println(s"Command not found: $command")
         println("Available commands: " + Command.values.mkString(", "))
     end match
@@ -29,11 +29,11 @@ trait DevCompanyCamundalaHelper extends DocCreator:
     command match
       case Command.publish if args.size == 1 =>
         publish(args.head)
-      case Command.publish =>
+      case Command.publish                   =>
         println("Usage: publish <version>")
-      case Command.prepareDocs =>
+      case Command.prepareDocs               =>
         prepareDocs()
-      case Command.publishDocs =>
+      case Command.publishDocs               =>
         publishDocs()
 
   private enum Command:

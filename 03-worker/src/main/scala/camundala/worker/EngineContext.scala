@@ -50,8 +50,8 @@ trait EngineContext:
       value: Any
   ): Any =
     value match
-      case None | null => null
-      case Some(v) => objectToEngineObject(product, key, v)
+      case None | null                            => null
+      case Some(v)                                => objectToEngineObject(product, key, v)
       case v: (Product | Iterable[?] | Map[?, ?]) =>
         product.asJson.hcursor
           .downField(key)
@@ -65,17 +65,17 @@ trait EngineContext:
 
   def valueToEngineObject(value: Any): Any =
     value match
-      case v: scala.reflect.Enum =>
+      case v: scala.reflect.Enum  =>
         v.toString
-      case ld: LocalDate =>
+      case ld: LocalDate          =>
         ld.toString
-      case ldt: LocalDateTime =>
+      case ldt: LocalDateTime     =>
         ldt.toString
       case other if other == null =>
         null
-      case v: Json =>
+      case v: Json                =>
         jsonToEngineValue(v)
-      case other =>
+      case other                  =>
         other
 
   def domainObjToEngineObject[A <: Product: InOutCodec](variable: A): Any =
@@ -83,15 +83,15 @@ trait EngineContext:
 
   def jsonToEngineValue(json: Json): Any =
     json match
-      case j if j.isNull => null
-      case j if j.isNumber =>
+      case j if j.isNull    => null
+      case j if j.isNumber  =>
         j.asNumber.get.toBigDecimal.get match
-          case n if n.isValidInt => n.toInt
+          case n if n.isValidInt  => n.toInt
           case n if n.isValidLong => n.toLong
-          case n => n.toDouble
+          case n                  => n.toDouble
       case j if j.isBoolean => j.asBoolean.get
-      case j if j.isString => j.asString.get
-      case j =>
+      case j if j.isString  => j.asString.get
+      case j                =>
         toEngineObject(j.deepDropNullValues)
   end jsonToEngineValue
 

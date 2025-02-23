@@ -22,7 +22,7 @@ trait DmnConfigWriter extends DmnTesterHelpers:
     ).body match
       case Right(_) =>
         println(s"Successfully updated ${dmnConfig.decisionId}")
-      case Left(v) => println(s"Problem updating $configPath: \n $v")
+      case Left(v)  => println(s"Problem updating $configPath: \n $v")
     end match
   end updateConfig
 

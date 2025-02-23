@@ -20,17 +20,18 @@ case class WorkerExecutor[
       processVariables: Seq[IO[BadVariableError, (String, Option[Json])]]
   ): IO[CamundalaWorkerError, Map[String, Any]] =
     (for
-      validatedInput    <- InputValidator.validate(processVariables)
-      initializedOutput <- Initializer.initVariables(validatedInput)
-      mockedOutput      <- OutMocker.mockedOutput(validatedInput)
+      validatedInput               <- InputValidator.validate(processVariables)
+      initializedOutput            <- Initializer.initVariables(validatedInput)
+      mockedOutput                 <- OutMocker.mockedOutput(validatedInput)
       // only run the work if it is not mocked
-      output            <-
+      output                       <-
         if mockedOutput.isEmpty then WorkRunner.run(validatedInput)
         else ZIO.succeed(mockedOutput.get)
-      allOutputs: Map[String, Any] = camundaOutputs(validatedInput, initializedOutput, output)
-      filteredOut: Map[String, Any] = filteredOutput(allOutputs, context.generalVariables.outputVariables)
+      allOutputs: Map[String, Any]  = camundaOutputs(validatedInput, initializedOutput, output)
+      filteredOut: Map[String, Any] =
+        filteredOutput(allOutputs, context.generalVariables.outputVariables)
       // make MockedOutput as error if mocked
-      _                 <- if mockedOutput.isDefined then ZIO.fail(MockedOutput(filteredOut)) else ZIO.succeed(())
+      _                            <- if mockedOutput.isDefined then ZIO.fail(MockedOutput(filteredOut)) else ZIO.succeed(())
     yield filteredOut)
 
   object InputValidator:
@@ -169,8 +170,7 @@ case class WorkerExecutor[
         case o: NoOutput =>
           context.toEngineObject(o)
         case _           =>
-          context.toEngineObject(output.asInstanceOf[Out])
-        )
+          context.toEngineObject(output.asInstanceOf[Out]))
 
   private def filteredOutput(
       allOutputs: Map[String, Any],

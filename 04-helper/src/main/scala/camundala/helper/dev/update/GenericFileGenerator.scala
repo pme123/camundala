@@ -14,7 +14,7 @@ case class GenericFileGenerator()(using config: DevConfig):
     createOrUpdate(config.projectDir / ".vscode" / "launch.json", workerTestAppVsCode)
   end generate
 
-  lazy val createScalaFmt =
+  lazy val createScalaFmt  =
     createOrUpdate(config.projectDir / ".scalafmt.conf", scalafmt)
   lazy val createGitIgnore =
     createOrUpdate(config.projectDir / ".gitignore", gitignore)
@@ -132,7 +132,7 @@ case class GenericFileGenerator()(using config: DevConfig):
         |  </configuration>
         |</component>
         |""".stripMargin
-  private lazy val workerTestAppVsCode =
+  private lazy val workerTestAppVsCode   =
     s"""|// DO NOT ADJUST. This file is replaced by `./helper.scala update`.
         |{
         |    "version": "2.0.0",

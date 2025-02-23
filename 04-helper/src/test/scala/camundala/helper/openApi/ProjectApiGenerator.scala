@@ -5,13 +5,13 @@ object ProjectApiGenerator extends App:
 
   OpenApiGenerator().generate
 
-  private given OpenApiConfig = gravitonConf
+  private given OpenApiConfig  = gravitonConf
   private lazy val typeMappers =
     OpenApiConfig.generalTypeMapping ++
       Seq(
         TypeMapper("AnyValue", "Json", OpenApiConfig.jsonObj)
       )
-  private given ApiDefinition = OpenApiCreator().create
+  private given ApiDefinition  = OpenApiCreator().create
   private lazy val camundaConf = OpenApiConfig(
     projectName = "mycompany-services",
     subProjectName = Some("camunda"),

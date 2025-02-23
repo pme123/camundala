@@ -19,7 +19,8 @@ import scala.util.{Failure, Success}
 /** To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
   * parameters.
   */
-trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec] extends camunda.ExternalTaskHandler, WorkerHandler[In, Out]:
+trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
+    extends camunda.ExternalTaskHandler, WorkerHandler[In, Out]:
 
   @Value("${spring.application.name}")
   var applicationName: String = scala.compiletime.uninitialized
@@ -165,7 +166,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec] ext
   end filteredOutput
 
   protected lazy val logger: WorkerLogger =
-    engineContext.getLogger(classOf[C7WorkerHandler[?,?]])
+    engineContext.getLogger(classOf[C7WorkerHandler[?, ?]])
 
   private[worker] def isErrorHandled(error: CamundalaWorkerError, handledErrors: Seq[String]) =
     error.isMock || // if it is mocked, it is handled in the error, as it also could be a successful output
