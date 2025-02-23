@@ -1,7 +1,7 @@
 #!/usr/bin/env -S scala shebang
 
 //> using toolkit 0.5.0
-//> using dep io.github.pme123::camundala-helper:1.30.33
+//> using dep io.github.pme123::camundala-helper:1.30.34
 
 import camundala.helper.dev.publish.ChangeLogUpdater
 
