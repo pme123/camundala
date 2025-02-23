@@ -109,30 +109,31 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
        | * Add here company specific stuff, to run the Workers.
        | * You also define the implementation of the WorkerHandler here.
        | */
-       |trait CompanyWorkerHandler extends C7WorkerHandler
+       |trait CompanyWorkerHandler[In <: Product : InOutCodec, Out <: Product : InOutCodec] 
+       |  extends C7WorkerHandler[In, Out]
        |
        |trait CompanyValidationWorkerDsl[
        |    In <: Product: InOutCodec
-       |] extends CompanyWorkerHandler, ValidationWorkerDsl[In]
+       |] extends CompanyWorkerHandler[In, NoOutput], ValidationWorkerDsl[In]
        |
        |trait CompanyInitWorkerDsl[
        |    In <: Product: InOutCodec,
        |    Out <: Product: InOutCodec,
        |    InitIn <: Product: InOutCodec,
        |    InConfig <: Product: InOutCodec
-       |] extends CompanyWorkerHandler, InitWorkerDsl[In, Out, InitIn, InConfig]
+       |] extends CompanyWorkerHandler[In, Out], InitWorkerDsl[In, Out, InitIn, InConfig]
        |
        |trait CompanyCustomWorkerDsl[
        |    In <: Product: InOutCodec,
        |    Out <: Product: InOutCodec
-       |] extends CompanyWorkerHandler, CustomWorkerDsl[In, Out]
+       |] extends CompanyWorkerHandler[In, Out], CustomWorkerDsl[In, Out]
        |
        |trait CompanyServiceWorkerDsl[
        |    In <: Product: InOutCodec,
        |    Out <: Product: InOutCodec,
        |    ServiceIn: InOutEncoder,
-       |    ServiceOut: InOutDecoder: ClassTag
-       |] extends CompanyWorkerHandler, ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]
+       |    ServiceOut: {InOutDecoder, ClassTag}
+       |] extends CompanyWorkerHandler[In, Out], ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]
        |""".stripMargin
 
   private lazy val workerContextWrapper =
