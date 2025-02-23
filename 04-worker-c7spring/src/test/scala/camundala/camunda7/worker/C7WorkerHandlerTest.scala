@@ -30,10 +30,10 @@ class C7WorkerHandlerTest extends munit.FunSuite:
 
   test("isErrorHandled catch all"):
     assertEquals(handler.isErrorHandled(UnexpectedError("blabla"), Seq("CatchAll")), true)
-    
+
   private lazy val handler = new C7WorkerHandler[NoInput, NoOutput]:
     def worker = ???
-    def topic = "test-topic"
+    def topic  = "test-topic"
   end handler
-  
+
 end C7WorkerHandlerTest

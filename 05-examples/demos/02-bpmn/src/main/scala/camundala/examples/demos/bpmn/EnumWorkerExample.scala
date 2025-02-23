@@ -5,16 +5,16 @@ import camundala.domain.*
 
 object EnumWorkerExample extends BpmnServiceTaskDsl:
 
-  val serviceLabel: String = "Demo for Enum as Inputs and Outputs in Worker"
+  val serviceLabel: String   = "Demo for Enum as Inputs and Outputs in Worker"
   val serviceVersion: String = "1.4"
-  val topicName: String = "myEnumWorker.Topic"
+  val topicName: String      = "myEnumWorker.Topic"
 
-  val descr = ""
+  val descr        = ""
   val path: String = "GET /people"
 
-  type ServiceIn = NoInput
+  type ServiceIn  = NoInput
   type ServiceOut = NoOutput
-  lazy val serviceInExample = NoInput()
+  lazy val serviceInExample                               = NoInput()
   lazy val serviceMock: MockedServiceResponse[ServiceOut] =
     MockedServiceResponse.success200(NoOutput())
 
@@ -33,7 +33,7 @@ object EnumWorkerExample extends BpmnServiceTaskDsl:
     )
   end In
   object In:
-    given ApiSchema[In] = deriveApiSchema
+    given ApiSchema[In]  = deriveApiSchema
     given InOutCodec[In] = deriveInOutCodec
 
   enum Out:
@@ -48,14 +48,14 @@ object EnumWorkerExample extends BpmnServiceTaskDsl:
     )
   end Out
   object Out:
-    given ApiSchema[Out] = deriveApiSchema
+    given ApiSchema[Out]  = deriveApiSchema
     given InOutCodec[Out] = deriveInOutCodec
 
   enum SimpleEnum:
     case One, Two
 
   object SimpleEnum:
-    given ApiSchema[SimpleEnum] = deriveEnumApiSchema
+    given ApiSchema[SimpleEnum]  = deriveEnumApiSchema
     given InOutCodec[SimpleEnum] = deriveEnumInOutCodec
 
   lazy val example = serviceTask(

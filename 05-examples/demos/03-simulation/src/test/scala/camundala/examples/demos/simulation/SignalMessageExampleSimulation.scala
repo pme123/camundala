@@ -9,7 +9,7 @@ import camundala.simulation.*
 // exampleDemosSimulation/testOnly *SignalMessageExampleSimulation
 class SignalMessageExampleSimulation extends DemosSimulation:
 
-  simulate (
+  simulate(
     scenario(messageExample.startWithMsg)(
       messageIntermediateExample,
       messageIntermediateExample
@@ -23,7 +23,6 @@ class SignalMessageExampleSimulation extends DemosSimulation:
       signalIntermediateExample
         .waitFor("signalReady", true)
     )
-
   )
 
   private lazy val messageIntermediateExample = receiveMessageEvent(

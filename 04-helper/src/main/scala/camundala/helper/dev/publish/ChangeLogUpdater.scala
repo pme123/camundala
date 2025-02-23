@@ -25,18 +25,18 @@ case class ChangeLogUpdater(
 
   private lazy val changeLog = os.read(os.pwd / "CHANGELOG.md")
 
-  private lazy val regex = """## (\d+\.\d+\.\d+) - (\d\d\d\d-\d\d-\d\d).*""".r
-  private lazy val firstMatch = regex.findFirstMatchIn(changeLog)
-  private lazy val lastVersion: Option[String] = firstMatch.map(_.group(1))
-  private lazy val lastVersionInt: Int = lastVersion
+  private lazy val regex                           = """## (\d+\.\d+\.\d+) - (\d\d\d\d-\d\d-\d\d).*""".r
+  private lazy val firstMatch                      = regex.findFirstMatchIn(changeLog)
+  private lazy val lastVersion: Option[String]     = firstMatch.map(_.group(1))
+  private lazy val lastVersionInt: Int             = lastVersion
     .map { v =>
       val vArray = v.split('.')
       vArray.head.toInt * 1000 * 1000 + vArray.tail.head.toInt * 1000 + vArray.last.toInt
     }
     .getOrElse(0)
-  private lazy val lastDate: Option[String] = firstMatch.map(_.group(2))
+  private lazy val lastDate: Option[String]        = firstMatch.map(_.group(2))
   private lazy val lastVersionLine: Option[String] = firstMatch.map(_.group(0))
-  private lazy val gitLog = os
+  private lazy val gitLog                          = os
     .proc(
       "git",
       "log",
@@ -44,7 +44,7 @@ case class ChangeLogUpdater(
       "--pretty=format:%cd :: %H :: %s"
     )
     .call()
-  private lazy val commitsAddress =
+  private lazy val commitsAddress                  =
     val remote: String = os
       .proc("git", "config", "--get", "remote.origin.url")
       .call()
@@ -68,7 +68,7 @@ case class ChangeLogUpdater(
   ) =
     result +
       (if newLine.last.startsWith("Released Version") then
-         val vArray = newLine.last.split(" ").last.split('.')
+         val vArray        = newLine.last.split(" ").last.split('.')
          val newVersionInt =
            vArray.head.toInt * 1000 * 1000 + vArray.tail.head.toInt * 1000 + vArray.last.toInt
          println(s"VERSION new: $newVersionInt - last: $lastVersionInt")
@@ -79,8 +79,7 @@ case class ChangeLogUpdater(
        else if result.endsWith("\nEXISTING VERSION") then
          "" // skip all entries for an existing version
        else
-         s"\n- ${newLine.last} - see [Commit]($commitsAddress${newLine.tail.head})"
-      )
+         s"\n- ${newLine.last} - see [Commit]($commitsAddress${newLine.tail.head})")
   end createNewChangelogEntries
 
   private lazy val newChangeLog = lastVersionLine

@@ -71,16 +71,20 @@ object DevConfig:
   ): DevConfig =
     new DevConfig(
       apiProjectConfig =
-        ApiProjectConfig.init(projectName, packageConfPath),
+        ApiProjectConfig.init(projectName, packageConfPath)
     )
 
   def configForCompany(projectName: String): DevConfig = DevConfig(
-    apiProjectConfig = ApiProjectConfig(projectName, "0.1.0-SNAPSHOT"),
+    apiProjectConfig = ApiProjectConfig(projectName, "0.1.0-SNAPSHOT")
   )
-  
+
   def projectDir(projectName: String, baseDir: os.Path): os.Path =
-    println(s"baseDir: $baseDir - projectName: $projectName -${if baseDir.toString.endsWith(projectName) then baseDir else baseDir / projectName}")
-    if baseDir.toString.toLowerCase.endsWith(projectName.toLowerCase) then baseDir else baseDir / projectName
+    println(s"baseDir: $baseDir - projectName: $projectName -${
+        if baseDir.toString.endsWith(projectName) then baseDir else baseDir / projectName
+      }")
+    if baseDir.toString.toLowerCase.endsWith(projectName.toLowerCase) then baseDir
+    else baseDir / projectName
+  end projectDir
 
   import ModuleConfig.*
 
