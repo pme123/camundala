@@ -22,7 +22,7 @@ case class GenericFileGenerator()(using config: DevConfig):
   private lazy val scalafmt =
     s"""# $helperDoNotAdjustText
        |
-       |version = "3.9.0"
+       |version = "3.9.1"
        |project.git = true
        |runner.dialect = scala3
        |align.preset = none
