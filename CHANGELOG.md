@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.35 - 2025-02-24
+### Changed 
+- Fixed error handling in C7WorkerHandler. - see [Commit](https://github.com/pme123/camundala/commit/0c0dcb2215eeb5f0a3246e3b05c12d8732368166)
+- Updated CompanyWrapperGenerator for adjusted CompanyWorkerHandler. - see [Commit](https://github.com/pme123/camundala/commit/f82cb00277112b99c9fa7a20b9b08725538bff37)
+
 ## 1.30.34 - 2025-02-22
 ### Changed 
 - Cleanup C7WorkerHandler to get closer to new Worker design. - see [Commit](https://github.com/pme123/camundala/commit/2561d19ad5a7535015bab6205dae1de6e74b7b2d)
