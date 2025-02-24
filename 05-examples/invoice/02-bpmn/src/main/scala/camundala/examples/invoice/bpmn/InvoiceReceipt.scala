@@ -131,7 +131,7 @@ object InvoiceReceipt extends BpmnProcessDsl:
 
     lazy val example: UserTask[In, Out] =
       userTask(
-        id = "ApproveInvoiceUT",
+        id = "ApproveInvoiceTask",
         descr = "Approve the invoice (or not).",
         in = InvoiceReceipt.PrepareBankTransferUT.In(),
         out = Out()
@@ -157,7 +157,7 @@ object InvoiceReceipt extends BpmnProcessDsl:
 
     lazy val example: UserTask[In, Out] =
       userTask(
-        id = "PrepareBankTransferUT",
+        id = "PrepareBankTransferTask",
         descr = "Prepare the bank transfer in the Financial Accounting System.",
         in = In(),
         out = NoOutput()

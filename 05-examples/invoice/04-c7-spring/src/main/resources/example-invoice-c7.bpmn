@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:signavio="http://www.signavio.com" id="sid-0b0aaa25-3baf-4875-9d7a-0907d599a9ef" targetNamespace="http://www.omg.org/spec/BPMN/20100524/MODEL" exporter="Camunda Modeler" exporterVersion="5.19.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:signavio="http://www.signavio.com" id="sid-0b0aaa25-3baf-4875-9d7a-0907d599a9ef" targetNamespace="http://www.omg.org/spec/BPMN/20100524/MODEL" exporter="Camunda Modeler" exporterVersion="5.31.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
   <dataStore id="FinancialAccountingSystem" name="Financial Accounting System" isUnlimited="false">
     <dataState id="DataState_1" />
   </dataStore>
@@ -16,9 +16,7 @@
         <flowNodeRef>ReviewInvoiceCallActivity</flowNodeRef>
         <flowNodeRef>InvoiceNotProcessedEndEvent</flowNodeRef>
         <flowNodeRef>ValidateStartMessageTask</flowNodeRef>
-        <flowNodeRef>Event_1roicyw</flowNodeRef>
         <flowNodeRef>MockedBoundaryEvent</flowNodeRef>
-        <flowNodeRef>ValidationfailedThrowErrorEndEvent</flowNodeRef>
         <flowNodeRef>OutputmockedEvent1</flowNodeRef>
         <flowNodeRef>OutputmockedEvent</flowNodeRef>
         <flowNodeRef>OutputmockedEndEvent</flowNodeRef>
@@ -85,20 +83,15 @@
     <endEvent id="InvoiceNotProcessedEndEvent" name="Invoice not&#10;processed" camunda:exclusive="false">
       <incoming>NoSequenceFlow</incoming>
     </endEvent>
-    <sequenceFlow id="Flow_1szk79c" sourceRef="Event_1roicyw" targetRef="ValidationfailedThrowErrorEndEvent" />
     <sequenceFlow id="Flow_1tnbvod" sourceRef="MockedBoundaryEvent" targetRef="OutputmockedEvent1" />
     <boundaryEvent id="MockedBoundaryEvent" attachedToRef="ValidateStartMessageTask">
       <outgoing>Flow_1tnbvod</outgoing>
       <errorEventDefinition id="ErrorEventDefinition_11vypoq" errorRef="Error_1rvzdyr" />
     </boundaryEvent>
-    <boundaryEvent id="Event_1roicyw" attachedToRef="ValidateStartMessageTask">
-      <outgoing>Flow_1szk79c</outgoing>
-      <errorEventDefinition id="ErrorEventDefinition_0ogxnq9" errorRef="Error_0ilyt1j" />
-    </boundaryEvent>
     <serviceTask id="ValidateStartMessageTask" name="Validate Start Message" camunda:type="external" camunda:topic="example-invoice-c7">
       <extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="handledErrors">output-mocked, validation-failed</camunda:inputParameter>
+          <camunda:inputParameter name="handledErrors">output-mocked</camunda:inputParameter>
         </camunda:inputOutput>
       </extensionElements>
       <incoming>Flow_0nql7w6</incoming>
@@ -150,15 +143,6 @@
       <outgoing>SequenceFlow_3__ArchiveInvoiceST__InvoiceProcessedEE</outgoing>
     </serviceTask>
     <serviceTask id="ArchiveInvoiceTask1" name="Archive Invoice" camunda:asyncBefore="true" implementation="##WebService" camunda:class="org.camunda.bpm.example.invoice.c7.service.ArchiveInvoiceService" />
-    <endEvent id="ValidationfailedThrowErrorEndEvent" name="validation-failed throw Error" camunda:asyncBefore="true">
-      <extensionElements>
-        <camunda:executionListener event="end">
-          <camunda:script scriptFormat="Groovy">throw new IllegalArgumentException("Process had not valid inputs - see $validationErrors.")</camunda:script>
-        </camunda:executionListener>
-      </extensionElements>
-      <incoming>Flow_1szk79c</incoming>
-      <errorEventDefinition id="ErrorEventDefinition_0wkp2uq" errorRef="Error_0tdcv3y" />
-    </endEvent>
     <intermediateThrowEvent id="OutputmockedEvent1" name="output-mocked">
       <incoming>Flow_1tnbvod</incoming>
       <linkEventDefinition id="LinkEventDefinition_147ix62" name="output-mocked" />
@@ -189,7 +173,6 @@
     <textAnnotation id="TextAnnotation_18e5h89">
       <text>use if you want to stop process with error</text>
     </textAnnotation>
-    <association id="Association_15mfbx8" sourceRef="ValidationfailedThrowErrorEndEvent" targetRef="TextAnnotation_18e5h89" />
   </process>
   <error id="Error_0tdcv3y" name="validation-failed" errorCode="validation-failed" camunda:errorMessage="${validationErrors.toString()}" />
   <error id="Error_0ilyt1j" name="validation-failed" errorCode="validation-failed" camunda:errorMessage="${validationErrors.toString()}" />
@@ -259,12 +242,6 @@
       <bpmndi:BPMNShape id="BPMNShape_1ar981g" bpmnElement="ArchiveInvoiceTask1">
         <omgdc:Bounds x="1200" y="390" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1cu5yxh_di" bpmnElement="ValidationfailedThrowErrorEndEvent" bioc:fill="#D5D5D5">
-        <omgdc:Bounds x="412" y="259" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds x="392" y="302" width="77" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_084c0k8_di" bpmnElement="OutputmockedEvent1" bioc:fill="#D5D5D5">
         <omgdc:Bounds x="512" y="259" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -298,12 +275,6 @@
       <bpmndi:BPMNShape id="TextAnnotation_18e5h89_di" bpmnElement="TextAnnotation_18e5h89">
         <omgdc:Bounds x="240" y="260" width="143" height="46" />
         <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1oeltv5" bpmnElement="Event_1roicyw" bioc:fill="#D5D5D5">
-        <omgdc:Bounds x="412" y="194" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds x="252.5" y="193" width="39" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_047id8n_di" bpmnElement="MockedBoundaryEvent" bioc:fill="#D5D5D5">
         <omgdc:Bounds x="512" y="194" width="36" height="36" />
@@ -385,10 +356,6 @@
         <omgdi:waypoint x="284" y="172" />
         <omgdi:waypoint x="430" y="172" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1szk79c_di" bpmnElement="Flow_1szk79c">
-        <omgdi:waypoint x="430" y="230" />
-        <omgdi:waypoint x="430" y="259" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1tnbvod_di" bpmnElement="Flow_1tnbvod">
         <omgdi:waypoint x="530" y="230" />
         <omgdi:waypoint x="530" y="259" />
@@ -412,10 +379,6 @@
       <bpmndi:BPMNEdge id="Association_0xpzck9_di" bpmnElement="Association_0xpzck9">
         <omgdi:waypoint x="1300" y="430" />
         <omgdi:waypoint x="1345" y="430" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_15mfbx8_di" bpmnElement="Association_15mfbx8">
-        <omgdi:waypoint x="412" y="277" />
-        <omgdi:waypoint x="383" y="277" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DataStoreReference_1_gui" bpmnElement="FinancialAccountingSystemDataStoreReference" isHorizontal="true">
         <omgdc:Bounds x="994" y="666" width="63" height="61" />
