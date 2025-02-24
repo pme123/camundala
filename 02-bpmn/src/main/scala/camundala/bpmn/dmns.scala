@@ -33,8 +33,8 @@ enum DecisionResultType:
 end DecisionResultType
 
 case class DecisionDmn[
-    In <: Product: InOutEncoder: InOutDecoder: Schema,
-    Out <: Product: InOutEncoder: InOutDecoder: Schema
+    In <: Product: {InOutEncoder , InOutDecoder , Schema},
+    Out <: Product: {InOutEncoder , InOutDecoder , Schema}
 ](
     inOutDescr: InOutDescr[In, Out],
     otherEnumInExamples: Option[Seq[In]] = None,
@@ -84,12 +84,12 @@ given DmnValueTypeJsonEncoder[T <: DmnValueSimple]: InOutEncoder[T] =
   new InOutEncoder[T]:
     final def apply(dv: T): Json = valueToJson(dv)
 
-given LocalDateJsonDecoder: InOutDecoder[LocalDate] = new InOutDecoder[LocalDate]:
+given InOutDecoder[LocalDate] = new InOutDecoder[LocalDate]:
   final def apply(c: HCursor): Decoder.Result[LocalDate] =
     for result <- c.as[String]
     yield LocalDate.parse(result)
 
-given LocalDateTimeJsonDecoder: InOutDecoder[LocalDateTime] =
+given InOutDecoder[LocalDateTime] =
   new InOutDecoder[LocalDateTime]:
     final def apply(c: HCursor): Decoder.Result[LocalDateTime] =
       c.as[String]
@@ -111,7 +111,7 @@ given InOutDecoder[ZonedDateTime] =
 @description(
   "SingleEntry: Output of a DMN Table. This returns one `DmnValueType`."
 )
-case class SingleEntry[Out <: DmnValueType: InOutEncoder: InOutDecoder: ClassTag](
+case class SingleEntry[Out <: DmnValueType: {InOutEncoder , InOutDecoder , ClassTag}](
     result: Out
 ):
   lazy val toCamunda: CamundaVariable = CamundaVariable.valueToCamunda(result)
@@ -120,7 +120,7 @@ end SingleEntry
 
 object SingleEntry:
 
-  given schemaForSingleEntry[A <: DmnValueType: InOutEncoder: InOutDecoder: Schema]
+  given schemaForSingleEntry[A <: DmnValueType: {InOutEncoder , InOutDecoder , Schema}]
       : Schema[SingleEntry[A]] =
     val sa = summon[Schema[A]]
     Schema[SingleEntry[A]](
@@ -133,14 +133,14 @@ object SingleEntry:
     )
   end schemaForSingleEntry
 
-  given SingleEntryCodec[T <: DmnValueType: InOutCodec: ClassTag]: InOutCodec[SingleEntry[T]] =
+  given SingleEntryCodec[T <: DmnValueType: {InOutCodec, ClassTag}]: InOutCodec[SingleEntry[T]] =
     CirceCodec.from(SingleEntryJsonDecoder, SingleEntryJsonEncoder)
 
   given SingleEntryJsonEncoder[T <: DmnValueType: InOutEncoder]: InOutEncoder[SingleEntry[T]] =
     new InOutEncoder[SingleEntry[T]]:
       final def apply(sr: SingleEntry[T]): Json = sr.result.asJson
 
-  given SingleEntryJsonDecoder[T <: DmnValueType: InOutEncoder: InOutDecoder: ClassTag]
+  given SingleEntryJsonDecoder[T <: DmnValueType: {InOutEncoder , InOutDecoder , ClassTag}]
       : InOutDecoder[SingleEntry[T]] =
     new InOutDecoder[SingleEntry[T]]:
       final def apply(c: HCursor): Decoder.Result[SingleEntry[T]] =
@@ -151,7 +151,7 @@ end SingleEntry
 @description(
   "CollectEntry: Output of a DMN Table. This returns a Sequence of `DmnValueType`s."
 )
-case class CollectEntries[Out <: DmnValueType: InOutEncoder: InOutDecoder: Schema](
+case class CollectEntries[Out <: DmnValueType: {InOutEncoder , InOutDecoder , Schema}](
     result: Seq[Out]
 ):
   lazy val toCamunda: Seq[CamundaVariable] =
@@ -160,13 +160,13 @@ case class CollectEntries[Out <: DmnValueType: InOutEncoder: InOutDecoder: Schem
 end CollectEntries
 
 object CollectEntries:
-  def apply[Out <: DmnValueType: InOutEncoder: InOutDecoder: Schema](
+  def apply[Out <: DmnValueType: {InOutEncoder , InOutDecoder , Schema}](
       result: Out,
       results: Out*
   ): CollectEntries[Out] =
     new CollectEntries[Out](result +: results)
 
-  given schemaForCollectEntries[A <: DmnValueType: InOutEncoder: InOutDecoder: Schema]
+  given schemaForCollectEntries[A <: DmnValueType: {InOutEncoder , InOutDecoder , Schema}]
       : Schema[CollectEntries[A]] =
     val sa = summon[Schema[A]]
     Schema[CollectEntries[A]](
@@ -179,12 +179,12 @@ object CollectEntries:
     )
   end schemaForCollectEntries
 
-  given CollectEntriesJsonEncoder[T <: DmnValueType: InOutEncoder: InOutDecoder]
+  given CollectEntriesJsonEncoder[T <: DmnValueType: {InOutEncoder , InOutDecoder}]
       : InOutEncoder[CollectEntries[T]] =
     new InOutEncoder[CollectEntries[T]]:
       final def apply(sr: CollectEntries[T]): Json = sr.result.asJson
 
-  given CollectEntriesJsonDecoder[T <: DmnValueType: InOutEncoder: InOutDecoder: Schema]
+  given CollectEntriesJsonDecoder[T <: DmnValueType: {InOutEncoder , InOutDecoder , Schema}]
       : InOutDecoder[CollectEntries[T]] = new InOutDecoder[CollectEntries[T]]:
     final def apply(c: HCursor): Decoder.Result[CollectEntries[T]] =
       for result <- c.as[Seq[T]]
@@ -194,7 +194,7 @@ end CollectEntries
 @description(
   "SingleResult: Output of a DMN Table. This returns one `Product` (case class) with more than one fields of `DmnValueType`s."
 )
-case class SingleResult[Out <: Product: InOutEncoder: InOutDecoder: Schema](result: Out):
+case class SingleResult[Out <: Product: {InOutEncoder , InOutDecoder , Schema}](result: Out):
 
   lazy val toCamunda: Map[String, CamundaVariable] =
     CamundaVariable.toCamunda(result)
@@ -202,7 +202,7 @@ case class SingleResult[Out <: Product: InOutEncoder: InOutDecoder: Schema](resu
 end SingleResult
 
 object SingleResult:
-  given schemaForSingleResult[A <: Product: InOutEncoder: InOutDecoder: Schema]
+  given schemaForSingleResult[A <: Product: {InOutEncoder , InOutDecoder , Schema}]
       : Schema[SingleResult[A]] =
     val sa = summon[Schema[A]]
     Schema[SingleResult[A]](
@@ -215,12 +215,12 @@ object SingleResult:
     )
   end schemaForSingleResult
 
-  given SingleResultJsonEncoder[T <: Product: InOutEncoder: InOutDecoder: Schema]
+  given SingleResultJsonEncoder[T <: Product: {InOutEncoder , InOutDecoder , Schema}]
       : InOutEncoder[SingleResult[T]] =
     new InOutEncoder[SingleResult[T]]:
       final def apply(sr: SingleResult[T]): Json = sr.result.asJson
 
-  given SingleResultJsonDecoder[T <: Product: InOutEncoder: InOutDecoder: Schema]
+  given SingleResultJsonDecoder[T <: Product: {InOutEncoder , InOutDecoder , Schema}]
       : InOutDecoder[SingleResult[T]] =
     new InOutDecoder[SingleResult[T]]:
       final def apply(c: HCursor): Decoder.Result[SingleResult[T]] =
@@ -231,7 +231,7 @@ end SingleResult
 @description(
   "ResultList: Output of a DMN Table. This returns a Sequence of `Product`s (case classes) with more than one fields of `DmnValueType`s"
 )
-case class ResultList[Out <: Product: InOutEncoder: InOutDecoder: Schema](
+case class ResultList[Out <: Product: {InOutEncoder , InOutDecoder , Schema}](
     result: Seq[Out]
 ):
 
@@ -241,13 +241,13 @@ case class ResultList[Out <: Product: InOutEncoder: InOutDecoder: Schema](
 end ResultList
 
 object ResultList:
-  def apply[Out <: Product: InOutEncoder: InOutDecoder: Schema](
+  def apply[Out <: Product: {InOutEncoder , InOutDecoder , Schema}](
       result: Out,
       results: Out*
   ): ResultList[Out] =
     new ResultList[Out](result +: results)
 
-  given schemaForResultList[A <: Product: InOutEncoder: InOutDecoder: Schema]
+  given schemaForResultList[A <: Product: {InOutEncoder , InOutDecoder , Schema}]
       : Schema[ResultList[A]] =
     val sa = summon[Schema[A]]
     Schema[ResultList[A]](
@@ -260,12 +260,12 @@ object ResultList:
     )
   end schemaForResultList
 
-  given ResultListEncoder[T <: Product: InOutEncoder: InOutDecoder: Schema]
+  given ResultListEncoder[T <: Product: {InOutEncoder , InOutDecoder , Schema}]
       : InOutEncoder[ResultList[T]] =
     new Encoder[ResultList[T]]:
       final def apply(sr: ResultList[T]): Json = sr.result.asJson
 
-  given ResultListDecoder[T <: Product: InOutEncoder: InOutDecoder: Schema]
+  given ResultListDecoder[T <: Product: {InOutEncoder , InOutDecoder , Schema}]
       : InOutDecoder[ResultList[T]] =
     new Decoder[ResultList[T]]:
       final def apply(c: HCursor): Decoder.Result[ResultList[T]] =

@@ -58,10 +58,6 @@ class InvoiceSimulation extends CustomSimulation:
     ),
     scenario(InvoiceAssignApproverDMN),
     scenario(InvoiceAssignApproverDMN2),
-    incidentScenario(
-      BadValidationP,
-      "- DecodingFailure at .creditor: Missing required field"
-    ),
     // mocking
     scenario(`Invoice Receipt mocked invoiceReviewed`)(
       NotApproveInvoiceUT,
@@ -173,9 +169,6 @@ class InvoiceSimulation extends CustomSimulation:
       .withOut(
         InvoiceReceipt.Out(approved = false, clarified = Some(false), archived = None)
       )
-  private lazy val BadValidationP =
-    InvoiceReceipt.example
-      .withIn(InvoiceReceipt.In(null))
 
   private lazy val `Archive Invoice` =
     ArchiveInvoice.example

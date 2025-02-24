@@ -6,9 +6,10 @@ import camundala.domain.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
 import jakarta.annotation.PostConstruct
-import org.camunda.bpm.client.{ExternalTaskClient, task as camunda}
+import org.camunda.bpm.client.{ExternalTaskClient, task, task as camunda}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
-import zio.{IO, ZIO}
+import zio.{IO, Runtime, Unsafe, ZIO}
+import zio.ZIO.*
 
 import java.util.Date
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,7 +20,8 @@ import scala.util.{Failure, Success}
 /** To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
   * parameters.
   */
-trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec] extends camunda.ExternalTaskHandler, WorkerHandler[In, Out]:
+trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
+    extends camunda.ExternalTaskHandler, WorkerHandler[In, Out]:
 
   @Value("${spring.application.name}")
   var applicationName: String = scala.compiletime.uninitialized
@@ -34,16 +36,29 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec] ext
       externalTask: camunda.ExternalTask,
       externalTaskService: camunda.ExternalTaskService
   ): Unit =
-    Future:
-      val startDate = new Date()
-      logger.info(
-        s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) started > ${externalTask.getBusinessKey}"
-      )
-      executeWorker(externalTaskService)(using externalTask)
-      logger.info(
-        s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) ended ${printTimeOnConsole(startDate)}   > ${externalTask.getBusinessKey}"
-      )
+    Unsafe.unsafe:
+      implicit unsafe =>
+        runtime.unsafe.runToFuture(
+          run(externalTaskService)(using externalTask)
+            .provideLayer(ZioLogger.logger)
+        ).future
   end execute
+
+  private def run(externalTaskService: camunda.ExternalTaskService)(using
+      externalTask: camunda.ExternalTask
+  ): ZIO[Any, Throwable, Unit] =
+    for
+      startDate <- succeed(new Date())
+      _         <-
+        logInfo(
+          s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) started > ${externalTask.getBusinessKey}"
+        )
+      _         <- executeWorker(externalTaskService)
+      _         <-
+        logInfo(
+          s"Worker: ${externalTask.getTopicName} (${externalTask.getId}) ended ${printTimeOnConsole(startDate)}   > ${externalTask.getBusinessKey}"
+        )
+    yield ()
 
   @PostConstruct
   def registerHandler(): Unit =
@@ -56,29 +71,27 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec] ext
 
   private def executeWorker(
       externalTaskService: camunda.ExternalTaskService
-  ): HelperContext[Unit] =
+  ): HelperContext[ZIO[Any, Throwable, Unit]] =
     val tryProcessVariables =
       ProcessVariablesExtractor.extract(worker.variableNames)
     val tryGeneralVariables = ProcessVariablesExtractor.extractGeneral()
-    try
-      (for
-          generalVariables      <- tryGeneralVariables
-          given EngineRunContext = EngineRunContext(engineContext, generalVariables)
-          filteredOut           <-
-            WorkerExecutor(worker).execute(tryProcessVariables)
-        yield externalTaskService.handleSuccess(filteredOut, generalVariables.manualOutMapping) //
-      ).mapError: ex =>
-        externalTaskService.handleError(ex, tryGeneralVariables)
-    catch // safety net
-      case ex: Throwable =>
-        ex.printStackTrace()
-        externalTaskService.handleError(
-          UnexpectedError(errorMsg =
-            s"We caught an UnhandledException: ${ex.getMessage}\n - check the Workers Log."
-          ),
-          tryGeneralVariables
-        )
-    end try
+    (for
+        generalVariables      <- tryGeneralVariables
+        given EngineRunContext = EngineRunContext(engineContext, generalVariables)
+        filteredOut           <- WorkerExecutor(worker).execute(tryProcessVariables)
+        _                     <- ZIO.attempt(externalTaskService.handleSuccess(
+                                   filteredOut,
+                                   generalVariables.manualOutMapping
+                                 ))
+      yield () //
+    ).mapError:
+      case ex: CamundalaWorkerError => ex
+      case ex                       => UnexpectedError(ex.getMessage)
+    .catchAll: ex =>
+      tryGeneralVariables.map: vars =>
+        externalTaskService.handleError(ex, vars)
+        ex
+
   end executeWorker
 
   extension (externalTaskService: camunda.ExternalTaskService)
@@ -95,51 +108,48 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec] ext
 
     private[worker] def handleError(
         error: CamundalaWorkerError,
-        tryGeneralVariables: IO[BadVariableError, GeneralVariables]
+        generalVariables: GeneralVariables
     ): HelperContext[Unit] =
       import CamundalaWorkerError.*
-      val errorMsg = error.errorMsg.replace("\n", "")
-      (for
-        generalVariables <- tryGeneralVariables
-        errorHandled      = isErrorHandled(error, generalVariables.handledErrors)
-        errorRegexHandled = errorHandled && generalVariables.regexHandledErrors.forall(regex =>
-                              errorMsg.matches(s".*$regex.*")
-                            )
-      yield (errorHandled, errorRegexHandled, generalVariables))
-        .flatMap {
-          case (true, true, generalVariables) =>
-            val mockedOutput = error match
-              case error: ErrorWithOutput =>
-                error.output
-              case _                      => Map.empty
-            val filtered     = filteredOutput(generalVariables.outputVariables, mockedOutput)
-            ZIO.succeed(
-              if
-                error.isMock && !generalVariables.handledErrors.contains(
-                  error.errorCode.toString
-                )
-              then
-                handleSuccess(filtered, generalVariables.manualOutMapping)
-              else
-                val errorVars = Map(
-                  "errorCode" -> error.errorCode,
-                  "errorMsg"  -> error.errorMsg
-                )
-                val variables = (filtered ++ errorVars).asJava
-                logger.info(s"Handled Error: $errorVars")
-                externalTaskService.handleBpmnError(
-                  summon[camunda.ExternalTask],
-                  s"${error.errorCode}",
-                  error.errorMsg,
-                  variables
-                )
-            )
-          case (true, false, _)               =>
-            ZIO.fail(HandledRegexNotMatchedError(error))
-          case _                              =>
-            ZIO.fail(error)
-        }
-        .mapError: err =>
+      val errorMsg          = error.errorMsg.replace("\n", "")
+      val errorHandled      = isErrorHandled(error, generalVariables.handledErrors)
+      val errorRegexHandled = errorHandled && generalVariables.regexHandledErrors.forall(regex =>
+        errorMsg.matches(s".*$regex.*")
+      )
+      ((errorHandled, errorRegexHandled, generalVariables) match
+        case (true, true, generalVariables) =>
+          val mockedOutput = error match
+            case error: ErrorWithOutput =>
+              error.output
+            case _                      => Map.empty
+          val filtered     = filteredOutput(generalVariables.outputVariables, mockedOutput)
+          Right(
+            if
+              error.isMock && !generalVariables.handledErrors.contains(
+                error.errorCode.toString
+              )
+            then
+              handleSuccess(filtered, generalVariables.manualOutMapping)
+            else
+              val errorVars = Map(
+                "errorCode" -> error.errorCode,
+                "errorMsg"  -> error.errorMsg
+              )
+              val variables = (filtered ++ errorVars).asJava
+              logger.info(s"Handled Error: $errorVars")
+              externalTaskService.handleBpmnError(
+                summon[camunda.ExternalTask],
+                s"${error.errorCode}",
+                error.errorMsg,
+                variables
+              )
+          )
+        case (true, false, _)               =>
+          Left(HandledRegexNotMatchedError(error))
+        case _                              =>
+          Left(error)
+      )
+        .left.map: err =>
           logger.error(err)
           externalTaskService.handleFailure(
             summon[camunda.ExternalTask],
@@ -165,12 +175,14 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec] ext
   end filteredOutput
 
   protected lazy val logger: WorkerLogger =
-    engineContext.getLogger(classOf[C7WorkerHandler[?,?]])
+    engineContext.getLogger(classOf[C7WorkerHandler[?, ?]])
 
   private[worker] def isErrorHandled(error: CamundalaWorkerError, handledErrors: Seq[String]) =
     error.isMock || // if it is mocked, it is handled in the error, as it also could be a successful output
       handledErrors.contains(error.errorCode.toString) || handledErrors.map(
         _.toLowerCase
       ).contains("catchall")
+
+  private lazy val runtime = Runtime.default
 
 end C7WorkerHandler

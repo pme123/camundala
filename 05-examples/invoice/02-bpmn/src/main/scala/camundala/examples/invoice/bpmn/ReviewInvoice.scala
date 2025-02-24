@@ -85,7 +85,7 @@ object ReviewInvoice extends BpmnProcessDsl:
 
     lazy val example: UserTask[In, Out] =
       userTask(
-        id = "ReviewInvoiceUT",
+        id = "ReviewInvoiceUT", 
         descr = "Review Invoice and approve.",
         in = InvoiceReceipt.PrepareBankTransferUT.In(),
         out = Out()
