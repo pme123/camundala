@@ -13,9 +13,8 @@ import sttp.model.{Header, Uri}
 import scala.reflect.ClassTag
 import scala.util.Try
 
-
 trait RestApiClient:
-  
+
   def sendRequest[
       ServiceIn: InOutEncoder,             // body of service
       ServiceOut: {InOutDecoder, ClassTag} // output of service

@@ -17,6 +17,6 @@ class TimerExampleSimulation extends DemosSimulation:
     )
   )
 
-  private lazy val `timerProcess waiting for job` = TimerExample.example
+  private lazy val `timerProcess waiting for job`      = TimerExample.example
   private lazy val `timerProcess waiting for variable` = TimerExample.example
 end TimerExampleSimulation

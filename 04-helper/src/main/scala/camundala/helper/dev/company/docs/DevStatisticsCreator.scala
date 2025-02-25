@@ -51,7 +51,7 @@ case class DevStatisticsCreator(gitBasePath: os.Path, basePath: os.Path):
         }
          |
         """.stripMargin
-    val path = basePath / "src" / "docs" / "devStatistics.md"
+    val path       = basePath / "src" / "docs" / "devStatistics.md"
     os.write.over(path, statistics)
   end create
 
@@ -65,7 +65,11 @@ case class DevStatisticsCreator(gitBasePath: os.Path, basePath: os.Path):
     FileTypeCount(fileType, projectCounts, filter)
   end lineCount
 
-  private def lineCountProject(fileType: String, project: String, filter: Option[String]): ProjectCounts =
+  private def lineCountProject(
+      fileType: String,
+      project: String,
+      filter: Option[String]
+  ): ProjectCounts =
     val files = os.walk(gitBasePath / project)
       .filter(_.ext == fileType)
       .filter(_.toIO.isFile)
@@ -80,7 +84,11 @@ case class DevStatisticsCreator(gitBasePath: os.Path, basePath: os.Path):
 
   end lineCountProject
 
-  case class FileTypeCount(fileType: String, projectCounts: Seq[ProjectCounts], filter: Option[String]):
+  case class FileTypeCount(
+      fileType: String,
+      projectCounts: Seq[ProjectCounts],
+      filter: Option[String]
+  ):
     lazy val lineCount =
       projectCounts.map(_.lineCount).sum
     lazy val fileCount =

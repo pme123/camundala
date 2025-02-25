@@ -5,20 +5,20 @@ import camundala.bpmn.GenericExternalTask.ProcessStatus
 import camundala.domain.*
 
 trait ServiceMethodServices extends BpmnServiceTaskDsl:
-  val serviceLabel: String = "TEST SERVICES for Service Methods"
+  val serviceLabel: String   = "TEST SERVICES for Service Methods"
   val serviceVersion: String = "0.1"
 end ServiceMethodServices
 
 object ServiceMethodDeleteApi extends ServiceMethodServices:
 
   final val topicName = "service-method-delete"
-  val descr = "Delete Dummy - mocking test"
-  val path: String = "DELETE /services/method"
+  val descr           = "Delete Dummy - mocking test"
+  val path: String    = "DELETE /services/method"
 
-  type ServiceIn = NoInput
+  type ServiceIn  = NoInput
   type ServiceOut = NoOutput
   lazy val serviceInExample = NoInput()
-  lazy val serviceMock = MockedServiceResponse.success204
+  lazy val serviceMock      = MockedServiceResponse.success204
 
   @description("Same Input as _InvoiceReceipt_, only different Mocking")
   case class In(
@@ -26,7 +26,7 @@ object ServiceMethodDeleteApi extends ServiceMethodServices:
   )
 
   object In:
-    given ApiSchema[In] = deriveApiSchema
+    given ApiSchema[In]  = deriveApiSchema
     given InOutCodec[In] = deriveCodec
   end In
 
@@ -35,7 +35,7 @@ object ServiceMethodDeleteApi extends ServiceMethodServices:
   )
 
   object Out:
-    given ApiSchema[Out] = deriveApiSchema
+    given ApiSchema[Out]  = deriveApiSchema
     given InOutCodec[Out] = deriveCodec
   end Out
 
@@ -43,7 +43,7 @@ object ServiceMethodDeleteApi extends ServiceMethodServices:
       id: Long = 123L
   )
   object Dummy:
-    given ApiSchema[Dummy] = deriveApiSchema
+    given ApiSchema[Dummy]  = deriveApiSchema
     given InOutCodec[Dummy] = deriveCodec
   end Dummy
 
@@ -60,12 +60,12 @@ end ServiceMethodDeleteApi
 object ServiceMethodListApi extends ServiceMethodServices:
 
   final val topicName = "service-method-list"
-  val descr = "Delete Dummy - mocking test"
-  val path: String = "GET /services/method"
-  type ServiceIn = NoInput
+  val descr           = "Delete Dummy - mocking test"
+  val path: String    = "GET /services/method"
+  type ServiceIn  = NoInput
   type ServiceOut = List[Dummy]
   lazy val serviceInExample = NoInput()
-  lazy val serviceMock = MockedServiceResponse.success200(List(Dummy()))
+  lazy val serviceMock      = MockedServiceResponse.success200(List(Dummy()))
 
   @description("Same Input as _InvoiceReceipt_, only different Mocking")
   case class In(
@@ -73,7 +73,7 @@ object ServiceMethodListApi extends ServiceMethodServices:
   )
 
   object In:
-    given ApiSchema[In] = deriveApiSchema
+    given ApiSchema[In]  = deriveApiSchema
     given InOutCodec[In] = deriveCodec
   end In
 
@@ -83,7 +83,7 @@ object ServiceMethodListApi extends ServiceMethodServices:
   )
 
   object Out:
-    given ApiSchema[Out] = deriveApiSchema
+    given ApiSchema[Out]  = deriveApiSchema
     given InOutCodec[Out] = deriveCodec
   end Out
 
@@ -91,7 +91,7 @@ object ServiceMethodListApi extends ServiceMethodServices:
       id: Long = 123L
   )
   object Dummy:
-    given ApiSchema[Dummy] = deriveApiSchema
+    given ApiSchema[Dummy]  = deriveApiSchema
     given InOutCodec[Dummy] = deriveCodec
   end Dummy
 

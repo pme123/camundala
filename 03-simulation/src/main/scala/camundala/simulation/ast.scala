@@ -15,7 +15,7 @@ sealed trait WithTestOverrides[T <: WithTestOverrides[T]]:
         .map(_ :+ testOverride)
         .getOrElse(TestOverrides(Seq(testOverride)))
     )
-  lazy val camundaToCheckMap: Map[String, CamundaVariable] =
+  lazy val camundaToCheckMap: Map[String, CamundaVariable]                     =
     inOut.camundaToCheckMap
 end WithTestOverrides
 
@@ -56,8 +56,8 @@ case class ProcessScenario(
   def add(testOverride: TestOverride): ProcessScenario =
     copy(testOverrides = addOverride(testOverride))
 
-  def ignored: ProcessScenario = copy(isIgnored = true)
-  def only: ProcessScenario = copy(isOnly = true)
+  def ignored: ProcessScenario                 = copy(isIgnored = true)
+  def only: ProcessScenario                    = copy(isOnly = true)
   def withSteps(steps: List[SStep]): SScenario =
     copy(steps = steps)
 end ProcessScenario
@@ -76,7 +76,7 @@ case class ExternalTaskScenario(
       WithTestOverrides[ExternalTaskScenario]:
 
   lazy val steps: List[SStep] = List.empty
-  def inOut: InOut[?, ?, ?] = process
+  def inOut: InOut[?, ?, ?]   = process
 
   def add(testOverride: TestOverride): ExternalTaskScenario =
     copy(testOverrides = addOverride(testOverride))
@@ -118,9 +118,9 @@ case class BadScenario(
     isOnly: Boolean = false
 ) extends IsProcessScenario:
   lazy val inOut: Process[?, ?, ?] = process
-  lazy val steps: List[SStep] = List.empty
-  def ignored: BadScenario = copy(isIgnored = true)
-  def only: BadScenario = copy(isOnly = true)
+  lazy val steps: List[SStep]      = List.empty
+  def ignored: BadScenario         = copy(isIgnored = true)
+  def only: BadScenario            = copy(isOnly = true)
 
   def withSteps(steps: List[SStep]): SScenario =
     this
@@ -157,7 +157,7 @@ case class IncidentServiceScenario(
     isOnly: Boolean = false
 ) extends IsIncidentScenario:
   lazy val inOut: ExternalTask[?, ?, ?] = process
-  lazy val steps: List[SStep] = List.empty
+  lazy val steps: List[SStep]           = List.empty
 
   def ignored: IncidentServiceScenario = copy(isIgnored = true)
 
@@ -172,10 +172,10 @@ sealed trait SStep extends ScenarioOrStep
 sealed trait SInServiceOuttep
     extends SStep,
       WithTestOverrides[SInServiceOuttep]:
-  lazy val inOutDescr: InOutDescr[?, ?] = inOut.inOutDescr
-  lazy val id: String = inOutDescr.id
-  lazy val descr: Option[String] = inOutDescr.descr
-  lazy val camundaInMap: Map[String, CamundaVariable] = inOut.camundaInMap
+  lazy val inOutDescr: InOutDescr[?, ?]                = inOut.inOutDescr
+  lazy val id: String                                  = inOutDescr.id
+  lazy val descr: Option[String]                       = inOutDescr.descr
+  lazy val camundaInMap: Map[String, CamundaVariable]  = inOut.camundaInMap
   lazy val camundaOutMap: Map[String, CamundaVariable] = inOut.camundaOutMap
 end SInServiceOuttep
 
@@ -199,7 +199,7 @@ case class SSubProcess(
 ) extends SInServiceOuttep,
       HasProcessSteps:
 
-  lazy val processName: String = process.processName
+  lazy val processName: String     = process.processName
   lazy val inOut: Process[?, ?, ?] = process
 
   def add(testOverride: TestOverride): SSubProcess =

@@ -3,13 +3,13 @@ package camundala.helper.dev.update
 export camundala.helper.util.DevConfig
 export camundala.helper.util.ModuleConfig
 
-val doNotAdjust = "DO NOT ADJUST"
-private val replaceHelperCommand ="./helper.scala update"
-lazy val helperDoNotAdjustText = doNotAdjustText(replaceHelperCommand)
-lazy val helperHowToResetText = howToResetText(replaceHelperCommand)
+val doNotAdjust                             = "DO NOT ADJUST"
+private val replaceHelperCommand            = "./helper.scala update"
+lazy val helperDoNotAdjustText              = doNotAdjustText(replaceHelperCommand)
+lazy val helperHowToResetText               = howToResetText(replaceHelperCommand)
 def doNotAdjustText(replaceCommand: String) =
   s"// DO NOT ADJUST. This file is replaced by `$replaceCommand`."
-def howToResetText(replaceCommand: String) =
+def howToResetText(replaceCommand: String)  =
   s"// This file was created with `$replaceCommand` - to reset delete it and run the command."
 
 case class SetupElement(
@@ -19,10 +19,10 @@ case class SetupElement(
     version: Option[Int]
 )(using setupConfig: DevConfig):
 
-  lazy val versionLabel: String = version.versionLabel
-  lazy val identifier =
+  lazy val versionLabel: String   = version.versionLabel
+  lazy val identifier             =
     s"${setupConfig.projectName}-$processName${version.versionLabel}$bpmnIdentifier"
-  lazy val identifierShort =
+  lazy val identifierShort        =
     s"${setupConfig.projectShortName}-$processName${version.versionLabel}$bpmnIdentifier"
   println(
     s"Create $label: $bpmnName in ${setupConfig.projectName} / process: $processName ${version.versionLabel}"
@@ -54,10 +54,11 @@ def createIfNotExists(file: os.Path, contentNew: String): Unit =
   else
     println(s"EXISTS: $file")
   end if
+end createIfNotExists
 extension (version: Option[Int])
-  def versionPath: String =
+  def versionPath: String    =
     version.map(v => s"v$v").getOrElse("v1")
-  def versionLabel: String =
+  def versionLabel: String   =
     version.map(v => s"V$v").getOrElse("V1")
   def versionPackage: String =
     version.map(v => s".v$v").getOrElse(".v1")

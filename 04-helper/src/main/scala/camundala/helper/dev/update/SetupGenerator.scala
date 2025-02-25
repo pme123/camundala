@@ -38,5 +38,4 @@ case class SetupGenerator()(using config: DevConfig):
     BpmnGenerator().createEvent(setupElement)
     if withWorker then WorkerGenerator().createEventWorker(setupElement)
 
-
 end SetupGenerator
