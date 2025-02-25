@@ -1,6 +1,5 @@
 package camundala.helper.dev.update
 
-
 case class DmnGenerator()(using config: DevConfig):
 
   lazy val generate: Unit =

@@ -7,11 +7,11 @@ trait DependencyCreator:
   protected def apiConfig: ApiConfig
   protected def configs: Seq[DocProjectConfig]
   protected def releaseConfig: ReleaseConfig = readReleaseConfig
-  given ApiConfig = apiConfig
-  
+  given ApiConfig                            = apiConfig
+
   case class Package(name: String, minorVersion: String):
-    lazy val show = s"$name:$minorVersion"
-    lazy val showRect = s"$name:$minorVersion($name:$minorVersion)"
+    lazy val show               = s"$name:$minorVersion"
+    lazy val showRect           = s"$name:$minorVersion($name:$minorVersion)"
     lazy val versionNumber: Int = minorVersion.replace(".", "").toInt
   end Package
 

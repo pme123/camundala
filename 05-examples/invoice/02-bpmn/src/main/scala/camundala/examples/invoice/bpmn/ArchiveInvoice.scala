@@ -7,13 +7,13 @@ import camundala.domain.*
 object ArchiveInvoice extends BpmnCustomTaskDsl:
 
   final val topicName = "ArchiveInvoiceService"
-  val descr = "Archives the Receipt."
+  val descr           = "Archives the Receipt."
 
   case class In(
       shouldFail: Option[Boolean] = Some(true)
   )
   object In:
-    given ApiSchema[In] = deriveApiSchema
+    given ApiSchema[In]  = deriveApiSchema
     given InOutCodec[In] = deriveCodec
   end In
 
@@ -21,7 +21,7 @@ object ArchiveInvoice extends BpmnCustomTaskDsl:
       archived: Option[Boolean] = Some(true)
   )
   object Out:
-    given ApiSchema[Out] = deriveApiSchema
+    given ApiSchema[Out]  = deriveApiSchema
     given InOutCodec[Out] = deriveCodec
   end Out
 

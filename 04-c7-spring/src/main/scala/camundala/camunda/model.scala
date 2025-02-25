@@ -16,7 +16,7 @@ case class BpmnProcess(
       elements: (InOut[?, ?, ?] | BpmnInOut[?, ?])*
   ): BpmnProcess =
     this.copy(elements = elements.map {
-      case inOut: InOut[?, ?, ?] => BpmnInOut(inOut.asInstanceOf[InOut[Product, Product, ?]])
+      case inOut: InOut[?, ?, ?]      => BpmnInOut(inOut.asInstanceOf[InOut[Product, Product, ?]])
       case bpmnInOut: BpmnInOut[?, ?] => bpmnInOut
     })
 end BpmnProcess
@@ -60,20 +60,20 @@ case class PathMapper(
   def printExpression(): String =
     toMappingEntries
       .map(_.name) match
-      case Nil => throwErr("The Path is empty - It must have more than one element!")
+      case Nil      => throwErr("The Path is empty - It must have more than one element!")
       case x :: Nil => throwErr(s"The Path is '$x' - It must have more than one element!")
-      case x :: xs =>
+      case x :: xs  =>
         s"$${" + x + xs.mkString(".prop(\"", "\").prop(\"", s"\")${varType.expr}") + "}"
 
   def toMappingEntries: List[MappingEntry] =
     val head = path.headOption match
       case Some(PathEntry.PathElem(n)) =>
         MappingEntry.ValueElem(n)
-      case other =>
+      case other                       =>
         throwErr("The Path must start")
 
     path.tail.foldLeft(List[MappingEntry](head)) {
-      case result -> PathEntry.PathElem(n) =>
+      case result -> PathEntry.PathElem(n)  =>
         result :+ MappingEntry.ValueElem(n)
       case result -> PathEntry.OptionalPath =>
         result.init :+ MappingEntry.OptionalElem(result.last.name)
@@ -87,23 +87,23 @@ enum PathEntry:
 
 enum MapType(val expr: String):
   case Boolean extends MapType(".boolValue()")
-  case Int extends MapType(".numberValue()")
-  case Long extends MapType(".numberValue()")
-  case Double extends MapType(".numberValue()")
-  case String extends MapType(".stringValue()")
-  case Json extends MapType("")
+  case Int     extends MapType(".numberValue()")
+  case Long    extends MapType(".numberValue()")
+  case Double  extends MapType(".numberValue()")
+  case String  extends MapType(".stringValue()")
+  case Json    extends MapType("")
 end MapType
 
 object MapType:
   def apply(className: String): MapType =
     className match
       case n if n.contains("Boolean") => MapType.Boolean
-      case n if n.contains("Int") => MapType.Int
-      case n if n.contains("Long") => MapType.Long
-      case n if n.contains("Float") => MapType.Double
-      case n if n.contains("Double") => MapType.Double
-      case n if n.contains("String") => MapType.String
-      case n => MapType.Json
+      case n if n.contains("Int")     => MapType.Int
+      case n if n.contains("Long")    => MapType.Long
+      case n if n.contains("Float")   => MapType.Double
+      case n if n.contains("Double")  => MapType.Double
+      case n if n.contains("String")  => MapType.String
+      case n                          => MapType.Json
 end MapType
 
 sealed trait MappingEntry:
@@ -113,8 +113,8 @@ sealed trait MappingEntry:
 object MappingEntry:
   case class OptionalElem(name: String) extends MappingEntry:
     def printGroovy(): String = s"$name?"
-  case class SeqElem(name: String) extends MappingEntry:
+  case class SeqElem(name: String)      extends MappingEntry:
     def printGroovy(): String = "SeqElem"
-  case class ValueElem(name: String) extends MappingEntry:
+  case class ValueElem(name: String)    extends MappingEntry:
     def printGroovy(): String = name
 end MappingEntry

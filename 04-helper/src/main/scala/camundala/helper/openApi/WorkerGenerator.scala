@@ -13,7 +13,7 @@ case class WorkerGenerator()(using val config: OpenApiConfig, val apiDefinition:
     generateWorkerTests
   end generate
 
-  protected lazy val workerPath: os.Path = config.workerPath(superClass.versionPackage)
+  protected lazy val workerPath: os.Path   = config.workerPath(superClass.versionPackage)
   protected lazy val workerPackage: String = config.workerPackage(superClass.versionPackage)
 
   private lazy val generateExports =
@@ -43,7 +43,7 @@ case class WorkerGenerator()(using val config: OpenApiConfig, val apiDefinition:
           os.write.over(workerPath / s"${name}WorkerTest.scala", content)
 
   private def generateWorker(bpmnServiceObject: BpmnServiceObject) =
-    val name = bpmnServiceObject.className
+    val name       = bpmnServiceObject.className
     val superClass = apiDefinition.superClass
 
     name ->
@@ -104,7 +104,7 @@ case class WorkerGenerator()(using val config: OpenApiConfig, val apiDefinition:
   end generateWorker
 
   private def generateWorkerTest(bpmnServiceObject: BpmnServiceObject) =
-    val name = bpmnServiceObject.className
+    val name       = bpmnServiceObject.className
     val superClass = apiDefinition.superClass
 
     name ->

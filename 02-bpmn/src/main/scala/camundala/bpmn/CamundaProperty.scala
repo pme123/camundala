@@ -59,14 +59,14 @@ object CamundaProperty:
   given InOutDecoder[CamundaProperty] =
     (c: HCursor) =>
       for
-        name <- c.downField("name").as[String]
+        name      <- c.downField("name").as[String]
         valueType <- c.downField("type").as[String]
-        anyValue = c.downField("value")
-        value <- CamundaVariable.decodeValue(
-          valueType,
-          anyValue,
-          c.downField("valueInfo")
-        )
+        anyValue   = c.downField("value")
+        value     <- CamundaVariable.decodeValue(
+                       valueType,
+                       anyValue,
+                       c.downField("valueInfo")
+                     )
       yield new CamundaProperty(name, value)
 
   def from(vars: FormVariables): Seq[CamundaProperty] =

@@ -20,7 +20,7 @@ trait ResultChecker:
     withOverrides.testOverrides match
       case Some(TestOverrides(overrides)) =>
         checkO(overrides, result)
-      case _ =>
+      case _                              =>
         checkP(withOverrides.camundaToCheckMap, result)
 
   private def checkO(
@@ -29,33 +29,33 @@ trait ResultChecker:
   ) =
     overrides
       .map {
-        case TestOverride(Some(k), Exists, _) =>
+        case TestOverride(Some(k), Exists, _)             =>
           checkExistsInResult(result, k)
-        case TestOverride(Some(k), NotExists, _) =>
+        case TestOverride(Some(k), NotExists, _)          =>
           val matches = !result.exists(_.key == k)
           if !matches then
             println(s"!!! $k did EXIST in $result")
           matches
-        case TestOverride(Some(k), IsEquals, Some(v)) =>
+        case TestOverride(Some(k), IsEquals, Some(v))     =>
           val r = result.find(_.key == k)
           checkExistsInResult(result, k) && checkIsEqualValue(k, v, r.get.value)
-        case TestOverride(Some(k), HasSize, Some(value)) =>
-          val r = result.find(_.key == k)
+        case TestOverride(Some(k), HasSize, Some(value))  =>
+          val r       = result.find(_.key == k)
           val matches = r.exists {
             _.value match
               case CJson(j, _) =>
                 (toJson(j).asArray, value) match
                   case (Some(vector), CInteger(s, _)) =>
                     vector.size == s
-                  case _ =>
+                  case _                              =>
                     false
-              case _ => false
+              case _           => false
           }
           if !matches then
             println(s"!!! $k has NOT Size $value in $r")
           matches
         case TestOverride(Some(k), Contains, Some(value)) =>
-          val r = result.find(_.key == k)
+          val r       = result.find(_.key == k)
           val matches = r.exists {
             _.value match
               case CJson(j, _) =>
@@ -64,20 +64,20 @@ trait ResultChecker:
                     vector
                       .exists(x =>
                         value match
-                          case CString(v, _) =>
+                          case CString(v, _)  =>
                             x.asString.contains(v)
                           case CInteger(v, _) => x.asNumber.contains(v)
                           case CBoolean(v, _) => x.asBoolean.contains(v)
-                          case _ => x.toString == value.value.toString
+                          case _              => x.toString == value.value.toString
                       )
-                  case _ =>
+                  case _            =>
                     false
-              case _ => false
+              case _           => false
           }
           if !matches then
             println(s"!!! $k does NOT contains $value in $r")
           matches
-        case _ =>
+        case _                                            =>
           println(
             s"!!! Only ${TestOverrideType.values.mkString(", ")} for TestOverrides supported."
           )
@@ -99,22 +99,22 @@ trait ResultChecker:
               s"!!! Size '${result.size}' of collection is NOT equal to $size in $result"
             )
           matches
-        case TestOverride(None, Contains, Some(expected)) =>
-          val exp = expected match
+        case TestOverride(None, Contains, Some(expected))         =>
+          val exp     = expected match
             case CJson(jsonStr, _) =>
               parse(jsonStr) match
                 case Right(json) =>
                   CamundaVariable.jsonToCamundaValue(json)
-                case Left(ex) =>
+                case Left(ex)    =>
                   throwErr(s"Problem parsing Json: $jsonStr\n$ex")
-            case other => other
+            case other             => other
           val matches = result.contains(exp)
           if !matches then
             println(
               s"!!! Result '$result' of collection does NOT contain to $expected"
             )
           matches
-        case _ =>
+        case _                                                    =>
           println(
             s"!!! Only ${TestOverrideType.values.mkString(", ")} for TestOverrides supported."
           )
@@ -128,7 +128,7 @@ trait ResultChecker:
   ): Boolean =
     camundaVariableMap
       .map {
-        case key -> CNull => // must not be in the result
+        case key -> CNull         => // must not be in the result
           result
             .find(p =>
               p.key == key && p.value != CNull
@@ -154,7 +154,7 @@ trait ResultChecker:
                 val matches = expectedValue match
                   case CFile(_, CFileValueInfo(pFileName, _), _) =>
                     cFileName == pFileName
-                  case o =>
+                  case o                                         =>
                     false
                 if !matches then
                   println(
@@ -166,10 +166,10 @@ trait ResultChecker:
                 end if
                 matches
               case CamundaProperty(key, CJson(cValue, _)) =>
-                val resultJson = toJson(cValue)
+                val resultJson   = toJson(cValue)
                 val expectedJson = toJson(expectedValue.value.toString)
                 checkJson(expectedJson, resultJson, key)
-              case CamundaProperty(_, cValue) =>
+              case CamundaProperty(_, cValue)             =>
                 checkIsEqualValue(key, expectedValue, cValue)
             }
             .getOrElse {
@@ -188,6 +188,7 @@ trait ResultChecker:
     if !matches then
       println(s"!!! $key did NOT exist in $result")
     matches
+  end checkExistsInResult
 
   private def checkIsEqualValue[T <: Product](
       key: String,
@@ -209,7 +210,7 @@ trait ResultChecker:
              | - result  : ${resultValue.value}""".stripMargin
         )
         if expectedValue.value.toString.contains("\n") then // compare each line for complex strings
-          val result = resultValue.value.toString.split("\n")
+          val result   = resultValue.value.toString.split("\n")
           val expected = expectedValue.value.toString.split("\n")
           result.zip(expected).foreach:
             case (r, e) =>
@@ -237,15 +238,15 @@ trait ResultChecker:
     ): Unit =
       if expJson != resJson then
         (expJson, resJson) match
-          case _ if expJson.isArray && resJson.isArray =>
+          case _ if expJson.isArray && resJson.isArray   =>
             val expJsonArray = expJson.asArray.toList.flatten
             val resJsonArray = resJson.asArray.toList.flatten
             for
               (expJson, resJson) <- expJsonArray.zipAll(
-                resJsonArray,
-                Json.Null,
-                Json.Null
-              )
+                                      resJsonArray,
+                                      Json.Null,
+                                      Json.Null
+                                    )
             do
               compareJsons(
                 expJson,
@@ -256,8 +257,8 @@ trait ResultChecker:
           case _ if expJson.isObject && resJson.isObject =>
             val expJsonObj = expJson.asObject.get
             val resJsonObj = resJson.asObject.get
-            val expKeys = expJsonObj.keys.toSeq
-            val resKeys = resJsonObj.keys.toSeq
+            val expKeys    = expJsonObj.keys.toSeq
+            val resKeys    = resJsonObj.keys.toSeq
             val commonKeys = expKeys.intersect(resKeys).toSet
             val uniqueKeys = (expKeys ++ resKeys).toSet.diff(commonKeys)
             for key <- commonKeys do
@@ -277,7 +278,7 @@ trait ResultChecker:
                   diffs += s"$path.$key: ${json.noSpaces} (field in result not expected)"
                 }
             end for
-          case _ =>
+          case _                                         =>
             diffs += s"$path: ${expJson.noSpaces} (expected) != ${resJson.noSpaces} (result)"
 
     compareJsons(expectedJson, resultJson, "")
