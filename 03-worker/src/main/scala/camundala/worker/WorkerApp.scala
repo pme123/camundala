@@ -3,8 +3,6 @@ package camundala.worker
 import zio.*
 import zio.ZIO.*
 
-import scala.compiletime.uninitialized
-
 trait WorkerApp extends ZIOAppDefault:
   // a list of registries for each worker implementation
   def workerRegistries: Seq[WorkerRegistry[?]]
@@ -19,8 +17,8 @@ trait WorkerApp extends ZIOAppDefault:
   def dependencies(workerApps: WorkerApp*): Unit                     =
     theDependencies = workerApps
 
-  protected var theWorkers: Set[WorkerDsl[?, ?]] = uninitialized
-  protected var theDependencies: Seq[WorkerApp]  = uninitialized
+  protected var theWorkers: Set[WorkerDsl[?, ?]] = Set.empty
+  protected var theDependencies: Seq[WorkerApp]  = Seq.empty
 
   override val bootstrap: ZLayer[ZIOAppArgs, Any, Any] = ZioLogger.logger
 
