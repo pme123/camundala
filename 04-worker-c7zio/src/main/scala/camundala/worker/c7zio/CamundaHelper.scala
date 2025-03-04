@@ -24,7 +24,8 @@ object CamundaHelper:
       varKey: String | InputParams
   ): HelperContext[IO[BadVariableError, Option[A]]] =
     for
-      maybeJson <- jsonVariableOpt(varKey)
+      maybeJson <- jsonVariableOpt(varKey).mapError: err =>
+                     err
       obj       <- ZIO.fromEither(
                      maybeJson
                        .map(_.as[Option[A]])
@@ -41,15 +42,19 @@ object CamundaHelper:
   def jsonVariableOpt(
       varKey: String | InputParams
   ): HelperContext[IO[BadVariableError, Option[Json]]] =
-    variableTypedOpt(varKey)
-      .map {
-        case typedValue if typedValue.getType == ValueType.NULL =>
+    ZIO.attempt(
+    variableTypedOpt(varKey))
+      .mapError:
+         err =>
+           BadVariableError(s"Problem get variable for $varKey: ${err.getMessage}")
+      .flatMap :
+        case Some(typedValue) if typedValue.getType == ValueType.NULL =>
           ZIO.succeed(None) // k -> null as Camunda Expressions need them
-        case typedValue                                         =>
+        case Some(typedValue) =>
           extractValue(typedValue)
             .map(v => Some(v))
-      }
-      .getOrElse(ZIO.succeed(None))
+        case _ =>
+          ZIO.succeed(None)
 
   // used for input variables you can define with Array of Strings or a comma-separated String
   // if not set it returns an empty Seq
@@ -88,7 +93,9 @@ object CamundaHelper:
       varKey: String | InputParams,
       defaultObj: A
   ): HelperContext[IO[BadVariableError, A]] =
-    variableOpt[A](varKey).map(_.getOrElse(defaultObj))
+    variableOpt[A](varKey).map(
+      _.getOrElse(defaultObj)
+    )
 
   /** Returns the Variable in the Bag. B if there is no Variable with that identifier.
     */
@@ -163,7 +170,7 @@ object CamundaHelper:
     ZIO.fromEither(variableKeys)
       .map: varKeys =>
         varKeys.map(_.trim).filter(_.nonEmpty)
-      .mapError : error =>
+      .mapError: error =>
         error.printStackTrace()
         BadVariableError(
           s"Could not extract Seq for an Array or comma-separated String: ${error.getMessage}"

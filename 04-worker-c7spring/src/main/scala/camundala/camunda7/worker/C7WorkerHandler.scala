@@ -8,7 +8,7 @@ import camundala.worker.CamundalaWorkerError.*
 import jakarta.annotation.PostConstruct
 import org.camunda.bpm.client.{ExternalTaskClient, task, task as camunda}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
-import zio.{IO, Runtime, Unsafe, ZIO}
+import zio.*
 import zio.ZIO.*
 
 import java.util.Date
@@ -22,6 +22,7 @@ import scala.util.{Failure, Success}
   */
 trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     extends camunda.ExternalTaskHandler, WorkerHandler[In, Out]:
+ // def timeout: Duration = 10.seconds
 
   @Value("${spring.application.name}")
   var applicationName: String = scala.compiletime.uninitialized
@@ -90,7 +91,6 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     .catchAll: ex =>
       tryGeneralVariables.map: vars =>
         externalTaskService.handleError(ex, vars)
-        ex
 
   end executeWorker
 
@@ -155,8 +155,8 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
             summon[camunda.ExternalTask],
             err.causeMsg,
             s" ${err.causeMsg}\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
-            0,
-            0
+            summon[camunda.ExternalTask].getRetries - 1,
+            1000000//     timeout.toMillis
           ) // TODO implement retry mechanism
     end handleError
 

@@ -183,7 +183,11 @@ lazy val camunda7ZioWorker = project
   .settings(unitTestSettings)
   .settings(
     autoImportSetting,
-    libraryDependencies ++=  camunda7ZioWorkerDependencies
+    libraryDependencies ++=
+      camunda7ZioWorkerDependencies ++ Seq(
+        "dev.zio" %% "zio-test" % zioVersion % Test,
+        "dev.zio" %% "zio-test-sbt" % zioVersion % Test,
+      )
   )
   .dependsOn(worker)
 lazy val camunda8Worker = project

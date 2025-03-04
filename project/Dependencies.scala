@@ -13,6 +13,7 @@ object Dependencies {
   val tapirVersion = "1.11.15"
   val ironCirceVersion = "2.6.0"
   val mUnitVersion = "1.1.0"
+  val scala3MockVersion = "0.6.6"
   // 02-bpmn
   // -> domain
   // - osLib
