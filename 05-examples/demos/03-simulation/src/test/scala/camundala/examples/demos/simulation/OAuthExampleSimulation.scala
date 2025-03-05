@@ -10,7 +10,7 @@ import camundala.simulation.custom.*
 class OAuthExampleSimulation extends OAuthSimulationDsl:
 
   simulate (
-    badScenario(
+    ignore.badScenario(
       CamundalaGenerateTestP,
       404,
       "No matching process definition with key: camundala-generate-test and tenant-id: 0949"

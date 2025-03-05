@@ -99,6 +99,12 @@ object Dependencies {
     "io.camunda" % "zeebe-client-java" % "8.7.0-alpha2" //TODO camunda8Version,
   val zioDependency =
     "dev.zio" %% "zio" % zioVersion
+  val zioTestDependencies =
+    Seq(
+      "dev.zio" %% "zio-test" % zioVersion % Test,
+      "dev.zio" %% "zio-test-sbt" % zioVersion % Test,
+    )
+
   val zioSlf4jDependency = "dev.zio" %% "zio-logging-slf4j" % zioVersion
 
   // examples

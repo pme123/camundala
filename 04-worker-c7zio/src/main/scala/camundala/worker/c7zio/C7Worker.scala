@@ -56,10 +56,10 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         generalVariables      <- ProcessVariablesExtractor.extractGeneral()
         given EngineRunContext = EngineRunContext(c7Context, generalVariables)
         filteredOut           <- WorkerExecutor(worker).execute(tryProcessVariables)
-        _                     <- ZIO.attempt(externalTaskService.handleSuccess(
+        _                     <- externalTaskService.handleSuccess(
                                    filteredOut,
                                    generalVariables.manualOutMapping
-                                 ))
+                                 )
       yield() //
     ).mapError:
       case ex: CamundalaWorkerError =>
@@ -74,7 +74,8 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
           exc => exc,
           err => err
         )
-    .mapError: err =>
+    .mapError:
+      case err: UnexpectedError =>
       err.printStackTrace()
       err
 
@@ -163,9 +164,13 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     ): HelperContext[URIO[Any, CamundalaWorkerError]] =
       val taskId  = summon[camunda.ExternalTask].getId
       val retries =
-        summon[camunda.ExternalTask].getRetries match
-          case r if r <= 0 => 3
-          case r           => r - 1
+        if error.isInstanceOf[CamundalaWorkerError.ServiceError]
+        then
+          summon[camunda.ExternalTask].getRetries match
+            case r if r <= 0 => 3
+            case r           => r - 1
+        else 0
+
       if retries == 0 then logger.error(error)
       logger.info(s"Retries left for $taskId: $retries")
       ZIO.attempt(

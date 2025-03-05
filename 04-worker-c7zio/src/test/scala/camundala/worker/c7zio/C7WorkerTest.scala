@@ -8,8 +8,7 @@ import zio.*
 import org.camunda.bpm.client.task as camunda
 import org.camunda.bpm.client.task.ExternalTask
 import org.camunda.bpm.engine.variable.VariableMap
-import org.camunda.bpm.engine.variable.impl.value.PrimitiveTypeValueImpl.BooleanValueImpl
-import org.camunda.bpm.engine.variable.value.{BooleanValue, TypedValue}
+import org.camunda.bpm.engine.variable.value.TypedValue
 import zio.test.*
 import zio.test.Assertion.*
 

@@ -31,7 +31,7 @@ object ProcessVariablesExtractor:
   end extract
 
   def extractGeneral()(using camunda.ExternalTask): IO[BadVariableError, GeneralVariables] =
-    (for
+    for
       // mocking
       servicesMocked <- variable(InputParams.servicesMocked, false)
         .mapError: err =>
@@ -56,9 +56,7 @@ object ProcessVariablesExtractor:
       handledErrors = handledErrors,
       regexHandledErrors = regexHandledErrors,
       impersonateUserId = impersonateUserIdOpt
-    )).mapError:
-      case err =>
-        err
+    )
 
   end extractGeneral
 
