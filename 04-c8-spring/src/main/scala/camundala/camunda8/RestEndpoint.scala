@@ -69,7 +69,6 @@ trait RestEndpoint extends Validator:
       Right(endCommand.send.join)
     catch
       case ex: Throwable =>
-        ex.printStackTrace()
         Left(s"Problem starting the Process: ${ex.getMessage}")
 
   end start

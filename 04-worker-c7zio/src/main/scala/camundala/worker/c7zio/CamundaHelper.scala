@@ -43,17 +43,17 @@ object CamundaHelper:
       varKey: String | InputParams
   ): HelperContext[IO[BadVariableError, Option[Json]]] =
     ZIO.attempt(
-    variableTypedOpt(varKey))
-      .mapError:
-         err =>
-           BadVariableError(s"Problem get variable for $varKey: ${err.getMessage}")
-      .flatMap :
+      variableTypedOpt(varKey)
+    )
+      .mapError: err =>
+        BadVariableError(s"Problem get variable for $varKey: ${err.getMessage}")
+      .flatMap:
         case Some(typedValue) if typedValue.getType == ValueType.NULL =>
           ZIO.succeed(None) // k -> null as Camunda Expressions need them
         case Some(typedValue) =>
           extractValue(typedValue)
             .map(v => Some(v))
-        case _ =>
+        case _                =>
           ZIO.succeed(None)
 
   // used for input variables you can define with Array of Strings or a comma-separated String
@@ -119,6 +119,18 @@ object CamundaHelper:
 
   extension [T](option: Option[T])
 
+    def toEither(msg: String): HelperContext[Either[BadVariableError, T]] =
+      toEither(BadVariableError(errorMsg = msg))
+
+    def toEither[E <: CamundalaWorkerError](
+        error: E
+    ): HelperContext[Either[E, T]] =
+      option
+        .map(Right(_))
+        .getOrElse(
+          Left(error)
+        )
+
     def toZIO(msg: String): HelperContext[IO[BadVariableError, T]] =
       toZIO(BadVariableError(errorMsg = msg))
 
@@ -171,7 +183,6 @@ object CamundaHelper:
       .map: varKeys =>
         varKeys.map(_.trim).filter(_.nonEmpty)
       .mapError: error =>
-        error.printStackTrace()
         BadVariableError(
           s"Could not extract Seq for an Array or comma-separated String: ${error.getMessage}"
         )

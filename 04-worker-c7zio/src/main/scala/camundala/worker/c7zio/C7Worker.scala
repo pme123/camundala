@@ -60,7 +60,7 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
                                    filteredOut,
                                    generalVariables.manualOutMapping
                                  )
-      yield() //
+      yield () //
     ).mapError:
       case ex: CamundalaWorkerError =>
         ex
@@ -76,8 +76,8 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         )
     .mapError:
       case err: UnexpectedError =>
-      err.printStackTrace()
-      err
+        err.printStackTrace()
+        err
 
   end executeWorker
 
