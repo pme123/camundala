@@ -5,6 +5,7 @@ import camundala.worker.c7zio.{C7NoAuthClient, C7WorkerRegistry, C8SaasClient, C
 
 
 object TestWorker2App extends CompanyWorkerApp:
+  
   workers(
     ExampleJob2Worker
   )

@@ -4,12 +4,13 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.context.annotation.ComponentScan
+import org.springframework.stereotype.Component
 
 //sbt> exampleDemosWorker/run
 @SpringBootApplication
+@Component("ValiantProductWorkerTestApp")
 @ConfigurationPropertiesScan
-@ComponentScan(basePackages =
-  Array(
+@ComponentScan(basePackages = Array(
     "camundala.camunda7.worker.context", // for context
     "camundala.examples.demos.worker"
   )

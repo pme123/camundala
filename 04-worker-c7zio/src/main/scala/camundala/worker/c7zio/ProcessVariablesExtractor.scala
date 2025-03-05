@@ -34,6 +34,8 @@ object ProcessVariablesExtractor:
     for
       // mocking
       servicesMocked <- variable(InputParams.servicesMocked, false)
+        .mapError: err =>
+          err
       mockedWorkers <- extractSeqFromArrayOrString(InputParams.mockedWorkers, Seq.empty)
       outputMockOpt <- jsonVariableOpt(InputParams.outputMock)
       outputServiceMockOpt <- jsonVariableOpt(InputParams.outputServiceMock)
@@ -55,6 +57,7 @@ object ProcessVariablesExtractor:
       regexHandledErrors = regexHandledErrors,
       impersonateUserId = impersonateUserIdOpt
     )
+
   end extractGeneral
 
 end ProcessVariablesExtractor

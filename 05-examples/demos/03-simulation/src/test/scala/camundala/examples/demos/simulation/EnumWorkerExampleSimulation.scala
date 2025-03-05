@@ -24,6 +24,7 @@ class EnumWorkerExampleSimulation extends CustomSimulation:
   override implicit def config =
     super.config
       .withPort(8887)
+      .withMaxCount(20)
     //  .withLogLevel(LogLevel.DEBUG)
 
 end EnumWorkerExampleSimulation

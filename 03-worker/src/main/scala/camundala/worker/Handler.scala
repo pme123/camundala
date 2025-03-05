@@ -9,6 +9,7 @@ import sttp.model.Uri.QuerySegment
 import sttp.model.{Method, Uri}
 import zio.{IO, ZIO}
 
+import scala.concurrent.duration.*
 import scala.reflect.ClassTag
 
 trait WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]:

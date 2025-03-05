@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration
 import sttp.client3.UriContext
 import sttp.model.Uri
 
-@Configuration
+@SpringConfiguration
 class EnumExampleWorker extends CompanyServiceWorkerDsl[In, Out, NoInput, ServiceOut]:
 
   lazy val serviceTask = example

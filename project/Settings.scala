@@ -1,4 +1,4 @@
-import Dependencies.mUnitVersion
+import Dependencies.*
 import laika.ast.Path.Root
 import laika.config.*
 import laika.format.Markdown.GitHubFlavor
@@ -32,7 +32,9 @@ object Settings {
   )
 
   lazy val unitTestSettings = Seq(
-    libraryDependencies += "org.scalameta" %% "munit" % mUnitVersion % Test,
+    libraryDependencies ++= Seq(
+      "org.scalameta" %% "munit" % mUnitVersion % Test,
+    ),
     testFrameworks += new TestFramework("munit.Framework")
   )
 

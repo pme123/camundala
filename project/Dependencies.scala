@@ -13,6 +13,7 @@ object Dependencies {
   val tapirVersion = "1.11.15"
   val ironCirceVersion = "2.6.0"
   val mUnitVersion = "1.1.0"
+  val scala3MockVersion = "0.6.6"
   // 02-bpmn
   // -> domain
   // - osLib
@@ -54,7 +55,7 @@ object Dependencies {
   // -> bpmn
   val scalaJacksonVersion = "2.18.2"
   val camunda8Version = "8.5.17"
-  val springBootVersion = "3.3.8"
+  val springBootVersion = "3.3.9"
   val nettyVersion = "4.1.118.Final"
   val swaggerOpenAPIVersion = "2.1.25"
   // examples
@@ -98,6 +99,12 @@ object Dependencies {
     "io.camunda" % "zeebe-client-java" % "8.7.0-alpha2" //TODO camunda8Version,
   val zioDependency =
     "dev.zio" %% "zio" % zioVersion
+  val zioTestDependencies =
+    Seq(
+      "dev.zio" %% "zio-test" % zioVersion % Test,
+      "dev.zio" %% "zio-test-sbt" % zioVersion % Test,
+    )
+
   val zioSlf4jDependency = "dev.zio" %% "zio-logging-slf4j" % zioVersion
 
   // examples

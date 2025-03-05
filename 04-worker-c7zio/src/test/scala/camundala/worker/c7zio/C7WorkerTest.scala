@@ -1,7 +1,6 @@
-package camundala.camunda7.worker
+package camundala.worker.c7zio
 
 import camundala.bpmn.{ErrorCodes, GeneralVariables, InOutDescr, Process, ProcessLabels}
-import camundala.camunda7.worker.context.DefaultCamunda7Context
 import camundala.domain.{NoInput, NoOutput}
 import camundala.worker.CamundalaWorkerError.*
 import camundala.worker.*
@@ -16,8 +15,8 @@ import zio.test.Assertion.*
 import java.util
 import java.util.Date
 
-object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOutput]:
-  engineContext = DefaultCamunda7Context()
+object C7WorkerTest extends ZIOSpecDefault, C7Worker[NoInput, NoOutput]:
+
   def spec =
     suite("C7WorkerSpec")(
       test("isErrorHandled should return true for handledErrors") {
@@ -120,6 +119,10 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
   lazy val externalTaskService = TestExternalTaskService()
   given externalTask: camunda.ExternalTask   = TestExternalTask()
 
+  override protected def c7Context: C7Context = new C7Context {
+
+  }
+
   override def worker: Worker[NoInput, NoOutput, ?] =
     InitWorker[NoInput, NoOutput, NoInput](
       Process(
@@ -131,9 +134,7 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
       )
   )
 
-  def topic: String = ???
-
-end C7WorkerHandlerTest
+end C7WorkerTest
 
 case class TestExternalTask(
     activityId: String = "defaultActivityId",

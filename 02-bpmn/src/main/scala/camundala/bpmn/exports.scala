@@ -189,13 +189,14 @@ end ProcessLabel
 type ValueSimple = String | Boolean | Int | Long | Double
 given ApiSchema[ValueSimple] = Schema.derivedUnion
 
-given valueEncoder: InOutEncoder[ValueSimple] with
+given InOutCodec[ValueSimple] = CirceCodec.from(valueDecoder, valueEncoder)
+
+lazy val valueEncoder = new InOutEncoder[ValueSimple]:
   def apply(a: ValueSimple): Json = valueToJson(a)
-given valueDecoder: InOutDecoder[ValueSimple] with
+
+lazy val valueDecoder = new InOutDecoder[ValueSimple]:
   def apply(c: HCursor): Decoder.Result[ValueSimple] =
     c.as[Int].orElse(c.as[Long]).orElse(c.as[Double]).orElse(c.as[String]).orElse(c.as[Boolean])
-
-given InOutCodec[ValueSimple] = CirceCodec.from(valueDecoder, valueEncoder)
 
 lazy val NewName   = """^.+\-(.+V.+\-(.+))$""".r // mycompany-myproject-myprocessV1-MyWorker
 lazy val OldName1  =

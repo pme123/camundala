@@ -38,7 +38,6 @@ trait RestApiClient:
           s"""Unexpected error while sending request: ${ex.getMessage}.
              | -> $runnableRequest
              |""".stripMargin
-        ex.printStackTrace()
         Left(ServiceUnexpectedError(unexpectedError))
   end sendRequest
 
@@ -73,7 +72,6 @@ trait RestApiClient:
           s"""Unexpected error while sending request: ${ex.getMessage}.
              | -> ${request.toCurl(Set("Authorization"))}
              |""".stripMargin
-        ex.printStackTrace()
         Left(ServiceUnexpectedError(unexpectedError))
 
   protected def decodeResponse[
