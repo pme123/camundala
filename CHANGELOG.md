@@ -15,6 +15,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.36 - 2025-03-05
+### Changed 
+- Cleanup for Retry in C7Worker. - see [Commit](https://github.com/pme123/camundala/commit/f58a2104a2d5489cff8328df78b065656ee38a0d)
+- Adjusted C7WorkerHandler with changes of C7Worker - running Simulations in demo project. - see [Commit](https://github.com/pme123/camundala/commit/61f3ec1090d4a33741a2af666db5ee98ff234687)
+- Added Tests for Error Handling in C7Worker. - see [Commit](https://github.com/pme123/camundala/commit/3491ed9fa44e3009fdbcf78471bbf2dd9e1094f9)
+- Fixing Error Handling in C7Worker. - see [Commit](https://github.com/pme123/camundala/commit/6c9305d1ad5236edaa3b32d261b44685dd5b6abd)
+- Updated Versions. - see [Commit](https://github.com/pme123/camundala/commit/99b89f288648b5a428f34aa8003cf19de7463bd2)
+- Fixed warnning for SimpleValue Codec. - see [Commit](https://github.com/pme123/camundala/commit/1f5bc285f1894a515714fb07596db352f71fdd90)
+
 ## 1.30.35 - 2025-02-24
 ### Changed 
 - Fixed error handling in C7WorkerHandler. - see [Commit](https://github.com/pme123/camundala/commit/0c0dcb2215eeb5f0a3246e3b05c12d8732368166)
