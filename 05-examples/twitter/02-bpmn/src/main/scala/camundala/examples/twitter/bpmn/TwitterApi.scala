@@ -5,8 +5,8 @@ import camundala.domain.*
 
 object TwitterApi extends BpmnProcessDsl:
   given tenantId: Option[String] = Some("{{tenantId}}")
-  val processName = "TwitterDemoP"
-  val descr = "This runs the Twitter Approvement Process."
+  val processName                = "TwitterDemoP"
+  val descr                      = "This runs the Twitter Approvement Process."
 
   @description("""Every employee may create a Tweet.
                  |
@@ -19,7 +19,7 @@ object TwitterApi extends BpmnProcessDsl:
       content: String = "Test Tweet"
   )
   object CreateTweet:
-    given ApiSchema[CreateTweet] = deriveApiSchema
+    given ApiSchema[CreateTweet]  = deriveApiSchema
     given InOutCodec[CreateTweet] = deriveCodec
   end CreateTweet
 
@@ -29,16 +29,16 @@ object TwitterApi extends BpmnProcessDsl:
       approved: Boolean = true
   )
   object ReviewedTweet:
-    given ApiSchema[ReviewedTweet] = deriveApiSchema
+    given ApiSchema[ReviewedTweet]  = deriveApiSchema
     given InOutCodec[ReviewedTweet] = deriveCodec
   end ReviewedTweet
 
-  lazy val twitterDemoProcess =
+  lazy val twitterDemoProcess       =
     process(
       in = CreateTweet(),
       out = ReviewedTweet() // just for Testing
     )
-  lazy val reviewTweetApprovedUT = userTask(
+  lazy val reviewTweetApprovedUT    = userTask(
     id = "ReviewTweetUT",
     in = NoInput(),
     out = ReviewedTweet()

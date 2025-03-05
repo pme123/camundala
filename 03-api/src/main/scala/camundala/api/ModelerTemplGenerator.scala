@@ -16,13 +16,13 @@ final case class ModelerTemplGenerator(
     os.makeDir.all(config.templatePath)
     println(s"Generate Modeler Templates for: $projectName: ${apis.map(_.id).mkString(", ")}")
     apis.foreach:
-      case api: ExternalTaskApi[?, ?] =>
+      case api: ExternalTaskApi[?, ?]                                               =>
         println(s"ExternalTaskApi supported for Modeler Template: ${api.id}")
         generateTempl(api)
       case api: ProcessApi[?, ?, ?] if !api.inOut.in.isInstanceOf[GenericServiceIn] =>
         println(s"ProcessApi supported for Modeler Template: ${api.id} - ${api.name}")
         generateTempl(api)
-      case api =>
+      case api                                                                      =>
         println(
           s"API NOT supported for Modeler Template: ${api.getClass.getSimpleName} - ${api.id}"
         )
@@ -45,7 +45,7 @@ final case class ModelerTemplGenerator(
         else PropType.`camunda:outputParameter`
       )
     val niceName = inOut.niceName.replace(s"${companyName.head.toUpper}${companyName.tail} ", "")
-    val templ = MTemplate(
+    val templ    = MTemplate(
       inOut.id,
       inOut.id,
       inOut.descr.getOrElse("").split("---").head,
@@ -79,7 +79,7 @@ final case class ModelerTemplGenerator(
   private def generateTempl(inOut: ExternalTaskApi[?, ?]): Unit =
     val vars = inOut match
       case _: ServiceWorkerApi[?, ?, ?, ?] => TemplMapperHelper.serviceWorkerVariables
-      case _ => TemplMapperHelper.customWorkerVariables
+      case _                               => TemplMapperHelper.customWorkerVariables
     generateTempl(
       inOut.inOut,
       AppliesTo.activity,
@@ -91,7 +91,10 @@ final case class ModelerTemplGenerator(
     )
   end generateTempl
 
-  private def mappings[T <: Product](variables: Seq[(String, Any)], propType: PropType): Seq[TemplProp] =
+  private def mappings[T <: Product](
+      variables: Seq[(String, Any)],
+      propType: PropType
+  ): Seq[TemplProp] =
     variables
       .filterNot:
         case name -> _ => name == "inConfig" // don't show configuration
@@ -104,15 +107,15 @@ final case class ModelerTemplGenerator(
               TemplMapperHelper.mapping(name, value)
             else name,
             binding = propType match
-              case PropType.`camunda:in` => PropBinding.`camunda:in`(
+              case PropType.`camunda:in`              => PropBinding.`camunda:in`(
                   `type` = propType,
                   target = name
                 )
-              case PropType.`camunda:out` => PropBinding.`camunda:out`(
+              case PropType.`camunda:out`             => PropBinding.`camunda:out`(
                   `type` = propType,
                   source = name
                 )
-              case PropType.`camunda:inputParameter` => PropBinding.`camunda:inputParameter`(
+              case PropType.`camunda:inputParameter`  => PropBinding.`camunda:inputParameter`(
                   `type` = propType,
                   name = name
                 )
@@ -120,7 +123,7 @@ final case class ModelerTemplGenerator(
                   `type` = propType,
                   source = TemplMapperHelper.mapping(name, value)
                 )
-              case _ =>
+              case _                                  =>
                 throw new IllegalArgumentException(s"PropType not expected for mappings: $propType")
           )
   end mappings
@@ -168,7 +171,7 @@ final case class MTemplate(
 
 object MTemplate:
   given InOutCodec[MTemplate] = deriveInOutCodec
-  given ApiSchema[MTemplate] = deriveApiSchema
+  given ApiSchema[MTemplate]  = deriveApiSchema
 
 final case class ElementType(
     value: AppliesTo
@@ -176,10 +179,10 @@ final case class ElementType(
 
 object ElementType:
   lazy val callActivity: ElementType = ElementType(AppliesTo.`bpmn:CallActivity`)
-  lazy val serviceTask: ElementType = ElementType(AppliesTo.`bpmn:ServiceTask`)
+  lazy val serviceTask: ElementType  = ElementType(AppliesTo.`bpmn:ServiceTask`)
 
   given InOutCodec[ElementType] = deriveInOutCodec
-  given ApiSchema[ElementType] = deriveApiSchema
+  given ApiSchema[ElementType]  = deriveApiSchema
 end ElementType
 
 final case class TemplProp(
@@ -192,19 +195,19 @@ final case class TemplProp(
 )
 
 object TemplProp:
-  lazy val businessKey = TemplProp(
+  lazy val businessKey                = TemplProp(
     `type` = TemplType.Hidden,
     value = "#{execution.processBusinessKey}",
     //  group = Some(PropGroup.callActivity.id),
     binding = PropBinding.`camunda:in:businessKey`()
   )
-  def name(value: String) = TemplProp(
+  def name(value: String)             = TemplProp(
     `type` = TemplType.Hidden,
     value = value,
     //  group = Some(PropGroup.callActivity.id),
     binding = PropBinding.property(name = "name")
   )
-  def calledElement(value: String) = TemplProp(
+  def calledElement(value: String)    = TemplProp(
     `type` = TemplType.Hidden,
     value = value,
     //  group = Some(PropGroup.callActivity.id),
@@ -216,14 +219,14 @@ object TemplProp:
     value = value,
     binding = PropBinding.property(name = "camunda:topic")
   )
-  lazy val serviceTaskType = TemplProp(
+  lazy val serviceTaskType            = TemplProp(
     `type` = TemplType.Hidden,
     value = "external",
     binding = PropBinding.property(name = "camunda:type")
   )
 
   given InOutCodec[TemplProp] = deriveInOutCodec
-  given ApiSchema[TemplProp] = deriveApiSchema
+  given ApiSchema[TemplProp]  = deriveApiSchema
 end TemplProp
 
 enum PropBinding:
@@ -256,7 +259,7 @@ end PropBinding
 
 object PropBinding:
   given InOutCodec[PropBinding] = deriveInOutCodec
-  given ApiSchema[PropBinding] = deriveApiSchema
+  given ApiSchema[PropBinding]  = deriveApiSchema
 
 final case class PropGroup(
     id: PropGroupId,
@@ -268,55 +271,55 @@ object PropGroup:
     PropGroupId.calledProcess,
     "Called Process"
   )
-  val inMappings = PropGroup(
+  val inMappings   = PropGroup(
     PropGroupId.inMappings,
     "In Mappings"
   )
-  val outMapping = PropGroup(
+  val outMapping   = PropGroup(
     PropGroupId.outMappings,
     "Out Mappings"
   )
-  val inputs = PropGroup(
+  val inputs       = PropGroup(
     PropGroupId.inputs,
     "Inputs"
   )
-  val outputs = PropGroup(
+  val outputs      = PropGroup(
     PropGroupId.outputs,
     "Outputs"
   )
 
   given InOutCodec[PropGroup] = deriveInOutCodec
-  given ApiSchema[PropGroup] = deriveApiSchema
+  given ApiSchema[PropGroup]  = deriveApiSchema
 end PropGroup
 
 enum TemplType:
   case String, Text, Boolean, Dropdown, Hidden
 object TemplType:
   given InOutCodec[TemplType] = deriveEnumInOutCodec
-  given ApiSchema[TemplType] = deriveApiSchema
+  given ApiSchema[TemplType]  = deriveApiSchema
 enum PropType:
   case property, `camunda:in:businessKey`, `camunda:in`, `camunda:out`, `camunda:inputParameter`,
     `camunda:outputParameter`
 object PropType:
   given InOutCodec[PropType] = deriveEnumInOutCodec
-  given ApiSchema[PropType] = deriveApiSchema
+  given ApiSchema[PropType]  = deriveApiSchema
 
 enum PropGroupId:
   case calledProcess, inMappings, outMappings, inputs, outputs
 object PropGroupId:
   given InOutCodec[PropGroupId] = deriveEnumInOutCodec
-  given ApiSchema[PropGroupId] = deriveApiSchema
+  given ApiSchema[PropGroupId]  = deriveApiSchema
 
 enum AppliesTo:
   case `bpmn:Activity`, `bpmn:CallActivity`, `bpmn:ServiceTask`
 
 object AppliesTo:
-  lazy val activity = Seq(AppliesTo.`bpmn:Activity`) // all
+  lazy val activity     = Seq(AppliesTo.`bpmn:Activity`) // all
   lazy val callActivity = Seq(AppliesTo.`bpmn:CallActivity`)
-  lazy val serviceTask = Seq(AppliesTo.`bpmn:ServiceTask`)
+  lazy val serviceTask  = Seq(AppliesTo.`bpmn:ServiceTask`)
 
   given InOutCodec[AppliesTo] = deriveEnumInOutCodec
-  given ApiSchema[AppliesTo] = deriveApiSchema
+  given ApiSchema[AppliesTo]  = deriveApiSchema
 end AppliesTo
 
 case class InputParamForTempl(
@@ -347,7 +350,7 @@ object TemplMapperHelper:
     InputParamForTempl(outputVariables, _.productElementNames.mkString(", ")),
     optionalMapping(outputMock),
     InputParamForTempl(handledErrors, "handledError1, handledError2"),
-    InputParamForTempl(regexHandledErrors, "errorRegex1, errorRegex2"),
+    InputParamForTempl(regexHandledErrors, "errorRegex1, errorRegex2")
   )
 
   def processVariables: Seq[InputParamForTempl] = Seq(
@@ -366,6 +369,6 @@ object TemplMapperHelper:
   def mapping(name: String, elem: Any): String =
     elem match
       case _: Option[?] => optionalMapping(name)
-      case _ => s"#{$name}"
+      case _            => s"#{$name}"
 
 end TemplMapperHelper

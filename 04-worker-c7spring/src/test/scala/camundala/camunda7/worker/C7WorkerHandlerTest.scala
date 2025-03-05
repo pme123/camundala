@@ -49,7 +49,9 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
         val error  = CamundalaWorkerError.CustomError("error")
         val result = TestExternalTaskService(throw IllegalAccessError("camunda not working"))
           .handleSuccess(Map.empty, true)
-        assertZIO(result.flip)(equalTo(UnexpectedError("There is an unexpected Error from completing a successful Worker to C7: camunda not working.")))
+        assertZIO(result.flip)(equalTo(UnexpectedError(
+          "There is an unexpected Error from completing a successful Worker to C7: camunda not working."
+        )))
       },
       test("handleBpmnError should return false for any other Error") {
         val error  = CamundalaWorkerError.CustomError("error")
@@ -61,7 +63,9 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
         val error  = CamundalaWorkerError.CustomError("error")
         val result = TestExternalTaskService(throw IllegalAccessError("camunda not working"))
           .handleBpmnError(error, Map.empty[String, Any])
-        assertZIO(result)(equalTo(UnexpectedError("Problem handling BpmnError to C7: camunda not working.")))
+        assertZIO(result)(
+          equalTo(UnexpectedError("Problem handling BpmnError to C7: camunda not working."))
+        )
       },
       test("handleFailure should return false for any other Error") {
         val error  = CamundalaWorkerError.CustomError("error")
@@ -73,7 +77,9 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
         val error  = CamundalaWorkerError.CustomError("error")
         val result = TestExternalTaskService(throw IllegalAccessError("camunda not working"))
           .handleFailure(error)
-        assertZIO(result)(equalTo(UnexpectedError("Problem handling Failure to C7: camunda not working.")))
+        assertZIO(result)(
+          equalTo(UnexpectedError("Problem handling Failure to C7: camunda not working."))
+        )
       },
       test("checkError should fail with an unhandled Error") {
         val error  = CamundalaWorkerError.CustomError("error")
@@ -117,19 +123,20 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
   lazy val generalVariables: GeneralVariables =
     GeneralVariables(handledErrors = handledErrors)
 
-  lazy val externalTaskService = TestExternalTaskService()
-  given externalTask: camunda.ExternalTask   = TestExternalTask()
+  lazy val externalTaskService             = TestExternalTaskService()
+  given externalTask: camunda.ExternalTask = TestExternalTask()
 
   override def worker: Worker[NoInput, NoOutput, ?] =
     InitWorker[NoInput, NoOutput, NoInput](
       Process(
         InOutDescr(
           "dummy Worker",
-        NoInput(), NoOutput()
+          NoInput(),
+          NoOutput()
         ),
         processLabels = ProcessLabels.none
       )
-  )
+    )
 
   def topic: String = ???
 
