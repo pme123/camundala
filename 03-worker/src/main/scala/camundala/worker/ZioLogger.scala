@@ -26,6 +26,7 @@ case class Slf4JLogger(private val delegateLogger: Logger) extends WorkerLogger:
 
   def error(err: CamundalaWorkerError): Unit =
     if delegateLogger.isErrorEnabled then
+      err.printStackTrace()
       delegateLogger.error(s"Error ${err.causeMsg}")
 end Slf4JLogger
 object Slf4JLogger:

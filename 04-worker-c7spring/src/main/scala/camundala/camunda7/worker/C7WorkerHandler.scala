@@ -98,7 +98,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         )
     .mapError:
       case err: UnexpectedError =>
-        err.printStackTrace()
+        logger.error(err)
         err
 
   end executeWorker
