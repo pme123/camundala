@@ -14,7 +14,7 @@ trait WorkerApp extends ZIOAppDefault:
         case s: Seq[?]          => s.collect { case d: WorkerDsl[?, ?] => d }
       .toSet
 
-  def dependencies(workerApps: WorkerApp*): Unit                     =
+  def dependencies(workerApps: WorkerApp*): Unit =
     theDependencies = workerApps
 
   protected var theWorkers: Set[WorkerDsl[?, ?]] = Set.empty
@@ -26,8 +26,8 @@ trait WorkerApp extends ZIOAppDefault:
     for
       _ <- logInfo(s"Starting WorkerApp: ${getClass.getSimpleName}")
       _ <- ZIO.foreachPar(workerRegistries)(registry =>
-        registry.register((theDependencies :+ this).flatMap(_.theWorkers).toSet)
-      )
+             registry.register((theDependencies :+ this).flatMap(_.theWorkers).toSet)
+           )
     yield ()
 
 end WorkerApp

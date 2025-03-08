@@ -5,7 +5,7 @@ import camundala.domain.*
 
 object ReviewInvoice extends BpmnProcessDsl:
   final val processName = "example-invoice-c7-review"
-  val descr = "This starts the Review Invoice Process."
+  val descr             = "This starts the Review Invoice Process."
 
   type InConfig = NoInConfig
 
@@ -17,7 +17,7 @@ object ReviewInvoice extends BpmnProcessDsl:
       invoiceNumber: String = "I-12345"
   )
   object In:
-    given ApiSchema[In] = deriveApiSchema
+    given ApiSchema[In]  = deriveApiSchema
     given InOutCodec[In] = deriveCodec
 
   case class InitIn(
@@ -28,7 +28,7 @@ object ReviewInvoice extends BpmnProcessDsl:
       justToTestInit: Double = 150.0
   )
   object InitIn:
-    given ApiSchema[InitIn] = deriveApiSchema
+    given ApiSchema[InitIn]  = deriveApiSchema
     given InOutCodec[InitIn] = deriveCodec
 
   case class Out(
@@ -36,7 +36,7 @@ object ReviewInvoice extends BpmnProcessDsl:
       clarified: Boolean = true
   )
   object Out:
-    given ApiSchema[Out] = deriveApiSchema
+    given ApiSchema[Out]  = deriveApiSchema
     given InOutCodec[Out] = deriveCodec
   end Out
 
@@ -56,7 +56,7 @@ object ReviewInvoice extends BpmnProcessDsl:
         reviewer: String = "John"
     )
     object Out:
-      given ApiSchema[Out] = deriveApiSchema
+      given ApiSchema[Out]  = deriveApiSchema
       given InOutCodec[Out] = deriveCodec
     end Out
 
@@ -79,13 +79,13 @@ object ReviewInvoice extends BpmnProcessDsl:
         clarified: Boolean = true
     )
     object Out:
-      given ApiSchema[Out] = deriveApiSchema
+      given ApiSchema[Out]  = deriveApiSchema
       given InOutCodec[Out] = deriveCodec
     end Out
 
     lazy val example: UserTask[In, Out] =
       userTask(
-        id = "ReviewInvoiceUT", 
+        id = "ReviewInvoiceUT",
         descr = "Review Invoice and approve.",
         in = InvoiceReceipt.PrepareBankTransferUT.In(),
         out = Out()

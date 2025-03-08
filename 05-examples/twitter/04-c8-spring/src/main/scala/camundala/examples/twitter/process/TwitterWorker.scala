@@ -20,7 +20,11 @@ class TwitterWorker:
     try twitterService.tweet(variables.tweet)
     catch
       case ex: DuplicateTweetException =>
-        throw new ZeebeBpmnError("duplicateMessage", "Could not post tweet, it is a duplicate.", Map.empty.asJava)
+        throw new ZeebeBpmnError(
+          "duplicateMessage",
+          "Could not post tweet, it is a duplicate.",
+          Map.empty.asJava
+        )
 
   @JobWorker(`type` = "send-rejection", autoComplete = true)
   @throws[Exception]

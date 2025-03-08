@@ -28,7 +28,7 @@ trait AbstractApiCreator extends ProcessReferenceCreator:
       groupAnchor: Option[String] = None
   ): String =
     val projName = s"${apiConfig.docBaseUrl}/$projectName"
-    val anchor = groupAnchor
+    val anchor   = groupAnchor
       .map(_ =>
         s"operation/${name.replace(" ", "%20")}"
       )
@@ -40,8 +40,8 @@ trait AbstractApiCreator extends ProcessReferenceCreator:
     def endpointName: String =
       val name = (inOutApi, inOutApi.inOut.in) match
         case (_: ServiceWorkerApi[?, ?, ?, ?], _) => inOutApi.inOutDescr.shortName
-        case (_, gs: GenericServiceIn) => gs.shortServiceName
-        case _ => inOutApi.inOutDescr.shortName
+        case (_, gs: GenericServiceIn)            => gs.shortServiceName
+        case _                                    => inOutApi.inOutDescr.shortName
       s"${inOutApi.inOutType}: $name"
   end extension
 

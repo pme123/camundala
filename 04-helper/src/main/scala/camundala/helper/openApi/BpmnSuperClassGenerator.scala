@@ -6,7 +6,7 @@ case class BpmnSuperClassGenerator()(using
 ) extends GeneratorHelper:
 
   val allSchemas = Map.empty[String, Schema[?]]
-  val name = config.superClassName(superClass.versionTag).getOrElse(superClass.name)
+  val name       = config.superClassName(superClass.versionTag).getOrElse(superClass.name)
 
   def generate =
     os.remove.all(bpmnPath)

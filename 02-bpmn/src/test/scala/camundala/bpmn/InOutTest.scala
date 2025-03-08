@@ -21,14 +21,14 @@ class InOutTest extends FunSuite:
     assertEquals(process.outVariableNames, expectedVariableNames)
 
   test("inVariables should return distinct variables"):
-    val process =
+    val process           =
       Process(InOutDescr("test-id", TestInOut.A(), NoOutput()), NoInput(), ProcessLabels.none)
         .withEnumInExample(TestInOut.B())
     val expectedVariables = Seq("name" -> "hello", "isSad" -> true, "isFunny" -> false)
     assertEquals(process.inVariables, expectedVariables)
 
   test("outVariables should return distinct variables"):
-    val process =
+    val process           =
       Process(InOutDescr("test-id", NoInput(), TestInOut.A()), NoInput(), ProcessLabels.none)
         .withEnumOutExample(TestInOut.B())
     val expectedVariables = Seq("name" -> "hello", "isSad" -> true, "isFunny" -> false)

@@ -15,11 +15,11 @@ case class BpmnClassesGenerator()(using
   end generate
 
   private def generateModel(serviceObj: BpmnServiceObject) =
-    val name = serviceObj.className
-    val topicName = s"${config.projectTopicName}${superClass.versionTag}"
+    val name                                      = serviceObj.className
+    val topicName                                 = s"${config.projectTopicName}${superClass.versionTag}"
     val printInOut: Option[ConstrField] => String =
       _.map(printField(_, serviceObj.className, "    ")).mkString("\n", "", "  ")
-    val content =
+    val content                                   =
       s"""package $bpmnPackage
          |
          |import $bpmnPackage.schema.*

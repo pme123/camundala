@@ -134,7 +134,7 @@ lazy val worker = project
       sttpDependency,
       scaffeineDependency,
       zioDependency,
-      zioSlf4jDependency,
+      zioSlf4jDependency
     )
   )
   .dependsOn(bpmn)
@@ -187,7 +187,7 @@ lazy val camunda7ZioWorker = project
       camunda7ZioWorkerDependencies ++ zioTestDependencies
   )
   .dependsOn(worker)
-lazy val camunda8Worker = project
+lazy val camunda8Worker    = project
   .in(file("./04-worker-c8zio"))
   .configure(publicationSettings)
   .settings(projectSettings("camunda8-worker"))
