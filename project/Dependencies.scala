@@ -10,7 +10,7 @@ object Dependencies {
   val osLibVersion = "0.11.4"
   // 01-domain
   val openapiCirceVersion = "0.11.7"
-  val tapirVersion = "1.11.15"
+  val tapirVersion = "1.11.17"
   val ironCirceVersion = "2.6.0"
   val mUnitVersion = "1.1.0"
   val scala3MockVersion = "0.6.6"
@@ -43,7 +43,7 @@ object Dependencies {
   val camundaVersion = "7.22.0" // external task client
   val jaxbApiVersion = "4.0.2" // needed by the camunda client 7.21?!
   val scaffeineV = "5.3.0" // caching
-  val zioVersion = "2.1.15" // zio
+  val zioVersion = "2.1.16" // zio
   // - sttpClient3
 
   // --- Experiments
@@ -53,15 +53,15 @@ object Dependencies {
   // camunda // server spring-boot
   // 04-c8-spring
   // -> bpmn
-  val scalaJacksonVersion = "2.18.2"
+  val scalaJacksonVersion = "2.18.3"
   val camunda8Version = "8.5.17"
   val springBootVersion = "3.3.9"
-  val nettyVersion = "4.1.118.Final"
+  val nettyVersion = "4.1.119.Final"
   val swaggerOpenAPIVersion = "2.1.25"
   // examples
   val h2Version = "2.3.232"
   val twitter4jVersion = "4.1.2"
-  val groovyVersion = "3.0.23"
+  val groovyVersion = "3.0.24"
 
   lazy val jaxbApiDependency = "jakarta.xml.bind" % "jakarta.xml.bind-api" % jaxbApiVersion
   lazy val scaffeineDependency = // token caching
