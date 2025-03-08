@@ -197,7 +197,6 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         "errorMsg"  -> error.errorMsg
       )
       val variables = (filteredGeneralVariables ++ errorVars).asJava
-      logger.info(s"Handled Error: $errorVars")
       ZIO.attempt(
         externalTaskService.handleBpmnError(
           summon[camunda.ExternalTask],

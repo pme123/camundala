@@ -205,7 +205,7 @@ case class TestExternalTask(
 
   def getAllVariablesTyped(deserializeObjectValues: Boolean) = ???
 
-  def getBusinessKey = ???
+  def getBusinessKey = businessKey
 
   def getExtensionProperty(propertyKey: String) = ???
 
