@@ -3,7 +3,6 @@ package camundala.domain
 import io.circe.*
 import io.circe.Decoder.Result
 
-
 class EnumValueTest extends munit.FunSuite:
 
   inline def deriveEnumValueEncoder[A]: Encoder[A] =
@@ -20,7 +19,7 @@ class EnumValueTest extends munit.FunSuite:
     CirceCodec.from(deriveEnumValueDecoder[A], deriveEnumValueEncoder[A])
 
   test("CmsTest encode and decode enum type"):
-    val obj = MyClass(MyEnum.Y)
+    val obj  = MyClass(MyEnum.Y)
     val json = obj.asJson
     assertEquals(Json.obj("processStatus" -> Json.fromString("Y")), json)
     assertEquals(Right(obj), json.as[MyClass])
@@ -31,7 +30,7 @@ class EnumValueTest extends munit.FunSuite:
 
   case class MyClass(processStatus: MyEnum.Y.type)
   object MyClass:
-    given InOutCodec[MyClass] = deriveInOutCodec
+    given InOutCodec[MyClass]       = deriveInOutCodec
     given InOutCodec[MyEnum.Y.type] = deriveEnumValueInOutCodec
 
   enum MyEnum:

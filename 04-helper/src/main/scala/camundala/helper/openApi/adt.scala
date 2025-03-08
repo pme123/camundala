@@ -11,19 +11,19 @@ sealed trait OpenApiElem:
   def name: String
   def descr: Option[String]
 
-  lazy val className = name.head.toUpper + name.tail
+  lazy val className        = name.head.toUpper + name.tail
   lazy val niceName: String = // e.g `Authorization Check Get`
     className.foldLeft(""):
       case result -> ch if ch.isUpper =>
         result + " " + ch
-      case result -> ch =>
+      case result -> ch               =>
         result + ch
     .trim
 end OpenApiElem
 
 sealed trait BpmnClassOrEnum extends OpenApiElem
-sealed trait EnumCase extends OpenApiElem
-sealed trait IsFieldType extends OpenApiElem
+sealed trait EnumCase        extends OpenApiElem
+sealed trait IsFieldType     extends OpenApiElem
 
 case class BpmnSuperClass(
     title: String,
@@ -32,8 +32,8 @@ case class BpmnSuperClass(
     externalDescr: Option[String],
     externalUrl: Option[String]
 ):
-  lazy val name: String = titleName + versionTag
-  lazy val versionTag: String = version.map("V" + _.split('.').head).getOrElse("")
+  lazy val name: String           = titleName + versionTag
+  lazy val versionTag: String     = version.map("V" + _.split('.').head).getOrElse("")
   lazy val versionPackage: String = versionTag.toLowerCase
 
   private lazy val titleName = title

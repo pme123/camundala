@@ -8,8 +8,8 @@ trait GeneratorHelper:
   protected def apiDefinition: ApiDefinition
 
   protected lazy val superClass: BpmnSuperClass = apiDefinition.superClass
-  protected lazy val bpmnPath: Path = config.bpmnPath(superClass.versionPackage)
-  protected lazy val bpmnPackage: String = config.bpmnPackage(superClass.versionPackage)
+  protected lazy val bpmnPath: Path             = config.bpmnPath(superClass.versionPackage)
+  protected lazy val bpmnPackage: String        = config.bpmnPackage(superClass.versionPackage)
 
   protected def generateObject(
       name: String,
@@ -68,7 +68,7 @@ trait GeneratorHelper:
   protected def printDescrTextOpt(elem: OpenApiElem, intent: String = ""): Option[String] =
     val format = elem match
       case f: ConstrField if f.format.nonEmpty => s"\n- Format: ${f.format.mkString}"
-      case _ => ""
+      case _                                   => ""
     elem.descr
       .map: descr =>
         val descrWithFormat = descr + format
@@ -89,7 +89,7 @@ trait GeneratorHelper:
 
   protected def printFieldType(field: ConstrField, parentName: Option[String] = None): String =
     val enumPrefix = field.enumCases.flatMap(_ => parentName).map(n => s"$n.").mkString
-    val tpe = enumPrefix + field.tpeName
+    val tpe        = enumPrefix + field.tpeName
 
     val typeWithWrapper = field.wrapperType
       .map: wt =>
@@ -116,11 +116,11 @@ trait GeneratorHelper:
                   ""
                 ) + s"${fieldName(tpeName)}.${fieldName(field.defaultEnumCase)}"
               )
-            case tpeName => apiDefinition.serviceClasses
+            case tpeName                             => apiDefinition.serviceClasses
                 .find:
                   _.name == tpeName
                 .map:
-                  case e: BpmnEnum =>
+                  case e: BpmnEnum  =>
                     s"$tpeName.${e.cases.head.name}()"
                   case _: BpmnClass =>
                     s"$tpeName()"

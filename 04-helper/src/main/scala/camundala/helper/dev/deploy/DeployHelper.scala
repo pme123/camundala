@@ -7,8 +7,8 @@ import java.util.Date
 
 case class DeployHelper(postmanConfig: PostmanConfig) extends Helpers:
 
-  val collectionId = postmanConfig.collectionId
-  val envId = postmanConfig.localDevEnvId
+  val collectionId  = postmanConfig.collectionId
+  val envId         = postmanConfig.localDevEnvId
   val postmanApiKey = sys.env(postmanConfig.envApiKey)
 
   def deploy(integrationTest: Option[String] = None): Unit =

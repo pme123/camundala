@@ -14,8 +14,8 @@ trait SimulationHelper extends ResultChecker, Logging:
   def config: SimulationConfig[RequestT[Empty, Either[String, String], Any]] =
     SimulationConfig[RequestT[Empty, Either[String, String], Any]]()
 
-  lazy val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
-  lazy val cockpitUrl =
+  lazy val backend: SttpBackend[Identity, Any]               = HttpClientSyncBackend()
+  lazy val cockpitUrl                                        =
     config.endpoint.replace("/engine-rest", "/camunda/app/cockpit/default")
   extension (request: RequestT[Empty, Either[String, String], Any])
     def auth(): RequestT[Empty, Either[String, String], Any] =
@@ -36,6 +36,7 @@ trait SimulationHelper extends ResultChecker, Logging:
                 .info(err.toString)
             )
         )
+  end extension
 
   protected def handleNon2xxResponse(
       httpStatus: StatusCode,
@@ -147,7 +148,7 @@ trait SimulationHelper extends ResultChecker, Logging:
                     )
                   )
                 }
-            case _ =>
+            case _                                                 =>
               Right(
                 data
                   .debug(
@@ -170,12 +171,12 @@ trait SimulationHelper extends ResultChecker, Logging:
         handleBody: (Json, ScenarioData) => ResultType
     ): ResultType =
       val processInstanceId = data.context.processInstanceId
-      val uri = rootIncidentId match
+      val uri               = rootIncidentId match
         case Some(incId) =>
           uri"${config.endpoint}/incident?incidentId=$incId&deserializeValues=false"
-        case None =>
+        case None        =>
           uri"${config.endpoint}/incident?processInstanceId=$processInstanceId&deserializeValues=false"
-      val request = basicRequest
+      val request           = basicRequest
         .auth()
         .get(uri)
 
@@ -192,13 +193,13 @@ trait SimulationHelper extends ResultChecker, Logging:
     ): Either[ScenarioData, (Option[String], String, String)] =
       val arr = body.hcursor.downArray
       (for
-        maybeIncMessage <- arr
-          .downField("incidentMessage")
-          .as[Option[String]]
-        id <- arr.downField("id").as[String]
+        maybeIncMessage     <- arr
+                                 .downField("incidentMessage")
+                                 .as[Option[String]]
+        id                  <- arr.downField("id").as[String]
         rootCauseIncidentId <- arr
-          .downField("rootCauseIncidentId")
-          .as[String]
+                                 .downField("rootCauseIncidentId")
+                                 .as[String]
       yield (maybeIncMessage, id, rootCauseIncidentId)).left
         .map { ex =>
           data
