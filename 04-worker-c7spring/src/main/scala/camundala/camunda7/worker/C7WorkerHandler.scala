@@ -123,7 +123,8 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         handleFailure(
           UnexpectedError(
             s"There is an unexpected Error from completing a successful Worker to C7: ${err.getMessage}."
-          )
+          ),
+          doRetry = true
         )
       .fold(
         err => logger.error(err),
@@ -254,9 +255,11 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     ): HelperContext[Int] =
       val doRetryMsgs = Seq(
         "Entity was updated by another transaction concurrently",
-        "An exception occurred in the persistence layer"
-      )
-      val doRetry     = doRetryMsgs.exists(error.errorMsg.contains)
+        "An exception occurred in the persistence layer",
+        "Service Unavailable",
+        "Gateway Timeout"
+      ).map(_.toLowerCase)
+      val doRetry     = doRetryMsgs.exists(error.errorMsg.toLowerCase.contains)
 
       summon[camunda.ExternalTask].getRetries match
         case r if r <= 0 && doRetry => 3

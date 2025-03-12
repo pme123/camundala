@@ -10,7 +10,7 @@ object Dependencies {
   val osLibVersion = "0.11.4"
   // 01-domain
   val openapiCirceVersion = "0.11.7"
-  val tapirVersion = "1.11.17"
+  val tapirVersion = "1.11.15"
   val ironCirceVersion = "2.6.0"
   val mUnitVersion = "1.1.0"
   val scala3MockVersion = "0.6.6"
@@ -43,7 +43,7 @@ object Dependencies {
   val camundaVersion = "7.22.0" // external task client
   val jaxbApiVersion = "4.0.2" // needed by the camunda client 7.21?!
   val scaffeineV = "5.3.0" // caching
-  val zioVersion = "2.1.16" // zio
+  val zioVersion = "2.1.15" // zio
   // - sttpClient3
 
   // --- Experiments
