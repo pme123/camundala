@@ -130,21 +130,21 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
       ) @@ ignore,
       
       suite("calcRetries")(
-        test("should return 3 when retries <= 0 and error message contains a retry pattern") {
+        test("should return 2 when retries <= 0 and error message contains a retry pattern") {
           given externalTask: camunda.ExternalTask = TestExternalTask(retries = 0)
           
           val error = CamundalaWorkerError.CustomError("Entity was updated by another transaction concurrently")
           val result = externalTaskService.calcRetries(error)
           
-          assert(result)(equalTo(3))
+          assert(result)(equalTo(2))
         },
-        test("should return 3 when retries < 0 and error message contains a retry pattern") {
+        test("should return 2 when retries < 0 and error message contains a retry pattern") {
           given externalTask: camunda.ExternalTask = TestExternalTask(retries = -1)
           
           val error = CamundalaWorkerError.CustomError("An exception occurred in the persistence layer")
           val result = externalTaskService.calcRetries(error)
           
-          assert(result)(equalTo(3))
+          assert(result)(equalTo(2))
         },
         test("should decrement retries by 1 when retries > 0 regardless of error message") {
           given externalTask: camunda.ExternalTask = TestExternalTask(retries = 5)

@@ -14,6 +14,7 @@ import zio.ZIO.*
 import scala.concurrent.duration.*
 import java.util.Date
 import scala.jdk.CollectionConverters.*
+import scala.language.postfixOps
 
 /** To avoid Annotations (Camunda Version specific), we extend ExternalTaskHandler for required
   * parameters.
@@ -71,40 +72,24 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
 
   private def executeWorker(
       externalTaskService: camunda.ExternalTaskService
-  )(using et: camunda.ExternalTask): ZIO[Any, Throwable, Unit] =
+  ): HelperContext[ZIO[Any, Throwable, Unit]] =
     val tryProcessVariables =
       ProcessVariablesExtractor.extract(worker.variableNames)
     (for
-        generalVariables      <- ProcessVariablesExtractor.extractGeneral()
-        given EngineRunContext = EngineRunContext(engineContext, generalVariables)
-        filteredOut           <- WorkerExecutor(worker).execute(tryProcessVariables)
-        _                     <- externalTaskService.handleSuccess(
-                                   filteredOut,
-                                   generalVariables.manualOutMapping
-                                 )
-      yield () //
-    ).flatMapError: ex =>
-      ProcessVariablesExtractor.extractGeneral()
-        .flatMap: generalVariables =>
-          externalTaskService.handleError(ex, generalVariables)
-        .fold(
-          exc =>
-            logger.error(exc)
-            exc
-          ,
-          {
-            case err: (MockedOutput | AlreadyHandledError.type) =>
-              err
-            case err                                            =>
-              logger.error(err)
-              err
-          }
-        )
-    .fold(
-      ex => (),
-      _ => ()
-    )
-
+      generalVariables      <- ProcessVariablesExtractor.extractGeneral()
+      given EngineRunContext = EngineRunContext(engineContext, generalVariables)
+      filteredOut           <- WorkerExecutor(worker).execute(tryProcessVariables)
+      _                     <- externalTaskService.handleSuccess(
+                                 filteredOut,
+                                 generalVariables.manualOutMapping
+                               )
+    yield ())
+      .catchAll: ex =>
+        ProcessVariablesExtractor.extractGeneral()
+          .flatMap(generalVariables =>
+            externalTaskService.handleError(ex, generalVariables)
+          )
+      .unit
   end executeWorker
 
   extension (externalTaskService: camunda.ExternalTaskService)
@@ -112,33 +97,30 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     private[worker] def handleSuccess(
         filteredOutput: Map[String, Any],
         manualOutMapping: Boolean
-    )(using externalTask: camunda.ExternalTask): URIO[Any, Unit] =
-      ZIO.attempt(
+    ): HelperContext[URIO[Any, Unit]] =
+      ZIO.attempt:
         externalTaskService.complete(
           summon[camunda.ExternalTask],
           if manualOutMapping then Map.empty.asJava else filteredOutput.asJava, // Process Variables
           if !manualOutMapping then Map.empty.asJava else filteredOutput.asJava // local Variables
         )
-      ).flatMapError: err =>
+      .catchAll: err =>
         handleFailure(
           UnexpectedError(
             s"There is an unexpected Error from completing a successful Worker to C7: ${err.getMessage}."
           ),
           doRetry = true
         )
-      .fold( // fold the error, so it is not handled twice
-        err => logger.error(err),
-        _ => ()
-      )
+      .ignore
 
     private[worker] def handleError(
         error: CamundalaWorkerError,
         generalVariables: GeneralVariables
-    ): HelperContext[URIO[Any, CamundalaWorkerError]] =
+    ): HelperContext[URIO[Any, Unit]] =
       checkError(error, generalVariables)
         .flatMap:
-          case err: (UnexpectedError | MockedOutput | AlreadyHandledError.type) =>
-            ZIO.succeed(err)
+          case _: (UnexpectedError | MockedOutput | AlreadyHandledError.type) =>
+            ZIO.unit
           case err                                                              =>
             handleFailure(err, doRetry = true)
 
@@ -204,47 +186,41 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
           error.errorMsg,
           variables
         )
-      ).flatMapError: err =>
-        handleFailure(
-          UnexpectedError(s"Problem handling BpmnError to C7: ${err.getMessage}."),
-          doRetry = true
-        )
-      .fold(
-        ex => (),
-        _ => ()
       )
+        .catchAll: err =>
+          handleFailure(
+            UnexpectedError(s"Problem handling BpmnError to C7: ${err.getMessage}."),
+            doRetry = true
+          ).ignore
+        .ignore
     end handleBpmnError
 
     private[worker] def handleFailure(
         error: CamundalaWorkerError,
         doRetry: Boolean = false
-    ): HelperContext[URIO[Any, CamundalaWorkerError]] =
+    ): HelperContext[URIO[Any, Unit]] =
       val taskId      = summon[camunda.ExternalTask].getId
+      val processInstanceId = summon[camunda.ExternalTask].getProcessInstanceId
       val businessKey = summon[camunda.ExternalTask].getBusinessKey
       val retries     = calcRetries(error)
 
       if retries == 0 then logger.error(error)
-      logger.info(s"Retries left for $taskId ($businessKey): $retries - $error")
-      if retries >= 0 || doRetry then
-        ZIO.attempt(
-          externalTaskService.handleFailure(
-            taskId,
-            error.causeMsg,
-            s" ${error.causeMsg}\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
-            Math.max(retries, 0), // < 0 not allowed
-            10.seconds.toMillis
-          )
-        ).mapError: throwable =>
-          UnexpectedError(s"Problem handling Failure to C7: ${throwable.getMessage}.")
-        .fold(
-          err =>
-            err,
-          s =>
-            error
+      logError(s"Handle Failure for taskId: $taskId | processInstanceId: $processInstanceId | doRetry: $doRetry | retries: $retries | $error") *>
+        (if retries >= 0 || doRetry then
+          ZIO.attempt(
+            externalTaskService.handleFailure(
+              taskId,
+              error.causeMsg,
+              s" ${error.causeMsg}\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
+              Math.max(retries, 0), // < 0 not allowed
+              10.seconds.toMillis
+            )
+          ).flatMapError: throwable =>
+            logError(s"Problem handling Failure to C7: ${throwable.getMessage}.")
+          .ignore
+        else
+          ZIO.succeed(error)
         )
-      else
-        ZIO.succeed(error)
-      end if
     end handleFailure
 
     private[worker] def calcRetries(
@@ -253,8 +229,8 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
       val doRetryMsgs = Seq(
         "Entity was updated by another transaction concurrently",
         "An exception occurred in the persistence layer",
-        "Service Unavailable",
-        "Gateway Timeout"
+      //  "Service Unavailable",
+      //  "Gateway Timeout"
       ).map(_.toLowerCase)
       val doRetry     = doRetryMsgs.exists(error.errorMsg.toLowerCase.contains)
 

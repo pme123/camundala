@@ -12,7 +12,7 @@
     <bpmn:serviceTask id="Activity_1p8rmh1" name="Publish on Twitter" camunda:type="external" camunda:topic="publish-tweet">
       <bpmn:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="handledErrors">custom-run-errorXX</camunda:inputParameter>
+          <camunda:inputParameter name="handledErrors">custom-run-error</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1c8rqmn</bpmn:incoming>

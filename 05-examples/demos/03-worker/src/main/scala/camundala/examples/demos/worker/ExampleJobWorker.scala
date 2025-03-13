@@ -14,7 +14,7 @@ class ExampleJobWorker extends CompanyCustomWorkerDsl[In, Out]:
     logger.info(s"Running ExampleJobWorker OLD with $in")
     Thread.sleep(500)
     Right(Out())
-  //  Left(CamundalaWorkerError.CustomError("Not implemented yet."))
+    //Left(CamundalaWorkerError.CustomError("Not implemented yet."))
 
 object ExampleJobWorker extends CompanyBpmnCustomTaskDsl:
 
