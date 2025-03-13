@@ -44,13 +44,13 @@ case class ServiceClassesCreator(
         .map:
           case sch -> _ if sch.get$ref != null =>
             val refTypeName = sch.refType
-            val refSchema = findRefSchema(refTypeName)
+            val refSchema   = findRefSchema(refTypeName)
             refSchema.map:
               case sch if sch.getAllOf == null =>
                 createCaseClass(refTypeName, sch)
-              case sch => createEnum(refTypeName, sch)
+              case sch                         => createEnum(refTypeName, sch)
             .getOrElse(BpmnEnumCase("SHOULD NOT HAPPEN", descr = None))
-          case sch -> index =>
+          case sch -> index                    =>
             createCaseClass(s"Default$index", sch)
         .toSeq
     )
@@ -76,7 +76,7 @@ case class ServiceClassesCreator(
             )
       .toSeq
       .flatten
-  private lazy val schemas = allSchemas
+  private lazy val schemas                                          = allSchemas
     .filter:
       case key -> schema =>
         schema.getAllOf != null ||

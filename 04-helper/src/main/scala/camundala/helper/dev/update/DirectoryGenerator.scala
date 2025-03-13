@@ -13,7 +13,7 @@ case class DirectoryGenerator()(using config: DevConfig):
     def printMainAndTest(
         subProject: Option[String] = None
     ): Unit =
-      def srcPath(mainOrTest: String) =
+      def srcPath(mainOrTest: String)       =
         config.projectDir /
           moduleConfig.packagePath(config.projectPath, mainOrTest, subProject)
       end srcPath

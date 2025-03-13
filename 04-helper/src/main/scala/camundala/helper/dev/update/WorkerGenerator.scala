@@ -13,13 +13,15 @@ case class WorkerGenerator()(using config: DevConfig):
 
   def createProcessWorker(setupElement: SetupElement): Unit =
     createWorker(setupElement, processWorker, processWorkerTest)
-  
+
   def createEventWorker(setupElement: SetupElement): Unit =
     createWorker(setupElement, eventWorker, eventWorkerTest)
 
-  def createWorker(setupElement: SetupElement,
-                   worker: SetupElement => String = processElement,
-                   workerTest: SetupElement => String = processElementTest): Unit =
+  def createWorker(
+      setupElement: SetupElement,
+      worker: SetupElement => String = processElement,
+      workerTest: SetupElement => String = processElementTest
+  ): Unit =
     createIfNotExists(
       workerPath(Some(setupElement)),
       worker(setupElement)
@@ -31,7 +33,7 @@ case class WorkerGenerator()(using config: DevConfig):
   end createWorker
 
   private lazy val companyName = config.companyName
-  private lazy val workerApp =
+  private lazy val workerApp   =
     createWorkerApp("WorkerApp")
 
   private lazy val workerTestApp =
@@ -89,7 +91,8 @@ case class WorkerGenerator()(using config: DevConfig):
        |    // NoInput() // if no initialization is needed
        |  
        |end ${workerName}Worker""".stripMargin
-    
+  end processWorker
+
   private def eventWorker(setupElement: SetupElement) =
     val SetupElement(_, processName, workerName, version) = setupElement
     s"""package ${config.projectPackage}
@@ -106,6 +109,7 @@ case class WorkerGenerator()(using config: DevConfig):
        |  override def validate(in: In): Either[CamundalaWorkerError.ValidatorError, In] = super.validate(in)
        |
        |end ${workerName}Worker""".stripMargin
+  end eventWorker
 
   private def processElement(
       setupElement: SetupElement
@@ -168,7 +172,7 @@ case class WorkerGenerator()(using config: DevConfig):
          |      worker.customInit(in),
          |      out
          |    )""".stripMargin
-      
+
   private def eventWorkerTest(setupElement: SetupElement) =
     workerTest(setupElement):
       s"""

@@ -10,7 +10,6 @@ lazy val myCompanyConfig = postmanApiConfig
   .withDocBaseUrl("https://webstor.ch")
   .withProjectsConfig(myCompanyGitConfigs)
 
-
 private lazy val myCompanyGitConfigs =
   ProjectsConfig(
     perGitRepoConfigs = Seq(
@@ -39,6 +38,6 @@ private lazy val myProjects: Seq[ProjectConfig] = Seq(
   )
 )
 
-private lazy val demos = ProjectGroup("demos", "purple")
+private lazy val demos    = ProjectGroup("demos", "purple")
 private lazy val invoices = ProjectGroup("demos", "green")
-private lazy val twitter = ProjectGroup("demos", "green")
+private lazy val twitter  = ProjectGroup("demos", "green")

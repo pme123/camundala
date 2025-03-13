@@ -21,7 +21,7 @@ class C7WorkerRegistry(client: C7Client)
     attempt(client
       .subscribe(worker.topic)
       .handler(worker)
-      //.lockDuration(worker.timeout.toMillis)
+      // .lockDuration(worker.timeout.toMillis)
       .open()) *>
       logInfo("Registered C7 Worker: " + worker.topic)
 

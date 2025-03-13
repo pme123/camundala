@@ -5,9 +5,9 @@ import camundala.domain.*
 
 object MessageForExample extends BpmnProcessDsl:
   val processName = "message-for-example"
-  val descr = ""
+  val descr       = ""
 
-  lazy val messageExample = process(
+  lazy val messageExample             = process(
     in = SignalMessageExampleIn(),
     out = SignalMessageExampleOut()
   )
@@ -19,9 +19,9 @@ end MessageForExample
 
 object SignalExample extends BpmnProcessDsl:
   val processName = "signal-example"
-  val descr = ""
+  val descr       = ""
 
-  lazy val signalExample = process(
+  lazy val signalExample             = process(
     in = SignalMessageExampleIn(),
     out = SignalMessageExampleOut(endStatus = EndStatus.signalReceived)
   )
@@ -33,7 +33,7 @@ end SignalExample
 
 case class SignalMessageExampleIn(someValue: String = "hello")
 object SignalMessageExampleIn:
-  given ApiSchema[SignalMessageExampleIn] = deriveApiSchema
+  given ApiSchema[SignalMessageExampleIn]  = deriveApiSchema
   given InOutCodec[SignalMessageExampleIn] = deriveCodec
 
 case class SignalMessageExampleOut(
@@ -41,12 +41,12 @@ case class SignalMessageExampleOut(
     endStatus: EndStatus = EndStatus.messageReceived
 )
 object SignalMessageExampleOut:
-  given ApiSchema[SignalMessageExampleOut] = deriveApiSchema
+  given ApiSchema[SignalMessageExampleOut]  = deriveApiSchema
   given InOutCodec[SignalMessageExampleOut] = deriveCodec
 
 enum EndStatus:
   case messageReceived, signalReceived
 
 object EndStatus:
-  given ApiSchema[EndStatus] = deriveEnumApiSchema
+  given ApiSchema[EndStatus]  = deriveEnumApiSchema
   given InOutCodec[EndStatus] = deriveEnumInOutCodec

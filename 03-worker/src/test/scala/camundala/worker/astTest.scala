@@ -24,10 +24,12 @@ class astTest extends munit.FunSuite:
   )
 
   test("defaultMock Process") {
-    val proc = Process(InOutDescr(
-      processName,
-      In(),
-      Out()),
+    val proc = Process(
+      InOutDescr(
+        processName,
+        In(),
+        Out()
+      ),
       NoInput(),
       ProcessLabels.none
     ).mockWith: in =>
@@ -80,11 +82,11 @@ class astTest extends munit.FunSuite:
   case class In(value: Int = 1)
   object In:
     given InOutCodec[In] = deriveInOutCodec[In]
-    given ApiSchema[In] = deriveApiSchema[In]
+    given ApiSchema[In]  = deriveApiSchema[In]
   case class Out(value: Boolean = true)
   object Out:
     given InOutCodec[Out] = deriveInOutCodec[Out]
-    given ApiSchema[Out] = deriveApiSchema[Out]
+    given ApiSchema[Out]  = deriveApiSchema[Out]
 
   def processName: String = "dummy"
 

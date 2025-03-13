@@ -4,8 +4,8 @@ package custom
 import sttp.client3.*
 
 trait BasicSimulationDsl extends CustomSimulation:
-  def username = "demo"
-  def password = "demo"
+  def username                                                                        = "demo"
+  def password                                                                        = "demo"
   override def config: SimulationConfig[RequestT[Empty, Either[String, String], Any]] =
     super.config
       .withAuthHeader((r: RequestT[Empty, Either[String, String], Any]) =>
@@ -29,7 +29,7 @@ trait OAuthSimulationDsl extends CustomSimulation:
       )
 
   private lazy val getToken: String =
-    val uri = uri"${fsso.url}/token"
+    val uri     = uri"${fsso.url}/token"
     val request = basicRequest
       .header("Content-Type", "application/x-www-form-urlencoded")
       .body(fsso.bodyForm)
@@ -44,7 +44,7 @@ trait OAuthSimulationDsl extends CustomSimulation:
           .as[String]
       ) match
       case Right(token) => token
-      case Left(err) =>
+      case Left(err)    =>
         throw new IllegalArgumentException(s"Could not get a token!\n$err")
     end match
   end getToken
