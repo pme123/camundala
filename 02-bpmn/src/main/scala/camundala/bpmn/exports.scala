@@ -57,6 +57,7 @@ enum ErrorCodes:
   case `service-auth-error`
   case `service-bad-body-error`
   case `service-unexpected-error`
+  case `error-already-handled`
 end ErrorCodes
 
 val GenericExternalTaskProcessName = "camundala-externalTask-generic"

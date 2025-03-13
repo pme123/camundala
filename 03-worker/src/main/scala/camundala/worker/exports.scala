@@ -72,6 +72,10 @@ object CamundalaWorkerError:
     override val isMock = true
   end MockedOutput
 
+  case object AlreadyHandledError extends CamundalaWorkerError:
+    val errorMsg: String      = "Error already handled."
+    val errorCode: ErrorCodes = ErrorCodes.`error-already-handled`
+
   case class InitProcessError(
       errorMsg: String = "Problems initialize default variables of the Process.",
       errorCode: ErrorCodes = ErrorCodes.`error-unexpected`

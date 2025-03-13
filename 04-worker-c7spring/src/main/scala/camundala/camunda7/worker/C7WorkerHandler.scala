@@ -93,9 +93,9 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
             exc
           ,
           {
-            case err: MockedOutput =>
+            case err: (MockedOutput | AlreadyHandledError.type) =>
               err
-            case err               =>
+            case err                                            =>
               logger.error(err)
               err
           }
@@ -126,7 +126,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
           ),
           doRetry = true
         )
-      .fold(
+      .fold( // fold the error, so it is not handled twice
         err => logger.error(err),
         _ => ()
       )
@@ -137,9 +137,9 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     ): HelperContext[URIO[Any, CamundalaWorkerError]] =
       checkError(error, generalVariables)
         .flatMap:
-          case err: (UnexpectedError | MockedOutput) =>
+          case err: (UnexpectedError | MockedOutput | AlreadyHandledError.type) =>
             ZIO.succeed(err)
-          case err                                   =>
+          case err                                                              =>
             handleFailure(err, doRetry = true)
 
     end handleError
@@ -180,11 +180,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
              handleSuccess(filtered, generalVariables.manualOutMapping)
            else
              handleBpmnError(error, filtered)
-          )
-            .fold(
-              ex => ex,
-              _ => error
-            )
+          ).map(_ => AlreadyHandledError)
         case (true, false) =>
           ZIO.succeed(HandledRegexNotMatchedError(error))
         case _             =>
@@ -195,7 +191,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     private[worker] def handleBpmnError(
         error: CamundalaWorkerError,
         filteredGeneralVariables: Map[String, Any]
-    ): HelperContext[ZIO[Any, CamundalaWorkerError, Unit]] =
+    ): HelperContext[URIO[Any, Unit]] =
       val errorVars = Map(
         "errorCode" -> error.errorCode,
         "errorMsg"  -> error.errorMsg
@@ -210,8 +206,13 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         )
       ).flatMapError: err =>
         handleFailure(
-          UnexpectedError(s"Problem handling BpmnError to C7: ${err.getMessage}.")
+          UnexpectedError(s"Problem handling BpmnError to C7: ${err.getMessage}."),
+          doRetry = true
         )
+      .fold(
+        ex => (),
+        _ => ()
+      )
     end handleBpmnError
 
     private[worker] def handleFailure(
@@ -233,15 +234,11 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
             Math.max(retries, 0), // < 0 not allowed
             10.seconds.toMillis
           )
-        ).flatMapError: throwable =>
-          handleFailure(
-            UnexpectedError(s"Problem handling Failure to C7: ${throwable.getMessage}.")
-          )
+        ).mapError: throwable =>
+          UnexpectedError(s"Problem handling Failure to C7: ${throwable.getMessage}.")
         .fold(
           err =>
-            logger.warn(s"ERROR fold error: ${err.errorMsg}")
-            err
-          ,
+            err,
           s =>
             error
         )
@@ -262,7 +259,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
       val doRetry     = doRetryMsgs.exists(error.errorMsg.toLowerCase.contains)
 
       summon[camunda.ExternalTask].getRetries match
-        case r if r <= 0 && doRetry => 3
+        case r if r <= 0 && doRetry => 2
         case r                      => r - 1
 
     end calcRetries
