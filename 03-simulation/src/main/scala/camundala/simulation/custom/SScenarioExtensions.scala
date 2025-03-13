@@ -17,17 +17,17 @@ trait SScenarioExtensions extends SStepExtensions:
       processInstance: Option[ProcessInstance]
   )
   object ProcessInstanceOrExecution:
-    given ApiSchema[ProcessInstanceOrExecution] = deriveApiSchema
+    given ApiSchema[ProcessInstanceOrExecution]  = deriveApiSchema
     given InOutCodec[ProcessInstanceOrExecution] = deriveInOutCodec
 
   case class Execution(processInstanceId: String)
   object Execution:
-    given ApiSchema[Execution] = deriveApiSchema
+    given ApiSchema[Execution]  = deriveApiSchema
     given InOutCodec[Execution] = deriveInOutCodec
 
   case class ProcessInstance(id: String)
   object ProcessInstance:
-    given ApiSchema[ProcessInstance] = Schema.derived
+    given ApiSchema[ProcessInstance]  = Schema.derived
     given InOutCodec[ProcessInstance] = deriveInOutCodec
 
   extension (scenario: IsProcessScenario)
@@ -62,13 +62,13 @@ trait SScenarioExtensions extends SStepExtensions:
         data: ScenarioData
     ): ResultType =
       val process = scenario.process
-      val body = CorrelateMessageIn(
+      val body    = CorrelateMessageIn(
         messageName = process.processName,
         tenantId = config.tenantId,
         businessKey = Some(scenario.name),
         processVariables = Some(process.camundaInMap)
       ).asJson.deepDropNullValues.toString
-      val uri = uri"${config.endpoint}/message"
+      val uri     = uri"${config.endpoint}/message"
 
       val request = basicRequest
         .auth()
@@ -81,11 +81,11 @@ trait SScenarioExtensions extends SStepExtensions:
           .as[List[ProcessInstanceOrExecution]]
           .map { pioe =>
             val processInstanceId = pioe match
-              case ProcessInstanceOrExecution(Some(exec), None) :: _ =>
+              case ProcessInstanceOrExecution(Some(exec), None) :: _     =>
                 exec.processInstanceId
               case ProcessInstanceOrExecution(None, Some(procInst)) :: _ =>
                 procInst.id
-              case other => s"PROCESS ID not found in $other"
+              case other                                                 => s"PROCESS ID not found in $other"
             data
               .withProcessInstanceId(processInstanceId)
               .info(
@@ -104,14 +104,14 @@ trait SScenarioExtensions extends SStepExtensions:
 
     private def prepareStartProcess() =
       val process = scenario.process
-      val body = StartProcessIn(
+      val body    = StartProcessIn(
         process.camundaInMap,
         businessKey = Some(scenario.name)
       ).asJson.deepDropNullValues.toString
-      val uri = config.tenantId match
+      val uri     = config.tenantId match
         case Some(tenantId) =>
           uri"${config.endpoint}/process-definition/key/${process.processName}/tenant-id/$tenantId/start"
-        case None =>
+        case None           =>
           uri"${config.endpoint}/process-definition/key/${process.processName}/start"
 
       val request: Request[Either[String, String], Any] = basicRequest
@@ -137,8 +137,8 @@ trait SScenarioExtensions extends SStepExtensions:
           given ScenarioData = data
           for
             given ScenarioData <- scenario.startType match
-              case ProcessStartType.START => scenario.startProcess()
-              case ProcessStartType.MESSAGE => scenario.sendMessage()
+                                    case ProcessStartType.START   => scenario.startProcess()
+                                    case ProcessStartType.MESSAGE => scenario.sendMessage()
             given ScenarioData <- scenario.runSteps()
             given ScenarioData <- scenario.check()
           yield summon[ScenarioData]
@@ -159,8 +159,8 @@ trait SScenarioExtensions extends SStepExtensions:
           given ScenarioData = data
           for
             given ScenarioData <- scenario.startType match
-              case ProcessStartType.START => scenario.startProcess()
-              case ProcessStartType.MESSAGE => scenario.sendMessage()
+                                    case ProcessStartType.START   => scenario.startProcess()
+                                    case ProcessStartType.MESSAGE => scenario.sendMessage()
             given ScenarioData <- scenario.check()
           yield summon[ScenarioData]
           end for
@@ -176,8 +176,8 @@ trait SScenarioExtensions extends SStepExtensions:
           given ScenarioData <- scenario.startProcess()
           given ScenarioData <- scenario.runSteps()
           given ScenarioData <- checkIncident()(
-            summon[ScenarioData].withRequestCount(0)
-          )
+                                  summon[ScenarioData].withRequestCount(0)
+                                )
         yield summon[ScenarioData]
         end for
       }
@@ -213,7 +213,7 @@ trait SScenarioExtensions extends SStepExtensions:
                         s"Incident Message only in Root incident $rootCauseIncidentId"
                       )
                     )
-                  case _ =>
+                  case _                             =>
                     Left(
                       data
                         .error(
@@ -221,7 +221,7 @@ trait SScenarioExtensions extends SStepExtensions:
                         )
                     )
                 }
-            case _ =>
+            case _                                                 =>
               given ScenarioData = data
               scenario.tryOrFail(checkIncident())
           }
@@ -248,14 +248,14 @@ trait SScenarioExtensions extends SStepExtensions:
       given ScenarioData = data
         .info(s"Process '${scenario.name}' startProcess")
         .debug(s"- URI: ${request.uri}")
-      val response = request.send(backend)
+      val response       = request.send(backend)
 
       (response.code.code match
         case scenario.status =>
           Right(
             data.info(s"Status matched for BadScenario (${scenario.status})")
           )
-        case other =>
+        case other           =>
           Left(
             data.error(
               s"Status NOT matched for BadScenario (expected: ${scenario.status}, actual: $other)"
@@ -267,7 +267,7 @@ trait SScenarioExtensions extends SStepExtensions:
             response.body match
               case Left(body) if body.contains(errMsg) =>
                 Right(data.info(s"Body contains correct errorMsg: '$errMsg'"))
-              case msg =>
+              case msg                                 =>
                 Left(
                   data
                     .error(s"Error Message not found in Body.")

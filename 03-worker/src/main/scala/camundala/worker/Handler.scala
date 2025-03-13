@@ -24,7 +24,7 @@ trait WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
     then
       register
       logger.info(s"Worker registered: $topic -> ${worker.getClass.getSimpleName}")
-        logger.debug(prettyString(worker))
+      logger.debug(prettyString(worker))
     else
       logger.info(
         s"Worker NOT registered: $topic -> ${worker.getClass.getSimpleName} (class starts not with $appPackageName)"
@@ -67,7 +67,6 @@ object ValidationHandler:
       override def validate(in: In): Either[ValidatorError, In] =
         funct(in)
 end ValidationHandler
-
 
 type InitProcessFunction =
   EngineContext ?=> Either[InitProcessError, Map[String, Any]]

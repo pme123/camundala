@@ -11,7 +11,7 @@ private lazy val mycompanyCred = RepoCredentials.UserPassword(
   "VALIANT_MVN_REPOSITORY_PASSWORD"
 )
 
-private val mycompanyHost = """https://bin.mycompany.com/artifactory"""
+private val mycompanyHost    = """https://bin.mycompany.com/artifactory"""
 private lazy val releaseRepo = RepoConfig.Artifactory(
   "release",
   mycompanyHost,
