@@ -14,6 +14,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## publish - 2025-03-14
+### Changed 
+- Improvements C7WorkerHandler error handling. - see [Commit](https://github.com/pme123/camundala/commit/60767a4910d5077b1067262a810600dc3a133a5d)
+- Tested C7WorkerHandler / retries. - see [Commit](https://github.com/pme123/camundala/commit/d67907c02bc3e23098e7eefd987f92672b20e237)
+- Version with ZIO C7WorkerHandler / retries. - see [Commit](https://github.com/pme123/camundala/commit/0a6392b62ae488d928791d88fb4f0a224a93e0d3)
+- Updated Versions. - see [Commit](https://github.com/pme123/camundala/commit/7027dd5e7aef4abf37c7504634e9fc4023a2c965)
+- State of work with C7WorkerHandler for retries. - see [Commit](https://github.com/pme123/camundala/commit/b710f44dcfc4f9de204a59444985b9a63680a8ce)
+- Adjusted printStackTrace - see [Commit](https://github.com/pme123/camundala/commit/ae8c9fd4cf03313a4a33fd2e366804edf19441f6)
+
+## 1.30.37 - 2025-03-14
+### Changed 
+- Improvements C7WorkerHandler error handling. - see [Commit](https://github.com/pme123/camundala/commit/60767a4910d5077b1067262a810600dc3a133a5d)
+- Tested C7WorkerHandler / retries. - see [Commit](https://github.com/pme123/camundala/commit/d67907c02bc3e23098e7eefd987f92672b20e237)
+- Version with ZIO C7WorkerHandler / retries. - see [Commit](https://github.com/pme123/camundala/commit/0a6392b62ae488d928791d88fb4f0a224a93e0d3)
+- Updated Versions. - see [Commit](https://github.com/pme123/camundala/commit/7027dd5e7aef4abf37c7504634e9fc4023a2c965)
+- State of work with C7WorkerHandler for retries. - see [Commit](https://github.com/pme123/camundala/commit/b710f44dcfc4f9de204a59444985b9a63680a8ce)
+- Adjusted printStackTrace - see [Commit](https://github.com/pme123/camundala/commit/ae8c9fd4cf03313a4a33fd2e366804edf19441f6)
 
 ## 1.30.36 - 2025-03-05
 ### Changed 

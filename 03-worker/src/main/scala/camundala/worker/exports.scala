@@ -47,6 +47,8 @@ sealed trait CamundalaWorkerError extends Throwable:
   def errorMsg: String
 
   def causeMsg = s"$errorCode: $errorMsg"
+  
+  override def toString(): String = causeMsg
 end CamundalaWorkerError
 
 sealed trait ErrorWithOutput extends CamundalaWorkerError:
@@ -71,6 +73,10 @@ object CamundalaWorkerError:
   ) extends ErrorWithOutput:
     override val isMock = true
   end MockedOutput
+
+  case object AlreadyHandledError extends CamundalaWorkerError:
+    val errorMsg: String      = "Error already handled."
+    val errorCode: ErrorCodes = ErrorCodes.`error-already-handled`
 
   case class InitProcessError(
       errorMsg: String = "Problems initialize default variables of the Process.",
