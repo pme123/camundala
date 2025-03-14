@@ -248,7 +248,7 @@ case class TestExternalTask(
 
   def getProcessDefinitionVersionTag = ???
 
-  def getProcessInstanceId = ???
+  def getProcessInstanceId = "213423-1234-1234"
 
   def getRetries = retries
 
