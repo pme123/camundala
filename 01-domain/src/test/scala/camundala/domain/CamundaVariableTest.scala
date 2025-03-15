@@ -1,8 +1,9 @@
-package camundala.bpmn
+package camundala.domain
 
-import camundala.bpmn.CamundaVariable.*
 import camundala.domain.*
+import camundala.domain.CamundaVariable.*
 import munit.FunSuite
+
 import java.time.LocalDate
 
 class CamundaVariableTest extends FunSuite:

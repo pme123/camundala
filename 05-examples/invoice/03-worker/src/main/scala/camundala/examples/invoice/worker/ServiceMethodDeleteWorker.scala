@@ -1,6 +1,5 @@
 package camundala.examples.invoice.worker
 
-import camundala.bpmn.ServiceTask
 import camundala.domain.*
 import camundala.examples.invoice.bpmn.ServiceMethodDeleteApi.{*, given}
 import camundala.worker.*

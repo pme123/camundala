@@ -1,14 +1,13 @@
-package camundala
-package bpmn
+package camundala.domain
 
 trait BpmnDsl:
   def descr: String
   def companyDescr: String = ""
 
-  private[bpmn] def msgNameDescr(messageName: String) =
+  private[domain] def msgNameDescr(messageName: String) =
     bpmnDescr(s"- _messageName_: `$messageName`")
 
-  private[bpmn] def userTaskDescr(messageName: String) =
+  private[domain] def userTaskDescr(messageName: String) =
     bpmnDescr(s"- _taskDefinitionKey_: `$messageName`")
 
   private def bpmnDescr(keyLabel: String) =

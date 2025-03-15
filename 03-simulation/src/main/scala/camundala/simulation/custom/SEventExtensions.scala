@@ -2,6 +2,7 @@ package camundala.simulation
 package custom
 
 import camundala.bpmn.*
+import camundala.domain.{CorrelateMessageIn, SendSignalIn, SignalEvent}
 import io.circe.*
 import sttp.client3.*
 

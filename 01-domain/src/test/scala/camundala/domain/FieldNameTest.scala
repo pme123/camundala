@@ -1,4 +1,6 @@
-package camundala.bpmn
+package camundala.domain
+
+import camundala.domain.allFieldNames
 
 import scala.reflect.Enum
 

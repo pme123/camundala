@@ -1,5 +1,4 @@
-package camundala
-package bpmn
+package camundala.domain
 
 import camundala.domain.*
 

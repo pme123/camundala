@@ -1,6 +1,8 @@
-package camundala.bpmn
+package camundala.domain
 
-class exportsTest extends munit.FunSuite:
+import camundala.domain.shortenName
+
+class bpmnTest extends munit.FunSuite:
 
   test("mycompany-myproject-myprocessV1-GetMyWorker NEW"):
     assertEquals(
@@ -63,4 +65,4 @@ class exportsTest extends munit.FunSuite:
 
 
 
-end exportsTest
+end bpmnTest

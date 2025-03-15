@@ -1,4 +1,4 @@
-package camundala.bpmn
+package camundala.domain
 
 import scala.quoted.{Expr, Quotes, Type}
 

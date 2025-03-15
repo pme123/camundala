@@ -1,6 +1,7 @@
 package camundala.examples.demos.bpmn
 
 import camundala.bpmn.*
+import camundala.domain.{BpmnProcessDsl, BpmnTimerEventDsl}
 
 object TimerExample extends BpmnProcessDsl:
 

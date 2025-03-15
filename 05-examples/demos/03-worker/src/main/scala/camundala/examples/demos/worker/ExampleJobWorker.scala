@@ -1,6 +1,5 @@
 package camundala.examples.demos.worker
 
-import camundala.bpmn.CustomTask
 import camundala.domain.*
 import camundala.examples.demos.newWorker.CompanyBpmnCustomTaskDsl
 import camundala.examples.demos.worker.ExampleJobWorker.*

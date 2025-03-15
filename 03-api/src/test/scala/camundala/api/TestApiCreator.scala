@@ -2,8 +2,7 @@ package camundala
 package api
 
 import camundala.api.Sample.{SampleOut, standardSample}
-import camundala.bpmn.{BpmnDsl, BpmnProcessDsl, InOutDescr, Process, ProcessLabels}
-import camundala.domain.*
+import camundala.domain.{BpmnDsl, BpmnProcessDsl, InOutDescr, Process, ProcessLabels, *}
 
 object TestApiCreator extends DefaultApiCreator, App:
 

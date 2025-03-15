@@ -1,6 +1,7 @@
 package camundala.examples.demos.bpmn
 
 import camundala.bpmn.*
+import camundala.domain.BpmnProcessDsl
 
 object BadScenarioExample extends BpmnProcessDsl:
   val processName = "badScenario-example"

@@ -1,7 +1,7 @@
 package camundala.helper.dev.publish
 
 import camundala.api.ApiConfig
-import camundala.bpmn.diagramPath
+import camundala.domain.diagramPath
 import camundala.helper.util.{Helpers, PublishConfig}
 import com.github.sardine.SardineFactory
 import com.github.sardine.impl.SardineException

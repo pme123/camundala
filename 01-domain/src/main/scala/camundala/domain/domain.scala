@@ -302,14 +302,13 @@ def outputServiceMockDescr[ServiceOut: InOutEncoder](mock: ServiceOut) =
 @deprecated(deprecatedDescr)
 val handledErrorsDescr =
   "A comma separated list of HTTP-Status-Codes, that are modelled in the BPMN as Business-Exceptions - see Outputs. z.B: `404,500`"
-val regexHandledErrorsDescr =
-  """If you specified _handledErrors_, you can specify Regexes that all must match the error messages.
-Otherwise the error is thrown.
-  
-You can use a JSON Array of Strings or a comma-separated String.  
-
-Example: `['java.sql.SQLException', '"errorNr":20000']` or 'java.sql.SQLException,"errorNr":20000'
-"""
+val regexHandledErrorsDescr = """If you specified _handledErrors_, you can specify Regexes that all must match the error messages.
+    |Otherwise the error is thrown.
+    |  
+    |You can use a JSON Array of Strings or a comma-separated String.  
+    |
+    |Example: `['java.sql.SQLException', '"errorNr":20000']` or 'java.sql.SQLException,"errorNr":20000'
+    |""".stripMargin
 
 extension (str: String)
   // changes ids to nice strings - the-coolDaddy -> The Cool Daddy

@@ -22,7 +22,7 @@ lazy val root = project
   .aggregate(
     docs,
     domain,
-    bpmn,
+    gateway,
     api,
     dmn,
     simulation,
@@ -63,7 +63,10 @@ lazy val domain = project
   .settings(unitTestSettings)
   .settings(
     autoImportSetting,
-    libraryDependencies ++= tapirDependencies,
+    libraryDependencies ++= tapirDependencies ++Seq(
+      osLib,
+      chimney // mapping
+    ),
     buildInfoPackage := "camundala",
     buildInfoKeys    := Seq[BuildInfoKey](
       organization,
@@ -80,17 +83,14 @@ lazy val domain = project
     )
   ).enablePlugins(BuildInfoPlugin)
 // layer 02
-lazy val bpmn   = project
-  .in(file("./02-bpmn"))
+lazy val gateway   = project
+  .in(file("./02-gateway"))
   .configure(publicationSettings)
-  .settings(projectSettings("bpmn"))
+  .settings(projectSettings("gateway"))
   .settings(unitTestSettings)
   .settings(
     autoImportSetting,
-    libraryDependencies ++= Seq(
-      osLib,
-      chimney // mapping
-    )
+    libraryDependencies ++= Seq()
   )
   .dependsOn(domain)
 
@@ -108,7 +108,7 @@ lazy val api = project
         "com.typesafe"            % "config"    % typesafeConfigVersion
       )
   )
-  .dependsOn(bpmn)
+  .dependsOn(gateway)
 
 lazy val dmn = project
   .in(file("./03-dmn"))
@@ -121,7 +121,7 @@ lazy val dmn = project
       "io.github.pme123" %% "camunda-dmn-tester-shared" % dmnTesterVersion
     )
   )
-  .dependsOn(bpmn)
+  .dependsOn(gateway)
 
 lazy val worker = project
   .in(file("./03-worker"))
@@ -137,7 +137,7 @@ lazy val worker = project
       zioSlf4jDependency,
     )
   )
-  .dependsOn(bpmn)
+  .dependsOn(gateway)
 
 lazy val simulation = project
   .in(file("./03-simulation"))
@@ -150,7 +150,7 @@ lazy val simulation = project
       "org.scala-sbt" % "test-interface" % testInterfaceVersion
     )
   )
-  .dependsOn(bpmn)
+  .dependsOn(gateway)
 
 // layer 04
 lazy val helper = project
@@ -214,7 +214,7 @@ lazy val camunda = project
       "org.camunda.spin"           % "camunda-spin-dataformat-json-jackson"                 % camundaSpinVersion
     )
   )
-  .dependsOn(bpmn)
+  .dependsOn(gateway)
 
 lazy val camunda8 = project
   .in(file("./04-c8-spring"))
@@ -224,7 +224,7 @@ lazy val camunda8 = project
     autoImportSetting,
     libraryDependencies ++= zeebeDependencies
   )
-  .dependsOn(bpmn)
+  .dependsOn(gateway)
 // end not in use
 
 // EXAMPLES
@@ -248,7 +248,7 @@ lazy val exampleInvoiceBpmn = project
   .settings(projectSettings("example-invoice-bpmn"))
   .configure(preventPublication)
   .settings(autoImportSetting)
-  .dependsOn(bpmn)
+  .dependsOn(gateway)
 
 lazy val exampleInvoiceApi = project
   .in(file("./05-examples/invoice/03-api"))
@@ -289,7 +289,7 @@ lazy val exampleInvoiceC7 = project
     autoImportSetting,
     libraryDependencies ++= camundaDependencies
   )
-  .dependsOn(bpmn, exampleInvoiceBpmn, camunda)
+  .dependsOn(gateway, exampleInvoiceBpmn, camunda)
 
 // not in use
 lazy val exampleInvoiceC8 = project
@@ -319,7 +319,7 @@ lazy val exampleTwitterBpmn = project
   .settings(projectSettings("example-twitter-bpmn"))
   .configure(preventPublication)
   .settings(autoImportSetting)
-  .dependsOn(bpmn)
+  .dependsOn(gateway)
 
 lazy val exampleTwitterApi = project
   .in(file("./05-examples/twitter/03-api"))
@@ -347,7 +347,7 @@ lazy val exampleTwitterC7 = project
     libraryDependencies ++= camundaDependencies :+
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
-  .dependsOn(bpmn, exampleTwitterBpmn, camunda)
+  .dependsOn(gateway, exampleTwitterBpmn, camunda)
 
 // not in use
 lazy val exampleTwitterC8 = project
@@ -359,7 +359,7 @@ lazy val exampleTwitterC8 = project
     libraryDependencies +=
       "org.twitter4j" % "twitter4j-core" % twitter4jVersion
   )
-  .dependsOn(bpmn, api, /*exampleTwitterBpmn,*/ camunda8)
+  .dependsOn(gateway, api, /*exampleTwitterBpmn,*/ camunda8)
 
 // INVOICE
 lazy val exampleDemos = project
@@ -380,7 +380,7 @@ lazy val exampleDemosBpmn = project
   .settings(projectSettings("example-demos-bpmn"))
   .configure(preventPublication)
   .settings(autoImportSetting)
-  .dependsOn(bpmn)
+  .dependsOn(gateway)
 
 lazy val exampleDemosApi = project
   .in(file("./05-examples/demos/03-api"))
@@ -421,7 +421,7 @@ lazy val exampleDemosC7 = project
     autoImportSetting,
     libraryDependencies ++= camundaDependencies
   )
-  .dependsOn(bpmn, exampleDemosBpmn, camunda)
+  .dependsOn(gateway, exampleDemosBpmn, camunda)
 
 // start company docs example
 import com.typesafe.config.ConfigFactory

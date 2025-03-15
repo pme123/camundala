@@ -1,7 +1,5 @@
-package camundala
-package bpmn
+package camundala.domain
 
-import domain.*
 import io.circe.HCursor
 
 @description(

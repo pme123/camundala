@@ -1,7 +1,4 @@
-package camundala
-package bpmn
-
-import domain.*
+package camundala.domain
 
 @description(
   "A JSON object with the following properties: (at least an empty JSON object {} or an empty request body)"

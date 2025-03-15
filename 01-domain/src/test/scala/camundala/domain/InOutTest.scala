@@ -1,7 +1,6 @@
-package camundala.bpmn
+package camundala.domain
 
 import camundala.domain.*
-
 import munit.FunSuite
 
 class InOutTest extends FunSuite:

@@ -1,7 +1,6 @@
 package camundala.api
 
 import camundala.BuildInfo
-import camundala.bpmn.InputParams
 import camundala.domain.*
 import io.circe.Encoder
 import sttp.apispec.openapi.*

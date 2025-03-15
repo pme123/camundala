@@ -18,16 +18,16 @@ We generate a description with the API Documentation under [_General Variables_]
 You can override the list of variables, you support in your _ApiProjectCreator_, like
 
 ```scala
-import camundala.bpmn.InputParams.*
+import camundala.domain.InputParams.*
 
 override def supportedVariables: Seq[InputParams] = Seq(
-    servicesMocked,
-    outputMock,
-    outputServiceMock,
-    handledErrors,
-    regexHandledErrors,
-    impersonateUserId
-  )
+  servicesMocked,
+  outputMock,
+  outputServiceMock,
+  handledErrors,
+  regexHandledErrors,
+  impersonateUserId
+)
 ```
 
 @:callout(info)

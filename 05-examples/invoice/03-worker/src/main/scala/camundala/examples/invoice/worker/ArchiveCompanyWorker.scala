@@ -1,6 +1,6 @@
 package camundala.examples.invoice.worker
 
-import camundala.bpmn.CustomTask
+import camundala.domain.CustomTask
 import camundala.examples.invoice.bpmn.ArchiveInvoice.*
 import camundala.worker.CamundalaWorkerError.CustomError
 import camundala.worker.CustomWorkerDsl

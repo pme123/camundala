@@ -1,5 +1,4 @@
-package camundala
-package bpmn
+package camundala.domain
 
 import camundala.domain.*
 import io.circe
@@ -7,7 +6,7 @@ import io.circe.HCursor
 import sttp.tapir.*
 import sttp.tapir.SchemaType.SchemaWithValue
 
-import java.time.{Instant, LocalDate, LocalDateTime, ZoneId, ZonedDateTime}
+import java.time.*
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
 

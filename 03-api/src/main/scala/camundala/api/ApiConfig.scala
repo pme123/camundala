@@ -1,7 +1,7 @@
 package camundala
 package api
 
-import camundala.bpmn.diagramPath
+import camundala.domain.diagramPath
 import sttp.apispec.openapi.Contact
 
 case class ApiConfig(

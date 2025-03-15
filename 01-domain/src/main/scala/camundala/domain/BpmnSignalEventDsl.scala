@@ -1,26 +1,25 @@
-package camundala.bpmn
+package camundala.domain
 
 import camundala.domain.*
 
 import scala.reflect.ClassTag
 
-trait BpmnMessageEventDsl extends BpmnDsl:
+trait BpmnSignalEventDsl extends BpmnDsl:
 
   def messageName: String
 
-  def messageEvent[
+  def signalEvent[
       Msg <: Product: InOutEncoder: InOutDecoder: Schema
   ](
-      in: Msg = NoInput(),
-      id: Option[String] = None
-  ): MessageEvent[Msg] =
-    MessageEvent(
+      in: Msg = NoInput()
+  ): SignalEvent[Msg] =
+    SignalEvent(
       messageName,
       InOutDescr(
-        id.getOrElse(messageName),
+        messageName,
         in,
         NoOutput(),
         msgNameDescr(messageName)
       )
     )
-end BpmnMessageEventDsl
+end BpmnSignalEventDsl

@@ -1,8 +1,7 @@
 package camundala.examples.demos.simulation
 
-import camundala.bpmn.GenericExternalTask.ProcessStatus
-import camundala.bpmn.{ErrorCodes, InputParams}
-import camundala.domain.MockedServiceResponse
+import camundala.domain.GenericExternalTask.ProcessStatus
+import camundala.domain.{ErrorCodes, InputParams, MockedServiceResponse}
 import camundala.examples.demos.bpmn.*
 import camundala.examples.demos.bpmn.EnumWorkerExample.*
 import camundala.simulation.*

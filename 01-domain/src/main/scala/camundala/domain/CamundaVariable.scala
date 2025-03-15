@@ -1,13 +1,11 @@
-package camundala
-package bpmn
+package camundala.domain
 
 import camundala.domain.*
 import io.circe.*
 import io.circe.Json.*
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import scala.annotation.tailrec
-import java.time.LocalDate
 
 sealed trait CamundaVariable:
   

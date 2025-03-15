@@ -1,7 +1,6 @@
 package camundala.api
 
 import os.CommandResult
-import camundala.bpmn.shortenName
 import camundala.domain.*
 
 val catalogFileName = "catalog.md"
