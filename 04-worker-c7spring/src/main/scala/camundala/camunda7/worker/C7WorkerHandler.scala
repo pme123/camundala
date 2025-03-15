@@ -5,7 +5,8 @@ import camundala.bpmn.*
 import camundala.domain.*
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
-import jakarta.annotation.PostConstruct
+import jakarta.annotation.{PostConstruct, PreDestroy}
+import org.camunda.bpm.client.topic.TopicSubscription
 import org.camunda.bpm.client.{ExternalTaskClient, task as camunda}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import zio.{URIO, Unsafe, ZIO}
@@ -45,7 +46,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         ).future
   end execute
 
-  private def run(externalTaskService: camunda.ExternalTaskService)(using
+  private[worker] def run(externalTaskService: camunda.ExternalTaskService)(using
       externalTask: camunda.ExternalTask
   ): ZIO[Any, Throwable, Unit] =
     for
@@ -61,14 +62,21 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         )
     yield ()
 
+  private lazy val subscription: TopicSubscription =
+    externalTaskClient
+      .subscribe(topic)
+      .handler(this)
+      .open()
+
   @PostConstruct
   def registerHandler(): Unit =
     registerHandler:
-      externalTaskClient
-        .subscribe(topic)
-        .handler(this)
-        .open()
-  end registerHandler
+      subscription
+
+  @PreDestroy
+  def unregisterHandler(): Unit =
+    logger.info(s"Unregistering C7 Worker: $topic")
+    subscription.close()
 
   private def executeWorker(
       externalTaskService: camunda.ExternalTaskService
@@ -121,7 +129,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         .flatMap:
           case _: (UnexpectedError | MockedOutput | AlreadyHandledError.type) =>
             ZIO.unit
-          case err                                                              =>
+          case err                                                            =>
             handleFailure(err, doRetry = true)
 
     end handleError
@@ -199,28 +207,29 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         error: CamundalaWorkerError,
         doRetry: Boolean = false
     ): HelperContext[URIO[Any, Unit]] =
-      val taskId      = summon[camunda.ExternalTask].getId
+      val taskId            = summon[camunda.ExternalTask].getId
       val processInstanceId = summon[camunda.ExternalTask].getProcessInstanceId
-      val businessKey = summon[camunda.ExternalTask].getBusinessKey
-      val retries     = calcRetries(error)
+      val businessKey       = summon[camunda.ExternalTask].getBusinessKey
+      val retries           = calcRetries(error)
 
       if retries == 0 then logger.error(error)
-      logError(s"Handle Failure for taskId: $taskId | processInstanceId: $processInstanceId | doRetry: $doRetry | retries: $retries | $error") *>
+      logError(
+        s"Handle Failure for taskId: $taskId | processInstanceId: $processInstanceId | doRetry: $doRetry | retries: $retries | $error"
+      ) *>
         (if retries >= 0 || doRetry then
-          ZIO.attempt(
-            externalTaskService.handleFailure(
-              taskId,
-              error.causeMsg,
-              s" ${error.causeMsg}\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
-              Math.max(retries, 0), // < 0 not allowed
-              10.seconds.toMillis
-            )
-          ).flatMapError: throwable =>
-            logError(s"Problem handling Failure to C7: ${throwable.getMessage}.")
-          .ignore
-        else
-          ZIO.succeed(error)
-        )
+           ZIO.attempt(
+             externalTaskService.handleFailure(
+               taskId,
+               error.causeMsg,
+               s" ${error.causeMsg}\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
+               Math.max(retries, 0), // < 0 not allowed
+               10.seconds.toMillis
+             )
+           ).flatMapError: throwable =>
+             logError(s"Problem handling Failure to C7: ${throwable.getMessage}.")
+           .ignore
+         else
+           ZIO.unit)
     end handleFailure
 
     private[worker] def calcRetries(
@@ -228,9 +237,9 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     ): HelperContext[Int] =
       val doRetryMsgs = Seq(
         "Entity was updated by another transaction concurrently",
-        "An exception occurred in the persistence layer",
-      //  "Service Unavailable",
-      //  "Gateway Timeout"
+        "An exception occurred in the persistence layer"
+        //  "Service Unavailable",
+        //  "Gateway Timeout"
       ).map(_.toLowerCase)
       val doRetry     = doRetryMsgs.exists(error.errorMsg.toLowerCase.contains)
 
@@ -239,7 +248,8 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         case r                      => r - 1
 
     end calcRetries
-    private def filteredOutput(
+    
+    private[worker] def filteredOutput(
         outputVariables: Seq[String],
         allOutputs: Map[String, Any]
     ): Map[String, Any] =
