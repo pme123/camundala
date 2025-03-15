@@ -1,7 +1,6 @@
 package camundala.simulation
 package custom
 
-import camundala.bpmn.*
 import camundala.domain.*
 import io.circe.*
 import sttp.client3.*

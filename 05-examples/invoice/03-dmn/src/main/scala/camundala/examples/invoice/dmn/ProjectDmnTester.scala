@@ -2,7 +2,6 @@ package camundala
 package examples.invoice
 package dmn
 
-import camundala.bpmn.*
 import camundala.domain.*
 import camundala.dmn.*
 import bpmn.InvoiceReceipt.{InvoiceAssignApproverDMN, InvoiceAssignApproverDmnUnit}

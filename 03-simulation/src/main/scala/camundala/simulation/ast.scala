@@ -1,7 +1,6 @@
 package camundala
 package simulation
 
-import camundala.bpmn.*
 import camundala.domain
 import camundala.domain.{CamundaVariable, DecisionDmn, ExternalTask, InOut, InOutDescr, MessageEvent, ProcessOrExternalTask, SignalEvent, TimerEvent, UserTask}
 

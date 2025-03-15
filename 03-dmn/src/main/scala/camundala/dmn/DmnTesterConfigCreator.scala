@@ -2,7 +2,6 @@ package camundala
 package dmn
 
 import camundala.domain.*
-import camundala.bpmn.*
 import pme123.camunda.dmn.tester.shared.*
 
 import java.io.FileNotFoundException

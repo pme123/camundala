@@ -1,6 +1,5 @@
 package camundala.examples.demos.newWorker
 
-import camundala.bpmn.*
 import camundala.domain.{BpmnCustomTaskDsl, BpmnDecisionDsl, BpmnDsl, BpmnMessageEventDsl, BpmnProcessDsl, BpmnServiceTaskDsl, BpmnSignalEventDsl, BpmnTimerEventDsl, BpmnUserTaskDsl}
 
 trait CompanyBpmnDsl extends BpmnDsl:

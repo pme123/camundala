@@ -1,7 +1,6 @@
 package camundala
 package worker
 
-import camundala.bpmn.*
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.ServiceError
 import zio.ZIO

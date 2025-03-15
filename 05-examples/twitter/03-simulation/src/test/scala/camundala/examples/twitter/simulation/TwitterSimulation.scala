@@ -2,7 +2,6 @@ package camundala.examples.twitter
 package simulation
 
 import bpmn.TwitterApi.*
-import camundala.bpmn.*
 import camundala.simulation.*
 import camundala.simulation.custom.CustomSimulation
 

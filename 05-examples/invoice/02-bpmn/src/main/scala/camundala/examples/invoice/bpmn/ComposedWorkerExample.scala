@@ -1,6 +1,5 @@
 package camundala.examples.invoice.bpmn
 
-import camundala.bpmn.*
 import camundala.domain.*
 
 // example for service API description

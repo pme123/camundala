@@ -1,7 +1,6 @@
 package camundala
 package api
 
-import camundala.bpmn.*
 import camundala.domain.*
 import sttp.tapir.EndpointIO
 import sttp.tapir.json.circe.*

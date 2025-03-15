@@ -1,8 +1,8 @@
 package camundala.camunda7.worker
 
-import camundala.bpmn.{ErrorCodes, GeneralVariables, InOutDescr, Process, ProcessLabels}
+
 import camundala.camunda7.worker.context.DefaultCamunda7Context
-import camundala.domain.{NoInput, NoOutput}
+import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 import camundala.worker.*
 import zio.*

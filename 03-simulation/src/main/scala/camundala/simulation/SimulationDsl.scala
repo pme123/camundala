@@ -1,7 +1,6 @@
 package camundala
 package simulation
 
-import camundala.bpmn.*
 import camundala.domain.*
 
 trait SimulationDsl[T] extends TestOverrideExtensions:

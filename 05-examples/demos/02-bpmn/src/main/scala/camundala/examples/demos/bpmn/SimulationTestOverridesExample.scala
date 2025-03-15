@@ -1,6 +1,5 @@
 package camundala.examples.demos.bpmn
 
-import camundala.bpmn.*
 import camundala.domain.*
 
 object SimulationTestOverridesExample extends BpmnProcessDsl:

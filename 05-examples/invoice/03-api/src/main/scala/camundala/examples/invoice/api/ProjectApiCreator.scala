@@ -3,7 +3,6 @@ package camundala.examples.invoice
 package api
 
 import camundala.api.*
-import camundala.bpmn.*
 import camundala.domain.*
 import camundala.examples.invoice.bpmn.*
 import camundala.examples.invoice.bpmn.InvoiceReceipt.*
