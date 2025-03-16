@@ -29,6 +29,7 @@ lazy val root = project
     worker,
     helper,
     // implementations
+    gatewayZio,
     camunda7Worker,
     camunda8Worker,
     camunda7ZioWorker,
@@ -129,6 +130,22 @@ lazy val worker = project
   .settings(
     projectSettings("worker"),
     unitTestSettings,
+    autoImportSetting,
+    libraryDependencies ++= Seq(
+      sttpDependency,
+      scaffeineDependency,
+      zioDependency,
+      zioSlf4jDependency,
+    )
+  )
+  .dependsOn(gateway)
+
+lazy val gatewayZio = project
+  .in(file("./03-gateway-zio"))
+  .configure(publicationSettings)
+  .settings(projectSettings("gateway-zio"))
+  .settings(unitTestSettings)
+  .settings(
     autoImportSetting,
     libraryDependencies ++= Seq(
       sttpDependency,

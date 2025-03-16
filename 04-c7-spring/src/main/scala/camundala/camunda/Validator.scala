@@ -1,7 +1,6 @@
 package camundala.camunda
 
-import camundala.bpmn.{*, given}
-import camundala.domain.*
+import camundala.domain.{*, given}
 
 import io.circe.generic.auto.*
 import org.camunda.bpm.engine.delegate.DelegateExecution

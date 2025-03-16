@@ -1,7 +1,6 @@
 package camundala
 package simulation
 
-import bpmn.*
 import camundala.domain.CamundaVariable.*
 import domain.*
 

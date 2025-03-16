@@ -1,7 +1,6 @@
 package camundala
 package camunda8
 
-import bpmn.*
 import domain.*
 import CamundaVariable.CJson
 import com.fasterxml.jackson.databind.ObjectMapper

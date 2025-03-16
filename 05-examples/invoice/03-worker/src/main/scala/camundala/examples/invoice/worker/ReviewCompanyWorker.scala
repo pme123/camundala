@@ -1,9 +1,8 @@
 package camundala.examples.invoice.worker
 
-import camundala.bpmn
 import camundala.domain.Process
 import camundala.examples.invoice.bpmn.ReviewInvoice.*
-import camundala.worker.CamundalaWorkerError.{InitProcessError, ValidatorError}
+import camundala.worker.CamundalaWorkerError.ValidatorError
 import camundala.worker.InitWorkerDsl
 import org.springframework.context.annotation.Configuration
 
