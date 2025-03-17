@@ -154,16 +154,16 @@
           </li>
         </ul>
         <p>You can override the list of variables, you support in your <em>ApiProjectCreator</em>, like</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">bpmn</span><span>.</span><span class="type-name">InputParams</span><span>.*
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">camundala</span><span>.</span><span class="identifier">domain</span><span>.</span><span class="type-name">InputParams</span><span>.*
 
 </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">supportedVariables</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">InputParams</span><span>] = </span><span class="type-name">Seq</span><span>(
-    </span><span class="identifier">servicesMocked</span><span>,
-    </span><span class="identifier">outputMock</span><span>,
-    </span><span class="identifier">outputServiceMock</span><span>,
-    </span><span class="identifier">handledErrors</span><span>,
-    </span><span class="identifier">regexHandledErrors</span><span>,
-    </span><span class="identifier">impersonateUserId</span><span>
-  )</span></code></pre>
+  </span><span class="identifier">servicesMocked</span><span>,
+  </span><span class="identifier">outputMock</span><span>,
+  </span><span class="identifier">outputServiceMock</span><span>,
+  </span><span class="identifier">handledErrors</span><span>,
+  </span><span class="identifier">regexHandledErrors</span><span>,
+  </span><span class="identifier">impersonateUserId</span><span>
+)</span></code></pre>
         <div class="callout info">
           <i class="icofont-laika info">&#xef4e;</i>
           <p>If you use our Workers - you must use the predefined Variables.</p>

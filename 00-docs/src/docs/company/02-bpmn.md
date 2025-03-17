@@ -19,7 +19,7 @@ Provide some Company specific things for the BPMN DSL, like additional Documenta
 Example:
 
 ```scala mdoc
-import camundala.bpmn.BpmnDsl
+import camundala.domain.BpmnDsl
 
 trait CompanyBpmnDsl extends BpmnDsl:
 

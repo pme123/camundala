@@ -249,6 +249,7 @@ lazy val camunda8 = project
 // EXAMPLES
 // INVOICE
 lazy val exampleInvoice = project
+  .configure(preventPublication)
   .aggregate(
     exampleInvoiceBpmn,
     exampleInvoiceApi,
@@ -319,6 +320,7 @@ lazy val exampleInvoiceC8 = project
 
 // TWITTER
 lazy val exampleTwitter = project
+  .configure(preventPublication)
   .aggregate(
     exampleTwitterBpmn,
     exampleTwitterApi,
@@ -376,6 +378,7 @@ lazy val exampleTwitterC8 = project
 
 // DEMO
 lazy val exampleDemos = project
+  .configure(preventPublication)
   .aggregate(
     exampleDemosBpmn,
     exampleDemosApi,

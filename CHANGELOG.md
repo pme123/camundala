@@ -23,6 +23,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - State of work with C7WorkerHandler for retries. - see [Commit](https://github.com/pme123/camundala/commit/b710f44dcfc4f9de204a59444985b9a63680a8ce)
 - Adjusted printStackTrace - see [Commit](https://github.com/pme123/camundala/commit/ae8c9fd4cf03313a4a33fd2e366804edf19441f6)
 
+
+## 1.30.39 - 2025-03-17
+### Changed 
+- State of work gateway. - see [Commit](https://github.com/pme123/camundala/commit/8d95b17010ba0008870e6a2127cea3f5d56cc634)
+- Increased lockDuration to 5 minutes in C7WorkerHandler. - see [Commit](https://github.com/pme123/camundala/commit/f613aeb91965a67197c6b1dd800386c557e930d3)
+- Added api services impl using json services to gateway module. - see [Commit](https://github.com/pme123/camundala/commit/1d79c1bbcfbda1b6bcb36507cc935f58f134bb2f)
+- Added json services to gateway module. - see [Commit](https://github.com/pme123/camundala/commit/601039eb8488772c0a3de84a4142af425e18d606)
+- Started gateway zio module. - see [Commit](https://github.com/pme123/camundala/commit/c5c5fc03e2336109ad1e01671a95db73dd6df4d1)
+- Started gateway module. - see [Commit](https://github.com/pme123/camundala/commit/91a4eb3119c38b6ce834ae3b9511cb14956cfcc9)
+- Merge bpmn module into domain module. - see [Commit](https://github.com/pme123/camundala/commit/77f7ec27acd2cab9605a771bdff99fe0f26c6cb7)
+- Merge bpmn module into domain module. - see [Commit](https://github.com/pme123/camundala/commit/f1668b6e29cfb0dce29cf13af0b42cfaf7f6801e)
+- Merge bpmn module into domain module. - see [Commit](https://github.com/pme123/camundala/commit/fb7c452763c6e04d17a71cd0209fe8e158672c83)
+- Improvements C7WorkerHandler. - see [Commit](https://github.com/pme123/camundala/commit/516ca3ca856b34fe95d54bf60c7dcf83096e6c17)
+
 ## 1.30.37 - 2025-03-14
 ### Changed 
 - Improvements C7WorkerHandler error handling. - see [Commit](https://github.com/pme123/camundala/commit/60767a4910d5077b1067262a810600dc3a133a5d)
