@@ -1,6 +1,5 @@
 package camundala.examples.invoice.bpmn
 
-import camundala.bpmn.*
 import camundala.domain.*
 import camundala.examples.invoice.bpmn.ReviewInvoice.Out
 

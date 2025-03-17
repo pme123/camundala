@@ -10,8 +10,7 @@ case class DmnGenerator()(using config: DevConfig):
     s"""package ${config.projectPackage}
        |package dmn
        |
-       |//import bpmn.*
-       |
+       |//       |
        |// dmn/run
        |object ProjectDmnTester extends CompanyDmnTester:
        |

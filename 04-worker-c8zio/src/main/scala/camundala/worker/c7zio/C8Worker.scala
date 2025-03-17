@@ -1,6 +1,5 @@
 package camundala.worker.c7zio
 
-import camundala.bpmn.GeneralVariables
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 import camundala.worker.*

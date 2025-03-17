@@ -1,7 +1,6 @@
 package camundala.worker.c7zio
 
-import camundala.bpmn.{*, given}
-import camundala.domain.*
+import camundala.domain.{*, given}
 import camundala.worker.*
 import camundala.worker.CamundalaWorkerError.*
 import io.circe.Decoder.Result

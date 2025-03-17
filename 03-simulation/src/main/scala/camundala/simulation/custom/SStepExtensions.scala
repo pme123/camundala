@@ -1,7 +1,7 @@
 package camundala.simulation
 package custom
 
-import camundala.bpmn.*
+import camundala.domain.CamundaProperty
 import sttp.client3.*
 
 trait SStepExtensions

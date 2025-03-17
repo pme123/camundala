@@ -1,7 +1,7 @@
 package camundala.simulation
 package custom
 
-import camundala.bpmn.*
+import camundala.domain.{CamundaProperty, CompleteTaskOut, FormVariables}
 import io.circe.*
 import sttp.client3.*
 

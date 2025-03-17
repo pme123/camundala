@@ -1,9 +1,8 @@
 package camundala
 package camunda8
 
-import bpmn.*
 import domain.*
-import camundala.bpmn.CamundaVariable.CJson
+import CamundaVariable.CJson
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.response.{ProcessInstanceEvent, ProcessInstanceResult}

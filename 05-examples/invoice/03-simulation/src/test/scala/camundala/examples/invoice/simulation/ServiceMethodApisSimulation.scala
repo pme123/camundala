@@ -1,8 +1,7 @@
 package camundala.examples.invoice.simulation
 
-import camundala.bpmn.GenericExternalTask.ProcessStatus
-import camundala.bpmn.{ErrorCodes, InputParams}
-import camundala.domain.MockedServiceResponse
+import camundala.domain.GenericExternalTask.ProcessStatus
+import camundala.domain.{ErrorCodes, InputParams, MockedServiceResponse}
 import camundala.examples.invoice.bpmn.*
 import camundala.simulation.*
 import camundala.simulation.custom.CustomSimulation

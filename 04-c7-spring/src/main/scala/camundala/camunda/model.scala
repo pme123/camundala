@@ -1,7 +1,6 @@
 package camundala
 package camunda
 
-import camundala.bpmn.*
 import camundala.domain.*
 
 case class Bpmn(path: Path, processes: BpmnProcess*)

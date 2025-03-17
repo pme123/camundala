@@ -1,6 +1,5 @@
 package camundala.api
 
-import camundala.bpmn.*
 import camundala.domain.*
 
 final case class ModelerTemplGenerator(

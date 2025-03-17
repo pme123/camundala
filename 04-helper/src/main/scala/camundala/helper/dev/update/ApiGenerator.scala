@@ -17,8 +17,7 @@ case class ApiGenerator()(using config: DevConfig):
     s"""package ${config.projectPackage}
        |package api
        |
-       |//import bpmn.*
-       |
+       |//       |
        |object ApiProjectCreator extends CompanyApiCreator:
        |
        |  lazy val projectName: String = "${config.projectName}"

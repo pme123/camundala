@@ -3,7 +3,6 @@ package worker
 
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
-import camundala.bpmn.WithConfig
 import io.circe.syntax.*
 import zio.*
 

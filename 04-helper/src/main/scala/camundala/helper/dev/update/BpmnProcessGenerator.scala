@@ -1,6 +1,6 @@
 package camundala.helper.dev.update
 
-import camundala.bpmn.diagramPath
+import camundala.domain.diagramPath
 
 case class BpmnProcessGenerator()(using config: DevConfig):
 

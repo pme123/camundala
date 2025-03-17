@@ -1,7 +1,7 @@
 package camundala.simulation
 package custom
 
-import camundala.bpmn.*
+import camundala.domain.{CamundaVariable, CollectEntries, DecisionDmn, EvaluateDecisionIn, ResultList, SingleEntry, SingleResult}
 import io.circe.*
 import sttp.client3.*
 

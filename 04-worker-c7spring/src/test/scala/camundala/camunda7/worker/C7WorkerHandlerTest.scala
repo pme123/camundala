@@ -1,8 +1,8 @@
 package camundala.camunda7.worker
 
-import camundala.bpmn.{ErrorCodes, GeneralVariables, InOutDescr, Process, ProcessLabels}
+
 import camundala.camunda7.worker.context.DefaultCamunda7Context
-import camundala.domain.{NoInput, NoOutput}
+import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 import camundala.worker.*
 import zio.*
@@ -42,21 +42,31 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
           val result = externalTaskService.isErrorHandled(error, handledErrors)
           assert(result)(isFalse)
         }
-      ) @@ ignore,
+      ),
       
       suite("handleSuccess")(
-        test("should return unit for any error") {
+        test("should return unit for any error"):
           val error  = CamundalaWorkerError.CustomError("error")
           val result = externalTaskService.handleSuccess(Map.empty, true)
           assertZIO(result)(equalTo(()))
-        },
-        test("should succeed if Camunda throws an exception, as it already did the retries.") {
+        ,
+        test("should succeed if Camunda throws an exception, as it already did the retries."):
           val error  = CamundalaWorkerError.CustomError("error")
           val result = TestExternalTaskService(throw IllegalAccessError("camunda not working"))
             .handleSuccess(Map.empty, true)
           assertZIO(result)(equalTo(()))
-        }
-      ) @@ ignore,
+        ,
+        test("should return unit for any error"):
+          val error  = CamundalaWorkerError.CustomError("error")
+          val result = externalTaskService.handleSuccess(Map.empty, true)
+          assertZIO(result)(equalTo(()))
+        ,
+        test("should succeed if Camunda throws an exception, as it already did the retries."):
+          val error  = CamundalaWorkerError.CustomError("error")
+          val result = TestExternalTaskService(throw IllegalAccessError("camunda not working"))
+            .handleSuccess(Map.empty, true)
+          assertZIO(result)(equalTo(()))
+      ),
       
       suite("handleBpmnError")(
         test("should return the error") {
@@ -81,13 +91,13 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
           assertZIO(result)(equalTo(error))
           assert(externalTask.getRetries)(equalTo(0))
         },
-        test("should fail with an UnsupportedError if Camunda throws an exception") {
+        test("should return unit if Camunda throws an exception") {
           val error  = CamundalaWorkerError.CustomError("error")
           val result = TestExternalTaskService(throw IllegalAccessError("camunda not working"))
             .handleFailure(error)
-          assertZIO(result)(equalTo(error))
+          assertZIO(result)(equalTo(()))
         }
-      ) @@ ignore,
+      ),
       
       suite("checkError")(
         test("should fail with an unhandled Error") {
@@ -96,89 +106,104 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
             .checkError(error, generalVariables)
           assertZIO(result)(equalTo(error))
         },
-        test("should fail with an handled Error") {
+        test("should fail with an handled Error"):
           val error  = CamundalaWorkerError.MappingError("error")
           val result = TestExternalTaskService()
             .checkError(error, generalVariables.copy(regexHandledErrors = Seq("error")))
           assertZIO(result)(equalTo(AlreadyHandledError))
-        },
-        test("should fail with an handled Error bad regex") {
+        ,
+        test("should fail with an handled Error bad regex"):
           val error  = CamundalaWorkerError.MappingError("error")
           val result = TestExternalTaskService()
             .checkError(error, generalVariables.copy(regexHandledErrors = Seq("errror")))
           assertZIO(result)(equalTo(HandledRegexNotMatchedError(error)))
-        },
-        test("should fail with a MockedOutput") {
+        ,
+        test("should fail with a MockedOutput"):
           val error  = CamundalaWorkerError.MockedOutput(Map.empty)
           val result = TestExternalTaskService()
             .checkError(error, generalVariables)
           assertZIO(result)(equalTo(AlreadyHandledError))
-        }
       ),
       
       suite("handleError")(
-        test("should return the expected Error") {
+        test("CustomError should return unit"):
           val error = CamundalaWorkerError.CustomError("error")
           val result = externalTaskService.handleError(error, generalVariables)
-          assertZIO(result)(equalTo(error))
-        },
-        test("should return the UnexpectedError") {
+          assertZIO(result)(equalTo(()))
+        ,
+        test("UnexpectedError should return unit"):
           val error = UnexpectedError("unexpected error")
           val result = externalTaskService.handleError(error, generalVariables)
-          assertZIO(result)(equalTo(error))
-        }
-      ) @@ ignore,
+          assertZIO(result)(equalTo(()))
+      ),
       
       suite("calcRetries")(
-        test("should return 2 when retries <= 0 and error message contains a retry pattern") {
+        test("should return 2 when retries <= 0 and error message contains a retry pattern"):
           given externalTask: camunda.ExternalTask = TestExternalTask(retries = 0)
           
           val error = CamundalaWorkerError.CustomError("Entity was updated by another transaction concurrently")
           val result = externalTaskService.calcRetries(error)
           
           assert(result)(equalTo(2))
-        },
-        test("should return 2 when retries < 0 and error message contains a retry pattern") {
+        ,
+        test("should return 2 when retries < 0 and error message contains a retry pattern"):
           given externalTask: camunda.ExternalTask = TestExternalTask(retries = -1)
           
           val error = CamundalaWorkerError.CustomError("An exception occurred in the persistence layer")
           val result = externalTaskService.calcRetries(error)
           
           assert(result)(equalTo(2))
-        },
-        test("should decrement retries by 1 when retries > 0 regardless of error message") {
+        ,
+        test("should decrement retries by 1 when retries > 0 regardless of error message"):
           given externalTask: camunda.ExternalTask = TestExternalTask(retries = 5)
           
           val error = CamundalaWorkerError.CustomError("Entity was updated by another transaction concurrently")
           val result = externalTaskService.calcRetries(error)
           
           assert(result)(equalTo(4))
-        },
-        test("should decrement retries by 1 when retries > 0 and error doesn't match retry patterns") {
+        ,
+        test("should decrement retries by 1 when retries > 0 and error doesn't match retry patterns"):
           given externalTask: camunda.ExternalTask = TestExternalTask(retries = 2)
           
           val error = CamundalaWorkerError.CustomError("Some other error message")
           val result = externalTaskService.calcRetries(error)
           
           assert(result)(equalTo(1))
-        },
-        test("should decrement retries to 0 when retries = 1") {
+        ,
+        test("should decrement retries to 0 when retries = 1"):
           given externalTask: camunda.ExternalTask = TestExternalTask(retries = 1)
           
           val error = CamundalaWorkerError.CustomError("Some error message")
           val result = externalTaskService.calcRetries(error)
           
           assert(result)(equalTo(0))
-        },
-        test("should return 0 when retries = 0 and error doesn't match retry patterns") {
+        ,
+        test("should return 0 when retries = 0 and error doesn't match retry patterns"):
           given externalTask: camunda.ExternalTask = TestExternalTask(retries = 0)
           
           val error = CamundalaWorkerError.CustomError("Some error that doesn't match retry patterns")
           val result = externalTaskService.calcRetries(error)
           
           assert(result)(equalTo(-1))
-        }
-      )
+      ),
+      suite("filteredOutput"):
+        test("should return all outputs when output variables is empty"):
+          val outputs = Map("key1" -> "value1", "key2" -> "value2")
+          val result = externalTaskService.filteredOutput(Seq.empty, outputs)
+          assert(result)(equalTo(outputs))
+        ,
+        test("should filter outputs based on output variables"):
+          val outputs = Map("key1" -> "value1", "key2" -> "value2", "key3" -> "value3")
+          val filterVars = Seq("key1", "key3")
+          val expected = Map("key1" -> "value1", "key3" -> "value3")
+          val result = externalTaskService.filteredOutput(filterVars, outputs)
+          assert(result)(equalTo(expected))
+        ,
+        test("should return empty map when no outputs match filter"):
+          val outputs = Map("key1" -> "value1", "key2" -> "value2")
+          val filterVars = Seq("key3", "key4")
+          val result = externalTaskService.filteredOutput(filterVars, outputs)
+          assert(result)(equalTo(Map.empty))
     )
 
   lazy val handledErrors: Seq[String]         = Seq(ErrorCodes.`mapping-error`.toString)
@@ -193,11 +218,11 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
       Process(
         InOutDescr(
           "dummy Worker",
-        NoInput(), NoOutput()
+          NoInput(), NoOutput()
         ),
         processLabels = ProcessLabels.none
       )
-  )
+    )
 
   def topic: String = ???
 
@@ -288,11 +313,9 @@ class TestExternalTaskService(completeFunct: => Unit = ()) extends camunda.Exter
 
   override def complete(externalTask: ExternalTask): Unit = ???
 
-  override def setVariables(processInstanceId: String, variables: util.Map[String, AnyRef]): Unit =
-    ???
+  override def setVariables(processInstanceId: String, variables: util.Map[String, AnyRef]): Unit = ???
 
-  override def setVariables(externalTask: ExternalTask, variables: util.Map[String, AnyRef]): Unit =
-    ???
+  override def setVariables(externalTask: ExternalTask, variables: util.Map[String, AnyRef]): Unit = ???
 
   override def complete(externalTask: ExternalTask, variables: util.Map[String, AnyRef]): Unit =
     completeFunct
@@ -317,7 +340,6 @@ class TestExternalTaskService(completeFunct: => Unit = ()) extends camunda.Exter
       retryTimeout: Long
   ): Unit =
     completeFunct
-  end handleFailure
 
   override def handleFailure(
       externalTaskId: String,
@@ -327,7 +349,6 @@ class TestExternalTaskService(completeFunct: => Unit = ()) extends camunda.Exter
       retryTimeout: Long
   ): Unit =
     completeFunct
-  end handleFailure
 
   override def handleFailure(
       externalTaskId: String,

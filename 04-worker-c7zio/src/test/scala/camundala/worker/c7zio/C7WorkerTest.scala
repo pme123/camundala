@@ -1,7 +1,6 @@
 package camundala.worker.c7zio
 
-import camundala.bpmn.{ErrorCodes, GeneralVariables, InOutDescr, Process, ProcessLabels}
-import camundala.domain.{NoInput, NoOutput}
+import camundala.domain.{ErrorCodes, GeneralVariables, InOutDescr, NoInput, NoOutput, Process, ProcessLabels}
 import camundala.worker.CamundalaWorkerError.*
 import camundala.worker.*
 import zio.*

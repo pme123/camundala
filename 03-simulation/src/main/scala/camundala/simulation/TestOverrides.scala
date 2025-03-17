@@ -1,8 +1,7 @@
 package camundala
 package simulation
 
-import bpmn.*
-import bpmn.CamundaVariable.*
+import camundala.domain.CamundaVariable.*
 import domain.*
 
 case class TestOverride(

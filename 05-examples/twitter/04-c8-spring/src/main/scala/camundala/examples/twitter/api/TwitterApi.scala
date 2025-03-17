@@ -1,6 +1,5 @@
 package camundala.examples.twitter.api
 
-import camundala.bpmn.*
 import camundala.domain.*
 
 object TwitterApi extends BpmnProcessDsl:

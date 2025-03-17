@@ -1,6 +1,6 @@
 package camundala.examples.invoice.worker
 
-import camundala.bpmn.GeneralVariables
+import camundala.domain.GeneralVariables
 import camundala.examples.invoice.bpmn.ComposedWorkerExample.*
 import camundala.examples.invoice.bpmn.{StarWarsPeople, StarWarsPeopleDetail}
 import camundala.worker.CamundalaWorkerError.CustomError

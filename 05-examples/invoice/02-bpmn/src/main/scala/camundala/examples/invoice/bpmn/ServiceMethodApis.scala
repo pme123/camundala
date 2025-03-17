@@ -1,7 +1,6 @@
 package camundala.examples.invoice.bpmn
 
-import camundala.bpmn.*
-import camundala.bpmn.GenericExternalTask.ProcessStatus
+import camundala.domain.GenericExternalTask.ProcessStatus
 import camundala.domain.*
 
 trait ServiceMethodServices extends BpmnServiceTaskDsl:

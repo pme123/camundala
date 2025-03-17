@@ -2,7 +2,6 @@ package camundala.examples.demos
 package api
 
 import camundala.api.*
-import camundala.bpmn.*
 import bpmn.*
 
 // exampleDemos/run

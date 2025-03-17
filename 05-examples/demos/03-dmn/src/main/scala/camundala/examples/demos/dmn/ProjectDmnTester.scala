@@ -1,10 +1,8 @@
 package camundala.examples.demos
 package dmn
 
-import camundala.bpmn.*
 import camundala.dmn.*
-import bpmn.*
-
+import camundala.examples.demos.bpmn.*
 import java.time.LocalDateTime
 
 object ProjectDmnTester

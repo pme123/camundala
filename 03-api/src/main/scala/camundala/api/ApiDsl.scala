@@ -1,7 +1,6 @@
 package camundala
 package api
 
-import camundala.bpmn.*
 import camundala.domain.*
 
 import scala.reflect.ClassTag

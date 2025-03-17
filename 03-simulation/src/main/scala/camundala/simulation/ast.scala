@@ -1,7 +1,8 @@
 package camundala
 package simulation
 
-import camundala.bpmn.*
+import camundala.domain
+import camundala.domain.{CamundaVariable, DecisionDmn, ExternalTask, InOut, InOutDescr, MessageEvent, ProcessOrExternalTask, SignalEvent, TimerEvent, UserTask}
 
 case class SSimulation(scenarios: List[SScenario])
 
@@ -39,16 +40,16 @@ sealed trait HasProcessSteps extends ScenarioOrStep:
 sealed trait IsProcessScenario extends HasProcessSteps, SScenario
 
 case class ProcessScenario(
-    // this is name of process in case of START
-    // this is message name in case of MESSAGE
-    // this is signal name in case of SIGNAL
-    name: String,
-    process: Process[?, ?, ?],
-    steps: List[SStep] = List.empty,
-    isIgnored: Boolean = false,
-    isOnly: Boolean = false,
-    testOverrides: Option[TestOverrides] = None,
-    startType: ProcessStartType = ProcessStartType.START
+                            // this is name of process in case of START
+                            // this is message name in case of MESSAGE
+                            // this is signal name in case of SIGNAL
+                            name: String,
+                            process: domain.Process[?, ?, ?],
+                            steps: List[SStep] = List.empty,
+                            isIgnored: Boolean = false,
+                            isOnly: Boolean = false,
+                            testOverrides: Option[TestOverrides] = None,
+                            startType: ProcessStartType = ProcessStartType.START
 ) extends IsProcessScenario,
       WithTestOverrides[ProcessScenario]:
   def inOut: InOut[?, ?, ?] = process
@@ -110,14 +111,14 @@ case class DmnScenario(
 end DmnScenario
 
 case class BadScenario(
-    name: String,
-    process: Process[?, ?, ?],
-    status: Int,
-    errorMsg: Option[String],
-    isIgnored: Boolean = false,
-    isOnly: Boolean = false
+                        name: String,
+                        process: domain.Process[?, ?, ?],
+                        status: Int,
+                        errorMsg: Option[String],
+                        isIgnored: Boolean = false,
+                        isOnly: Boolean = false
 ) extends IsProcessScenario:
-  lazy val inOut: Process[?, ?, ?] = process
+  lazy val inOut: domain.Process[?, ?, ?] = process
   lazy val steps: List[SStep] = List.empty
   def ignored: BadScenario = copy(isIgnored = true)
   def only: BadScenario = copy(isOnly = true)
@@ -130,15 +131,15 @@ trait IsIncidentScenario extends IsProcessScenario, HasProcessSteps:
   def incidentMsg: String
 
 case class IncidentScenario(
-    name: String,
-    process: Process[?, ?, ?],
-    steps: List[SStep] = List.empty,
-    incidentMsg: String,
-    isIgnored: Boolean = false,
-    isOnly: Boolean = false
+                             name: String,
+                             process: domain.Process[?, ?, ?],
+                             steps: List[SStep] = List.empty,
+                             incidentMsg: String,
+                             isIgnored: Boolean = false,
+                             isOnly: Boolean = false
 ) extends IsIncidentScenario,
       HasProcessSteps:
-  lazy val inOut: Process[?, ?, ?] = process
+  lazy val inOut: domain.Process[?, ?, ?] = process
 
   def ignored: IncidentScenario = copy(isIgnored = true)
 
@@ -192,15 +193,15 @@ case class SUserTask(
 end SUserTask
 
 case class SSubProcess(
-    name: String,
-    process: Process[?, ?, ?],
-    steps: List[SStep],
-    testOverrides: Option[TestOverrides] = None
+                        name: String,
+                        process: domain.Process[?, ?, ?],
+                        steps: List[SStep],
+                        testOverrides: Option[TestOverrides] = None
 ) extends SInServiceOuttep,
       HasProcessSteps:
 
   lazy val processName: String = process.processName
-  lazy val inOut: Process[?, ?, ?] = process
+  lazy val inOut: domain.Process[?, ?, ?] = process
 
   def add(testOverride: TestOverride): SSubProcess =
     copy(testOverrides = addOverride(testOverride))

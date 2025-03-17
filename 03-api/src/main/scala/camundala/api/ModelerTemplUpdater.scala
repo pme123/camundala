@@ -1,6 +1,6 @@
 package camundala.api
 
-import camundala.bpmn.diagramPath
+import camundala.domain.diagramPath
 import io.circe.parser
 import io.circe.syntax.*
 

@@ -1,8 +1,7 @@
 package camundala
 package simulation
 
-import camundala.bpmn.*
-import camundala.bpmn.CamundaVariable.*
+import camundala.domain.CamundaVariable.*
 import camundala.domain.*
 import camundala.simulation.TestOverrideType.*
 import io.circe.*

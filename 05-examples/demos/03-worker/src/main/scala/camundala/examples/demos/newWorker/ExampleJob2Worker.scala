@@ -1,6 +1,5 @@
 package camundala.examples.demos.newWorker
 
-import camundala.bpmn.CustomTask
 import camundala.domain.*
 import camundala.examples.demos.newWorker.ExampleJob2.*
 import camundala.worker.CamundalaWorkerError

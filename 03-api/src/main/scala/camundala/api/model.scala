@@ -1,7 +1,6 @@
 package camundala
 package api
 
-import bpmn.*
 import domain.*
 import io.circe.*
 import sttp.model.StatusCode

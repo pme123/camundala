@@ -1,10 +1,8 @@
 package camundala.api
 
-import camundala.bpmn.InOutType
-
 import java.io.StringReader
 import scala.xml.XML
-import camundala.bpmn.shortenName
+import camundala.domain.{InOutType, shortenName}
 
 /** Checks all BPMNs if a process is used in another process. As result a list is created that can
   * be included in the Documentation.

@@ -1,7 +1,7 @@
 package camundala.examples.invoice
 package simulation
 
-import camundala.bpmn.{CollectEntries, ErrorCodes}
+import camundala.domain.{CollectEntries, ErrorCodes}
 import camundala.examples.invoice.bpmn.*
 import camundala.examples.invoice.bpmn.InvoiceReceipt.*
 import camundala.examples.invoice.bpmn.ReviewInvoice.*
