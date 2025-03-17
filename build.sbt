@@ -57,14 +57,14 @@ lazy val docs =
     .dependsOn(helper)
 
 // layer 01
-lazy val domain = project
+lazy val domain  = project
   .in(file("./01-domain"))
   .configure(publicationSettings)
   .settings(projectSettings("domain"))
   .settings(unitTestSettings)
   .settings(
     autoImportSetting,
-    libraryDependencies ++= tapirDependencies ++Seq(
+    libraryDependencies ++= tapirDependencies ++ Seq(
       osLib,
       chimney // mapping
     ),
@@ -84,14 +84,16 @@ lazy val domain = project
     )
   ).enablePlugins(BuildInfoPlugin)
 // layer 02
-lazy val gateway   = project
+lazy val gateway = project
   .in(file("./02-gateway"))
   .configure(publicationSettings)
   .settings(projectSettings("gateway"))
   .settings(unitTestSettings)
   .settings(
     autoImportSetting,
-    libraryDependencies ++= Seq()
+    libraryDependencies ++= Seq(
+      zioDependency
+    )
   )
   .dependsOn(domain)
 
@@ -135,7 +137,7 @@ lazy val worker = project
       sttpDependency,
       scaffeineDependency,
       zioDependency,
-      zioSlf4jDependency,
+      zioSlf4jDependency
     )
   )
   .dependsOn(gateway)
@@ -151,7 +153,7 @@ lazy val gatewayZio = project
       sttpDependency,
       scaffeineDependency,
       zioDependency,
-      zioSlf4jDependency,
+      zioSlf4jDependency
     )
   )
   .dependsOn(gateway)
@@ -204,7 +206,7 @@ lazy val camunda7ZioWorker = project
       camunda7ZioWorkerDependencies ++ zioTestDependencies
   )
   .dependsOn(worker)
-lazy val camunda8Worker = project
+lazy val camunda8Worker    = project
   .in(file("./04-worker-c8zio"))
   .configure(publicationSettings)
   .settings(projectSettings("camunda8-worker"))
@@ -247,9 +249,6 @@ lazy val camunda8 = project
 // EXAMPLES
 // INVOICE
 lazy val exampleInvoice = project
-  .in(file("./05-examples/invoice"))
-  .settings(projectSettings("example-invoice"))
-  .configure(preventPublication)
   .aggregate(
     exampleInvoiceBpmn,
     exampleInvoiceApi,
@@ -320,9 +319,6 @@ lazy val exampleInvoiceC8 = project
 
 // TWITTER
 lazy val exampleTwitter = project
-  .in(file("./05-examples/twitter"))
-  .settings(projectSettings("example-twitter"))
-  .configure(preventPublication)
   .aggregate(
     exampleTwitterBpmn,
     exampleTwitterApi,
@@ -378,11 +374,8 @@ lazy val exampleTwitterC8 = project
   )
   .dependsOn(gateway, api, /*exampleTwitterBpmn,*/ camunda8)
 
-// INVOICE
+// DEMO
 lazy val exampleDemos = project
-  .in(file("./05-examples/demos"))
-  .settings(projectSettings("example-demos"))
-  .configure(preventPublication)
   .aggregate(
     exampleDemosBpmn,
     exampleDemosApi,

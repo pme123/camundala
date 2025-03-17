@@ -1,7 +1,7 @@
 package camundala.gateway.zio.bpmn
 
 import camundala.domain.*
-import camundala.gateway.{ProcessInfo, ProcessService}
+import camundala.gateway.{GatewayError, ProcessInfo, ProcessService}
 import camundala.gateway.json.JsonProcessService
 import io.circe.syntax.*
 import zio.*
@@ -10,31 +10,50 @@ case class ProcessServiceLive(jsonService: JsonProcessService) extends ProcessSe
   def startProcess[In <: Product: InOutEncoder, Out <: Product: InOutDecoder](
       processDefId: String, 
       in: In
-  ): Out = 
-    val jsonIn = in.asJson
-    val jsonOut = jsonService.startProcess(processDefId, jsonIn)
-    jsonOut.as[Out].fold(throw _, identity)
+  ): IO[GatewayError, Out] = 
+    ZIO.attempt {
+      val jsonIn = in.asJson
+      val jsonOut = jsonService.startProcess(processDefId, jsonIn)
+      jsonOut.as[Out]
+    }.catchAll { case ex: Throwable =>
+      ZIO.fail(GatewayError.ProcessError(s"Failed to start process: ${ex.getMessage}"))
+    }.flatMap {
+      case Left(err) => ZIO.fail(GatewayError.DecodingError(s"Failed to decode response: ${err.getMessage}"))
+      case Right(value) => ZIO.succeed(value)
+    }
 
   def startProcessAsync[In <: Product: InOutEncoder](
       processDefId: String, 
       in: In
-  ): ProcessInfo = 
-    val jsonIn = in.asJson
-    jsonService.startProcessAsync(processDefId, jsonIn)
+  ): IO[GatewayError, ProcessInfo] = 
+    ZIO.attempt {
+      val jsonIn = in.asJson
+      jsonService.startProcessAsync(processDefId, jsonIn)
+    }.catchAll { case ex: Throwable =>
+      ZIO.fail(GatewayError.ProcessError(s"Failed to start process async: ${ex.getMessage}"))
+    }
 
   def sendMessage[In <: Product: InOutEncoder](
       messageDefId: String, 
       in: In
-  ): ProcessInfo = 
-    val jsonIn = in.asJson
-    jsonService.sendMessage(messageDefId, jsonIn)
+  ): IO[GatewayError, ProcessInfo] = 
+    ZIO.attempt {
+      val jsonIn = in.asJson
+      jsonService.sendMessage(messageDefId, jsonIn)
+    }.catchAll { case ex: Throwable =>
+      ZIO.fail(GatewayError.ProcessError(s"Failed to send message: ${ex.getMessage}"))
+    }
 
   def sendSignal[In <: Product: InOutEncoder](
       signalDefId: String, 
       in: In
-  ): ProcessInfo = 
-    val jsonIn = in.asJson
-    jsonService.sendSignal(signalDefId, jsonIn)
+  ): IO[GatewayError, ProcessInfo] = 
+    ZIO.attempt {
+      val jsonIn = in.asJson
+      jsonService.sendSignal(signalDefId, jsonIn)
+    }.catchAll { case ex: Throwable =>
+      ZIO.fail(GatewayError.ProcessError(s"Failed to send signal: ${ex.getMessage}"))
+    }
 
 object ProcessServiceLive:
   val layer: URLayer[JsonProcessService, ProcessService] = 

@@ -12,7 +12,7 @@ import sttp.model.Uri
 class EnumExampleWorker extends CompanyServiceWorkerDsl[In, Out, NoInput, ServiceOut]:
 
   lazy val serviceTask = example
-  println("VARS: " + example.otherEnumInExamples)
+
   def apiUri(in: In) =
     in match
       case In.A(someValue, enumEx, maybeOut, _) =>
