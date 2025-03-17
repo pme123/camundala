@@ -14,7 +14,7 @@ import scala.util.{Failure, Success}
 lazy val servicePath =
   uri"https://swapi.dev/api/people/1"
 
-lazy val client = SimpleHttpClient()
+lazy val client  = SimpleHttpClient()
 lazy val backend = HttpClientFutureBackend()
 
 @Configuration
@@ -31,7 +31,7 @@ class SyncTestWorker extends ExternalTaskHandler:
         .get(uri"$servicePath")
         .send(backend)
       println(s" SYNC request sent")
-      val resp = Await.result(response, 10.seconds)
+      val resp     = Await.result(response, 10.seconds)
       println(s" ASYNC Status ${resp.statusText}")
       println(s" SYNC Result ${resp.body}")
       externalTaskService.complete(externalTask, Map("result" -> resp.body).asJava)
@@ -68,7 +68,7 @@ class AsyncTestWorker extends ExternalTaskHandler:
         .onComplete {
           case Success(value) =>
             externalTaskService.complete(externalTask, Map("result" -> value).asJava)
-          case Failure(ex) =>
+          case Failure(ex)    =>
             externalTaskService.handleFailure(externalTask, ex.getMessage, "SYNC TEST", 0, 0)
         }
 

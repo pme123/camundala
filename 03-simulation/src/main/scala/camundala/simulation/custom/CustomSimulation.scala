@@ -18,11 +18,11 @@ abstract class CustomSimulation
       .sequence(
         sim.scenarios
           .map {
-            case scen: ProcessScenario => scen.run()
+            case scen: ProcessScenario      => scen.run()
             case scen: ExternalTaskScenario => scen.run()
-            case scen: IsIncidentScenario => scen.run()
-            case scen: DmnScenario => scen.run()
-            case scen: BadScenario => scen.run()
+            case scen: IsIncidentScenario   => scen.run()
+            case scen: DmnScenario          => scen.run()
+            case scen: BadScenario          => scen.run()
           }
       )
       .map(
@@ -31,7 +31,7 @@ abstract class CustomSimulation
             d => d,
             d => d
           )
-          val log =
+          val log                =
             data.logEntries
               .filter(config.logLevel)
               .map(_.toString)

@@ -29,7 +29,7 @@ trait OAuthPasswordFlow:
   )
 
   def adminToken(tokenKey: String = username)(using
-      logger: WorkerLogger,
+      logger: WorkerLogger
   ): Either[ServiceAuthError, String] =
     TokenCache.cache.getIfPresent(tokenKey)
       .map: token =>
@@ -45,7 +45,7 @@ trait OAuthPasswordFlow:
             token
 
   def clientCredentialsToken()(using
-      logger: WorkerLogger,
+      logger: WorkerLogger
   ): Either[ServiceAuthError, String] =
     TokenCache.cache.getIfPresent("clientCredentials")
       .map: token =>
@@ -61,7 +61,7 @@ trait OAuthPasswordFlow:
             token
 
   def impersonateToken(username: String, adminToken: String)(using
-      logger: WorkerLogger,
+      logger: WorkerLogger
   ): Either[ServiceAuthError, String] =
     TokenCache.cache.getIfPresent(username)
       .map: token =>

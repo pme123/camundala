@@ -5,11 +5,11 @@ import sttp.client3.*
 
 trait DmnTesterHelpers:
   protected def starterConfig: DmnTesterStarterConfig
-  protected def projectBasePath: os.Path = os.pwd
-  private lazy val exposedPort: Int = starterConfig.exposedPort
+  protected def projectBasePath: os.Path      = os.pwd
+  private lazy val exposedPort: Int           = starterConfig.exposedPort
   protected lazy val client: SimpleHttpClient = SimpleHttpClient()
-  protected lazy val apiUrl = s"http://localhost:$exposedPort/api"
-  protected lazy val infoUrl = s"http://localhost:$exposedPort/info"
+  protected lazy val apiUrl                   = s"http://localhost:$exposedPort/api"
+  protected lazy val infoUrl                  = s"http://localhost:$exposedPort/info"
 
   protected case class DmnTesterStarterConfig(
       companyName: String,

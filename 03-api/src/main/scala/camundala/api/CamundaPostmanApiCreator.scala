@@ -74,9 +74,9 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
       process.inOut.startEventType match
         case StartEventType.Message =>
           correlateMessage(tag)
-        case StartEventType.Signal =>
+        case StartEventType.Signal  =>
           sendSignal(tag)
-        case _ =>
+        case _                      =>
           startProcessNone(tag, isGroup)
     end startProcess
 
@@ -84,7 +84,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
         tag: String,
         isGroup: Boolean
     ): PublicEndpoint[?, Unit, ?, Any] =
-      val path =
+      val path  =
         tenantIdPath(
           "process-definition" / "key" / process.endpointPath(isGroup),
           "start"
@@ -104,7 +104,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
     end startProcessNone
 
     private def correlateMessage(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val path = "message" / s"--REMOVE:${process.id}--"
+      val path  = "message" / s"--REMOVE:${process.id}--"
       val input = process
         .toPostmanInput((example: FormVariables) =>
           CorrelateMessageIn(
@@ -128,7 +128,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
     end correlateMessage
 
     private def sendSignal(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val path = "signal" / s"--REMOVE:${process.id}--"
+      val path  = "signal" / s"--REMOVE:${process.id}--"
       val input = process
         .toPostmanInput((example: FormVariables) =>
           SendSignalIn(
@@ -157,7 +157,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
     def startProcess(
         tag: String
     ): PublicEndpoint[?, Unit, ?, Any] =
-      val path =
+      val path  =
         tenantIdPath(
           "process-definition" / "key" / externalTaskApi.processName,
           s"start--REMOVE:${externalTaskApi.id}--"
@@ -177,7 +177,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
     end startProcess
 
     private def correlateMessage(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val path = "message" / s"--REMOVE:${externalTaskApi.id}--"
+      val path  = "message" / s"--REMOVE:${externalTaskApi.id}--"
       val input = externalTaskApi
         .toPostmanInput((example: FormVariables) =>
           CorrelateMessageIn(
@@ -201,7 +201,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
     end correlateMessage
 
     private def sendSignal(tag: String): PublicEndpoint[?, Unit, ?, Any] =
-      val path = "signal" / s"--REMOVE:${externalTaskApi.id}--"
+      val path  = "signal" / s"--REMOVE:${externalTaskApi.id}--"
       val input = externalTaskApi
         .toPostmanInput((example: FormVariables) =>
           SendSignalIn(
@@ -281,15 +281,15 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
 
     def evaluateDecision(tag: String): PublicEndpoint[?, Unit, ?, Any] =
       val decisionDmn = api.inOut.asInstanceOf[DecisionDmn[?, ?]]
-      val path = tenantIdPath(
+      val path        = tenantIdPath(
         "decision-definition" / "key" / definitionKeyPath(
           decisionDmn.decisionDefinitionKey
         ) / s"--REMOVE:${api.id}--",
         "evaluate"
       )
-      val input = api
+      val input       = api
         .toPostmanInput((example: FormVariables) => EvaluateDecisionIn(example))
-      val descr = s"""
+      val descr       = s"""
                      |${api.descr}
                      |
                      |Decision DMN:
@@ -303,7 +303,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
 
     def correlateMessage(tag: String): PublicEndpoint[?, Unit, ?, Any] =
       val event = api.inOut.asInstanceOf[MessageEvent[?]]
-      val path = "message" / s"--REMOVE:${event.messageName}--"
+      val path  = "message" / s"--REMOVE:${event.messageName}--"
       val input = api
         .toPostmanInput((example: FormVariables) =>
           CorrelateMessageIn(
@@ -327,7 +327,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
 
     def sendSignal(tag: String): PublicEndpoint[?, Unit, ?, Any] =
       val event = api.inOut.asInstanceOf[SignalEvent[?]]
-      val path = "signal" / s"--REMOVE:${event.messageName}--"
+      val path  = "signal" / s"--REMOVE:${event.messageName}--"
       val input = api
         .toPostmanInput((example: FormVariables) =>
           SendSignalIn(
@@ -362,7 +362,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
 
     def executeTimer(tag: String): PublicEndpoint[?, Unit, ?, Any] =
       val event = api.inOut.asInstanceOf[TimerEvent]
-      val path = "job" / jobIdPath() / "execute" / s"--REMOVE:${event.id}--"
+      val path  = "job" / jobIdPath() / "execute" / s"--REMOVE:${event.id}--"
       api
         .postmanBaseEndpoint(tag, None, "ExecuteTimer", Some(api.descr))
         .in(path)
@@ -381,7 +381,7 @@ trait CamundaPostmanApiCreator extends PostmanApiCreator:
       inOutApi.inOut.in match
         case _: NoInput =>
           None
-        case _ =>
+        case _          =>
           Some(
             jsonBody[T]
               .examples(examples.map { case ex @ InOutExample(label, _) =>

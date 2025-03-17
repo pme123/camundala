@@ -16,7 +16,7 @@ object DevCompanyHelper:
     Try(Command.valueOf(command)) match
       case Success(cmd) =>
         runCommand(cmd, args)
-      case Failure(_) =>
+      case Failure(_)   =>
         println(s"Command not found: $command")
         println("Available commands: " + Command.values.mkString(", "))
     end match
@@ -24,13 +24,13 @@ object DevCompanyHelper:
 
   private def runCommand(command: Command, args: Seq[String]): Unit =
     command match
-      case Command.`init` =>
+      case Command.`init`  =>
         initCompany
       case Command.project =>
         args.toList match
           case Seq(projectName) =>
             createProject(projectName)
-          case other =>
+          case other            =>
             println(s"Invalid arguments for command $command: $other")
             println("Usage: project <projectName>")
       // dev-company/company-camundala/helper.scala
@@ -45,11 +45,12 @@ object DevCompanyHelper:
 
   protected def createProject(projectName: String): Unit =
     println(s"Create Project: ${projectName.replace(s"-$companyName", "")} - Company: $companyName")
-    val name = s"$companyName-${projectName.replace(s"$companyName-", "")}"
-    val configPath = projectsPath / name / defaultProjectConfigPath
+    val name                = s"$companyName-${projectName.replace(s"$companyName-", "")}"
+    val configPath          = projectsPath / name / defaultProjectConfigPath
     createIfNotExists(configPath, apiProjectConfig(name))
     given config: DevConfig = DevConfig.init(configPath)
     CompanyGenerator().createProject
+  end createProject
 
   private lazy val companyName = os.pwd.last.replace("dev-", "").toLowerCase
 

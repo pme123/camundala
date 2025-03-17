@@ -27,7 +27,7 @@ object TestApiCreator extends DefaultApiCreator, App:
 
   private lazy val testProcess2 =
     Process(InOutDescr(processName, standardSample, SampleOut()), NoInput(), ProcessLabels.none)
-  val processName: String = "sample-process2"
+  val processName: String       = "sample-process2"
 
   val descr: String = ""
 end TestApiCreator

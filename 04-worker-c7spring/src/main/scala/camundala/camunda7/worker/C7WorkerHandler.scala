@@ -248,7 +248,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         case r                      => r - 1
 
     end calcRetries
-    
+
     private[worker] def filteredOutput(
         outputVariables: Seq[String],
         allOutputs: Map[String, Any]

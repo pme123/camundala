@@ -1,7 +1,15 @@
 package camundala.simulation
 package custom
 
-import camundala.domain.{CamundaVariable, CollectEntries, DecisionDmn, EvaluateDecisionIn, ResultList, SingleEntry, SingleResult}
+import camundala.domain.{
+  CamundaVariable,
+  CollectEntries,
+  DecisionDmn,
+  EvaluateDecisionIn,
+  ResultList,
+  SingleEntry,
+  SingleResult
+}
 import io.circe.*
 import sttp.client3.*
 
@@ -17,14 +25,14 @@ trait DmnScenarioExtensions extends SScenarioExtensions:
       }
 
     def evaluate()(using data: ScenarioData): ResultType =
-      val dmn = scenario.inOut
+      val dmn  = scenario.inOut
       val body = EvaluateDecisionIn(
         dmn.camundaInMap
       ).asJson.deepDropNullValues.toString
-      val uri = config.tenantId match
+      val uri  = config.tenantId match
         case Some(tenantId) =>
           uri"${config.endpoint}/decision-definition/key/${dmn.decisionDefinitionKey}/tenant-id/$tenantId/evaluate"
-        case None =>
+        case None           =>
           uri"${config.endpoint}/decision-definition/key/${dmn.decisionDefinitionKey}/evaluate"
 
       val request = basicRequest
@@ -51,10 +59,10 @@ trait DmnScenarioExtensions extends SScenarioExtensions:
     private def evaluateDmn(resultSeq: Seq[Map[String, CamundaVariable]])(using
         data: ScenarioData
     ): ResultType =
-      val result = resultSeq
+      val result                         = resultSeq
       val decisionDmn: DecisionDmn[?, ?] = scenario.inOut
-      val check: ResultType = decisionDmn.out match
-        case expected: SingleEntry[?] =>
+      val check: ResultType              = decisionDmn.out match
+        case expected: SingleEntry[?]    =>
           for
             given ScenarioData <-
               if result.size == 1 && result.head.size == 1 then
@@ -75,7 +83,7 @@ trait DmnScenarioExtensions extends SScenarioExtensions:
                   )
                 )
           yield summon[ScenarioData]
-        case expected: SingleResult[?] =>
+        case expected: SingleResult[?]   =>
           for
             given ScenarioData <-
               if
@@ -101,7 +109,7 @@ trait DmnScenarioExtensions extends SScenarioExtensions:
         case expected: CollectEntries[?] =>
           val resultValues = result.map(_.values.head)
           scenario.testOverrides match
-            case None =>
+            case None                =>
               if
                 (result.isEmpty && expected.toCamunda.isEmpty) ||
                 (result.nonEmpty &&
@@ -130,7 +138,7 @@ trait DmnScenarioExtensions extends SScenarioExtensions:
 
         case expected: ResultList[?] =>
           scenario.testOverrides match
-            case None =>
+            case None                =>
               if
                 (result.isEmpty && expected.toCamunda.isEmpty) ||
                 (result.nonEmpty &&
@@ -155,7 +163,7 @@ trait DmnScenarioExtensions extends SScenarioExtensions:
                   )
                 )
               end if
-        case _ =>
+        case _                       =>
           Left(
             summon[ScenarioData].error(
               s"Unknown Type ${decisionDmn.out.getClass}: ${decisionDmn.out}"

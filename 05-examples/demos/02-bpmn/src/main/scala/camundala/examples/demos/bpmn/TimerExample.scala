@@ -5,7 +5,7 @@ import camundala.domain.{BpmnProcessDsl, BpmnTimerEventDsl}
 object TimerExample extends BpmnProcessDsl:
 
   lazy val processName: String = "timer-example"
-  lazy val descr: String = ""
+  lazy val descr: String       = ""
 
   lazy val example = process()
 

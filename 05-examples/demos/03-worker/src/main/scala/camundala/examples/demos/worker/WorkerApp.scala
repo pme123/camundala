@@ -10,7 +10,8 @@ import org.springframework.stereotype.Component
 @SpringBootApplication
 @Component("ValiantProductWorkerTestApp")
 @ConfigurationPropertiesScan
-@ComponentScan(basePackages = Array(
+@ComponentScan(basePackages =
+  Array(
     "camundala.camunda7.worker.context", // for context
     "camundala.examples.demos.worker"
   )

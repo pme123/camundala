@@ -46,7 +46,7 @@ sealed trait CamundalaWorkerError extends Throwable:
   def errorMsg: String
 
   def causeMsg = s"$errorCode: $errorMsg"
-  
+
   override def toString(): String = causeMsg
 end CamundalaWorkerError
 
