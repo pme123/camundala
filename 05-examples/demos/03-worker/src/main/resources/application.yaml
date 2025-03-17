@@ -1,4 +1,5 @@
 spring.application.name: camundala-examples-demos
+
 server:
   port: 8093
 camunda.bpm:

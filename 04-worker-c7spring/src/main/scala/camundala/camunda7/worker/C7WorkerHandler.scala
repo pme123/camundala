@@ -64,6 +64,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
   private lazy val subscription: TopicSubscription =
     externalTaskClient
       .subscribe(topic)
+      .lockDuration(5.minutes.toMillis)
       .handler(this)
       .open()
 
