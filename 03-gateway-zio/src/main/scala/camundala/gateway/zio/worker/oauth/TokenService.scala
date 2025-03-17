@@ -13,7 +13,7 @@ class TokenService(
     impersonateBody: Map[String, String]
 ):
 
-  def adminToken(): Either[ServiceAuthError, String] =
+  def adminToken(): Either[ServiceAuthError, String]             =
     authAdminResponse
       .body
       .map(t => s"Bearer ${t.access_token}")
@@ -36,7 +36,7 @@ class TokenService(
 
   def impersonateToken(username: String, adminToken: String): Either[ServiceAuthError, String] =
     val token = adminToken.replace("Bearer ", "")
-    val body = impersonateBody ++ Map("requested_subject" -> username, "subject_token" -> token)
+    val body  = impersonateBody ++ Map("requested_subject" -> username, "subject_token" -> token)
     authImpersonateResponse(body)
       .body
       .map(t => s"Bearer ${t.access_token}")
@@ -47,14 +47,14 @@ class TokenService(
         )
       )
   end impersonateToken
-  private lazy val tokenRequest =
+  private lazy val tokenRequest                                                                =
     basicRequest
       .post(identityUrl)
       .header("accept", "application/json")
 
-  private def authAdminResponse =
+  private def authAdminResponse                                  =
     tokenRequest.body(adminTokenBody).response(asJson[TokenResponse]).send(backend)
-  private def authClientCredentialsResponse =
+  private def authClientCredentialsResponse                      =
     tokenRequest.body(clientCredentialsBody).response(asJson[TokenResponse]).send(backend)
   private def authImpersonateResponse(body: Map[String, String]) =
     tokenRequest.body(body).response(asJson[TokenResponse]).send(backend)

@@ -8,9 +8,9 @@ import zio.*
 
 case class WorkerServiceLive(jsonService: JsonWorkerService) extends WorkerService:
   def startWorker[In <: Product: InOutEncoder](
-      workerDefId: String, 
+      workerDefId: String,
       in: In
-  ): IO[GatewayError, ProcessInfo] = 
+  ): IO[GatewayError, ProcessInfo] =
     ZIO.attempt {
       val jsonIn = in.asJson
       jsonService.startWorker(workerDefId, jsonIn)
@@ -20,13 +20,14 @@ case class WorkerServiceLive(jsonService: JsonWorkerService) extends WorkerServi
 
   def registerWorkers(
       workers: Seq[ProcessWorker]
-  ): IO[GatewayError, Unit] = 
+  ): IO[GatewayError, Unit] =
     ZIO.attempt {
       jsonService.registerWorkers(workers)
     }.catchAll { case ex: Throwable =>
       ZIO.fail(GatewayError.WorkerError(s"Failed to register workers: ${ex.getMessage}"))
     }
+end WorkerServiceLive
 
 object WorkerServiceLive:
-  val layer: URLayer[JsonWorkerService, WorkerService] = 
+  val layer: URLayer[JsonWorkerService, WorkerService] =
     ZLayer.fromFunction(WorkerServiceLive(_))

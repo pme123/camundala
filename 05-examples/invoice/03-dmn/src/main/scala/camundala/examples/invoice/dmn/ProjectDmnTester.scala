@@ -9,7 +9,7 @@ import bpmn.InvoiceReceipt.{InvoiceAssignApproverDMN, InvoiceAssignApproverDmnUn
 object ProjectDmnTester
     extends DmnTesterConfigCreator:
   val processName = "NOT USED"
-  val descr = ""
+  val descr       = ""
 
   private lazy val localDmnConfigPath: os.Path =
     os.pwd / "05-examples" / "invoice" / "03-dmn" / "src" / "main" / "resources" / "dmnConfigs"
@@ -35,7 +35,5 @@ object ProjectDmnTester
       .dmnPath("example-invoice-c7-assignApprover")
     //  .inTestMode
   )
-  
-
 
 end ProjectDmnTester

@@ -27,15 +27,15 @@ trait RestEndpoint extends Validator:
   ): Response =
     (for
       startObj <- startVars
-      process <- start(processId, startObj)
+      process  <- start(processId, startObj)
     yield process) match
-      case Right(process: ProcessInstanceEvent) =>
+      case Right(process: ProcessInstanceEvent)  =>
         ResponseEntity
           .status(HttpStatus.OK)
           .body(process)
       case Right(process: ProcessInstanceResult) =>
         extractBody[Out](process)
-      case Left(errorMsg) =>
+      case Left(errorMsg)                        =>
         ResponseEntity
           .status(HttpStatus.BAD_REQUEST)
           .body(errorMsg)
@@ -45,7 +45,7 @@ trait RestEndpoint extends Validator:
       startObj: CreateProcessInstanceIn[In, Out]
   ): Either[String, ProcessInstanceEvent | ProcessInstanceResult] =
     try
-      val command =
+      val command    =
         zeebeClient.newCreateInstanceCommand
           .bpmnProcessId(processId)
           .latestVersion
@@ -77,7 +77,7 @@ trait RestEndpoint extends Validator:
       case CJson(value, _) =>
         val jacksonMapper = new ObjectMapper()
         jacksonMapper.readTree(value)
-      case _ =>
+      case _               =>
         camundaVariable.value
 
   private def extractBody[Out <: Product: InOutCodec](
@@ -85,7 +85,7 @@ trait RestEndpoint extends Validator:
   ): Response =
     // parsing will validate output
     parser.parse(process.getVariables).flatMap(_.as[Out]) match
-      case Right(out) =>
+      case Right(out)     =>
         val result = CreateProcessInstanceOut(
           process.getProcessDefinitionKey,
           process.getBpmnProcessId,

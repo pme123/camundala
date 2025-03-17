@@ -4,7 +4,7 @@ import camundala.domain.*
 
 object VariablesExample extends BpmnProcessDsl:
   val processName = "NOT USED"
-  def descr = ""
+  def descr       = ""
 
   case class Input(
       letters: Option[String] = Some("A_dynamic_2"),
@@ -19,7 +19,7 @@ object VariablesExample extends BpmnProcessDsl:
       "OK dynamicOut" // Camunda returns String - LocalVariablesTime.parse("2012-12-12T12:12:12")
   )
 
-  given ApiSchema[Input] = deriveApiSchema
+  given ApiSchema[Input]  = deriveApiSchema
   given InOutCodec[Input] = deriveCodec
 
 end VariablesExample
