@@ -37,9 +37,28 @@ lazy val root = project
     camunda,  // not in use
     camunda8, // not in use
     // examples
-    exampleInvoice,
-    exampleTwitter,
-    exampleDemos,
+    // invoice
+    exampleInvoiceBpmn,
+    exampleInvoiceApi,
+    exampleInvoiceDmn,
+    exampleInvoiceSimulation,
+    exampleInvoiceWorker,
+    exampleInvoiceC7,
+    exampleInvoiceC8,
+    // twitter
+    exampleTwitterBpmn,
+    exampleTwitterApi,
+    exampleTwitterSimulation,
+    exampleTwitterC7,
+    exampleTwitterC8,
+    // demos
+    exampleDemosBpmn,
+    exampleDemosApi,
+    exampleDemosDmn,
+    exampleDemosSimulation,
+    exampleDemosWorker,
+    exampleDemosC7,
+    // myCompany
     exampleMyCompany
   )
 
@@ -248,18 +267,6 @@ lazy val camunda8 = project
 
 // EXAMPLES
 // INVOICE
-lazy val exampleInvoice = project
-  .configure(preventPublication)
-  .aggregate(
-    exampleInvoiceBpmn,
-    exampleInvoiceApi,
-    exampleInvoiceDmn,
-    exampleInvoiceSimulation,
-    exampleInvoiceWorker,
-    exampleInvoiceC7,
-    exampleInvoiceC8
-  )
-
 lazy val exampleInvoiceBpmn = project
   .in(file("./05-examples/invoice/02-bpmn"))
   .settings(projectSettings("example-invoice-bpmn"))
@@ -319,16 +326,6 @@ lazy val exampleInvoiceC8 = project
   .dependsOn(api, exampleInvoiceBpmn, camunda8)
 
 // TWITTER
-lazy val exampleTwitter = project
-  .configure(preventPublication)
-  .aggregate(
-    exampleTwitterBpmn,
-    exampleTwitterApi,
-    exampleTwitterSimulation,
-    exampleTwitterC7,
-    exampleTwitterC8
-  )
-
 lazy val exampleTwitterBpmn = project
   .in(file("./05-examples/twitter/02-bpmn"))
   .settings(projectSettings("example-twitter-bpmn"))
@@ -377,17 +374,6 @@ lazy val exampleTwitterC8 = project
   .dependsOn(gateway, api, /*exampleTwitterBpmn,*/ camunda8)
 
 // DEMO
-lazy val exampleDemos = project
-  .configure(preventPublication)
-  .aggregate(
-    exampleDemosBpmn,
-    exampleDemosApi,
-    exampleDemosDmn,
-    exampleDemosSimulation,
-    exampleDemosWorker,
-    exampleDemosC7
-  )
-
 lazy val exampleDemosBpmn = project
   .in(file("./05-examples/demos/02-bpmn"))
   .settings(projectSettings("example-demos-bpmn"))
