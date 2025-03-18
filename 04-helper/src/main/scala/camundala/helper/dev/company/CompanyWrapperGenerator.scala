@@ -35,7 +35,7 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
   private lazy val helperCompanyCamundalaDevHelperPath = ModuleConfig.helperModule.srcPath / "CompanyCamundalaDevHelper.scala"
 
   private lazy val bpmnWrapper =
-    s"""package $companyName.camundala.bpmn
+    s"""package $companyName.camundala.domain
        |
        |/**
        | * Add here company specific stuff, like documentation or custom elements.

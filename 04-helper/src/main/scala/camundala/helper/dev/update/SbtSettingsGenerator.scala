@@ -45,7 +45,7 @@ case class SbtSettingsGenerator()(using config: DevConfig):
        |  - org: $${ProjectDef.org}
        |  - name: $${ProjectDef.name}
        |  - version: $${ProjectDef.version}
-       |  - dependencies: $${ProjectDef.bpmnDependencies.map(_.toString()).sorted.mkString("\\n    - ", "\\n    - ", "")}
+       |  - dependencies: $${ProjectDef.domainDependencies.map(_.toString()).sorted.mkString("\\n    - ", "\\n    - ", "")}
        |  \"\"\"
        |$sbtAutoImportSetting
        |}""".stripMargin
@@ -157,8 +157,7 @@ case class SbtSettingsGenerator()(using config: DevConfig):
       |          "scala",
       |          "scala.Predef",
       |          "camundala.domain",
-      |          "camundala.bpmn",
-      |          s"$customer.camundala.bpmn",
+      |          s"$customer.camundala.domain",
       |          "io.circe.syntax", 
       |          "sttp.tapir.json.circe",
       |          "io.scalaland.chimney.dsl",

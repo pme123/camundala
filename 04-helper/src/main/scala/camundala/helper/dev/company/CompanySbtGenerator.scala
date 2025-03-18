@@ -81,7 +81,8 @@ case class CompanySbtGenerator()(using
        |    scalacOptions +=
        |      (module.toSeq.map(m => s"camundala.$$m") ++
        |        Seq(
-       |          "java.lang", "java.time", "scala", "scala.Predef", "camundala.domain", "camundala.bpmn",
+       |          "java.lang", "java.time", "scala", "scala.Predef",
+       |          "camundala.domain",
        |          "io.circe",
        |          "io.circe.generic.semiauto", "io.circe.derivation", "io.circe.syntax", "sttp.tapir",
        |          "sttp.tapir.json.circe"
@@ -134,8 +135,8 @@ case class CompanySbtGenerator()(using
        |  // dependencies
        |  val typesafeConfigDep = "com.typesafe" % "config" % "1.4.3"
        |
-       |  lazy val bpmnDeps = Seq(
-       |    "io.github.pme123" %% "camundala-bpmn" % camundalaV
+       |  lazy val domainDeps = Seq(
+       |    "io.github.pme123" %% "camundala-domain" % camundalaV
        |  )
        |  lazy val apiDeps = Seq(
        |    "io.github.pme123" %% "camundala-api" % camundalaV,
@@ -196,7 +197,7 @@ case class CompanySbtGenerator()(using
        |  .in(file("./02-bpmn"))
        |  .settings(generalSettings(Some("bpmn")))
        |  .settings(publicationSettings)
-       |  .settings(libraryDependencies ++= bpmnDeps)
+       |  .settings(libraryDependencies ++= domainDeps)
        |  .settings(buildInfoSettings())
        |  .enablePlugins(BuildInfoPlugin)
        |
