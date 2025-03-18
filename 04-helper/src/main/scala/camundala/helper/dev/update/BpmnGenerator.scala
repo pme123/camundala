@@ -127,16 +127,16 @@ case class BpmnGenerator()(using config: DevConfig):
   private def eventDefinition(
       setupObject: SetupElement
   ) =
-    val SetupElement(label, processName, bpmnName, version) = setupObject
+    val SetupElement(label, processName, domainName, version) = setupObject
     s"""package ${config.projectPackage}
        |package bpmn.$processName${version.versionPackage}
        |
-       |object $bpmnName extends CompanyBpmn${label}EventDsl:
+       |object $domainName extends CompanyBpmn${label}EventDsl:
        |
        |  val ${
         if label == "Timer" then "title"
         else "messageName"
-      } = "${config.projectName}-$processName${setupObject.version.versionLabel}.$bpmnName"
+      } = "${config.projectName}-$processName${setupObject.version.versionLabel}.$domainName"
        |  val descr: String = ""
        |${
         if label == "Timer" then ""
@@ -151,12 +151,12 @@ case class BpmnGenerator()(using config: DevConfig):
         if label == "Timer" then ""
         else "In()"
       })
-       |end $bpmnName""".stripMargin
+       |end $domainName""".stripMargin
   end eventDefinition
 
   private def bpmnPath(processName: String, version: Option[Int]) =
     val subProject = config.subProjects.find(_ == processName)
-    val dir = config.projectDir / ModuleConfig.bpmnModule.packagePath(
+    val dir = config.projectDir / ModuleConfig.domainModule.packagePath(
       config.projectPath,
       subProject = subProject
     ) / subProject.map(_ => os.rel).getOrElse(os.rel / processName) / version.versionPath

@@ -207,21 +207,21 @@ case class CompanySbtGenerator()(using
        |  .settings(publicationSettings)
        |  .settings(unitTestSettings)
        |  .settings(libraryDependencies ++= apiDeps)
-       |  .dependsOn(bpmn)
+       |  .dependsOn(domain)
        |
        |lazy val dmn = project
        |  .in(file("./03-dmn"))
        |  .settings(generalSettings(Some("dmn")))
        |  .settings(publicationSettings)
        |  .settings(libraryDependencies ++= dmnDeps)
-       |  .dependsOn(bpmn)
+       |  .dependsOn(domain)
        |
        |lazy val simulation = project
        |  .in(file("./03-simulation"))
        |  .settings(generalSettings(Some("simulation")))
        |  .settings(publicationSettings)
        |  .settings(libraryDependencies ++= simulationDeps)
-       |  .dependsOn(bpmn)
+       |  .dependsOn(domain)
        |
        |lazy val worker = project
        |  .in(file("./03-worker"))
@@ -229,7 +229,7 @@ case class CompanySbtGenerator()(using
        |  .settings(publicationSettings)
        |  .settings(unitTestSettings)
        |  .settings(libraryDependencies ++= workersDeps)
-       |  .dependsOn(bpmn)
+       |  .dependsOn(domain)
        |
        |lazy val helper = project
        |  .in(file("./04-helper"))
