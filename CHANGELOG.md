@@ -24,6 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adjusted printStackTrace - see [Commit](https://github.com/pme123/camundala/commit/ae8c9fd4cf03313a4a33fd2e366804edf19441f6)
 
 
+## 1.30.40 - 2025-03-27
+### Changed 
+- Added possibility to compose Workers in the CustomWorker. - see [Commit](https://github.com/pme123/camundala/commit/dea9b1d02384c6afe541b31ba2491852270838bf)
+- Adjusted Generators. - see [Commit](https://github.com/pme123/camundala/commit/1c7a173244f65af32e989f939c192de90384bab1)
+- Adjusted Generators. - see [Commit](https://github.com/pme123/camundala/commit/552ee0dd7c4605f69fc967ea2959cc7a08b917c8)
+- Adjusted example modules / removed bpmn/test from ci.yml. - see [Commit](https://github.com/pme123/camundala/commit/3f289014f5885744a4cc184563a284a4a037cc00)
+
 ## 1.30.39 - 2025-03-17
 ### Changed 
 - State of work gateway. - see [Commit](https://github.com/pme123/camundala/commit/8d95b17010ba0008870e6a2127cea3f5d56cc634)
