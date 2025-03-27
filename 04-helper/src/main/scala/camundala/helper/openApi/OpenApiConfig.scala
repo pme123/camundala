@@ -18,8 +18,8 @@ case class OpenApiConfig(
     // creates name: Portfolios
     filterNames: Seq[String] = Seq.empty
 ):
-  def bpmnPath(versionTag: String): os.Path = path(ModuleConfig.bpmnModule, versionTag)
-  def bpmnPackage(versionTag: String): String = pckg(ModuleConfig.bpmnModule.name, versionTag)
+  def bpmnPath(versionTag: String): os.Path = path(ModuleConfig.domainModule, versionTag)
+  def bpmnPackage(versionTag: String): String = pckg(ModuleConfig.domainModule.name, versionTag)
   def simulationPath(versionTag: String): os.Path = path(ModuleConfig.simulationModule, versionTag)
   def simulationPackage(versionTag: String): String =
     pckg(ModuleConfig.simulationModule.name, versionTag)

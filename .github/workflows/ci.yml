@@ -22,7 +22,7 @@ jobs:
       - name: Compile
         run: sbt compile
       - name: Test
-        run: sbt -v "test:compile; domain/test; bpmn/test;"
+        run: sbt -v "test:compile; domain/test"
       - name: Test Report
         uses: dorny/test-reporter@v1
         if: success()    # run this step even if previous step failed

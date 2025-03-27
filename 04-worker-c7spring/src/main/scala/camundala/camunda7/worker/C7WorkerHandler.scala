@@ -93,7 +93,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
                                )
     yield ())
       .catchAll: ex =>
-        ProcessVariablesExtractor.extractGeneral()
+        ProcessVariablesExtractor.extractGeneral(ex.generalVariables)
           .flatMap(generalVariables =>
             externalTaskService.handleError(ex, generalVariables)
           )
@@ -140,6 +140,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     ): Boolean =
       error.isMock || // if it is mocked, it is handled in the error, as it also could be a successful output
         handledErrors.contains(error.errorCode.toString) ||
+        handledErrors.exists(err => error.causeError.map(_.errorCode.toString).contains(err)) ||
         handledErrors.map(
           _.toLowerCase
         ).contains("catchall")
@@ -148,12 +149,14 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         error: CamundalaWorkerError,
         generalVariables: GeneralVariables
     ): HelperContext[URIO[Any, CamundalaWorkerError]] =
+
       val errorMsg          = error.errorMsg.replace("\n", "")
       val errorHandled      = isErrorHandled(error, generalVariables.handledErrors)
       val errorRegexHandled =
         errorHandled && generalVariables.regexHandledErrors.forall(regex =>
           errorMsg.matches(s".*$regex.*")
         )
+
       (errorHandled, errorRegexHandled) match
         case (true, true)  =>
           val mockedOutput               = error match
@@ -170,7 +173,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
              handleSuccess(filtered, generalVariables.manualOutMapping)
            else
              handleBpmnError(error, filtered)
-          ).map(_ => AlreadyHandledError)
+          ).as(AlreadyHandledError)
         case (true, false) =>
           ZIO.succeed(HandledRegexNotMatchedError(error))
         case _             =>
@@ -248,7 +251,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         case r                      => r - 1
 
     end calcRetries
-    
+
     private[worker] def filteredOutput(
         outputVariables: Seq[String],
         allOutputs: Map[String, Any]

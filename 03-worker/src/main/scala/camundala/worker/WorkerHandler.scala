@@ -15,6 +15,9 @@ trait WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
   def worker: Worker[In, Out, ?]
   def topic: String
 
+  type RunnerOutput =
+    EngineRunContext ?=> IO[RunWorkError, Out]
+
   def applicationName: String
   def registerHandler(register: => Unit): Unit =
     val appPackageName = applicationName.replace("-", ".")
@@ -23,7 +26,7 @@ trait WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
     then
       register
       logger.info(s"Worker registered: $topic -> ${worker.getClass.getSimpleName}")
-        logger.debug(prettyString(worker))
+      logger.debug(prettyString(worker))
     else
       logger.info(
         s"Worker NOT registered: $topic -> ${worker.getClass.getSimpleName} (class starts not with $appPackageName)"
@@ -66,7 +69,6 @@ object ValidationHandler:
       override def validate(in: In): Either[ValidatorError, In] =
         funct(in)
 end ValidationHandler
-
 
 type InitProcessFunction =
   EngineContext ?=> Either[InitProcessError, Map[String, Any]]
@@ -124,10 +126,14 @@ trait RunWorkHandler[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec
 ]:
-  type RunnerOutput =
-    EngineRunContext ?=> Either[RunWorkError, Out]
 
-  def runWork(inputObject: In): RunnerOutput
+  type RunnerOutput    =
+    EngineRunContext ?=> Either[RunWorkError, Out]
+  type RunnerOutputZIO =
+    EngineRunContext ?=> IO[RunWorkError, Out]
+
+  def runWorkZIO(inputObject: In): RunnerOutputZIO
+
 end RunWorkHandler
 
 case class ServiceHandler[
@@ -147,20 +153,20 @@ case class ServiceHandler[
     serviceInExample: ServiceIn
 ) extends RunWorkHandler[In, Out]:
 
-  def runWork(
+  override def runWorkZIO(
       inputObject: In
-  ): RunnerOutput =
+  ): RunnerOutputZIO =
     val rRequest = runnableRequest(inputObject)
     for
       optWithServiceMock <- withServiceMock(rRequest, inputObject)
       output             <- handleMocking(optWithServiceMock, rRequest).getOrElse(
                               summon[EngineRunContext]
                                 .sendRequest[ServiceIn, ServiceOut](rRequest)
-                                .flatMap(out => outputMapper(out, inputObject))
+                                .flatMap(out => ZIO.fromEither(outputMapper(out, inputObject)))
                             )
     yield output
     end for
-  end runWork
+  end runWorkZIO
 
   private def runnableRequest(
       inputObject: In
@@ -177,7 +183,7 @@ case class ServiceHandler[
   private def withServiceMock(
       runnableRequest: RunnableRequest[ServiceIn],
       in: In
-  )(using context: EngineRunContext): Either[ServiceError, Option[Out]] =
+  )(using context: EngineRunContext): IO[ServiceError, Option[Out]] =
     (
       context.generalVariables.servicesMocked,
       context.generalVariables.outputServiceMock
@@ -196,21 +202,21 @@ case class ServiceHandler[
         )
           .map(Some.apply)
       case _               =>
-        Right(None)
+        ZIO.succeed(None)
 
   end withServiceMock
 
   private def decodeMock[Out: InOutDecoder](
       json: Json
-  ): Either[ServiceMockingError, Out] =
-    decodeTo[Out](json.asJson.deepDropNullValues.toString).left
-      .map(ex => ServiceMockingError(errorMsg = ex.causeMsg))
+  ): IO[ServiceMockingError, Out] =
+    decodeTo[Out](json.asJson.deepDropNullValues.toString)
+      .mapError(ex => ServiceMockingError(errorMsg = ex.causeMsg))
   end decodeMock
 
   private def handleMocking(
       optOutMock: Option[Out],
       runnableRequest: RunnableRequest[ServiceIn]
-  )(using context: EngineRunContext): Option[Either[ServiceError, Out]] =
+  )(using context: EngineRunContext): Option[IO[ServiceError, Out]] =
     optOutMock
       .map { mock =>
         context
@@ -221,19 +227,19 @@ case class ServiceHandler[
                    |""".stripMargin)
         mock
       }
-      .map(m => Right(m))
+      .map(m => ZIO.succeed(m))
   end handleMocking
 
   private def handleServiceMock(
       mockedResponse: MockedServiceResponse[ServiceOut],
       runnableRequest: RunnableRequest[ServiceIn],
       in: In
-  ): Either[ServiceError, Out] =
+  ): IO[ServiceError, Out] =
     mockedResponse match
       case MockedServiceResponse(_, Right(body), headers) =>
-        mapBodyOutput(body, headers, in)
+        ZIO.fromEither(mapBodyOutput(body, headers, in))
       case MockedServiceResponse(status, Left(body), _)   =>
-        Left(
+        ZIO.fail(
           ServiceRequestError(
             status,
             serviceErrorMsg(
@@ -274,8 +280,8 @@ object CustomHandler:
   def apply[
       In <: Product: InOutCodec,
       Out <: Product: InOutCodec
-  ](funct: In => Either[CustomError, Out]): CustomHandler[In, Out] =
+  ](funct: In => EngineRunContext ?=> IO[CustomError, Out]): CustomHandler[In, Out] =
     new CustomHandler[In, Out]:
-      override def runWork(inputObject: In): RunnerOutput =
+      override def runWorkZIO(inputObject: In): RunnerOutputZIO =
         funct(inputObject)
 end CustomHandler

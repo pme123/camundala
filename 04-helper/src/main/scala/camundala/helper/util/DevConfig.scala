@@ -38,8 +38,16 @@ case class DevConfig(
   lazy val sbtProjectDir: os.Path  = projectDir / "project"
 
   def dependsOn(level: Int): String =
+    val aboveLevel =
+      modules
+        .sortBy(_.level)
+        .span(_.level < level)
+        ._1.lastOption
+        .map(_.level)
+        .getOrElse(0)
+
     val depsOn = modules
-      .filter(_.level == level - 1) // depends on one level above
+      .filter(_.level == aboveLevel)
       .map(_.name)
     if depsOn.nonEmpty
     then depsOn.mkString(".dependsOn(", ", ", ")")
@@ -71,21 +79,25 @@ object DevConfig:
   ): DevConfig =
     new DevConfig(
       apiProjectConfig =
-        ApiProjectConfig.init(projectName, packageConfPath),
+        ApiProjectConfig.init(projectName, packageConfPath)
     )
 
   def configForCompany(projectName: String): DevConfig = DevConfig(
-    apiProjectConfig = ApiProjectConfig(projectName, "0.1.0-SNAPSHOT"),
+    apiProjectConfig = ApiProjectConfig(projectName, "0.1.0-SNAPSHOT")
   )
-  
+
   def projectDir(projectName: String, baseDir: os.Path): os.Path =
-    println(s"baseDir: $baseDir - projectName: $projectName -${if baseDir.toString.endsWith(projectName) then baseDir else baseDir / projectName}")
-    if baseDir.toString.toLowerCase.endsWith(projectName.toLowerCase) then baseDir else baseDir / projectName
+    println(s"baseDir: $baseDir - projectName: $projectName -${
+        if baseDir.toString.endsWith(projectName) then baseDir else baseDir / projectName
+      }")
+    if baseDir.toString.toLowerCase.endsWith(projectName.toLowerCase) then baseDir
+    else baseDir / projectName
+  end projectDir
 
   import ModuleConfig.*
 
   lazy val modules: Seq[ModuleConfig] = Seq(
-    bpmnModule,
+    domainModule,
     apiModule,
     dmnModule,
     simulationModule,
@@ -136,9 +148,9 @@ case class ModuleConfig(
 end ModuleConfig
 
 object ModuleConfig:
-  lazy val bpmnModule       = ModuleConfig(
-    "bpmn",
-    level = 2,
+  lazy val domainModule     = ModuleConfig(
+    "domain",
+    level = 1,
     testType = TestType.MUnit,
     generateSubModule = true,
     hasProjectDependencies = true
@@ -161,7 +173,7 @@ object ModuleConfig:
   lazy val workerModule     = ModuleConfig(
     "worker",
     level = 3,
-    testType = TestType.MUnit,
+    testType = TestType.ZIO,
     sbtSettings = Seq("dockerSettings"),
     sbtPlugins = Seq("DockerPlugin", "JavaAppPackaging"),
     hasProjectDependencies = true
@@ -174,7 +186,7 @@ object ModuleConfig:
 end ModuleConfig
 
 enum TestType:
-  case MUnit, Simulation, None
+  case MUnit, Simulation, ZIO, None
 
 case class CompanyVersionConfig(
     scalaVersion: String = BuildInfo.scalaVersion,
@@ -185,5 +197,6 @@ case class CompanyVersionConfig(
     springBootVersion: String = BuildInfo.springBootVersion,
     jaxbXmlVersion: String = BuildInfo.jaxbApiVersion,
     munitVersion: String = BuildInfo.mUnitVersion,
+    zioVersion: String = BuildInfo.zioVersion,
     otherVersions: Map[String, String] = Map.empty
 )

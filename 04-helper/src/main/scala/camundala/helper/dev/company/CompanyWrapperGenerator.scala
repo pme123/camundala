@@ -21,7 +21,7 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
 
   private lazy val companyName = config.companyName
 
-  private lazy val projectBpmnPath = ModuleConfig.bpmnModule.srcPath / "CompanyBpmnDsl.scala"
+  private lazy val projectBpmnPath = ModuleConfig.domainModule.srcPath / "CompanyBpmnDsl.scala"
   private lazy val projectApiPath = ModuleConfig.apiModule.srcPath / "CompanyApiCreator.scala"
   private lazy val projectDmnPath = ModuleConfig.dmnModule.srcPath / "CompanyDmnTester.scala"
   private lazy val projectSimulationPath = ModuleConfig.simulationModule.srcPath / "CompanySimulation.scala"
@@ -35,7 +35,7 @@ case class CompanyWrapperGenerator()(using config: DevConfig):
   private lazy val helperCompanyCamundalaDevHelperPath = ModuleConfig.helperModule.srcPath / "CompanyCamundalaDevHelper.scala"
 
   private lazy val bpmnWrapper =
-    s"""package $companyName.camundala.bpmn
+    s"""package $companyName.camundala.domain
        |
        |/**
        | * Add here company specific stuff, like documentation or custom elements.

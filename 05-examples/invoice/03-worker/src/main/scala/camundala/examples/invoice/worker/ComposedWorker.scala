@@ -20,16 +20,16 @@ class ComposedWorker
 
   lazy val customTask = example
 
-  def runWork(
+  override def runWorkZIO(
       inputObject: In
-  ): Either[CustomError, Out] =
+  ): EngineRunContext ?=> IO[CustomError, Out] =
     logger.info("Do some crazy things running work...")
     given EngineRunContext =
       EngineRunContext(engineContext, GeneralVariables())
 
     val peopleWorkerIn = StarWarsPeople.In()
     val out = peopleWorker.runWorkFromWorkerUnsafe(peopleWorkerIn)
-      .left.map: error =>
+      .mapError: error =>
         CustomError(
           s"Error while fetching Starwars People:\n- ${error.errorMsg}."
         )
@@ -40,7 +40,5 @@ class ComposedWorker
       case StarWarsPeople.Out.Failure(processStatus) =>
         logger.info(s"- Got People failed with: $processStatus")
         Out()
-
-  end runWork
 
 end ComposedWorker

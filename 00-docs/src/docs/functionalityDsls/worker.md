@@ -45,7 +45,7 @@ class MyCustomTaskWorker extends CompanyCustomWorkerDsl[In, Out]:
 
   lazy val customTask = example
 
-  def runWork(in: In): Either[CamundalaWorkerError.CustomError, Out] =
+  override def runWork(in: In): Either[CamundalaWorkerError.CustomError, Out] =
     // your business logic
     ???
 ```

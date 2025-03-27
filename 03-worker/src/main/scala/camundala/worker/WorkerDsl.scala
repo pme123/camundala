@@ -3,6 +3,7 @@ package worker
 
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
+import zio.{IO, ZIO}
 
 import scala.concurrent.duration.*
 import scala.reflect.ClassTag
@@ -14,12 +15,20 @@ trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
   def topic: String     = worker.topic
   def timeout: Duration = 10.seconds
 
-  def runWorkFromWorker(in: In)(using EngineRunContext): Option[Either[RunWorkError, Out]] =
+  def runWorkFromWorker(in: In)(using EngineRunContext): Option[IO[RunWorkError, Out]] =
     worker.runWorkHandler
       .map: handler =>
-        handler.runWork(in)
+        handler.runWorkZIO(in)
+          .flatMapError:
+            case error: CustomError =>
+              ZIO.logWarning(s"Error generalVariables: ${error.generalVariables}")
+                .as(error.copy(generalVariables =
+                  Some(summon[EngineRunContext].generalVariables)
+                ))
+            case error              =>
+              ZIO.succeed(error)
 
-  def runWorkFromWorkerUnsafe(in: In)(using EngineRunContext): Either[RunWorkError, Out] =
+  def runWorkFromWorkerUnsafe(in: In)(using EngineRunContext): IO[RunWorkError, Out] =
     runWorkFromWorker(in)
       .get // only if you are sure that there is a handler
 
@@ -61,6 +70,15 @@ trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
         .map(Right(_))
         .getOrElse(
           Left(error)
+        )
+
+    def toIO[E <: CamundalaWorkerError](
+        error: E
+    ): IO[E, T] =
+      option
+        .map(ZIO.succeed(_))
+        .getOrElse(
+          ZIO.fail(error)
         )
   end extension // Option
 
@@ -109,7 +127,7 @@ trait CustomWorkerDsl[
   lazy val worker: CustomWorker[In, Out] =
     CustomWorker(customTask)
       .validate(ValidationHandler(validate))
-      .runWork(CustomHandler(runWork))
+      .runWork(CustomHandler(runWorkZIO))
 
 end CustomWorkerDsl
 
@@ -158,7 +176,7 @@ trait ServiceWorkerDsl[
   /** Run the Work is done by the handler. If you want a different behavior, you need to use the
     * CustomWorkerDsl
     */
-  final def runWork(
+  override final def runWork(
       inputObject: In
   ): Either[CustomError, Out] = Right(serviceTask.out)
 
@@ -270,9 +288,26 @@ private trait RunWorkDsl[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec
 ]:
+  type RunWorkZIOOutput =
+    EngineRunContext ?=> IO[CustomError, Out]
+  type RunWorkOutput    =
+    Either[CustomError, Out]
 
-  def runWork(
+  protected def runWorkZIO(
       inputObject: In
-  ): Either[CustomError, Out]
+  ): EngineRunContext ?=> IO[CustomError, Out] =
+
+    ZIO.fromEither(runWork(inputObject))
+      .tapError: error =>
+        ZIO.logError(s"Worker ${getClass.getName} failed with $error")
+      .tap: out =>
+        ZIO.logInfo(s"Worker ${getClass.getName} finished with $out")
+
+  protected def runWork(
+      inputObject: In
+  ): Either[CustomError, Out] =
+    Left(CustomError(
+      "Worker is not implemented. Be aware you have either to override runWork or runWorkZIO."
+    ))
 
 end RunWorkDsl

@@ -2,11 +2,14 @@ package camundala.worker
 
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
-import zio.ZIO
+import zio.*
+import zio.test.*
+import zio.test.Assertion.*
+import zio.test.TestAspect.*
 
 import scala.reflect.ClassTag
 
-class WorkerExecutorTest extends munit.FunSuite:
+object WorkerExecutorSpec extends ZIOSpecDefault:
 
   def descr: String = "myDescr"
 
@@ -14,7 +17,7 @@ class WorkerExecutorTest extends munit.FunSuite:
     new EngineContext:
       override def getLogger(clazz: Class[?]): WorkerLogger = ???
       override def toEngineObject: Json => Any = ???
-      override def sendRequest[ServiceIn: Encoder, ServiceOut: Decoder: ClassTag](
+      override def sendRequest[ServiceIn: Encoder, ServiceOut: {Decoder, ClassTag}](
           request: RunnableRequest[ServiceIn]
       ): SendRequestType[ServiceOut] = ???
     ,
@@ -46,43 +49,52 @@ class WorkerExecutorTest extends munit.FunSuite:
 
   lazy val executor = WorkerExecutor(worker)
 
-  test("InputValidator WithConfig override InConfig"):
-    assertEquals(
-      executor.InputValidator.validate(Seq(
+  def spec = suite("WorkerExecutorSpec")(
+    test("InputValidator WithConfig override InConfig") {
+      val result = executor.InputValidator.validate(Seq(
         ZIO.succeed("requiredValue" -> None),
         ZIO.succeed("optionalValue" -> None),
         ZIO.succeed("aValue" -> Some(Json.fromString("ok"))),
         ZIO.succeed("inConfig" -> Some(Json.obj("requiredValue" -> Json.fromString("aso"))))
-      )),
-      ZIO.succeed(In(inConfig = Some(InConfig(requiredValue = "aso"))))
-    )
-  test("InputValidator WithConfig default InConfig"):
-    assertEquals(
-      executor.InputValidator.validate(Seq(
+      ))
+
+      assertZIO(result)(
+        equalTo(In(inConfig = Some(InConfig(requiredValue = "aso"))))
+      )
+    },
+
+    test("InputValidator WithConfig default InConfig") {
+      val result = executor.InputValidator.validate(Seq(
         ZIO.succeed("requiredValue" -> None),
         ZIO.succeed("optionalValue" -> None),
         ZIO.succeed("aValue" -> Some(Json.fromString("ok")))
-      )),
-      ZIO.succeed(In(inConfig = Some(InConfig())))
-    )
-  test("InputValidator WithConfig override InConfig in In"):
-    assertEquals(
-      executor.InputValidator.validate(Seq(
+      ))
+
+      assertZIO(result)(
+        equalTo(In(inConfig = Some(InConfig())))
+      )
+    },
+
+    test("InputValidator WithConfig override InConfig in In") {
+      val result = executor.InputValidator.validate(Seq(
         ZIO.succeed("aValue" -> Some(Json.fromString("ok"))),
         ZIO.succeed("requiredValue" -> Some(Json.fromString("aso"))),
         ZIO.succeed("optionalValue" -> Some(Json.fromString("nei")))
-      )),
-      ZIO.succeed(In(inConfig = Some(InConfig(requiredValue = "aso", optionalValue = Some("nei")))))
-    )
+      ))
 
-  test("Test optional values are null in JSON"):
-    val in = InConfig().asJson.hcursor
-      .downField("optionalValue")
-      .as[Json]
-    val out = Json.Null
-    assertEquals(
-      in,
-      Right(out)
-    )
- 
-end WorkerExecutorTest
+      assertZIO(result)(
+        equalTo(In(inConfig = Some(InConfig(requiredValue = "aso", optionalValue = Some("nei")))))
+      )
+    },
+
+    test("Test optional values are null in JSON") {
+      val in = (ZIO.fromEither(InConfig().asJson.hcursor
+        .downField("optionalValue")
+        .as[Json]))
+      val out = Json.Null
+
+      assertZIO(in)(equalTo(out))
+    }
+  ) @@ sequential
+
+end WorkerExecutorSpec

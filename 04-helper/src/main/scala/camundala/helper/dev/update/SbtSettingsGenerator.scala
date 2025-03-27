@@ -26,7 +26,8 @@ case class SbtSettingsGenerator()(using config: DevConfig):
        |  // run worker
        |  val mUnitVersion = "${config.versionConfig.munitVersion}"
        |  val mUnit = "org.scalameta" %% "munit" % mUnitVersion % Test
-       |    
+       |  val zioVersion = "${config.versionConfig.zioVersion}"
+       |  
        |$projectSettings
        |$sbtDependencies
        |$sbtPublish
@@ -45,7 +46,7 @@ case class SbtSettingsGenerator()(using config: DevConfig):
        |  - org: $${ProjectDef.org}
        |  - name: $${ProjectDef.name}
        |  - version: $${ProjectDef.version}
-       |  - dependencies: $${ProjectDef.bpmnDependencies.map(_.toString()).sorted.mkString("\\n    - ", "\\n    - ", "")}
+       |  - dependencies: $${ProjectDef.domainDependencies.map(_.toString()).sorted.mkString("\\n    - ", "\\n    - ", "")}
        |  \"\"\"
        |$sbtAutoImportSetting
        |}""".stripMargin
@@ -145,6 +146,21 @@ case class SbtSettingsGenerator()(using config: DevConfig):
        |    Test / parallelExecution := true,
        |    testFrameworks += new TestFramework("munit.Framework")
        |  )
+       |  lazy val simulationSettings = Seq(
+       |    Test / parallelExecution := false,
+       |    testFrameworks += new TestFramework("camundala.simulation.custom.SimulationTestFramework")
+       |  )
+       |  lazy val zioTestSettings = Seq(
+       |    libraryDependencies ++= zioTestDependencies,
+       |    Test / parallelExecution := true,
+       |    testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
+       |  )
+       |  lazy val zioTestDependencies =
+       |    Seq(
+       |      "dev.zio" %% "zio-test" % zioVersion % Test,
+       |      "dev.zio" %% "zio-test-sbt" % zioVersion % Test,
+       |    )
+       |  
        |""".stripMargin
 
   private lazy val sbtAutoImportSetting =
@@ -157,8 +173,7 @@ case class SbtSettingsGenerator()(using config: DevConfig):
       |          "scala",
       |          "scala.Predef",
       |          "camundala.domain",
-      |          "camundala.bpmn",
-      |          s"$customer.camundala.bpmn",
+      |          s"$customer.camundala.domain",
       |          "io.circe.syntax", 
       |          "sttp.tapir.json.circe",
       |          "io.scalaland.chimney.dsl",

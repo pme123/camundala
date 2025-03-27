@@ -13,19 +13,21 @@ export sttp.model.Uri.UriContext
 export sttp.model.Method
 export sttp.model.Uri
 
+export zio.ZIO
+export zio.IO
+
 lazy val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
 
 type SendRequestType[ServiceOut] =
-  EngineRunContext ?=> Either[ServiceError, ServiceResponse[ServiceOut]]
+  EngineRunContext ?=> IO[ServiceError, ServiceResponse[ServiceOut]]
 
 def decodeTo[A: InOutDecoder](
     jsonStr: String
-): Either[CamundalaWorkerError.UnexpectedError, A] =
-  io.circe.parser
+): IO[CamundalaWorkerError.UnexpectedError, A] =
+  ZIO.fromEither(io.circe.parser
     .decodeAccumulating[A](jsonStr)
-    .toEither
-    .left
-    .map { ex =>
+    .toEither)
+    .mapError { ex =>
       CamundalaWorkerError.UnexpectedError(errorMsg =
         ex.toList
           .map(_.getMessage())
@@ -45,9 +47,10 @@ sealed trait CamundalaWorkerError extends Throwable:
   def errorCode: ErrorCodeType
   def errorMsg: String
 
-  def causeMsg = s"$errorCode: $errorMsg"
-  
-  override def toString(): String = causeMsg
+  def causeMsg                                   = s"$errorCode: $errorMsg"
+  def causeError: Option[CamundalaWorkerError]   = None
+  def generalVariables: Option[GeneralVariables] = None
+  override def toString(): String                = causeMsg + causeError.map(e =>s"Caused by ${e.causeMsg}").getOrElse("")
 end CamundalaWorkerError
 
 sealed trait ErrorWithOutput extends CamundalaWorkerError:
@@ -58,19 +61,18 @@ object CamundalaWorkerError:
   case class CamundaBpmnError(errorCode: ErrorCodes, errorMsg: String)
 
   case class ValidatorError(
-      errorMsg: String,
-      errorCode: ErrorCodes = ErrorCodes.`validation-failed`
+      errorMsg: String
   ) extends ErrorWithOutput:
-    def output: Map[String, Any] =
-      Map("validationErrors" -> errorMsg)
+    val errorCode: ErrorCodes    = ErrorCodes.`validation-failed`
+    def output: Map[String, Any] = Map("validationErrors" -> errorMsg)
   end ValidatorError
 
   case class MockedOutput(
       output: Map[String, Any],
-      errorCode: ErrorCodes = ErrorCodes.`output-mocked`,
       errorMsg: String = "Output mocked"
   ) extends ErrorWithOutput:
-    override val isMock = true
+    val errorCode: ErrorCodes = ErrorCodes.`output-mocked`
+    override val isMock       = true
   end MockedOutput
 
   case object AlreadyHandledError extends CamundalaWorkerError:
@@ -78,29 +80,29 @@ object CamundalaWorkerError:
     val errorCode: ErrorCodes = ErrorCodes.`error-already-handled`
 
   case class InitProcessError(
-      errorMsg: String = "Problems initialize default variables of the Process.",
-      errorCode: ErrorCodes = ErrorCodes.`error-unexpected`
-  ) extends CamundalaWorkerError
+      errorMsg: String = "Problems initialize default variables of the Process."
+  ) extends CamundalaWorkerError:
+    val errorCode: ErrorCodes = ErrorCodes.`error-unexpected`
 
   case class MockerError(
-      errorMsg: String,
-      errorCode: ErrorCodes = ErrorCodes.`mocking-failed`
-  ) extends CamundalaWorkerError
+      errorMsg: String
+  ) extends CamundalaWorkerError:
+    val errorCode: ErrorCodes = ErrorCodes.`mocking-failed`
 
   case class MappingError(
-      errorMsg: String,
-      errorCode: ErrorCodes = ErrorCodes.`mapping-error`
-  ) extends CamundalaWorkerError
+      errorMsg: String
+  ) extends CamundalaWorkerError:
+    val errorCode: ErrorCodes = ErrorCodes.`mapping-error`
 
   case class UnexpectedError(
-      errorMsg: String,
-      errorCode: ErrorCodes = ErrorCodes.`error-unexpected`
-  ) extends CamundalaWorkerError
+      errorMsg: String
+  ) extends CamundalaWorkerError:
+    val errorCode: ErrorCodes = ErrorCodes.`error-unexpected`
 
   case class HandledRegexNotMatchedError(
-      errorMsg: String,
-      errorCode: ErrorCodes = ErrorCodes.`error-handledRegexNotMatched`
-  ) extends CamundalaWorkerError
+      errorMsg: String
+  ) extends CamundalaWorkerError:
+    val errorCode: ErrorCodes = ErrorCodes.`error-handledRegexNotMatched`
 
   object HandledRegexNotMatchedError:
     def apply(error: CamundalaWorkerError): HandledRegexNotMatchedError =
@@ -112,43 +114,52 @@ object CamundalaWorkerError:
   end HandledRegexNotMatchedError
 
   case class BadVariableError(
-      errorMsg: String,
-      errorCode: ErrorCodes = ErrorCodes.`bad-variable`
-  ) extends CamundalaWorkerError
+      errorMsg: String
+  ) extends CamundalaWorkerError:
+    val errorCode: ErrorCodes = ErrorCodes.`bad-variable`
 
   sealed trait RunWorkError extends CamundalaWorkerError
 
-  case class CustomError(errorMsg: String, errorCode: ErrorCodes = ErrorCodes.`custom-run-error`)
-      extends RunWorkError
+  case class CustomError(
+      errorMsg: String,
+      override val generalVariables: Option[GeneralVariables] = None,
+      override val causeError: Option[CamundalaWorkerError] = None
+  ) extends RunWorkError:
+    val errorCode: ErrorCodes = ErrorCodes.`custom-run-error`
+  end CustomError
 
   trait ServiceError extends RunWorkError
 
   case class ServiceMappingError(
-      errorMsg: String,
-      errorCode: ErrorCodes = ErrorCodes.`service-mapping-error`
-  ) extends ServiceError
+      errorMsg: String
+  ) extends ServiceError:
+    val errorCode: ErrorCodes = ErrorCodes.`service-mapping-error`
+
   case class ServiceMockingError(
-      errorMsg: String,
-      errorCode: ErrorCodes = ErrorCodes.`service-mocking-error`
-  ) extends ServiceError
+      errorMsg: String
+  ) extends ServiceError:
+    val errorCode: ErrorCodes = ErrorCodes.`service-mocking-error`
+
   case class ServiceBadPathError(
-      errorMsg: String,
-      errorCode: ErrorCodes = ErrorCodes.`service-bad-path-error`
-  ) extends ServiceError
+      errorMsg: String
+  ) extends ServiceError:
+    val errorCode: ErrorCodes = ErrorCodes.`service-bad-path-error`
 
   case class ServiceAuthError(
-      errorMsg: String,
-      errorCode: ErrorCodes = ErrorCodes.`service-auth-error`
-  ) extends ServiceError
+      errorMsg: String
+  ) extends ServiceError:
+    val errorCode: ErrorCodes = ErrorCodes.`service-auth-error`
 
   case class ServiceBadBodyError(
-      errorMsg: String,
-      errorCode: ErrorCodes = ErrorCodes.`service-bad-body-error`
-  ) extends ServiceError
+      errorMsg: String
+  ) extends ServiceError:
+    val errorCode: ErrorCodes = ErrorCodes.`service-bad-body-error`
+
   case class ServiceUnexpectedError(
-      errorMsg: String,
-      errorCode: ErrorCodes = ErrorCodes.`service-unexpected-error`
-  ) extends ServiceError
+      errorMsg: String
+  ) extends ServiceError:
+    val errorCode: ErrorCodes = ErrorCodes.`service-unexpected-error`
+
   case class ServiceRequestError(
       errorCode: Int,
       errorMsg: String

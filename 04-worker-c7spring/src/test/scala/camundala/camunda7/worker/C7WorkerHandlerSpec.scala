@@ -17,7 +17,7 @@ import zio.test.TestAspect.*
 import java.util
 import java.util.Date
 
-object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOutput]:
+object C7WorkerHandlerSpec extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOutput]:
   engineContext = DefaultCamunda7Context()
   def spec =
     suite("C7WorkerSpec")(
@@ -25,22 +25,27 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
         test("should return true for handledErrors") {
           val error  = CamundalaWorkerError.MappingError("error")
           val result = externalTaskService.isErrorHandled(error, handledErrors)
-          assert(result)(isTrue)
+          assertTrue(result)
         },
         test("should return true for MockedOutput") {
           val error  = CamundalaWorkerError.MockedOutput(Map.empty)
           val result = externalTaskService.isErrorHandled(error, handledErrors)
-          assert(result)(isTrue)
+          assertTrue(result)
         },
         test("should return true for catchAll") {
           val error  = CamundalaWorkerError.CustomError("error")
           val result = externalTaskService.isErrorHandled(error, Seq("CatchAll"))
-          assert(result)(isTrue)
+          assertTrue(result)
         },
         test("should return false for any other Error") {
           val error  = CamundalaWorkerError.CustomError("error")
           val result = externalTaskService.isErrorHandled(error, handledErrors)
-          assert(result)(isFalse)
+          assertTrue(!result)
+        },
+        test("should return true for a causeError") {
+          val error  = CamundalaWorkerError.CustomError("error", causeError = Some(CamundalaWorkerError.MappingError("mapping error")))
+          val result = externalTaskService.isErrorHandled(error, handledErrors)
+          assertTrue(result)
         }
       ),
       
@@ -72,8 +77,8 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
         test("should return the error") {
           val error  = CamundalaWorkerError.CustomError("error")
           val result = externalTaskService.handleBpmnError(error, Map.empty[String, Any])
-          assertZIO(result)(equalTo(error))
-          assert(externalTask.getRetries)(equalTo(0))
+          assertZIO(result)(equalTo(())) &&
+            assertTrue(externalTask.getRetries == 0)
         },
         test("should fail with an UnsupportedError if Camunda throws an exception") {
           val error  = CamundalaWorkerError.CustomError("error")
@@ -88,8 +93,8 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
         test("should return the error") {
           val error  = CamundalaWorkerError.CustomError("error")
           val result = externalTaskService.handleFailure(error)
-          assertZIO(result)(equalTo(error))
-          assert(externalTask.getRetries)(equalTo(0))
+          assertZIO(result)(equalTo(())) &&
+            assertTrue(externalTask.getRetries == 0)
         },
         test("should return unit if Camunda throws an exception") {
           val error  = CamundalaWorkerError.CustomError("error")
@@ -143,67 +148,67 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
           
           val error = CamundalaWorkerError.CustomError("Entity was updated by another transaction concurrently")
           val result = externalTaskService.calcRetries(error)
-          
-          assert(result)(equalTo(2))
+
+          assertTrue(result == 2)
         ,
         test("should return 2 when retries < 0 and error message contains a retry pattern"):
           given externalTask: camunda.ExternalTask = TestExternalTask(retries = -1)
           
           val error = CamundalaWorkerError.CustomError("An exception occurred in the persistence layer")
           val result = externalTaskService.calcRetries(error)
-          
-          assert(result)(equalTo(2))
+
+          assertTrue(result == 2)
         ,
         test("should decrement retries by 1 when retries > 0 regardless of error message"):
           given externalTask: camunda.ExternalTask = TestExternalTask(retries = 5)
           
           val error = CamundalaWorkerError.CustomError("Entity was updated by another transaction concurrently")
           val result = externalTaskService.calcRetries(error)
-          
-          assert(result)(equalTo(4))
+
+          assertTrue(result == 4)
         ,
         test("should decrement retries by 1 when retries > 0 and error doesn't match retry patterns"):
           given externalTask: camunda.ExternalTask = TestExternalTask(retries = 2)
           
           val error = CamundalaWorkerError.CustomError("Some other error message")
           val result = externalTaskService.calcRetries(error)
-          
-          assert(result)(equalTo(1))
+
+          assertTrue(result == 1)
         ,
         test("should decrement retries to 0 when retries = 1"):
           given externalTask: camunda.ExternalTask = TestExternalTask(retries = 1)
           
           val error = CamundalaWorkerError.CustomError("Some error message")
           val result = externalTaskService.calcRetries(error)
-          
-          assert(result)(equalTo(0))
+
+          assertTrue(result == 0)
         ,
         test("should return 0 when retries = 0 and error doesn't match retry patterns"):
           given externalTask: camunda.ExternalTask = TestExternalTask(retries = 0)
           
           val error = CamundalaWorkerError.CustomError("Some error that doesn't match retry patterns")
           val result = externalTaskService.calcRetries(error)
-          
-          assert(result)(equalTo(-1))
+
+          assertTrue(result == -1)
       ),
       suite("filteredOutput"):
         test("should return all outputs when output variables is empty"):
           val outputs = Map("key1" -> "value1", "key2" -> "value2")
           val result = externalTaskService.filteredOutput(Seq.empty, outputs)
-          assert(result)(equalTo(outputs))
+          assertTrue(result == outputs)
         ,
         test("should filter outputs based on output variables"):
           val outputs = Map("key1" -> "value1", "key2" -> "value2", "key3" -> "value3")
           val filterVars = Seq("key1", "key3")
           val expected = Map("key1" -> "value1", "key3" -> "value3")
           val result = externalTaskService.filteredOutput(filterVars, outputs)
-          assert(result)(equalTo(expected))
+          assertTrue(result == expected)
         ,
         test("should return empty map when no outputs match filter"):
           val outputs = Map("key1" -> "value1", "key2" -> "value2")
           val filterVars = Seq("key3", "key4")
           val result = externalTaskService.filteredOutput(filterVars, outputs)
-          assert(result)(equalTo(Map.empty))
+          assertTrue(result == Map.empty)
     )
 
   lazy val handledErrors: Seq[String]         = Seq(ErrorCodes.`mapping-error`.toString)
@@ -226,7 +231,7 @@ object C7WorkerHandlerTest extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
 
   def topic: String = ???
 
-end C7WorkerHandlerTest
+end C7WorkerHandlerSpec
 
 case class TestExternalTask(
     activityId: String = "defaultActivityId",

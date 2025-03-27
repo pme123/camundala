@@ -77,7 +77,7 @@ case class WorkerGenerator()(using config: DevConfig):
     s"""package ${config.projectPackage}
        |package worker.$processName${version.versionPackage}
        |
-       |import ${config.projectPackage}.bpmn.$processName${version.versionPackage}.$workerName.*
+       |import ${config.projectPackage}.domain.$processName${version.versionPackage}.$workerName.*
        |
        |@SpringConfiguration
        |class ${workerName}Worker extends CompanyInitWorkerDsl[In, Out, InitIn, InConfig]:
@@ -95,7 +95,7 @@ case class WorkerGenerator()(using config: DevConfig):
     s"""package ${config.projectPackage}
        |package worker.$processName${version.versionPackage}
        |
-       |import ${config.projectPackage}.bpmn.$processName${version.versionPackage}.$workerName.*
+       |import ${config.projectPackage}.domain.$processName${version.versionPackage}.$workerName.*
        |
        |@SpringConfiguration
        |class ${workerName}Worker extends CompanyValidationWorkerDsl[In]:
@@ -114,7 +114,7 @@ case class WorkerGenerator()(using config: DevConfig):
     s"""package ${config.projectPackage}
        |package worker.$processName${version.versionPackage}
        |
-       |import ${config.projectPackage}.bpmn.$processName${version.versionPackage}.$workerName.*
+       |import ${config.projectPackage}.domain.$processName${version.versionPackage}.$workerName.*
        |
        |@SpringConfiguration
        |class ${workerName}Worker extends Company${label.replace("Task", "")}WorkerDsl[In, Out${
@@ -126,7 +126,7 @@ case class WorkerGenerator()(using config: DevConfig):
         then
           """  lazy val customTask = example
             |
-            |  def runWork(in: In): Either[CamundalaWorkerError.CustomError, Out] =
+            |  override def runWork(in: In): Either[CamundalaWorkerError.CustomError, Out] =
             |    ???
             |  end runWork""".stripMargin
         else
@@ -223,7 +223,7 @@ case class WorkerGenerator()(using config: DevConfig):
     s"""package ${config.projectPackage}
        |package worker.$processName${version.versionPackage}
        |
-       |import ${config.projectPackage}.bpmn.$processName${version.versionPackage}.$workerName.*
+       |import ${config.projectPackage}.domain.$processName${version.versionPackage}.$workerName.*
        |import ${config.projectPackage}.worker.$processName${version.versionPackage}.${workerName}Worker
        |
        |//sbt worker/testOnly *${workerName}WorkerTest

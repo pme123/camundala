@@ -157,8 +157,11 @@ case class SbtGenerator()(using
       case TestType.MUnit =>
         s""",
            |    testSettings""".stripMargin
+      case TestType.ZIO =>
+        s""",
+           |    testSettings,
+           |    zioTestSettings""".stripMargin
       case TestType.Simulation =>
         s""",
-           |    Test / parallelExecution := false,
-           |    testFrameworks += new TestFramework("camundala.simulation.custom.SimulationTestFramework")""".stripMargin
+           |    simulationSettings""".stripMargin
 end SbtGenerator
