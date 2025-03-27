@@ -65,7 +65,7 @@ case class WorkerExecutor[
       def toIn(posJsonObj: IO[ValidatorError, JsonObject]): IO[ValidatorError, In] =
         posJsonObj
           .flatMap(jsonObj =>
-            ZIO.fromEither(decodeTo[In](jsonObj.asJson.deepDropNullValues.toString))
+            decodeTo[In](jsonObj.asJson.deepDropNullValues.toString)
               .mapError(ex => ValidatorError(errorMsg = ex.errorMsg))
               .flatMap(in =>
                 validationHandler.map(h => ZIO.fromEither(h.validate(in))).getOrElse(ZIO.succeed(
@@ -151,9 +151,7 @@ case class WorkerExecutor[
     def run(inputObject: In)(using EngineRunContext): IO[RunWorkError, Out | NoOutput] =
       worker.runWorkHandler
         .map:
-          _.runWork(inputObject)
-        .map:
-          ZIO.fromEither
+          _.runWorkZIO(inputObject)
         .getOrElse:
           ZIO.succeed(NoOutput())
   end WorkRunner

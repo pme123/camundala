@@ -173,7 +173,7 @@ object ModuleConfig:
   lazy val workerModule     = ModuleConfig(
     "worker",
     level = 3,
-    testType = TestType.MUnit,
+    testType = TestType.ZIO,
     sbtSettings = Seq("dockerSettings"),
     sbtPlugins = Seq("DockerPlugin", "JavaAppPackaging"),
     hasProjectDependencies = true
@@ -186,7 +186,7 @@ object ModuleConfig:
 end ModuleConfig
 
 enum TestType:
-  case MUnit, Simulation, None
+  case MUnit, Simulation, ZIO, None
 
 case class CompanyVersionConfig(
     scalaVersion: String = BuildInfo.scalaVersion,
@@ -197,5 +197,6 @@ case class CompanyVersionConfig(
     springBootVersion: String = BuildInfo.springBootVersion,
     jaxbXmlVersion: String = BuildInfo.jaxbApiVersion,
     munitVersion: String = BuildInfo.mUnitVersion,
+    zioVersion: String = BuildInfo.zioVersion,
     otherVersions: Map[String, String] = Map.empty
 )

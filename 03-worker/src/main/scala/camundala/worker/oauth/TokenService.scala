@@ -34,27 +34,25 @@ class TokenService(
         )
       )
 
-  def impersonateToken(username: String, adminToken: String): Either[ServiceAuthError, String] =
+  def impersonateToken(username: String, adminToken: String): IO[ServiceAuthError, String] =
     val token = adminToken.replace("Bearer ", "")
-    val body = impersonateBody ++ Map("requested_subject" -> username, "subject_token" -> token)
-    authImpersonateResponse(body)
+    val body  = impersonateBody ++ Map("requested_subject" -> username, "subject_token" -> token)
+    ZIO.fromEither(authImpersonateResponse(body)
       .body
-      .map(t => s"Bearer ${t.access_token}")
-      .left
-      .map(err =>
-        ServiceAuthError(
-          s"Could not get impersonated token for $username - ${token.take(20)}...${token.takeRight(10)}!\n$err\n\n$identityUrl"
-        )
+      .map(t => s"Bearer ${t.access_token}")).mapError(err =>
+      ServiceAuthError(
+        s"Could not get impersonated token for $username - ${token.take(20)}...${token.takeRight(10)}!\n$err\n\n$identityUrl"
       )
+    )
   end impersonateToken
-  private lazy val tokenRequest =
+  private lazy val tokenRequest                                                            =
     basicRequest
       .post(identityUrl)
       .header("accept", "application/json")
 
-  private def authAdminResponse =
+  private def authAdminResponse                                  =
     tokenRequest.body(adminTokenBody).response(asJson[TokenResponse]).send(backend)
-  private def authClientCredentialsResponse =
+  private def authClientCredentialsResponse                      =
     tokenRequest.body(clientCredentialsBody).response(asJson[TokenResponse]).send(backend)
   private def authImpersonateResponse(body: Map[String, String]) =
     tokenRequest.body(body).response(asJson[TokenResponse]).send(backend)

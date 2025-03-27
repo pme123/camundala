@@ -4,15 +4,16 @@ import camundala.domain.*
 import camundala.examples.demos.newWorker.CompanyBpmnCustomTaskDsl
 import camundala.examples.demos.worker.ExampleJobWorker.*
 import camundala.worker.*
+import camundala.worker.CamundalaWorkerError.CustomError
+import zio.*
 @SpringConfiguration
 class ExampleJobWorker extends CompanyCustomWorkerDsl[In, Out]:
 
   lazy val customTask = example
 
-  def runWork(in: In): Either[CamundalaWorkerError.CustomError, Out] =
+  override def runWorkZIO(in: In): EngineRunContext ?=> IO[CustomError, Out] =
     logger.info(s"Running ExampleJobWorker OLD with $in")
-    Thread.sleep(500)
-    Right(Out())
+    ZIO.sleep(500.millis).as(Out())
     //Left(CamundalaWorkerError.CustomError("Not implemented yet."))
 
 object ExampleJobWorker extends CompanyBpmnCustomTaskDsl:

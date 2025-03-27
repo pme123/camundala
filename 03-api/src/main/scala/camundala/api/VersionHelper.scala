@@ -55,7 +55,7 @@ end VersionHelper
 object VersionHelper:
 
   lazy val camundalaVersion: String =
-    repoSearch("camundala-bpmn_3", "io.github.pme123")
+    repoSearch("camundala-domain_3", "io.github.pme123")
 
   // this expects a projectName in this pattern mycompany-myproject
   def repoSearch(projectName: String): String =

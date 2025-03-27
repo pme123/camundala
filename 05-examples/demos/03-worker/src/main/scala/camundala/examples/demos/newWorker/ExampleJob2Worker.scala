@@ -4,10 +4,11 @@ import camundala.domain.*
 import camundala.examples.demos.newWorker.ExampleJob2.*
 import camundala.worker.CamundalaWorkerError
 import camundala.worker.c7zio.C8Worker
+import zio.*
 
 object ExampleJob2Worker extends CompanyCustomWorkerDsl[In, Out]:
   lazy val customTask = example
-  def runWork(in: In): Either[CamundalaWorkerError.CustomError, Out] =
+  override def runWork(in: In): Either[CamundalaWorkerError.CustomError, Out] =
     logger.info(s"Running ExampleJob2Worker with $in")
     Thread.sleep(2000)
     Right(Out())

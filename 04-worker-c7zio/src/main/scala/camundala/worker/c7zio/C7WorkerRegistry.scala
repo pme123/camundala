@@ -1,19 +1,20 @@
 package camundala.worker.c7zio
 
-import camundala.worker.WorkerRegistry
+import camundala.worker.{WorkerDsl, WorkerRegistry}
 import org.camunda.bpm.client.ExternalTaskClient
 import zio.ZIO.*
 import zio.{Console, *}
 
 class C7WorkerRegistry(client: C7Client)
-    extends WorkerRegistry[C7Worker[?, ?]]:
+    extends WorkerRegistry:
 
-  def registerWorkers(workers: Set[C7Worker[?, ?]]): ZIO[Any, Any, Any] =
+  protected def registerWorkers(workers: Set[WorkerDsl[?, ?]]): ZIO[Any, Any, Any] =
     Console.printLine(s"Starting C7 Worker Client") *>
       acquireReleaseWith(client.client)(_.closeClient()): client =>
         for
           server <- ZIO.never.forever.fork
-          _      <- collectAllPar(workers.map(w => registerWorker(w, client)))
+          c7Workers: Set[C7Worker[?, ?]] = workers.collect { case w: C7Worker[?, ?] => w }
+          _      <- collectAllPar(c7Workers.map(w => registerWorker(w, client)))
           _      <- server.join
         yield ()
 

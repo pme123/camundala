@@ -6,7 +6,7 @@ case class BpmnGenerator()(using config: DevConfig):
 
   def createProcess(setupElement: SetupElement): Unit =
     createIfNotExists(
-      bpmnPath(setupElement.processName, setupElement.version) / s"${setupElement.bpmnName}.scala",
+      domainPath(setupElement.processName, setupElement.version) / s"${setupElement.bpmnName}.scala",
       objectDefinition(
         setupElement,
         isProcess = true
@@ -18,7 +18,7 @@ case class BpmnGenerator()(using config: DevConfig):
     val processName = setupElement.processName
     val version = setupElement.version
     createIfNotExists(
-      bpmnPath(
+      domainPath(
         processName,
         version
       ) / s"${setupElement.bpmnName}.scala",
@@ -28,7 +28,7 @@ case class BpmnGenerator()(using config: DevConfig):
     then
       val superTrait = processName.head.toUpper + processName.tail + s"V${version.getOrElse(1)}"
       createOrUpdate(
-        bpmnPath(
+        domainPath(
           processName,
           version
         ) / s"$superTrait.scala",
@@ -39,7 +39,7 @@ case class BpmnGenerator()(using config: DevConfig):
 
   def createEvent(setupElement: SetupElement): Unit =
     createIfNotExists(
-      bpmnPath(setupElement.processName, setupElement.version) / s"${setupElement.bpmnName}.scala",
+      domainPath(setupElement.processName, setupElement.version) / s"${setupElement.bpmnName}.scala",
       eventDefinition(setupElement)
     )
 
@@ -47,11 +47,11 @@ case class BpmnGenerator()(using config: DevConfig):
       setupObject: SetupElement,
       isProcess: Boolean = false
   ) =
-    val SetupElement(label, processName, bpmnName, version) = setupObject
+    val SetupElement(label, processName, domainName, version) = setupObject
     s"""package ${config.projectPackage}
-       |package bpmn.$processName${version.versionPackage}
+       |package domain.$processName${version.versionPackage}
        |
-       |object $bpmnName extends ${
+       |object $domainName extends ${
         if label == "ServiceTask"
         then processName.head.toUpper + processName.tail + s"${version.versionLabel}:"
         else s"CompanyBpmn${label}Dsl:"
@@ -97,7 +97,7 @@ case class BpmnGenerator()(using config: DevConfig):
         else ""
       }
        |  )
-       |end $bpmnName""".stripMargin
+       |end $domainName""".stripMargin
   end objectDefinition
 
   private def serviceTaskTrait(
@@ -106,7 +106,7 @@ case class BpmnGenerator()(using config: DevConfig):
       superTrait: String
   ) =
     s"""package ${config.projectPackage}
-       |package bpmn.$processName${version.versionPackage}
+       |package domain.$processName${version.versionPackage}
        |
        |object $superTrait:
        |
@@ -129,7 +129,7 @@ case class BpmnGenerator()(using config: DevConfig):
   ) =
     val SetupElement(label, processName, domainName, version) = setupObject
     s"""package ${config.projectPackage}
-       |package bpmn.$processName${version.versionPackage}
+       |package domain.$processName${version.versionPackage}
        |
        |object $domainName extends CompanyBpmn${label}EventDsl:
        |
@@ -154,7 +154,7 @@ case class BpmnGenerator()(using config: DevConfig):
        |end $domainName""".stripMargin
   end eventDefinition
 
-  private def bpmnPath(processName: String, version: Option[Int]) =
+  private def domainPath(processName: String, version: Option[Int]) =
     val subProject = config.subProjects.find(_ == processName)
     val dir = config.projectDir / ModuleConfig.domainModule.packagePath(
       config.projectPath,
@@ -162,7 +162,7 @@ case class BpmnGenerator()(using config: DevConfig):
     ) / subProject.map(_ => os.rel).getOrElse(os.rel / processName) / version.versionPath
     os.makeDir.all(dir)
     dir
-  end bpmnPath
+  end domainPath
 
   private def inOutDefinitions(isProcess: Boolean = false) =
     s"""  case class In(

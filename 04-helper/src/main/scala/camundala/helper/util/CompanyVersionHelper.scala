@@ -9,7 +9,7 @@ case class CompanyVersionHelper(
 ):
 
   lazy val companyCamundalaVersion: String =
-    VersionHelper.repoSearch(s"$companyName-camundala-bpmn_3", companyName)
+    VersionHelper.repoSearch(s"$companyName-camundala-domain_3", companyName)
 
 end CompanyVersionHelper
 

@@ -31,31 +31,34 @@ object ProcessVariablesExtractor:
       }
   end extract
 
-  def extractGeneral(): GeneralVariableType =
-    for
-      // mocking
-      servicesMocked <- variable(InputParams.servicesMocked, false)
-      mockedWorkers <- extractSeqFromArrayOrString(InputParams.mockedWorkers, Seq.empty)
-      outputMockOpt <- jsonVariableOpt(InputParams.outputMock)
-      outputServiceMockOpt <- jsonVariableOpt(InputParams.outputServiceMock)
-      // mapping
-      manualOutMapping <- variable(InputParams.manualOutMapping, false)
-      outputVariables <- extractSeqFromArrayOrString(InputParams.outputVariables, Seq.empty)
-      handledErrors <- extractSeqFromArrayOrString(InputParams.handledErrors, Seq.empty)
-      regexHandledErrors <- extractSeqFromArrayOrString(InputParams.regexHandledErrors, Seq.empty)
-      // authorization
-      impersonateUserIdOpt <- variableOpt[String](InputParams.impersonateUserId)
-    yield GeneralVariables(
-      servicesMocked = servicesMocked,
-      mockedWorkers = mockedWorkers,
-      outputMock = outputMockOpt,
-      outputServiceMock = outputServiceMockOpt,
-      outputVariables = outputVariables,
-      manualOutMapping = manualOutMapping,
-      handledErrors = handledErrors,
-      regexHandledErrors = regexHandledErrors,
-      impersonateUserId = impersonateUserIdOpt
-    )
+  def extractGeneral(generalVariablesFromError: Option[GeneralVariables] = None): GeneralVariableType =
+    generalVariablesFromError
+      .map(ZIO.succeed(_))
+      .getOrElse:
+        for
+          // mocking
+          servicesMocked <- variable(InputParams.servicesMocked, false)
+          mockedWorkers <- extractSeqFromArrayOrString(InputParams.mockedWorkers, Seq.empty)
+          outputMockOpt <- jsonVariableOpt(InputParams.outputMock)
+          outputServiceMockOpt <- jsonVariableOpt(InputParams.outputServiceMock)
+          // mapping
+          manualOutMapping <- variable(InputParams.manualOutMapping, false)
+          outputVariables <- extractSeqFromArrayOrString(InputParams.outputVariables, Seq.empty)
+          handledErrors <- extractSeqFromArrayOrString(InputParams.handledErrors, Seq.empty)
+          regexHandledErrors <- extractSeqFromArrayOrString(InputParams.regexHandledErrors, Seq.empty)
+          // authorization
+          impersonateUserIdOpt <- variableOpt[String](InputParams.impersonateUserId)
+        yield GeneralVariables(
+          servicesMocked = servicesMocked,
+          mockedWorkers = mockedWorkers,
+          outputMock = outputMockOpt,
+          outputServiceMock = outputServiceMockOpt,
+          outputVariables = outputVariables,
+          manualOutMapping = manualOutMapping,
+          handledErrors = handledErrors,
+          regexHandledErrors = regexHandledErrors,
+          impersonateUserId = impersonateUserIdOpt
+        )
   end extractGeneral
 
 end ProcessVariablesExtractor

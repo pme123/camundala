@@ -1,20 +1,21 @@
 package camundala.worker.c7zio
 
-import camundala.worker.WorkerRegistry
+import camundala.worker.{WorkerDsl, WorkerRegistry}
 import io.camunda.zeebe.client.ZeebeClient
 import zio.ZIO.*
 import zio.{Console, *}
 
 class C8WorkerRegistry(client: C8Client)
-    extends WorkerRegistry[C8Worker[?, ?]]:
+    extends WorkerRegistry:
 
-  def registerWorkers(workers: Set[C8Worker[?, ?]]): ZIO[Any, Any, Any] =
+  protected def registerWorkers(workers: Set[WorkerDsl[?, ?]]): ZIO[Any, Any, Any] =
     Console.printLine(s"Starting C8 Worker Client") *>
       acquireReleaseWith(client.client)(_.closeClient()): client =>
         for
-          server <- ZIO.never.forever.fork
-          _      <- collectAllPar(workers.map(w => registerWorker(w, client)))
-          _      <- server.join
+          server   <- ZIO.never.forever.fork
+          c8Workers = workers.collect { case w: C8Worker[?, ?] => w }
+          _        <- collectAllPar(c8Workers.map(w => registerWorker(w, client)))
+          _        <- server.join
         yield ()
 
   private def registerWorker(worker: C8Worker[?, ?], client: ZeebeClient) =

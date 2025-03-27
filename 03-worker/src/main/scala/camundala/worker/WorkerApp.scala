@@ -5,7 +5,7 @@ import zio.ZIO.*
 
 trait WorkerApp extends ZIOAppDefault:
   // a list of registries for each worker implementation
-  def workerRegistries: Seq[WorkerRegistry[?]]
+  def workerRegistries: Seq[WorkerRegistry]
   // list all the workers you want to register
   def workers(dWorkers: (WorkerDsl[?, ?] | Seq[WorkerDsl[?, ?]])*): Unit =
     theWorkers = dWorkers

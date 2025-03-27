@@ -121,7 +121,7 @@ case class ServiceWorker[
   override def defaultMock(in: In): IO[MockerError, Out] =
     runWorkHandler
       .map(handler =>
-        ZIO.fromEither(
+        ZIO.fromEither:
           handler
             .outputMapper(
               inOutExample.dynamicServiceOutMock
@@ -132,7 +132,7 @@ case class ServiceWorker[
               ,
               in
             )
-        ).mapError: error =>
+        .mapError: error =>
           MockerError(s"Error mapping ServiceResponse to Out: $error")
       )
       .getOrElse(

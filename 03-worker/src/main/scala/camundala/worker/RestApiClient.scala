@@ -12,41 +12,39 @@ import sttp.model.{Header, Uri}
 import scala.reflect.ClassTag
 import scala.util.Try
 
-
 trait RestApiClient:
-  
+
   def sendRequest[
       ServiceIn: InOutEncoder,             // body of service
       ServiceOut: {InOutDecoder, ClassTag} // output of service
   ](
       runnableRequest: RunnableRequest[ServiceIn]
   ): SendRequestType[ServiceOut] =
-    try
-      for
-        reqWithOptBody <- requestWithOptBody(runnableRequest)
-        req            <- auth(reqWithOptBody)
-        response       <- sendRequest(req)
-        statusCode      = response.code
-        body           <- readBody(statusCode, response, req)
-        headers         = response.headers.map(h => h.name -> h.value).toMap
-        out            <- decodeResponse[ServiceOut](body)
-      yield ServiceResponse(out, headers)
-    catch
-      case ex: Throwable =>
+    (for
+      reqWithOptBody <- requestWithOptBody(runnableRequest)
+      req            <- auth(reqWithOptBody)
+      response       <- sendRequest(req)
+      statusCode      = response.code
+      body           <- readBody(statusCode, response, req)
+      headers         = response.headers.map(h => h.name -> h.value).toMap
+      out            <- decodeResponse[ServiceOut](body)
+    yield ServiceResponse(out, headers))
+      .mapError(err =>
         val unexpectedError =
-          s"""Unexpected error while sending request: ${ex.getMessage}.
+          s"""Unexpected error while sending request: ${err.getMessage}.
              | -> $runnableRequest
              |""".stripMargin
-        Left(ServiceUnexpectedError(unexpectedError))
+        ServiceUnexpectedError(unexpectedError)
+      )
   end sendRequest
 
   protected def readBody(
       statusCode: StatusCode,
       response: Response[Either[String, String]],
       request: Request[Either[String, String], Any]
-  ): Either[ServiceRequestError, String] =
-    response.body.left
-      .map(body =>
+  ): IO[ServiceRequestError, String] =
+    ZIO.fromEither(response.body)
+      .mapError(body =>
         ServiceRequestError(
           statusCode.code,
           s"Non-2xx response with code $statusCode:\n$body\n\n${request.toCurl}"
@@ -57,52 +55,50 @@ trait RestApiClient:
   // no auth per default
   protected def auth(
       request: Request[Either[String, String], Any]
-  )(using EngineRunContext): Either[ServiceAuthError, Request[Either[String, String], Any]] =
-    Right(request)
+  )(using EngineRunContext): IO[ServiceAuthError, Request[Either[String, String], Any]] =
+    ZIO.succeed(request)
 
   protected def sendRequest(
       request: Request[Either[String, String], Any]
-  ) =
-    try
-      Right(request.send(backend))
-    catch
-      case ex: Throwable =>
+  ): IO[ServiceUnexpectedError, Identity[Response[Either[String, String]]]] =
+    ZIO.attempt(request.send(backend))
+      .mapError(ex =>
         val unexpectedError =
           s"""Unexpected error while sending request: ${ex.getMessage}.
              | -> ${request.toCurl(Set("Authorization"))}
              |""".stripMargin
-        Left(ServiceUnexpectedError(unexpectedError))
+        ServiceUnexpectedError(unexpectedError)
+      )
 
   protected def decodeResponse[
-      ServiceOut: InOutDecoder: ClassTag // output of service
+      ServiceOut: {InOutDecoder, ClassTag} // output of service
   ](
       body: String
-  ): Either[ServiceBadBodyError, ServiceOut] =
+  ): IO[ServiceBadBodyError, ServiceOut] =
     if hasNoOutput[ServiceOut]()
-    then Right(NoOutput().asInstanceOf[ServiceOut])
+    then ZIO.succeed(NoOutput().asInstanceOf[ServiceOut])
     else
       if body.isBlank then
         val runtimeClass = implicitly[ClassTag[ServiceOut]].runtimeClass
         runtimeClass match
           case x if x == classOf[Option[?]] =>
-            Right(None.asInstanceOf[ServiceOut])
+            ZIO.succeed(None.asInstanceOf[ServiceOut])
           case other                        =>
-            Left(ServiceBadBodyError(
+            ZIO.fail(ServiceBadBodyError(
               s"There is no body in the response and the ServiceOut is neither NoOutput nor Option (Class is $other)."
             ))
         end match
       else
-        parser
+        ZIO.fromEither(parser
           .decodeAccumulating[ServiceOut](body)
-          .toEither
-          .left
-          .map(err =>
+          .toEither)
+          .mapError(err =>
             ServiceBadBodyError(s"Problem creating body from response.\n$err\nBODY: $body")
           )
 
   protected def requestWithOptBody[ServiceIn: InOutEncoder](
       runnableRequest: RunnableRequest[ServiceIn]
-  ): Either[ServiceBadBodyError, RequestT[Identity, Either[String, String], Any]] =
+  ): IO[ServiceBadBodyError, RequestT[Identity, Either[String, String], Any]] =
     val request =
       requestMethod(
         runnableRequest.httpMethod,
@@ -110,10 +106,10 @@ trait RestApiClient:
         runnableRequest.qSegments,
         runnableRequest.headers
       )
-    Try(runnableRequest.requestBodyOpt.map(b =>
+    ZIO.attempt(runnableRequest.requestBodyOpt.map(b =>
       request.body(b.asJson.deepDropNullValues)
-    ).getOrElse(request)).toEither.left
-      .map(err => ServiceBadBodyError(errorMsg = s"Problem creating body for request.\n$err"))
+    ).getOrElse(request))
+       .mapError(err => ServiceBadBodyError(errorMsg = s"Problem creating body for request.\n$err"))
   end requestWithOptBody
 
   private def requestMethod(

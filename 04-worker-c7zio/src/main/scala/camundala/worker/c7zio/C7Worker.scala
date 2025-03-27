@@ -11,6 +11,7 @@ import java.util.Date
 
 import scala.jdk.CollectionConverters.*
 
+//TODO: take from C7WorkerHandler
 trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     extends WorkerDsl[In, Out], camunda.ExternalTaskHandler:
 
@@ -30,7 +31,7 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         ).future
   end execute
 
-  private def run(externalTaskService: camunda.ExternalTaskService)(using
+  private[worker] def run(externalTaskService: camunda.ExternalTaskService)(using
       externalTask: camunda.ExternalTask
   ): ZIO[Any, Throwable, Unit] =
     for
@@ -48,36 +49,24 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
 
   private def executeWorker(
       externalTaskService: camunda.ExternalTaskService
-  )(using camunda.ExternalTask): ZIO[Any, Throwable, Unit] =
+  ): HelperContext[ZIO[Any, Throwable, Unit]] =
     val tryProcessVariables =
       ProcessVariablesExtractor.extract(worker.variableNames)
     (for
-        generalVariables      <- ProcessVariablesExtractor.extractGeneral()
-        given EngineRunContext = EngineRunContext(c7Context, generalVariables)
-        filteredOut           <- WorkerExecutor(worker).execute(tryProcessVariables)
-        _                     <- externalTaskService.handleSuccess(
-                                   filteredOut,
-                                   generalVariables.manualOutMapping
-                                 )
-      yield () //
-    ).mapError:
-      case ex: CamundalaWorkerError =>
-        ex
-      case ex                       =>
-        UnexpectedError(ex.getMessage)
-    .flatMapError: ex =>
-      ProcessVariablesExtractor.extractGeneral()
-        .flatMap: generalVariables =>
-          externalTaskService.handleError(ex, generalVariables)
-        .fold(
-          exc => exc,
-          err => err
-        )
-    .mapError:
-      case err: UnexpectedError =>
-        err.printStackTrace()
-        err
-
+      generalVariables      <- ProcessVariablesExtractor.extractGeneral()
+      given EngineRunContext = EngineRunContext(c7Context, generalVariables)
+      filteredOut           <- WorkerExecutor(worker).execute(tryProcessVariables)
+      _                     <- externalTaskService.handleSuccess(
+                                 filteredOut,
+                                 generalVariables.manualOutMapping
+                               )
+    yield ())
+      .catchAll: ex =>
+        ProcessVariablesExtractor.extractGeneral()
+          .flatMap(generalVariables =>
+            externalTaskService.handleError(ex, generalVariables)
+          )
+      .unit
   end executeWorker
 
   extension (externalTaskService: camunda.ExternalTaskService)
@@ -85,28 +74,32 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     private[worker] def handleSuccess(
         filteredOutput: Map[String, Any],
         manualOutMapping: Boolean
-    )(using externalTask: camunda.ExternalTask): ZIO[Any, UnexpectedError, Unit] =
-      ZIO.attempt(
+    ): HelperContext[URIO[Any, Unit]] =
+      ZIO.attempt:
         externalTaskService.complete(
           summon[camunda.ExternalTask],
           if manualOutMapping then Map.empty.asJava else filteredOutput.asJava, // Process Variables
           if !manualOutMapping then Map.empty.asJava else filteredOutput.asJava // local Variables
         )
-      ).mapError: err =>
-        UnexpectedError(
-          s"There is an unexpected Error from completing a successful Worker to C7: ${err.getMessage}."
+      .catchAll: err =>
+        handleFailure(
+          UnexpectedError(
+            s"There is an unexpected Error from completing a successful Worker to C7: ${err.getMessage}."
+          ),
+          doRetry = true
         )
+      .ignore
 
     private[worker] def handleError(
         error: CamundalaWorkerError,
         generalVariables: GeneralVariables
-    ): HelperContext[URIO[Any, CamundalaWorkerError]] =
+    ): HelperContext[URIO[Any, Unit]] =
       checkError(error, generalVariables)
         .flatMap:
-          case err: UnexpectedError =>
-            ZIO.succeed(err)
-          case err                  =>
-            handleFailure(err)
+          case _: (UnexpectedError | MockedOutput | AlreadyHandledError.type) =>
+            ZIO.unit
+          case err                                                            =>
+            handleFailure(err, doRetry = true)
 
     end handleError
 
@@ -138,19 +131,15 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
             case _                      => Map.empty
           val filtered: Map[String, Any] =
             filteredOutput(generalVariables.outputVariables, mockedOutput)
-          if
-            error.isMock && !generalVariables.handledErrors.contains(
-              error.errorCode.toString
-            )
-          then
-            handleSuccess(filtered, generalVariables.manualOutMapping)
-              .fold(
-                ex => ex,
-                _ => error
-              )
-          else
-            handleBpmnError(error, filtered)
-          end if
+          (if
+             error.isMock && !generalVariables.handledErrors.contains(
+               error.errorCode.toString
+             )
+           then
+             handleSuccess(filtered, generalVariables.manualOutMapping)
+           else
+             handleBpmnError(error, filtered)
+          ).as(AlreadyHandledError)
         case (true, false) =>
           ZIO.succeed(HandledRegexNotMatchedError(error))
         case _             =>
@@ -158,39 +147,10 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
       end match
     end checkError
 
-    private[worker] def handleFailure(
-        error: CamundalaWorkerError
-    ): HelperContext[URIO[Any, CamundalaWorkerError]] =
-      val taskId  = summon[camunda.ExternalTask].getId
-      val retries =
-        if error.isInstanceOf[CamundalaWorkerError.ServiceError]
-        then
-          summon[camunda.ExternalTask].getRetries match
-            case r if r <= 0 => 3
-            case r           => r - 1
-        else 0
-
-      if retries == 0 then logger.error(error)
-      logger.info(s"Retries left for $taskId: $retries")
-      ZIO.attempt(
-        externalTaskService.handleFailure(
-          taskId,
-          error.causeMsg,
-          s" ${error.causeMsg}\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
-          retries,
-          timeout.toMillis
-        )
-      ).fold(
-        ex =>
-          UnexpectedError(s"Problem handling Failure to C7: ${ex.getMessage}."),
-        s => error
-      )
-    end handleFailure
-
     private[worker] def handleBpmnError(
         error: CamundalaWorkerError,
         filteredGeneralVariables: Map[String, Any]
-    ): HelperContext[URIO[Any, CamundalaWorkerError]] =
+    ): HelperContext[URIO[Any, Unit]] =
       val errorVars = Map(
         "errorCode" -> error.errorCode,
         "errorMsg"  -> error.errorMsg
@@ -203,13 +163,76 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
           error.errorMsg,
           variables
         )
-      ).fold(
-        err => UnexpectedError(s"Problem handling BpmnError to C7: ${err.getMessage}."),
-        _ => error
       )
+        .catchSome:
+          case err if summon[camunda.ExternalTask].getRetries >= 0 =>
+            handleFailure(
+              UnexpectedError(s"Problem handling BpmnError to C7: ${err.getMessage}."),
+              doRetry = true
+            ).ignore
+        .ignore
     end handleBpmnError
 
+    private[worker] def handleFailure(
+        error: CamundalaWorkerError,
+        doRetry: Boolean = false
+    ): HelperContext[URIO[Any, Unit]] =
+      val taskId            = summon[camunda.ExternalTask].getId
+      val processInstanceId = summon[camunda.ExternalTask].getProcessInstanceId
+      val businessKey       = summon[camunda.ExternalTask].getBusinessKey
+      val retries           = calcRetries(error)
+
+      if retries == 0 then logger.error(error)
+      logError(
+        s"Handle Failure for taskId: $taskId | processInstanceId: $processInstanceId | doRetry: $doRetry | retries: $retries | $error"
+      ) *>
+        ZIO.when(retries >= 0 || doRetry):
+          ZIO.attempt(
+            externalTaskService.handleFailure(
+              taskId,
+              error.causeMsg,
+              s" ${error.causeMsg}\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
+              Math.max(retries, 0), // < 0 not allowed
+              10.seconds.toMillis
+            )
+          ).flatMapError: throwable =>
+            logError(s"Problem handling Failure to C7: ${throwable.getMessage}.")
+          .ignore
+        .ignore
+    end handleFailure
+
+    private[worker] def calcRetries(
+        error: CamundalaWorkerError
+    ): HelperContext[Int] =
+      val doRetryMsgs = Seq(
+        "Entity was updated by another transaction concurrently",
+        "An exception occurred in the persistence layer"
+        //  "Service Unavailable",
+        //  "Gateway Timeout"
+      ).map(_.toLowerCase)
+      val doRetry     = doRetryMsgs.exists(error.errorMsg.toLowerCase.contains)
+
+      summon[camunda.ExternalTask].getRetries match
+        case r if r <= 0 && doRetry => 2
+        case r                      => r - 1
+
+    end calcRetries
+
+    private[worker] def filteredOutput(
+        outputVariables: Seq[String],
+        allOutputs: Map[String, Any]
+    ): Map[String, Any] =
+      outputVariables match
+        case filter if filter.isEmpty => allOutputs
+        case filter                   =>
+          allOutputs
+            .filter:
+              case k -> _ => filter.contains(k)
+
+    end filteredOutput
+
   end extension
-  private lazy val runtime = Runtime.default
+
+  private lazy val runtime = zio.Runtime.default
 
 end C7Worker

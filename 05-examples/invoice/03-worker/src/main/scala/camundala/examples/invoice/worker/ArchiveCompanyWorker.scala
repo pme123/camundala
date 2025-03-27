@@ -3,7 +3,7 @@ package camundala.examples.invoice.worker
 import camundala.domain.CustomTask
 import camundala.examples.invoice.bpmn.ArchiveInvoice.*
 import camundala.worker.CamundalaWorkerError.CustomError
-import camundala.worker.CustomWorkerDsl
+import camundala.worker.*
 import org.springframework.context.annotation.Configuration
 
 @Configuration
@@ -12,7 +12,7 @@ class ArchiveCompanyWorker
 
   lazy val customTask = example
 
-  def runWork(
+  override def runWork(
       inputObject: In
   ): Either[CustomError, Out] =
     logger.info("Do some crazy things running work...")

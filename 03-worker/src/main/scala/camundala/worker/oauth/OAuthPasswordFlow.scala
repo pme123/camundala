@@ -25,7 +25,7 @@ trait OAuthPasswordFlow:
     identityUrl,
     tokenRequestBody,
     clientCredentialsTokenRequestBody,
-    impersontateTokenRequestBody
+    impersonateTokenRequestBody
   )
 
   def adminToken(tokenKey: String = username)(using
@@ -62,11 +62,11 @@ trait OAuthPasswordFlow:
 
   def impersonateToken(username: String, adminToken: String)(using
       logger: WorkerLogger,
-  ): Either[ServiceAuthError, String] =
+  ): IO[ServiceAuthError, String] =
     TokenCache.cache.getIfPresent(username)
       .map: token =>
         logger.info(s"Token from Cache: $username")
-        Right(token)
+        ZIO.succeed(token)
       .getOrElse:
         tokenService.impersonateToken(username, adminToken)
           .map: token =>
@@ -92,7 +92,7 @@ trait OAuthPasswordFlow:
     "scope"         -> scope
   )
 
-  lazy val impersontateTokenRequestBody = Map(
+  lazy val impersonateTokenRequestBody = Map(
     "grant_type"    -> grant_type_impersonate,
     "client_id"     -> client_id,
     "client_secret" -> client_secret,

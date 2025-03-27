@@ -99,6 +99,7 @@ lazy val domain  = project
       BuildInfoKey("jaxbApiVersion", jaxbApiVersion),
       BuildInfoKey("osLibVersion", osLibVersion),
       BuildInfoKey("mUnitVersion", mUnitVersion),
+      BuildInfoKey("zioVersion", zioVersion),
       BuildInfoKey("dmnTesterVersion", dmnTesterVersion)
     )
   ).enablePlugins(BuildInfoPlugin)
@@ -156,8 +157,8 @@ lazy val worker = project
       sttpDependency,
       scaffeineDependency,
       zioDependency,
-      zioSlf4jDependency
-    )
+      zioSlf4jDependency,
+    ) ++ zioTestDependencies
   )
   .dependsOn(gateway)
 
