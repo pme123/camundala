@@ -3,7 +3,9 @@
 This generates HTML to _/docs_ (standard in Github)
 
 ### Development
-`sbt>~docs/laikaPreview`
+Terminal: `sbt "docs/mdoc --watch"`
+sbt console: `~docs/laikaPreview`
+
 
 ### Releasing
 Should be taken care by the normal release process.
