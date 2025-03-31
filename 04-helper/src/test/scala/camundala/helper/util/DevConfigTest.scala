@@ -2,7 +2,8 @@ package camundala.helper.util
 
 class DevConfigTest extends munit.FunSuite:
 
-  val testConfig = DevConfig.init(os.pwd / "04-helper" / "src" / "test" / "resources" / "PROJECT.conf")
+  val testConfig =
+    DevConfig.init(os.pwd / "04-helper" / "src" / "test" / "resources" / "PROJECT.conf")
 
   test("dependsOn with no dependencies"):
     assertEquals(

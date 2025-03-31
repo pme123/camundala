@@ -8,24 +8,25 @@ import zio.*
 
 case class ProcessServiceLive(jsonService: JsonProcessService) extends ProcessService:
   def startProcess[In <: Product: InOutEncoder, Out <: Product: InOutDecoder](
-      processDefId: String, 
+      processDefId: String,
       in: In
-  ): IO[GatewayError, Out] = 
+  ): IO[GatewayError, Out] =
     ZIO.attempt {
-      val jsonIn = in.asJson
+      val jsonIn  = in.asJson
       val jsonOut = jsonService.startProcess(processDefId, jsonIn)
       jsonOut.as[Out]
     }.catchAll { case ex: Throwable =>
       ZIO.fail(GatewayError.ProcessError(s"Failed to start process: ${ex.getMessage}"))
     }.flatMap {
-      case Left(err) => ZIO.fail(GatewayError.DecodingError(s"Failed to decode response: ${err.getMessage}"))
+      case Left(err)    =>
+        ZIO.fail(GatewayError.DecodingError(s"Failed to decode response: ${err.getMessage}"))
       case Right(value) => ZIO.succeed(value)
     }
 
   def startProcessAsync[In <: Product: InOutEncoder](
-      processDefId: String, 
+      processDefId: String,
       in: In
-  ): IO[GatewayError, ProcessInfo] = 
+  ): IO[GatewayError, ProcessInfo] =
     ZIO.attempt {
       val jsonIn = in.asJson
       jsonService.startProcessAsync(processDefId, jsonIn)
@@ -34,9 +35,9 @@ case class ProcessServiceLive(jsonService: JsonProcessService) extends ProcessSe
     }
 
   def sendMessage[In <: Product: InOutEncoder](
-      messageDefId: String, 
+      messageDefId: String,
       in: In
-  ): IO[GatewayError, ProcessInfo] = 
+  ): IO[GatewayError, ProcessInfo] =
     ZIO.attempt {
       val jsonIn = in.asJson
       jsonService.sendMessage(messageDefId, jsonIn)
@@ -45,16 +46,17 @@ case class ProcessServiceLive(jsonService: JsonProcessService) extends ProcessSe
     }
 
   def sendSignal[In <: Product: InOutEncoder](
-      signalDefId: String, 
+      signalDefId: String,
       in: In
-  ): IO[GatewayError, ProcessInfo] = 
+  ): IO[GatewayError, ProcessInfo] =
     ZIO.attempt {
       val jsonIn = in.asJson
       jsonService.sendSignal(signalDefId, jsonIn)
     }.catchAll { case ex: Throwable =>
       ZIO.fail(GatewayError.ProcessError(s"Failed to send signal: ${ex.getMessage}"))
     }
+end ProcessServiceLive
 
 object ProcessServiceLive:
-  val layer: URLayer[JsonProcessService, ProcessService] = 
+  val layer: URLayer[JsonProcessService, ProcessService] =
     ZLayer.fromFunction(ProcessServiceLive(_))

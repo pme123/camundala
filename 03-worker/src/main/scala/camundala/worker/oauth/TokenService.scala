@@ -13,7 +13,7 @@ class TokenService(
     impersonateBody: Map[String, String]
 ):
 
-  def adminToken(): Either[ServiceAuthError, String] =
+  def adminToken(): Either[ServiceAuthError, String]             =
     authAdminResponse
       .body
       .map(t => s"Bearer ${t.access_token}")

@@ -5,21 +5,22 @@ import zio.*
 
 trait ProcessService:
   def startProcess[In <: Product: InOutEncoder, Out <: Product: InOutDecoder](
-    processDefId: String,
-    in: In
+      processDefId: String,
+      in: In
   ): IO[GatewayError, Out]
 
   def startProcessAsync[In <: Product: InOutEncoder](
-    processDefId: String,
-    in: In
+      processDefId: String,
+      in: In
   ): IO[GatewayError, ProcessInfo]
 
   def sendMessage[In <: Product: InOutEncoder](
-    messageDefId: String,
-    in: In
+      messageDefId: String,
+      in: In
   ): IO[GatewayError, ProcessInfo]
 
   def sendSignal[In <: Product: InOutEncoder](
-    signalDefId: String,
-    in: In
+      signalDefId: String,
+      in: In
   ): IO[GatewayError, ProcessInfo]
+end ProcessService

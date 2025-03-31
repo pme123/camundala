@@ -7,10 +7,11 @@ import zio.*
 
 case class JsonDmnServiceLive() extends JsonDmnService:
   def executeDmn(
-      dmnDefId: String, 
+      dmnDefId: String,
       in: Json
   ): ProcessInfo = ???
+end JsonDmnServiceLive
 
 object JsonDmnServiceLive:
-  val layer: ULayer[JsonDmnService] = 
+  val layer: ULayer[JsonDmnService] =
     ZLayer.succeed(JsonDmnServiceLive())

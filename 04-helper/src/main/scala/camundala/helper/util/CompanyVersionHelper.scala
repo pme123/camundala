@@ -12,6 +12,3 @@ case class CompanyVersionHelper(
     VersionHelper.repoSearch(s"$companyName-camundala-domain_3", companyName)
 
 end CompanyVersionHelper
-
-
-

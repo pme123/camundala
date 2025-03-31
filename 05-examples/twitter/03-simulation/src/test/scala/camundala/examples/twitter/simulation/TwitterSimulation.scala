@@ -21,7 +21,7 @@ class TwitterSimulation extends CustomSimulation:
   override implicit def config =
     super.config.withPort(8034)
 
-  private lazy val `Twitter - Approved` = twitterDemoProcess
+  private lazy val `Twitter - Approved`     = twitterDemoProcess
   private lazy val `Twitter - Not Approved` = twitterDemoProcess
     .withOut(ReviewedTweet(false))
 

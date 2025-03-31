@@ -4,11 +4,11 @@ import camundala.domain.*
 
 object GenericServiceExample extends BpmnProcessDsl:
   val processName = "genericServiceExample"
-  val descr = ""
+  val descr       = ""
 
-  case class Input(serviceName: String = "myservice.api.v1.post")extends GenericServiceIn
+  case class Input(serviceName: String = "myservice.api.v1.post") extends GenericServiceIn
   object Input:
-    given ApiSchema[Input] = deriveApiSchema
+    given ApiSchema[Input]  = deriveApiSchema
     given InOutCodec[Input] = deriveInOutCodec
 
   type Output = NoOutput

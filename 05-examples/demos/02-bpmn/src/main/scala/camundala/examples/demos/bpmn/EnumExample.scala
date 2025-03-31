@@ -4,7 +4,7 @@ import camundala.domain.*
 
 object EnumExample extends BpmnProcessDsl:
   val processName = "enum-example"
-  val descr = ""
+  val descr       = ""
 
   enum Input:
 
@@ -18,7 +18,7 @@ object EnumExample extends BpmnProcessDsl:
     )
   end Input
   object Input:
-    given ApiSchema[Input] = deriveApiSchema
+    given ApiSchema[Input]  = deriveApiSchema
     given InOutCodec[Input] = deriveInOutCodec
 
   enum Output:
@@ -30,14 +30,14 @@ object EnumExample extends BpmnProcessDsl:
     )
   end Output
   object Output:
-    given ApiSchema[Output] = deriveApiSchema
+    given ApiSchema[Output]  = deriveApiSchema
     given InOutCodec[Output] = deriveInOutCodec
 
   enum SimpleEnum:
     case One, Two
 
   object SimpleEnum:
-    given ApiSchema[SimpleEnum] = deriveEnumApiSchema
+    given ApiSchema[SimpleEnum]  = deriveEnumApiSchema
     given InOutCodec[SimpleEnum] = deriveEnumInOutCodec
 
   lazy val example = process(

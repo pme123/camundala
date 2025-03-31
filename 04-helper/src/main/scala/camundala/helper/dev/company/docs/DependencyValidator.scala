@@ -20,7 +20,7 @@ case class DependencyValidator()(using
       }
       .filterNot { case _ -> v => v.isEmpty }
       .map(f => s" - ${f._1} -> ${f._2.mkString("[", ", ", "]")}") match
-      case Nil =>
+      case Nil      =>
         println(
           "All Packages have dependencies that are correctly configured in VERSION.conf."
         )
@@ -49,7 +49,7 @@ case class DependencyValidator()(using
       .filterNot(_.isEmpty)
       .map(f => s" - ${f.mkString(", ")}")
       .toSeq match
-      case Nil => println("All Packages are needed - no orphans.")
+      case Nil     => println("All Packages are needed - no orphans.")
       case orphans =>
         println(s"""${Console.YELLOW_B}
                    |There are Versions of Packages that are not needed in VERSION.conf.

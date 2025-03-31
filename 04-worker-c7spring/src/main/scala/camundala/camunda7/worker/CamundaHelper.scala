@@ -124,7 +124,7 @@ object CamundaHelper:
         .getOrElse(
           Left(error)
         )
-    def toIO(msg: String): HelperContext[IO[BadVariableError, T]] =
+    def toIO(msg: String): HelperContext[IO[BadVariableError, T]]         =
       toIO(BadVariableError(errorMsg = msg))
 
     def toIO[E <: CamundalaWorkerError](

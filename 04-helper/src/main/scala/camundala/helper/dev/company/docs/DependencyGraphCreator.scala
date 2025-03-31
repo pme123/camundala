@@ -33,8 +33,8 @@ case class DependencyGraphCreator()(using
   end createProjectDependencies
 
   private def create(
-                      versionedConfigs: Seq[DocProjectConfig],
-                      link: Package => String
+      versionedConfigs: Seq[DocProjectConfig],
+      link: Package => String
   ): String =
     val configs = versionedConfigs
       .groupBy(_.projectName)
@@ -57,9 +57,9 @@ case class DependencyGraphCreator()(using
        |flowchart TB
        |${configs
         .map { config =>
-          val color = colorMap.getOrElse(config.projectName, "#fff")
+          val color     = colorMap.getOrElse(config.projectName, "#fff")
           val depConfig = getUniqueDependencies(config, configs)
-          val tree =
+          val tree      =
             if depConfig.nonEmpty then
               s"${config.projectName} --> ${depConfig
                   .map(d => d.projectName)
@@ -103,11 +103,11 @@ case class DependencyGraphCreator()(using
   case class ProjectTree(name: String, graph: String)
 
   private def toPackageTree(
-                             configs: Seq[DocProjectConfig],
-                             allConfigs: Seq[DocProjectConfig]
+      configs: Seq[DocProjectConfig],
+      allConfigs: Seq[DocProjectConfig]
   ): Seq[PackageTree] =
     configs.map { c =>
-      val mainPackage = Package(c.projectName, c.minorVersion)
+      val mainPackage  = Package(c.projectName, c.minorVersion)
       val fromPackages = allConfigs
         .filter { aC =>
           aC.dependencies.exists(aD =>
@@ -115,7 +115,7 @@ case class DependencyGraphCreator()(using
           )
         }
         .map { aC => Package(aC.projectName, aC.minorVersion) }
-      val toPackages = c.dependencies.map { cd =>
+      val toPackages   = c.dependencies.map { cd =>
         Package(cd.projectName, cd.minorVersion)
       }.toSeq
       println(s"mainPackage: $mainPackage")
@@ -126,7 +126,7 @@ case class DependencyGraphCreator()(using
 
   private def treeForEachProject(packageTrees: Seq[PackageTree]) =
     val packageName = packageTrees.head.mainPackage.name
-    val trees = packageTrees.map(treeForEachVersion)
+    val trees       = packageTrees.map(treeForEachVersion)
     s"""
        |# $packageName
        |${releaseConfig.releasedLabel}
@@ -198,10 +198,10 @@ case class DependencyGraphCreator()(using
   end treeForEachVersion
 
   private def getUniqueDependencies(
-                                     toCheckConfig: DocProjectConfig,
-                                     configs: Seq[DocProjectConfig]
+      toCheckConfig: DocProjectConfig,
+      configs: Seq[DocProjectConfig]
   ) =
-    val configsToCheck = configs.filter { c =>
+    val configsToCheck  = configs.filter { c =>
       toCheckConfig.dependencies.exists(_.projectName == c.projectName)
 
     }

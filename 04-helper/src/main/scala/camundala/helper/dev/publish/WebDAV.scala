@@ -12,7 +12,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 abstract class WebDAV:
   def publishConfig: PublishConfig
-  val publishBaseUrl = publishConfig.documentationUrl
+  val publishBaseUrl  = publishConfig.documentationUrl
   val contentTypeHtml = "text/html"
   val contentTypeYaml = "text/yaml"
 
@@ -36,7 +36,8 @@ abstract class WebDAV:
   end startSession
 end WebDAV
 
-case class ProjectWebDAV(projectName: String, apiConfig: ApiConfig, publishConfig: PublishConfig) extends WebDAV:
+case class ProjectWebDAV(projectName: String, apiConfig: ApiConfig, publishConfig: PublishConfig)
+    extends WebDAV:
 
   val projectUrl = s"$publishBaseUrl/$projectName/"
 
@@ -69,7 +70,7 @@ case class ProjectWebDAV(projectName: String, apiConfig: ApiConfig, publishConfi
         )
       )
       // additional files
-      val docDir = os.pwd / "doc"
+      val docDir       = os.pwd / "doc"
       if docDir.toIO.exists() then
         sardine.createDirectory(s"$projectUrl/doc/")
         val docFiles = os.list(docDir)
@@ -82,7 +83,7 @@ case class ProjectWebDAV(projectName: String, apiConfig: ApiConfig, publishConfi
         }
       end if
       // diagrams
-      val diagramDir = os.pwd / diagramPath
+      val diagramDir   = os.pwd / diagramPath
       println(s"Diagram Directory: $diagramDir")
       sardine.createDirectory(s"$projectUrl/diagrams/")
       val diagramFiles = os.list(diagramDir)
@@ -103,9 +104,9 @@ case class ProjectWebDAV(projectName: String, apiConfig: ApiConfig, publishConfi
     end try
   end upload
 
-  private lazy val openApiHtml =
+  private lazy val openApiHtml   =
     os.read.inputStream(publishConfig.openApiHtmlPath)
-  private lazy val openApiYml = os
+  private lazy val openApiYml    = os
     .read(apiConfig.openApiPath)
     .getBytes(StandardCharsets.UTF_8)
   private lazy val postmanApiYml =
@@ -121,7 +122,7 @@ case class DocsWebDAV(apiConfig: ApiConfig, publishConfig: PublishConfig) extend
     with Helpers:
   def upload(releaseTag: String): Unit =
     val sardine = startSession
-    val docDir = apiConfig.basePath / "target" / "docs" / "site"
+    val docDir  = apiConfig.basePath / "target" / "docs" / "site"
     if docDir.toIO.exists() then
       try
         println(s"Delete $publishBaseUrl/$releaseTag/")
@@ -132,12 +133,12 @@ case class DocsWebDAV(apiConfig: ApiConfig, publishConfig: PublishConfig) extend
           docFiles.foreach {
             case f if f.toIO.isDirectory && f.toIO.exists() =>
               println(s"Create Directory $url/${f.toIO.getName}")
-              //sardine.createDirectory(s"$url/${f.toIO.getName}")
+              // sardine.createDirectory(s"$url/${f.toIO.getName}")
               uploadFiles(s"$url/${f.toIO.getName}", os.list(f))
-            case f if f.toIO.exists() =>
+            case f if f.toIO.exists()                       =>
               println(s"Uploading $url/${f.toIO.getName}")
               sardine.put(s"$url/${f.toIO.getName}", os.read.inputStream(f))
-            case f =>
+            case f                                          =>
               println(s"Not supported file: $f")
           }
 
@@ -148,9 +149,9 @@ case class DocsWebDAV(apiConfig: ApiConfig, publishConfig: PublishConfig) extend
               println(s"Create symbolic link $f")
               val symLink = docDir / f
               Files.createSymbolicLink(symLink.toNIO, (docDir / releaseTag / f).toNIO)
-            //  os.proc("ln", "-s", s"./$releaseTag/$f", docDir / f)
-            //    .callOnConsole()
-            //  sardine.put(s"$publishBaseUrl/${f.replace("dependencies", "dependencies/")}", os.read.inputStream(symLink))
+          //  os.proc("ln", "-s", s"./$releaseTag/$f", docDir / f)
+          //    .callOnConsole()
+          //  sardine.put(s"$publishBaseUrl/${f.replace("dependencies", "dependencies/")}", os.read.inputStream(symLink))
 
         addSymbolicLinks
         uploadFiles(publishBaseUrl, os.list(docDir))
@@ -169,6 +170,5 @@ case class DocsWebDAV(apiConfig: ApiConfig, publishConfig: PublishConfig) extend
       )
     end if
   end upload
-
 
 end DocsWebDAV
