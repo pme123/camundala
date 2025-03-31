@@ -14,7 +14,8 @@ class ExampleJobWorker extends CompanyCustomWorkerDsl[In, Out]:
   override def runWorkZIO(in: In): EngineRunContext ?=> IO[CustomError, Out] =
     logger.info(s"Running ExampleJobWorker OLD with $in")
     ZIO.sleep(500.millis).as(Out())
-    //Left(CamundalaWorkerError.CustomError("Not implemented yet."))
+    // Left(CamundalaWorkerError.CustomError("Not implemented yet."))
+end ExampleJobWorker
 
 object ExampleJobWorker extends CompanyBpmnCustomTaskDsl:
 

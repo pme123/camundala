@@ -157,7 +157,7 @@ lazy val worker = project
       sttpDependency,
       scaffeineDependency,
       zioDependency,
-      zioSlf4jDependency,
+      zioSlf4jDependency
     ) ++ zioTestDependencies
   )
   .dependsOn(gateway)

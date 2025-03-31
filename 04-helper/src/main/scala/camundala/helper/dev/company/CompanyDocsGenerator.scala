@@ -6,8 +6,8 @@ import java.time.LocalDate
 
 case class CompanyDocsGenerator(companyCamundala: os.Path):
   private lazy val companyProjectName = companyCamundala.last
-  private lazy val docsBase = companyCamundala / s"00-docs"
-  private lazy val docsSrc = docsBase / "src" / "docs"
+  private lazy val docsBase           = companyCamundala / s"00-docs"
+  private lazy val docsSrc            = docsBase / "src" / "docs"
 
   lazy val generate: Unit =
     println("Generate Company Docs")
@@ -25,7 +25,7 @@ case class CompanyDocsGenerator(companyCamundala: os.Path):
     versions("VERSIONS_PREVIOUS")
   end generate
 
-  private lazy val contact =
+  private lazy val contact      =
     createIfNotExists(
       docsSrc / "contact.md",
       s"""|## Contact
@@ -76,7 +76,7 @@ case class CompanyDocsGenerator(companyCamundala: os.Path):
           |""".stripMargin
     )
 
-  private lazy val pattern =
+  private lazy val pattern    =
     createIfNotExists(
       docsSrc / "pattern.md",
       s"""|# Process Pattern
@@ -98,7 +98,7 @@ case class CompanyDocsGenerator(companyCamundala: os.Path):
           |<iframe id="optimizeFrame" src="https://TODO/" frameborder="0" style="width: 1000px; height: 700px; allowtransparency; overflow: scroll"></iframe>
           |""".stripMargin
     )
-  private lazy val style =
+  private lazy val style      =
     createIfNotExists(
       docsSrc / "style.css",
       s"""|.mermaid svg {
@@ -131,10 +131,10 @@ case class CompanyDocsGenerator(companyCamundala: os.Path):
   end directory
 
   private def laikaVersioned(isVersioned: Boolean) = s"laika.versioned = $isVersioned"
-  private def laikaTitle(title: String) = s"laika.title = $title"
-  private lazy val laikaNavigationOrder = s"laika.navigationOrder = [\n]"
+  private def laikaTitle(title: String)            = s"laika.title = $title"
+  private lazy val laikaNavigationOrder            = s"laika.navigationOrder = [\n]"
 
-  private lazy val config =
+  private lazy val config            =
     createIfNotExists(
       docsBase / "CONFIG.conf",
       s"""|// year and month you want to release
@@ -170,5 +170,6 @@ case class CompanyDocsGenerator(companyCamundala: os.Path):
           |//..
           |
           |// END VERSIONS
-          |""".stripMargin)
+          |""".stripMargin
+    )
 end CompanyDocsGenerator

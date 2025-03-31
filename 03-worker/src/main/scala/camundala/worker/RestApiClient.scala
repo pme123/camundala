@@ -109,7 +109,7 @@ trait RestApiClient:
     ZIO.attempt(runnableRequest.requestBodyOpt.map(b =>
       request.body(b.asJson.deepDropNullValues)
     ).getOrElse(request))
-       .mapError(err => ServiceBadBodyError(errorMsg = s"Problem creating body for request.\n$err"))
+      .mapError(err => ServiceBadBodyError(errorMsg = s"Problem creating body for request.\n$err"))
   end requestWithOptBody
 
   private def requestMethod(

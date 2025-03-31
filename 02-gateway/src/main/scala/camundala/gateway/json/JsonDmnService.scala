@@ -5,6 +5,7 @@ import io.circe.Json
 
 trait JsonDmnService:
   def executeDmn(
-      dmnDefId: String, 
+      dmnDefId: String,
       in: Json
   ): ProcessInfo
+end JsonDmnService

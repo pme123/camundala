@@ -7,25 +7,26 @@ import zio.*
 
 case class JsonProcessServiceLive() extends JsonProcessService:
   def startProcess(
-      processDefId: String, 
+      processDefId: String,
       in: Json
   ): Json = ???
-  
+
   def startProcessAsync(
-      processDefId: String, 
-      in: Json
-  ): ProcessInfo = ???
-  
-  def sendMessage(
-      messageDefId: String, 
-      in: Json
-  ): ProcessInfo = ???
-  
-  def sendSignal(
-      signalDefId: String, 
+      processDefId: String,
       in: Json
   ): ProcessInfo = ???
 
+  def sendMessage(
+      messageDefId: String,
+      in: Json
+  ): ProcessInfo = ???
+
+  def sendSignal(
+      signalDefId: String,
+      in: Json
+  ): ProcessInfo = ???
+end JsonProcessServiceLive
+
 object JsonProcessServiceLive:
-  val layer: ULayer[JsonProcessService] = 
+  val layer: ULayer[JsonProcessService] =
     ZLayer.succeed(JsonProcessServiceLive())
