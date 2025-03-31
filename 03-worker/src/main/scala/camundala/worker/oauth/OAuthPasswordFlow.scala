@@ -33,7 +33,7 @@ trait OAuthPasswordFlow:
   ): Either[ServiceAuthError, String] =
     TokenCache.cache.getIfPresent(tokenKey)
       .map: token =>
-        logger.info(s"Token from Cache: $tokenKey")
+        logger.debug(s"Token from Cache: $tokenKey")
         Right(token)
       .getOrElse:
         tokenService.adminToken()
