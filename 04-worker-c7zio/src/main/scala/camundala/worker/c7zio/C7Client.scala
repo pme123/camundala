@@ -70,20 +70,28 @@ trait OAuth2Client extends C7Client, OAuthPasswordFlow:
       request.addHeader("Authorization", token)
 
   def client =
-    ZIO.attempt:
-      ExternalTaskClient.create()
-        .baseUrl(camundaRestUrl)
-        .backoffStrategy(
-          new ExponentialBackoffStrategy(
-            100L,
-            2.0,
-            maxTimeForAcquireJob.toMillis
-          )
-        )
-        .lockDuration(lockDuration)
-        .customizeHttpClient: httpClientBuilder =>
-          httpClientBuilder
-            .addRequestInterceptorLast(addAccessToken)
+    ZIO.logInfo(s"Starting C7 Worker Client: ${adminToken()}") *>
+      ZIO
+        .attempt:
+          ExternalTaskClient.create()
+            .baseUrl(camundaRestUrl)
+            .backoffStrategy(
+              new ExponentialBackoffStrategy(
+                100L,
+                2.0,
+                maxTimeForAcquireJob.toMillis
+              )
+            )
+            .lockDuration(lockDuration)
+            .customizeHttpClient: httpClientBuilder =>
+              httpClientBuilder
+                .addRequestInterceptorLast(addAccessToken)
+                .build()
             .build()
-        .build()
+        .tapError(ex =>
+          zio.Console.printLine(s"Errordd: ${ex.getMessage}")
+        ).tap(_ =>
+          zio.Console.printLine(s"Success: ${camundaRestUrl}")
+        )
+
 end OAuth2Client

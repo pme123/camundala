@@ -44,6 +44,7 @@ object Dependencies {
   val jaxbApiVersion = "4.0.2" // needed by the camunda client 7.21?!
   val scaffeineV = "5.3.0" // caching
   val zioVersion = "2.1.16" // zio
+  val logbackVersion = "1.4.11" // logging
   // - sttpClient3
 
   // --- Experiments
@@ -106,6 +107,7 @@ object Dependencies {
     )
 
   val zioSlf4jDependency = "dev.zio" %% "zio-logging-slf4j" % zioVersion
+  val logbackDependency = "ch.qos.logback" % "logback-classic" % logbackVersion % Runtime
 
   // examples
   val camundaDependencies = Seq(

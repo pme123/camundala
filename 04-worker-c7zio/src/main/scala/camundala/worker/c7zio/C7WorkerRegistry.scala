@@ -9,9 +9,10 @@ class C7WorkerRegistry(client: C7Client)
     extends WorkerRegistry:
 
   protected def registerWorkers(workers: Set[WorkerDsl[?, ?]]): ZIO[Any, Any, Any] =
-    Console.printLine(s"Starting C7 Worker Client") *>
+    ZIO.logInfo(s"Starting C7 Worker Client") *>
       acquireReleaseWith(client.client)(_.closeClient()): client =>
         for
+          _ <- ZIO.logInfo(s"Client Ready")
           server <- never.forever.fork
           c7Workers: Set[C7Worker[?, ?]] = workers.collect { case w: C7Worker[?, ?] => w }
           _      <- foreachParDiscard(c7Workers)(w => registerWorker(w, client))

@@ -100,6 +100,7 @@ lazy val domain  = project
       BuildInfoKey("osLibVersion", osLibVersion),
       BuildInfoKey("mUnitVersion", mUnitVersion),
       BuildInfoKey("zioVersion", zioVersion),
+      BuildInfoKey("logbackVersion", logbackVersion),
       BuildInfoKey("dmnTesterVersion", dmnTesterVersion)
     )
   ).enablePlugins(BuildInfoPlugin)
@@ -158,6 +159,7 @@ lazy val worker = project
       scaffeineDependency,
       zioDependency,
       zioSlf4jDependency,
+      logbackDependency
     ) ++ zioTestDependencies
   )
   .dependsOn(gateway)

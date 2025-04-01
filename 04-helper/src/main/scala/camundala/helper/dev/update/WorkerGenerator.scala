@@ -7,19 +7,21 @@ case class WorkerGenerator()(using config: DevConfig):
   lazy val generate: Unit =
     createOrUpdate(workerPath() / "WorkerApp.scala", workerApp)
     createOrUpdate(workerTestPath() / "WorkerTestApp.scala", workerTestApp)
-    createOrUpdate(workerConfigPath / "application.yaml", applicationYaml)
+    createOrUpdate(workerConfigPath / "logback.xml", logbackXml)
     createOrUpdate(workerConfigPath / "banner.txt", banner)
   end generate
 
   def createProcessWorker(setupElement: SetupElement): Unit =
     createWorker(setupElement, processWorker, processWorkerTest)
-  
+
   def createEventWorker(setupElement: SetupElement): Unit =
     createWorker(setupElement, eventWorker, eventWorkerTest)
 
-  def createWorker(setupElement: SetupElement,
-                   worker: SetupElement => String = processElement,
-                   workerTest: SetupElement => String = processElementTest): Unit =
+  def createWorker(
+      setupElement: SetupElement,
+      worker: SetupElement => String = processElement,
+      workerTest: SetupElement => String = processElementTest
+  ): Unit =
     createIfNotExists(
       workerPath(Some(setupElement)),
       worker(setupElement)
@@ -31,7 +33,7 @@ case class WorkerGenerator()(using config: DevConfig):
   end createWorker
 
   private lazy val companyName = config.companyName
-  private lazy val workerApp =
+  private lazy val workerApp   =
     createWorkerApp("WorkerApp")
 
   private lazy val workerTestApp =
@@ -45,31 +47,19 @@ case class WorkerGenerator()(using config: DevConfig):
        |package ${config.projectPackage}.worker
        |
        |// sbt worker/${dependencies.map(_ => "test:").getOrElse("")}run
-       |@SpringBootApplication
-       |@Component("${config.projectClassName}$objName")
-       |@ConfigurationPropertiesScan
-       |@ComponentScan(basePackages = Array(
-       |  "camundala.camunda7.worker.oauth",
-       |  "$companyName.camundala.worker",
-       |  "${config.projectPackage}.worker",
-       |  ${
+       |object $objName extends CompanyWorkerApp:
+       |  workers(
+       |    ${dependencies.map(_ => "").getOrElse("//TODO add workers here")}
+       |  )
+       |  dependencies(
+       |    ${
         dependencies
           .map:
-            _.map(_.projectPackage + ".worker")
-              .map(d => s"\"$d\"")
-              .mkString(",\n  ")
-          .map:
-            _ +
-              (if dependencies.get.nonEmpty then ",\n" else "  //TODO add here your dependencies")
+            _.map(_.projectPackage + ".worker.WorkerApp")
+              .mkString("WorkerApp,\n    ",",\n    ", "")
           .getOrElse("")
       }
-       |))
-       |class $objName
-       |
-       |object $objName:
-       |  
-       |  def main(args: Array[String]): Unit =
-       |    runSpringApp(classOf[$objName], args*)
+       |  )
        |end $objName""".stripMargin
 
   private def processWorker(setupElement: SetupElement) =
@@ -89,7 +79,8 @@ case class WorkerGenerator()(using config: DevConfig):
        |    // NoInput() // if no initialization is needed
        |  
        |end ${workerName}Worker""".stripMargin
-    
+  end processWorker
+
   private def eventWorker(setupElement: SetupElement) =
     val SetupElement(_, processName, workerName, version) = setupElement
     s"""package ${config.projectPackage}
@@ -106,6 +97,7 @@ case class WorkerGenerator()(using config: DevConfig):
        |  override def validate(in: In): Either[CamundalaWorkerError.ValidatorError, In] = super.validate(in)
        |
        |end ${workerName}Worker""".stripMargin
+  end eventWorker
 
   private def processElement(
       setupElement: SetupElement
@@ -168,7 +160,7 @@ case class WorkerGenerator()(using config: DevConfig):
          |      worker.customInit(in),
          |      out
          |    )""".stripMargin
-      
+
   private def eventWorkerTest(setupElement: SetupElement) =
     workerTest(setupElement):
       s"""
@@ -237,20 +229,25 @@ case class WorkerGenerator()(using config: DevConfig):
        |end ${workerName}WorkerTest""".stripMargin
   end workerTest
 
-  private lazy val applicationYaml =
-    s"""# DO NOT ADJUST. This file is replaced by `./helper.scala update`.
-       |spring.application.name: ${config.projectName}-worker
+  private lazy val logbackXml =
+    s"""<!-- DO NOT ADJUST. This file is replaced by `./helper.scala update` -->
+       |<configuration>
+       |    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+       |        <encoder>
+       |            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+       |        </encoder>
+       |    </appender>
        |
-       |spring.profiles.include: company-defaults # adds your specific company spring boot configuration (camundala-company-worker -> application-company-defaults.yaml)
+       |    <logger name="camundala" level="INFO"/>
+       |    <logger name="${config.companyName}" level="INFO"/>
+       |    <logger name="org.camunda.bpm.client" level="INFO"/>
+       |    <logger name="org.glassfish.jaxb" level="WARN"/>
+       |    <logger name="com.sun.xml.bind" level="WARN"/>
        |
-       |logging:
-       |  level:
-       |    root: warn
-       |    "camundala": info
-       |    "${config.companyName}": info
-       |    "org.camunda.bpm.client": info
-       |    
-       |# add here your specific configuration -> REMOVE # DO NOT ADJU...
+       |    <root level="WARN">
+       |        <appender-ref ref="STDOUT" />
+       |    </root>
+       |</configuration>
        |""".stripMargin
 
   private lazy val banner =

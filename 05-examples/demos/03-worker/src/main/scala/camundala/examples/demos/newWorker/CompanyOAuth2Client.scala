@@ -1,6 +1,5 @@
 package camundala.examples.demos.newWorker
 
-import camundala.camunda7.worker.oauth.OAuthPasswordFlow
 import camundala.worker.c7zio.OAuth2Client
 
 object CompanyOAuth2Client extends OAuth2Client:

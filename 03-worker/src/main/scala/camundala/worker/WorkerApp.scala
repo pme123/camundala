@@ -25,7 +25,7 @@ trait WorkerApp extends ZIOAppDefault:
   override def run: ZIO[Any, Any, Any] =
     for
       _ <- logInfo(s"Starting WorkerApp: ${getClass.getSimpleName}")
-      _ <- ZIO.foreachParDiscard(workerRegistries) :
+      _ <- foreachParDiscard(workerRegistries) :
         registry =>
           registry.register((theDependencies :+ this).flatMap(_.theWorkers).toSet)
     yield ()
