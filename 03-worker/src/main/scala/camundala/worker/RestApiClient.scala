@@ -10,7 +10,6 @@ import sttp.model.Uri.QuerySegment
 import sttp.model.{Header, Uri}
 
 import scala.reflect.ClassTag
-import scala.util.Try
 
 trait RestApiClient:
 
@@ -29,13 +28,15 @@ trait RestApiClient:
       headers         = response.headers.map(h => h.name -> h.value).toMap
       out            <- decodeResponse[ServiceOut](body)
     yield ServiceResponse(out, headers))
-      .mapError(err =>
-        val unexpectedError =
-          s"""Unexpected error while sending request: ${err.getMessage}.
-             | -> $runnableRequest
-             |""".stripMargin
-        ServiceUnexpectedError(unexpectedError)
-      )
+      .mapError:
+        case err: ServiceUnexpectedError => err
+        case err                         =>
+          val unexpectedError =
+            s"""Unexpected error while sending request: $err.
+               | -> $runnableRequest
+               |""".stripMargin
+          ServiceUnexpectedError(unexpectedError)
+
   end sendRequest
 
   protected def readBody(
@@ -109,7 +110,7 @@ trait RestApiClient:
     ZIO.attempt(runnableRequest.requestBodyOpt.map(b =>
       request.body(b.asJson.deepDropNullValues)
     ).getOrElse(request))
-       .mapError(err => ServiceBadBodyError(errorMsg = s"Problem creating body for request.\n$err"))
+      .mapError(err => ServiceBadBodyError(errorMsg = s"Problem creating body for request.\n$err"))
   end requestWithOptBody
 
   private def requestMethod(
