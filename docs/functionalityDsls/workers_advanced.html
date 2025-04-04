@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en-CH">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Advanced Custom Workers</title>
+  
+  
+  <meta name="description" content="camundala-docs"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/site/laika-helium.css" />
+  <script src="../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://github.com/pme123/camundala"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://github.com/pme123/camundala"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../">Intro</a></li>
+    <li class="level1 nav-leaf"><a href="../specification.html">Process &amp; Domain Specification</a></li>
+    <li class="level1 nav-leaf"><a href="../bpmnDsl.html">BPMN DSL</a></li>
+    <li class="level1 nav-leaf"><a href="../technologies.html">Technologies</a></li>
+    <li class="level1 nav-leaf"><a href="../generalConcerns.html">General Concerns</a></li>
+    <li class="level1 nav-header">Functional DSLs</li>
+    <li class="level2 nav-leaf"><a href="apiDoc.html">API Documentation</a></li>
+    <li class="level2 nav-leaf"><a href="simulation.html">Simulations</a></li>
+    <li class="level2 nav-leaf"><a href="worker.html">Workers</a></li>
+    <li class="level2 nav-leaf"><a href="dmnTester.html">DMN Tester</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Advanced Custom Workers</a></li>
+    <li class="level1 nav-header">development</li>
+    <li class="level2 nav-leaf"><a href="../development/intro.html">Introduction</a></li>
+    <li class="level2 nav-leaf"><a href="../development/initCompany.html">Init Company</a></li>
+    <li class="level2 nav-leaf"><a href="../development/createProject.html">Create Project</a></li>
+    <li class="level2 nav-leaf"><a href="../development/projectDev.html">Project Development</a></li>
+    <li class="level1 nav-header">company</li>
+    <li class="level2 nav-leaf"><a href="../company/intro.html">Introduction</a></li>
+    <li class="level2 nav-leaf"><a href="../company/sbt.html">sbt</a></li>
+    <li class="level2 nav-leaf"><a href="../company/00-docs.html">00-docs</a></li>
+    <li class="level2 nav-leaf"><a href="../company/02-bpmn.html">02-bpmn</a></li>
+    <li class="level2 nav-leaf"><a href="../company/03-api.html">03-api</a></li>
+    <li class="level2 nav-leaf"><a href="../company/03-dmn.html">03-dmn</a></li>
+    <li class="level2 nav-leaf"><a href="../company/03-simulation.html">03-simulation</a></li>
+    <li class="level2 nav-leaf"><a href="../company/03-worker.html">03-worker</a></li>
+    <li class="level2 nav-leaf"><a href="../company/04-helper.html">04-helper</a></li>
+    <li class="level2 nav-leaf"><a href="../company/development.html">Development</a></li>
+    <li class="level2 nav-leaf"><a href="../company/postman.html">Postman</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Advanced Custom Workers</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#why-zio">Why ZIO?</a></li>
+    <li class="level1 nav-leaf"><a href="#mocking">Mocking</a></li>
+    <li class="level1 nav-leaf"><a href="#handled-errors-bpmnerror">Handled Errors (BpmnError)</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="advanced-custom-workers" class="title">Advanced Custom Workers</h1>
+        <p>It is possible to orchestrate Workers in a <em>Custom Worker</em>.</p>
+        <p>This is advanced in a sense that you work with the <em>ZIO</em> library.</p>
+        <p>Here are the main differences to a simple <em>Custom Worker</em>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">mycompany</span><span>.</span><span class="identifier">myproject</span><span>.</span><span class="identifier">bpmn</span><span>.</span><span class="identifier">myprocess</span><span>.</span><span class="identifier">v1</span><span>.</span><span class="type-name">MyCustomTask</span><span>.*
+
+</span><span class="annotation">@SpringConfiguration</span><span>
+</span><span class="keyword">class</span><span> </span><span class="type-name">MyCustomTaskWorker</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CompanyCustomWorkerDsl</span><span>[</span><span class="type-name">In</span><span>, </span><span class="type-name">Out</span><span>]:
+
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">customTask</span><span> = </span><span class="identifier">example</span><span>
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">runWorkZIO</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">EngineRunContext</span><span> ?=&gt; </span><span class="type-name">IO</span><span>[</span><span class="type-name">CustomError</span><span>, </span><span class="type-name">Out</span><span>] =
+    </span><span class="comment">// your business logic
+</span><span>    ???</span></code></pre>
+        <ul>
+          <li><code>runWorkZIO</code> instead of <code>runWork</code> is the method that is called by the <em>Worker</em> to execute the business logic.</li>
+          <li>
+            The code can either:
+            <ul>
+              <li>complete the task successfully with a result -&gt; <code>ZIO.succeed[Out]</code></li>
+              <li>fail the task with an error -&gt; <code>ZIO.fail[CamundalaWorkerError.CustomError]</code></li>
+            </ul>
+          </li>
+          <li>
+            What about the strange return value <code>EngineRunContext ?=&gt; IO[CustomError, Seq[Account]]</code>?
+            <ul>
+              <li>No worries <code>EngineRunContext ?=&gt;</code> is just a way to pass the <code>EngineRunContext</code> to the function implicitly.</li>
+              <li>As you have this already in the <code>runWorkZIO</code> method, you can use it in the <code>getAccounts</code> method.</li>
+              <li>This is needed to call the <code>runWorkFromWorkerUnsafe</code> method of an orchestrated Worker
+              and gets you access to the <code>GeneralVariables</code> for example.</li>
+            </ul>
+          </li>
+        </ul>
+        
+        <h3 id="why-zio" class="section"><a class="anchor-link left" href="#why-zio"><i class="icofont-laika link">&#xef71;</i></a>Why ZIO?</h3>
+        <p><em>ZIO</em> is a library for asynchronous and concurrent programming in Scala.
+        It is used to handle errors and side effects in a functional way.
+        It is also used to handle the asynchronous nature of the Camunda 8 API.
+        This means that composing Workers is easier and more readable.</p>
+        <p>Let&#39;s look at an Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="annotation">@Autowired</span><span>
+    </span><span class="keyword">var</span><span> </span><span class="identifier">processInstanceService</span><span>: </span><span class="type-name">GetProcessInstanceWorker</span><span>         = </span><span class="identifier">uninitialized</span><span>
+    </span><span class="annotation">@Autowired</span><span>
+    </span><span class="keyword">var</span><span> </span><span class="identifier">createSetModulesOtherWorker</span><span>: </span><span class="type-name">CreateSetModulesOtherWorker</span><span> = </span><span class="identifier">uninitialized</span><span>
+    
+    </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">runWorkZIO</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">EngineRunContext</span><span> ?=&gt; </span><span class="type-name">IO</span><span>[</span><span class="type-name">CustomError</span><span>, </span><span class="type-name">Out</span><span>] =
+      </span><span class="keyword">for</span><span>
+        </span><span class="identifier">client</span><span> &lt;- </span><span class="identifier">getProcessInstances</span><span>(</span><span class="identifier">in</span><span>)
+        </span><span class="identifier">result</span><span> &lt;- </span><span class="identifier">createSetModulesOther</span><span>(</span><span class="identifier">in</span><span>, </span><span class="identifier">client</span><span>)
+      </span><span class="keyword">yield</span><span> </span><span class="identifier">result</span></code></pre>
+        <ul>
+          <li><code>GetProcessInstanceWorker</code>: you simply can add Workers as dependencies.</li>
+          <li><code>getProcessInstances(in)</code>: you can simply compose the Workers.</li>
+        </ul>
+        <p>Running in parallel can also be achieved easily:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="keyword">for</span><span>
+          </span><span class="identifier">partnerClientKeys</span><span>               &lt;- </span><span class="identifier">getPartnerClientKeys</span><span>(</span><span class="identifier">in</span><span>, </span><span class="identifier">client</span><span>)
+          </span><span class="identifier">partners</span><span>                        &lt;- </span><span class="identifier">getPartners</span><span>(</span><span class="identifier">partnerClientKeys</span><span>) </span><span class="comment">// wait for the above result
+</span><span>          </span><span class="identifier">eBankingContractsFork</span><span>           &lt;- </span><span class="identifier">getEBankingContracts</span><span>(</span><span class="identifier">partners</span><span>).</span><span class="identifier">fork</span><span> </span><span class="comment">// run in parallel
+</span><span>          </span><span class="identifier">cardsFork</span><span>                       &lt;- </span><span class="identifier">getCards</span><span>(</span><span class="identifier">in</span><span>).</span><span class="identifier">fork</span><span> </span><span class="comment">// run in parallel
+</span><span>          </span><span class="comment">// Join all forks
+</span><span>          </span><span class="identifier">eBankingContracts</span><span>               &lt;- </span><span class="identifier">eBankingContractsFork</span><span>.</span><span class="identifier">join</span><span> 
+          </span><span class="identifier">allCards</span><span>                        &lt;- </span><span class="identifier">cardsFork</span><span>.</span><span class="identifier">join</span><span>
+          </span><span class="identifier">output</span><span>                          &lt;- </span><span class="identifier">createOutput</span><span>(</span><span class="identifier">eBankingContracts</span><span>, </span><span class="identifier">allCards</span><span>)
+        </span><span class="keyword">yield</span><span> </span><span class="identifier">output</span></code></pre>
+        <p>Error Handling:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="keyword">private</span><span>[</span><span class="identifier">v3</span><span>] </span><span class="keyword">def</span><span> </span><span class="declaration-name">getAccounts</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">EngineRunContext</span><span> ?=&gt; </span><span class="type-name">IO</span><span>[</span><span class="type-name">CustomError</span><span>, </span><span class="type-name">Seq</span><span>[</span><span class="type-name">Account</span><span>]] =
+      </span><span class="identifier">getAccountsWorker</span><span>
+        .</span><span class="identifier">runWorkFromWorkerUnsafe</span><span>(</span><span class="type-name">GetAccounts</span><span>.</span><span class="type-name">In</span><span>.</span><span class="identifier">minimalExample</span><span>.</span><span class="identifier">copy</span><span>(
+          </span><span class="identifier">clientKey</span><span> = </span><span class="identifier">in</span><span>.</span><span class="identifier">clientKey</span><span>
+        ))
+        .</span><span class="identifier">mapError</span><span>: </span><span class="identifier">err</span><span> =&gt;
+          </span><span class="type-name">CustomError</span><span>(
+            </span><span class="string-literal">s&quot;Error while get Accounts: </span><span class="substitution">${err.errorMsg}</span><span class="string-literal">&quot;</span><span>
+          )</span></code></pre>
+        <p>Simply use <code>mapError</code> to map the error to a <code>CustomError</code>.</p>
+        <p>For more information on <em>ZIO</em> see the <a href="https://zio.dev/">ZIO documentation</a>.</p>
+        
+        <h3 id="mocking" class="section"><a class="anchor-link left" href="#mocking"><i class="icofont-laika link">&#xef71;</i></a>Mocking</h3>
+        <p>You can also mock a composed Worker like:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">private</span><span>[</span><span class="identifier">v3</span><span>] </span><span class="keyword">def</span><span> </span><span class="declaration-name">checkClient</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>)(</span><span class="identifier">using</span><span> </span><span class="identifier">engineContext</span><span>: </span><span class="type-name">EngineRunContext</span><span>): </span><span class="type-name">IO</span><span>[</span><span class="type-name">CustomError</span><span>, </span><span class="type-name">GetClientClientKey</span><span>.</span><span class="type-name">Out</span><span>] =
+    </span><span class="identifier">given</span><span> </span><span class="type-name">EngineRunContext</span><span> = </span><span class="identifier">engineContext</span><span>
+      .</span><span class="identifier">copy</span><span>(</span><span class="identifier">generalVariables</span><span> =
+        </span><span class="identifier">engineContext</span><span>.</span><span class="identifier">generalVariables</span><span>.</span><span class="identifier">copy</span><span>(
+          </span><span class="identifier">outputServiceMock</span><span> = </span><span class="identifier">in</span><span>.</span><span class="identifier">loadCustomerMock</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">asJson</span><span>)
+        )
+      )
+    </span><span class="identifier">getClientClientKeyWorker</span><span>
+      .</span><span class="identifier">runWorkFromWorkerUnsafe</span><span>(</span><span class="type-name">GetClientClientKey</span><span>.</span><span class="type-name">In</span><span>(</span><span class="identifier">in</span><span>.</span><span class="identifier">clientKey</span><span>))</span></code></pre>
+        <ul>
+          <li>You see <code>(using engineContext: EngineRunContext):</code> is an alternative way to pass the <code>EngineRunContext</code> to the function implicitly.</li>
+          <li>For mocking you can use the <code>outputServiceMock</code> or <code>outputMock</code> in the <code>GeneralVariables</code>.</li>
+          <li>The mock itself must be in the <code>In</code> object of the Worker as there is no <code>InConfig</code> for a Worker.</li>
+        </ul>
+        
+        <h3 id="handled-errors-bpmnerror" class="section"><a class="anchor-link left" href="#handled-errors-bpmnerror"><i class="icofont-laika link">&#xef71;</i></a>Handled Errors (BpmnError)</h3>
+        <p>There are 2 scenarios where you can handle Errors in a Worker:
+        1. The worker logic should go on:
+           <code>scala
+    .catchAll:
+            case err: ServiceError if err.errorCode == 404 =&gt;
+              ZIO.succeed(Seq.empty[Card])
+            case err                                       =&gt;
+              ZIO.fail:
+                CustomError(
+                  s&quot;Error while loading cards.&quot;,
+                  causeError = Some(err)
+                )</code>
+           Just handle the error and switch the error to a successful result.</p>
+        <ol class="arabic">
+          <li>
+            The worker logic should stop:
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span>..
+.</span><span class="identifier">mapError</span><span>: </span><span class="identifier">err</span><span> =&gt;
+    </span><span class="type-name">CustomError</span><span>(
+      </span><span class="string-literal">s&quot;Error while checking client: </span><span class="substitution">${err.errorMsg}</span><span class="string-literal">&quot;</span><span>,
+      </span><span class="identifier">generalVariables</span><span> =
+        </span><span class="type-name">Some</span><span>(</span><span class="type-name">GeneralVariables</span><span>(</span><span class="identifier">handledErrors</span><span> = </span><span class="identifier">engineContext</span><span>.</span><span class="identifier">generalVariables</span><span>.</span><span class="identifier">handledErrors</span><span>)),
+      </span><span class="identifier">causeError</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="identifier">err</span><span>)
+    )</span></code></pre>
+            <p>Just extend the <code>CustomError</code> with the <code>handledErrors</code> and <code>causeError</code> to handle the error.
+            The rest is done by <em>Camundala</em>. </p>
+          </li>
+        </ol>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>
