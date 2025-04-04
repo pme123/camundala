@@ -413,7 +413,14 @@ lazy val exampleDemosWorker = project
   .settings(projectSettings("example-demos-worker"))
   .configure(preventPublication)
   .settings(autoImportSetting)
-  .dependsOn(worker, camunda7Worker, camunda8Worker, camunda7ZioWorker, exampleDemosBpmn)
+  .settings(zioTestSettings)
+  .settings(unitTestSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.twitter4j" % "twitter4j-core" % twitter4jVersion
+    )
+  )
+  .dependsOn(worker, camunda8Worker, camunda7Worker, camunda7ZioWorker, exampleDemosBpmn)
 
 lazy val exampleDemosC7 = project
   .in(file("./05-examples/demos/04-c7-spring"))

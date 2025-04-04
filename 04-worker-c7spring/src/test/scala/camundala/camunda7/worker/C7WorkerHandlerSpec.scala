@@ -226,7 +226,8 @@ object C7WorkerHandlerSpec extends ZIOSpecDefault, C7WorkerHandler[NoInput, NoOu
           NoInput(), NoOutput()
         ),
         processLabels = ProcessLabels.none
-      )
+      ),
+      validationHandler = ValidationHandler(Right(_)),
     )
 
   def topic: String = ???

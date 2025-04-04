@@ -120,6 +120,11 @@ object CamundalaWorkerError:
 
   sealed trait RunWorkError extends CamundalaWorkerError
 
+  case class MissingHandlerError(
+      errorMsg: String
+  ) extends RunWorkError:
+    val errorCode: ErrorCodes = ErrorCodes.`running-failed`
+
   case class CustomError(
       errorMsg: String,
       override val generalVariables: Option[GeneralVariables] = None,

@@ -52,7 +52,8 @@ object AstSpec extends ZIOSpecDefault:
         else Out(false)
 
       val worker: InitWorker[In, Out, In] = InitWorker(
-        inOutExample = proc
+        inOutExample = proc,
+        ValidationHandler(Right(_))
       )
 
       for
@@ -80,6 +81,7 @@ object AstSpec extends ZIOSpecDefault:
 
       val worker = ServiceWorker(
         inOutExample = servTask,
+        validationHandler = ValidationHandler(Right(_)),
         runWorkHandler = Some(
           ServiceHandler[In, Out, NoInput, Out](
             httpMethod = Method.GET,

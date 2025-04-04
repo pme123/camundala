@@ -1,6 +1,5 @@
 package camundala.examples.demos.newWorker
 
-import camundala.camunda7.worker.C7WorkerHandler
 import camundala.domain.*
 import camundala.worker.*
 import camundala.worker.c7zio.{C7Context, C7Worker, C8Context, C8Worker}
@@ -36,5 +35,5 @@ trait CompanyServiceWorkerDsl[
     In <: Product: InOutCodec,
     Out <: Product: InOutCodec,
     ServiceIn: InOutEncoder,
-    ServiceOut: InOutDecoder: ClassTag
+    ServiceOut: {InOutDecoder, ClassTag}
 ] extends CompanyWorkerHandler[In, Out], ServiceWorkerDsl[In, Out, ServiceIn, ServiceOut]

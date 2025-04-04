@@ -2,7 +2,7 @@ package camundala
 package worker
 
 import camundala.domain.*
-import camundala.worker.CamundalaWorkerError.*
+import camundala.worker.CamundalaWorkerError.{RunWorkError, *}
 import zio.{IO, ZIO}
 
 import scala.concurrent.duration.*
@@ -15,22 +15,22 @@ trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
   def topic: String     = worker.topic
   def timeout: Duration = 10.seconds
 
-  def runWorkFromWorker(in: In)(using EngineRunContext): Option[IO[RunWorkError, Out]] =
-    worker.runWorkHandler
-      .map: handler =>
-        handler.runWorkZIO(in)
-          .flatMapError:
-            case error: CustomError =>
-              ZIO.logWarning(s"Error generalVariables: ${error.generalVariables}")
-                .as(error.copy(generalVariables =
-                  Some(summon[EngineRunContext].generalVariables)
-                ))
-            case error              =>
-              ZIO.succeed(error)
+  def runWorkFromWorker(in: In)(using
+      EngineRunContext
+  ): IO[CamundalaWorkerError, Out | NoOutput] =
+    for
+      validatedInput <- ZIO.fromEither(
+                worker.validationHandler.validate(in)
+              )
+      mockedOutput: Option[Out] <- OutMocker(worker).mockedOutput(validatedInput)
+      out            <-
+        if mockedOutput.isEmpty then WorkRunner(worker).run(validatedInput)
+        else ZIO.succeed(mockedOutput.get)
+    yield out
 
-  def runWorkFromWorkerUnsafe(in: In)(using EngineRunContext): IO[RunWorkError, Out] =
+  def runWorkFromWorkerUnsafe(in: In)(using EngineRunContext): IO[CamundalaWorkerError, Out] =
     runWorkFromWorker(in)
-      .get // only if you are sure that there is a handler
+      .asInstanceOf[IO[RunWorkError, Out]] // only if you are sure that there is a handler
 
   protected def errorHandled(error: CamundalaWorkerError, handledErrors: Seq[String]): Boolean =
     error.isMock || // if it is mocked, it is handled in the error, as it also could be a successful output
@@ -96,8 +96,7 @@ trait InitWorkerDsl[
   protected def inOutExample: Process[In, Out, InitIn]
 
   lazy val worker: InitWorker[In, Out, InitIn] =
-    InitWorker(inOutExample)
-      .validate(ValidationHandler(validate))
+    InitWorker(inOutExample, ValidationHandler(validate))
       .initProcess(InitProcessHandler(initProcess, inOutExample.processLabels))
 
 end InitWorkerDsl
@@ -110,8 +109,7 @@ trait ValidationWorkerDsl[
   protected def inOutExample: ReceiveEvent[In, ?]
 
   lazy val worker: InitWorker[In, NoOutput, In] =
-    InitWorker(inOutExample)
-      .validate(ValidationHandler(validate))
+    InitWorker(inOutExample, ValidationHandler(validate))
 
 end ValidationWorkerDsl
 
@@ -125,8 +123,7 @@ trait CustomWorkerDsl[
   protected def customTask: CustomTask[In, Out]
 
   lazy val worker: CustomWorker[In, Out] =
-    CustomWorker(customTask)
-      .validate(ValidationHandler(validate))
+    CustomWorker(customTask, ValidationHandler(validate))
       .runWork(CustomHandler(runWorkZIO))
 
 end CustomWorkerDsl
@@ -141,8 +138,7 @@ trait ServiceWorkerDsl[
       RunWorkDsl[In, Out]:
 
   lazy val worker: ServiceWorker[In, Out, ServiceIn, ServiceOut] =
-    ServiceWorker[In, Out, ServiceIn, ServiceOut](serviceTask)
-      .validate(ValidationHandler(validate))
+    ServiceWorker[In, Out, ServiceIn, ServiceOut](serviceTask, ValidationHandler(validate))
       .runWork(
         ServiceHandler(
           method,

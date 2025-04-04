@@ -38,6 +38,12 @@ object Settings {
     testFrameworks += new TestFramework("munit.Framework")
   )
 
+  lazy val zioTestSettings = Seq(
+    libraryDependencies ++= zioTestDependencies,
+    Test / parallelExecution := true,
+    testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
+  )
+  
   lazy val githubUrl = "https://github.com/pme123/camundala"
   lazy val publicationSettings: Project => Project = _.settings(
     // publishMavenStyle := true,
