@@ -24,6 +24,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adjusted printStackTrace - see [Commit](https://github.com/pme123/camundala/commit/ae8c9fd4cf03313a4a33fd2e366804edf19441f6)
 
 
+## 1.30.41 - 2025-04-04
+### Changed 
+- Added ValidationHandler to runWorkFromWorker. - see [Commit](https://github.com/pme123/camundala/commit/b1d28e9aed6076c09e7192d328071d6b0102a1b8)
+- Fixes in error handling in RestApiClient. - see [Commit](https://github.com/pme123/camundala/commit/6f5ca9e3bfd55b728e7f21f704a689338b6da375)
+- Adding error handling to workers run in custom worker. - see [Commit](https://github.com/pme123/camundala/commit/12093f0c83223633ececbbd411a3ddddd46a813c)
+- State of work migration to ZIO. - see [Commit](https://github.com/pme123/camundala/commit/f2c5f14f776f6bce49d0bc258419d80aaa5a4eb5)
+- Fixed OAuth2Client. - see [Commit](https://github.com/pme123/camundala/commit/a08d93c694ebd717edadf3f8eed6a8a75167a2d7)
+- Added documentation of advanced workers. - see [Commit](https://github.com/pme123/camundala/commit/42da6f86f2e1dfcf7beb15fa0758c213f9c606c8)
+
 ## 1.30.40 - 2025-03-27
 ### Changed 
 - Added possibility to compose Workers in the CustomWorker. - see [Commit](https://github.com/pme123/camundala/commit/dea9b1d02384c6afe541b31ba2491852270838bf)

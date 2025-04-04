@@ -19,15 +19,18 @@ trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
       EngineRunContext
   ): IO[CamundalaWorkerError, Out | NoOutput] =
     for
-      validatedInput <- ZIO.fromEither(
-                worker.validationHandler.validate(in)
-              )
+      validatedInput            <- ZIO.fromEither(
+                                     worker.validationHandler.validate(in)
+                                   )
       mockedOutput: Option[Out] <- OutMocker(worker).mockedOutput(validatedInput)
-      out            <-
+      out                       <-
         if mockedOutput.isEmpty then WorkRunner(worker).run(validatedInput)
         else ZIO.succeed(mockedOutput.get)
     yield out
 
+  /*
+    Only call this if it is NOT an InitWorker
+   */
   def runWorkFromWorkerUnsafe(in: In)(using EngineRunContext): IO[CamundalaWorkerError, Out] =
     runWorkFromWorker(in)
       .asInstanceOf[IO[RunWorkError, Out]] // only if you are sure that there is a handler
