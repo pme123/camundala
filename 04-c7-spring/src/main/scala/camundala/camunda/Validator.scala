@@ -45,6 +45,7 @@ trait Validator[T <: Product: InOutCodec]:
       case _: PrimitiveValueType =>
         typedValue.getValue match
           case vt: DmnValueSimple =>
+            import DmnValueSimple.DmnValueTypeJsonEncoder
             vt.asJson
           case en: scala.reflect.Enum =>
             en.toString

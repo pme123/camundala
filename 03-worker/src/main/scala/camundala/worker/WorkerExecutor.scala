@@ -21,10 +21,10 @@ case class WorkerExecutor[
     (for
       validatedInput    <- InputValidator.validate(processVariables)
       initializedOutput <- Initializer.initVariables(validatedInput)
-      mockedOutput      <- OutMocker.mockedOutput(validatedInput)
+      mockedOutput      <- OutMocker(worker).mockedOutput(validatedInput)
       // only run the work if it is not mocked
       output            <-
-        if mockedOutput.isEmpty then WorkRunner.run(validatedInput)
+        if mockedOutput.isEmpty then WorkRunner(worker).run(validatedInput)
         else ZIO.succeed(mockedOutput.get)
       allOutputs: Map[String, Any] = camundaOutputs(validatedInput, initializedOutput, output)
       filteredOut: Map[String, Any] = filteredOutput(allOutputs, context.generalVariables.outputVariables)
@@ -68,9 +68,7 @@ case class WorkerExecutor[
             decodeTo[In](jsonObj.asJson.deepDropNullValues.toString)
               .mapError(ex => ValidatorError(errorMsg = ex.errorMsg))
               .flatMap(in =>
-                validationHandler.map(h => ZIO.fromEither(h.validate(in))).getOrElse(ZIO.succeed(
-                  in
-                ))
+                ZIO.fromEither(validationHandler.validate(in))
               )
           )
 
@@ -115,46 +113,6 @@ case class WorkerExecutor[
         .getOrElse:
           ZIO.succeed(defaultVariables)
   end Initializer
-
-  object OutMocker:
-
-    def mockedOutput(in: In): IO[MockerError, Option[Out]] =
-      (
-        context.generalVariables.isMockedWorker(worker.topic),
-        context.generalVariables.outputMock,
-        context.generalVariables.outputServiceMock
-      ) match
-        // if the outputMock is set than we mock
-        case (_, Some(outputMock), _) =>
-          decodeMock(outputMock)
-        // if your worker is mocked we use the default mock
-        case (true, None, None)       =>
-          worker.defaultMock(in).map(Some(_))
-        // otherwise it is not mocked or it is a service mock which is handled in service Worker during running
-        case (_, None, _)             =>
-          ZIO.succeed(None)
-    end mockedOutput
-
-    private def decodeMock(
-        json: Json
-    ) =
-      ZIO.fromEither(json.as[Out])
-        .map:
-          Some(_)
-        .mapError: error =>
-          MockerError(errorMsg = s"$error:\n- $json")
-    end decodeMock
-
-  end OutMocker
-
-  object WorkRunner:
-    def run(inputObject: In)(using EngineRunContext): IO[RunWorkError, Out | NoOutput] =
-      worker.runWorkHandler
-        .map:
-          _.runWorkZIO(inputObject)
-        .getOrElse:
-          ZIO.succeed(NoOutput())
-  end WorkRunner
 
   private def camundaOutputs(
       initializedInput: In,

@@ -27,6 +27,8 @@ case class SbtSettingsGenerator()(using config: DevConfig):
        |  val mUnitVersion = "${config.versionConfig.munitVersion}"
        |  val mUnit = "org.scalameta" %% "munit" % mUnitVersion % Test
        |  val zioVersion = "${config.versionConfig.zioVersion}"
+       |  val logbackVersion = "${config.versionConfig.logbackVersion}"
+       |  val jaxbApiVersion = "${config.versionConfig.jaxbXmlVersion}"
        |  
        |$projectSettings
        |$sbtDependencies

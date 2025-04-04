@@ -75,6 +75,7 @@
     <li class="level2 nav-leaf"><a href="simulation.html">Simulations</a></li>
     <li class="level2 active nav-leaf"><a href="#">Workers</a></li>
     <li class="level2 nav-leaf"><a href="dmnTester.html">DMN Tester</a></li>
+    <li class="level2 nav-leaf"><a href="workers_advanced.html">Advanced Custom Workers</a></li>
     <li class="level1 nav-header">development</li>
     <li class="level2 nav-leaf"><a href="../development/intro.html">Introduction</a></li>
     <li class="level2 nav-leaf"><a href="../development/initCompany.html">Init Company</a></li>
@@ -106,6 +107,10 @@
     <li class="level1 nav-node"><a href="#general">General</a></li>
     <li class="level2 nav-leaf"><a href="#validate">validate</a></li>
     <li class="level1 nav-leaf"><a href="#custom-worker">Custom Worker</a></li>
+    <li class="level1 nav-node"><a href="#advanced-custom-workers">Advanced Custom Workers</a></li>
+    <li class="level2 nav-leaf"><a href="#why-zio">Why ZIO?</a></li>
+    <li class="level2 nav-leaf"><a href="#mocking">Mocking</a></li>
+    <li class="level2 nav-leaf"><a href="#handled-errors-bpmnerror">Handled Errors (BpmnError)</a></li>
     <li class="level1 nav-node"><a href="#init-process-worker">Init Process Worker</a></li>
     <li class="level2 nav-leaf"><a href="#custominit">customInit</a></li>
     <li class="level1 nav-node"><a href="#service-worker">Service Worker</a></li>
@@ -187,6 +192,131 @@
 </span><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">doSomethingThatCanFail</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">Either</span><span>[</span><span class="type-name">Throwable</span><span>, </span><span class="type-name">In</span><span>] = ???    </span></code></pre>
         <p><code>doSomethingThatCanFail</code> does some mapping or business logic that can fail.
         If it fails, it returns a <code>Left</code> with an error message, that you wrap with a <em>CamundalaWorkerError.CustomError</em>.</p>
+        
+        <h2 id="advanced-custom-workers" class="section"><a class="anchor-link left" href="#advanced-custom-workers"><i class="icofont-laika link">&#xef71;</i></a>Advanced Custom Workers</h2>
+        <p>It is possible to orchestrate Workers in a <em>Custom Worker</em>.</p>
+        <p>This is advanced in a sense that you work with the <em>ZIO</em> library.</p>
+        <p>Here are the main differences to a simple <em>Custom Worker</em>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">mycompany</span><span>.</span><span class="identifier">myproject</span><span>.</span><span class="identifier">bpmn</span><span>.</span><span class="identifier">myprocess</span><span>.</span><span class="identifier">v1</span><span>.</span><span class="type-name">MyCustomTask</span><span>.*
+
+</span><span class="annotation">@SpringConfiguration</span><span>
+</span><span class="keyword">class</span><span> </span><span class="type-name">MyCustomTaskWorker</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">CompanyCustomWorkerDsl</span><span>[</span><span class="type-name">In</span><span>, </span><span class="type-name">Out</span><span>]:
+
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">customTask</span><span> = </span><span class="identifier">example</span><span>
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">runWorkZIO</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">EngineRunContext</span><span> ?=&gt; </span><span class="type-name">IO</span><span>[</span><span class="type-name">CustomError</span><span>, </span><span class="type-name">Out</span><span>] =
+    </span><span class="comment">// your business logic
+</span><span>    ???</span></code></pre>
+        <ul>
+          <li><code>runWorkZIO</code> instead of <code>runWork</code> is the method that is called by the <em>Worker</em> to execute the business logic.</li>
+          <li>
+            The code can either:
+            <ul>
+              <li>complete the task successfully with a result -&gt; <code>ZIO.succeed[Out]</code></li>
+              <li>fail the task with an error -&gt; <code>ZIO.fail[CamundalaWorkerError.CustomError]</code></li>
+            </ul>
+          </li>
+          <li>
+            What about the strange return value <code>EngineRunContext ?=&gt; IO[CustomError, Seq[Account]]</code>?
+            <ul>
+              <li>No worries <code>EngineRunContext ?=&gt;</code> is just a way to pass the <code>EngineRunContext</code> to the function implicitly.</li>
+              <li>As you have this already in the <code>runWorkZIO</code> method, you can use it in the <code>getAccounts</code> method.</li>
+              <li>This is needed to call the <code>runWorkFromWorkerUnsafe</code> method of an orchestrated Worker
+              and gets you access to the <code>GeneralVariables</code> for example.</li>
+            </ul>
+          </li>
+        </ul>
+        
+        <h3 id="why-zio" class="section"><a class="anchor-link left" href="#why-zio"><i class="icofont-laika link">&#xef71;</i></a>Why ZIO?</h3>
+        <p><em>ZIO</em> is a library for asynchronous and concurrent programming in Scala.
+        It is used to handle errors and side effects in a functional way.
+        It is also used to handle the asynchronous nature of the Camunda 8 API.
+        This means that composing Workers is easier and more readable.</p>
+        <p>Let&#39;s look at an Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="annotation">@Autowired</span><span>
+    </span><span class="keyword">var</span><span> </span><span class="identifier">processInstanceService</span><span>: </span><span class="type-name">GetProcessInstanceWorker</span><span>         = </span><span class="identifier">uninitialized</span><span>
+    </span><span class="annotation">@Autowired</span><span>
+    </span><span class="keyword">var</span><span> </span><span class="identifier">createSetModulesOtherWorker</span><span>: </span><span class="type-name">CreateSetModulesOtherWorker</span><span> = </span><span class="identifier">uninitialized</span><span>
+    
+    </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">runWorkZIO</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">EngineRunContext</span><span> ?=&gt; </span><span class="type-name">IO</span><span>[</span><span class="type-name">CustomError</span><span>, </span><span class="type-name">Out</span><span>] =
+      </span><span class="keyword">for</span><span>
+        </span><span class="identifier">client</span><span> &lt;- </span><span class="identifier">getProcessInstances</span><span>(</span><span class="identifier">in</span><span>)
+        </span><span class="identifier">result</span><span> &lt;- </span><span class="identifier">createSetModulesOther</span><span>(</span><span class="identifier">in</span><span>, </span><span class="identifier">client</span><span>)
+      </span><span class="keyword">yield</span><span> </span><span class="identifier">result</span></code></pre>
+        <ul>
+          <li><code>GetProcessInstanceWorker</code>: you simply can add Workers as dependencies.</li>
+          <li><code>getProcessInstances(in)</code>: you can simply compose the Workers.</li>
+        </ul>
+        <p>Running in parallel can also be achieved easily:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="keyword">for</span><span>
+          </span><span class="identifier">partnerClientKeys</span><span>               &lt;- </span><span class="identifier">getPartnerClientKeys</span><span>(</span><span class="identifier">in</span><span>, </span><span class="identifier">client</span><span>)
+          </span><span class="identifier">partners</span><span>                        &lt;- </span><span class="identifier">getPartners</span><span>(</span><span class="identifier">partnerClientKeys</span><span>) </span><span class="comment">// wait for the above result
+</span><span>          </span><span class="identifier">eBankingContractsFork</span><span>           &lt;- </span><span class="identifier">getEBankingContracts</span><span>(</span><span class="identifier">partners</span><span>).</span><span class="identifier">fork</span><span> </span><span class="comment">// run in parallel
+</span><span>          </span><span class="identifier">cardsFork</span><span>                       &lt;- </span><span class="identifier">getCards</span><span>(</span><span class="identifier">in</span><span>).</span><span class="identifier">fork</span><span> </span><span class="comment">// run in parallel
+</span><span>          </span><span class="comment">// Join all forks
+</span><span>          </span><span class="identifier">eBankingContracts</span><span>               &lt;- </span><span class="identifier">eBankingContractsFork</span><span>.</span><span class="identifier">join</span><span> 
+          </span><span class="identifier">allCards</span><span>                        &lt;- </span><span class="identifier">cardsFork</span><span>.</span><span class="identifier">join</span><span>
+          </span><span class="identifier">output</span><span>                          &lt;- </span><span class="identifier">createOutput</span><span>(</span><span class="identifier">eBankingContracts</span><span>, </span><span class="identifier">allCards</span><span>)
+        </span><span class="keyword">yield</span><span> </span><span class="identifier">output</span></code></pre>
+        <p>Error Handling:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="keyword">private</span><span>[</span><span class="identifier">v3</span><span>] </span><span class="keyword">def</span><span> </span><span class="declaration-name">getAccounts</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>): </span><span class="type-name">EngineRunContext</span><span> ?=&gt; </span><span class="type-name">IO</span><span>[</span><span class="type-name">CustomError</span><span>, </span><span class="type-name">Seq</span><span>[</span><span class="type-name">Account</span><span>]] =
+      </span><span class="identifier">getAccountsWorker</span><span>
+        .</span><span class="identifier">runWorkFromWorkerUnsafe</span><span>(</span><span class="type-name">GetAccounts</span><span>.</span><span class="type-name">In</span><span>.</span><span class="identifier">minimalExample</span><span>.</span><span class="identifier">copy</span><span>(
+          </span><span class="identifier">clientKey</span><span> = </span><span class="identifier">in</span><span>.</span><span class="identifier">clientKey</span><span>
+        ))
+        .</span><span class="identifier">mapError</span><span>: </span><span class="identifier">err</span><span> =&gt;
+          </span><span class="type-name">CustomError</span><span>(
+            </span><span class="string-literal">s&quot;Error while get Accounts: </span><span class="substitution">${err.errorMsg}</span><span class="string-literal">&quot;</span><span>
+          )</span></code></pre>
+        <p>Simply use <code>mapError</code> to map the error to a <code>CustomError</code>.</p>
+        <p>For more information on <em>ZIO</em> see the <a href="https://zio.dev/">ZIO documentation</a>.</p>
+        
+        <h3 id="mocking" class="section"><a class="anchor-link left" href="#mocking"><i class="icofont-laika link">&#xef71;</i></a>Mocking</h3>
+        <p>You can also mock a composed Worker like:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">private</span><span>[</span><span class="identifier">v3</span><span>] </span><span class="keyword">def</span><span> </span><span class="declaration-name">checkClient</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">In</span><span>)(</span><span class="identifier">using</span><span> </span><span class="identifier">engineContext</span><span>: </span><span class="type-name">EngineRunContext</span><span>): </span><span class="type-name">IO</span><span>[</span><span class="type-name">CustomError</span><span>, </span><span class="type-name">GetClientClientKey</span><span>.</span><span class="type-name">Out</span><span>] =
+    </span><span class="identifier">given</span><span> </span><span class="type-name">EngineRunContext</span><span> = </span><span class="identifier">engineContext</span><span>
+      .</span><span class="identifier">copy</span><span>(</span><span class="identifier">generalVariables</span><span> =
+        </span><span class="identifier">engineContext</span><span>.</span><span class="identifier">generalVariables</span><span>.</span><span class="identifier">copy</span><span>(
+          </span><span class="identifier">outputServiceMock</span><span> = </span><span class="identifier">in</span><span>.</span><span class="identifier">loadCustomerMock</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">asJson</span><span>)
+        )
+      )
+    </span><span class="identifier">getClientClientKeyWorker</span><span>
+      .</span><span class="identifier">runWorkFromWorkerUnsafe</span><span>(</span><span class="type-name">GetClientClientKey</span><span>.</span><span class="type-name">In</span><span>(</span><span class="identifier">in</span><span>.</span><span class="identifier">clientKey</span><span>))</span></code></pre>
+        <ul>
+          <li>You see <code>(using engineContext: EngineRunContext):</code> is an alternative way to pass the <code>EngineRunContext</code> to the function implicitly.</li>
+          <li>For mocking you can use the <code>outputServiceMock</code> or <code>outputMock</code> in the <code>GeneralVariables</code>.</li>
+          <li>The mock itself must be in the <code>In</code> object of the Worker as there is no <code>InConfig</code> for a Worker.</li>
+        </ul>
+        
+        <h3 id="handled-errors-bpmnerror" class="section"><a class="anchor-link left" href="#handled-errors-bpmnerror"><i class="icofont-laika link">&#xef71;</i></a>Handled Errors (BpmnError)</h3>
+        <p>There are 2 scenarios where you can handle Errors in a Worker:
+        1. The worker logic should go on:
+           <code>scala
+    .catchAll:
+            case err: ServiceError if err.errorCode == 404 =&gt;
+              ZIO.succeed(Seq.empty[Card])
+            case err                                       =&gt;
+              ZIO.fail:
+                CustomError(
+                  s&quot;Error while loading cards.&quot;,
+                  causeError = Some(err)
+                )</code>
+           Just handle the error and switch the error to a successful result.</p>
+        <ol class="arabic">
+          <li>
+            The worker logic should stop:
+            <pre class="keep-together pdf epub"><code class="nohighlight"><span>..
+.</span><span class="identifier">mapError</span><span>: </span><span class="identifier">err</span><span> =&gt;
+    </span><span class="type-name">CustomError</span><span>(
+      </span><span class="string-literal">s&quot;Error while checking client: </span><span class="substitution">${err.errorMsg}</span><span class="string-literal">&quot;</span><span>,
+      </span><span class="identifier">generalVariables</span><span> =
+        </span><span class="type-name">Some</span><span>(</span><span class="type-name">GeneralVariables</span><span>(</span><span class="identifier">handledErrors</span><span> = </span><span class="identifier">engineContext</span><span>.</span><span class="identifier">generalVariables</span><span>.</span><span class="identifier">handledErrors</span><span>)),
+      </span><span class="identifier">causeError</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="identifier">err</span><span>)
+    )</span></code></pre>
+            <p>Just extend the <code>CustomError</code> with the <code>handledErrors</code> and <code>causeError</code> to handle the error.
+            The rest is done by <em>Camundala</em>. </p>
+          </li>
+        </ol>
         
         <h2 id="init-process-worker" class="section"><a class="anchor-link left" href="#init-process-worker"><i class="icofont-laika link">&#xef71;</i></a>Init Process Worker</h2>
         <p>The <em>Init Process Worker</em> is a special <em>Worker</em> that is used to start a process.</p>

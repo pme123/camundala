@@ -28,21 +28,23 @@ object AstSpec extends ZIOSpecDefault:
   case class In(value: Int = 1)
   object In:
     given InOutCodec[In] = deriveInOutCodec[In]
-    given ApiSchema[In] = deriveApiSchema[In]
-  
+    given ApiSchema[In]  = deriveApiSchema[In]
+
   case class Out(value: Boolean = true)
   object Out:
     given InOutCodec[Out] = deriveInOutCodec[Out]
-    given ApiSchema[Out] = deriveApiSchema[Out]
+    given ApiSchema[Out]  = deriveApiSchema[Out]
 
   def processName: String = "dummy"
 
   def spec = suite("AstSpec")(
     test("defaultMock Process") {
-      val proc = Process(InOutDescr(
-        processName,
-        In(),
-        Out()),
+      val proc = Process(
+        InOutDescr(
+          processName,
+          In(),
+          Out()
+        ),
         NoInput(),
         ProcessLabels.none
       ).mockWith: in =>
@@ -50,7 +52,8 @@ object AstSpec extends ZIOSpecDefault:
         else Out(false)
 
       val worker: InitWorker[In, Out, In] = InitWorker(
-        inOutExample = proc
+        inOutExample = proc,
+        ValidationHandler(Right(_))
       )
 
       for
@@ -60,8 +63,8 @@ object AstSpec extends ZIOSpecDefault:
         result1 == Out(),
         result2 == Out(false)
       )
+      end for
     },
-
     test("defaultMock ServiceTask") {
       val servTask = ServiceTask[In, Out, NoInput, Out](
         inOutDescr = InOutDescr[In, Out](
@@ -76,22 +79,23 @@ object AstSpec extends ZIOSpecDefault:
           if in.value == 1 then true else false
         ))
 
-    val worker = ServiceWorker(
-      inOutExample = servTask,
-      runWorkHandler = Some(
-        ServiceHandler[In, Out, NoInput, Out](
-          httpMethod = Method.GET,
-          apiUri = _ => Uri("http://localhost:8080"),
-          querySegments = _ => Seq.empty,
-          inputMapper = _ => None,
-          inputHeaders = _ => Map.empty,
-          defaultServiceOutMock = servTask.defaultServiceOutMock,
-          outputMapper = (serviceOut, _) => Right(Out(serviceOut.outputBody.value)),
-          serviceInExample = NoInput(),
-          dynamicServiceOutMock = servTask.dynamicServiceOutMock
+      val worker = ServiceWorker(
+        inOutExample = servTask,
+        validationHandler = ValidationHandler(Right(_)),
+        runWorkHandler = Some(
+          ServiceHandler[In, Out, NoInput, Out](
+            httpMethod = Method.GET,
+            apiUri = _ => Uri("http://localhost:8080"),
+            querySegments = _ => Seq.empty,
+            inputMapper = _ => None,
+            inputHeaders = _ => Map.empty,
+            defaultServiceOutMock = servTask.defaultServiceOutMock,
+            outputMapper = (serviceOut, _) => Right(Out(serviceOut.outputBody.value)),
+            serviceInExample = NoInput(),
+            dynamicServiceOutMock = servTask.dynamicServiceOutMock
+          )
         )
       )
-    )
 
       for
         result1 <- worker.defaultMock(In(1))
@@ -100,6 +104,7 @@ object AstSpec extends ZIOSpecDefault:
         result1 == Out(),
         result2 == Out(false)
       )
+      end for
     }
   )
 

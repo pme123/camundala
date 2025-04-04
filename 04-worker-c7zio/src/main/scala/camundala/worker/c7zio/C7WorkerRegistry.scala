@@ -9,12 +9,13 @@ class C7WorkerRegistry(client: C7Client)
     extends WorkerRegistry:
 
   protected def registerWorkers(workers: Set[WorkerDsl[?, ?]]): ZIO[Any, Any, Any] =
-    Console.printLine(s"Starting C7 Worker Client") *>
+    ZIO.logInfo(s"Starting C7 Worker Client") *>
       acquireReleaseWith(client.client)(_.closeClient()): client =>
         for
-          server <- ZIO.never.forever.fork
+          _ <- ZIO.logInfo(s"Client Ready")
+          server <- never.forever.fork
           c7Workers: Set[C7Worker[?, ?]] = workers.collect { case w: C7Worker[?, ?] => w }
-          _      <- collectAllPar(c7Workers.map(w => registerWorker(w, client)))
+          _      <- foreachParDiscard(c7Workers)(w => registerWorker(w, client))
           _      <- server.join
         yield ()
 
@@ -27,7 +28,7 @@ class C7WorkerRegistry(client: C7Client)
       logInfo("Registered C7 Worker: " + worker.topic)
 
   extension (client: ExternalTaskClient)
-    def closeClient() =
-      logInfo("Closing C7 Worker Client") *>
-        succeed(if client != null then client.stop() else ())
+    def closeClient(): ZIO[Any, Nothing, Unit] =
+      logInfo("Closing C7 Worker Client")
+        .as(if client != null then client.stop() else ())
 end C7WorkerRegistry

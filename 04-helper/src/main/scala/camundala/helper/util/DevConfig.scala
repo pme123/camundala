@@ -176,6 +176,10 @@ object ModuleConfig:
     testType = TestType.ZIO,
     sbtSettings = Seq("dockerSettings"),
     sbtPlugins = Seq("DockerPlugin", "JavaAppPackaging"),
+    sbtDependencies = Seq(
+      """"ch.qos.logback" % "logback-classic" % logbackVersion % Runtime""",
+      """"jakarta.xml.bind" % "jakarta.xml.bind-api" % jaxbApiVersion"""
+    ),
     hasProjectDependencies = true
   )
   lazy val helperModule     = ModuleConfig(
@@ -198,5 +202,6 @@ case class CompanyVersionConfig(
     jaxbXmlVersion: String = BuildInfo.jaxbApiVersion,
     munitVersion: String = BuildInfo.mUnitVersion,
     zioVersion: String = BuildInfo.zioVersion,
+    logbackVersion: String = BuildInfo.logbackVersion,
     otherVersions: Map[String, String] = Map.empty
 )

@@ -28,7 +28,7 @@ object WorkerExecutorSpec extends ZIOSpecDefault:
   def example =
     Process(InOutDescr(processName, In(), NoOutput()), NoInput(), ProcessLabels.none)
   import In.given
-  def worker = InitWorker(example)
+  def worker = InitWorker(example, ValidationHandler(Right(_)))
 
   case class In(aValue: String = "ok", inConfig: Option[InConfig] = None)
       extends WithConfig[InConfig]:

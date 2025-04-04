@@ -8,9 +8,11 @@ import org.apache.hc.core5.http.*
 import org.apache.hc.core5.http.protocol.HttpContext
 import org.apache.hc.core5.util.Timeout
 import org.camunda.bpm.client.ExternalTaskClient
-import org.camunda.bpm.client.backoff.ExponentialErrorBackoffStrategy
+import org.camunda.bpm.client.backoff.{ExponentialBackoffStrategy, ExponentialErrorBackoffStrategy}
 import zio.ZIO
+import zio.ZIO.*
 
+import scala.concurrent.duration.*
 import java.io.IOException
 import java.util.Base64
 import scala.jdk.CollectionConverters.*
@@ -27,9 +29,10 @@ object C7NoAuthClient extends C7Client:
         .disableBackoffStrategy()
         .customizeHttpClient: httpClientBuilder =>
           httpClientBuilder.setDefaultRequestConfig(RequestConfig.custom()
-           // .setResponseTimeout(Timeout.ofSeconds(15))
+            // .setResponseTimeout(Timeout.ofSeconds(15))
             .build())
         .build()
+end C7NoAuthClient
 
 object C7BasicAuthClient extends C7Client:
 
@@ -55,23 +58,40 @@ object C7BasicAuthClient extends C7Client:
     Base64.getEncoder.encodeToString(credentials.getBytes)
 end C7BasicAuthClient
 
-object OAuth2Client extends C7Client, OAuthPasswordFlow:
-  given WorkerLogger = Slf4JLogger.logger(getClass.getName)
-  lazy val fssoRealm: String = sys.env.getOrElse("FSSO_REALM", "0949")
-  lazy val fssoBaseUrl = sys.env.getOrElse("FSSO_BASE_URL", s"http://host.lima.internal:8090")
+trait OAuth2Client extends C7Client, OAuthPasswordFlow:
+  given WorkerLogger       = Slf4JLogger.logger(getClass.getName)
+  def camundaRestUrl       = "http://localhost:8080/engine-rest"
+  def maxTimeForAcquireJob = 500.millis
+  def lockDuration         = 5.minutes.toMillis
 
   def addAccessToken = new HttpRequestInterceptor:
     override def process(request: HttpRequest, entity: EntityDetails, context: HttpContext): Unit =
-      request.addHeader("Authorization", "Bearer " + adminToken().toOption.getOrElse("NO TOkEN"))
+      val token = adminToken().toOption.getOrElse("NO TOkEN")
+      request.addHeader("Authorization", token)
 
   def client =
-    ZIO.attempt:
-      ExternalTaskClient.create()
-        .baseUrl("http://localhost:8080/engine-rest")
-        .disableBackoffStrategy()
-        .customizeHttpClient: httpClientBuilder =>
-          httpClientBuilder
-            .addRequestInterceptorLast(addAccessToken)
+    ZIO.logInfo(s"Starting C7 Worker Client: ${adminToken()}") *>
+      ZIO
+        .attempt:
+          ExternalTaskClient.create()
+            .baseUrl(camundaRestUrl)
+            .backoffStrategy(
+              new ExponentialBackoffStrategy(
+                100L,
+                2.0,
+                maxTimeForAcquireJob.toMillis
+              )
+            )
+            .lockDuration(lockDuration)
+            .customizeHttpClient: httpClientBuilder =>
+              httpClientBuilder
+                .addRequestInterceptorLast(addAccessToken)
+                .build()
             .build()
-        .build()
+        .tapError(ex =>
+          zio.Console.printLine(s"Errordd: ${ex.getMessage}")
+        ).tap(_ =>
+          zio.Console.printLine(s"Success: ${camundaRestUrl}")
+        )
+
 end OAuth2Client

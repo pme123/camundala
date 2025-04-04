@@ -161,6 +161,7 @@ object CamundaHelper:
       case _: PrimitiveValueType =>
         typedValue.getValue match
           case vt: DmnValueSimple     =>
+            import DmnValueSimple.given 
             ZIO.succeed(vt.asJson)
           case en: scala.reflect.Enum =>
             ZIO.succeed(Json.fromString(en.toString))

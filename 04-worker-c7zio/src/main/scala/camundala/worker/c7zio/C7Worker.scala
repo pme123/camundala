@@ -62,7 +62,7 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
                                )
     yield ())
       .catchAll: ex =>
-        ProcessVariablesExtractor.extractGeneral()
+        ProcessVariablesExtractor.extractGeneral(ex.generalVariables)
           .flatMap(generalVariables =>
             externalTaskService.handleError(ex, generalVariables)
           )
@@ -109,6 +109,7 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     ): Boolean =
       error.isMock || // if it is mocked, it is handled in the error, as it also could be a successful output
         handledErrors.contains(error.errorCode.toString) ||
+        handledErrors.exists(err => error.causeError.map(_.errorCode.toString).contains(err)) ||
         handledErrors.map(
           _.toLowerCase
         ).contains("catchall")
@@ -117,12 +118,14 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
         error: CamundalaWorkerError,
         generalVariables: GeneralVariables
     ): HelperContext[URIO[Any, CamundalaWorkerError]] =
+
       val errorMsg          = error.errorMsg.replace("\n", "")
       val errorHandled      = isErrorHandled(error, generalVariables.handledErrors)
       val errorRegexHandled =
         errorHandled && generalVariables.regexHandledErrors.forall(regex =>
           errorMsg.matches(s".*$regex.*")
         )
+
       (errorHandled, errorRegexHandled) match
         case (true, true)  =>
           val mockedOutput               = error match
@@ -164,12 +167,11 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
           variables
         )
       )
-        .catchSome:
-          case err if summon[camunda.ExternalTask].getRetries >= 0 =>
-            handleFailure(
-              UnexpectedError(s"Problem handling BpmnError to C7: ${err.getMessage}."),
-              doRetry = true
-            ).ignore
+        .catchAll: err =>
+          handleFailure(
+            UnexpectedError(s"Problem handling BpmnError to C7: ${err.getMessage}."),
+            doRetry = true
+          ).ignore
         .ignore
     end handleBpmnError
 
@@ -186,19 +188,20 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
       logError(
         s"Handle Failure for taskId: $taskId | processInstanceId: $processInstanceId | doRetry: $doRetry | retries: $retries | $error"
       ) *>
-        ZIO.when(retries >= 0 || doRetry):
-          ZIO.attempt(
-            externalTaskService.handleFailure(
-              taskId,
-              error.causeMsg,
-              s" ${error.causeMsg}\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
-              Math.max(retries, 0), // < 0 not allowed
-              10.seconds.toMillis
-            )
-          ).flatMapError: throwable =>
-            logError(s"Problem handling Failure to C7: ${throwable.getMessage}.")
-          .ignore
-        .ignore
+        (if retries >= 0 || doRetry then
+           ZIO.attempt(
+             externalTaskService.handleFailure(
+               taskId,
+               error.causeMsg,
+               s" ${error.causeMsg}\nSee the log of the Worker: ${niceClassName(worker.getClass)}",
+               Math.max(retries, 0), // < 0 not allowed
+               10.seconds.toMillis
+             )
+           ).flatMapError: throwable =>
+             logError(s"Problem handling Failure to C7: ${throwable.getMessage}.")
+           .ignore
+         else
+           ZIO.unit)
     end handleFailure
 
     private[worker] def calcRetries(
@@ -232,7 +235,6 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     end filteredOutput
 
   end extension
-
   private lazy val runtime = zio.Runtime.default
 
 end C7Worker

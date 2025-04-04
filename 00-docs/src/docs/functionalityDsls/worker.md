@@ -68,6 +68,8 @@ private def doSomethingThatCanFail(in: In): Either[Throwable, In] = ???
 `doSomethingThatCanFail` does some mapping or business logic that can fail.
 If it fails, it returns a `Left` with an error message, that you wrap with a _CamundalaWorkerError.CustomError_.
 
+@:include(workers_advanced.md)
+
 ## Init Process Worker
 The _Init Process Worker_ is a special _Worker_ that is used to start a process.
 

@@ -24,7 +24,7 @@ sealed trait Worker[
   lazy val out: Out        = inOutExample.out
 
   // handler
-  def validationHandler: Option[ValidationHandler[In]]   = None
+  def validationHandler: ValidationHandler[In]
   def initProcessHandler: Option[InitProcessHandler[In]] = None
   // no handler for mocking - all done from the InOut Object
   def runWorkHandler: Option[RunWorkHandler[In, Out]]    = None
@@ -57,16 +57,11 @@ case class InitWorker[
     InitIn <: Product: InOutCodec
 ](
     inOutExample: InOut[In, Out, ?],
-    override val validationHandler: Option[ValidationHandler[In]] = None,
+    validationHandler: ValidationHandler[In],
     override val initProcessHandler: Option[InitProcessHandler[In]] = None
 ) extends Worker[In, Out, InitWorker[In, Out, InitIn]]:
   lazy val topic: String = inOutExample.id
-
-  def validate(
-      validator: ValidationHandler[In]
-  ): InitWorker[In, Out, InitIn] =
-    copy(validationHandler = Some(validator))
-
+  
   def initProcess(
       init: InitProcessHandler[In]
   ): InitWorker[In, Out, InitIn] =
@@ -79,15 +74,10 @@ case class CustomWorker[
     Out <: Product: InOutCodec
 ](
     inOutExample: CustomTask[In, Out],
-    override val validationHandler: Option[ValidationHandler[In]] = None,
+    validationHandler: ValidationHandler[In],
     override val runWorkHandler: Option[RunWorkHandler[In, Out]] = None
 ) extends Worker[In, Out, CustomWorker[In, Out]]:
   lazy val topic: String = inOutExample.topicName
-
-  def validate(
-      validator: ValidationHandler[In]
-  ): CustomWorker[In, Out] =
-    copy(validationHandler = Some(validator))
 
   def runWork(
       serviceHandler: CustomHandler[In, Out]
@@ -103,15 +93,10 @@ case class ServiceWorker[
     ServiceOut: InOutDecoder
 ](
     inOutExample: ServiceTask[In, Out, ServiceIn, ServiceOut],
-    override val validationHandler: Option[ValidationHandler[In]] = None,
+    validationHandler: ValidationHandler[In],
     override val runWorkHandler: Option[ServiceHandler[In, Out, ServiceIn, ServiceOut]] = None
 ) extends Worker[In, Out, ServiceWorker[In, Out, ServiceIn, ServiceOut]]:
   lazy val topic: String = inOutExample.topicName
-
-  def validate(
-      handler: ValidationHandler[In]
-  ): ServiceWorker[In, Out, ServiceIn, ServiceOut] =
-    copy(validationHandler = Some(handler))
 
   def runWork(
       handler: ServiceHandler[In, Out, ServiceIn, ServiceOut]
