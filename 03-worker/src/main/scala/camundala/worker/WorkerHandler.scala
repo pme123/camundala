@@ -71,7 +71,7 @@ object ValidationHandler:
 end ValidationHandler
 
 type InitProcessFunction =
-  EngineContext ?=> Either[InitProcessError, Map[String, Any]]
+  EngineRunContext ?=> IO[InitProcessError, Map[String, Any]]
 
 /** handler for Custom Process Initialisation. All the variables in the Result Map will be put on
   * the process.
@@ -111,7 +111,7 @@ object InitProcessHandler:
   def apply[
       In <: Product: InOutCodec
   ](
-      funct: In => InitProcessFunction,
+      funct: In => EngineRunContext ?=> IO[InitProcessError, Map[String, Any]],
       processLabels: ProcessLabels
   ): InitProcessHandler[In] =
     new InitProcessHandler[In]:
