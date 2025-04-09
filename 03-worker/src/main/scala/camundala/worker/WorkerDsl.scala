@@ -3,7 +3,7 @@ package worker
 
 import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.{RunWorkError, *}
-import zio.{IO, ZIO}
+import zio.{IO, UIO, ZIO}
 
 import scala.concurrent.duration.*
 import scala.reflect.ClassTag
@@ -100,7 +100,7 @@ trait InitWorkerDsl[
 
   lazy val worker: InitWorker[In, Out, InitIn] =
     InitWorker(inOutExample, ValidationHandler(validate))
-      .initProcess(InitProcessHandler(initProcess, inOutExample.processLabels))
+      .initProcess(InitProcessHandler(initProcessZIO, inOutExample.processLabels))
 
 end InitWorkerDsl
 
@@ -215,30 +215,42 @@ private trait InitProcessDsl[
     InitIn <: Product: InOutCodec,
     InConfig <: Product: InOutCodec
 ]:
-  protected def customInit(in: In): InitIn
+
+  protected def customInitZIO(
+      inputObject: In
+  ): EngineRunContext ?=> IO[InitProcessError, InitIn] =
+    ZIO.succeed(customInit(inputObject))
+
+  protected def customInit(in: In): InitIn = ??? // this must be implemented if customInitZIO isn't
 
   // by default the InConfig is initialized
-  final def initProcess(in: In)(using
-      engineContext: EngineContext
-  ): Either[InitProcessError, Map[String, Any]] =
-    val inConfig = in match
+  final def initProcessZIO(in: In): EngineRunContext ?=> IO[InitProcessError, Map[String, Any]] =
+    given EngineContext = summon[EngineRunContext].engineContext
+    val inConfigZIO = in match
       case i: WithConfig[?] =>
-        initConfig(
-          i.inConfig.asInstanceOf[Option[InConfig]],
-          i.defaultConfig.asInstanceOf[InConfig]
-        )
-      case _                => Map.empty
-    val custom   = engineContext.toEngineObject(customInit(in))
-    Right(inConfig ++ custom)
-  end initProcess
+        ZIO
+          .attempt:
+            initConfig(
+              i.inConfig.asInstanceOf[Option[InConfig]],
+              i.defaultConfig.asInstanceOf[InConfig]
+            )
+          .mapError: err =>
+            InitProcessError(s"Error initializing InConfig: $err")
+      case _                => ZIO.succeed(Map.empty)
+    for 
+      initIn <- customInitZIO(in)
+      inConfig <- inConfigZIO
+    yield inConfig ++ summon[EngineRunContext].toEngineObject(initIn)
+    
+  end initProcessZIO
 
   /** initialize the config of the form of:
     *
     * ```
     * case class InConfig(
-    * timerIdentificationNotReceived: Option[String :| Iso8601Duration],
-    * timerEBankingContractCheckOpened: Option[String :| CronExpr] =
-    * ...
+    *   timerIdentificationNotReceived: Option[String :| Iso8601Duration],
+    *   timerEBankingContractCheckOpened: Option[String :| CronExpr] =
+    *   ...
     * )
     * ```
     */

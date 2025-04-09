@@ -88,10 +88,5 @@ trait OAuth2Client extends C7Client, OAuthPasswordFlow:
                 .addRequestInterceptorLast(addAccessToken)
                 .build()
             .build()
-        .tapError(ex =>
-          zio.Console.printLine(s"Errordd: ${ex.getMessage}")
-        ).tap(_ =>
-          zio.Console.printLine(s"Success: ${camundaRestUrl}")
-        )
 
 end OAuth2Client
