@@ -1,9 +1,11 @@
 package camundala.worker
 
-import zio.*
+import camundala.BuildInfo
 import zio.ZIO.*
+import zio.{ZIOAppArgs, ZIOAppDefault, ZLayer}
 
 trait WorkerApp extends ZIOAppDefault:
+  def applicationName: String = getClass.getName.split('.').take(2).mkString("-")
   // a list of registries for each worker implementation
   def workerRegistries: Seq[WorkerRegistry]
   // list all the workers you want to register
@@ -14,7 +16,7 @@ trait WorkerApp extends ZIOAppDefault:
         case s: Seq[?]          => s.collect { case d: WorkerDsl[?, ?] => d }
       .toSet
 
-  def dependencies(workerApps: WorkerApp*): Unit                     =
+  def dependencies(workerApps: WorkerApp*): Unit =
     theDependencies = workerApps
 
   protected var theWorkers: Set[WorkerDsl[?, ?]] = Set.empty
@@ -24,10 +26,26 @@ trait WorkerApp extends ZIOAppDefault:
 
   override def run: ZIO[Any, Any, Any] =
     for
-      _ <- logInfo(s"Starting WorkerApp: ${getClass.getSimpleName}")
-      _ <- foreachParDiscard(workerRegistries) :
-        registry =>
-          registry.register((theDependencies :+ this).flatMap(_.theWorkers).toSet)
+      _ <- logInfo(banner)
+      _ <- foreachParDiscard(workerRegistries): registry =>
+             registry.register((theDependencies :+ this).flatMap(_.theWorkers).toSet)
     yield ()
 
+  private lazy val banner =
+    s"""
+       |
+       |..#######..########...######..##.....##.########..######...######.....###....##..........###...
+       |.##.....##.##.....##.##....##.##.....##.##.......##....##.##....##...##.##...##.........##.##..
+       |.##.....##.##.....##.##.......##.....##.##.......##.......##........##...##..##........##...##.
+       |.##.....##.########..##.......#########.######....######..##.......##.....##.##.......##.....##
+       |.##.....##.##...##...##.......##.....##.##.............##.##.......#########.##.......#########
+       |.##.....##.##....##..##....##.##.....##.##.......##....##.##....##.##.....##.##.......##.....##
+       |..#######..##.....##..######..##.....##.########..######...######..##.....##.########.##.....##
+       |
+       |                                                        >>> DOMAIN DRIVEN PROCESS ORCHESTRATION
+       |  $applicationName
+       |
+       |  Camundala: ${BuildInfo.version}
+       |  Scala: ${BuildInfo.scalaVersion}
+       |""".stripMargin
 end WorkerApp
