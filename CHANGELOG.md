@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adjusted printStackTrace - see [Commit](https://github.com/pme123/camundala/commit/ae8c9fd4cf03313a4a33fd2e366804edf19441f6)
 
 
+## 1.30.42 - 2025-04-09
+### Changed 
+- Added customInitZIO to support worker in worker in init Process. - see [Commit](https://github.com/pme123/camundala/commit/309890056f1f3c55e8652e265cc45acc84b27caf)
+- Uncommented Snapshot verification. - see [Commit](https://github.com/pme123/camundala/commit/a7f712f51684af185f00b17f5fb47e40c5b6765b)
+- Added Documentation for advanced workers. - see [Commit](https://github.com/pme123/camundala/commit/c5079ccc6277e24ba152624ae197a765fdbacb28)
+
 ## 1.30.41 - 2025-04-04
 ### Changed 
 - Added ValidationHandler to runWorkFromWorker. - see [Commit](https://github.com/pme123/camundala/commit/b1d28e9aed6076c09e7192d328071d6b0102a1b8)
