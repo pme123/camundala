@@ -58,7 +58,7 @@ object Dependencies {
   val camunda8Version = "8.5.18"
   val zeebeClientVersion = "8.7.0"
   val springBootVersion = "3.3.9"
-  val nettyVersion = "4.1.119.Final"
+  val nettyVersion = "4.2.0.Final"
   val swaggerOpenAPIVersion = "2.1.26"
   // examples
   val h2Version = "2.3.232"
