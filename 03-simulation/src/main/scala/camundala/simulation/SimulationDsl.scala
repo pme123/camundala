@@ -10,7 +10,7 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
   def simulate(body: => (Seq[SScenario] | SScenario)*): Unit =
     try
       val scenarios = body.flatMap:
-        case s: Seq[?] => s.collect { case ss: SScenario => ss }
+        case s: Seq[?]    => s.collect { case ss: SScenario => ss }
         case s: SScenario => Seq(s)
 
       val modScen =
@@ -18,7 +18,7 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
         then
           scenarios.map:
             case s if s.isOnly => s
-            case s => s.ignored
+            case s             => s.ignored
         else scenarios
 
       run(SSimulation(modScen.toList)) // runs Scenarios
@@ -42,8 +42,8 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
       outputMock: Out,
       outputServiceMock: MockedServiceResponse[ServiceOut]
   ): Seq[ExternalTaskScenario] =
-    val withDefaultMock = task.mockServicesWithDefault
-    val withOutputMock = task
+    val withDefaultMock       = task.mockServicesWithDefault
+    val withOutputMock        = task
       .mockWith(outputMock)
       .withOut(outputMock)
     val withServiceOutputMock = task
@@ -153,23 +153,23 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
       STimerEvent(nameOfVariable(event), event)
 
   extension (event: MessageEvent[?])
-    def waitFor(readyVariable: String): SMessageEvent =
+    def waitFor(readyVariable: String): SMessageEvent                  =
       event.waitFor(readyVariable, true)
     def waitFor(readyVariable: String, readyValue: Any): SMessageEvent =
       SMessageEvent(event.name, event, Some(readyVariable), readyValue)
-    def start: SMessageEvent =
+    def start: SMessageEvent                                           =
       SMessageEvent(event.name, event).start
   end extension
 
   extension (event: SignalEvent[?])
-    def waitFor(readyVariable: String): SSignalEvent =
+    def waitFor(readyVariable: String): SSignalEvent                         =
       event.waitFor(readyVariable, true)
     def waitFor(readyVariable: String, readyValue: Any = true): SSignalEvent =
       SSignalEvent(event.name, event, readyVariable, readyValue)
   end extension
 
   extension (event: TimerEvent)
-    def waitFor(readyVariable: String): STimerEvent =
+    def waitFor(readyVariable: String): STimerEvent                  =
       event.waitFor(readyVariable, true)
     def waitFor(readyVariable: String, readyValue: Any): STimerEvent =
       STimerEvent(event.name, event, Some(readyVariable), readyValue)
@@ -303,22 +303,22 @@ trait SimulationDsl[T] extends TestOverrideExtensions:
       serviceScenario(task, task.out, task.defaultServiceOutMock)
 
     inline def badScenario(
-                            inline process: Process[?, ?, ?],
-                            status: Int,
-                            errorMsg: Optable[String] = None
-                          ): BadScenario =
+        inline process: Process[?, ?, ?],
+        status: Int,
+        errorMsg: Optable[String] = None
+    ): BadScenario =
       BadScenario(nameOfVariable(process), process, status, errorMsg.value, isOnly = true)
 
     inline def incidentScenario(
-                                 inline process: Process[?, ?, ?],
-                                 incidentMsg: String
-                               )(body: SStep*): IncidentScenario =
+        inline process: Process[?, ?, ?],
+        incidentMsg: String
+    )(body: SStep*): IncidentScenario =
       IncidentScenario(nameOfVariable(process), process, body.toList, incidentMsg, isOnly = true)
 
     inline def incidentScenario(
-                                 inline process: Process[?, ?, ?],
-                                 incidentMsg: String
-                               ): IncidentScenario =
+        inline process: Process[?, ?, ?],
+        incidentMsg: String
+    ): IncidentScenario =
       incidentScenario(process, incidentMsg)()
   end only
 

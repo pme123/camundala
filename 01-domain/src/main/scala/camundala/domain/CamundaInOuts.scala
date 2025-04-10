@@ -12,7 +12,7 @@ case class StartProcessIn(
     withVariablesInReturn: Boolean = true
 )
 object StartProcessIn:
-  given ApiSchema[StartProcessIn] = deriveApiSchema
+  given ApiSchema[StartProcessIn]  = deriveApiSchema
   given InOutCodec[StartProcessIn] = deriveCodec
 
 case class CorrelateMessageIn(
@@ -30,7 +30,7 @@ case class CorrelateMessageIn(
     variablesInResultEnabled: Boolean = true
 )
 object CorrelateMessageIn:
-  given ApiSchema[CorrelateMessageIn] = deriveApiSchema
+  given ApiSchema[CorrelateMessageIn]  = deriveApiSchema
   given InOutCodec[CorrelateMessageIn] = deriveCodec
 
 case class SendSignalIn(
@@ -58,7 +58,7 @@ Note: If no execution id is defined the signal is broadcasted to all subscribed 
 )
 
 object SendSignalIn:
-  given ApiSchema[SendSignalIn] = deriveApiSchema
+  given ApiSchema[SendSignalIn]  = deriveApiSchema
   given InOutCodec[SendSignalIn] = deriveCodec
 
 @description(
@@ -69,7 +69,7 @@ case class EvaluateDecisionIn(
     variables: Map[String, CamundaVariable]
 )
 object EvaluateDecisionIn:
-  given ApiSchema[EvaluateDecisionIn] = deriveApiSchema
+  given ApiSchema[EvaluateDecisionIn]  = deriveApiSchema
   given InOutCodec[EvaluateDecisionIn] = deriveCodec
 
 case class CompleteTaskOut(
@@ -79,6 +79,6 @@ case class CompleteTaskOut(
     variables: Map[String, CamundaVariable]
 )
 object CompleteTaskOut:
-  given ApiSchema[CompleteTaskOut] = deriveApiSchema
+  given ApiSchema[CompleteTaskOut]  = deriveApiSchema
   given InOutCodec[CompleteTaskOut] = deriveCodec
 end CompleteTaskOut

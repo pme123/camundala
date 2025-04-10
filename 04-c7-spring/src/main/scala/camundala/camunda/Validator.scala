@@ -42,18 +42,18 @@ trait Validator[T <: Product: InOutCodec]:
 
   private def extractValue(typedValue: TypedValue): AnyRef =
     typedValue.getType match
-      case _: PrimitiveValueType =>
+      case _: PrimitiveValueType    =>
         typedValue.getValue match
-          case vt: DmnValueSimple =>
+          case vt: DmnValueSimple     =>
             import DmnValueSimple.DmnValueTypeJsonEncoder
             vt.asJson
           case en: scala.reflect.Enum =>
             en.toString
-          case other =>
+          case other                  =>
             println(s"Unexpected: $other")
             other
       case _: SerializableValueType => typedValue.getValue
-      case _: FileValueType =>
+      case _: FileValueType         =>
         typedValue match
           case f: FileValueImpl =>
             FileInOut(
@@ -61,6 +61,6 @@ trait Validator[T <: Product: InOutCodec]:
               f.getByteArray.take(10), // just take a few
               Option(f.getMimeType)
             ).asJson
-          case o =>
+          case o                =>
             throwErr(s"Must be a FileValueImpl - but is ${o.getClass}")
 end Validator

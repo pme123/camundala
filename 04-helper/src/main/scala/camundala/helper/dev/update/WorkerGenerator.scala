@@ -56,7 +56,7 @@ case class WorkerGenerator()(using config: DevConfig):
         dependencies
           .map:
             _.map(_.projectPackage + ".worker.WorkerApp")
-              .mkString("WorkerApp,\n    ",",\n    ", "")
+              .mkString("WorkerApp,\n    ", ",\n    ", "")
           .getOrElse("")
       }
        |  )

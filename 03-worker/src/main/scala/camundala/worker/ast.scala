@@ -61,7 +61,7 @@ case class InitWorker[
     override val initProcessHandler: Option[InitProcessHandler[In]] = None
 ) extends Worker[In, Out, InitWorker[In, Out, InitIn]]:
   lazy val topic: String = inOutExample.id
-  
+
   def initProcess(
       init: InitProcessHandler[In]
   ): InitWorker[In, Out, InitIn] =

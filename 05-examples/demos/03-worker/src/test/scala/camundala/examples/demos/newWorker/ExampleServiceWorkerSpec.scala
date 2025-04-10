@@ -15,7 +15,7 @@ object ExampleServiceWorkerSpec extends ZIOSpecDefault:
     test("validate should accept valid input") {
       // Arrange
       val worker = new ExampleServiceWorker()
-      val input = ExampleService.In(
+      val input  = ExampleService.In(
         clientKey = 123L,
         approved = true,
         myMessage = Some("test message"),

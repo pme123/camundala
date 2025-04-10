@@ -8,16 +8,17 @@ import zio.*
 
 case class DmnServiceLive(jsonService: JsonDmnService) extends DmnService:
   def executeDmn[In <: Product: InOutEncoder](
-      dmnDefId: String, 
+      dmnDefId: String,
       in: In
-  ): IO[GatewayError, ProcessInfo] = 
+  ): IO[GatewayError, ProcessInfo] =
     ZIO.attempt {
       val jsonIn = in.asJson
       jsonService.executeDmn(dmnDefId, jsonIn)
     }.catchAll { case ex: Throwable =>
       ZIO.fail(GatewayError.DmnError(s"Failed to execute DMN: ${ex.getMessage}"))
     }
+end DmnServiceLive
 
 object DmnServiceLive:
-  val layer: URLayer[JsonDmnService, DmnService] = 
+  val layer: URLayer[JsonDmnService, DmnService] =
     ZLayer.fromFunction(DmnServiceLive(_))

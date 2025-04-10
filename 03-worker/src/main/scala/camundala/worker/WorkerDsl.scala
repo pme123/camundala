@@ -226,7 +226,7 @@ private trait InitProcessDsl[
   // by default the InConfig is initialized
   final def initProcessZIO(in: In): EngineRunContext ?=> IO[InitProcessError, Map[String, Any]] =
     given EngineContext = summon[EngineRunContext].engineContext
-    val inConfigZIO = in match
+    val inConfigZIO     = in match
       case i: WithConfig[?] =>
         ZIO
           .attempt:
@@ -237,11 +237,11 @@ private trait InitProcessDsl[
           .mapError: err =>
             InitProcessError(s"Error initializing InConfig: $err")
       case _                => ZIO.succeed(Map.empty)
-    for 
-      initIn <- customInitZIO(in)
+    for
+      initIn   <- customInitZIO(in)
       inConfig <- inConfigZIO
     yield inConfig ++ summon[EngineRunContext].toEngineObject(initIn)
-    
+
   end initProcessZIO
 
   /** initialize the config of the form of:
