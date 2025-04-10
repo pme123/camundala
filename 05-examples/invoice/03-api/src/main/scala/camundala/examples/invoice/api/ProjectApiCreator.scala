@@ -11,9 +11,7 @@ import camundala.examples.invoice.bpmn.InvoiceReceipt.InvoiceAssignApproverDMN.*
 // define an object that extends from a common Api Creator
 // exampleInvoiceApi/run
 object ProjectApiCreator extends DefaultApiCreator:
-
-  // technical name of the project
-  val projectName = "example-invoice"
+  
   // readable name of the project
   protected val title = "Invoice Example Process API"
   // version of your project

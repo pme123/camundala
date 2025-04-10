@@ -9,8 +9,8 @@ object Dependencies {
   // 04-helper
   val osLibVersion = "0.11.4"
   // 01-domain
-  val openapiCirceVersion = "0.11.7"
-  val tapirVersion = "1.11.15"
+  val openapiCirceVersion = "0.11.8"
+  val tapirVersion = "1.11.23"
   val ironCirceVersion = "2.6.0"
   val mUnitVersion = "1.1.0"
   val scala3MockVersion = "0.6.6"
@@ -40,11 +40,11 @@ object Dependencies {
   val sardineWebDavVersion = "5.13"
   // 04-worker-c7spring
   // -> worker
-  val camundaVersion = "7.22.0" // external task client
+  val camundaVersion = "7.23.0" // external task client
   val jaxbApiVersion = "4.0.2" // needed by the camunda client 7.21?!
   val scaffeineV = "5.3.0" // caching
-  val zioVersion = "2.1.16" // zio
-  val logbackVersion = "1.4.11" // logging
+  val zioVersion = "2.1.17" // zio
+  val logbackVersion = "1.4.14" // logging
   // - sttpClient3
 
   // --- Experiments
@@ -55,10 +55,11 @@ object Dependencies {
   // 04-c8-spring
   // -> bpmn
   val scalaJacksonVersion = "2.18.3"
-  val camunda8Version = "8.5.17"
+  val camunda8Version = "8.5.18"
+  val zeebeClientVersion = "8.7.0"
   val springBootVersion = "3.3.9"
   val nettyVersion = "4.1.119.Final"
-  val swaggerOpenAPIVersion = "2.1.25"
+  val swaggerOpenAPIVersion = "2.1.26"
   // examples
   val h2Version = "2.3.232"
   val twitter4jVersion = "4.1.2"
@@ -97,7 +98,7 @@ object Dependencies {
   )//.map(_.exclude("org.slf4j", "slf4j-api"))
 
   val zeebeJavaClientDependency =
-    "io.camunda" % "zeebe-client-java" % "8.7.0-alpha2" //TODO camunda8Version,
+    "io.camunda" % "zeebe-client-java" % zeebeClientVersion
   val zioDependency =
     "dev.zio" %% "zio" % zioVersion
   val zioTestDependencies =

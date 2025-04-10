@@ -7,9 +7,7 @@ import bpmn.*
 // exampleDemos/run
 object ProjectApiCreator extends DefaultApiCreator:
   lazy val companyName = "MyCompany"
-
-  val projectName = "demos-example"
-
+  
   protected val title = "Demos Example Process API"
 
   protected val version = "1.0"

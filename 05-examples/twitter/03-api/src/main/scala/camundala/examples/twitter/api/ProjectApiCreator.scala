@@ -7,9 +7,7 @@ import camundala.examples.twitter.bpmn.TwitterApi.*
 
 // exampleTwitterApi/run
 object ProjectApiCreator extends DefaultApiCreator:
-
-  val projectName = "twitter-example-c7"
-
+  
   val title = "Twitter Process API C7"
 
   val version = "1.0"
