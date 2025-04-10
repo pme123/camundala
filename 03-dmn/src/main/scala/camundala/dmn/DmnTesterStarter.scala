@@ -35,7 +35,7 @@ trait DmnTesterStarter extends DmnTesterHelpers, App:
             .response(asString)
         )
         .body match
-        case Left(_) =>
+        case Left(_)                                             =>
           false
         case Right(result) if !result.contains(getClass.getName) =>
           println(
@@ -45,12 +45,12 @@ trait DmnTesterStarter extends DmnTesterHelpers, App:
           runDocker()
           waitForServer
           true
-        case Right(result) =>
+        case Right(result)                                       =>
           println(s"Docker is Running for project: $result.")
           true
     ) match
       case Success(value) => value
-      case Failure(_) => false
+      case Failure(_)     => false
 
   protected def runDocker(): Unit =
     println(s"Start Docker for ${starterConfig.containerName}!")

@@ -13,7 +13,7 @@ case class ApiGenerator()(using config: DevConfig):
     createOrUpdate(config.projectDir / "03-api" / "PostmanOpenApi.html", postmanOpenApiHtml)
   end generate
 
-  lazy val api =
+  lazy val api                 =
     s"""package ${config.projectPackage}
        |package api
        |

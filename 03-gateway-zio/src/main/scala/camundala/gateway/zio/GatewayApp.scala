@@ -8,20 +8,21 @@ import camundala.gateway.zio.worker.WorkerServiceLive
 import zio.*
 
 object GatewayApp extends ZIOAppDefault:
-  def run = 
+  def run =
     (for
       process <- ZIO.service[ProcessService]
-      dmn <- ZIO.service[DmnService]
-      worker <- ZIO.service[WorkerService]
-      _ <- Console.printLine("Gateway Services Ready")
+      dmn     <- ZIO.service[DmnService]
+      worker  <- ZIO.service[WorkerService]
+      _       <- Console.printLine("Gateway Services Ready")
     yield ())
-    .provide(
-      // JSON service implementations
-      JsonProcessServiceLive.layer,
-      JsonDmnServiceLive.layer,
-      JsonWorkerServiceLive.layer,
-      // Typed service implementations that depend on JSON services
-      ProcessServiceLive.layer,
-      DmnServiceLive.layer,
-      WorkerServiceLive.layer
-    )
+      .provide(
+        // JSON service implementations
+        JsonProcessServiceLive.layer,
+        JsonDmnServiceLive.layer,
+        JsonWorkerServiceLive.layer,
+        // Typed service implementations that depend on JSON services
+        ProcessServiceLive.layer,
+        DmnServiceLive.layer,
+        WorkerServiceLive.layer
+      )
+end GatewayApp

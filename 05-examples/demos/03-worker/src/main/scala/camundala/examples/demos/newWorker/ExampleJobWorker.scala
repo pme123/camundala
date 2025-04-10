@@ -8,7 +8,7 @@ import zio.*
 import zio.ZIO.*
 
 class ExampleJobWorker extends CompanyCustomWorkerDsl[In, Out]:
-  lazy val customTask = example
+  lazy val customTask                                                         = example
   override def runWork(in: In): Either[CamundalaWorkerError.CustomError, Out] =
     logger.info(s"Running ExampleJobWorker with $in")
     Thread.sleep(3000)

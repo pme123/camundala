@@ -12,18 +12,18 @@ class C7WorkerRegistry(client: C7Client)
     ZIO.logInfo(s"Starting C7 Worker Client") *>
       acquireReleaseWith(client.client)(_.closeClient()): client =>
         for
-          _ <- ZIO.logInfo(s"Client Ready")
-          server <- never.forever.fork
+          _                             <- ZIO.logInfo(s"Client Ready")
+          server                        <- never.forever.fork
           c7Workers: Set[C7Worker[?, ?]] = workers.collect { case w: C7Worker[?, ?] => w }
-          _      <- foreachParDiscard(c7Workers)(w => registerWorker(w, client))
-          _      <- server.join
+          _                             <- foreachParDiscard(c7Workers)(w => registerWorker(w, client))
+          _                             <- server.join
         yield ()
 
   private def registerWorker(worker: C7Worker[?, ?], client: ExternalTaskClient) =
     attempt(client
       .subscribe(worker.topic)
       .handler(worker)
-      //.lockDuration(worker.timeout.toMillis)
+      // .lockDuration(worker.timeout.toMillis)
       .open()) *>
       logInfo("Registered C7 Worker: " + worker.topic)
 

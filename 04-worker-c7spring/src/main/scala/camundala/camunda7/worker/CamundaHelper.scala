@@ -124,7 +124,7 @@ object CamundaHelper:
         .getOrElse(
           Left(error)
         )
-    def toIO(msg: String): HelperContext[IO[BadVariableError, T]] =
+    def toIO(msg: String): HelperContext[IO[BadVariableError, T]]         =
       toIO(BadVariableError(errorMsg = msg))
 
     def toIO[E <: CamundalaWorkerError](
@@ -161,7 +161,7 @@ object CamundaHelper:
       case _: PrimitiveValueType =>
         typedValue.getValue match
           case vt: DmnValueSimple     =>
-            import DmnValueSimple.given 
+            import DmnValueSimple.given
             ZIO.succeed(vt.asJson)
           case en: scala.reflect.Enum =>
             ZIO.succeed(Json.fromString(en.toString))

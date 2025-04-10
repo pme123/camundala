@@ -4,9 +4,9 @@ import camundala.domain.BpmnProcessDsl
 
 object BadScenarioExample extends BpmnProcessDsl:
   val processName = "badScenario-example"
-  val descr = ""
+  val descr       = ""
 
-  lazy val `Bad Scenario with Message` =
+  lazy val `Bad Scenario with Message`    =
     process()
   lazy val `Bad Scenario without Message` =
     `Bad Scenario with Message`

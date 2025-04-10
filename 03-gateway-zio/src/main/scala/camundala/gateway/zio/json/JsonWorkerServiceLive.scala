@@ -7,14 +7,15 @@ import zio.*
 
 case class JsonWorkerServiceLive() extends JsonWorkerService:
   def startWorker(
-      workerDefId: String, 
+      workerDefId: String,
       in: Json
   ): ProcessInfo = ???
-  
+
   def registerWorkers(
       workers: Seq[ProcessWorker]
   ): Unit = ???
+end JsonWorkerServiceLive
 
 object JsonWorkerServiceLive:
-  val layer: ULayer[JsonWorkerService] = 
+  val layer: ULayer[JsonWorkerService] =
     ZLayer.succeed(JsonWorkerServiceLive())

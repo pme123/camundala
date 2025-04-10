@@ -12,7 +12,7 @@ object ProjectApiCreator extends DefaultApiCreator:
 
   protected val title = "Demos Example Process API"
 
-  protected val version = "1.0"
+  protected val version                  = "1.0"
   lazy val companyProjectVersion: String = "0.1.0"
 
   lazy val companyDescr: ExampleName = ""
@@ -36,9 +36,9 @@ object ProjectApiCreator extends DefaultApiCreator:
     ),
     GenericServiceExample.example,
     api(EnumExample.example)(
-    EnumWorkerExample.example,
-    DateExample.DateExampleDMN,
-    VariablesExample.VariablesExampleDMN,
+      EnumWorkerExample.example,
+      DateExample.DateExampleDMN,
+      VariablesExample.VariablesExampleDMN
     ),
     SimulationTestOverridesExample.simulationProcess,
     group("SignalMessageExample")(

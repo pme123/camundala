@@ -5,8 +5,8 @@ import camundala.camunda7.worker.C7WorkerHandler
 import camundala.worker.{CustomWorkerDsl, InitWorkerDsl, ServiceWorkerDsl}
 
 trait CompanyWorkerHandler[
-  In <: Product: InOutCodec,
-  Out <: Product: InOutCodec
+    In <: Product: InOutCodec,
+    Out <: Product: InOutCodec
 ] extends C7WorkerHandler[In, Out]
 
 trait CompanyInitWorkerDsl[

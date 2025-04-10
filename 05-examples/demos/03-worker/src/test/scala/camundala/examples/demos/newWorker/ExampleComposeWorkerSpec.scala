@@ -16,15 +16,18 @@ import java.util.concurrent.atomic.AtomicInteger
 object ExampleComposeWorkerSpec extends ZIOSpecDefault:
 
   def spec = suite("ExampleComposeWorkerSpec")(
-
     test("should successfully execute both workers in parallel") {
       // Arrange
       val mockJobWorker = new ExampleJobWorker:
-        override def runWorkFromWorkerUnsafe(in: ExampleJob.In)(using EngineRunContext): IO[CustomError, ExampleJob.Out] =
+        override def runWorkFromWorkerUnsafe(in: ExampleJob.In)(using
+            EngineRunContext
+        ): IO[CustomError, ExampleJob.Out] =
           ZIO.succeed(ExampleJob.Out(myId = 123L, myMessage = "job1 success"))
 
       val mockJob2Worker = new ExampleJob2Worker:
-        override def runWorkFromWorkerUnsafe(in: ExampleJob2.In)(using EngineRunContext): IO[CustomError, ExampleJob2.Out] =
+        override def runWorkFromWorkerUnsafe(in: ExampleJob2.In)(using
+            EngineRunContext
+        ): IO[CustomError, ExampleJob2.Out] =
           ZIO.succeed(ExampleJob2.Out(myId = 456L, myMessage = "job2 success"))
 
       val worker = new ExampleComposeWorker(mockJobWorker, mockJob2Worker)
@@ -37,7 +40,6 @@ object ExampleComposeWorkerSpec extends ZIOSpecDefault:
         equalTo(Out())
       )
     },
-
     test("should execute workers in parallel") {
       // Arrange
       // Use a simpler approach that doesn't rely on sleep
@@ -45,12 +47,16 @@ object ExampleComposeWorkerSpec extends ZIOSpecDefault:
       val job2Started = new AtomicInteger(0)
 
       val mockJobWorker = new ExampleJobWorker:
-        override def runWorkFromWorkerUnsafe(in: ExampleJob.In)(using EngineRunContext): IO[CustomError, ExampleJob.Out] =
+        override def runWorkFromWorkerUnsafe(in: ExampleJob.In)(using
+            EngineRunContext
+        ): IO[CustomError, ExampleJob.Out] =
           ZIO.succeed(job1Started.incrementAndGet())
             .as(ExampleJob.Out(myId = 123L, myMessage = "job1 success"))
 
       val mockJob2Worker = new ExampleJob2Worker:
-        override def runWorkFromWorkerUnsafe(in: ExampleJob2.In)(using EngineRunContext): IO[CustomError, ExampleJob2.Out] =
+        override def runWorkFromWorkerUnsafe(in: ExampleJob2.In)(using
+            EngineRunContext
+        ): IO[CustomError, ExampleJob2.Out] =
           ZIO.succeed(job2Started.incrementAndGet())
             .as(ExampleJob2.Out(myId = 456L, myMessage = "job2 success"))
 
@@ -63,15 +69,18 @@ object ExampleComposeWorkerSpec extends ZIOSpecDefault:
         equalTo((1, 1)) // Both workers should have executed exactly once
       )
     },
-
     test("should fail if first worker fails") {
       // Arrange
       val mockJobWorker = new ExampleJobWorker:
-        override def runWorkFromWorkerUnsafe(in: ExampleJob.In)(using EngineRunContext): IO[CustomError, ExampleJob.Out] =
+        override def runWorkFromWorkerUnsafe(in: ExampleJob.In)(using
+            EngineRunContext
+        ): IO[CustomError, ExampleJob.Out] =
           ZIO.fail(CustomError("Job1 failed"))
 
       val mockJob2Worker = new ExampleJob2Worker:
-        override def runWorkFromWorkerUnsafe(in: ExampleJob2.In)(using EngineRunContext): IO[CustomError, ExampleJob2.Out] =
+        override def runWorkFromWorkerUnsafe(in: ExampleJob2.In)(using
+            EngineRunContext
+        ): IO[CustomError, ExampleJob2.Out] =
           ZIO.succeed(ExampleJob2.Out(myId = 456L, myMessage = "job2 success"))
 
       val worker = new ExampleComposeWorker(mockJobWorker, mockJob2Worker)
@@ -82,19 +91,26 @@ object ExampleComposeWorkerSpec extends ZIOSpecDefault:
       // Assert
       assertZIO(result.exit)(
         fails(
-          hasField("errorMsg", (e: CustomError) => e.errorMsg, containsString("Error while fetching ExampleJob1"))
+          hasField(
+            "errorMsg",
+            (e: CustomError) => e.errorMsg,
+            containsString("Error while fetching ExampleJob1")
+          )
         )
       )
     },
-
     test("should fail if second worker fails") {
       // Arrange
       val mockJobWorker = new ExampleJobWorker:
-        override def runWorkFromWorkerUnsafe(in: ExampleJob.In)(using EngineRunContext): IO[CustomError, ExampleJob.Out] =
+        override def runWorkFromWorkerUnsafe(in: ExampleJob.In)(using
+            EngineRunContext
+        ): IO[CustomError, ExampleJob.Out] =
           ZIO.succeed(ExampleJob.Out(myId = 123L, myMessage = "job1 success"))
 
       val mockJob2Worker = new ExampleJob2Worker:
-        override def runWorkFromWorkerUnsafe(in: ExampleJob2.In)(using EngineRunContext): IO[CustomError, ExampleJob2.Out] =
+        override def runWorkFromWorkerUnsafe(in: ExampleJob2.In)(using
+            EngineRunContext
+        ): IO[CustomError, ExampleJob2.Out] =
           ZIO.fail(CustomError("Job2 failed"))
 
       val worker = new ExampleComposeWorker(mockJobWorker, mockJob2Worker)
@@ -105,19 +121,26 @@ object ExampleComposeWorkerSpec extends ZIOSpecDefault:
       // Assert
       assertZIO(result.exit)(
         fails(
-          hasField("errorMsg", (e: CustomError) => e.errorMsg, containsString("Error while fetching ExampleJob2"))
+          hasField(
+            "errorMsg",
+            (e: CustomError) => e.errorMsg,
+            containsString("Error while fetching ExampleJob2")
+          )
         )
       )
     },
-
     test("should fail if both workers fail") {
       // Arrange
       val mockJobWorker = new ExampleJobWorker:
-        override def runWorkFromWorkerUnsafe(in: ExampleJob.In)(using EngineRunContext): IO[CustomError, ExampleJob.Out] =
+        override def runWorkFromWorkerUnsafe(in: ExampleJob.In)(using
+            EngineRunContext
+        ): IO[CustomError, ExampleJob.Out] =
           ZIO.fail(CustomError("Job1 failed"))
 
       val mockJob2Worker = new ExampleJob2Worker:
-        override def runWorkFromWorkerUnsafe(in: ExampleJob2.In)(using EngineRunContext): IO[CustomError, ExampleJob2.Out] =
+        override def runWorkFromWorkerUnsafe(in: ExampleJob2.In)(using
+            EngineRunContext
+        ): IO[CustomError, ExampleJob2.Out] =
           ZIO.fail(CustomError("Job2 failed"))
 
       val worker = new ExampleComposeWorker(mockJobWorker, mockJob2Worker)
@@ -128,19 +151,26 @@ object ExampleComposeWorkerSpec extends ZIOSpecDefault:
       // Assert
       assertZIO(result.exit)(
         fails(
-          hasField("errorMsg", (e: CustomError) => e.errorMsg, containsString("Error while fetching ExampleJob"))
+          hasField(
+            "errorMsg",
+            (e: CustomError) => e.errorMsg,
+            containsString("Error while fetching ExampleJob")
+          )
         )
       )
     },
-
     test("should handle custom input parameters") {
       // Arrange
       val mockJobWorker = new ExampleJobWorker:
-        override def runWorkFromWorkerUnsafe(in: ExampleJob.In)(using EngineRunContext): IO[CustomError, ExampleJob.Out] =
+        override def runWorkFromWorkerUnsafe(in: ExampleJob.In)(using
+            EngineRunContext
+        ): IO[CustomError, ExampleJob.Out] =
           ZIO.succeed(ExampleJob.Out(myId = 123L, myMessage = "job1 success"))
 
       val mockJob2Worker = new ExampleJob2Worker:
-        override def runWorkFromWorkerUnsafe(in: ExampleJob2.In)(using EngineRunContext): IO[CustomError, ExampleJob2.Out] =
+        override def runWorkFromWorkerUnsafe(in: ExampleJob2.In)(using
+            EngineRunContext
+        ): IO[CustomError, ExampleJob2.Out] =
           ZIO.succeed(ExampleJob2.Out(myId = 456L, myMessage = "job2 success"))
 
       val worker = new ExampleComposeWorker(mockJobWorker, mockJob2Worker)

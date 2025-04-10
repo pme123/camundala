@@ -7,11 +7,11 @@ case class ApiGeneratorGenerator()(using config: DevConfig):
   lazy val generate: Unit =
     createIfNotExists(apiGeneratorPath, apiGenerator)
 
-  private lazy val companyName = config.companyName
-  private lazy val helperPath =
+  private lazy val companyName      = config.companyName
+  private lazy val helperPath       =
     config.projectDir / ModuleConfig.helperModule.packagePath(config.projectPath)
   private lazy val apiGeneratorPath = helperPath / "ProjectApiGenerator.scala"
-  private lazy val apiGenerator =
+  private lazy val apiGenerator     =
     objectContent("ProjectApiGenerator")
 
   private def objectContent(

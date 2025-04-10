@@ -15,7 +15,7 @@ object ProjectApiCreator extends DefaultApiCreator:
   val version = "1.0"
 
   lazy val companyProjectVersion: String = "0.1.0"
-  lazy val projectDescr: String = ""
+  lazy val projectDescr: String          = ""
 
   document(
     api(twitterDemoProcess)(
@@ -28,7 +28,7 @@ object ProjectApiCreator extends DefaultApiCreator:
       .withBasePath(os.pwd / "05-examples" / "twitter")
       .withPort(8887)
 
-  private lazy val `Tweet accepted` = reviewTweetApprovedUT
+  private lazy val `Tweet accepted`      = reviewTweetApprovedUT
   private lazy val ReviewTweetApprovedUT =
     `Tweet accepted`
       .withOutExample("Tweet rejected", ReviewedTweet(approved = false))
