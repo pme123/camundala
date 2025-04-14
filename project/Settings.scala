@@ -12,18 +12,18 @@ import xerial.sbt.Sonatype.autoImport.sonatypeRepository
 
 import scala.util.Using
 
-object Settings {
+object Settings:
 
   lazy val projectVersion =
     Using(scala.io.Source.fromFile("version"))(_.mkString.trim).get
-  val scala3Version = "3.6.2"
-  val org = "io.github.pme123"
+  val scala3Version       = "3.6.4"
+  val org                 = "io.github.pme123"
 
   def projectSettings(projName: String) = Seq(
-    name := s"camundala-$projName",
+    name         := s"camundala-$projName",
     organization := org,
     scalaVersion := scala3Version,
-    version := projectVersion,
+    version      := projectVersion,
     scalacOptions ++= Seq(
       //   "-Xmax-inlines:50", // is declared as erased, but is in fact used
       //   "-Wunused:imports",
@@ -33,7 +33,7 @@ object Settings {
 
   lazy val unitTestSettings = Seq(
     libraryDependencies ++= Seq(
-      "org.scalameta" %% "munit" % mUnitVersion % Test,
+      "org.scalameta" %% "munit" % mUnitVersion % Test
     ),
     testFrameworks += new TestFramework("munit.Framework")
   )
@@ -43,12 +43,12 @@ object Settings {
     Test / parallelExecution := true,
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
   )
-  
-  lazy val githubUrl = "https://github.com/pme123/camundala"
+
+  lazy val githubUrl                               = "https://github.com/pme123/camundala"
   lazy val publicationSettings: Project => Project = _.settings(
     // publishMavenStyle := true,
     pomIncludeRepository := { _ => false },
-    sonatypeRepository := "https://s01.oss.sonatype.org/service/local",
+    sonatypeRepository   := "https://s01.oss.sonatype.org/service/local",
     /*  publishTo := {
       val nexus = "https://s01.oss.sonatype.org/"
       if (isSnapshot.value)
@@ -57,18 +57,18 @@ object Settings {
     },
     credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credentials"),
      */ licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
-    homepage := Some(url(githubUrl)),
-    startYear := Some(2021),
+    homepage             := Some(url(githubUrl)),
+    startYear            := Some(2021),
     // logLevel := Level.Debug,
-    scmInfo := Some(
+    scmInfo              := Some(
       ScmInfo(
         url(githubUrl),
         "scm:git:github.com:/pme123/camundala"
       )
     ),
-    developers := developerList
+    developers           := developerList
   )
-  lazy val developerList = List(
+  lazy val developerList                           = List(
     Developer(
       id = "pme123",
       name = "Pascal Mengelt",
@@ -76,15 +76,15 @@ object Settings {
       url = url("https://github.com/pme123")
     )
   )
-  lazy val preventPublication: Project => Project =
+  lazy val preventPublication: Project => Project  =
     _.settings(
-      publish := {},
-      publishTo := Some(
+      publish           := {},
+      publishTo         := Some(
         Resolver
           .file("Unused transient repository", target.value / "fakepublish")
       ),
-      publishArtifact := false,
-      publishLocal := {},
+      publishArtifact   := false,
+      publishLocal      := {},
       packagedArtifacts := Map.empty
     ) // doesn't work - https://github.com/sbt/sbt-pgp/issues/42
 
@@ -103,7 +103,7 @@ object Settings {
       ).mkString(start = "-Yimports:", sep = ",", end = "")
 
   lazy val laikaSettings = Seq(
-    laikaConfig := LaikaConfig.defaults
+    laikaConfig               := LaikaConfig.defaults
       .withConfigValue(LaikaKeys.excludeFromNavigation, Seq(Root))
       .withConfigValue("project.version", projectVersion)
       .withConfigValue(
@@ -124,23 +124,22 @@ object Settings {
     //  .renderMessages(MessageFilter.None)
     ,
     Laika / sourceDirectories := Seq(mdocOut.value),
-
-    laikaSite / target := baseDirectory.value / ".." / "docs",
-    laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting),
-    laikaTheme := Helium.defaults.site
+    laikaSite / target        := baseDirectory.value / ".." / "docs",
+    laikaExtensions           := Seq(GitHubFlavor, SyntaxHighlighting),
+    laikaTheme                := Helium.defaults.site
       .topNavigationBar(
         homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home),
         navLinks = Seq(
-          IconLink.external(githubUrl, HeliumIcon.github),
+          IconLink.external(githubUrl, HeliumIcon.github)
         )
       )
-      .build,
+      .build
   )
-  lazy val mdocSettings = Seq(
-    mdocIn                    := baseDirectory.value / "src" / "docs",
-    mdocVariables             := Map(
-      "VERSION"-> projectVersion
+  lazy val mdocSettings  = Seq(
+    mdocIn             := baseDirectory.value / "src" / "docs",
+    mdocVariables      := Map(
+      "VERSION" -> projectVersion
     ),
-    mdocExtraArguments        := Seq("--no-link-hygiene"),
+    mdocExtraArguments := Seq("--no-link-hygiene")
   )
-}
+end Settings
