@@ -29,7 +29,7 @@ trait RestApiClient:
       out            <- decodeResponse[ServiceOut](body)
     yield ServiceResponse(out, headers))
       .mapError:
-        case err: ServiceUnexpectedError => err
+        case err: CamundalaWorkerError => err
         case err                         =>
           val unexpectedError =
             s"""Unexpected error while sending request: $err.
