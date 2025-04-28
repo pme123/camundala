@@ -8,7 +8,6 @@ case class WorkerGenerator()(using config: DevConfig):
     createOrUpdate(workerPath() / "WorkerApp.scala", workerApp)
     createOrUpdate(workerTestPath() / "WorkerTestApp.scala", workerTestApp)
     createOrUpdate(workerConfigPath / "logback.xml", logbackXml)
-    createOrUpdate(workerConfigPath / "banner.txt", banner)
   end generate
 
   def createProcessWorker(setupElement: SetupElement): Unit =
@@ -248,23 +247,6 @@ case class WorkerGenerator()(using config: DevConfig):
        |        <appender-ref ref="STDOUT" />
        |    </root>
        |</configuration>
-       |""".stripMargin
-
-  private lazy val banner =
-    s"""# DO NOT ADJUST. This file is replaced by `./helper.scala update`.
-       |
-       |     _/_/_/                                                      _/            _/
-       |  _/          _/_/_/  _/_/_/  _/_/    _/    _/  _/_/_/      _/_/_/    _/_/_/  _/    _/_/_/
-       | _/        _/    _/  _/    _/    _/  _/    _/  _/    _/  _/    _/  _/    _/  _/  _/    _/
-       |_/        _/    _/  _/    _/    _/  _/    _/  _/    _/  _/    _/  _/    _/  _/  _/    _/
-       | _/_/_/    _/_/_/  _/    _/    _/    _/_/_/  _/    _/    _/_/_/    _/_/_/  _/    _/_/_/
-       |
-       | $${spring.application.name}
-       |                                                          >>> the Scala DSL for Camunda
-       |
-       |  Spring-Boot: $${spring-boot.formatted-version}
-       |  Runs on port $${server.port}
-       |  Connects to $${camunda.bpm.client.base-url}
        |""".stripMargin
 
   private def workerPath(setupElement: Option[SetupElement] = None) =

@@ -9,7 +9,8 @@ import camundala.domain.{InOutType, shortenName}
   */
 trait ProcessReferenceCreator:
 
-  protected def projectName: String
+  protected def projectName: String = getClass.getName.split('.').take(2).mkString("-")
+
   protected def apiConfig: ApiConfig
 
   protected def refIdentShort(refIdent: String): String                      =

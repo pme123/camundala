@@ -5,9 +5,7 @@ import camundala.examples.twitter.api.TwitterApi.*
 
 // exampleTwitterC8/run
 object TwitterApiCreator extends DefaultApiCreator:
-
-  val projectName = "twitter-example-c8"
-
+  
   override val apiConfig: ApiConfig =
     ApiConfig("demoCompany")
       .withBasePath(os.pwd / "05-examples" / "twitter" / "camunda8")

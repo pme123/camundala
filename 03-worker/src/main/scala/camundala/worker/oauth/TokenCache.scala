@@ -9,7 +9,7 @@ object TokenCache:
   lazy val cache: Cache[String, String] =
     Scaffeine()
       .recordStats()
-      .expireAfterWrite(12.minutes)
+      .expireAfterWrite(4.minutes)
       .maximumSize(1000)
       .build[String, String]()
 end TokenCache

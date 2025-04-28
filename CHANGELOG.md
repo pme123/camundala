@@ -24,6 +24,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adjusted printStackTrace - see [Commit](https://github.com/pme123/camundala/commit/ae8c9fd4cf03313a4a33fd2e366804edf19441f6)
 
 
+## 1.30.43 - 2025-04-28
+### Changed 
+- Added debug infos for completing Task. - see [Commit](https://github.com/pme123/camundala/commit/82aaaf504547c793556c0a09651495628cfd80c7)
+- Changed filter to CamundalaWorkerError in RestApiClient. - see [Commit](https://github.com/pme123/camundala/commit/17910752e0fa043406e053edf0328556613d4de2)
+- Updated minor version of Netty. - see [Commit](https://github.com/pme123/camundala/commit/258294a142f3a7de86d94fed8fd587e2d860505c)
+- Updated patch versions. - see [Commit](https://github.com/pme123/camundala/commit/84492c237362c6ebd72f8076db9864d946616856)
+- Create projectName and applicationName automatically / added banner when starting worker. - see [Commit](https://github.com/pme123/camundala/commit/e0d293c83b1a8c1a6b13eb9b70e32b3d56e58156)
+
 ## 1.30.42 - 2025-04-09
 ### Changed 
 - Added customInitZIO to support worker in worker in init Process. - see [Commit](https://github.com/pme123/camundala/commit/309890056f1f3c55e8652e265cc45acc84b27caf)

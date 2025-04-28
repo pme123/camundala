@@ -11,7 +11,6 @@ import java.util.Date
 
 import scala.jdk.CollectionConverters.*
 
-//TODO: take from C7WorkerHandler
 trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     extends WorkerDsl[In, Out], camunda.ExternalTaskHandler:
 
@@ -74,21 +73,25 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
     private[worker] def handleSuccess(
         filteredOutput: Map[String, Any],
         manualOutMapping: Boolean
-    ): HelperContext[URIO[Any, Unit]] =
-      ZIO.attempt:
-        externalTaskService.complete(
-          summon[camunda.ExternalTask],
-          if manualOutMapping then Map.empty.asJava else filteredOutput.asJava, // Process Variables
-          if !manualOutMapping then Map.empty.asJava else filteredOutput.asJava // local Variables
-        )
-      .catchAll: err =>
-        handleFailure(
-          UnexpectedError(
-            s"There is an unexpected Error from completing a successful Worker to C7: ${err.getMessage}."
-          ),
-          doRetry = true
-        )
-      .ignore
+    ): HelperContext[URIO[Any, Unit]] = {
+      ZIO.logDebug(s"handleSuccess BEFORE complete: ${worker.topic}") *>
+        ZIO.attempt {
+          externalTaskService.complete(
+            summon[camunda.ExternalTask],
+            if manualOutMapping then Map.empty.asJava
+            else filteredOutput.asJava, // Process Variables
+            if !manualOutMapping then Map.empty.asJava else filteredOutput.asJava // local Variables
+          )
+        } *>
+        ZIO.logDebug(s"handleSuccess AFTER complete: ${worker.topic}")
+    }.catchAll: err =>
+            handleFailure(
+              UnexpectedError(
+                s"There is an unexpected Error from completing a successful Worker to C7: ${err.getMessage}."
+              ),
+              doRetry = true
+            )
+          .ignore
 
     private[worker] def handleError(
         error: CamundalaWorkerError,
