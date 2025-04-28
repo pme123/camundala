@@ -29,23 +29,23 @@ trait OAuthPasswordFlow:
   )
 
   def adminToken(tokenKey: String = username)(using
-      logger: WorkerLogger,
+      logger: WorkerLogger
   ): Either[ServiceAuthError, String] =
     TokenCache.cache.getIfPresent(tokenKey)
       .map: token =>
-        logger.debug(s"Token from Cache: $tokenKey")
+        logger.debug(s"Admin Token from Cache: $tokenKey")
         Right(token)
       .getOrElse:
         tokenService.adminToken()
           .map: token =>
             logger.info(
-              s"Added Token to Cache self acquired: $username - ${token.take(20)}...${token.takeRight(10)}"
+              s"Added Admin Token to Cache self acquired: $username - ${token.take(20)}...${token.takeRight(10)}"
             )
             TokenCache.cache.put(username, token)
             token
 
   def clientCredentialsToken()(using
-      logger: WorkerLogger,
+      logger: WorkerLogger
   ): Either[ServiceAuthError, String] =
     TokenCache.cache.getIfPresent("clientCredentials")
       .map: token =>
@@ -61,7 +61,7 @@ trait OAuthPasswordFlow:
             token
 
   def impersonateToken(username: String, adminToken: String)(using
-      logger: WorkerLogger,
+      logger: WorkerLogger
   ): IO[ServiceAuthError, String] =
     TokenCache.cache.getIfPresent(username)
       .map: token =>

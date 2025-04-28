@@ -62,31 +62,36 @@ trait OAuth2Client extends C7Client, OAuthPasswordFlow:
   given WorkerLogger       = Slf4JLogger.logger(getClass.getName)
   def camundaRestUrl       = "http://localhost:8080/engine-rest"
   def maxTimeForAcquireJob = 500.millis
-  def lockDuration         = 5.minutes.toMillis
+  def lockDuration: Long   = 30.seconds.toMillis
+  def maxTasks: Int        = 10
 
   def addAccessToken = new HttpRequestInterceptor:
     override def process(request: HttpRequest, entity: EntityDetails, context: HttpContext): Unit =
-      val token = adminToken().toOption.getOrElse("NO TOkEN")
+      val token = adminToken().toOption.getOrElse("NO TOKEN")
       request.addHeader("Authorization", token)
 
   def client =
-    ZIO.logInfo(s"Starting C7 Worker Client: ${adminToken()}") *>
-      ZIO
-        .attempt:
-          ExternalTaskClient.create()
-            .baseUrl(camundaRestUrl)
-            .backoffStrategy(
-              new ExponentialBackoffStrategy(
-                100L,
-                2.0,
-                maxTimeForAcquireJob.toMillis
-              )
+    ZIO
+      .attempt:
+        ExternalTaskClient.create()
+          .baseUrl(camundaRestUrl)
+          .maxTasks(maxTasks)
+        //  .disableBackoffStrategy()
+          .backoffStrategy(
+            new ExponentialBackoffStrategy(
+              100L,
+              2.0,
+              maxTimeForAcquireJob.toMillis
             )
-            .lockDuration(lockDuration)
-            .customizeHttpClient: httpClientBuilder =>
-              httpClientBuilder
-                .addRequestInterceptorLast(addAccessToken)
-                .build()
-            .build()
+          )
+          .lockDuration(lockDuration)
+          .customizeHttpClient: httpClientBuilder =>
+            httpClientBuilder
+              .addRequestInterceptorLast(addAccessToken)
+              .build()
+          .build()
+      .tap: client =>
+        ZIO.logInfo(s"Created C7 Client with maxTimeForAcquireJob: $maxTimeForAcquireJob")
+    
 
 end OAuth2Client

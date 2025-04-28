@@ -4,8 +4,7 @@ import org.springframework.context.annotation.{Bean, Configuration}
 import org.springframework.security.oauth2.client.*
 import org.springframework.security.oauth2.client.registration.{
   ClientRegistration,
-  ClientRegistrationRepository,
-  InMemoryClientRegistrationRepository
+  ClientRegistrationRepository
 }
 
 @Configuration
