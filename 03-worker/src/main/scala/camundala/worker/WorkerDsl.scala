@@ -307,12 +307,7 @@ private trait RunWorkDsl[
   protected def runWorkZIO(
       inputObject: In
   ): EngineRunContext ?=> IO[CustomError, Out] =
-
     ZIO.fromEither(runWork(inputObject))
-      .tapError: error =>
-        ZIO.logError(s"Worker ${getClass.getName} failed with $error")
-      .tap: out =>
-        ZIO.logInfo(s"Worker ${getClass.getName} finished with $out")
 
   protected def runWork(
       inputObject: In
