@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adjusted printStackTrace - see [Commit](https://github.com/pme123/camundala/commit/ae8c9fd4cf03313a4a33fd2e366804edf19441f6)
 
 
+## 1.30.44 - 2025-04-28
+### Changed 
+- Changed deprecated ubuntu version in release.yml. - see [Commit](https://github.com/pme123/camundala/commit/e02235927e8f4ebe78bee02e181d70d8c4aa3964)
+
 ## 1.30.43 - 2025-04-28
 ### Changed 
 - Added debug infos for completing Task. - see [Commit](https://github.com/pme123/camundala/commit/82aaaf504547c793556c0a09651495628cfd80c7)
