@@ -8,7 +8,8 @@ import zio.*
 import zio.ZIO.*
 
 import java.util.Date
-
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.jdk.CollectionConverters.*
 
 trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
@@ -22,12 +23,13 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
       externalTask: camunda.ExternalTask,
       externalTaskService: camunda.ExternalTaskService
   ): Unit =
-    Unsafe.unsafe:
-      implicit unsafe =>
-        runtime.unsafe.runToFuture(
-          run(externalTaskService)(using externalTask)
-            .provideLayer(ZioLogger.logger)
-        ).future
+    Future: // workaround check https://discord.com/channels/629491597070827530/1367819728944500786
+      Unsafe.unsafe:
+        implicit unsafe =>
+          runtime.unsafe.run(
+            run(externalTaskService)(using externalTask)
+              .provideLayer(ZioLogger.logger)
+          )
   end execute
 
   private[worker] def run(externalTaskService: camunda.ExternalTaskService)(using

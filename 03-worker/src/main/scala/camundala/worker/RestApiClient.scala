@@ -19,7 +19,7 @@ trait RestApiClient:
   ](
       runnableRequest: RunnableRequest[ServiceIn]
   ): SendRequestType[ServiceOut] =
-    (for
+    for
       reqWithOptBody <- requestWithOptBody(runnableRequest)
       req            <- auth(reqWithOptBody)
       response       <- sendRequest(req)
@@ -27,15 +27,7 @@ trait RestApiClient:
       body           <- readBody(statusCode, response, req)
       headers         = response.headers.map(h => h.name -> h.value).toMap
       out            <- decodeResponse[ServiceOut](body)
-    yield ServiceResponse(out, headers))
-      .mapError:
-        case err: CamundalaWorkerError => err
-        case err                         =>
-          val unexpectedError =
-            s"""Unexpected error while sending request: $err.
-               | -> $runnableRequest
-               |""".stripMargin
-          ServiceUnexpectedError(unexpectedError)
+    yield ServiceResponse(out, headers)
 
   end sendRequest
 

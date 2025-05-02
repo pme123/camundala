@@ -13,6 +13,9 @@ import zio.ZIO.*
 
 import scala.concurrent.duration.*
 import java.util.Date
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
 import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 
@@ -36,13 +39,15 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
   override def execute(
       externalTask: camunda.ExternalTask,
       externalTaskService: camunda.ExternalTaskService
-  ): Unit =
-    Unsafe.unsafe:
-      implicit unsafe =>
-        runtime.unsafe.runToFuture(
-          run(externalTaskService)(using externalTask)
-            .provideLayer(ZioLogger.logger)
-        ).future
+  ): Unit = 
+    Future:
+      Unsafe.unsafe:
+        implicit unsafe =>
+          runtime.unsafe.run(
+            run(externalTaskService)(using externalTask)
+              .provideLayer(ZioLogger.logger)
+          )
+  
   end execute
 
   private[worker] def run(externalTaskService: camunda.ExternalTaskService)(using

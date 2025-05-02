@@ -19,7 +19,7 @@ trait C8Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
   private lazy val runtime = Runtime.default
 
   def handle(client: JobClient, job: ActivatedJob): Unit =
-    Unsafe.unsafe:
+    Unsafe.unsafe: //TODO: check C7Worker execute
       implicit unsafe =>
         runtime.unsafe.runToFuture(
           run(client, job)

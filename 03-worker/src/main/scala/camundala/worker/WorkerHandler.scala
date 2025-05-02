@@ -25,7 +25,7 @@ trait WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
     if testMode || getClass.getName.startsWith(appPackageName)
     then
       register
-      logger.info(s"Worker registered: $topic -> ${worker.getClass.getSimpleName}")
+      logger.info(s"C7 Old Worker registered: $topic -> ${worker.getClass.getSimpleName}")
       logger.debug(prettyString(worker))
     else
       logger.info(
