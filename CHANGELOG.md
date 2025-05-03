@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## 1.30.47 - 2025-05-03
+### Changed 
+- Changed sttp backend to AsyncHttpClientZioBackend.scoped(). - see [Commit](https://github.com/pme123/camundala/commit/c008ab094e68499fdcbd2a01bb91c8f0103b541f)
+
 ## 1.30.46 - 2025-05-02
 ### Changed 
 - Fixed problem parallelism on Openshift with workaround - see https://discord.com/channels/629491597070827530/1367819728944500786. - see [Commit](https://github.com/pme123/camundala/commit/3cd7d0e632746d2137faaa4294f9edbb4dbe932f)
