@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## 1.30.47 - 2025-05-03
+## 1.30.48 - 2025-05-03
 ### Changed 
 - Changed sttp backend to AsyncHttpClientZioBackend.scoped(). - see [Commit](https://github.com/pme123/camundala/commit/c008ab094e68499fdcbd2a01bb91c8f0103b541f)
 
