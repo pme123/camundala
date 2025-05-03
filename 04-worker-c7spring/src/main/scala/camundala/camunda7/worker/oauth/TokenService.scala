@@ -1,6 +1,5 @@
 package camundala.camunda7.worker.oauth
 
-import camundala.worker.backend
 import camundala.worker.CamundalaWorkerError.ServiceAuthError
 import sttp.client3.*
 import sttp.client3.circe.*
@@ -51,6 +50,8 @@ class TokenService(
     basicRequest
       .post(identityUrl)
       .header("accept", "application/json")
+
+  private lazy val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
 
   private def authAdminResponse =
     tokenRequest.body(adminTokenBody).response(asJson[TokenResponse]).send(backend)

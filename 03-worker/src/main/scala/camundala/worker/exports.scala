@@ -16,8 +16,6 @@ export sttp.model.Uri
 export zio.ZIO
 export zio.IO
 
-lazy val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
-
 type SendRequestType[ServiceOut] =
   EngineRunContext ?=> IO[ServiceError, ServiceResponse[ServiceOut]]
 

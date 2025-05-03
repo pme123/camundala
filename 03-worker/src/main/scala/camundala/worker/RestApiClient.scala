@@ -6,8 +6,10 @@ import camundala.worker.CamundalaWorkerError.*
 import io.circe.parser
 import sttp.client3.*
 import sttp.client3.circe.*
+import sttp.client3.asynchttpclient.zio.{AsyncHttpClientZioBackend, ZioWebSocketsStreams}
 import sttp.model.Uri.QuerySegment
 import sttp.model.{Header, Uri}
+import zio.{Scope, Task, ZIO}
 
 import scala.reflect.ClassTag
 
@@ -22,7 +24,7 @@ trait RestApiClient:
     for
       reqWithOptBody <- requestWithOptBody(runnableRequest)
       req            <- auth(reqWithOptBody)
-      response       <- sendRequest(req)
+      response       <- ZIO.scoped(sendRequest(req))
       statusCode      = response.code
       body           <- readBody(statusCode, response, req)
       headers         = response.headers.map(h => h.name -> h.value).toMap
@@ -52,13 +54,15 @@ trait RestApiClient:
     ZIO.succeed(request)
 
   protected def sendRequest(
-      request: Request[Either[String, String], Any]
-  ): IO[ServiceUnexpectedError, Identity[Response[Either[String, String]]]] =
-    ZIO.attempt(request.send(backend))
+      req: Request[Either[String, String], Any]
+  ): ZIO[Scope, ServiceUnexpectedError, Response[Either[String, String]]] =
+    AsyncHttpClientZioBackend.scoped()
+      .flatMap:
+        req.send(_)
       .mapError(ex =>
         val unexpectedError =
-          s"""Unexpected error while sending request: ${ex.getMessage}.
-             | -> ${request.toCurl(Set("Authorization"))}
+          s"""Unexpected error while sending request: ${ex.getMessage} / ${ex.getClass}.
+             | -> ${req.toCurl(Set("Authorization"))}
              |""".stripMargin
         ServiceUnexpectedError(unexpectedError)
       )

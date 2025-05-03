@@ -140,10 +140,8 @@ lazy val dmn = project
   .settings(projectSettings("dmn"))
   .settings(unitTestSettings)
   .settings(
-    libraryDependencies ++= Seq(
-      sttpDependency,
+    libraryDependencies ++= sttpDependencies :+
       "io.github.pme123" %% "camunda-dmn-tester-shared" % dmnTesterVersion
-    )
   )
   .dependsOn(gateway)
 
@@ -154,8 +152,7 @@ lazy val worker = project
     projectSettings("worker"),
     unitTestSettings,
     autoImportSetting,
-    libraryDependencies ++= Seq(
-      sttpDependency,
+    libraryDependencies ++= sttpDependencies ++ Seq(
       scaffeineDependency,
       zioDependency,
       zioSlf4jDependency,
@@ -171,8 +168,7 @@ lazy val gatewayZio = project
   .settings(unitTestSettings)
   .settings(
     autoImportSetting,
-    libraryDependencies ++= Seq(
-      sttpDependency,
+    libraryDependencies ++= sttpDependencies ++ Seq(
       scaffeineDependency,
       zioDependency,
       zioSlf4jDependency
@@ -186,8 +182,7 @@ lazy val simulation = project
   .settings(projectSettings("simulation"))
   .settings(
     autoImportSetting,
-    libraryDependencies ++= Seq(
-      sttpDependency,
+    libraryDependencies ++= sttpDependencies ++ Seq(
       "org.scala-sbt" % "test-interface" % testInterfaceVersion
     )
   )
