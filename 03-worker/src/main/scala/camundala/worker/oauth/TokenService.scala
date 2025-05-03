@@ -50,6 +50,8 @@ class TokenService(
       .post(identityUrl)
       .header("accept", "application/json")
 
+  private lazy val backend: SttpBackend[Identity, Any] = HttpClientSyncBackend()
+
   private def authAdminResponse                                  =
     tokenRequest.body(adminTokenBody).response(asJson[TokenResponse]).send(backend)
   private def authClientCredentialsResponse                      =
