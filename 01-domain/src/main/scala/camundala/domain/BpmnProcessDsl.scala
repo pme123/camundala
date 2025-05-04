@@ -169,7 +169,7 @@ trait BpmnProcessDsl extends BpmnDsl:
 
   @deprecated("Use .. extends BpmnMessageEventDsl")
   def receiveMessageEvent[
-    Msg <: Product: {InOutEncoder, InOutDecoder, Schema}
+      Msg <: Product: {InOutEncoder, InOutDecoder, Schema}
   ](
       messageName: String,
       in: Msg = NoInput(),

@@ -5,6 +5,7 @@ import zio.*
 
 trait DmnService:
   def executeDmn[In <: Product: InOutEncoder](
-    dmnDefId: String,
-    in: In
+      dmnDefId: String,
+      in: In
   ): IO[GatewayError, ProcessInfo]
+end DmnService

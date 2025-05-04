@@ -6,9 +6,9 @@ import camundala.worker.CamundalaWorkerError.*
 import camundala.examples.demos.newWorker.ExampleService.{Out, *}
 
 class ExampleServiceWorkerTest extends munit.FunSuite:
-  
+
   lazy val worker = new ExampleServiceWorker()
-  
+
   test("apiUri should return expected URI") {
     assertEquals(
       worker.apiUri(In()).toString(),
@@ -39,7 +39,7 @@ class ExampleServiceWorkerTest extends munit.FunSuite:
 
   test("should handle default input values") {
     val input = In()
-    
+
     assertEquals(
       input,
       In(
@@ -79,7 +79,7 @@ class ExampleServiceWorkerTest extends munit.FunSuite:
 
   test("output case class should have correct default values") {
     val defaultOutput = Out()
-    
+
     assertEquals(
       defaultOutput,
       Out(
@@ -91,7 +91,7 @@ class ExampleServiceWorkerTest extends munit.FunSuite:
 
   test("MyType should have correct default values") {
     val defaultMyType = MyType()
-    
+
     assertEquals(
       defaultMyType,
       MyType(

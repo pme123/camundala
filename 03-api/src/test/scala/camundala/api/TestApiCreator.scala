@@ -6,7 +6,6 @@ import camundala.domain.{BpmnDsl, BpmnProcessDsl, InOutDescr, Process, ProcessLa
 
 object TestApiCreator extends DefaultApiCreator, App:
 
-  
   def title = "Test API"
 
   def version                            = "1.0"
@@ -26,7 +25,7 @@ object TestApiCreator extends DefaultApiCreator, App:
 
   private lazy val testProcess2 =
     Process(InOutDescr(processName, standardSample, SampleOut()), NoInput(), ProcessLabels.none)
-  val processName: String = "sample-process2"
+  val processName: String       = "sample-process2"
 
   val descr: String = ""
 end TestApiCreator

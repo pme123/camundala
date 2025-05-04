@@ -16,11 +16,11 @@ case class SbtGenerator()(using
 
   def generateBuildProperties(replaceStr: String = helperDoNotAdjustText) =
     createOrUpdate(config.sbtProjectDir / "build.properties", buildProperties(replaceStr))
-  lazy val generatePluginsSbt =
+  lazy val generatePluginsSbt                                             =
     createOrUpdate(config.sbtProjectDir / "plugins.sbt", pluginsSbt)
-  private lazy val projectConf = config.apiProjectConfig
-  private lazy val versionHelper = VersionHelper(projectConf)
-  private lazy val buildSbtDir = config.projectDir / "build.sbt"
+  private lazy val projectConf                                            = config.apiProjectConfig
+  private lazy val versionHelper                                          = VersionHelper(projectConf)
+  private lazy val buildSbtDir                                            = config.projectDir / "build.sbt"
 
   private lazy val buildSbt =
     s"""// $doNotAdjust. This file is replaced by `./helper.scala update`.
@@ -42,7 +42,7 @@ case class SbtGenerator()(using
     s"""$replaceStr
        |sbt.version=${config.versionConfig.sbtVersion}
        |""".stripMargin
-  private lazy val pluginsSbt =
+  private lazy val pluginsSbt                     =
     s"""$helperDoNotAdjustText
        |addDependencyTreePlugin // sbt dependencyBrowseTreeHTML -> target/tree.html
        |
@@ -77,7 +77,7 @@ case class SbtGenerator()(using
       }
        |}""".stripMargin
 
-  private lazy val sbtRoot =
+  private lazy val sbtRoot    =
     s"""
        |lazy val root = project
        |  .in(file("."))
@@ -90,9 +90,9 @@ case class SbtGenerator()(using
   private lazy val sbtModules =
     config.modules
       .map: modC =>
-        val name = modC.name
-        val plugins = modC.sbtPlugins
-        val sbtSettings = modC.sbtSettings
+        val name                                  = modC.name
+        val plugins                               = modC.sbtPlugins
+        val sbtSettings                           = modC.sbtSettings
         def sbtSubProjectName(subProject: String) =
           name + subProject.head.toUpper + subProject.tail
 
@@ -130,8 +130,8 @@ case class SbtGenerator()(using
                           |  )""".stripMargin
                   else ""
                 }""".stripMargin
-          else "" -> ""
-        val enablePlugins =
+          else ""       -> ""
+        val enablePlugins                       =
           if plugins.isEmpty then ""
           else plugins.mkString(".enablePlugins(", ", ", ")")
         s"""
@@ -153,11 +153,11 @@ case class SbtGenerator()(using
 
   private def testSetting(modC: ModuleConfig) =
     modC.testType match
-      case TestType.None => ""
-      case TestType.MUnit =>
+      case TestType.None       => ""
+      case TestType.MUnit      =>
         s""",
            |    testSettings""".stripMargin
-      case TestType.ZIO =>
+      case TestType.ZIO        =>
         s""",
            |    testSettings,
            |    zioTestSettings""".stripMargin

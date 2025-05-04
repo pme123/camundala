@@ -76,7 +76,7 @@ trait OAuth2Client extends C7Client, OAuthPasswordFlow:
         ExternalTaskClient.create()
           .baseUrl(camundaRestUrl)
           .maxTasks(maxTasks)
-        //  .disableBackoffStrategy()
+          //  .disableBackoffStrategy()
           .backoffStrategy(
             new ExponentialBackoffStrategy(
               100L,
@@ -92,6 +92,5 @@ trait OAuth2Client extends C7Client, OAuthPasswordFlow:
           .build()
       .tap: client =>
         ZIO.logInfo(s"Created C7 Client with maxTimeForAcquireJob: $maxTimeForAcquireJob")
-    
 
 end OAuth2Client

@@ -48,7 +48,8 @@ sealed trait CamundalaWorkerError extends Throwable:
   def causeMsg                                   = s"$errorCode: $errorMsg"
   def causeError: Option[CamundalaWorkerError]   = None
   def generalVariables: Option[GeneralVariables] = None
-  override def toString(): String                = causeMsg + causeError.map(e =>s"Caused by ${e.causeMsg}").getOrElse("")
+  override def toString(): String                =
+    causeMsg + causeError.map(e => s"Caused by ${e.causeMsg}").getOrElse("")
 end CamundalaWorkerError
 
 sealed trait ErrorWithOutput extends CamundalaWorkerError:

@@ -35,8 +35,7 @@ trait ProcessReferenceCreator:
              os.walk(absBpmnPath)
            else
              println(s"THIS PATH DOES NOT EXIST: $projectName")
-             Seq.empty
-          )
+             Seq.empty)
 
       }
       .map { case projectName -> path =>
