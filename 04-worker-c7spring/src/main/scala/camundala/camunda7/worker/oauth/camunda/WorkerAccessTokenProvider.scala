@@ -26,13 +26,11 @@ class WorkerAccessTokenProvider @Autowired() (
       .principal("Worker")
       .build()
     val authorizedClient = this.authorizedClientManager.authorize(authorizeRequest)
-    val accessToken = Objects.requireNonNull(authorizedClient).getAccessToken
-    val token = accessToken.getTokenValue
+    val accessToken      = Objects.requireNonNull(authorizedClient).getAccessToken
+    val token            = accessToken.getTokenValue
     logger.debug(
-        s"""Got Camunda Token:
-           |- Scopes: ${accessToken.getScopes}
-           |- Token: ${token.take(20)}...${token.takeRight(10)}""".stripMargin
-      )
+      "Got Camunda Token for authorization: " + authorizedClient.getPrincipalName
+    )
     "Bearer " + token
   end getAccessTokenSync
 end WorkerAccessTokenProvider
