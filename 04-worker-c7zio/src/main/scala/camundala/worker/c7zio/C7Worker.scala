@@ -23,13 +23,16 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
       externalTask: camunda.ExternalTask,
       externalTaskService: camunda.ExternalTaskService
   ): Unit =
-    Future: // workaround check https://discord.com/channels/629491597070827530/1367819728944500786
-      Unsafe.unsafe:
+    // Future: // workaround check https://discord.com/channels/629491597070827530/1367819728944500786
+    Unsafe
+      .unsafe:
         implicit unsafe =>
-          runtime.unsafe.run(
+          runtime.unsafe.runToFuture(
             run(externalTaskService)(using externalTask)
               .provideLayer(ZioLogger.logger)
+              .provideLayer(fixedThreadExecutorLayer)
           )
+
   end execute
 
   private[worker] def run(externalTaskService: camunda.ExternalTaskService)(using
@@ -81,19 +84,19 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
           externalTaskService.complete(
             summon[camunda.ExternalTask],
             if manualOutMapping then Map.empty.asJava
-            else filteredOutput.asJava, // Process Variables
+            else filteredOutput.asJava,                                           // Process Variables
             if !manualOutMapping then Map.empty.asJava else filteredOutput.asJava // local Variables
           )
         } *>
         ZIO.logDebug(s"handleSuccess AFTER complete: ${worker.topic}")
     }.catchAll: err =>
-            handleFailure(
-              UnexpectedError(
-                s"There is an unexpected Error from completing a successful Worker to C7: ${err.getMessage}."
-              ),
-              doRetry = true
-            )
-          .ignore
+      handleFailure(
+        UnexpectedError(
+          s"There is an unexpected Error from completing a successful Worker to C7: ${err.getMessage}."
+        ),
+        doRetry = true
+      )
+    .ignore
 
     private[worker] def handleError(
         error: CamundalaWorkerError,

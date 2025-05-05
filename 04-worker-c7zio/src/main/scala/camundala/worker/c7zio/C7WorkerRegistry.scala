@@ -3,7 +3,7 @@ package camundala.worker.c7zio
 import camundala.worker.{WorkerDsl, WorkerRegistry}
 import org.camunda.bpm.client.ExternalTaskClient
 import zio.ZIO.*
-import zio.{Console, *}
+import zio.{Console, ZIO}
 
 class C7WorkerRegistry(client: C7Client)
     extends WorkerRegistry:
@@ -11,7 +11,7 @@ class C7WorkerRegistry(client: C7Client)
   protected def registerWorkers(workers: Set[WorkerDsl[?, ?]]): ZIO[Any, Any, Any] =
     acquireReleaseWith(client.client)(_.closeClient()): client =>
       for
-        _                             <- ZIO.logInfo("Starting C7 Worker Client")
+        _                             <- ZIO.logInfo(s"Starting C7 Worker Client - Available Processors: ${Runtime.getRuntime.availableProcessors()}")
         server                        <- never.forever.fork
         c7Workers: Set[C7Worker[?, ?]] = workers.collect { case w: C7Worker[?, ?] => w }
         _                             <- foreachParDiscard(c7Workers)(w => registerWorker(w, client))

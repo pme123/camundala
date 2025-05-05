@@ -5,9 +5,10 @@ import camundala.domain.*
 import camundala.worker.CamundalaWorkerError.*
 import io.circe.*
 import sttp.client3.{HttpClientSyncBackend, Identity, SttpBackend}
-import zio.{IO, ZIO}
+import zio.{Executor, IO, ZIO, ZLayer}
 
 import java.util.Date
+import java.util.concurrent.{Executors, ThreadPoolExecutor}
 
 export sttp.model.Uri.UriContext
 export sttp.model.Method
@@ -201,3 +202,8 @@ def printTimeOnConsole(start: Date) =
   else Console.BLACK
   s"($color$time ms${Console.RESET})"
 end printTimeOnConsole
+
+lazy val fixedThreadExecutorLayer: ZLayer[Any, Nothing, Unit] =
+  zio.Runtime.setExecutor:
+    val threadPool = Executors.newFixedThreadPool(4).asInstanceOf[ThreadPoolExecutor]
+    Executor.fromThreadPoolExecutor(threadPool)

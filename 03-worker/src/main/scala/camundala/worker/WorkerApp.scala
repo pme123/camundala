@@ -25,11 +25,11 @@ trait WorkerApp extends ZIOAppDefault:
   override val bootstrap: ZLayer[ZIOAppArgs, Any, Any] = ZioLogger.logger
 
   override def run: ZIO[Any, Any, Any] =
-    for
+    (for
       _ <- logInfo(banner)
       _ <- foreachParDiscard(workerRegistries): registry =>
              registry.register((theDependencies :+ this).flatMap(_.theWorkers).toSet)
-    yield ()
+    yield ()).provideLayer(fixedThreadExecutorLayer)
 
   private lazy val banner =
     s"""
