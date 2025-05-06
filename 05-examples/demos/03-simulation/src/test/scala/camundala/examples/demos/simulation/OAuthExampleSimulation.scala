@@ -9,7 +9,7 @@ import camundala.simulation.custom.*
   */
 class OAuthExampleSimulation extends OAuthSimulationDsl:
 
-  simulate (
+  simulate(
     ignore.badScenario(
       CamundalaGenerateTestP,
       404,
@@ -24,12 +24,12 @@ class OAuthExampleSimulation extends OAuthSimulationDsl:
   lazy val fsso: Fsso = Fsso(
     s"http://kubernetes.docker.internal:8090/auth/realms/${config.tenantId.get}/protocol/openid-connect",
     Map(
-      "grant_type" -> "password",
-      "client_id" -> "all",
+      "grant_type"    -> "password",
+      "client_id"     -> "all",
       "client_secret" -> "6ec0e8ce-eff1-456f-bc2f-907b6fcb5157",
-      "username" -> "admin",
-      "password" -> "admin",
-      "scope" -> "fcs"
+      "username"      -> "admin",
+      "password"      -> "admin",
+      "scope"         -> "fcs"
     )
   )
 end OAuthExampleSimulation

@@ -6,7 +6,10 @@ case class BpmnGenerator()(using config: DevConfig):
 
   def createProcess(setupElement: SetupElement): Unit =
     createIfNotExists(
-      domainPath(setupElement.processName, setupElement.version) / s"${setupElement.bpmnName}.scala",
+      domainPath(
+        setupElement.processName,
+        setupElement.version
+      ) / s"${setupElement.bpmnName}.scala",
       objectDefinition(
         setupElement,
         isProcess = true
@@ -16,7 +19,7 @@ case class BpmnGenerator()(using config: DevConfig):
 
   def createProcessElement(setupElement: SetupElement): Unit =
     val processName = setupElement.processName
-    val version = setupElement.version
+    val version     = setupElement.version
     createIfNotExists(
       domainPath(
         processName,
@@ -39,7 +42,10 @@ case class BpmnGenerator()(using config: DevConfig):
 
   def createEvent(setupElement: SetupElement): Unit =
     createIfNotExists(
-      domainPath(setupElement.processName, setupElement.version) / s"${setupElement.bpmnName}.scala",
+      domainPath(
+        setupElement.processName,
+        setupElement.version
+      ) / s"${setupElement.bpmnName}.scala",
       eventDefinition(setupElement)
     )
 
@@ -59,12 +65,12 @@ case class BpmnGenerator()(using config: DevConfig):
        |
        |  val ${
         label match
-          case "Process" => "processName"
-          case "UserTask" => "name"
-          case "Decision" => "decisionId"
+          case "Process"                      => "processName"
+          case "UserTask"                     => "name"
+          case "Decision"                     => "decisionId"
           case "SignalEvent" | "MessageEvent" => "messageName"
-          case "TimerEvent" => "title"
-          case _ => "topicName"
+          case "TimerEvent"                   => "title"
+          case _                              => "topicName"
       } = "${setupObject.identifier}"
        |  val descr: String = ""
        |
@@ -156,7 +162,7 @@ case class BpmnGenerator()(using config: DevConfig):
 
   private def domainPath(processName: String, version: Option[Int]) =
     val subProject = config.subProjects.find(_ == processName)
-    val dir = config.projectDir / ModuleConfig.domainModule.packagePath(
+    val dir        = config.projectDir / ModuleConfig.domainModule.packagePath(
       config.projectPath,
       subProject = subProject
     ) / subProject.map(_ => os.rel).getOrElse(os.rel / processName) / version.versionPath
@@ -213,7 +219,7 @@ case class BpmnGenerator()(using config: DevConfig):
         else ""
       }
       |  case class Out(//TODO output variables
-            ${//TODO output variables
+            ${ // TODO output variables
         if isProcess then
           "        processStatus: ProcessStatus.succeeded.type = ProcessStatus.succeeded"
         else ""

@@ -16,7 +16,7 @@ object WorkerExecutorSpec extends ZIOSpecDefault:
   given EngineRunContext = EngineRunContext(
     new EngineContext:
       override def getLogger(clazz: Class[?]): WorkerLogger = ???
-      override def toEngineObject: Json => Any = ???
+      override def toEngineObject: Json => Any              = ???
       override def sendRequest[ServiceIn: Encoder, ServiceOut: {Decoder, ClassTag}](
           request: RunnableRequest[ServiceIn]
       ): SendRequestType[ServiceOut] = ???
@@ -25,10 +25,10 @@ object WorkerExecutorSpec extends ZIOSpecDefault:
   )
 
   def processName: String = "test-process"
-  def example =
+  def example             =
     Process(InOutDescr(processName, In(), NoOutput()), NoInput(), ProcessLabels.none)
   import In.given
-  def worker = InitWorker(example, ValidationHandler(Right(_)))
+  def worker              = InitWorker(example, ValidationHandler(Right(_)))
 
   case class In(aValue: String = "ok", inConfig: Option[InConfig] = None)
       extends WithConfig[InConfig]:
@@ -36,7 +36,7 @@ object WorkerExecutorSpec extends ZIOSpecDefault:
 
   object In:
     given InOutCodec[In] = deriveInOutCodec[In]
-    given ApiSchema[In] = deriveApiSchema[In]
+    given ApiSchema[In]  = deriveApiSchema[In]
 
   case class InConfig(
       requiredValue: String = "required",
@@ -45,7 +45,7 @@ object WorkerExecutorSpec extends ZIOSpecDefault:
 
   object InConfig:
     given InOutCodec[InConfig] = deriveInOutCodec[InConfig]
-    given ApiSchema[InConfig] = deriveApiSchema[InConfig]
+    given ApiSchema[InConfig]  = deriveApiSchema[InConfig]
 
   lazy val executor = WorkerExecutor(worker)
 
@@ -54,30 +54,28 @@ object WorkerExecutorSpec extends ZIOSpecDefault:
       val result = executor.InputValidator.validate(Seq(
         ZIO.succeed("requiredValue" -> None),
         ZIO.succeed("optionalValue" -> None),
-        ZIO.succeed("aValue" -> Some(Json.fromString("ok"))),
-        ZIO.succeed("inConfig" -> Some(Json.obj("requiredValue" -> Json.fromString("aso"))))
+        ZIO.succeed("aValue"        -> Some(Json.fromString("ok"))),
+        ZIO.succeed("inConfig"      -> Some(Json.obj("requiredValue" -> Json.fromString("aso"))))
       ))
 
       assertZIO(result)(
         equalTo(In(inConfig = Some(InConfig(requiredValue = "aso"))))
       )
     },
-
     test("InputValidator WithConfig default InConfig") {
       val result = executor.InputValidator.validate(Seq(
         ZIO.succeed("requiredValue" -> None),
         ZIO.succeed("optionalValue" -> None),
-        ZIO.succeed("aValue" -> Some(Json.fromString("ok")))
+        ZIO.succeed("aValue"        -> Some(Json.fromString("ok")))
       ))
 
       assertZIO(result)(
         equalTo(In(inConfig = Some(InConfig())))
       )
     },
-
     test("InputValidator WithConfig override InConfig in In") {
       val result = executor.InputValidator.validate(Seq(
-        ZIO.succeed("aValue" -> Some(Json.fromString("ok"))),
+        ZIO.succeed("aValue"        -> Some(Json.fromString("ok"))),
         ZIO.succeed("requiredValue" -> Some(Json.fromString("aso"))),
         ZIO.succeed("optionalValue" -> Some(Json.fromString("nei")))
       ))
@@ -86,9 +84,8 @@ object WorkerExecutorSpec extends ZIOSpecDefault:
         equalTo(In(inConfig = Some(InConfig(requiredValue = "aso", optionalValue = Some("nei")))))
       )
     },
-
     test("Test optional values are null in JSON") {
-      val in = (ZIO.fromEither(InConfig().asJson.hcursor
+      val in  = (ZIO.fromEither(InConfig().asJson.hcursor
         .downField("optionalValue")
         .as[Json]))
       val out = Json.Null

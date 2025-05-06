@@ -5,7 +5,7 @@ import camundala.examples.twitter.api.TwitterApi.*
 
 // exampleTwitterC8/run
 object TwitterApiCreator extends DefaultApiCreator:
-  
+
   override val apiConfig: ApiConfig =
     ApiConfig("demoCompany")
       .withBasePath(os.pwd / "05-examples" / "twitter" / "camunda8")
@@ -14,7 +14,7 @@ object TwitterApiCreator extends DefaultApiCreator:
 
   def title = "Twitter Process API C8"
 
-  def version = "1.0"
+  def version                            = "1.0"
   lazy val companyProjectVersion: String = "0.1.0"
 
   document {

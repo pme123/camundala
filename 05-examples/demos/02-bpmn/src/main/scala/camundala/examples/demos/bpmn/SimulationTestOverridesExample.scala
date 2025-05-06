@@ -5,12 +5,12 @@ import camundala.domain.*
 object SimulationTestOverridesExample extends BpmnProcessDsl:
 
   lazy val processName: String = "simulation-TestOverrides"
-  lazy val descr: String = ""
+  lazy val descr: String       = ""
 
   case class SimpleObject(name: String = "salu", other: Boolean = false)
 
   object SimpleObject:
-    given ApiSchema[SimpleObject] = deriveApiSchema
+    given ApiSchema[SimpleObject]  = deriveApiSchema
     given InOutCodec[SimpleObject] = deriveCodec
 
   case class InOutput(
@@ -20,7 +20,7 @@ object SimulationTestOverridesExample extends BpmnProcessDsl:
       objectCollectionValue: Seq[SimpleObject] = Seq(SimpleObject(), SimpleObject("tschau", true))
   )
   object InOutput:
-    given ApiSchema[InOutput] = deriveApiSchema
+    given ApiSchema[InOutput]  = deriveApiSchema
     given InOutCodec[InOutput] = deriveCodec
 
   lazy val simulationProcess = process(

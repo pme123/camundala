@@ -29,8 +29,8 @@ sealed trait GroupedApi extends CApi:
 end GroupedApi
 
 sealed trait InOutApi[
-    In <: Product: {InOutEncoder , InOutDecoder , Schema},
-    Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag}
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema, ClassTag}
 ] extends CApi:
   def inOut: InOut[In, Out, ?]
   def apiExamples: ApiExamples[In, Out]
@@ -109,9 +109,9 @@ sealed trait InOutApi[
 end InOutApi
 
 case class ProcessApi[
-    In <: Product: {InOutEncoder , InOutDecoder , Schema},
-    Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag},
-    InitIn <: Product: {InOutEncoder , InOutDecoder , Schema}
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema, ClassTag},
+    InitIn <: Product: {InOutEncoder, InOutDecoder, Schema}
 ](
     name: String,
     inOut: Process[In, Out, InitIn],
@@ -127,7 +127,7 @@ case class ProcessApi[
   ): InOutApi[In, Out] =
     copy(apiExamples = examples)
 
-  override def apiDescription(companyName:String): String =
+  override def apiDescription(companyName: String): String =
     s"""${super.apiDescription(companyName)}
        |
        |${inOut.in match
@@ -137,16 +137,16 @@ case class ProcessApi[
       }
        |${generalVariablesDescr(inOut.out, "")}""".stripMargin
 
-      // this function needs to be here as circe does not find the JsonEncoder in the extension method
-  lazy val initInMapper: EndpointIO.Body[String, InitIn] = jsonBody[InitIn]
+    // this function needs to be here as circe does not find the JsonEncoder in the extension method
+  lazy val initInMapper: EndpointIO.Body[String, InitIn]   = jsonBody[InitIn]
 
 end ProcessApi
 
 object ProcessApi:
   def apply[
-      In <: Product: {InOutEncoder , InOutDecoder , Schema},
-      Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag},
-      InitIn <: Product: {InOutEncoder , InOutDecoder , Schema}
+      In <: Product: {InOutEncoder, InOutDecoder, Schema},
+      Out <: Product: {InOutEncoder, InOutDecoder, Schema, ClassTag},
+      InitIn <: Product: {InOutEncoder, InOutDecoder, Schema}
   ](name: String, inOut: Process[In, Out, InitIn]): ProcessApi[In, Out, InitIn] =
     ProcessApi(name, inOut, ApiExamples(name, inOut))
 
@@ -189,8 +189,8 @@ def generalVariablesDescr[Out <: Product: InOutEncoder](
 end generalVariablesDescr
 
 sealed trait ExternalTaskApi[
-    In <: Product: {InOutEncoder , InOutDecoder , Schema},
-    Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag}
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema, ClassTag}
 ] extends InOutApi[In, Out]:
   def inOut: ExternalTask[In, Out, ?]
 
@@ -208,10 +208,10 @@ sealed trait ExternalTaskApi[
 end ExternalTaskApi
 
 case class ServiceWorkerApi[
-    In <: Product: {InOutEncoder , InOutDecoder , Schema},
-    Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag},
-    ServiceIn: {InOutEncoder , InOutDecoder , Schema},
-    ServiceOut: {InOutEncoder , InOutDecoder , Schema}
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema, ClassTag},
+    ServiceIn: {InOutEncoder, InOutDecoder, Schema},
+    ServiceOut: {InOutEncoder, InOutDecoder, Schema}
 ](
     name: String,
     inOut: ServiceTask[In, Out, ServiceIn, ServiceOut],
@@ -251,10 +251,10 @@ end ServiceWorkerApi
 
 object ServiceWorkerApi:
   def apply[
-      In <: Product: {InOutEncoder , InOutDecoder , Schema},
-      Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag},
-      ServiceIn: {InOutEncoder , InOutDecoder , Schema},
-      ServiceOut: {InOutEncoder , InOutDecoder , Schema}
+      In <: Product: {InOutEncoder, InOutDecoder, Schema},
+      Out <: Product: {InOutEncoder, InOutDecoder, Schema, ClassTag},
+      ServiceIn: {InOutEncoder, InOutDecoder, Schema},
+      ServiceOut: {InOutEncoder, InOutDecoder, Schema}
   ](
       name: String,
       inOut: ServiceTask[In, Out, ServiceIn, ServiceOut]
@@ -264,8 +264,8 @@ object ServiceWorkerApi:
 end ServiceWorkerApi
 
 case class CustomWorkerApi[
-    In <: Product: {InOutEncoder , InOutDecoder , Schema},
-    Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag}
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema, ClassTag}
 ](
     name: String,
     inOut: CustomTask[In, Out],
@@ -280,8 +280,8 @@ end CustomWorkerApi
 
 object CustomWorkerApi:
   def apply[
-      In <: Product: {InOutEncoder , InOutDecoder , Schema},
-      Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag}
+      In <: Product: {InOutEncoder, InOutDecoder, Schema},
+      Out <: Product: {InOutEncoder, InOutDecoder, Schema, ClassTag}
   ](
       name: String,
       inOut: CustomTask[In, Out]
@@ -291,8 +291,8 @@ object CustomWorkerApi:
 end CustomWorkerApi
 
 case class DecisionDmnApi[
-    In <: Product: {InOutEncoder , InOutDecoder , Schema},
-    Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag}
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema, ClassTag}
 ](
     name: String,
     inOut: DecisionDmn[In, Out],
@@ -315,8 +315,8 @@ end DecisionDmnApi
 
 object DecisionDmnApi:
   def apply[
-      In <: Product: {InOutEncoder , InOutDecoder , Schema},
-      Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag}
+      In <: Product: {InOutEncoder, InOutDecoder, Schema},
+      Out <: Product: {InOutEncoder, InOutDecoder, Schema, ClassTag}
   ](name: String, inOut: DecisionDmn[In, Out]): DecisionDmnApi[In, Out] =
     DecisionDmnApi(name, inOut, ApiExamples(name, inOut))
 
@@ -334,8 +334,8 @@ case class CApiGroup(
 end CApiGroup
 
 case class ActivityApi[
-    In <: Product: {InOutEncoder , InOutDecoder , Schema},
-    Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag}
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema, ClassTag}
 ](
     name: String,
     inOut: Activity[In, Out, ?],
@@ -351,15 +351,15 @@ end ActivityApi
 object ActivityApi:
 
   def apply[
-      In <: Product: {InOutEncoder , InOutDecoder , Schema},
-      Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag}
+      In <: Product: {InOutEncoder, InOutDecoder, Schema},
+      Out <: Product: {InOutEncoder, InOutDecoder, Schema, ClassTag}
   ](name: String, inOut: Activity[In, Out, ?]): ActivityApi[In, Out] =
     ActivityApi(name, inOut, ApiExamples(name, inOut))
 
 end ActivityApi
 case class ApiExamples[
-    In <: Product: {InOutEncoder , InOutDecoder , Schema},
-    Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag}
+    In <: Product: {InOutEncoder, InOutDecoder, Schema},
+    Out <: Product: {InOutEncoder, InOutDecoder, Schema, ClassTag}
 ](
     inputExamples: InOutExamples[In],
     outputExamples: InOutExamples[Out]
@@ -368,8 +368,8 @@ case class ApiExamples[
 object ApiExamples:
 
   def apply[
-      In <: Product: {InOutEncoder , InOutDecoder , Schema},
-      Out <: Product: {InOutEncoder , InOutDecoder , Schema, ClassTag}
+      In <: Product: {InOutEncoder, InOutDecoder, Schema},
+      Out <: Product: {InOutEncoder, InOutDecoder, Schema, ClassTag}
   ](name: String, inOut: InOut[In, Out, ?]): ApiExamples[In, Out] =
     val enumInExamples = inOut.otherEnumInExamples
       .map: examples =>
@@ -395,7 +395,7 @@ object ApiExamples:
 
 end ApiExamples
 
-case class InOutExamples[T <: Product: {InOutEncoder , InOutDecoder , Schema}](
+case class InOutExamples[T <: Product: {InOutEncoder, InOutDecoder, Schema}](
     examples: Seq[InOutExample[T]]
 ):
   @targetName("add")
@@ -406,7 +406,7 @@ case class InOutExamples[T <: Product: {InOutEncoder , InOutDecoder , Schema}](
     examples
 end InOutExamples
 
-case class InOutExample[T <: Product: {InOutEncoder , InOutDecoder , Schema}](
+case class InOutExample[T <: Product: {InOutEncoder, InOutDecoder, Schema}](
     name: String,
     example: T
 ):
@@ -416,7 +416,7 @@ end InOutExample
 
 object InOutExample:
 
-  def apply[T <: Product: {InOutEncoder , InOutDecoder , Schema}](inOut: T): InOutExample[T] =
+  def apply[T <: Product: {InOutEncoder, InOutDecoder, Schema}](inOut: T): InOutExample[T] =
     val name = inOut.getClass.getName.replace("$", " > ").split('.').last
     InOutExample(name, inOut)
 

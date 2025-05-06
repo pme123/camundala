@@ -5,7 +5,7 @@ import camundala.api.{ApiProjectConfig, DependencyConfig}
 import scala.jdk.CollectionConverters.*
 
 case class VersionHelper(
-                          projectConf: ApiProjectConfig,
+    projectConf: ApiProjectConfig
 ):
 
   lazy val dependencyVersions: Map[String, String] =
@@ -48,7 +48,7 @@ case class VersionHelper(
     name.split("-").toList match
       case head :: tail =>
         head + tail.map(n => n.head.toUpper + n.tail).mkString
-      case other => other
+      case other        => other
 
 end VersionHelper
 
@@ -60,7 +60,7 @@ object VersionHelper:
   // this expects a projectName in this pattern mycompany-myproject
   def repoSearch(projectName: String): String =
     repoSearch(projectName, projectName.split("-").head)
-    
+
   def repoSearch(project: String, org: String): String =
     val searchResult = os.proc(
       "cs",
@@ -68,11 +68,11 @@ object VersionHelper:
       s"$org:$project:"
     ).call()
     val versionRegex = """(\d+\.\d+\.\d+)""".r
-    val versionStr =
+    val versionStr   =
       searchResult.out.text()
         .split("\n").toList
         .filter(_.trim.matches(versionRegex.regex))
-        .map:v =>
+        .map: v =>
           val vers = v.split("\\.")
             .filterNot(_.trim.toIntOption.isEmpty)
             .map: nr =>
@@ -82,7 +82,7 @@ object VersionHelper:
         .sortBy(_._2)(Ordering[String].reverse)
         .headOption
         .map(_._1)
-    val version = versionStr.getOrElse:
+    val version      = versionStr.getOrElse:
       println(
         s"${Console.YELLOW_B}NOT FOUND!${Console.RESET} - Result from Maven Central:\n ${searchResult.out.text()}" +
           s"Check: cs complete-dep $org:$project:"

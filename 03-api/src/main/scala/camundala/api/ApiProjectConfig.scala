@@ -77,7 +77,7 @@ case class VersionConfig(major: Int, minor: Int, patch: Int, isSnapshot: Boolean
   lazy val versionAsInt: Int    =
     major * 100000 + minor * 1000 + patch
 
-  override def toString: String = s"$minorVersion.$patch${if isSnapshot then "-SNAPSHOT" else ""}"
+  override def toString: String                    = s"$minorVersion.$patch${if isSnapshot then "-SNAPSHOT" else ""}"
   def isHigherThan(config: VersionConfig): Boolean =
     versionAsInt > config.versionAsInt
 end VersionConfig

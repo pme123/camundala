@@ -17,15 +17,15 @@ trait PostmanApiCreator extends AbstractApiCreator:
     def createPostman(): Seq[PublicEndpoint[?, Unit, ?, Any]] =
       println(s"Start Grouped API: ${cApi.name}")
       cApi match
-        case pa: ProcessApi[?, ?, ?] =>
+        case pa: ProcessApi[?, ?, ?]  =>
           createPostmanForProcess(pa, pa.name) ++ pa.apis.flatMap(
             _.createPostman(cApi.name)
           )
         case da: DecisionDmnApi[?, ?] =>
           createPostmanForDecisionDmn(da.toActivityApi, da.name)
-        case gApi: CApiGroup =>
+        case gApi: CApiGroup          =>
           gApi.apis.flatMap(_.createPostman(cApi.name, true))
-        case _: CApi =>
+        case _: CApi                  =>
           cApi.createPostman(cApi.name, true)
       end match
 
@@ -40,30 +40,30 @@ trait PostmanApiCreator extends AbstractApiCreator:
         case pa @ ProcessApi(name, inOut, _, apis, _) if apis.isEmpty =>
           println(s"${inOut.getClass.getSimpleName}: $tag - $name")
           createPostmanForProcess(pa, tag, isGroup)
-        case aa @ ActivityApi(name, inOut, _) =>
+        case aa @ ActivityApi(name, inOut, _)                         =>
           println(s"${inOut.getClass.getSimpleName}: $tag - $name")
           inOut match
-            case _: UserTask[?, ?] =>
+            case _: UserTask[?, ?]    =>
               createPostmanForUserTask(aa, tag)
             case _: DecisionDmn[?, ?] =>
               createPostmanForDecisionDmn(aa, tag)
-            case _: MessageEvent[?] =>
+            case _: MessageEvent[?]   =>
               createPostmanForMessageEvent(aa, tag)
-            case _: SignalEvent[?] =>
+            case _: SignalEvent[?]    =>
               createPostmanForSignalEvent(aa, tag)
-            case _: TimerEvent =>
+            case _: TimerEvent        =>
               createPostmanForTimerEvent(aa, tag)
           end match
         case pa @ ProcessApi(name, _, _, apis, _)
             if apis.forall(_.isInstanceOf[ActivityApi[?, ?]]) =>
           createPostmanForProcess(pa, tag) ++ apis.flatMap(_.createPostman(tag))
-        case api @ ServiceWorkerApi(_, _, _) =>
+        case api @ ServiceWorkerApi(_, _, _)                          =>
           createPostmanForExternalTask(api, tag)
-        case api @ CustomWorkerApi(_, _, _) =>
+        case api @ CustomWorkerApi(_, _, _)                           =>
           createPostmanForExternalTask(api, tag)
-        case da: DecisionDmnApi[?, ?] =>
+        case da: DecisionDmnApi[?, ?]                                 =>
           createPostmanForDecisionDmn(da.toActivityApi, tag)
-        case ga =>
+        case ga                                                       =>
           throw IllegalArgumentException(
             s"Sorry, only one level of GroupedApi is allowed!\n - $ga"
           )
@@ -138,11 +138,12 @@ trait PostmanApiCreator extends AbstractApiCreator:
       inOutApi.inOut.in match
         case gs: GenericServiceIn =>
           inOutApi.id / s"--REMOVE${gs.serviceName}--"
-        case _ =>
+        case _                    =>
           if isGroup then
             inOutApi.id / s"--REMOVE${inOutApi.name.replace(" ", "")}--"
           else
             inOutApi.id
+  end extension
 
   protected def tenantIdPath(
       basePath: EndpointInput[?],

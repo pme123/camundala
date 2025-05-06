@@ -26,7 +26,7 @@ case class ServiceClassesGenerator()(using
          |${printDescr(classOrEnum)}
          |${
           classOrEnum match
-            case e: BpmnEnum =>
+            case e: BpmnEnum  =>
               val params = e.cases
                 .collect:
                   case c: BpmnClass =>
@@ -62,11 +62,11 @@ case class ServiceClassesGenerator()(using
        |${
         bpmnEnum.cases
           .map:
-            case bpmnEnum: BpmnEnum =>
+            case bpmnEnum: BpmnEnum   =>
               generateEnum(bpmnEnum, s"  $intent")
             case bpmnClass: BpmnClass =>
               generateCaseClass(bpmnClass, Some(key), s"  $intent")
-            case enumCase: EnumCase =>
+            case enumCase: EnumCase   =>
               s"""$intent  ${printDescr(enumCase)}
                  |$intent  case ${enumCase.className}""".stripMargin
           .mkString

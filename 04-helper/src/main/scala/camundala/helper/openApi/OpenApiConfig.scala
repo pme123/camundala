@@ -18,21 +18,21 @@ case class OpenApiConfig(
     // creates name: Portfolios
     filterNames: Seq[String] = Seq.empty
 ):
-  def bpmnPath(versionTag: String): os.Path = path(ModuleConfig.domainModule, versionTag)
-  def bpmnPackage(versionTag: String): String = pckg(ModuleConfig.domainModule.name, versionTag)
-  def simulationPath(versionTag: String): os.Path = path(ModuleConfig.simulationModule, versionTag)
+  def bpmnPath(versionTag: String): os.Path         = path(ModuleConfig.domainModule, versionTag)
+  def bpmnPackage(versionTag: String): String       = pckg(ModuleConfig.domainModule.name, versionTag)
+  def simulationPath(versionTag: String): os.Path   = path(ModuleConfig.simulationModule, versionTag)
   def simulationPackage(versionTag: String): String =
     pckg(ModuleConfig.simulationModule.name, versionTag)
-  def workerPath(versionTag: String): os.Path = path(ModuleConfig.workerModule, versionTag)
-  def workerPackage(versionTag: String): String = pckg(ModuleConfig.workerModule.name, versionTag)
-  lazy val projectTopicName: String =
+  def workerPath(versionTag: String): os.Path       = path(ModuleConfig.workerModule, versionTag)
+  def workerPackage(versionTag: String): String     = pckg(ModuleConfig.workerModule.name, versionTag)
+  lazy val projectTopicName: String                 =
     s"$projectName${subProjectName.map(n => s"-$n").getOrElse("")}"
-  lazy val typeMapping =
+  lazy val typeMapping                              =
     typeMappers
       .map:
         case TypeMapper(from, to, _) => from -> to
       .toMap
-  lazy val implMapping =
+  lazy val implMapping                              =
     typeMappers
       .map:
         case TypeMapper(_, to, impl) => to -> impl
@@ -46,18 +46,18 @@ case class OpenApiConfig(
     outputPath(moduleConfig.nameWithLevel) / projectName.split(
       '-'
     ).toSeq / moduleConfig.name / subProjectName.toSeq / versionTag
-  private def pckg(moduleName: String, versionTag: String) =
+  private def pckg(moduleName: String, versionTag: String)         =
     s"${projectName.replace('-', '.')}.$moduleName${subProjectName.map(n => s".$n").getOrElse("")}.$versionTag"
 
 end OpenApiConfig
 
 object OpenApiConfig:
-  lazy val openApiFile: os.RelPath = os.rel / "openApi.yml"
+  lazy val openApiFile: os.RelPath       = os.rel / "openApi.yml"
   lazy val outputPath: String => os.Path = os.pwd / _ / ".generated"
-  lazy val superBpmnClass: String = "CompanyBpmnServiceTaskDsl"
-  lazy val superSimulationClass: String = "CompanySimulation"
-  lazy val superWorkerClass: String = "CompanyServiceWorkerDsl"
-  lazy val generalTypeMapping = Seq(
+  lazy val superBpmnClass: String        = "CompanyBpmnServiceTaskDsl"
+  lazy val superSimulationClass: String  = "CompanySimulation"
+  lazy val superWorkerClass: String      = "CompanyServiceWorkerDsl"
+  lazy val generalTypeMapping            = Seq(
     TypeMapper("array", "Seq", _.getOrElse("Seq.empty")),
     TypeMapper("set", "Set", _.getOrElse("Set.empty")),
     TypeMapper("boolean", "Boolean", _.getOrElse("true")),

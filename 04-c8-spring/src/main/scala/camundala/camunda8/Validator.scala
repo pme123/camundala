@@ -15,8 +15,8 @@ trait Validator:
     decode[T](json) match
       case Left(error: DecodingFailure) =>
         Left(error.show)
-      case Left(error: circe.Error) =>
+      case Left(error: circe.Error)     =>
         Left(error.show)
-      case Right(p: T) =>
+      case Right(p: T)                  =>
         Right(p)
 end Validator
