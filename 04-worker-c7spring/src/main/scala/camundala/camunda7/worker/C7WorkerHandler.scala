@@ -39,7 +39,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
   override def execute(
       externalTask: camunda.ExternalTask,
       externalTaskService: camunda.ExternalTaskService
-  ): Unit = 
+  ): Unit =
     Future:
       Unsafe.unsafe:
         implicit unsafe =>
@@ -47,7 +47,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
             run(externalTaskService)(using externalTask)
               .provideLayer(ZioLogger.logger)
           )
-  
+
   end execute
 
   private[worker] def run(externalTaskService: camunda.ExternalTaskService)(using
@@ -116,7 +116,7 @@ trait C7WorkerHandler[In <: Product: InOutCodec, Out <: Product: InOutCodec]
           externalTaskService.complete(
             summon[camunda.ExternalTask],
             if manualOutMapping then Map.empty.asJava
-            else filteredOutput.asJava, // Process Variables
+            else filteredOutput.asJava,                                           // Process Variables
             if !manualOutMapping then Map.empty.asJava else filteredOutput.asJava // local Variables
           )
         } *>

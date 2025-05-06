@@ -24,7 +24,7 @@ case class MockedServiceResponse[
     })
 
   // be sure ServiceOut is set!
-  def unsafeBody: ServiceOut = respBody.toOption.get
+  def unsafeBody: ServiceOut            = respBody.toOption.get
   def headersAsMap: Map[String, String] =
     respHeaders
       .map(_.toList)
@@ -73,11 +73,11 @@ object MockedServiceResponse:
       : InOutEncoder[MockedServiceResponse[ServiceOut]] =
     Encoder.instance { response =>
       Json.obj(
-        "respStatus" -> Json.fromInt(response.respStatus),
-        "respBody" -> (
+        "respStatus"  -> Json.fromInt(response.respStatus),
+        "respBody"    -> (
           response.respBody match
             case Right(value) => value.asJson.deepDropNullValues
-            case Left(err) => err.getOrElse(Json.Null)
+            case Left(err)    => err.getOrElse(Json.Null)
         ),
         "respHeaders" -> response.respHeaders
           .map(_.map(Json.fromString))
@@ -89,8 +89,8 @@ object MockedServiceResponse:
       : InOutDecoder[MockedServiceResponse[ServiceOut]] =
     Decoder.instance { cursor =>
       for
-        respStatus <- cursor.downField("respStatus").as[Int]
-        respBody <-
+        respStatus  <- cursor.downField("respStatus").as[Int]
+        respBody    <-
           if respStatus < 300 then
             cursor.downField("respBody").as[ServiceOut].map(Right(_))
           else cursor.downField("respBody").as[Option[Json]].map(Left(_))

@@ -77,7 +77,7 @@ trait OAuth2Client extends C7Client, OAuthPasswordFlow:
           .baseUrl(camundaRestUrl)
           .maxTasks(maxTasks)
           .asyncResponseTimeout(10.seconds.toMillis)
-        //  .disableBackoffStrategy()
+          //  .disableBackoffStrategy()
           .backoffStrategy(
             new ExponentialBackoffStrategy(
               100L,
@@ -91,6 +91,5 @@ trait OAuth2Client extends C7Client, OAuthPasswordFlow:
               .addRequestInterceptorLast(addAccessToken)
               .build()
           .build()
-    
 
 end OAuth2Client

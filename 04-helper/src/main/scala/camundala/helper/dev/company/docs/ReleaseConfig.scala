@@ -22,7 +22,7 @@ end ReleaseConfig
 object ReleaseConfig:
   def releaseConfig(basePath: os.Path) =
     val configFile = (basePath / "CONFIG.conf")
-    val config = ConfigFactory.parseFile(configFile.toIO)
+    val config     = ConfigFactory.parseFile(configFile.toIO)
     ReleaseConfig(
       config.getString("release.tag"),
       if config.hasPath("jira.release.url") then Some(config.getString("jira.release.url"))

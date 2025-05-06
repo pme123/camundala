@@ -2,7 +2,18 @@ package camundala
 package simulation
 
 import camundala.domain
-import camundala.domain.{CamundaVariable, DecisionDmn, ExternalTask, InOut, InOutDescr, MessageEvent, ProcessOrExternalTask, SignalEvent, TimerEvent, UserTask}
+import camundala.domain.{
+  CamundaVariable,
+  DecisionDmn,
+  ExternalTask,
+  InOut,
+  InOutDescr,
+  MessageEvent,
+  ProcessOrExternalTask,
+  SignalEvent,
+  TimerEvent,
+  UserTask
+}
 
 case class SSimulation(scenarios: List[SScenario])
 
@@ -16,7 +27,7 @@ sealed trait WithTestOverrides[T <: WithTestOverrides[T]]:
         .map(_ :+ testOverride)
         .getOrElse(TestOverrides(Seq(testOverride)))
     )
-  lazy val camundaToCheckMap: Map[String, CamundaVariable] =
+  lazy val camundaToCheckMap: Map[String, CamundaVariable]                     =
     inOut.camundaToCheckMap
 end WithTestOverrides
 
@@ -40,16 +51,16 @@ sealed trait HasProcessSteps extends ScenarioOrStep:
 sealed trait IsProcessScenario extends HasProcessSteps, SScenario
 
 case class ProcessScenario(
-                            // this is name of process in case of START
-                            // this is message name in case of MESSAGE
-                            // this is signal name in case of SIGNAL
-                            name: String,
-                            process: domain.Process[?, ?, ?],
-                            steps: List[SStep] = List.empty,
-                            isIgnored: Boolean = false,
-                            isOnly: Boolean = false,
-                            testOverrides: Option[TestOverrides] = None,
-                            startType: ProcessStartType = ProcessStartType.START
+    // this is name of process in case of START
+    // this is message name in case of MESSAGE
+    // this is signal name in case of SIGNAL
+    name: String,
+    process: domain.Process[?, ?, ?],
+    steps: List[SStep] = List.empty,
+    isIgnored: Boolean = false,
+    isOnly: Boolean = false,
+    testOverrides: Option[TestOverrides] = None,
+    startType: ProcessStartType = ProcessStartType.START
 ) extends IsProcessScenario,
       WithTestOverrides[ProcessScenario]:
   def inOut: InOut[?, ?, ?] = process
@@ -57,8 +68,8 @@ case class ProcessScenario(
   def add(testOverride: TestOverride): ProcessScenario =
     copy(testOverrides = addOverride(testOverride))
 
-  def ignored: ProcessScenario = copy(isIgnored = true)
-  def only: ProcessScenario = copy(isOnly = true)
+  def ignored: ProcessScenario                 = copy(isIgnored = true)
+  def only: ProcessScenario                    = copy(isOnly = true)
   def withSteps(steps: List[SStep]): SScenario =
     copy(steps = steps)
 end ProcessScenario
@@ -77,7 +88,7 @@ case class ExternalTaskScenario(
       WithTestOverrides[ExternalTaskScenario]:
 
   lazy val steps: List[SStep] = List.empty
-  def inOut: InOut[?, ?, ?] = process
+  def inOut: InOut[?, ?, ?]   = process
 
   def add(testOverride: TestOverride): ExternalTaskScenario =
     copy(testOverrides = addOverride(testOverride))
@@ -111,17 +122,17 @@ case class DmnScenario(
 end DmnScenario
 
 case class BadScenario(
-                        name: String,
-                        process: domain.Process[?, ?, ?],
-                        status: Int,
-                        errorMsg: Option[String],
-                        isIgnored: Boolean = false,
-                        isOnly: Boolean = false
+    name: String,
+    process: domain.Process[?, ?, ?],
+    status: Int,
+    errorMsg: Option[String],
+    isIgnored: Boolean = false,
+    isOnly: Boolean = false
 ) extends IsProcessScenario:
   lazy val inOut: domain.Process[?, ?, ?] = process
-  lazy val steps: List[SStep] = List.empty
-  def ignored: BadScenario = copy(isIgnored = true)
-  def only: BadScenario = copy(isOnly = true)
+  lazy val steps: List[SStep]             = List.empty
+  def ignored: BadScenario                = copy(isIgnored = true)
+  def only: BadScenario                   = copy(isOnly = true)
 
   def withSteps(steps: List[SStep]): SScenario =
     this
@@ -131,12 +142,12 @@ trait IsIncidentScenario extends IsProcessScenario, HasProcessSteps:
   def incidentMsg: String
 
 case class IncidentScenario(
-                             name: String,
-                             process: domain.Process[?, ?, ?],
-                             steps: List[SStep] = List.empty,
-                             incidentMsg: String,
-                             isIgnored: Boolean = false,
-                             isOnly: Boolean = false
+    name: String,
+    process: domain.Process[?, ?, ?],
+    steps: List[SStep] = List.empty,
+    incidentMsg: String,
+    isIgnored: Boolean = false,
+    isOnly: Boolean = false
 ) extends IsIncidentScenario,
       HasProcessSteps:
   lazy val inOut: domain.Process[?, ?, ?] = process
@@ -158,7 +169,7 @@ case class IncidentServiceScenario(
     isOnly: Boolean = false
 ) extends IsIncidentScenario:
   lazy val inOut: ExternalTask[?, ?, ?] = process
-  lazy val steps: List[SStep] = List.empty
+  lazy val steps: List[SStep]           = List.empty
 
   def ignored: IncidentServiceScenario = copy(isIgnored = true)
 
@@ -173,10 +184,10 @@ sealed trait SStep extends ScenarioOrStep
 sealed trait SInServiceOuttep
     extends SStep,
       WithTestOverrides[SInServiceOuttep]:
-  lazy val inOutDescr: InOutDescr[?, ?] = inOut.inOutDescr
-  lazy val id: String = inOutDescr.id
-  lazy val descr: Option[String] = inOutDescr.descr
-  lazy val camundaInMap: Map[String, CamundaVariable] = inOut.camundaInMap
+  lazy val inOutDescr: InOutDescr[?, ?]                = inOut.inOutDescr
+  lazy val id: String                                  = inOutDescr.id
+  lazy val descr: Option[String]                       = inOutDescr.descr
+  lazy val camundaInMap: Map[String, CamundaVariable]  = inOut.camundaInMap
   lazy val camundaOutMap: Map[String, CamundaVariable] = inOut.camundaOutMap
 end SInServiceOuttep
 
@@ -193,14 +204,14 @@ case class SUserTask(
 end SUserTask
 
 case class SSubProcess(
-                        name: String,
-                        process: domain.Process[?, ?, ?],
-                        steps: List[SStep],
-                        testOverrides: Option[TestOverrides] = None
+    name: String,
+    process: domain.Process[?, ?, ?],
+    steps: List[SStep],
+    testOverrides: Option[TestOverrides] = None
 ) extends SInServiceOuttep,
       HasProcessSteps:
 
-  lazy val processName: String = process.processName
+  lazy val processName: String            = process.processName
   lazy val inOut: domain.Process[?, ?, ?] = process
 
   def add(testOverride: TestOverride): SSubProcess =

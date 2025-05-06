@@ -5,7 +5,7 @@ import zio.ZIO.*
 import zio.{ZIOAppArgs, ZIOAppDefault, ZLayer}
 
 trait WorkerApp extends ZIOAppDefault:
-  def applicationName: String = getClass.getName.split('.').take(2).mkString("-")
+  def applicationName: String                                            = getClass.getName.split('.').take(2).mkString("-")
   // a list of registries for each worker implementation
   def workerRegistries: Seq[WorkerRegistry]
   // list all the workers you want to register
