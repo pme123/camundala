@@ -14,6 +14,8 @@ trait WorkerDsl[In <: Product: InOutCodec, Out <: Product: InOutCodec]:
   def worker: Worker[In, Out, ?]
   def topic: String     = worker.topic
   def timeout: Duration = 10.seconds
+  // thread pool size to run the worker
+  def nrOfThreads: Int = 6
 
   def runWorkFromWorker(in: In)(using
       EngineRunContext

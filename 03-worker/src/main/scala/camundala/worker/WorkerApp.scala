@@ -6,6 +6,9 @@ import zio.{ZIOAppArgs, ZIOAppDefault, ZLayer}
 
 trait WorkerApp extends ZIOAppDefault:
   def applicationName: String = getClass.getName.split('.').take(2).mkString("-")
+  // thread pool size for registering workers
+  def nrOfThreads: Int = 4
+
   // a list of registries for each worker implementation
   def workerRegistries: Seq[WorkerRegistry]
   // list all the workers you want to register
@@ -29,7 +32,7 @@ trait WorkerApp extends ZIOAppDefault:
       _ <- logInfo(banner)
       _ <- foreachParDiscard(workerRegistries): registry =>
              registry.register((theDependencies :+ this).flatMap(_.theWorkers).toSet)
-    yield ()).provideLayer(fixedThreadExecutorLayer)
+    yield ()).provideLayer(fixedThreadExecutorLayer(nrOfThreads))
 
   private lazy val banner =
     s"""

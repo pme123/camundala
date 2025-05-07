@@ -23,14 +23,14 @@ trait C7Worker[In <: Product: InOutCodec, Out <: Product: InOutCodec]
       externalTask: camunda.ExternalTask,
       externalTaskService: camunda.ExternalTaskService
   ): Unit =
-    // Future: // workaround check https://discord.com/channels/629491597070827530/1367819728944500786
+    // see also https://discord.com/channels/629491597070827530/1367819728944500786
     Unsafe
       .unsafe:
         implicit unsafe =>
           runtime.unsafe.runToFuture(
             run(externalTaskService)(using externalTask)
               .provideLayer(ZioLogger.logger)
-              .provideLayer(fixedThreadExecutorLayer)
+              .provideLayer(fixedThreadExecutorLayer(nrOfThreads))
           )
 
   end execute

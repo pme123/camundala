@@ -203,7 +203,7 @@ def printTimeOnConsole(start: Date) =
   s"($color$time ms${Console.RESET})"
 end printTimeOnConsole
 
-lazy val fixedThreadExecutorLayer: ZLayer[Any, Nothing, Unit] =
+def fixedThreadExecutorLayer(threads: Int): ZLayer[Any, Nothing, Unit] =
   zio.Runtime.setExecutor:
-    val threadPool = Executors.newFixedThreadPool(4).asInstanceOf[ThreadPoolExecutor]
+    val threadPool = Executors.newFixedThreadPool(threads).asInstanceOf[ThreadPoolExecutor]
     Executor.fromThreadPoolExecutor(threadPool)
