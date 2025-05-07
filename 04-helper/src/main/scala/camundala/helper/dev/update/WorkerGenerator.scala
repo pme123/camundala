@@ -73,7 +73,7 @@ case class WorkerGenerator()(using config: DevConfig):
        |
        |  lazy val inOutExample = example
        |
-       |  def customInit(in: In): InitIn =
+       |  override def customInit(in: In): InitIn =
        |    InitIn() //TODO add variable initialisation (to simplify the process expressions) or remove function
        |    // NoInput() // if no initialization is needed
        |  

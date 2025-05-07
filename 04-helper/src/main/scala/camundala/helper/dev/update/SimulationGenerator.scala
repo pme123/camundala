@@ -16,7 +16,7 @@ case class SimulationGenerator()(using config: DevConfig):
     s"""package ${config.projectPackage}
        |package simulation
        |
-       |import ${config.projectPackage}.bpmn.$processName${version.versionPackage}.$name.*
+       |import ${config.projectPackage}.domain.$processName${version.versionPackage}.$name.*
        |
        |// ./helper.scala deploy ${name}Simulation
        |// simulation/test
@@ -29,7 +29,7 @@ case class SimulationGenerator()(using config: DevConfig):
        |    )
        |  )
        |
-       |  override implicit def config =
+       |  override def config =
        |    super.config
        |      //.withMaxCount(30)
        |      //.withLogLevel(LogLevel.DEBUG)
