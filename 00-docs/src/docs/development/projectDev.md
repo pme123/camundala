@@ -306,6 +306,10 @@ To run the Camunda Server locally, you can use `docker-compose`.
 ### dockerUp
 Starts the server with `docker-compose`.
 
+@:callout(info)
+Check your company settings in `DockerHelper` before running this command.
+@:@
+
 Usage / example:
 ```
 ./helper.scala dockerUp
